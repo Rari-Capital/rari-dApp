@@ -1,0 +1,17 @@
+body,
+html {
+  margin: 0 !important;
+  /*
+  Remove below if you want to be able to scroll on the site (aka if it's not emulating a mobile app)
+  More info here: https://stackoverflow.com/questions/7768269/ipad-safari-disable-scrolling-and-bounce-effect
+  */
+
+  width: 100%;
+  height: 100%;
+
+  background-color: #000000;
+}
+
+* {
+  -webkit-overflow-scrolling: touch;
+}
