@@ -33,3 +33,4 @@ cypress.env.json
 
 .env
 .now
+.vercel
