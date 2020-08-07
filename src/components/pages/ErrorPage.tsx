@@ -23,8 +23,8 @@ interface Props {
 
 const ErrorPage: React.FC<Props> = ({ componentStack, error }) => {
   return (
-    <>
-      <Box bg="red.600" w="100%" p={4} color="white">
+    <Box color="white">
+      <Box bg="red.600" w="100%" p={4}>
         <Heading>Whoops! Looks like something went wrong!</Heading>
         <Text>
           You can either reload the page, or report this error to us on{" "}
@@ -59,7 +59,7 @@ const ErrorPage: React.FC<Props> = ({ componentStack, error }) => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-    </>
+    </Box>
   );
 };
 
