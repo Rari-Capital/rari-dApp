@@ -7,7 +7,7 @@ const PreviewPortal = () => {
       <Image src="https://i.imgur.com/wDgikRS.png" mb={2} />
       <Flex
         width="100%"
-        height="500px"
+        height={{ md: "500px", xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
       >
         <Box
@@ -140,6 +140,9 @@ const PreviewPortal = () => {
           </Flex>
         </Flex>
       </Flex>
+      <Text textAlign="center" width="100%" my={8} color="#FFFFFF">
+        © {new Date().getFullYear()} Rari Capital. All rights reserved.
+      </Text>
     </Flex>
   );
 };
