@@ -41,6 +41,8 @@ jobs:
       - name: Report the bundle size of this build
         uses: sarthak-saxena/JSBundleSize@master
         with:
-          build_command: CI=false npm run build
+          build_command: npm run build
           dist_path: "build"
           token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          CI: false
