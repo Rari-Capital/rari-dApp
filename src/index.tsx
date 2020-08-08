@@ -23,7 +23,7 @@ ReactDOM.render(
     <PWAPrompt
       timesToShow={10}
       permanentlyHideOnDismiss={false}
-      copyTitle="Add the Rari Portal to your home screen!"
+      copyTitle="Add this site to your home screen!"
       copyBody="The Rari Portal works best when added to your homescreen. Without doing this, you may have a degraded experience."
       copyClosePrompt="Close"
     />
