@@ -10,7 +10,13 @@ const PreviewPortal = () => {
   };
 
   return (
-    <Flex width="100%" flexDirection="column" alignItems="flex-start" p={6}>
+    <Flex
+      width="100%"
+      flexDirection="column"
+      alignItems="flex-start"
+      p={6}
+      color="#FFFFFF"
+    >
       <Image src="https://i.imgur.com/wDgikRS.png" mb={2} />
       <Flex
         width="100%"
@@ -33,12 +39,9 @@ const PreviewPortal = () => {
             p={4}
           >
             <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading color="#FFFF" textAlign="center">
-                14.2%
-              </Heading>
+              <Heading textAlign="center">14.2%</Heading>
               <Text
                 textTransform="uppercase"
-                color="#FFFFFF"
                 textAlign="center"
                 letterSpacing="wide"
                 fontSize="xs"
@@ -47,12 +50,9 @@ const PreviewPortal = () => {
               </Text>
             </Stack>
             <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading color="#FFFF" textAlign="center">
-                13.3%
-              </Heading>
+              <Heading textAlign="center">13.3%</Heading>
               <Text
                 textTransform="uppercase"
-                color="#FFFFFF"
                 textAlign="center"
                 letterSpacing="wide"
                 fontSize="xs"
@@ -61,12 +61,9 @@ const PreviewPortal = () => {
               </Text>
             </Stack>
             <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading color="#FFFF" textAlign="center">
-                $10.2m
-              </Heading>
+              <Heading textAlign="center">$10.2m</Heading>
               <Text
                 textTransform="uppercase"
-                color="#FFFFFF"
                 textAlign="center"
                 letterSpacing="wide"
                 fontSize="xs"
@@ -91,9 +88,7 @@ const PreviewPortal = () => {
             borderColor="#272727"
           >
             <Flex alignItems="center" justifyContent="center" height="100%">
-              <Heading color="#FFFFFF" fontSize="6xl">
-                📈
-              </Heading>
+              <Heading fontSize="6xl">📈</Heading>
             </Flex>
           </Box>
 
@@ -112,12 +107,7 @@ const PreviewPortal = () => {
               justifyContent="center"
               alignItems="center"
             >
-              <Text
-                textAlign="center"
-                color="#FFF"
-                fontWeight="bold"
-                fontSize="lg"
-              >
+              <Text textAlign="center" fontWeight="bold" fontSize="lg">
                 Connect Wallet
               </Text>
             </Box>
@@ -136,19 +126,14 @@ const PreviewPortal = () => {
               justifyContent="center"
               alignItems="center"
             >
-              <Text
-                color="#FFFFFF"
-                fontWeight="bold"
-                fontSize="lg"
-                textAlign="center"
-              >
+              <Text fontWeight="bold" fontSize="lg" textAlign="center">
                 Get Wallet
               </Text>
             </Box>
           </Flex>
         </Flex>
       </Flex>
-      <Text textAlign="center" width="100%" my={8} color="#FFFFFF">
+      <Text textAlign="center" width="100%" my={8}>
         © {new Date().getFullYear()} Rari Capital. All rights reserved.
       </Text>
     </Flex>
