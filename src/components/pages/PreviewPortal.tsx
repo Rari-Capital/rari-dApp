@@ -1,12 +1,25 @@
-import React from "react";
-import { Image, Flex, Box, Stack, Text, Heading } from "@chakra-ui/core";
+import React, { useState } from "react";
+import {
+  Image,
+  Flex,
+  Box,
+  Stack,
+  Text,
+  Heading,
+  Spinner,
+} from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 const PreviewPortal = () => {
+  const [loading, setLoading] = useState(false);
+
   const { login } = useWeb3();
 
   const onRequestConnect = () => {
-    login();
+    setLoading(true);
+    login()
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
   };
 
   return (
@@ -107,13 +120,22 @@ const PreviewPortal = () => {
               justifyContent="center"
               alignItems="center"
             >
-              <Text textAlign="center" fontWeight="bold" fontSize="lg">
-                Connect Wallet
-              </Text>
+              {loading ? (
+                <Spinner />
+              ) : (
+                <Text textAlign="center" fontWeight="bold" fontSize="lg">
+                  Connect Wallet
+                </Text>
+              )}
             </Box>
 
             <Box
               as="button"
+              onClick={() =>
+                window.open(
+                  "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
+                )
+              }
               width="50%"
               height={{ md: "100%", xs: "40px" }}
               ml={4}

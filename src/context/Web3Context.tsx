@@ -1,48 +1,66 @@
 import React, { useState, useCallback, useMemo } from "react";
 import Web3 from "web3";
-import Web3Modal from "web3modal";
 
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import Portis from "@portis/web3";
-import Authereum from "authereum";
-import Fortmatic from "fortmatic";
-import Torus from "@toruslabs/torus-embed";
+async function launchModalLazy() {
+  const [
+    WalletConnectProvider,
+    Portis,
+    Authereum,
+    Fortmatic,
+    Torus,
+    Web3Modal,
+  ] = await Promise.all([
+    import("@walletconnect/web3-provider"),
+    import("@portis/web3"),
+    import("authereum"),
+    import("fortmatic"),
+    import("@toruslabs/torus-embed"),
+    import("web3modal"),
+  ]);
 
-export const providerOptions = {
-  walletconnect: {
-    package: WalletConnectProvider,
-    options: {
-      infuraId: process.env.REACT_APP_INFURA_ID,
+  const providerOptions = {
+    walletconnect: {
+      package: WalletConnectProvider,
+      options: {
+        infuraId: process.env.REACT_APP_INFURA_ID,
+      },
     },
-  },
-  fortmatic: {
-    package: Fortmatic,
-    options: {
-      key: process.env.REACT_APP_FORTMATIC_KEY,
+    fortmatic: {
+      package: Fortmatic,
+      options: {
+        key: process.env.REACT_APP_FORTMATIC_KEY,
+      },
     },
-  },
-  torus: {
-    package: Torus,
-    options: {},
-  },
-  portis: {
-    package: Portis,
-    options: {
-      id: process.env.REACT_APP_PORTIS_ID,
+    torus: {
+      package: Torus,
+      options: {},
     },
-  },
-  authereum: {
-    package: Authereum,
-    options: {},
-  },
-};
+    portis: {
+      package: Portis,
+      options: {
+        id: process.env.REACT_APP_PORTIS_ID,
+      },
+    },
+    authereum: {
+      package: Authereum,
+      options: {},
+    },
+  };
+
+  const web3Modal = new Web3Modal.default({
+    cacheProvider: false,
+    providerOptions,
+  });
+
+  return web3Modal.connect();
+}
 
 export interface Web3ContextData {
   web3Network: Web3;
   web3Authed: Web3 | null;
   web3ModalProvider: any | null;
   isAuthed: boolean;
-  login: () => any;
+  login: () => Promise<any>;
 }
 
 export const Web3Context = React.createContext<Web3ContextData | undefined>(
@@ -62,12 +80,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
   const login = useCallback(async () => {
-    const web3Modal = new Web3Modal({
-      cacheProvider: false,
-      providerOptions,
-    });
-
-    const provider = await web3Modal.connect();
+    const provider = await launchModalLazy();
 
     setWeb3ModalProvider(provider);
 
