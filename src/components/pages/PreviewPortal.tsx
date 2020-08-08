@@ -9,6 +9,7 @@ import {
   Spinner,
 } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
+import ReactFrappeChart from "react-frappe-charts";
 import WideLogo from "../../assets/wide-logo.png";
 
 const PreviewPortal = () => {
@@ -95,15 +96,60 @@ const PreviewPortal = () => {
           width={{ md: "80%", xs: "100%" }}
         >
           <Box
-            height={{ md: "90%", xs: "400px" }}
+            height={{ md: "90%", xs: "420px" }}
             backgroundColor="#121212"
             borderRadius="10px"
             border="1px"
             borderColor="#272727"
           >
-            <Flex alignItems="center" justifyContent="center" height="100%">
-              <Heading fontSize="6xl">📈</Heading>
-            </Flex>
+            <ReactFrappeChart
+              type="line"
+              colors={["red", "green", "#FFFFFF"]}
+              axisOptions={{
+                xAxisMode: "tick",
+                yAxisMode: "tick",
+                xIsSeries: 1,
+              }}
+              height={420}
+              lineOptions={{
+                dotSize: 0,
+                hideLine: 0,
+                hideDots: 1,
+                heatline: 0,
+                regionFill: 0,
+                areaFill: 0,
+              }}
+              data={{
+                labels: [
+                  "Sun",
+                  "Mon",
+                  "Tue",
+                  "Wed",
+                  "Thu",
+                  "Fri",
+                  "Sat",
+                  "Sun",
+                  "Mon",
+                  "Tue",
+                ],
+
+                datasets: [
+                  {
+                    name: "dYdX",
+                    values: [18, 40, 30, 35, 8, 52, 17, 4, 9, 9],
+                  },
+                  {
+                    name: "Compound",
+                    values: [18, 9, 1, 2, 33, 44, 47, 14, 92, 91],
+                  },
+
+                  {
+                    name: "Rari",
+                    values: [90, 100, 120, 125, 126, 127, 128, 190, 200, 210],
+                  },
+                ],
+              }}
+            />
           </Box>
 
           <Flex mt={4} height="10%">
