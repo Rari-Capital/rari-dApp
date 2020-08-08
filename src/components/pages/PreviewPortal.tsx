@@ -9,6 +9,7 @@ import {
   Spinner,
 } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
+import WideLogo from "../../assets/wide-logo.png";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ const PreviewPortal = () => {
       p={6}
       color="#FFFFFF"
     >
-      <Image src="https://i.imgur.com/wDgikRS.png" mb={2} />
+      <Image src={WideLogo} mb={2} />
       <Flex
         width="100%"
         height={{ md: "500px", xs: "auto" }}

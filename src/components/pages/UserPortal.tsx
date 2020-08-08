@@ -1,13 +1,14 @@
 import React from "react";
 import { Image, Flex, Box, Stack, Text, Heading } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
+import WideLogo from "../../assets/wide-logo.png";
 
 const UserPortal = () => {
   const { address } = useAuthedWeb3();
 
   return (
     <Flex width="100%" flexDirection="column" alignItems="flex-start" p={6}>
-      <Image src="https://i.imgur.com/wDgikRS.png" mb={2} />
+      <Image src={WideLogo} mb={2} />
       <Flex
         width="100%"
         height={{ md: "500px", xs: "auto" }}
