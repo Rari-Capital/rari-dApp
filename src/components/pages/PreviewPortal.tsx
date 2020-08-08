@@ -32,7 +32,10 @@ const PreviewPortal = () => {
       p={6}
       color="#FFFFFF"
     >
-      <Image src={WideLogo} mb={2} />
+      <Box w="200px" h="53px" mb={4}>
+        <Image src={WideLogo} />
+      </Box>
+
       <Flex
         width="100%"
         height={{ md: "500px", xs: "auto" }}
