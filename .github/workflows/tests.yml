@@ -39,7 +39,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} # This is passed by Github, don't worry about setting this.
 
       - name: Report the bundle size of this build
-      - uses: sarthak-saxena/JSBundleSize@master
+        uses: sarthak-saxena/JSBundleSize@master
         with:
           build_command: npm run build
           dist_path: "build"
