@@ -1,7 +1,14 @@
 import React from "react";
 import { Image, Flex, Box, Stack, Text, Heading } from "@chakra-ui/core";
+import { useWeb3 } from "../../context/Web3Context";
 
 const PreviewPortal = () => {
+  const { login } = useWeb3();
+
+  const onRequestConnect = () => {
+    login();
+  };
+
   return (
     <Flex width="100%" flexDirection="column" alignItems="flex-start" p={6}>
       <Image src="https://i.imgur.com/wDgikRS.png" mb={2} />
@@ -93,6 +100,7 @@ const PreviewPortal = () => {
           <Flex mt={4} height="10%">
             <Box
               as="button"
+              onClick={onRequestConnect}
               width="50%"
               height={{ md: "100%", xs: "40px" }}
               backgroundColor="#121212"

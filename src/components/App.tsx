@@ -3,6 +3,7 @@ import React from "react";
 import loadable from "@loadable/component";
 
 import FullPageSpinner from "./shared/FullPageSpinner";
+import { useWeb3 } from "../context/Web3Context";
 
 const UserPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/UserPortal"),
@@ -19,7 +20,9 @@ const PreviewPortal = loadable(
 );
 
 export default function App() {
-  if (false) {
+  const { isAuthed } = useWeb3();
+
+  if (isAuthed) {
     return <UserPortal />;
   } else {
     return <PreviewPortal />;

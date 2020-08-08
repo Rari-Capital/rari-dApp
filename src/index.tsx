@@ -16,6 +16,7 @@ import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
 
 import ErrorPage from "./components/pages/ErrorPage";
 import { ErrorBoundary } from "react-error-boundary";
+import { Web3Provider } from "./context/Web3Context";
 
 ReactDOM.render(
   <>
@@ -30,7 +31,9 @@ ReactDOM.render(
       <CSSReset />
 
       <ErrorBoundary FallbackComponent={ErrorPage}>
-        <App />
+        <Web3Provider>
+          <App />
+        </Web3Provider>
       </ErrorBoundary>
     </ThemeProvider>
   </>,
