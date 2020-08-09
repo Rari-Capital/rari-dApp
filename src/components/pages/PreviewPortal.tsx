@@ -10,12 +10,27 @@ import {
 } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 import ReactFrappeChart from "react-frappe-charts";
-import WideLogo from "../../assets/wide-logo.png";
+import WideLogo from "../../static/wide-logo.png";
+import { useContracts } from "../../context/ContractsContext";
+import FullPageSpinner from "../shared/FullPageSpinner";
+import { useContractMethod } from "../../hooks/useContractMethod";
+import { divBy1e18 } from "../../utils/1e18";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
 
   const { login } = useWeb3();
+  const { RariFundManager } = useContracts();
+
+  const {
+    isLoading: isFundBalenceLoading,
+    data: fundBalence,
+  } = useContractMethod(RariFundManager, "getFundBalance", (result: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(divBy1e18(result))
+  );
 
   const onRequestConnect = () => {
     setLoading(true);
@@ -23,6 +38,10 @@ const PreviewPortal = () => {
       .then(() => setLoading(false))
       .catch(() => setLoading(false));
   };
+
+  if (isFundBalenceLoading) {
+    return <FullPageSpinner />;
+  }
 
   return (
     <Flex
@@ -79,7 +98,9 @@ const PreviewPortal = () => {
               </Text>
             </Stack>
             <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading textAlign="center">$10.2m</Heading>
+              <Heading textAlign="center" size="lg">
+                {fundBalence}
+              </Heading>
               <Text
                 textTransform="uppercase"
                 textAlign="center"
@@ -160,7 +181,7 @@ const PreviewPortal = () => {
               as="button"
               onClick={onRequestConnect}
               width="50%"
-              height={{ md: "100%", xs: "40px" }}
+              height={{ md: "100%", xs: "70px" }}
               backgroundColor="#121212"
               borderRadius="10px"
               border="1px"
@@ -187,7 +208,7 @@ const PreviewPortal = () => {
                 )
               }
               width="50%"
-              height={{ md: "100%", xs: "40px" }}
+              height={{ md: "100%", xs: "70px" }}
               ml={4}
               backgroundColor="#121212"
               borderRadius="10px"
