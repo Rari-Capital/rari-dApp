@@ -12,14 +12,12 @@ import { useWeb3 } from "../../context/Web3Context";
 import ReactFrappeChart from "react-frappe-charts";
 import WideLogo from "../../static/wide-logo.png";
 import { useContracts } from "../../context/ContractsContext";
-import FullPageSpinner from "../shared/FullPageSpinner";
+
 import { useContractMethod } from "../../hooks/useContractMethod";
 import { divBy1e18 } from "../../utils/1e18";
+import DashboardBox from "../shared/DashboardBox";
 
-const PreviewPortal = () => {
-  const [loading, setLoading] = useState(false);
-
-  const { login } = useWeb3();
+const FundStats = () => {
   const { RariFundManager } = useContracts();
 
   const {
@@ -32,6 +30,65 @@ const PreviewPortal = () => {
     }).format(divBy1e18(result))
   );
 
+  return (
+    <DashboardBox
+      width={{
+        md: "20%",
+        xs: "100%",
+      }}
+    >
+      <Stack
+        width="100%"
+        height="100%"
+        justifyContent="space-around"
+        alignItems="center"
+        p={4}
+      >
+        <Stack spacing={1} justifyContent="center" alignItems="center">
+          <Heading textAlign="center">14.2%</Heading>
+          <Text
+            textTransform="uppercase"
+            textAlign="center"
+            letterSpacing="wide"
+            fontSize="xs"
+          >
+            Today's APR
+          </Text>
+        </Stack>
+        <Stack spacing={1} justifyContent="center" alignItems="center">
+          <Heading textAlign="center">13.3%</Heading>
+          <Text
+            textTransform="uppercase"
+            textAlign="center"
+            letterSpacing="wide"
+            fontSize="xs"
+          >
+            Yearly APR
+          </Text>
+        </Stack>
+        <Stack spacing={1} justifyContent="center" alignItems="center">
+          <Heading textAlign="center" size="lg">
+            {isFundBalenceLoading ? "$?" : fundBalence}
+          </Heading>
+          <Text
+            textTransform="uppercase"
+            textAlign="center"
+            letterSpacing="wide"
+            fontSize="xs"
+          >
+            Assets under management
+          </Text>
+        </Stack>
+      </Stack>
+    </DashboardBox>
+  );
+};
+
+const PreviewPortal = () => {
+  const [loading, setLoading] = useState(false);
+
+  const { login } = useWeb3();
+
   const onRequestConnect = () => {
     setLoading(true);
     login()
@@ -39,18 +96,8 @@ const PreviewPortal = () => {
       .catch(() => setLoading(false));
   };
 
-  if (isFundBalenceLoading) {
-    return <FullPageSpinner />;
-  }
-
   return (
-    <Flex
-      width="100%"
-      flexDirection="column"
-      alignItems="flex-start"
-      p={6}
-      color="#FFFFFF"
-    >
+    <Flex flexDirection="column" alignItems="flex-start" p={6} color="#FFFFFF">
       <Box w="200px" h="53px" mb={4}>
         <Image src={WideLogo} />
       </Box>
@@ -60,72 +107,14 @@ const PreviewPortal = () => {
         height={{ md: "500px", xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
       >
-        <Box
-          width={{ md: "20%", xs: "100%" }}
-          height="100%"
-          backgroundColor="#121212"
-          borderRadius="10px"
-          border="1px"
-          borderColor="#272727"
-        >
-          <Stack
-            width="100%"
-            height="100%"
-            justifyContent="space-around"
-            alignItems="center"
-            p={4}
-          >
-            <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading textAlign="center">14.2%</Heading>
-              <Text
-                textTransform="uppercase"
-                textAlign="center"
-                letterSpacing="wide"
-                fontSize="xs"
-              >
-                Today's APR
-              </Text>
-            </Stack>
-            <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading textAlign="center">13.3%</Heading>
-              <Text
-                textTransform="uppercase"
-                textAlign="center"
-                letterSpacing="wide"
-                fontSize="xs"
-              >
-                Yearly APR
-              </Text>
-            </Stack>
-            <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading textAlign="center" size="lg">
-                {fundBalence}
-              </Heading>
-              <Text
-                textTransform="uppercase"
-                textAlign="center"
-                letterSpacing="wide"
-                fontSize="xs"
-              >
-                Assets under management
-              </Text>
-            </Stack>
-          </Stack>
-        </Box>
+        <FundStats />
         <Flex
           ml={{ md: 4, xs: 0 }}
           mt={{ md: 0, xs: 4 }}
-          mb={{ md: 0, xs: 4 }}
           flexDirection="column"
           width={{ md: "80%", xs: "100%" }}
         >
-          <Box
-            height={{ md: "90%", xs: "420px" }}
-            backgroundColor="#121212"
-            borderRadius="10px"
-            border="1px"
-            borderColor="#272727"
-          >
+          <DashboardBox height={{ md: "90%", xs: "420px" }}>
             <ReactFrappeChart
               type="line"
               colors={["red", "green", "#FFFFFF"]}
@@ -174,18 +163,14 @@ const PreviewPortal = () => {
                 ],
               }}
             />
-          </Box>
+          </DashboardBox>
 
           <Flex mt={4} height="10%">
-            <Box
+            <DashboardBox
               as="button"
               onClick={onRequestConnect}
               width="50%"
               height={{ md: "100%", xs: "70px" }}
-              backgroundColor="#121212"
-              borderRadius="10px"
-              border="1px"
-              borderColor="#272727"
               display="flex"
               flexDirection="column"
               justifyContent="center"
@@ -198,9 +183,9 @@ const PreviewPortal = () => {
                   Connect Wallet
                 </Text>
               )}
-            </Box>
+            </DashboardBox>
 
-            <Box
+            <DashboardBox
               as="button"
               onClick={() =>
                 window.open(
@@ -210,10 +195,6 @@ const PreviewPortal = () => {
               width="50%"
               height={{ md: "100%", xs: "70px" }}
               ml={4}
-              backgroundColor="#121212"
-              borderRadius="10px"
-              border="1px"
-              borderColor="#272727"
               display="flex"
               flexDirection="column"
               justifyContent="center"
@@ -222,7 +203,7 @@ const PreviewPortal = () => {
               <Text fontWeight="bold" fontSize="lg" textAlign="center">
                 Get Wallet
               </Text>
-            </Box>
+            </DashboardBox>
           </Flex>
         </Flex>
       </Flex>

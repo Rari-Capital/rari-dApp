@@ -1,152 +1,112 @@
 import React from "react";
-import { Image, Flex, Box, Stack, Text, Heading } from "@chakra-ui/core";
+import {
+  Image,
+  Flex,
+  Box,
+  Text,
+  Heading,
+  IconButton,
+  Stack,
+} from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
-import WideLogo from "../../static/wide-logo.png";
+import SmallLogo from "../../static/small-logo.png";
+import DashboardBox from "../shared/DashboardBox";
 
 const UserPortal = () => {
-  const { address } = useAuthedWeb3();
+  const { address, logout } = useAuthedWeb3();
 
   return (
-    <Flex width="100%" flexDirection="column" alignItems="flex-start" p={6}>
-      <Box w="200px" h="53px" mb={4}>
-        <Image src={WideLogo} />
-      </Box>
+    <Flex flexDirection="column" alignItems="flex-start" color="#FFFFFF">
+      <Flex
+        py={3}
+        px={6}
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+        overflowX="scroll"
+        width="100%"
+      >
+        <Box w="47px" h="47px" flexShrink={0}>
+          <Image src={SmallLogo} />
+        </Box>
+        <Heading
+          color="#FFFFFF"
+          pl={4}
+          size="md"
+          display={{ md: "block", xs: "none" }}
+        >
+          {address}
+        </Heading>
+        <IconButton
+          variant="link"
+          variantColor="#FFFFFFF"
+          aria-label="Logout"
+          fontSize="20px"
+          onClick={logout}
+          icon="arrow-right"
+        />
+      </Flex>
+
+      <Box height="1px" width="100%" bg="white" />
+
       <Flex
         width="100%"
-        height={{ md: "500px", xs: "auto" }}
+        height={{ md: "630px", xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
+        p={6}
       >
-        <Box
-          width={{ md: "20%", xs: "100%" }}
-          height="100%"
-          backgroundColor="#121212"
-          borderRadius="10px"
-          border="1px"
-          borderColor="#272727"
-        >
-          <Stack
-            width="100%"
-            height="100%"
-            justifyContent="space-around"
-            alignItems="center"
-            p={4}
-          >
-            <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading color="#FFFF" textAlign="center">
-                14.2%
-              </Heading>
-              <Text
-                textTransform="uppercase"
-                color="#FFFFFF"
-                textAlign="center"
-                letterSpacing="wide"
-                fontSize="xs"
-              >
-                Today's APR
-              </Text>
-            </Stack>
-            <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading color="#FFFF" textAlign="center">
-                13.3%
-              </Heading>
-              <Text
-                textTransform="uppercase"
-                color="#FFFFFF"
-                textAlign="center"
-                letterSpacing="wide"
-                fontSize="xs"
-              >
-                Yearly APR
-              </Text>
-            </Stack>
-            <Stack spacing={1} justifyContent="center" alignItems="center">
-              <Heading color="#FFFF" textAlign="center">
-                $10.2m
-              </Heading>
-              <Text
-                textTransform="uppercase"
-                color="#FFFFFF"
-                textAlign="center"
-                letterSpacing="wide"
-                fontSize="xs"
-              >
-                Assets under management
-              </Text>
-            </Stack>
-          </Stack>
-        </Box>
         <Flex
-          ml={{ md: 4, xs: 0 }}
-          mt={{ md: 0, xs: 4 }}
-          mb={{ md: 0, xs: 4 }}
           flexDirection="column"
-          width={{ md: "80%", xs: "100%" }}
+          height={{ md: "100%", xs: "auto" }}
+          width={{ md: "60%", xs: "100%" }}
         >
-          <Box
-            height={{ md: "90%", xs: "400px" }}
-            backgroundColor="#121212"
-            borderRadius="10px"
-            border="1px"
-            borderColor="#272727"
+          <DashboardBox
+            width="100%"
+            height={{ md: "15%", xs: "80px" }}
+            overflow="scroll"
+            whiteSpace="nowrap"
+            mb={4}
           >
-            <Flex alignItems="center" justifyContent="center" height="100%">
-              <Heading color="#FFFFFF" fontSize="xl">
-                Hello {address}!
+            <Flex
+              flexDirection="column"
+              alignItems="start"
+              justifyContent="center"
+              height="100%"
+              p={4}
+            >
+              <Heading color="#FFFFFF" size="md" pr={4}>
+                Hello, {address}!
               </Heading>
+              <Text color="#FFFFFF" fontSize="xs" pr={4}>
+                It's nice to see you!
+              </Text>
             </Flex>
-          </Box>
+          </DashboardBox>
 
-          <Flex mt={4} height="10%">
-            <Box
-              as="button"
-              width="50%"
-              height={{ md: "100%", xs: "40px" }}
-              backgroundColor="#121212"
-              borderRadius="10px"
-              border="1px"
-              borderColor="#272727"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text
-                textAlign="center"
-                color="#FFF"
-                fontWeight="bold"
-                fontSize="lg"
-              >
-                Connect Wallet
-              </Text>
-            </Box>
+          <DashboardBox height={{ md: "85%", xs: "200px" }}>
+            hello wtf
+          </DashboardBox>
+        </Flex>
 
-            <Box
-              as="button"
-              width="50%"
-              height={{ md: "100%", xs: "40px" }}
-              ml={4}
-              backgroundColor="#121212"
-              borderRadius="10px"
-              border="1px"
-              borderColor="#272727"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text
-                color="#FFFFFF"
-                fontWeight="bold"
-                fontSize="lg"
-                textAlign="center"
-              >
-                Get Wallet
-              </Text>
-            </Box>
-          </Flex>
+        <Flex
+          mt={{ md: 0, xs: 4 }}
+          ml={{ md: 4, xs: 0 }}
+          flexDirection="column"
+          height={{ md: "100%", xs: "auto" }}
+          width={{ md: "40%", xs: "100%" }}
+        >
+          <Stack spacing={4} height="100%">
+            <DashboardBox height={{ md: "15%", xs: "300px" }}>
+              test1
+            </DashboardBox>
+            <DashboardBox height={{ md: "85%", xs: "300px" }}>
+              test2
+            </DashboardBox>
+          </Stack>
         </Flex>
       </Flex>
-      <Text textAlign="center" width="100%" my={8} color="#FFFFFF">
+
+      <Text textAlign="center" width="100%" my={5}>
         © {new Date().getFullYear()} Rari Capital. All rights reserved.
       </Text>
     </Flex>
