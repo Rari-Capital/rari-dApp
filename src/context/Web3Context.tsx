@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import Web3 from "web3";
+import Web3Modal from "web3modal";
 
 async function launchModalLazy() {
   const [
@@ -60,7 +61,8 @@ export interface Web3ContextData {
   web3Authed: Web3 | null;
   web3ModalProvider: any | null;
   isAuthed: boolean;
-  login: () => Promise<any>;
+  login: () => any;
+  logout: () => any;
 }
 
 export const Web3Context = React.createContext<Web3ContextData | undefined>(
@@ -77,7 +79,9 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
 
   const [web3Authed, setWeb3Authed] = useState<Web3 | null>(null);
 
-  const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
+  const [web3ModalProvider, setWeb3ModalProvider] = useState<Web3Modal | null>(
+    null
+  );
 
   const login = useCallback(async () => {
     const provider = await launchModalLazy();
@@ -85,7 +89,37 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     setWeb3ModalProvider(provider);
 
     setWeb3Authed(new Web3(provider));
-  }, [setWeb3Authed]);
+  }, [setWeb3Authed, setWeb3ModalProvider]);
+
+  const logout = useCallback(() => {
+    setWeb3ModalProvider(null);
+
+    setWeb3Authed(null);
+  }, [setWeb3Authed, setWeb3ModalProvider]);
+
+  useEffect(() => {
+    if (web3ModalProvider != null) {
+      let refetch = () => setWeb3Authed(new Web3(web3ModalProvider as any));
+
+      web3ModalProvider.on("accountsChanged", () => {
+        refetch();
+      });
+
+      web3ModalProvider.on("chainChanged", () => {
+        refetch();
+      });
+
+      web3ModalProvider.on("networkChanged", () => {
+        refetch();
+      });
+    }
+
+    return () => {
+      web3ModalProvider?.off("accountsChanged");
+      web3ModalProvider?.off("chainChanged");
+      web3ModalProvider?.off("networkChanged");
+    };
+  }, [web3ModalProvider]);
 
   let value = useMemo(
     () => ({
@@ -93,9 +127,10 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
       web3Authed,
       web3ModalProvider,
       login,
+      logout,
       isAuthed: web3Authed != null,
     }),
-    [web3Network, web3Authed, login, web3ModalProvider]
+    [web3Network, web3Authed, login, logout, web3ModalProvider]
   );
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
