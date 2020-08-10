@@ -58,14 +58,12 @@ const UserPortal = () => {
         <Flex
           flexDirection="column"
           height={{ md: "100%", xs: "auto" }}
-          width={{ md: "60%", xs: "100%" }}
+          width={{ md: "75%", xs: "100%" }}
         >
           <DashboardBox
-            width="100%"
             height={{ md: "15%", xs: "80px" }}
             overflow="scroll"
             whiteSpace="nowrap"
-            mb={4}
           >
             <Flex
               flexDirection="column"
@@ -83,30 +81,52 @@ const UserPortal = () => {
             </Flex>
           </DashboardBox>
 
-          <DashboardBox height={{ md: "85%", xs: "200px" }}>
-            hello wtf
+          <DashboardBox height={{ md: "55%", xs: "400px" }} mt={4}>
+            chart here
           </DashboardBox>
+
+          <Flex
+            flexDirection={{ md: "row", xs: "column" }}
+            height={{ md: "30%", xs: "600px" }}
+            pt={4}
+          >
+            <DashboardBox
+              mr={{ md: 4, xs: 0 }}
+              mb={{ md: 0, xs: 4 }}
+              height="100%"
+              width={{ md: "50%", xs: "100%" }}
+            >
+              chart here
+            </DashboardBox>
+            <DashboardBox height="100%" width={{ md: "50%", xs: "100%" }}>
+              chart here
+            </DashboardBox>
+          </Flex>
         </Flex>
 
-        <Flex
-          mt={{ md: 0, xs: 4 }}
-          ml={{ md: 4, xs: 0 }}
-          flexDirection="column"
+        <Stack
+          spacing={4}
           height={{ md: "100%", xs: "auto" }}
-          width={{ md: "40%", xs: "100%" }}
+          width={{ md: "25%", xs: "100%" }}
+          pt={{ md: 0, xs: 4 }}
+          pl={{ md: 4, xs: 0 }}
         >
-          <Stack spacing={4} height="100%">
-            <DashboardBox height={{ md: "15%", xs: "300px" }}>
-              test1
-            </DashboardBox>
-            <DashboardBox height={{ md: "85%", xs: "300px" }}>
-              test2
-            </DashboardBox>
-          </Stack>
-        </Flex>
+          <DashboardBox height={{ md: "15%", xs: "300px" }}>
+            Today's APY
+          </DashboardBox>
+          <DashboardBox height={{ md: "25%", xs: "300px" }}>
+            APY Stats
+          </DashboardBox>
+          <DashboardBox height={{ md: "30%", xs: "300px" }}>
+            Current Allocation
+          </DashboardBox>
+          <DashboardBox height={{ md: "30%", xs: "300px" }}>
+            Current Allocation
+          </DashboardBox>
+        </Stack>
       </Flex>
 
-      <Text textAlign="center" width="100%" my={5}>
+      <Text textAlign="center" width="100%" py={5}>
         © {new Date().getFullYear()} Rari Capital. All rights reserved.
       </Text>
     </Flex>

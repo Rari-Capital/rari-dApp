@@ -109,12 +109,12 @@ const PreviewPortal = () => {
       >
         <FundStats />
         <Flex
-          ml={{ md: 4, xs: 0 }}
-          mt={{ md: 0, xs: 4 }}
+          pl={{ md: 4, xs: 0 }}
+          pt={{ md: 0, xs: 4 }}
           flexDirection="column"
           width={{ md: "80%", xs: "100%" }}
         >
-          <DashboardBox height={{ md: "90%", xs: "420px" }}>
+          <DashboardBox height={{ md: "85%", xs: "420px" }}>
             <ReactFrappeChart
               animate={false}
               type="line"
@@ -166,49 +166,50 @@ const PreviewPortal = () => {
             />
           </DashboardBox>
 
-          <Flex mt={4} height="10%">
-            <DashboardBox
-              as="button"
-              onClick={onRequestConnect}
-              width="50%"
-              height={{ md: "100%", xs: "70px" }}
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              {loading ? (
-                <Spinner />
-              ) : (
-                <Text textAlign="center" fontWeight="bold" fontSize="lg">
-                  Connect Wallet
-                </Text>
-              )}
-            </DashboardBox>
+          <Flex pt={4} height="15%">
+            <Stack isInline={true} spacing={4} w="100%">
+              <DashboardBox
+                as="button"
+                onClick={onRequestConnect}
+                width="50%"
+                height={{ md: "100%", xs: "70px" }}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  <Text textAlign="center" fontWeight="bold" fontSize="lg">
+                    Connect Wallet
+                  </Text>
+                )}
+              </DashboardBox>
 
-            <DashboardBox
-              as="button"
-              onClick={() =>
-                window.open(
-                  "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
-                )
-              }
-              width="50%"
-              height={{ md: "100%", xs: "70px" }}
-              ml={4}
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Text fontWeight="bold" fontSize="lg" textAlign="center">
-                Get Wallet
-              </Text>
-            </DashboardBox>
+              <DashboardBox
+                as="button"
+                onClick={() =>
+                  window.open(
+                    "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
+                  )
+                }
+                width="50%"
+                height={{ md: "100%", xs: "70px" }}
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Text fontWeight="bold" fontSize="lg" textAlign="center">
+                  Get Wallet
+                </Text>
+              </DashboardBox>
+            </Stack>
           </Flex>
         </Flex>
       </Flex>
-      <Text textAlign="center" width="100%" my={8}>
+      <Text textAlign="center" width="100%" py={8}>
         © {new Date().getFullYear()} Rari Capital. All rights reserved.
       </Text>
     </Flex>
