@@ -9,7 +9,7 @@ import {
   Spinner,
 } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
-import ReactFrappeChart from "react-frappe-charts";
+import ReactFrappeChart from "react-frappe-charts-upgraded";
 import WideLogo from "../../static/wide-logo.png";
 import { useContracts } from "../../context/ContractsContext";
 
@@ -116,6 +116,7 @@ const PreviewPortal = () => {
         >
           <DashboardBox height={{ md: "90%", xs: "420px" }}>
             <ReactFrappeChart
+              animate={false}
               type="line"
               colors={["red", "green", "#FFFFFF"]}
               axisOptions={{
