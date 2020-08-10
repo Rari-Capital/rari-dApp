@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import Web3 from "web3";
-import Web3Modal from "web3modal";
 
 async function launchModalLazy() {
   const [
@@ -21,32 +20,34 @@ async function launchModalLazy() {
 
   const providerOptions = {
     walletconnect: {
-      package: WalletConnectProvider,
+      package: WalletConnectProvider.default,
       options: {
         infuraId: process.env.REACT_APP_INFURA_ID,
       },
     },
     fortmatic: {
-      package: Fortmatic,
+      package: Fortmatic.default,
       options: {
         key: process.env.REACT_APP_FORTMATIC_KEY,
       },
     },
     torus: {
-      package: Torus,
+      package: Torus.default,
       options: {},
     },
     portis: {
-      package: Portis,
+      package: Portis.default,
       options: {
         id: process.env.REACT_APP_PORTIS_ID,
       },
     },
     authereum: {
-      package: Authereum,
+      package: Authereum.default,
       options: {},
     },
   };
+
+  console.log(process.env.REACT_APP_PORTIS_ID);
 
   const web3Modal = new Web3Modal.default({
     cacheProvider: false,
@@ -79,9 +80,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
 
   const [web3Authed, setWeb3Authed] = useState<Web3 | null>(null);
 
-  const [web3ModalProvider, setWeb3ModalProvider] = useState<Web3Modal | null>(
-    null
-  );
+  const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
   const login = useCallback(async () => {
     const provider = await launchModalLazy();
@@ -115,9 +114,9 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     }
 
     return () => {
-      web3ModalProvider?.off("accountsChanged");
-      web3ModalProvider?.off("chainChanged");
-      web3ModalProvider?.off("networkChanged");
+      web3ModalProvider?.off("accountsChanged", () => {});
+      web3ModalProvider?.off("chainChanged", () => {});
+      web3ModalProvider?.off("networkChanged", () => {});
     };
   }, [web3ModalProvider]);
 
@@ -152,7 +151,7 @@ export interface Web3AuthedContextData {
 }
 
 export function useAuthedWeb3() {
-  const { isAuthed, web3Authed } = useWeb3();
+  const { isAuthed, web3Authed, logout } = useWeb3();
 
   let web3 = web3Authed!;
 
@@ -160,6 +159,7 @@ export function useAuthedWeb3() {
     web3,
     //@ts-ignore
     address: web3Authed?.currentProvider?.selectedAddress,
+    logout,
   };
 
   if (isAuthed) {
