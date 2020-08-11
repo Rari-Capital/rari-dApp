@@ -97,7 +97,7 @@ const PreviewPortal = () => {
   };
 
   return (
-    <Flex flexDirection="column" alignItems="flex-start" p={6} color="#FFFFFF">
+    <Flex flexDirection="column" alignItems="flex-start" p={4} color="#FFFFFF">
       <Box w="200px" h="53px" mb={4}>
         <Image src={WideLogo} />
       </Box>
@@ -171,7 +171,7 @@ const PreviewPortal = () => {
               <DashboardBox
                 as="button"
                 onClick={onRequestConnect}
-                width="50%"
+                width="57%"
                 height={{ md: "100%", xs: "70px" }}
                 display="flex"
                 flexDirection="column"
@@ -194,7 +194,7 @@ const PreviewPortal = () => {
                     "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
                   )
                 }
-                width="50%"
+                width="43%"
                 height={{ md: "100%", xs: "70px" }}
                 display="flex"
                 flexDirection="column"

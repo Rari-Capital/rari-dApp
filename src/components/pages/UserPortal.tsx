@@ -11,9 +11,26 @@ import {
 import { useAuthedWeb3 } from "../../context/Web3Context";
 import SmallLogo from "../../static/small-logo.png";
 import DashboardBox from "../shared/DashboardBox";
+import { useContracts } from "../../context/ContractsContext";
+import { useContractMethod } from "../../hooks/useContractMethod";
+import { divBy1e18 } from "../../utils/1e18";
+import { shortAddress } from "../../utils/shortAddress";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
+
+  const { RariFundManager } = useContracts();
+
+  const { isLoading: isBalanceLoading, data: myBalance } = useContractMethod(
+    RariFundManager,
+    "balanceOf",
+    (result: number) =>
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(divBy1e18(result)),
+    address
+  );
 
   return (
     <Flex flexDirection="column" alignItems="flex-start" color="#FFFFFF">
@@ -29,14 +46,7 @@ const UserPortal = () => {
         <Box w="47px" h="47px" flexShrink={0}>
           <Image src={SmallLogo} />
         </Box>
-        <Heading
-          color="#FFFFFF"
-          pl={4}
-          size="md"
-          display={{ md: "block", xs: "none" }}
-        >
-          {address}
-        </Heading>
+
         <IconButton
           variant="link"
           variantColor="#FFFFFFF"
@@ -53,7 +63,7 @@ const UserPortal = () => {
         width="100%"
         height={{ md: "630px", xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
-        p={6}
+        p={4}
       >
         <Flex
           flexDirection="column"
@@ -66,18 +76,45 @@ const UserPortal = () => {
             whiteSpace="nowrap"
           >
             <Flex
-              flexDirection="column"
-              alignItems="start"
-              justifyContent="center"
-              height="100%"
-              p={4}
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
             >
-              <Heading color="#FFFFFF" size="md" pr={4}>
-                Hello, {address}!
-              </Heading>
-              <Text color="#FFFFFF" fontSize="xs" pr={4}>
-                It's nice to see you!
-              </Text>
+              <Flex
+                flexDirection="column"
+                justifyContent="center"
+                height="100%"
+                pt={4}
+                pl={4}
+              >
+                <Heading color="#FFFFFF" fontSize={{ md: "2xl", xs: "sm" }}>
+                  Hello, {shortAddress(address)}!
+                </Heading>
+                <Text color="#FFFFFF" fontSize="xs">
+                  It's nice to see you!
+                </Text>
+              </Flex>
+
+              <Flex
+                flexDirection="column"
+                alignItems="flex-end"
+                justifyContent="center"
+                height="100%"
+                pt={4}
+                pr={4}
+              >
+                <Text
+                  textTransform="uppercase"
+                  letterSpacing="wide"
+                  color="#FFFFFF"
+                  fontSize="xs"
+                >
+                  Account Balance
+                </Text>
+                <Heading color="#FFFFFF" size="md">
+                  {isBalanceLoading ? "$?" : myBalance}
+                </Heading>
+              </Flex>
             </Flex>
           </DashboardBox>
 
