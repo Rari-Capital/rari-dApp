@@ -42,7 +42,7 @@ const PreviewPortal = () => {
           flexDirection="column"
           width={{ md: "80%", xs: "100%" }}
         >
-          <DashboardBox height={{ md: "85%", xs: "420px" }}>
+          <DashboardBox height={{ md: "90%", xs: "420px" }}>
             <ReactFrappeChart
               animate={false}
               type="line"
@@ -58,7 +58,7 @@ const PreviewPortal = () => {
                   ? // Set the chart as the height of its parent (which is 420)
                     420
                   : // Otherwise calculate the height dynamically
-                    dashboardHeight * 0.85
+                    dashboardHeight * 0.9
               }
               lineOptions={{
                 dotSize: 0,
@@ -101,10 +101,11 @@ const PreviewPortal = () => {
             />
           </DashboardBox>
 
-          <Flex pt={4} height="15%">
+          <Flex pt={4} height="10%">
             <Stack isInline={true} spacing={4} w="100%">
               <DashboardBox
                 as="button"
+                outline="none"
                 onClick={onRequestConnect}
                 width="57%"
                 height={{ md: "100%", xs: "70px" }}
@@ -119,7 +120,7 @@ const PreviewPortal = () => {
                   <Text
                     textAlign="center"
                     fontWeight="bold"
-                    fontSize={{ md: "3xl", xs: "lg" }}
+                    fontSize={{ md: "xl", xs: "lg" }}
                   >
                     Connect Wallet
                   </Text>
@@ -128,6 +129,7 @@ const PreviewPortal = () => {
 
               <DashboardBox
                 as="button"
+                outline="none"
                 onClick={() =>
                   window.open(
                     "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
@@ -142,7 +144,7 @@ const PreviewPortal = () => {
               >
                 <Text
                   fontWeight="bold"
-                  fontSize={{ md: "3xl", xs: "lg" }}
+                  fontSize={{ md: "xl", xs: "lg" }}
                   textAlign="center"
                 >
                   Get Wallet

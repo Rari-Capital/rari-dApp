@@ -43,7 +43,7 @@ const UserPortal = () => {
         <SmallLogo />
 
         <IconButton
-          variant="link"
+          variant="solid"
           variantColor="#FFFFFFF"
           aria-label="Logout"
           fontSize="20px"

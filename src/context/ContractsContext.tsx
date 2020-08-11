@@ -15,6 +15,7 @@ import {
   RARI_FUND_PROXY_ABI,
   RARI_FUND_PROXY_ADDRESS,
 } from "../static/contracts/RariFundProxy";
+import FullPageSpinner from "../components/shared/FullPageSpinner";
 
 export interface ContractsContextData {
   RariFundController: Contract;
@@ -68,6 +69,11 @@ export const ContractsProvider = ({ children }: { children: JSX.Element }) => {
       tokens: [],
     });
   }, [isAuthed, web3Authed, web3Network]);
+
+  // Don't render children who depend on contracts until they are loaded.
+  if (contractData === undefined) {
+    return <FullPageSpinner />;
+  }
 
   return (
     <ContractsContext.Provider value={contractData}>
