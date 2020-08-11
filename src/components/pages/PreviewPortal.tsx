@@ -1,16 +1,8 @@
 import React, { useState } from "react";
-import {
-  Image,
-  Flex,
-  Box,
-  Stack,
-  Text,
-  Heading,
-  Spinner,
-} from "@chakra-ui/core";
+import { Flex, Stack, Text, Heading, Spinner } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 import ReactFrappeChart from "react-frappe-charts-upgraded";
-import WideLogo from "../../static/wide-logo.png";
+
 import { useContracts } from "../../context/ContractsContext";
 
 import { useContractMethod } from "../../hooks/useContractMethod";
@@ -18,73 +10,7 @@ import { divBy1e18 } from "../../utils/1e18";
 import DashboardBox from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
-
-const FundStats = () => {
-  const { RariFundManager } = useContracts();
-
-  const {
-    isLoading: isFundBalenceLoading,
-    data: fundBalence,
-  } = useContractMethod(RariFundManager, "getFundBalance", (result: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(divBy1e18(result))
-  );
-
-  return (
-    <DashboardBox
-      width={{
-        md: "20%",
-        xs: "100%",
-      }}
-    >
-      <Stack
-        width="100%"
-        height="100%"
-        justifyContent="space-around"
-        alignItems="center"
-        p={4}
-      >
-        <Stack spacing={1} justifyContent="center" alignItems="center">
-          <Heading textAlign="center">14.2%</Heading>
-          <Text
-            textTransform="uppercase"
-            textAlign="center"
-            letterSpacing="wide"
-            fontSize="xs"
-          >
-            Today's APR
-          </Text>
-        </Stack>
-        <Stack spacing={1} justifyContent="center" alignItems="center">
-          <Heading textAlign="center">13.3%</Heading>
-          <Text
-            textTransform="uppercase"
-            textAlign="center"
-            letterSpacing="wide"
-            fontSize="xs"
-          >
-            Yearly APR
-          </Text>
-        </Stack>
-        <Stack spacing={1} justifyContent="center" alignItems="center">
-          <Heading textAlign="center" size="lg">
-            {isFundBalenceLoading ? "$?" : fundBalence}
-          </Heading>
-          <Text
-            textTransform="uppercase"
-            textAlign="center"
-            letterSpacing="wide"
-            fontSize="xs"
-          >
-            Assets under management
-          </Text>
-        </Stack>
-      </Stack>
-    </DashboardBox>
-  );
-};
+import { WideLogo } from "../shared/Logos";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -102,9 +28,7 @@ const PreviewPortal = () => {
 
   return (
     <Flex flexDirection="column" alignItems="flex-start" p={4} color="#FFFFFF">
-      <Box w="200px" h="53px" mb={4}>
-        <Image src={WideLogo} />
-      </Box>
+      <WideLogo />
 
       <Flex
         width="100%"
@@ -234,3 +158,70 @@ const PreviewPortal = () => {
 };
 
 export default PreviewPortal;
+
+const FundStats = () => {
+  const { RariFundManager } = useContracts();
+
+  const {
+    isLoading: isFundBalenceLoading,
+    data: fundBalence,
+  } = useContractMethod(RariFundManager, "getFundBalance", (result: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(divBy1e18(result))
+  );
+
+  return (
+    <DashboardBox
+      width={{
+        md: "20%",
+        xs: "100%",
+      }}
+    >
+      <Stack
+        width="100%"
+        height="100%"
+        justifyContent="space-around"
+        alignItems="center"
+        p={4}
+      >
+        <Stack spacing={1} justifyContent="center" alignItems="center">
+          <Heading textAlign="center">14.2%</Heading>
+          <Text
+            textTransform="uppercase"
+            textAlign="center"
+            letterSpacing="wide"
+            fontSize="xs"
+          >
+            Today's APR
+          </Text>
+        </Stack>
+        <Stack spacing={1} justifyContent="center" alignItems="center">
+          <Heading textAlign="center">13.3%</Heading>
+          <Text
+            textTransform="uppercase"
+            textAlign="center"
+            letterSpacing="wide"
+            fontSize="xs"
+          >
+            Yearly APR
+          </Text>
+        </Stack>
+        <Stack spacing={1} justifyContent="center" alignItems="center">
+          <Heading textAlign="center" size="lg">
+            {isFundBalenceLoading ? "$?" : fundBalence}
+          </Heading>
+          <Text
+            textTransform="uppercase"
+            textAlign="center"
+            letterSpacing="wide"
+            fontSize="xs"
+          >
+            Assets under management
+          </Text>
+        </Stack>
+      </Stack>
+    </DashboardBox>
+  );
+};

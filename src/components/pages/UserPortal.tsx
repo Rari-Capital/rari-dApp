@@ -1,15 +1,7 @@
 import React from "react";
-import {
-  Image,
-  Flex,
-  Box,
-  Text,
-  Heading,
-  IconButton,
-  Stack,
-} from "@chakra-ui/core";
+import { Flex, Box, Text, Heading, IconButton, Stack } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
-import SmallLogo from "../../static/small-logo.png";
+
 import DashboardBox from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 import { useContractMethod } from "../../hooks/useContractMethod";
@@ -17,6 +9,7 @@ import { divBy1e18 } from "../../utils/1e18";
 import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
+import { SmallLogo } from "../shared/Logos";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -47,9 +40,7 @@ const UserPortal = () => {
         overflowX="auto"
         width="100%"
       >
-        <Box h="37px" w="37px" flexShrink={0}>
-          <Image h="37px" w="37px" src={SmallLogo} />
-        </Box>
+        <SmallLogo />
 
         <IconButton
           variant="link"
