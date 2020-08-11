@@ -47,8 +47,6 @@ async function launchModalLazy() {
     },
   };
 
-  console.log(process.env.REACT_APP_PORTIS_ID);
-
   const web3Modal = new Web3Modal.default({
     cacheProvider: false,
     providerOptions,

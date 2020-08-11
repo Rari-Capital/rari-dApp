@@ -15,11 +15,15 @@ import { useContracts } from "../../context/ContractsContext";
 import { useContractMethod } from "../../hooks/useContractMethod";
 import { divBy1e18 } from "../../utils/1e18";
 import { shortAddress } from "../../utils/shortAddress";
+import CopyrightSpacer from "../shared/CopyrightSpacer";
+import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
 
   const { RariFundManager } = useContracts();
+
+  const dashboardHeight = useMinLockedViewHeight(670, 0.9);
 
   const { isLoading: isBalanceLoading, data: myBalance } = useContractMethod(
     RariFundManager,
@@ -40,7 +44,7 @@ const UserPortal = () => {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
-        overflowX="scroll"
+        overflowX="auto"
         width="100%"
       >
         <Box w="47px" h="47px" flexShrink={0}>
@@ -61,7 +65,7 @@ const UserPortal = () => {
 
       <Flex
         width="100%"
-        height={{ md: "630px", xs: "auto" }}
+        height={{ md: dashboardHeight, xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
         p={4}
       >
@@ -72,19 +76,18 @@ const UserPortal = () => {
         >
           <DashboardBox
             height={{ md: "15%", xs: "80px" }}
-            overflow="scroll"
+            overflowX="auto"
             whiteSpace="nowrap"
           >
             <Flex
               flexDirection="row"
-              alignItems="center"
+              height="100%"
               justifyContent="space-between"
             >
               <Flex
                 flexDirection="column"
                 justifyContent="center"
                 height="100%"
-                pt={4}
                 pl={4}
               >
                 <Heading color="#FFFFFF" fontSize={{ md: "2xl", xs: "sm" }}>
@@ -100,7 +103,6 @@ const UserPortal = () => {
                 alignItems="flex-end"
                 justifyContent="center"
                 height="100%"
-                pt={4}
                 pr={4}
               >
                 <Text
@@ -163,9 +165,7 @@ const UserPortal = () => {
         </Stack>
       </Flex>
 
-      <Text textAlign="center" width="100%" py={5}>
-        © {new Date().getFullYear()} Rari Capital. All rights reserved.
-      </Text>
+      <CopyrightSpacer />
     </Flex>
   );
 };

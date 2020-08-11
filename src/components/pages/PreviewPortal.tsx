@@ -16,6 +16,8 @@ import { useContracts } from "../../context/ContractsContext";
 import { useContractMethod } from "../../hooks/useContractMethod";
 import { divBy1e18 } from "../../utils/1e18";
 import DashboardBox from "../shared/DashboardBox";
+import CopyrightSpacer from "../shared/CopyrightSpacer";
+import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 
 const FundStats = () => {
   const { RariFundManager } = useContracts();
@@ -96,6 +98,8 @@ const PreviewPortal = () => {
       .catch(() => setLoading(false));
   };
 
+  const dashboardHeight = useMinLockedViewHeight(650, 0.85);
+
   return (
     <Flex flexDirection="column" alignItems="flex-start" p={4} color="#FFFFFF">
       <Box w="200px" h="53px" mb={4}>
@@ -104,7 +108,7 @@ const PreviewPortal = () => {
 
       <Flex
         width="100%"
-        height={{ md: "500px", xs: "auto" }}
+        height={{ md: dashboardHeight + "px", xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
       >
         <FundStats />
@@ -124,7 +128,14 @@ const PreviewPortal = () => {
                 yAxisMode: "tick",
                 xIsSeries: 1,
               }}
-              height={420}
+              height={
+                // If the window is in mobile mode:
+                window.matchMedia("(max-width: 48em)").matches
+                  ? // Set the chart as the height of its parent (which is 420)
+                    420
+                  : // Otherwise calculate the height dynamically
+                    dashboardHeight * 0.85
+              }
               lineOptions={{
                 dotSize: 0,
                 hideLine: 0,
@@ -181,7 +192,11 @@ const PreviewPortal = () => {
                 {loading ? (
                   <Spinner />
                 ) : (
-                  <Text textAlign="center" fontWeight="bold" fontSize="lg">
+                  <Text
+                    textAlign="center"
+                    fontWeight="bold"
+                    fontSize={{ md: "3xl", xs: "lg" }}
+                  >
                     Connect Wallet
                   </Text>
                 )}
@@ -201,7 +216,11 @@ const PreviewPortal = () => {
                 justifyContent="center"
                 alignItems="center"
               >
-                <Text fontWeight="bold" fontSize="lg" textAlign="center">
+                <Text
+                  fontWeight="bold"
+                  fontSize={{ md: "3xl", xs: "lg" }}
+                  textAlign="center"
+                >
                   Get Wallet
                 </Text>
               </DashboardBox>
@@ -209,9 +228,7 @@ const PreviewPortal = () => {
           </Flex>
         </Flex>
       </Flex>
-      <Text textAlign="center" width="100%" py={8}>
-        © {new Date().getFullYear()} Rari Capital. All rights reserved.
-      </Text>
+      <CopyrightSpacer />
     </Flex>
   );
 };
