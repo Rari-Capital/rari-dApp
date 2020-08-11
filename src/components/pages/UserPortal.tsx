@@ -47,8 +47,8 @@ const UserPortal = () => {
         overflowX="auto"
         width="100%"
       >
-        <Box w="47px" h="47px" flexShrink={0}>
-          <Image src={SmallLogo} />
+        <Box h="37px" w="37px" flexShrink={0}>
+          <Image h="37px" w="37px" src={SmallLogo} />
         </Box>
 
         <IconButton

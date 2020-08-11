@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import Web3 from "web3";
+import FullPageSpinner from "../components/shared/FullPageSpinner";
 
 async function launchModalLazy() {
   const [
@@ -62,6 +63,7 @@ export interface Web3ContextData {
   isAuthed: boolean;
   login: () => any;
   logout: () => any;
+  address: string | null;
 }
 
 export const Web3Context = React.createContext<Web3ContextData | undefined>(
@@ -77,6 +79,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   );
 
   const [web3Authed, setWeb3Authed] = useState<Web3 | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
@@ -85,18 +88,34 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
 
     setWeb3ModalProvider(provider);
 
-    setWeb3Authed(new Web3(provider));
+    let authedProvider = new Web3(provider);
+
+    setWeb3Authed(authedProvider);
+
+    authedProvider.eth
+      .getAccounts()
+      .then((addresses) => setAddress(addresses[0]));
   }, [setWeb3Authed, setWeb3ModalProvider]);
 
   const logout = useCallback(() => {
     setWeb3ModalProvider(null);
 
     setWeb3Authed(null);
+
+    setAddress(null);
   }, [setWeb3Authed, setWeb3ModalProvider]);
 
   useEffect(() => {
     if (web3ModalProvider != null) {
-      let refetch = () => setWeb3Authed(new Web3(web3ModalProvider as any));
+      let refetch = () => {
+        let authedProvider = new Web3(web3ModalProvider);
+
+        setWeb3Authed(authedProvider);
+
+        authedProvider.eth
+          .getAccounts()
+          .then((addresses) => setAddress(addresses[0]));
+      };
 
       web3ModalProvider.on("accountsChanged", () => {
         refetch();
@@ -125,10 +144,16 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
       web3ModalProvider,
       login,
       logout,
+      address,
       isAuthed: web3Authed != null,
     }),
-    [web3Network, web3Authed, login, logout, web3ModalProvider]
+    [web3Network, web3Authed, login, logout, address, web3ModalProvider]
   );
+
+  // If the address is still loading in, don't render children who rely on it.
+  if (value.isAuthed && address == null) {
+    return <FullPageSpinner />;
+  }
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
 };
@@ -149,14 +174,15 @@ export interface Web3AuthedContextData {
 }
 
 export function useAuthedWeb3() {
-  const { isAuthed, web3Authed, logout } = useWeb3();
+  const { isAuthed, web3Authed, logout, address: addressOrNull } = useWeb3();
 
   let web3 = web3Authed!;
 
+  let address = addressOrNull!;
+
   const value = {
     web3,
-    //@ts-ignore
-    address: web3Authed?.currentProvider?.selectedAddress,
+    address,
     logout,
   };
 
