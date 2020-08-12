@@ -81,12 +81,10 @@ const UserPortal = () => {
                 height="100%"
                 pl={4}
               >
-                <Heading color="#FFFFFF" fontSize={{ md: "2xl", xs: "sm" }}>
+                <Heading fontSize={{ md: "2xl", xs: "sm" }}>
                   Hello, {shortAddress(address)}!
                 </Heading>
-                <Text color="#FFFFFF" fontSize="xs">
-                  It's nice to see you!
-                </Text>
+                <Text fontSize="xs">It's nice to see you!</Text>
               </Flex>
 
               <Flex
@@ -99,12 +97,11 @@ const UserPortal = () => {
                 <Text
                   textTransform="uppercase"
                   letterSpacing="wide"
-                  color="#FFFFFF"
                   fontSize="xs"
                 >
                   Account Balance
                 </Text>
-                <Heading color="#FFFFFF" size="md">
+                <Heading size="md">
                   {isBalanceLoading ? "$?" : myBalance}
                 </Heading>
               </Flex>

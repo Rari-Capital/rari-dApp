@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Flex, Stack, Text, Heading, Spinner } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
-import ReactFrappeChart from "react-frappe-charts-upgraded";
 
 import { useContracts } from "../../context/ContractsContext";
-
+import Chart from "react-apexcharts";
 import { useContractMethod } from "../../hooks/useContractMethod";
 import { divBy1e18 } from "../../utils/1e18";
 import DashboardBox from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 import { WideLogo } from "../shared/Logos";
+import { ChartOptions } from "../../utils/chartOptions";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ const PreviewPortal = () => {
       .catch(() => setLoading(false));
   };
 
-  const dashboardHeight = useMinLockedViewHeight(650, 0.85);
+  const dashboardHeight = useMinLockedViewHeight(690, 0.85);
 
   return (
     <Flex flexDirection="column" alignItems="flex-start" p={4} color="#FFFFFF">
@@ -42,116 +42,101 @@ const PreviewPortal = () => {
           flexDirection="column"
           width={{ md: "80%", xs: "100%" }}
         >
-          <DashboardBox height={{ md: "90%", xs: "420px" }}>
-            <ReactFrappeChart
-              animate={false}
-              type="line"
-              colors={["red", "green", "#FFFFFF"]}
-              axisOptions={{
-                xAxisMode: "tick",
-                yAxisMode: "tick",
-                xIsSeries: 1,
-              }}
-              height={
-                // If the window is in mobile mode:
-                window.matchMedia("(max-width: 48em)").matches
-                  ? // Set the chart as the height of its parent (which is 420)
-                    420
-                  : // Otherwise calculate the height dynamically
-                    dashboardHeight * 0.9
-              }
-              lineOptions={{
-                dotSize: 0,
-                hideLine: 0,
-                hideDots: 1,
-                heatline: 0,
-                regionFill: 0,
-                areaFill: 0,
-              }}
-              data={{
-                labels: [
-                  "Sun",
-                  "Mon",
-                  "Tue",
-                  "Wed",
-                  "Thu",
-                  "Fri",
-                  "Sat",
-                  "Sun",
-                  "Mon",
-                  "Tue",
-                ],
-
-                datasets: [
+          <Stack spacing={4} h="100%">
+            <DashboardBox
+              height={{ md: "90%", xs: "420px" }}
+              p={2}
+              color="#292828"
+            >
+              <Chart
+                options={ChartOptions}
+                series={[
+                  {
+                    name: "Rari",
+                    data: [
+                      { x: "August 1, 2019", y: 54 },
+                      { x: "August 3, 2019", y: 47 },
+                      { x: "August 4, 2019", y: 64 },
+                      { x: "August 5, 2019", y: 95 },
+                    ],
+                  },
                   {
                     name: "dYdX",
-                    values: [18, 40, 30, 35, 8, 52, 17, 4, 9, 9],
+                    data: [
+                      { x: "August 1, 2019", y: 21 },
+                      { x: "August 3, 2019", y: 24 },
+                      { x: "August 4, 2019", y: 26 },
+                      { x: "August 5, 2019", y: 36 },
+                    ],
                   },
                   {
                     name: "Compound",
-                    values: [18, 9, 1, 2, 33, 44, 47, 14, 92, 91],
+                    data: [
+                      { x: "August 1, 2019", y: 25 },
+                      { x: "August 3, 2019", y: 38 },
+                      { x: "August 4, 2019", y: 36 },
+                      { x: "August 5, 2019", y: 41 },
+                    ],
                   },
+                ]}
+                type="line"
+                width="100%"
+                height="100%"
+              />
+            </DashboardBox>
 
-                  {
-                    name: "Rari",
-                    values: [90, 100, 120, 125, 126, 127, 128, 190, 200, 210],
-                  },
-                ],
-              }}
-            />
-          </DashboardBox>
+            <Flex height="10%">
+              <Stack isInline={true} spacing={4} w="100%">
+                <DashboardBox
+                  as="button"
+                  outline="none"
+                  onClick={onRequestConnect}
+                  width="57%"
+                  height={{ md: "100%", xs: "70px" }}
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  {loading ? (
+                    <Spinner />
+                  ) : (
+                    <Text
+                      textAlign="center"
+                      fontWeight="bold"
+                      fontSize={{ md: "xl", xs: "lg" }}
+                    >
+                      Connect Wallet
+                    </Text>
+                  )}
+                </DashboardBox>
 
-          <Flex pt={4} height="10%">
-            <Stack isInline={true} spacing={4} w="100%">
-              <DashboardBox
-                as="button"
-                outline="none"
-                onClick={onRequestConnect}
-                width="57%"
-                height={{ md: "100%", xs: "70px" }}
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="center"
-              >
-                {loading ? (
-                  <Spinner />
-                ) : (
+                <DashboardBox
+                  as="button"
+                  outline="none"
+                  onClick={() =>
+                    window.open(
+                      "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
+                    )
+                  }
+                  width="43%"
+                  height={{ md: "100%", xs: "70px" }}
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                >
                   <Text
-                    textAlign="center"
                     fontWeight="bold"
                     fontSize={{ md: "xl", xs: "lg" }}
+                    textAlign="center"
                   >
-                    Connect Wallet
+                    Get Wallet
                   </Text>
-                )}
-              </DashboardBox>
-
-              <DashboardBox
-                as="button"
-                outline="none"
-                onClick={() =>
-                  window.open(
-                    "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
-                  )
-                }
-                width="43%"
-                height={{ md: "100%", xs: "70px" }}
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Text
-                  fontWeight="bold"
-                  fontSize={{ md: "xl", xs: "lg" }}
-                  textAlign="center"
-                >
-                  Get Wallet
-                </Text>
-              </DashboardBox>
-            </Stack>
-          </Flex>
+                </DashboardBox>
+              </Stack>
+            </Flex>
+          </Stack>
         </Flex>
       </Flex>
       <CopyrightSpacer />
@@ -196,7 +181,7 @@ const FundStats = () => {
             letterSpacing="wide"
             fontSize="xs"
           >
-            Today's APR
+            Today's APY
           </Text>
         </Stack>
         <Stack spacing={1} justifyContent="center" alignItems="center">
@@ -207,7 +192,7 @@ const FundStats = () => {
             letterSpacing="wide"
             fontSize="xs"
           >
-            Yearly APR
+            Yearly APY
           </Text>
         </Stack>
         <Stack spacing={1} justifyContent="center" alignItems="center">

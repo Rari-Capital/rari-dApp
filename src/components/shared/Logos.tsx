@@ -8,7 +8,7 @@ export const WideLogo = () => {
   return (
     <Fade direction="down">
       <Box w="200px" h="53px" mb={4} flexShrink={0}>
-        <Image src={LargeLogo} />
+        <Image alt="Logo" src={LargeLogo} />
       </Box>
     </Fade>
   );
@@ -18,7 +18,7 @@ export const SmallLogo = () => {
   return (
     <Flip>
       <Box w="37px" h="37px" flexShrink={0}>
-        <Image w="37px" h="37px" src={Logo} />
+        <Image alt="Logo" w="37px" h="37px" src={Logo} />
       </Box>
     </Flip>
   );
