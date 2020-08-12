@@ -32,3 +32,15 @@ export const ChartOptions = {
     horizontalAlign: "left",
   },
 };
+
+export const FundReturnChartOptions = {
+  ...ChartOptions,
+
+  yaxis: {
+    labels: {
+      formatter: function (value: string) {
+        return "$" + value;
+      },
+    },
+  },
+};

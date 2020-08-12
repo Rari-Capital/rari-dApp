@@ -10,7 +10,7 @@ import DashboardBox from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 import { WideLogo } from "../shared/Logos";
-import { ChartOptions } from "../../utils/chartOptions";
+import { FundReturnChartOptions } from "../../utils/chartOptions";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ const PreviewPortal = () => {
               color="#292828"
             >
               <Chart
-                options={ChartOptions}
+                options={FundReturnChartOptions}
                 series={[
                   {
                     name: "Rari",
