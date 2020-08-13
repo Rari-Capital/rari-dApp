@@ -154,7 +154,7 @@ const UserPortal = () => {
           pt={{ md: 0, xs: 4 }}
           pl={{ md: 4, xs: 0 }}
         >
-          <DashboardBox height={{ md: "15%", xs: "300px" }}>
+          <DashboardBox height={{ md: "15%", xs: "80px" }}>
             Today's APY
           </DashboardBox>
           <DashboardBox height={{ md: "25%", xs: "300px" }}>
