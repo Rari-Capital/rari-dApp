@@ -121,7 +121,7 @@ const UserPortal = () => {
             </Flex>
           </DashboardBox>
 
-          <DashboardBox height={{ md: "55%", xs: "400px" }}>
+          <DashboardBox height={{ md: "50%", xs: "400px" }}>
             chart here
           </DashboardBox>
 
@@ -160,7 +160,7 @@ const UserPortal = () => {
           <DashboardBox height={{ md: "25%", xs: "300px" }}>
             APY Stats
           </DashboardBox>
-          <DashboardBox height={{ md: "30%", xs: "300px" }}>
+          <DashboardBox height={{ md: "22.6%", xs: "300px" }}>
             Current Allocation
           </DashboardBox>
           <DashboardBox height={{ md: "30%", xs: "300px" }}>
