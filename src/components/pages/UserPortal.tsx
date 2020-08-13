@@ -1,15 +1,27 @@
 import React from "react";
-import { Flex, Box, Text, Heading, IconButton, Stack } from "@chakra-ui/core";
+import {
+  Flex,
+  Box,
+  Text,
+  Heading,
+  IconButton,
+  Stack,
+  Spinner,
+  Divider,
+} from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
 import DashboardBox from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 import { useContractMethod } from "../../hooks/useContractMethod";
-import { divBy1e18 } from "../../utils/1e18";
+import { format1e18AsDollars } from "../../utils/1e18";
 import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 import { SmallLogo } from "../shared/Logos";
+
+import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
+import FullPageSpinner from "../shared/FullPageSpinner";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -18,16 +30,18 @@ const UserPortal = () => {
 
   const dashboardHeight = useMinLockedViewHeight(670, 0.9);
 
-  const { isLoading: isBalanceLoading, data: myBalance } = useContractMethod(
+  const { isLoading: isBalanceLoading, data } = useContractMethod(
     RariFundManager,
     "balanceOf",
-    (result: number) =>
-      new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(divBy1e18(result)),
+    (result: number) => format1e18AsDollars(result),
     address
   );
+
+  if (isBalanceLoading) {
+    return <FullPageSpinner />;
+  }
+
+  const myBalance = data!;
 
   return (
     <Flex flexDirection="column" alignItems="flex-start" color="#FFFFFF">
@@ -43,8 +57,8 @@ const UserPortal = () => {
         <SmallLogo />
 
         <IconButton
-          variant="solid"
-          variantColor="#FFFFFFF"
+          variant="ghost"
+          variantColor="thisIsInvalidButItNeedsToBe"
           aria-label="Logout"
           fontSize="20px"
           onClick={logout}
@@ -60,8 +74,8 @@ const UserPortal = () => {
         flexDirection={{ md: "row", xs: "column" }}
         p={4}
       >
-        <Flex
-          flexDirection="column"
+        <Stack
+          spacing={4}
           height={{ md: "100%", xs: "auto" }}
           width={{ md: "75%", xs: "100%" }}
         >
@@ -101,35 +115,36 @@ const UserPortal = () => {
                 >
                   Account Balance
                 </Text>
-                <Heading size="md">
-                  {isBalanceLoading ? "$?" : myBalance}
-                </Heading>
+                <Heading size="md">{myBalance}</Heading>
               </Flex>
             </Flex>
           </DashboardBox>
 
-          <DashboardBox height={{ md: "55%", xs: "400px" }} mt={4}>
+          <DashboardBox height={{ md: "55%", xs: "400px" }}>
             chart here
           </DashboardBox>
 
           <Flex
             flexDirection={{ md: "row", xs: "column" }}
             height={{ md: "30%", xs: "600px" }}
-            pt={4}
           >
             <DashboardBox
               mr={{ md: 4, xs: 0 }}
               mb={{ md: 0, xs: 4 }}
               height="100%"
               width={{ md: "50%", xs: "100%" }}
+              p={4}
             >
-              chart here
+              <TransactionHistoryOrTokenAllocation
+                address={address}
+                userBalance={myBalance!}
+              />
             </DashboardBox>
             <DashboardBox height="100%" width={{ md: "50%", xs: "100%" }}>
               chart here
             </DashboardBox>
           </Flex>
-        </Flex>
+        </Stack>
 
         <Stack
           spacing={4}
@@ -148,7 +163,7 @@ const UserPortal = () => {
             Current Allocation
           </DashboardBox>
           <DashboardBox height={{ md: "30%", xs: "300px" }}>
-            Current Allocation
+            Monthly Returns
           </DashboardBox>
         </Stack>
       </Flex>
@@ -159,3 +174,47 @@ const UserPortal = () => {
 };
 
 export default UserPortal;
+
+const TransactionHistoryOrTokenAllocation = ({
+  address,
+  userBalance,
+}: {
+  address: string;
+  userBalance: string;
+}) => {
+  return userBalance === "$0.00" ? (
+    <Text>You have no RFT.</Text>
+  ) : (
+    <TransactionHistory address={address} />
+  );
+};
+
+const TransactionHistory = ({ address }: { address: string }) => {
+  const { RariFundManager } = useContracts();
+
+  const {
+    isLoading: isEventsLoading,
+    data: events,
+  } = useTransactionHistoryEvents(RariFundManager, address);
+
+  return isEventsLoading ? (
+    <Flex height="100%" alignItems="center" justifyContent="center">
+      <Spinner mx="auto" my="auto" />
+    </Flex>
+  ) : (
+    <Flex height="100%" flexDirection="column" overflowY="auto">
+      <Heading size="md" mb={2}>
+        Your Transaction History
+      </Heading>
+
+      {events!.map((event) => (
+        <>
+          <Text color="#6e6a6a" key={event.transactionHash}>
+            {event.event}: {format1e18AsDollars(event.returnValues.amount)}
+          </Text>
+          <Divider borderColor="#616161" my={1} />
+        </>
+      ))}
+    </Flex>
+  );
+};

@@ -1,19 +1,22 @@
 import { useQuery } from "react-query";
 import { Contract } from "web3-eth-contract";
 
-export function useContractMethod<T, A>(
+export function useContractMethod<DataType>(
   contract: Contract,
   methodKey: string,
-  resultTransformFunc?: (result: T) => A,
+  resultTransformFunc?: (result: any) => DataType,
   ...parameters: any[]
 ) {
-  return useQuery<A, [string, ...any[]]>([methodKey, ...parameters], () => {
-    let result = contract.methods[methodKey](...parameters).call();
+  return useQuery<DataType, [string, ...any[]]>(
+    [methodKey, ...parameters],
+    () => {
+      let result = contract.methods[methodKey](...parameters).call();
 
-    if (resultTransformFunc) {
-      result = result.then(resultTransformFunc);
+      if (resultTransformFunc) {
+        result = result.then(resultTransformFunc);
+      }
+
+      return result;
     }
-
-    return result;
-  });
+  );
 }
