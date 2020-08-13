@@ -1,5 +1,8 @@
 import { useQuery } from "react-query";
 import { Contract, Filter, EventData } from "web3-eth-contract";
+import Web3 from "web3";
+import { useContracts } from "../context/ContractsContext";
+import { useWeb3, useAuthedWeb3 } from "../context/Web3Context";
 
 export function usePastContractEvents<DataType = EventData[]>(
   contract: Contract,
@@ -30,24 +33,43 @@ export function usePastContractEvents<DataType = EventData[]>(
   );
 }
 
-export function useTransactionHistoryEvents(
-  rariFundManager: Contract,
-  address: string
-) {
-  return useQuery<EventData[], "transactionHistoryEvents">(
+export type TransactionEvent = EventData & { timeSent: string };
+
+export function useTransactionHistoryEvents() {
+  const { RariFundManager } = useContracts();
+
+  const { web3, address } = useAuthedWeb3();
+
+  return useQuery<TransactionEvent[], "transactionHistoryEvents">(
     "transactionHistoryEvents",
     async () => {
-      const withdraws = await rariFundManager.getPastEvents("Withdrawal", {
+      const withdraws = await RariFundManager.getPastEvents("Withdrawal", {
         fromBlock: "earliest",
         filter: { payee: address },
       });
 
-      const deposits = await rariFundManager.getPastEvents("Deposit", {
+      const deposits = await RariFundManager.getPastEvents("Deposit", {
         fromBlock: "earliest",
         filter: { payee: address },
       });
 
-      let merged_arrays = withdraws.concat(deposits);
+      let merged_arrays = await Promise.all(
+        withdraws.concat(deposits).map(async (event) => {
+          const block = await web3.eth.getBlock(event.blockNumber);
+
+          const date = new Date(parseInt(block.timestamp as string) * 1000);
+
+          return {
+            ...event,
+            timeSent: date.toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }),
+          } as TransactionEvent;
+        })
+      );
 
       // Sort descending by blockNumber
       merged_arrays.sort((a, b) => (a.blockNumber < b.blockNumber ? 1 : -1));

@@ -42,6 +42,7 @@ const UserPortal = () => {
   }
 
   const myBalance = data!;
+  const isFirstTime = myBalance === "$0.00";
 
   return (
     <Flex flexDirection="column" alignItems="flex-start" color="#FFFFFF">
@@ -126,21 +127,21 @@ const UserPortal = () => {
 
           <Flex
             flexDirection={{ md: "row", xs: "column" }}
-            height={{ md: "30%", xs: "600px" }}
+            height={{ md: "30%", xs: "auto" }}
           >
             <DashboardBox
               mr={{ md: 4, xs: 0 }}
               mb={{ md: 0, xs: 4 }}
-              height="100%"
+              height={{ md: "100%", xs: "auto" }}
               width={{ md: "50%", xs: "100%" }}
               p={4}
             >
-              <TransactionHistoryOrTokenAllocation
-                address={address}
-                userBalance={myBalance!}
-              />
+              <TransactionHistoryOrTokenAllocation isFirstTime={isFirstTime} />
             </DashboardBox>
-            <DashboardBox height="100%" width={{ md: "50%", xs: "100%" }}>
+            <DashboardBox
+              height={{ md: "100%", xs: "300px" }}
+              width={{ md: "50%", xs: "100%" }}
+            >
               chart here
             </DashboardBox>
           </Flex>
@@ -176,26 +177,18 @@ const UserPortal = () => {
 export default UserPortal;
 
 const TransactionHistoryOrTokenAllocation = ({
-  address,
-  userBalance,
+  isFirstTime,
 }: {
-  address: string;
-  userBalance: string;
+  isFirstTime: boolean;
 }) => {
-  return userBalance === "$0.00" ? (
-    <Text>You have no RFT.</Text>
-  ) : (
-    <TransactionHistory address={address} />
-  );
+  return isFirstTime ? <Text>You have no RFT.</Text> : <TransactionHistory />;
 };
 
-const TransactionHistory = ({ address }: { address: string }) => {
-  const { RariFundManager } = useContracts();
-
+const TransactionHistory = () => {
   const {
     isLoading: isEventsLoading,
     data: events,
-  } = useTransactionHistoryEvents(RariFundManager, address);
+  } = useTransactionHistoryEvents();
 
   return isEventsLoading ? (
     <Flex height="100%" alignItems="center" justifyContent="center">
@@ -208,12 +201,13 @@ const TransactionHistory = ({ address }: { address: string }) => {
       </Heading>
 
       {events!.map((event) => (
-        <>
+        <Box key={event.transactionHash}>
           <Text color="#6e6a6a" key={event.transactionHash}>
             {event.event}: {format1e18AsDollars(event.returnValues.amount)}
+            <b> ({event.timeSent})</b>
           </Text>
           <Divider borderColor="#616161" my={1} />
-        </>
+        </Box>
       ))}
     </Flex>
   );
