@@ -8,7 +8,6 @@ import { useContractMethod } from "../../hooks/useContractMethod";
 import { divBy1e18 } from "../../utils/1e18";
 import DashboardBox from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
-import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 import { WideLogo } from "../shared/Logos";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
 import {
@@ -16,6 +15,7 @@ import {
   Center,
   Row,
   RowOnDesktopColumnOnMobile,
+  useMinLockedViewHeight,
 } from "buttered-chakra";
 
 const PreviewPortal = () => {
