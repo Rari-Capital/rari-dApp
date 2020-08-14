@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Stack, Text, Heading, Spinner } from "@chakra-ui/core";
+import { Text, Heading, Spinner } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
@@ -56,101 +56,101 @@ const PreviewPortal = () => {
           width={{ md: "80%", xs: "100%" }}
           height="100%"
         >
-          <Stack spacing={4} h="100%" width="100%">
+          <DashboardBox
+            height={{ md: "90%", xs: "420px" }}
+            width="100%"
+            p={2}
+            color="#292828"
+          >
+            <Chart
+              options={FundReturnChartOptions}
+              type="line"
+              width="100%"
+              height="100%"
+              series={[
+                {
+                  name: "Rari",
+                  data: [
+                    { x: "August 1, 2019", y: 54 },
+                    { x: "August 3, 2019", y: 47 },
+                    { x: "August 4, 2019", y: 64 },
+                    { x: "August 5, 2019", y: 95 },
+                  ],
+                },
+                {
+                  name: "dYdX",
+                  data: [
+                    { x: "August 1, 2019", y: 21 },
+                    { x: "August 3, 2019", y: 24 },
+                    { x: "August 4, 2019", y: 26 },
+                    { x: "August 5, 2019", y: 36 },
+                  ],
+                },
+                {
+                  name: "Compound",
+                  data: [
+                    { x: "August 1, 2019", y: 25 },
+                    { x: "August 3, 2019", y: 38 },
+                    { x: "August 4, 2019", y: 36 },
+                    { x: "August 5, 2019", y: 41 },
+                  ],
+                },
+              ]}
+            />
+          </DashboardBox>
+
+          <Row
+            mt={4}
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            height="10%"
+            width="100%"
+          >
             <DashboardBox
-              height={{ md: "90%", xs: "420px" }}
-              p={2}
-              color="#292828"
+              as="button"
+              outline="none"
+              onClick={onRequestConnect}
+              width="57%"
+              height={{ md: "100%", xs: "70px" }}
             >
-              <Chart
-                options={FundReturnChartOptions}
-                series={[
-                  {
-                    name: "Rari",
-                    data: [
-                      { x: "August 1, 2019", y: 54 },
-                      { x: "August 3, 2019", y: 47 },
-                      { x: "August 4, 2019", y: 64 },
-                      { x: "August 5, 2019", y: 95 },
-                    ],
-                  },
-                  {
-                    name: "dYdX",
-                    data: [
-                      { x: "August 1, 2019", y: 21 },
-                      { x: "August 3, 2019", y: 24 },
-                      { x: "August 4, 2019", y: 26 },
-                      { x: "August 5, 2019", y: 36 },
-                    ],
-                  },
-                  {
-                    name: "Compound",
-                    data: [
-                      { x: "August 1, 2019", y: 25 },
-                      { x: "August 3, 2019", y: 38 },
-                      { x: "August 4, 2019", y: 36 },
-                      { x: "August 5, 2019", y: 41 },
-                    ],
-                  },
-                ]}
-                type="line"
-                width="100%"
-                height="100%"
-              />
+              <Center>
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  <Text
+                    textAlign="center"
+                    fontWeight="bold"
+                    fontSize={{ md: "xl", xs: "lg" }}
+                  >
+                    Connect Wallet
+                  </Text>
+                )}
+              </Center>
             </DashboardBox>
 
-            <Row
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              height="10%"
+            <DashboardBox
+              ml={4}
+              as="button"
+              outline="none"
+              onClick={() =>
+                window.open(
+                  "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
+                )
+              }
+              width="43%"
+              height={{ md: "100%", xs: "70px" }}
             >
-              <Stack isInline={true} spacing={4} width="100%" height="100%">
-                <DashboardBox
-                  as="button"
-                  outline="none"
-                  onClick={onRequestConnect}
-                  width="57%"
-                  height={{ md: "100%", xs: "70px" }}
+              <Center>
+                <Text
+                  fontWeight="bold"
+                  fontSize={{ md: "xl", xs: "lg" }}
+                  textAlign="center"
                 >
-                  <Center>
-                    {loading ? (
-                      <Spinner />
-                    ) : (
-                      <Text
-                        textAlign="center"
-                        fontWeight="bold"
-                        fontSize={{ md: "xl", xs: "lg" }}
-                      >
-                        Connect Wallet
-                      </Text>
-                    )}
-                  </Center>
-                </DashboardBox>
-
-                <DashboardBox
-                  as="button"
-                  outline="none"
-                  onClick={() =>
-                    window.open(
-                      "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
-                    )
-                  }
-                  width="43%"
-                  height={{ md: "100%", xs: "70px" }}
-                >
-                  <Center>
-                    <Text
-                      fontWeight="bold"
-                      fontSize={{ md: "xl", xs: "lg" }}
-                      textAlign="center"
-                    >
-                      Get Wallet
-                    </Text>
-                  </Center>
-                </DashboardBox>
-              </Stack>
-            </Row>
-          </Stack>
+                  Get Wallet
+                </Text>
+              </Center>
+            </DashboardBox>
+          </Row>
         </Column>
       </RowOnDesktopColumnOnMobile>
       <CopyrightSpacer />
@@ -180,15 +180,14 @@ const FundStats = () => {
         md: "20%",
         xs: "100%",
       }}
+      p={4}
     >
-      <Stack
-        width="100%"
-        height="100%"
-        justifyContent="space-around"
-        alignItems="center"
-        p={4}
+      <Column
+        expand
+        mainAxisAlignment="space-around"
+        crossAxisAlignment="center"
       >
-        <Stack spacing={1} justifyContent="center" alignItems="center">
+        <Column mainAxisAlignment="center" crossAxisAlignment="center" mb={4}>
           <Heading textAlign="center">14.2%</Heading>
           <Text
             textTransform="uppercase"
@@ -198,8 +197,8 @@ const FundStats = () => {
           >
             Today's APY
           </Text>
-        </Stack>
-        <Stack spacing={1} justifyContent="center" alignItems="center">
+        </Column>
+        <Column mainAxisAlignment="center" crossAxisAlignment="center" mb={4}>
           <Heading textAlign="center">13.3%</Heading>
           <Text
             textTransform="uppercase"
@@ -209,8 +208,8 @@ const FundStats = () => {
           >
             Yearly APY
           </Text>
-        </Stack>
-        <Stack spacing={1} justifyContent="center" alignItems="center">
+        </Column>
+        <Column mainAxisAlignment="center" crossAxisAlignment="center" mb={4}>
           <Heading textAlign="center" size="lg">
             {isFundBalenceLoading ? "$?" : fundBalence}
           </Heading>
@@ -222,8 +221,8 @@ const FundStats = () => {
           >
             Assets under management
           </Text>
-        </Stack>
-      </Stack>
+        </Column>
+      </Column>
     </DashboardBox>
   );
 };
