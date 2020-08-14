@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Flex, Stack, Text, Heading, Spinner } from "@chakra-ui/core";
+import { Stack, Text, Heading, Spinner } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
@@ -11,7 +11,12 @@ import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 import { WideLogo } from "../shared/Logos";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
-import { Column, Center, Row } from "buttered-chakra";
+import {
+  Column,
+  Center,
+  Row,
+  RowOnDesktopColumnOnMobile,
+} from "buttered-chakra";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -36,10 +41,11 @@ const PreviewPortal = () => {
     >
       <WideLogo />
 
-      <Flex
+      <RowOnDesktopColumnOnMobile
         width="100%"
         height={{ md: dashboardHeight + "px", xs: "auto" }}
-        flexDirection={{ md: "row", xs: "column" }}
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
       >
         <FundStats />
         <Column
@@ -48,6 +54,7 @@ const PreviewPortal = () => {
           pl={{ md: 4, xs: 0 }}
           pt={{ md: 0, xs: 4 }}
           width={{ md: "80%", xs: "100%" }}
+          height="100%"
         >
           <Stack spacing={4} h="100%" width="100%">
             <DashboardBox
@@ -145,7 +152,7 @@ const PreviewPortal = () => {
             </Row>
           </Stack>
         </Column>
-      </Flex>
+      </RowOnDesktopColumnOnMobile>
       <CopyrightSpacer />
     </Column>
   );
@@ -168,6 +175,7 @@ const FundStats = () => {
 
   return (
     <DashboardBox
+      height="100%"
       width={{
         md: "20%",
         xs: "100%",

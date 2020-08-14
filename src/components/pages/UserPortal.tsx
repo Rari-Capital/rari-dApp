@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Flex,
   Box,
   Text,
   Heading,
@@ -27,6 +26,7 @@ import {
   Center,
   useMinLockedViewHeight,
   useSpacedLayout,
+  RowOnDesktopColumnOnMobile,
 } from "buttered-chakra";
 
 const UserPortal = () => {
@@ -40,7 +40,7 @@ const UserPortal = () => {
     spacing: statsSidebarSpacing,
     childSizes: statsSidebarChildSizes,
   } = useSpacedLayout({
-    parentHeight: 600,
+    parentHeight: dashboardHeight,
     spacing: 15,
     childSizePercentages: [0.2, 0.25, 0.25, 0.3],
   });
@@ -49,7 +49,7 @@ const UserPortal = () => {
     spacing: mainSectionSpacing,
     childSizes: mainSectionChildSizes,
   } = useSpacedLayout({
-    parentHeight: 600,
+    parentHeight: dashboardHeight,
     spacing: 15,
     childSizePercentages: [0.2, 0.5, 0.3],
   });
@@ -96,10 +96,11 @@ const UserPortal = () => {
 
       <Box height="1px" width="100%" bg="white" />
 
-      <Flex
+      <RowOnDesktopColumnOnMobile
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
         width="100%"
         height={{ md: dashboardHeight + "px", xs: "auto" }}
-        flexDirection={{ md: "row", xs: "column" }}
         p={4}
       >
         <Column
@@ -158,8 +159,9 @@ const UserPortal = () => {
             chart here
           </DashboardBox>
 
-          <Flex
-            flexDirection={{ md: "row", xs: "column" }}
+          <RowOnDesktopColumnOnMobile
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
             height={{ md: mainSectionChildSizes[2], xs: "auto" }}
             width="100%"
           >
@@ -178,7 +180,7 @@ const UserPortal = () => {
             >
               chart here
             </DashboardBox>
-          </Flex>
+          </RowOnDesktopColumnOnMobile>
         </Column>
 
         <Column
@@ -217,7 +219,7 @@ const UserPortal = () => {
             Monthly Returns
           </DashboardBox>
         </Column>
-      </Flex>
+      </RowOnDesktopColumnOnMobile>
 
       <CopyrightSpacer />
     </Column>

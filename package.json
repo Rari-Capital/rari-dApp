@@ -23,7 +23,7 @@
     "@walletconnect/web3-provider": "^1.1.0",
     "apexcharts": "^3.20.0",
     "authereum": "0.0.4-beta.164",
-    "buttered-chakra": "^0.9.4",
+    "buttered-chakra": "^0.9.6",
     "cypress": "^4.12.1",
     "emotion-theming": "^10.0.27",
     "fortmatic": "^2.2.1",
