@@ -24,7 +24,7 @@ interface Props {
 const ErrorPage: React.FC<Props> = ({ componentStack, error }) => {
   return (
     <Box color="white">
-      <Box bg="red.600" w="100%" p={4}>
+      <Box bg="red.600" width="100%" p={4}>
         <Heading>Whoops! Looks like something went wrong!</Heading>
         <Text>
           You can either reload the page, or report this error to us on{" "}

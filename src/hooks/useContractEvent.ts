@@ -1,8 +1,7 @@
 import { useQuery } from "react-query";
 import { Contract, Filter, EventData } from "web3-eth-contract";
-import Web3 from "web3";
 import { useContracts } from "../context/ContractsContext";
-import { useWeb3, useAuthedWeb3 } from "../context/Web3Context";
+import { useAuthedWeb3 } from "../context/Web3Context";
 
 export function usePastContractEvents<DataType = EventData[]>(
   contract: Contract,

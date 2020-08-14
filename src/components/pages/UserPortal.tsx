@@ -5,7 +5,6 @@ import {
   Text,
   Heading,
   IconButton,
-  Stack,
   Spinner,
   Divider,
 } from "@chakra-ui/core";
@@ -17,11 +16,18 @@ import { useContractMethod } from "../../hooks/useContractMethod";
 import { format1e18AsDollars } from "../../utils/1e18";
 import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
-import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
+
 import { SmallLogo } from "../shared/Logos";
 
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import FullPageSpinner from "../shared/FullPageSpinner";
+import {
+  Column,
+  Row,
+  Center,
+  useMinLockedViewHeight,
+  useSpacedLayout,
+} from "buttered-chakra";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -29,6 +35,24 @@ const UserPortal = () => {
   const { RariFundManager } = useContracts();
 
   const dashboardHeight = useMinLockedViewHeight(670, 0.9);
+
+  const {
+    spacing: statsSidebarSpacing,
+    childSizes: statsSidebarChildSizes,
+  } = useSpacedLayout({
+    parentHeight: 600,
+    spacing: 15,
+    childSizePercentages: [0.2, 0.25, 0.25, 0.3],
+  });
+
+  const {
+    spacing: mainSectionSpacing,
+    childSizes: mainSectionChildSizes,
+  } = useSpacedLayout({
+    parentHeight: 600,
+    spacing: 15,
+    childSizePercentages: [0.2, 0.5, 0.3],
+  });
 
   const { isLoading: isBalanceLoading, data } = useContractMethod(
     RariFundManager,
@@ -45,13 +69,16 @@ const UserPortal = () => {
   const isFirstTime = myBalance === "$0.00";
 
   return (
-    <Flex flexDirection="column" alignItems="flex-start" color="#FFFFFF">
-      <Flex
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      color="#FFFFFF"
+    >
+      <Row
         py={3}
         px={6}
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
         overflowX="auto"
         width="100%"
       >
@@ -65,34 +92,37 @@ const UserPortal = () => {
           onClick={logout}
           icon="arrow-right"
         />
-      </Flex>
+      </Row>
 
       <Box height="1px" width="100%" bg="white" />
 
       <Flex
         width="100%"
-        height={{ md: dashboardHeight, xs: "auto" }}
+        height={{ md: dashboardHeight + "px", xs: "auto" }}
         flexDirection={{ md: "row", xs: "column" }}
         p={4}
       >
-        <Stack
-          spacing={4}
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
           height={{ md: "100%", xs: "auto" }}
           width={{ md: "75%", xs: "100%" }}
         >
           <DashboardBox
-            height={{ md: "15%", xs: "80px" }}
+            width="100%"
+            mb={mainSectionSpacing}
+            height={{ md: mainSectionChildSizes[0], xs: "80px" }}
             overflowX="auto"
             whiteSpace="nowrap"
           >
-            <Flex
-              flexDirection="row"
-              height="100%"
-              justifyContent="space-between"
+            <Row
+              expand
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
             >
-              <Flex
-                flexDirection="column"
-                justifyContent="center"
+              <Column
+                mainAxisAlignment="center"
+                crossAxisAlignment="flex-start"
                 height="100%"
                 pl={4}
               >
@@ -100,12 +130,11 @@ const UserPortal = () => {
                   Hello, {shortAddress(address)}!
                 </Heading>
                 <Text fontSize="xs">It's nice to see you!</Text>
-              </Flex>
+              </Column>
 
-              <Flex
-                flexDirection="column"
-                alignItems="flex-end"
-                justifyContent="center"
+              <Column
+                mainAxisAlignment="center"
+                crossAxisAlignment="flex-end"
                 height="100%"
                 pr={4}
               >
@@ -117,17 +146,22 @@ const UserPortal = () => {
                   Account Balance
                 </Text>
                 <Heading size="md">{myBalance}</Heading>
-              </Flex>
-            </Flex>
+              </Column>
+            </Row>
           </DashboardBox>
 
-          <DashboardBox height={{ md: "50%", xs: "400px" }}>
+          <DashboardBox
+            width="100%"
+            mb={mainSectionSpacing}
+            height={{ md: mainSectionChildSizes[1], xs: "400px" }}
+          >
             chart here
           </DashboardBox>
 
           <Flex
             flexDirection={{ md: "row", xs: "column" }}
-            height={{ md: "30%", xs: "auto" }}
+            height={{ md: mainSectionChildSizes[2], xs: "auto" }}
+            width="100%"
           >
             <DashboardBox
               mr={{ md: 4, xs: 0 }}
@@ -145,32 +179,48 @@ const UserPortal = () => {
               chart here
             </DashboardBox>
           </Flex>
-        </Stack>
+        </Column>
 
-        <Stack
-          spacing={4}
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
           height={{ md: "100%", xs: "auto" }}
           width={{ md: "25%", xs: "100%" }}
           pt={{ md: 0, xs: 4 }}
           pl={{ md: 4, xs: 0 }}
         >
-          <DashboardBox height={{ md: "15%", xs: "80px" }}>
+          <DashboardBox
+            width="100%"
+            mb={statsSidebarSpacing}
+            height={{ md: statsSidebarChildSizes[0], xs: "80px" }}
+          >
             Today's APY
           </DashboardBox>
-          <DashboardBox height={{ md: "25%", xs: "300px" }}>
+          <DashboardBox
+            width="100%"
+            mb={statsSidebarSpacing}
+            height={{ md: statsSidebarChildSizes[1], xs: "300px" }}
+          >
             APY Stats
           </DashboardBox>
-          <DashboardBox height={{ md: "22.6%", xs: "300px" }}>
+          <DashboardBox
+            width="100%"
+            mb={statsSidebarSpacing}
+            height={{ md: statsSidebarChildSizes[2], xs: "300px" }}
+          >
             Current Allocation
           </DashboardBox>
-          <DashboardBox height={{ md: "30%", xs: "300px" }}>
+          <DashboardBox
+            width="100%"
+            height={{ md: statsSidebarChildSizes[3], xs: "300px" }}
+          >
             Monthly Returns
           </DashboardBox>
-        </Stack>
+        </Column>
       </Flex>
 
       <CopyrightSpacer />
-    </Flex>
+    </Column>
   );
 };
 
@@ -191,11 +241,16 @@ const TransactionHistory = () => {
   } = useTransactionHistoryEvents();
 
   return isEventsLoading ? (
-    <Flex height="100%" alignItems="center" justifyContent="center">
+    <Center expand>
       <Spinner mx="auto" my="auto" />
-    </Flex>
+    </Center>
   ) : (
-    <Flex height="100%" flexDirection="column" overflowY="auto">
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      expand
+      overflowY="auto"
+    >
       <Heading size="md" mb={2}>
         Your Transaction History
       </Heading>
@@ -209,6 +264,6 @@ const TransactionHistory = () => {
           <Divider borderColor="#616161" my={1} />
         </Box>
       ))}
-    </Flex>
+    </Column>
   );
 };

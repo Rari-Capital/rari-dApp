@@ -11,6 +11,7 @@ import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useMinLockedViewHeight } from "../../hooks/useWindowSize";
 import { WideLogo } from "../shared/Logos";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
+import { Column, Center, Row } from "buttered-chakra";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,12 @@ const PreviewPortal = () => {
   const dashboardHeight = useMinLockedViewHeight(690, 0.85);
 
   return (
-    <Flex flexDirection="column" alignItems="flex-start" p={4} color="#FFFFFF">
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      p={4}
+      color="#FFFFFF"
+    >
       <WideLogo />
 
       <Flex
@@ -36,13 +42,14 @@ const PreviewPortal = () => {
         flexDirection={{ md: "row", xs: "column" }}
       >
         <FundStats />
-        <Flex
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
           pl={{ md: 4, xs: 0 }}
           pt={{ md: 0, xs: 4 }}
-          flexDirection="column"
           width={{ md: "80%", xs: "100%" }}
         >
-          <Stack spacing={4} h="100%">
+          <Stack spacing={4} h="100%" width="100%">
             <DashboardBox
               height={{ md: "90%", xs: "420px" }}
               p={2}
@@ -85,30 +92,32 @@ const PreviewPortal = () => {
               />
             </DashboardBox>
 
-            <Flex height="10%">
-              <Stack isInline={true} spacing={4} w="100%">
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              height="10%"
+            >
+              <Stack isInline={true} spacing={4} width="100%" height="100%">
                 <DashboardBox
                   as="button"
                   outline="none"
                   onClick={onRequestConnect}
                   width="57%"
                   height={{ md: "100%", xs: "70px" }}
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center"
                 >
-                  {loading ? (
-                    <Spinner />
-                  ) : (
-                    <Text
-                      textAlign="center"
-                      fontWeight="bold"
-                      fontSize={{ md: "xl", xs: "lg" }}
-                    >
-                      Connect Wallet
-                    </Text>
-                  )}
+                  <Center>
+                    {loading ? (
+                      <Spinner />
+                    ) : (
+                      <Text
+                        textAlign="center"
+                        fontWeight="bold"
+                        fontSize={{ md: "xl", xs: "lg" }}
+                      >
+                        Connect Wallet
+                      </Text>
+                    )}
+                  </Center>
                 </DashboardBox>
 
                 <DashboardBox
@@ -121,26 +130,24 @@ const PreviewPortal = () => {
                   }
                   width="43%"
                   height={{ md: "100%", xs: "70px" }}
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="center"
-                  alignItems="center"
                 >
-                  <Text
-                    fontWeight="bold"
-                    fontSize={{ md: "xl", xs: "lg" }}
-                    textAlign="center"
-                  >
-                    Get Wallet
-                  </Text>
+                  <Center>
+                    <Text
+                      fontWeight="bold"
+                      fontSize={{ md: "xl", xs: "lg" }}
+                      textAlign="center"
+                    >
+                      Get Wallet
+                    </Text>
+                  </Center>
                 </DashboardBox>
               </Stack>
-            </Flex>
+            </Row>
           </Stack>
-        </Flex>
+        </Column>
       </Flex>
       <CopyrightSpacer />
-    </Flex>
+    </Column>
   );
 };
 
