@@ -151,7 +151,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   );
 
   // If the address is still loading in, don't render children who rely on it.
-  if (value.isAuthed && address == null) {
+  if (value.isAuthed && address === null) {
     return <FullPageSpinner />;
   }
 
