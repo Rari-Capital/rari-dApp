@@ -14,7 +14,7 @@ import { useAuthedWeb3 } from "../../context/Web3Context";
 import DashboardBox from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 import { useContractMethod } from "../../hooks/useContractMethod";
-import { format1e18AsDollars } from "../../utils/1e18";
+
 import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
@@ -32,6 +32,7 @@ import {
 } from "buttered-chakra";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
+import { format1e18BigSourceAsUSD } from "../../utils/1e18";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -58,13 +59,14 @@ const UserPortal = () => {
     childSizePercentages: [0.2, 0.6, 0.2],
   });
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
-    "balanceOf" + address,
-    () =>
-      RariFundManager.methods
-        .balanceOf(address)
-        .call()
-        .then((result) => format1e18AsDollars(parseFloat(result)))
+  const {
+    isLoading: isBalanceLoading,
+    data: balanceData,
+  } = useContractMethod("balanceOf" + address, () =>
+    RariFundManager.methods
+      .balanceOf(address)
+      .call()
+      .then(format1e18BigSourceAsUSD)
   );
 
   const {
@@ -74,7 +76,7 @@ const UserPortal = () => {
     RariFundManager.methods
       .interestAccruedBy(address)
       .call()
-      .then((result) => format1e18AsDollars(parseFloat(result)))
+      .then(format1e18BigSourceAsUSD)
   );
 
   if (isBalanceLoading || isInterestLoading) {
@@ -320,7 +322,7 @@ const TransactionHistory = () => {
       {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
           <Text color="#6e6a6a" key={event.transactionHash}>
-            {event.event}: {format1e18AsDollars(event.returnValues.amount)}
+            {event.event}: {format1e18BigSourceAsUSD(event.returnValues.amount)}
             <b> ({event.timeSent})</b>
           </Text>
           {index !== events!.length - 1 ? (

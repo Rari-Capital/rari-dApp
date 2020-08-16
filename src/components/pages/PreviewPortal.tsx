@@ -5,7 +5,7 @@ import { useWeb3 } from "../../context/Web3Context";
 import { useContracts } from "../../context/ContractsContext";
 import Chart from "react-apexcharts";
 import { useContractMethod } from "../../hooks/useContractMethod";
-import { divBy1e18 } from "../../utils/1e18";
+import { format1e18BigSourceAsUSD } from "../../utils/1e18";
 import DashboardBox from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { WideLogo } from "../shared/Logos";
@@ -169,12 +169,7 @@ const FundStats = () => {
     RariFundManager.methods
       .getFundBalance()
       .call()
-      .then((result) =>
-        new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(divBy1e18(parseFloat(result)))
-      )
+      .then(format1e18BigSourceAsUSD)
   );
 
   return (

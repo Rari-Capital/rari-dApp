@@ -23,6 +23,7 @@
     "@walletconnect/web3-provider": "^1.1.0",
     "apexcharts": "^3.20.0",
     "authereum": "0.0.4-beta.164",
+    "big.js": "^5.2.2",
     "buttered-chakra": "^0.9.6",
     "cypress": "^4.12.1",
     "emotion-theming": "^10.0.27",
@@ -38,6 +39,7 @@
     "react-ios-pwa-prompt": "^1.8.0",
     "react-query": "^2.5.13",
     "react-scripts": "3.4.1",
+    "toformat": "^2.0.0",
     "typescript": "^3.9.7",
     "web3": "^1.2.11",
     "web3modal": "^1.9.0"
@@ -69,6 +71,7 @@
   },
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",
+    "@types/big.js": "^4.0.5",
     "typechain": "^2.0.0"
   }
 }
