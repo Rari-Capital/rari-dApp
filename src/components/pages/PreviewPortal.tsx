@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, Heading, Spinner } from "@chakra-ui/core";
+import React, { useState, useCallback } from "react";
+import { Text, Spinner } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
@@ -17,20 +17,21 @@ import {
   RowOnDesktopColumnOnMobile,
   useMinLockedViewHeight,
 } from "buttered-chakra";
+import CaptionedStat from "../shared/CaptionedStat";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
 
   const { login } = useWeb3();
 
-  const onRequestConnect = () => {
+  const dashboardHeight = useMinLockedViewHeight(690, 0.85);
+
+  const onRequestConnect = useCallback(() => {
     setLoading(true);
     login()
       .then(() => setLoading(false))
       .catch(() => setLoading(false));
-  };
-
-  const dashboardHeight = useMinLockedViewHeight(690, 0.85);
+  }, [setLoading, login]);
 
   return (
     <Column
@@ -166,11 +167,16 @@ const FundStats = () => {
   const {
     isLoading: isFundBalenceLoading,
     data: fundBalence,
-  } = useContractMethod(RariFundManager, "getFundBalance", (result: number) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(divBy1e18(result))
+  } = useContractMethod("getFundBalance", () =>
+    RariFundManager.methods
+      .getFundBalance()
+      .call()
+      .then((result) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(divBy1e18(parseFloat(result)))
+      )
   );
 
   return (
@@ -187,41 +193,31 @@ const FundStats = () => {
         mainAxisAlignment="space-around"
         crossAxisAlignment="center"
       >
-        <Column mainAxisAlignment="center" crossAxisAlignment="center" mb={4}>
-          <Heading textAlign="center">14.2%</Heading>
-          <Text
-            textTransform="uppercase"
-            textAlign="center"
-            letterSpacing="wide"
-            fontSize="xs"
-          >
-            Today's APY
-          </Text>
-        </Column>
-        <Column mainAxisAlignment="center" crossAxisAlignment="center" mb={4}>
-          <Heading textAlign="center">13.3%</Heading>
-          <Text
-            textTransform="uppercase"
-            textAlign="center"
-            letterSpacing="wide"
-            fontSize="xs"
-          >
-            Yearly APY
-          </Text>
-        </Column>
-        <Column mainAxisAlignment="center" crossAxisAlignment="center" mb={4}>
-          <Heading textAlign="center" size="lg">
-            {isFundBalenceLoading ? "$?" : fundBalence}
-          </Heading>
-          <Text
-            textTransform="uppercase"
-            textAlign="center"
-            letterSpacing="wide"
-            fontSize="xs"
-          >
-            Assets under management
-          </Text>
-        </Column>
+        <CaptionedStat
+          crossAxisAlignment="center"
+          caption="Today's APY"
+          captionSize="xs"
+          stat={"14.2%"}
+          statSize="xl"
+          captionFirst={false}
+        />
+        <CaptionedStat
+          crossAxisAlignment="center"
+          caption="Yearly APY"
+          captionSize="xs"
+          stat={"13.3%"}
+          statSize="xl"
+          captionFirst={false}
+        />
+
+        <CaptionedStat
+          crossAxisAlignment="center"
+          caption=" Assets under management"
+          captionSize="xs"
+          stat={isFundBalenceLoading ? "$?" : fundBalence!}
+          statSize="lg"
+          captionFirst={false}
+        />
       </Column>
     </DashboardBox>
   );

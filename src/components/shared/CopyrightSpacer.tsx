@@ -1,7 +1,7 @@
 import React from "react";
 import { Text } from "@chakra-ui/core";
 
-const CopyrightSpacer = () => {
+const CopyrightSpacer = React.memo(() => {
   return (
     <Text
       display={{ md: "none", xs: "block" }}
@@ -12,6 +12,6 @@ const CopyrightSpacer = () => {
       © {new Date().getFullYear()} Rari Capital. All rights reserved.
     </Text>
   );
-};
+});
 
 export default CopyrightSpacer;

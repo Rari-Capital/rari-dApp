@@ -4,7 +4,7 @@ import { Box, Image } from "@chakra-ui/core";
 import LargeLogo from "../../static/wide-logo.png";
 import Logo from "../../static/small-logo.png";
 
-export const WideLogo = () => {
+export const WideLogo = React.memo(() => {
   return (
     <Fade direction="down">
       <Box width="200px" height="53px" mb={4} flexShrink={0}>
@@ -12,9 +12,9 @@ export const WideLogo = () => {
       </Box>
     </Fade>
   );
-};
+});
 
-export const SmallLogo = () => {
+export const SmallLogo = React.memo(() => {
   return (
     <Flip>
       <Box width="37px" height="37px" flexShrink={0}>
@@ -22,4 +22,4 @@ export const SmallLogo = () => {
       </Box>
     </Flip>
   );
-};
+});

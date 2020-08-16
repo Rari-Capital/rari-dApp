@@ -3,9 +3,11 @@ import {
   Box,
   Text,
   Heading,
-  IconButton,
   Spinner,
   Divider,
+  Button,
+  Select,
+  CloseButton,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
@@ -17,7 +19,7 @@ import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
 import { SmallLogo } from "../shared/Logos";
-
+import Chart from "react-apexcharts";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import FullPageSpinner from "../shared/FullPageSpinner";
 import {
@@ -28,6 +30,8 @@ import {
   useSpacedLayout,
   RowOnDesktopColumnOnMobile,
 } from "buttered-chakra";
+import { FundReturnChartOptions } from "../../utils/chartOptions";
+import CaptionedStat from "../shared/CaptionedStat";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -51,21 +55,34 @@ const UserPortal = () => {
   } = useSpacedLayout({
     parentHeight: dashboardHeight,
     spacing: 15,
-    childSizePercentages: [0.2, 0.5, 0.3],
+    childSizePercentages: [0.2, 0.6, 0.2],
   });
 
-  const { isLoading: isBalanceLoading, data } = useContractMethod(
-    RariFundManager,
-    "balanceOf",
-    (result: number) => format1e18AsDollars(result),
-    address
+  const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
+    "balanceOf" + address,
+    () =>
+      RariFundManager.methods
+        .balanceOf(address)
+        .call()
+        .then((result) => format1e18AsDollars(parseFloat(result)))
   );
 
-  if (isBalanceLoading) {
+  const {
+    isLoading: isInterestLoading,
+    data: interestData,
+  } = useContractMethod("interestAccruedBy" + address, () =>
+    RariFundManager.methods
+      .interestAccruedBy(address)
+      .call()
+      .then((result) => format1e18AsDollars(parseFloat(result)))
+  );
+
+  if (isBalanceLoading || isInterestLoading) {
     return <FullPageSpinner />;
   }
 
-  const myBalance = data!;
+  const myBalance = balanceData!;
+  const myInterest = interestData!;
   const isFirstTime = myBalance === "$0.00";
 
   return (
@@ -84,14 +101,7 @@ const UserPortal = () => {
       >
         <SmallLogo />
 
-        <IconButton
-          variant="ghost"
-          variantColor="thisIsInvalidButItNeedsToBe"
-          aria-label="Logout"
-          fontSize="20px"
-          onClick={logout}
-          icon="arrow-right"
-        />
+        <CloseButton onClick={logout} />
       </Row>
 
       <Box height="1px" width="100%" bg="white" />
@@ -112,51 +122,96 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={mainSectionSpacing}
-            height={{ md: mainSectionChildSizes[0], xs: "80px" }}
+            height={{ md: mainSectionChildSizes[0], xs: "auto" }}
             overflowX="auto"
             whiteSpace="nowrap"
           >
-            <Row
+            <RowOnDesktopColumnOnMobile
               expand
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
+              p={4}
             >
               <Column
                 mainAxisAlignment="center"
-                crossAxisAlignment="flex-start"
+                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
                 height="100%"
-                pl={4}
+                mb={{ md: 0, xs: 4 }}
               >
-                <Heading fontSize={{ md: "2xl", xs: "sm" }}>
+                <Heading fontSize={{ md: "2xl", xs: "xl" }}>
                   Hello, {shortAddress(address)}!
                 </Heading>
                 <Text fontSize="xs">It's nice to see you!</Text>
               </Column>
 
-              <Column
-                mainAxisAlignment="center"
-                crossAxisAlignment="flex-end"
-                height="100%"
-                pr={4}
+              <Button
+                bg="#FFFFFF"
+                color="#000000"
+                height="51px"
+                width="200px"
+                fontSize="xl"
+                borderRadius="7px"
               >
-                <Text
-                  textTransform="uppercase"
-                  letterSpacing="wide"
-                  fontSize="xs"
-                >
-                  Account Balance
-                </Text>
-                <Heading size="md">{myBalance}</Heading>
-              </Column>
-            </Row>
+                Deposit
+              </Button>
+            </RowOnDesktopColumnOnMobile>
           </DashboardBox>
 
           <DashboardBox
             width="100%"
             mb={mainSectionSpacing}
             height={{ md: mainSectionChildSizes[1], xs: "400px" }}
+            p={2}
           >
-            chart here
+            <RowOnDesktopColumnOnMobile
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              px={4}
+              height="20%"
+              width="100%"
+            >
+              <CaptionedStat
+                crossAxisAlignment="flex-start"
+                caption="Account Balance"
+                captionSize="xs"
+                stat={myBalance}
+                statSize="xl"
+              />
+
+              <CaptionedStat
+                crossAxisAlignment="flex-start"
+                caption="Interest Earned"
+                captionSize="xs"
+                stat={myInterest}
+                statSize="xl"
+              />
+
+              <Select color="#000000" fontWeight="bold" ml={3} width="130px">
+                <option value="weekly">Weekly</option>
+                <option value="yearly">Yearly</option>
+                <option value="monthly">Montly</option>
+              </Select>
+            </RowOnDesktopColumnOnMobile>
+
+            <Box height="80%" color="#000000">
+              <Chart
+                options={FundReturnChartOptions}
+                type="line"
+                width="100%"
+                height="100%"
+                series={[
+                  {
+                    name: "Rari",
+                    data: [
+                      { x: "August 1, 2019", y: 54 },
+                      { x: "August 3, 2019", y: 47 },
+                      { x: "August 4, 2019", y: 64 },
+                      { x: "August 5, 2019", y: 95 },
+                    ],
+                  },
+                ]}
+              />
+            </Box>
           </DashboardBox>
 
           <RowOnDesktopColumnOnMobile
@@ -170,7 +225,8 @@ const UserPortal = () => {
               mb={{ md: 0, xs: 4 }}
               height={{ md: "100%", xs: "auto" }}
               width={{ md: "50%", xs: "100%" }}
-              p={4}
+              pt={4}
+              px={4}
             >
               <TransactionHistoryOrTokenAllocation isFirstTime={isFirstTime} />
             </DashboardBox>
@@ -257,13 +313,17 @@ const TransactionHistory = () => {
         Your Transaction History
       </Heading>
 
-      {events!.map((event) => (
-        <Box key={event.transactionHash}>
+      {events!.map((event, index) => (
+        <Box key={event.transactionHash} width="100%">
           <Text color="#6e6a6a" key={event.transactionHash}>
             {event.event}: {format1e18AsDollars(event.returnValues.amount)}
             <b> ({event.timeSent})</b>
           </Text>
-          <Divider borderColor="#616161" my={1} />
+          {index !== events!.length - 1 ? (
+            <Divider borderColor="#616161" my={1} />
+          ) : (
+            <Box height={4} />
+          )}
         </Box>
       ))}
     </Column>

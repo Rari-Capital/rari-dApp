@@ -43,6 +43,7 @@
     "web3modal": "^1.9.0"
   },
   "scripts": {
+    "postinstall": "typechain --target web3-v1 --outDir src/static/contracts/compiled 'src/static/contracts/*.json' ",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -65,5 +66,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@typechain/web3-v1": "^1.0.0",
+    "typechain": "^2.0.0"
   }
 }

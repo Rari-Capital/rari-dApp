@@ -2,7 +2,7 @@
 import React from "react";
 import { Spinner } from "@chakra-ui/core";
 
-const FullPageSpinner = () => {
+const FullPageSpinner = React.memo(() => {
   return (
     <Spinner
       data-testid="full-page-spinner"
@@ -20,6 +20,6 @@ const FullPageSpinner = () => {
       size="xl"
     />
   );
-};
+});
 
 export default FullPageSpinner;

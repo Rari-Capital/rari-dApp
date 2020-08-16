@@ -13,6 +13,8 @@
 /reports
 
 
+/src/static/contracts/compiled/*.d.ts
+
 # production
 /build
 
