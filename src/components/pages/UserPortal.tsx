@@ -138,10 +138,14 @@ const UserPortal = () => {
                 height="100%"
                 mb={{ md: 0, xs: 4 }}
               >
-                <Heading fontSize={{ md: "2xl", xs: "xl" }}>
+                <Heading fontSize={{ md: "3xl", xs: "xl" }}>
                   Hello, {shortAddress(address)}!
                 </Heading>
-                <Text fontSize="xs">It's nice to see you!</Text>
+                <Text fontSize="xs">
+                  {isFirstTime
+                    ? "It's nice to see you!"
+                    : "It's good to see you again."}
+                </Text>
               </Column>
 
               <Button
@@ -167,7 +171,7 @@ const UserPortal = () => {
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
               px={4}
-              height="20%"
+              height="17%"
               width="100%"
             >
               <CaptionedStat
@@ -175,7 +179,7 @@ const UserPortal = () => {
                 caption="Account Balance"
                 captionSize="xs"
                 stat={myBalance}
-                statSize="xl"
+                statSize="lg"
               />
 
               <CaptionedStat
@@ -183,7 +187,7 @@ const UserPortal = () => {
                 caption="Interest Earned"
                 captionSize="xs"
                 stat={myInterest}
-                statSize="xl"
+                statSize="lg"
               />
 
               <Select color="#000000" fontWeight="bold" ml={3} width="130px">
@@ -193,7 +197,7 @@ const UserPortal = () => {
               </Select>
             </RowOnDesktopColumnOnMobile>
 
-            <Box height="80%" color="#000000">
+            <Box height="83%" color="#000000">
               <Chart
                 options={FundReturnChartOptions}
                 type="line"
