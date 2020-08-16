@@ -28,9 +28,7 @@ const PreviewPortal = () => {
 
   const onRequestConnect = useCallback(() => {
     setLoading(true);
-    login()
-      .then(() => setLoading(false))
-      .catch(() => setLoading(false));
+    login().catch(() => setLoading(false));
   }, [setLoading, login]);
 
   return (

@@ -98,7 +98,13 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   }, [setWeb3Authed, setWeb3ModalProvider]);
 
   const logout = useCallback(() => {
-    setWeb3ModalProvider(null);
+    setWeb3ModalProvider((past: any) => {
+      // TODO:
+      // web3ModalProvider?.off("accountsChanged");
+      // web3ModalProvider?.off("chainChanged");
+
+      return null;
+    });
 
     setWeb3Authed(null);
 
@@ -124,16 +130,12 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
       web3ModalProvider.on("chainChanged", () => {
         refetch();
       });
-
-      web3ModalProvider.on("networkChanged", () => {
-        refetch();
-      });
     }
 
     return () => {
-      web3ModalProvider?.off("accountsChanged", () => {});
-      web3ModalProvider?.off("chainChanged", () => {});
-      web3ModalProvider?.off("networkChanged", () => {});
+      // TODO:
+      // web3ModalProvider?.off("accountsChanged");
+      // web3ModalProvider?.off("chainChanged");
     };
   }, [web3ModalProvider]);
 
