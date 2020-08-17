@@ -206,7 +206,7 @@ const UserPortal = () => {
             <RowOnDesktopColumnOnMobile
               mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
               crossAxisAlignment="center"
-              pt={DASHBOARD_BOX_SPACING.asPxString()}
+              pt={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
               px={DASHBOARD_BOX_SPACING.asPxString()}
               height={{ md: "20%", xs: "30%" }}
               width="100%"
