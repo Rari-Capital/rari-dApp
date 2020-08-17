@@ -275,7 +275,7 @@ const UserPortal = () => {
             <DashboardBox
               mr={{
                 md: DASHBOARD_BOX_SPACING.asPxString(),
-                xs: DASHBOARD_BOX_SPACING.asPxString(),
+                xs: 0,
               }}
               mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
               height={{ md: "100%", xs: "auto" }}

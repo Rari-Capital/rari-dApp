@@ -145,7 +145,7 @@ const PreviewPortal = () => {
               outline="none"
               onClick={onLogin}
               width="57%"
-              height={{ md: "100%", xs: "70px" }}
+              height="100%"
             >
               <Center>
                 {loading ? (
@@ -172,7 +172,7 @@ const PreviewPortal = () => {
                 )
               }
               width="43%"
-              height={{ md: "100%", xs: "70px" }}
+              height="100%"
             >
               <Center>
                 <Text
