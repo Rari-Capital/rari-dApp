@@ -38,7 +38,7 @@ export const FundReturnChartOptions = {
 
   yaxis: {
     labels: {
-      formatter: function (value: string) {
+      formatter: function(value: string) {
         return "$" + value;
       },
     },

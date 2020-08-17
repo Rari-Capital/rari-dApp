@@ -1,11 +1,10 @@
 import React from "react";
-import { Box } from "@chakra-ui/core";
+import { Box, BoxProps } from "@chakra-ui/core";
+import { PixelMeasurement } from "buttered-chakra";
 
-type Props = {
-  [props: string]: any;
-};
+export const DASHBOARD_BOX_SPACING = new PixelMeasurement(15);
 
-const DashboardBox = ({ children, ...props }: Props) => {
+const DashboardBox = ({ children, ...props }: BoxProps) => {
   return (
     <Box
       {...props}

@@ -66,6 +66,9 @@ const CaptionedStat = ({
             letterSpacing="wide"
             color="#858585"
             fontSize={captionSize}
+            textAlign={
+              crossAxisAlignment.toString().replace("flex-", "") as any
+            }
             {...captionProps}
           >
             {caption}

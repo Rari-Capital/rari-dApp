@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
-import DashboardBox from "../shared/DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 import { useContractMethod } from "../../hooks/useContractMethod";
 
@@ -26,9 +26,11 @@ import {
   Column,
   Row,
   Center,
-  useMinLockedViewHeight,
+  useMinLockedWindowHeight,
   useSpacedLayout,
   RowOnDesktopColumnOnMobile,
+  PercentageSize,
+  PixelSize,
 } from "buttered-chakra";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
@@ -39,24 +41,48 @@ const UserPortal = () => {
 
   const { RariFundManager } = useContracts();
 
-  const dashboardHeight = useMinLockedViewHeight(670, 0.9);
+  const { windowHeight, isLocked } = useMinLockedWindowHeight(700);
+
+  const {
+    spacing: headerAndBodySpacing,
+    childSizes: [headerSize, bodySize],
+  } = useSpacedLayout({
+    parentHeight: windowHeight.asNumber(),
+    spacing: DASHBOARD_BOX_SPACING.asNumber(),
+    childSizes: [
+      new PixelSize(60),
+      new PercentageSize(1),
+      // We have a 0 sized child here because it will now lower the size of the "100%" child
+      // by accouting for padding below it, which is 15.
+      new PixelSize(0),
+    ],
+  });
 
   const {
     spacing: statsSidebarSpacing,
     childSizes: statsSidebarChildSizes,
   } = useSpacedLayout({
-    parentHeight: dashboardHeight,
-    spacing: 15,
-    childSizePercentages: [0.2, 0.25, 0.25, 0.3],
+    parentHeight: bodySize.asNumber(),
+    spacing: DASHBOARD_BOX_SPACING.asNumber(),
+    childSizes: [
+      new PixelSize(130),
+      new PercentageSize(0.25),
+      new PercentageSize(0.25),
+      new PercentageSize(0.5),
+    ],
   });
 
   const {
     spacing: mainSectionSpacing,
     childSizes: mainSectionChildSizes,
   } = useSpacedLayout({
-    parentHeight: dashboardHeight,
-    spacing: 15,
-    childSizePercentages: [0.2, 0.6, 0.2],
+    parentHeight: bodySize.asNumber(),
+    spacing: DASHBOARD_BOX_SPACING.asNumber(),
+    childSizes: [
+      new PixelSize(130),
+      new PercentageSize(0.6),
+      new PercentageSize(0.4),
+    ],
   });
 
   const {
@@ -93,27 +119,35 @@ const UserPortal = () => {
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
     >
-      <Row
-        py={3}
-        px={6}
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        overflowX="auto"
+      <Column
+        height={headerSize.asPxString()}
         width="100%"
+        mb={headerAndBodySpacing.asPxString()}
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
       >
-        <SmallLogo />
+        <Row
+          py={3}
+          px={6}
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          overflowX="auto"
+          width="100%"
+        >
+          <SmallLogo />
 
-        <CloseButton onClick={logout} />
-      </Row>
+          <CloseButton onClick={logout} />
+        </Row>
 
-      <Box height="1px" width="100%" bg="white" />
+        <Box height="1px" width="100%" bg="white" />
+      </Column>
 
       <RowOnDesktopColumnOnMobile
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         width="100%"
-        height={{ md: dashboardHeight + "px", xs: "auto" }}
-        p={4}
+        px={DASHBOARD_BOX_SPACING.asPxString()}
+        height={{ md: bodySize.asPxString(), xs: "auto" }}
       >
         <Column
           mainAxisAlignment="flex-start"
@@ -123,8 +157,8 @@ const UserPortal = () => {
         >
           <DashboardBox
             width="100%"
-            mb={mainSectionSpacing}
-            height={{ md: mainSectionChildSizes[0], xs: "auto" }}
+            mb={mainSectionSpacing.asPxString()}
+            height={{ md: mainSectionChildSizes[0].asPxString(), xs: "auto" }}
             overflowX="auto"
             whiteSpace="nowrap"
           >
@@ -132,13 +166,13 @@ const UserPortal = () => {
               expand
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
-              p={4}
+              p={DASHBOARD_BOX_SPACING.asPxString()}
             >
               <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment={{ md: "flex-start", xs: "center" }}
                 height="100%"
-                mb={{ md: 0, xs: 4 }}
+                mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
               >
                 <Heading fontSize={{ md: "3xl", xs: "xl" }}>
                   Hello, {shortAddress(address)}!
@@ -165,41 +199,53 @@ const UserPortal = () => {
 
           <DashboardBox
             width="100%"
-            mb={mainSectionSpacing}
-            height={{ md: mainSectionChildSizes[1], xs: "400px" }}
+            mb={mainSectionSpacing.asPxString()}
+            height={{ md: mainSectionChildSizes[1].asPxString(), xs: "600px" }}
             p={2}
           >
             <RowOnDesktopColumnOnMobile
-              mainAxisAlignment="space-between"
+              mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
               crossAxisAlignment="center"
-              px={4}
-              height="17%"
+              pt={DASHBOARD_BOX_SPACING.asPxString()}
+              px={DASHBOARD_BOX_SPACING.asPxString()}
+              height={{ md: "20%", xs: "30%" }}
               width="100%"
             >
               <CaptionedStat
-                crossAxisAlignment="flex-start"
+                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
                 caption="Account Balance"
                 captionSize="xs"
                 stat={myBalance}
                 statSize="lg"
+                columnProps={{
+                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+                }}
               />
 
               <CaptionedStat
-                crossAxisAlignment="flex-start"
+                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
                 caption="Interest Earned"
                 captionSize="xs"
                 stat={myInterest}
                 statSize="lg"
+                columnProps={{
+                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+                }}
               />
 
-              <Select color="#000000" fontWeight="bold" ml={3} width="130px">
+              <Select
+                color="#000000"
+                fontWeight="bold"
+                ml={{ md: 3, xs: 0 }}
+                width={{ md: "130px", xs: "100%" }}
+              >
                 <option value="weekly">Weekly</option>
                 <option value="yearly">Yearly</option>
                 <option value="monthly">Montly</option>
               </Select>
             </RowOnDesktopColumnOnMobile>
 
-            <Box height="83%" color="#000000">
+            <Box height={{ md: "80%", xs: "70%" }} color="#000000">
               <Chart
                 options={FundReturnChartOptions}
                 type="line"
@@ -223,16 +269,19 @@ const UserPortal = () => {
           <RowOnDesktopColumnOnMobile
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            height={{ md: mainSectionChildSizes[2], xs: "auto" }}
+            height={{ md: mainSectionChildSizes[2].asPxString(), xs: "auto" }}
             width="100%"
           >
             <DashboardBox
-              mr={{ md: 4, xs: 0 }}
-              mb={{ md: 0, xs: 4 }}
+              mr={{
+                md: DASHBOARD_BOX_SPACING.asPxString(),
+                xs: DASHBOARD_BOX_SPACING.asPxString(),
+              }}
+              mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
               height={{ md: "100%", xs: "auto" }}
               width={{ md: "50%", xs: "100%" }}
-              pt={4}
-              px={4}
+              pt={DASHBOARD_BOX_SPACING.asPxString()}
+              px={DASHBOARD_BOX_SPACING.asPxString()}
             >
               <TransactionHistoryOrTokenAllocation isFirstTime={isFirstTime} />
             </DashboardBox>
@@ -250,40 +299,40 @@ const UserPortal = () => {
           crossAxisAlignment="center"
           height={{ md: "100%", xs: "auto" }}
           width={{ md: "25%", xs: "100%" }}
-          pt={{ md: 0, xs: 4 }}
-          pl={{ md: 4, xs: 0 }}
+          pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+          pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
         >
           <DashboardBox
             width="100%"
-            mb={statsSidebarSpacing}
-            height={{ md: statsSidebarChildSizes[0], xs: "80px" }}
+            mb={statsSidebarSpacing.asPxString()}
+            height={{ md: statsSidebarChildSizes[0].asPxString(), xs: "80px" }}
           >
             Today's APY
           </DashboardBox>
           <DashboardBox
             width="100%"
-            mb={statsSidebarSpacing}
-            height={{ md: statsSidebarChildSizes[1], xs: "300px" }}
+            mb={statsSidebarSpacing.asPxString()}
+            height={{ md: statsSidebarChildSizes[1].asPxString(), xs: "300px" }}
           >
             APY Stats
           </DashboardBox>
           <DashboardBox
             width="100%"
-            mb={statsSidebarSpacing}
-            height={{ md: statsSidebarChildSizes[2], xs: "300px" }}
+            mb={statsSidebarSpacing.asPxString()}
+            height={{ md: statsSidebarChildSizes[2].asPxString(), xs: "300px" }}
           >
             Current Allocation
           </DashboardBox>
           <DashboardBox
             width="100%"
-            height={{ md: statsSidebarChildSizes[3], xs: "300px" }}
+            height={{ md: statsSidebarChildSizes[3].asPxString(), xs: "300px" }}
           >
             Monthly Returns
           </DashboardBox>
         </Column>
       </RowOnDesktopColumnOnMobile>
 
-      <CopyrightSpacer />
+      <CopyrightSpacer forceShow={isLocked} />
     </Column>
   );
 };
@@ -328,7 +377,7 @@ const TransactionHistory = () => {
           {index !== events!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />
           ) : (
-            <Box height={4} />
+            <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
           )}
         </Box>
       ))}

@@ -6,7 +6,7 @@ import { useContracts } from "../../context/ContractsContext";
 import Chart from "react-apexcharts";
 import { useContractMethod } from "../../hooks/useContractMethod";
 import { format1e18BigSourceAsUSD } from "../../utils/1e18";
-import DashboardBox from "../shared/DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { WideLogo } from "../shared/Logos";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
@@ -15,7 +15,10 @@ import {
   Center,
   Row,
   RowOnDesktopColumnOnMobile,
-  useMinLockedViewHeight,
+  useMinLockedWindowHeight,
+  useSpacedLayout,
+  PixelSize,
+  PercentageSize,
 } from "buttered-chakra";
 import CaptionedStat from "../shared/CaptionedStat";
 
@@ -24,9 +27,33 @@ const PreviewPortal = () => {
 
   const { login } = useWeb3();
 
-  const dashboardHeight = useMinLockedViewHeight(690, 0.85);
+  const { windowHeight, isLocked } = useMinLockedWindowHeight(650);
 
-  const onRequestConnect = useCallback(() => {
+  const {
+    spacing: headerAndBodySpacing,
+    childSizes: [headerSize, bodySize],
+  } = useSpacedLayout({
+    parentHeight: windowHeight.asNumber(),
+    spacing: DASHBOARD_BOX_SPACING.asNumber(),
+    childSizes: [
+      new PixelSize(65),
+      new PercentageSize(1),
+      // We have a 0 sized child here because it will now lower the size of the "100%" child
+      // by accouting for padding below it, which is 15.
+      new PixelSize(0),
+    ],
+  });
+
+  const {
+    spacing: mainSectionSpacing,
+    childSizes: [chartSize, buttonsSize],
+  } = useSpacedLayout({
+    parentHeight: bodySize.asNumber(),
+    spacing: DASHBOARD_BOX_SPACING.asNumber(),
+    childSizes: [new PercentageSize(1.0), new PixelSize(55)],
+  });
+
+  const onLogin = useCallback(() => {
     setLoading(true);
     login().catch(() => setLoading(false));
   }, [setLoading, login]);
@@ -35,14 +62,22 @@ const PreviewPortal = () => {
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      p={4}
       color="#FFFFFF"
+      px={DASHBOARD_BOX_SPACING.asPxString()}
     >
-      <WideLogo />
+      <Column
+        height={headerSize.asPxString()}
+        width="100%"
+        mb={headerAndBodySpacing.asPxString()}
+        mainAxisAlignment="flex-end"
+        crossAxisAlignment="flex-start"
+      >
+        <WideLogo />
+      </Column>
 
       <RowOnDesktopColumnOnMobile
         width="100%"
-        height={{ md: dashboardHeight + "px", xs: "auto" }}
+        height={{ md: bodySize.asPxString(), xs: "auto" }}
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
       >
@@ -50,13 +85,13 @@ const PreviewPortal = () => {
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
-          pl={{ md: 4, xs: 0 }}
-          pt={{ md: 0, xs: 4 }}
+          pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
+          pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
           width={{ md: "80%", xs: "100%" }}
           height="100%"
         >
           <DashboardBox
-            height={{ md: "90%", xs: "420px" }}
+            height={{ md: chartSize.asPxString(), xs: "420px" }}
             width="100%"
             p={2}
             color="#292828"
@@ -99,16 +134,16 @@ const PreviewPortal = () => {
           </DashboardBox>
 
           <Row
-            mt={4}
+            mt={mainSectionSpacing.asPxString()}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            height="10%"
+            height={buttonsSize.asPxString()}
             width="100%"
           >
             <DashboardBox
               as="button"
               outline="none"
-              onClick={onRequestConnect}
+              onClick={onLogin}
               width="57%"
               height={{ md: "100%", xs: "70px" }}
             >
@@ -128,7 +163,7 @@ const PreviewPortal = () => {
             </DashboardBox>
 
             <DashboardBox
-              ml={4}
+              ml={DASHBOARD_BOX_SPACING.asPxString()}
               as="button"
               outline="none"
               onClick={() =>
@@ -152,7 +187,7 @@ const PreviewPortal = () => {
           </Row>
         </Column>
       </RowOnDesktopColumnOnMobile>
-      <CopyrightSpacer />
+      <CopyrightSpacer forceShow={isLocked} />
     </Column>
   );
 };
@@ -179,7 +214,7 @@ const FundStats = () => {
         md: "20%",
         xs: "100%",
       }}
-      p={4}
+      p={DASHBOARD_BOX_SPACING.asPxString()}
     >
       <Column
         expand

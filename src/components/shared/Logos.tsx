@@ -6,9 +6,9 @@ import Logo from "../../static/small-logo.png";
 
 export const WideLogo = React.memo(() => {
   return (
-    <Fade direction="down">
-      <Box width="200px" height="53px" mb={4} flexShrink={0}>
-        <Image width="200px" height="53px" alt="Logo" src={LargeLogo} />
+    <Fade direction="down" delay={200}>
+      <Box width="200px" height="53px" flexShrink={0}>
+        <Image width="200px" height="53px" alt="" src={LargeLogo} />
       </Box>
     </Fade>
   );
@@ -16,9 +16,9 @@ export const WideLogo = React.memo(() => {
 
 export const SmallLogo = React.memo(() => {
   return (
-    <Flip>
+    <Flip delay={200}>
       <Box width="37px" height="37px" flexShrink={0}>
-        <Image alt="Logo" width="37px" height="37px" src={Logo} />
+        <Image alt="" width="37px" height="37px" src={Logo} />
       </Box>
     </Flip>
   );
