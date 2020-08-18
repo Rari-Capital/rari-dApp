@@ -64,7 +64,7 @@ const PreviewPortal = () => {
       mainAxisAlignment="center"
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
-      px={DASHBOARD_BOX_SPACING.asPxString()}
+      px={{ md: "5vw", xs: DASHBOARD_BOX_SPACING.asPxString() }}
     >
       <Column
         height={headerSize.asPxString()}
