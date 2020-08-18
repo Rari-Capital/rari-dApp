@@ -83,25 +83,35 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
+  const setWeb3AuthedAndAddressFromModal = useCallback(
+    (modalProvider) => {
+      let authedProvider = new Web3(modalProvider);
+
+      setWeb3Authed(authedProvider);
+
+      authedProvider.eth
+        .getAccounts()
+        .then((addresses) => setAddress(addresses[0]));
+    },
+    [setWeb3Authed, setAddress]
+  );
+
   const login = useCallback(async () => {
     const provider = await launchModalLazy();
 
     setWeb3ModalProvider(provider);
 
-    let authedProvider = new Web3(provider);
+    setWeb3AuthedAndAddressFromModal(provider);
+  }, [setWeb3ModalProvider, setWeb3AuthedAndAddressFromModal]);
 
-    setWeb3Authed(authedProvider);
-
-    authedProvider.eth
-      .getAccounts()
-      .then((addresses) => setAddress(addresses[0]));
-  }, [setWeb3Authed, setWeb3ModalProvider]);
+  const refetchAccountData = useCallback(() => {
+    setWeb3AuthedAndAddressFromModal(web3ModalProvider);
+  }, [setWeb3AuthedAndAddressFromModal, web3ModalProvider]);
 
   const logout = useCallback(() => {
     setWeb3ModalProvider((past: any) => {
-      // TODO:
-      // web3ModalProvider?.off("accountsChanged");
-      // web3ModalProvider?.off("chainChanged");
+      past?.off("accountsChanged", refetchAccountData);
+      past?.off("chainChanged", refetchAccountData);
 
       return null;
     });
@@ -109,35 +119,19 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     setWeb3Authed(null);
 
     setAddress(null);
-  }, [setWeb3Authed, setWeb3ModalProvider]);
+  }, [setWeb3Authed, setWeb3ModalProvider, refetchAccountData]);
 
   useEffect(() => {
     if (web3ModalProvider != null) {
-      let refetch = () => {
-        let authedProvider = new Web3(web3ModalProvider);
-
-        setWeb3Authed(authedProvider);
-
-        authedProvider.eth
-          .getAccounts()
-          .then((addresses) => setAddress(addresses[0]));
-      };
-
-      web3ModalProvider.on("accountsChanged", () => {
-        refetch();
-      });
-
-      web3ModalProvider.on("chainChanged", () => {
-        refetch();
-      });
+      web3ModalProvider.on("accountsChanged", refetchAccountData);
+      web3ModalProvider.on("chainChanged", refetchAccountData);
     }
 
     return () => {
-      // TODO:
-      // web3ModalProvider?.off("accountsChanged");
-      // web3ModalProvider?.off("chainChanged");
+      web3ModalProvider?.off("accountsChanged", refetchAccountData);
+      web3ModalProvider?.off("chainChanged", refetchAccountData);
     };
-  }, [web3ModalProvider]);
+  }, [web3ModalProvider, refetchAccountData]);
 
   let value = useMemo(
     () => ({

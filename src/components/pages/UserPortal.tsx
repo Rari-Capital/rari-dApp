@@ -85,14 +85,13 @@ const UserPortal = () => {
     ],
   });
 
-  const {
-    isLoading: isBalanceLoading,
-    data: balanceData,
-  } = useContractMethod("balanceOf" + address, () =>
-    RariFundManager.methods
-      .balanceOf(address)
-      .call()
-      .then(format1e18BigSourceAsUSD)
+  const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
+    "balanceOf" + address,
+    () =>
+      RariFundManager.methods
+        .balanceOf(address)
+        .call()
+        .then(format1e18BigSourceAsUSD)
   );
 
   const {
@@ -131,7 +130,7 @@ const UserPortal = () => {
           px={6}
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
-          overflowX="hidden"
+          overflowX="visible"
           overflowY="visible"
           width="100%"
         >
