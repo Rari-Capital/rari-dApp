@@ -164,27 +164,20 @@ export function useWeb3() {
   return context;
 }
 
-export interface Web3AuthedContextData {
-  web3: Web3;
-  address: string;
-}
-
 export function useAuthedWeb3() {
   const { isAuthed, web3Authed, logout, address: addressOrNull } = useWeb3();
+
+  if (!isAuthed) {
+    throw new Error(`Used useAuthedWeb3 while not authenticated!`);
+  }
 
   let web3 = web3Authed!;
 
   let address = addressOrNull!;
 
-  const value = {
+  return {
     web3,
     address,
     logout,
   };
-
-  if (isAuthed) {
-    return value;
-  } else {
-    throw new Error(`Used useAuthedWeb3 while not authenticated!`);
-  }
 }
