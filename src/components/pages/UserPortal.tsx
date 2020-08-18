@@ -201,69 +201,12 @@ const UserPortal = () => {
             width="100%"
             mb={mainSectionSpacing.asPxString()}
             height={{ md: mainSectionChildSizes[1].asPxString(), xs: "600px" }}
-            p={2}
           >
-            <RowOnDesktopColumnOnMobile
-              mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
-              crossAxisAlignment="center"
-              pt={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
-              px={DASHBOARD_BOX_SPACING.asPxString()}
-              height={{ md: "20%", xs: "30%" }}
-              width="100%"
-            >
-              <CaptionedStat
-                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-                caption="Account Balance"
-                captionSize="xs"
-                stat={myBalance}
-                statSize="lg"
-                columnProps={{
-                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-                }}
-              />
-
-              <CaptionedStat
-                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-                caption="Interest Earned"
-                captionSize="xs"
-                stat={myInterest}
-                statSize="lg"
-                columnProps={{
-                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-                }}
-              />
-
-              <Select
-                color="#000000"
-                fontWeight="bold"
-                ml={{ md: 3, xs: 0 }}
-                width={{ md: "130px", xs: "100%" }}
-              >
-                <option value="weekly">Weekly</option>
-                <option value="yearly">Yearly</option>
-                <option value="monthly">Montly</option>
-              </Select>
-            </RowOnDesktopColumnOnMobile>
-
-            <Box height={{ md: "80%", xs: "70%" }} color="#000000">
-              <Chart
-                options={FundReturnChartOptions}
-                type="line"
-                width="100%"
-                height="100%"
-                series={[
-                  {
-                    name: "Rari",
-                    data: [
-                      { x: "August 1, 2019", y: 54 },
-                      { x: "August 3, 2019", y: 47 },
-                      { x: "August 4, 2019", y: 64 },
-                      { x: "August 5, 2019", y: 95 },
-                    ],
-                  },
-                ]}
-              />
-            </Box>
+            <UserStatsAndChart
+              size={mainSectionChildSizes[1].asNumber()}
+              balance={myBalance}
+              interestEarned={myInterest}
+            />
           </DashboardBox>
 
           <RowOnDesktopColumnOnMobile
@@ -338,6 +281,90 @@ const UserPortal = () => {
 };
 
 export default UserPortal;
+
+const UserStatsAndChart = ({
+  size,
+  balance,
+  interestEarned,
+}: {
+  size: number;
+  balance: string;
+  interestEarned: string;
+}) => {
+  const {
+    childSizes: [statsSize, chartSize],
+  } = useSpacedLayout({
+    parentHeight: size,
+    spacing: 0,
+    childSizes: [new PixelSize(75), new PercentageSize(1), new PixelSize(10)],
+  });
+
+  return (
+    <>
+      <RowOnDesktopColumnOnMobile
+        mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
+        crossAxisAlignment="center"
+        px={DASHBOARD_BOX_SPACING.asPxString()}
+        height={{ md: statsSize.asPxString(), xs: "30%" }}
+        width="100%"
+      >
+        <CaptionedStat
+          crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+          caption="Account Balance"
+          captionSize="xs"
+          stat={balance}
+          statSize="lg"
+          columnProps={{
+            mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+            mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+          }}
+        />
+
+        <CaptionedStat
+          crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+          caption="Interest Earned"
+          captionSize="xs"
+          stat={interestEarned}
+          statSize="lg"
+          columnProps={{
+            mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+          }}
+        />
+
+        <Select
+          color="#000000"
+          fontWeight="bold"
+          width={{ md: "130px", xs: "100%" }}
+          mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+        >
+          <option value="weekly">Weekly</option>
+          <option value="yearly">Yearly</option>
+          <option value="monthly">Montly</option>
+        </Select>
+      </RowOnDesktopColumnOnMobile>
+
+      <Box height={{ md: chartSize.asPxString(), xs: "69%" }} color="#000000">
+        <Chart
+          options={FundReturnChartOptions}
+          type="line"
+          width="100%"
+          height="100%"
+          series={[
+            {
+              name: "Rari",
+              data: [
+                { x: "August 1, 2019", y: 54 },
+                { x: "August 3, 2019", y: 47 },
+                { x: "August 4, 2019", y: 64 },
+                { x: "August 5, 2019", y: 95 },
+              ],
+            },
+          ]}
+        />
+      </Box>
+    </>
+  );
+};
 
 const TransactionHistoryOrTokenAllocation = ({
   isFirstTime,

@@ -30,6 +30,7 @@ export const ChartOptions = {
   legend: {
     position: "top",
     horizontalAlign: "left",
+    showForSingleSeries: true,
   },
 };
 
