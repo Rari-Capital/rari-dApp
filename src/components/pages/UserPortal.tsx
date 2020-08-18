@@ -191,6 +191,7 @@ const UserPortal = () => {
                 width="200px"
                 fontSize="xl"
                 borderRadius="7px"
+                fontWeight="bold"
               >
                 Deposit
               </Button>
