@@ -88,7 +88,7 @@ const PreviewPortal = () => {
           crossAxisAlignment="flex-start"
           pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
           pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-          width={{ md: "80%", xs: "100%" }}
+          width={{ md: "75%", xs: "100%" }}
           height="100%"
         >
           <DashboardBox
@@ -212,7 +212,7 @@ const FundStats = () => {
     <DashboardBox
       height="100%"
       width={{
-        md: "20%",
+        md: "25%",
         xs: "100%",
       }}
       p={DASHBOARD_BOX_SPACING.asPxString()}
