@@ -123,15 +123,16 @@ const UserPortal = () => {
         height={headerSize.asPxString()}
         width="100%"
         mb={headerAndBodySpacing.asPxString()}
-        mainAxisAlignment="flex-start"
+        mainAxisAlignment="space-between"
         crossAxisAlignment="flex-start"
       >
         <Row
-          py={3}
+          mt={3}
           px={6}
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
-          overflowX="auto"
+          overflowX="hidden"
+          overflowY="visible"
           width="100%"
         >
           <SmallLogo />
@@ -339,8 +340,8 @@ const UserStatsAndChart = ({
           mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
         >
           <option value="weekly">Weekly</option>
-          <option value="yearly">Yearly</option>
-          <option value="monthly">Montly</option>
+          <option value="monthly">Monthly</option>
+          <option value="ytd">Year-To-Date</option>
         </Select>
       </RowOnDesktopColumnOnMobile>
 
