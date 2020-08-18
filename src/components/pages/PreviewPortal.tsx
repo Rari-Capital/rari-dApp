@@ -37,7 +37,7 @@ const PreviewPortal = () => {
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
       new PixelSize(65),
-      new PercentageSize(1),
+      new PercentageSize(0.7),
       // We have a 0 sized child here because it will now lower the size of the "100%" child
       // by accouting for padding below it, which is 15.
       new PixelSize(0),
@@ -60,7 +60,8 @@ const PreviewPortal = () => {
 
   return (
     <Column
-      mainAxisAlignment="flex-start"
+      height={isLocked ? "100%" : { md: "100vh", xs: "100%" }}
+      mainAxisAlignment="center"
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
       px={DASHBOARD_BOX_SPACING.asPxString()}
