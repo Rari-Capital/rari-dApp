@@ -344,7 +344,11 @@ const UserStatsAndChart = ({
         </Select>
       </RowOnDesktopColumnOnMobile>
 
-      <Box height={{ md: chartSize.asPxString(), xs: "69%" }} color="#000000">
+      <Box
+        px={1}
+        height={{ md: chartSize.asPxString(), xs: "69%" }}
+        color="#000000"
+      >
         <Chart
           options={FundReturnChartOptions}
           type="line"
