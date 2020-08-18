@@ -4,8 +4,22 @@ export const ChartOptions = {
     animations: {
       enabled: false,
     },
+
+    dropShadow: {
+      // This looks nice, try it!
+      enabled: false,
+    },
+
     toolbar: {
       show: false,
+    },
+
+    selection: {
+      enabled: false,
+    },
+
+    zoom: {
+      enabled: false,
     },
   },
 
@@ -43,5 +57,13 @@ export const FundReturnChartOptions = {
         return "$" + value;
       },
     },
+  },
+};
+
+export const DisabledFundReturnChartOptions = {
+  ...FundReturnChartOptions,
+
+  tooltip: {
+    enabled: false,
   },
 };
