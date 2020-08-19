@@ -35,6 +35,7 @@ import {
 import { FundReturnChartOptions } from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
 import { format1e18BigSourceAsUSD } from "../../utils/1e18";
+import ProgressBar from "../shared/ProgressBar";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -78,11 +79,7 @@ const UserPortal = () => {
   } = useSpacedLayout({
     parentHeight: bodySize.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [
-      new PixelSize(130),
-      new PercentageSize(0.6),
-      new PercentageSize(0.4),
-    ],
+    childSizes: [new PixelSize(130), new PercentageSize(1), new PixelSize(180)],
   });
 
   const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
@@ -224,7 +221,7 @@ const UserPortal = () => {
               mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
               height={{ md: "100%", xs: "auto" }}
               width={{ md: "50%", xs: "100%" }}
-              pt={DASHBOARD_BOX_SPACING.asPxString()}
+              pt={"12px"}
               px={DASHBOARD_BOX_SPACING.asPxString()}
             >
               <TransactionHistoryOrTokenAllocation isFirstTime={isFirstTime} />
@@ -376,7 +373,36 @@ const TransactionHistoryOrTokenAllocation = ({
 }: {
   isFirstTime: boolean;
 }) => {
-  return isFirstTime ? <Text>You have no RFT.</Text> : <TransactionHistory />;
+  return isFirstTime ? <TokenAllocation /> : <TransactionHistory />;
+};
+
+const TokenAllocation = () => {
+  const allocations = { DAI: 0.4, USDC: 0.3, USDT: 0.2, TUSD: 0.1 };
+
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      expand
+      overflowY="hidden"
+    >
+      <Heading size="md">Token Allocation</Heading>
+
+      {Object.entries(allocations).map(([key, value]) => {
+        return (
+          <Column
+            width="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            mb={2}
+          >
+            <Text fontSize={10}>{key}</Text>
+            <ProgressBar key={key} percentageFilled={value} />
+          </Column>
+        );
+      })}
+    </Column>
+  );
 };
 
 const TransactionHistory = () => {
@@ -387,7 +413,7 @@ const TransactionHistory = () => {
 
   return isEventsLoading ? (
     <Center expand>
-      <Spinner mx="auto" my="auto" />
+      <Spinner />
     </Center>
   ) : (
     <Column
