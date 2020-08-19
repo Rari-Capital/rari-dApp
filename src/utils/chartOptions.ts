@@ -89,6 +89,12 @@ export const StrategyAllocationChartOptions = {
     },
   },
 
+  dataLabels: {
+    dropShadow: {
+      enabled: false,
+    },
+  },
+
   stroke: {
     show: false,
   },
