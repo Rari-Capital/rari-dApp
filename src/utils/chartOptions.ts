@@ -89,6 +89,15 @@ export const StrategyAllocationChartOptions = {
     },
   },
 
+  states: {
+    hover: {
+      filter: {
+        type: "none",
+        value: 0,
+      },
+    },
+  },
+
   dataLabels: {
     dropShadow: {
       enabled: false,
