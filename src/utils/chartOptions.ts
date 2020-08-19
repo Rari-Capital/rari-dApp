@@ -1,4 +1,4 @@
-export const ChartOptions = {
+export const LineChartOptions = {
   chart: {
     foreColor: "#a19f9f",
     animations: {
@@ -49,7 +49,7 @@ export const ChartOptions = {
 };
 
 export const FundReturnChartOptions = {
-  ...ChartOptions,
+  ...LineChartOptions,
 
   yaxis: {
     labels: {
@@ -66,4 +66,34 @@ export const DisabledFundReturnChartOptions = {
   tooltip: {
     enabled: false,
   },
+};
+
+export const StrategyAllocationChartOptions = {
+  chart: {
+    foreColor: "#a19f9f",
+    animations: {
+      enabled: false,
+    },
+
+    toolbar: {
+      show: false,
+    },
+  },
+
+  plotOptions: {
+    pie: {
+      expandOnClick: false,
+      dataLabels: {
+        offset: -15,
+      },
+    },
+  },
+
+  stroke: {
+    show: false,
+  },
+
+  colors: ["#4D4D4D", "#aba7a7"],
+
+  labels: ["Compound", "dYdX"],
 };

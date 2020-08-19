@@ -32,7 +32,10 @@ import {
   PercentageSize,
   PixelSize,
 } from "buttered-chakra";
-import { FundReturnChartOptions } from "../../utils/chartOptions";
+import {
+  FundReturnChartOptions,
+  StrategyAllocationChartOptions,
+} from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
 import { format1e18BigSourceAsUSD } from "../../utils/1e18";
 import ProgressBar from "../shared/ProgressBar";
@@ -66,9 +69,9 @@ const UserPortal = () => {
     parentHeight: bodySize.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
-      new PixelSize(130),
-      new PercentageSize(0.25),
-      new PercentageSize(0.25),
+      new PixelSize(100),
+      new PixelSize(172),
+      new PercentageSize(0.5),
       new PercentageSize(0.5),
     ],
   });
@@ -79,7 +82,7 @@ const UserPortal = () => {
   } = useSpacedLayout({
     parentHeight: bodySize.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [new PixelSize(130), new PercentageSize(1), new PixelSize(180)],
+    childSizes: [new PixelSize(100), new PercentageSize(1), new PixelSize(180)],
   });
 
   const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
@@ -150,7 +153,7 @@ const UserPortal = () => {
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           height={{ md: "100%", xs: "auto" }}
-          width={{ md: "75%", xs: "100%" }}
+          width={{ md: "100%", xs: "100%" }}
         >
           <DashboardBox
             width="100%"
@@ -171,7 +174,7 @@ const UserPortal = () => {
                 height="100%"
                 mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
               >
-                <Heading fontSize={{ md: "3xl", xs: "xl" }}>
+                <Heading fontSize={{ md: 26, xs: "xl" }}>
                   Hello, {shortAddress(address)}!
                 </Heading>
                 <Text fontSize="xs">
@@ -185,7 +188,7 @@ const UserPortal = () => {
                 bg="#FFFFFF"
                 color="#000000"
                 height="51px"
-                width="200px"
+                width="190px"
                 fontSize="xl"
                 borderRadius="7px"
                 fontWeight="bold"
@@ -238,8 +241,9 @@ const UserPortal = () => {
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
+          flexShrink={0}
           height={{ md: "100%", xs: "auto" }}
-          width={{ md: "25%", xs: "100%" }}
+          width={{ md: "260px", xs: "100%" }}
           pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
           pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
         >
@@ -250,20 +254,41 @@ const UserPortal = () => {
           >
             Today's APY
           </DashboardBox>
+
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[1].asPxString(), xs: "300px" }}
+            height={statsSidebarChildSizes[1].asPxString()}
+            pt={DASHBOARD_BOX_SPACING.asPxString()}
+            px={DASHBOARD_BOX_SPACING.asPxString()}
           >
-            APY Stats
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+              expand
+            >
+              <Heading lineHeight={1} size="md" mb={2}>
+                Strategy Allocation
+              </Heading>
+
+              <Chart
+                options={StrategyAllocationChartOptions}
+                type="pie"
+                width="100%"
+                height="120px"
+                series={[0.44, 0.64]}
+              />
+            </Column>
           </DashboardBox>
+
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
             height={{ md: statsSidebarChildSizes[2].asPxString(), xs: "300px" }}
           >
-            Current Allocation
+            APY Stats
           </DashboardBox>
+
           <DashboardBox
             width="100%"
             height={{ md: statsSidebarChildSizes[3].asPxString(), xs: "300px" }}
@@ -391,13 +416,14 @@ const TokenAllocation = () => {
       {Object.entries(allocations).map(([key, value]) => {
         return (
           <Column
+            key={key}
             width="100%"
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-end"
             mb={2}
           >
             <Text fontSize={10}>{key}</Text>
-            <ProgressBar key={key} percentageFilled={value} />
+            <ProgressBar percentageFilled={value} />
           </Column>
         );
       })}
