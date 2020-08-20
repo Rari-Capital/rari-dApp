@@ -51,6 +51,13 @@ async function launchModalLazy() {
   const web3Modal = new Web3Modal.default({
     cacheProvider: false,
     providerOptions,
+    theme: {
+      background: "#121212",
+      main: "#FFFFFF",
+      secondary: "#858585",
+      border: "#272727",
+      hover: "#000000",
+    },
   });
 
   return web3Modal.connect();

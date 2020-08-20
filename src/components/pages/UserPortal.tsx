@@ -71,8 +71,8 @@ const UserPortal = () => {
     childSizes: [
       new PixelSize(100),
       new PixelSize(172),
-      new PercentageSize(0.5),
-      new PercentageSize(0.5),
+      new PercentageSize(1),
+      new PixelSize(180),
     ],
   });
 
@@ -222,15 +222,15 @@ const UserPortal = () => {
                 xs: 0,
               }}
               mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-              height={{ md: "100%", xs: "auto" }}
+              height={mainSectionChildSizes[2].asPxString()}
               width={{ md: "50%", xs: "100%" }}
-              pt={"12px"}
+              pt={DASHBOARD_BOX_SPACING.asPxString()}
               px={DASHBOARD_BOX_SPACING.asPxString()}
             >
               <TransactionHistoryOrTokenAllocation isFirstTime={isFirstTime} />
             </DashboardBox>
             <DashboardBox
-              height={{ md: "100%", xs: "300px" }}
+              height={mainSectionChildSizes[2].asPxString()}
               width={{ md: "50%", xs: "100%" }}
             >
               chart here
@@ -262,23 +262,7 @@ const UserPortal = () => {
             pt={DASHBOARD_BOX_SPACING.asPxString()}
             px={DASHBOARD_BOX_SPACING.asPxString()}
           >
-            <Column
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-              expand
-            >
-              <Heading lineHeight={1} size="md" mb={2}>
-                Strategy Allocation
-              </Heading>
-
-              <Chart
-                options={StrategyAllocationChartOptions}
-                type="pie"
-                width="100%"
-                height="120px"
-                series={[0.44, 0.64]}
-              />
-            </Column>
+            <StrategyAllocation />
           </DashboardBox>
 
           <DashboardBox
@@ -291,9 +275,11 @@ const UserPortal = () => {
 
           <DashboardBox
             width="100%"
-            height={{ md: statsSidebarChildSizes[3].asPxString(), xs: "300px" }}
+            height={statsSidebarChildSizes[3].asPxString()}
+            pt={DASHBOARD_BOX_SPACING.asPxString()}
+            px={DASHBOARD_BOX_SPACING.asPxString()}
           >
-            Monthly Returns
+            <MonthlyReturns />
           </DashboardBox>
         </Column>
       </RowOnDesktopColumnOnMobile>
@@ -393,6 +379,76 @@ const UserStatsAndChart = ({
   );
 };
 
+const StrategyAllocation = () => {
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment={{
+        md: "flex-start",
+        xs: "center",
+      }}
+      expand
+    >
+      <Heading lineHeight={1} size="md" mb={2}>
+        Strategy Allocation
+      </Heading>
+
+      <Chart
+        options={StrategyAllocationChartOptions}
+        type="pie"
+        width="100%"
+        height="120px"
+        series={[0.44, 0.64]}
+      />
+    </Column>
+  );
+};
+
+const MonthlyReturns = () => {
+  const returns = { Rari: 94, Compound: 5.4, dYdX: 4.3 };
+
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      expand
+      overflowY="hidden"
+    >
+      <Heading size="md" lineHeight={1} mb={4}>
+        Monthly Returns
+      </Heading>
+
+      {Object.entries(returns).map(([key, value]) => {
+        return (
+          <Column
+            key={key}
+            width="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            mb={3}
+          >
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              mb={1}
+            >
+              <Text color="#CACACA" fontSize={10}>
+                {key}
+              </Text>
+              <Text color="#CACACA" fontSize={10}>
+                {value}%
+              </Text>
+            </Row>
+
+            <ProgressBar percentageFilled={value / 100} />
+          </Column>
+        );
+      })}
+    </Column>
+  );
+};
+
 const TransactionHistoryOrTokenAllocation = ({
   isFirstTime,
 }: {
@@ -411,7 +467,9 @@ const TokenAllocation = () => {
       expand
       overflowY="hidden"
     >
-      <Heading size="md">Token Allocation</Heading>
+      <Heading size="md" lineHeight={1}>
+        Token Allocation
+      </Heading>
 
       {Object.entries(allocations).map(([key, value]) => {
         return (
@@ -422,7 +480,9 @@ const TokenAllocation = () => {
             crossAxisAlignment="flex-end"
             mb={2}
           >
-            <Text fontSize={10}>{key}</Text>
+            <Text color="#CACACA" fontSize={10}>
+              {key}
+            </Text>
             <ProgressBar percentageFilled={value} />
           </Column>
         );
