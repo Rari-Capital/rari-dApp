@@ -37,8 +37,10 @@ import {
   StrategyAllocationChartOptions,
 } from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
-import { format1e18BigSourceAsUSD } from "../../utils/1e18";
+
 import ProgressBar from "../shared/ProgressBar";
+import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
+import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/1e18";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -91,7 +93,7 @@ const UserPortal = () => {
       RariFundManager.methods
         .balanceOf(address)
         .call()
-        .then(format1e18BigSourceAsUSD)
+        .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
   const {
@@ -101,7 +103,7 @@ const UserPortal = () => {
     RariFundManager.methods
       .interestAccruedBy(address)
       .call()
-      .then(format1e18BigSourceAsUSD)
+      .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
   if (isBalanceLoading || isInterestLoading) {
@@ -515,7 +517,12 @@ const TransactionHistory = () => {
       {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
           <Text color="#6e6a6a" key={event.transactionHash}>
-            {event.event}: {format1e18BigSourceAsUSD(event.returnValues.amount)}
+            {event.event +
+              ": " +
+              format1e18Big(toBig(event.returnValues.amount)) +
+              " " +
+              getCurrencyCodeFromKeccak256(event.returnValues.currencyCode) ??
+              "UNKNOWN_CURRENCY"}
             <b> ({event.timeSent})</b>
           </Text>
           {index !== events!.length - 1 ? (

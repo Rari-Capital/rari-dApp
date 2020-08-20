@@ -5,7 +5,7 @@ import { useWeb3 } from "../../context/Web3Context";
 import { useContracts } from "../../context/ContractsContext";
 import Chart from "react-apexcharts";
 import { useContractMethod } from "../../hooks/useContractMethod";
-import { format1e18BigSourceAsUSD } from "../../utils/1e18";
+import { format1e18BigAsUSD, toBig } from "../../utils/1e18";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { WideLogo } from "../shared/Logos";
@@ -200,12 +200,12 @@ const FundStats = () => {
 
   const {
     isLoading: isFundBalenceLoading,
-    data: fundBalence,
+    data: fundBalance,
   } = useContractMethod("getFundBalance", () =>
     RariFundManager.methods
       .getFundBalance()
       .call()
-      .then(format1e18BigSourceAsUSD)
+      .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
   return (
@@ -241,9 +241,9 @@ const FundStats = () => {
 
         <CaptionedStat
           crossAxisAlignment="center"
-          caption=" Assets under management"
+          caption="Assets under management"
           captionSize="xs"
-          stat={isFundBalenceLoading ? "$?" : fundBalence!}
+          stat={isFundBalenceLoading ? "$?" : fundBalance!}
           statSize="lg"
           captionFirst={false}
         />
