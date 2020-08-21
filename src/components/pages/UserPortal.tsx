@@ -385,16 +385,14 @@ const UserStatsAndChart = ({
 
 const CurrentAPY = () => {
   return (
-    <Center expand>
-      <Row mainAxisAlignment="center" crossAxisAlignment="center">
-        <Heading fontSize="64px" fontWeight="extrabold">
-          12%
-        </Heading>
-        <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
-          Today's APY
-        </Text>
-      </Row>
-    </Center>
+    <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
+      <Heading fontSize="64px" fontWeight="extrabold">
+        12%
+      </Heading>
+      <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
+        Today's APY
+      </Text>
+    </Row>
   );
 };
 
