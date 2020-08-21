@@ -189,8 +189,8 @@ const UserPortal = () => {
               <Button
                 bg="#FFFFFF"
                 color="#000000"
-                height="51px"
-                width="190px"
+                height="45px"
+                width="170px"
                 fontSize="xl"
                 borderRadius="7px"
                 fontWeight="bold"
@@ -391,7 +391,7 @@ const StrategyAllocation = () => {
       }}
       expand
     >
-      <Heading lineHeight={1} size="md" mb={2}>
+      <Heading lineHeight={1} size="sm" mb={2}>
         Strategy Allocation
       </Heading>
 
@@ -416,7 +416,7 @@ const MonthlyReturns = () => {
       expand
       overflowY="hidden"
     >
-      <Heading size="md" lineHeight={1} mb={4}>
+      <Heading size="sm" lineHeight={1} mb={4}>
         Monthly Returns
       </Heading>
 
@@ -510,7 +510,7 @@ const TransactionHistory = () => {
       expand
       overflowY="auto"
     >
-      <Heading size="md" mb={2}>
+      <Heading size="sm" mb={2}>
         Your Transaction History
       </Heading>
 
