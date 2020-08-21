@@ -252,9 +252,11 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[0].asPxString(), xs: "80px" }}
+            height={statsSidebarChildSizes[0].asPxString()}
+            bg="#FFFFFF"
+            color="#000000"
           >
-            Today's APY
+            <CurrentAPY />
           </DashboardBox>
 
           <DashboardBox
@@ -378,6 +380,21 @@ const UserStatsAndChart = ({
         />
       </Box>
     </>
+  );
+};
+
+const CurrentAPY = () => {
+  return (
+    <Center expand>
+      <Row mainAxisAlignment="center" crossAxisAlignment="center">
+        <Heading fontSize="64px" fontWeight="extrabold">
+          12%
+        </Heading>
+        <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
+          Today's APY
+        </Text>
+      </Row>
+    </Center>
   );
 };
 
