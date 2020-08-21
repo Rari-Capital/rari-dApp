@@ -253,7 +253,7 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[0].asPxString() }}
+            height={statsSidebarChildSizes[0].asPxString()}
             p={DASHBOARD_BOX_SPACING.asPxString()}
           >
             <APYStats />
