@@ -73,8 +73,8 @@ const UserPortal = () => {
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
       new PixelSize(100),
-      new PixelSize(172),
       new PercentageSize(1),
+      new PixelSize(172),
       new PixelSize(180),
     ],
   });
@@ -253,7 +253,16 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={statsSidebarChildSizes[0].asPxString()}
+            height={{ md: statsSidebarChildSizes[0].asPxString() }}
+            p={DASHBOARD_BOX_SPACING.asPxString()}
+          >
+            <APYStats />
+          </DashboardBox>
+
+          <DashboardBox
+            width="100%"
+            mb={statsSidebarSpacing.asPxString()}
+            height={{ md: statsSidebarChildSizes[1].asPxString(), xs: "120px" }}
             bg="#FFFFFF"
             color="#000000"
           >
@@ -263,20 +272,11 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={statsSidebarChildSizes[1].asPxString()}
+            height={statsSidebarChildSizes[2].asPxString()}
             pt={DASHBOARD_BOX_SPACING.asPxString()}
             px={DASHBOARD_BOX_SPACING.asPxString()}
           >
             <StrategyAllocation />
-          </DashboardBox>
-
-          <DashboardBox
-            width="100%"
-            mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[2].asPxString(), xs: "120px" }}
-            p={DASHBOARD_BOX_SPACING.asPxString()}
-          >
-            <APYStats />
           </DashboardBox>
 
           <DashboardBox
@@ -405,7 +405,7 @@ const APYStats = () => {
       mainAxisAlignment="space-between"
       crossAxisAlignment="flex-start"
     >
-      <Heading lineHeight={1} size="sm" mb={3}>
+      <Heading lineHeight={1} size="sm">
         APY Stats
       </Heading>
 
@@ -419,12 +419,12 @@ const APYStats = () => {
           crossAxisAlignment="center"
           width="100%"
         >
-          <Text>
+          <Text fontSize="sm">
             Month: <b>42%</b>
           </Text>
 
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Text>+ 12%</Text>
+            <Text fontSize="sm">+ 12%</Text>
             <Icon ml={1} name="arrow-up" />
           </Row>
         </Row>
@@ -433,12 +433,12 @@ const APYStats = () => {
           crossAxisAlignment="center"
           width="100%"
         >
-          <Text>
+          <Text fontSize="sm">
             Week: <b>52%</b>
           </Text>
 
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Text>+ 10%</Text>
+            <Text fontSize="sm">+ 10%</Text>
             <Icon ml={1} name="arrow-up" />
           </Row>
         </Row>
