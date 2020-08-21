@@ -8,6 +8,7 @@ import {
   Button,
   Select,
   CloseButton,
+  Icon,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
@@ -272,9 +273,10 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[2].asPxString(), xs: "300px" }}
+            height={{ md: statsSidebarChildSizes[2].asPxString(), xs: "120px" }}
+            p={DASHBOARD_BOX_SPACING.asPxString()}
           >
-            APY Stats
+            <APYStats />
           </DashboardBox>
 
           <DashboardBox
@@ -393,6 +395,55 @@ const CurrentAPY = () => {
         Today's APY
       </Text>
     </Row>
+  );
+};
+
+const APYStats = () => {
+  return (
+    <Column
+      expand
+      mainAxisAlignment="space-between"
+      crossAxisAlignment="flex-start"
+    >
+      <Heading lineHeight={1} size="sm" mb={3}>
+        APY Stats
+      </Heading>
+
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        width="100%"
+      >
+        <Row
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          width="100%"
+        >
+          <Text>
+            Month: <b>42%</b>
+          </Text>
+
+          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <Text>+ 12%</Text>
+            <Icon ml={1} name="arrow-up" />
+          </Row>
+        </Row>
+        <Row
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          width="100%"
+        >
+          <Text>
+            Week: <b>52%</b>
+          </Text>
+
+          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <Text>+ 10%</Text>
+            <Icon ml={1} name="arrow-up" />
+          </Row>
+        </Row>
+      </Column>
+    </Column>
   );
 };
 
