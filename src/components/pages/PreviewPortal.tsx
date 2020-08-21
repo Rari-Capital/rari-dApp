@@ -95,6 +95,7 @@ const PreviewPortal = () => {
             height={{ md: chartSize.asPxString(), xs: "420px" }}
             width="100%"
             p={2}
+            pt={3}
             color="#292828"
           >
             <Chart
