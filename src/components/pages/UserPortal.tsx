@@ -262,7 +262,7 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[1].asPxString(), xs: "120px" }}
+            height={{ md: statsSidebarChildSizes[1].asPxString(), xs: "110px" }}
             bg="#FFFFFF"
             color="#000000"
           >
