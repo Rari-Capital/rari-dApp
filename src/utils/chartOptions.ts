@@ -110,5 +110,5 @@ export const StrategyAllocationChartOptions = {
 
   colors: ["#4D4D4D", "#aba7a7"],
 
-  labels: ["Compound Dai", "dYdX Dai"],
+  labels: ["Compound", "dYdX"],
 };
