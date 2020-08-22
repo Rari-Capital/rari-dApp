@@ -235,8 +235,10 @@ const UserPortal = () => {
             <DashboardBox
               height={mainSectionChildSizes[2].asPxString()}
               width={{ md: "50%", xs: "100%" }}
+              pt={DASHBOARD_BOX_SPACING.asPxString()}
+              px={DASHBOARD_BOX_SPACING.asPxString()}
             >
-              chart here
+              <RecentTrades />
             </DashboardBox>
           </RowOnDesktopColumnOnMobile>
         </Column>
@@ -582,7 +584,7 @@ const TransactionHistory = () => {
 
       {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
-          <Text color="#6e6a6a" key={event.transactionHash}>
+          <Text color="#aba6a6" key={event.transactionHash}>
             {event.event +
               ": " +
               format1e18Big(toBig(event.returnValues.amount)) +
@@ -593,9 +595,77 @@ const TransactionHistory = () => {
           </Text>
           {index !== events!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />
-          ) : (
+          ) : events!.length > 4 ? (
             <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
-          )}
+          ) : null}
+        </Box>
+      ))}
+    </Column>
+  );
+};
+
+const RecentTrades = () => {
+  const recentTrades = [
+    {
+      transactionHash: "XXXXX",
+      timeSent: "January 1st, 2020",
+      returnValues: { percent: 0.4, from: "dYdX DAI", to: "Compound DAI" },
+    },
+    {
+      transactionHash: "YYYYYY",
+      timeSent: "January 2nd, 2020",
+      returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX Dai" },
+    },
+    {
+      transactionHash: "ZZZZZZ",
+      timeSent: "January 2nd, 2020",
+      returnValues: { percent: 0.3, from: "Compound USDT", to: "dYdX ZRX" },
+    },
+    {
+      transactionHash: "AAAAAAA",
+      timeSent: "January 3rd, 2020",
+      returnValues: { percent: 0.1, from: "dYdX REP", to: "Compound USDC" },
+    },
+    {
+      transactionHash: "BBBBBB",
+      timeSent: "January 4th, 2020",
+      returnValues: {
+        percent: 0.25,
+        from: "Compound ETH",
+        to: "Compound USDC",
+      },
+    },
+  ];
+
+  const tradesLoading = false;
+  return tradesLoading ? (
+    <Center expand>
+      <Spinner />
+    </Center>
+  ) : (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      expand
+      overflowY="auto"
+    >
+      <Heading size="sm" mb={2}>
+        Recent Trades
+      </Heading>
+
+      {recentTrades!.map((event, index) => (
+        <Box key={event.transactionHash} width="100%">
+          <Text color="#aba6a6" key={event.transactionHash}>
+            {`Move ${event.returnValues.percent * 100}% from ${
+              event.returnValues.from
+            } to ${event.returnValues.to}`}
+            <b> ({event.timeSent})</b>
+          </Text>
+          {index !== recentTrades!.length - 1 ? (
+            <Divider borderColor="#616161" my={1} />
+          ) : recentTrades!.length > 4 ? (
+            <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
+          ) : null}
         </Box>
       ))}
     </Column>
