@@ -391,6 +391,7 @@ const UserStatsAndChart = ({
         px={1}
         height={{ md: chartSize.asPxString(), xs: "69%" }}
         color="#000000"
+        overflowX="hidden"
       >
         <Chart
           options={FundReturnChartOptions}

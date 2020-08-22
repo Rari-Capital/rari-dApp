@@ -104,6 +104,7 @@ const PreviewPortal = () => {
             p={2}
             pt={3}
             color="#292828"
+            overflowX="hidden"
           >
             <Chart
               options={FundReturnChartOptions}
