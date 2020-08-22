@@ -595,9 +595,9 @@ const TransactionHistory = () => {
           </Text>
           {index !== events!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />
-          ) : events!.length > 4 ? (
+          ) : (
             <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
-          ) : null}
+          )}
         </Box>
       ))}
     </Column>
@@ -614,7 +614,7 @@ const RecentTrades = () => {
     {
       transactionHash: "YYYYYY",
       timeSent: "January 2nd, 2020",
-      returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX Dai" },
+      returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX DAI" },
     },
     {
       transactionHash: "ZZZZZZ",
@@ -663,9 +663,9 @@ const RecentTrades = () => {
           </Text>
           {index !== recentTrades!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />
-          ) : recentTrades!.length > 4 ? (
+          ) : (
             <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
-          ) : null}
+          )}
         </Box>
       ))}
     </Column>
