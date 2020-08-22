@@ -7,8 +7,8 @@ import Logo from "../../static/small-logo.png";
 export const WideLogo = React.memo(() => {
   return (
     <Fade direction="down" delay={200}>
-      <Box width="200px" height="53px" flexShrink={0}>
-        <Image width="200px" height="53px" alt="" src={LargeLogo} />
+      <Box width="200px" height="50px" flexShrink={0}>
+        <Image width="200px" height="50px" alt="" src={LargeLogo} />
       </Box>
     </Fade>
   );
