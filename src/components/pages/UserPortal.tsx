@@ -390,7 +390,7 @@ const UserStatsAndChart = ({
 const CurrentAPY = () => {
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading fontSize="64px" fontWeight="extrabold">
+      <Heading fontSize="54px" fontWeight="extrabold">
         12%
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
