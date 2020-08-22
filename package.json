@@ -24,7 +24,7 @@
     "apexcharts": "^3.20.0",
     "authereum": "0.0.4-beta.164",
     "big.js": "^5.2.2",
-    "buttered-chakra": "^2.0.0",
+    "buttered-chakra": "^3.0.0",
     "cypress": "^4.12.1",
     "emotion-theming": "^10.0.27",
     "fortmatic": "^2.2.1",
