@@ -15,10 +15,11 @@ import {
   Center,
   Row,
   RowOnDesktopColumnOnMobile,
-  useMinLockedWindowHeight,
+  useLockedViewHeight,
   useSpacedLayout,
   PixelSize,
   PercentageSize,
+  PercentOnDesktopPixelOnMobileSize,
 } from "buttered-chakra";
 import CaptionedStat from "../shared/CaptionedStat";
 
@@ -27,7 +28,7 @@ const PreviewPortal = () => {
 
   const { login } = useWeb3();
 
-  const { windowHeight, isLocked } = useMinLockedWindowHeight(650);
+  const { windowHeight, isLocked } = useLockedViewHeight({ min: 650 });
 
   const {
     spacing: headerAndBodySpacing,
@@ -50,7 +51,13 @@ const PreviewPortal = () => {
   } = useSpacedLayout({
     parentHeight: bodySize.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [new PercentageSize(1.0), new PixelSize(55)],
+    childSizes: [
+      new PercentOnDesktopPixelOnMobileSize({
+        percentageSize: 1.0,
+        pixelSize: 420,
+      }),
+      new PixelSize(55),
+    ],
   });
 
   const onLogin = useCallback(() => {
@@ -92,7 +99,7 @@ const PreviewPortal = () => {
           height="100%"
         >
           <DashboardBox
-            height={{ md: chartSize.asPxString(), xs: "420px" }}
+            height={chartSize.asPxString()}
             width="100%"
             p={2}
             pt={3}

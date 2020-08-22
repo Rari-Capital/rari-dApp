@@ -9,8 +9,11 @@ import {
   Select,
   CloseButton,
   Icon,
+  Image,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
+
+import BookBrain from "../../static/book-brain.png";
 
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
@@ -27,11 +30,12 @@ import {
   Column,
   Row,
   Center,
-  useMinLockedWindowHeight,
+  useLockedViewHeight,
   useSpacedLayout,
   RowOnDesktopColumnOnMobile,
   PercentageSize,
   PixelSize,
+  PercentOnDesktopPixelOnMobileSize,
 } from "buttered-chakra";
 import {
   FundReturnChartOptions,
@@ -48,7 +52,10 @@ const UserPortal = () => {
 
   const { RariFundManager } = useContracts();
 
-  const { windowHeight, isLocked } = useMinLockedWindowHeight(700);
+  const { windowHeight, isLocked } = useLockedViewHeight({
+    min: 750,
+    max: 1300,
+  });
 
   const {
     spacing: headerAndBodySpacing,
@@ -72,10 +79,14 @@ const UserPortal = () => {
     parentHeight: bodySize.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
+      new PixelSize(90),
       new PixelSize(100),
-      new PercentageSize(1),
-      new PixelSize(172),
+      new PixelSize(152),
       new PixelSize(180),
+      new PercentOnDesktopPixelOnMobileSize({
+        percentageSize: 1,
+        pixelSize: 100,
+      }),
     ],
   });
 
@@ -85,7 +96,14 @@ const UserPortal = () => {
   } = useSpacedLayout({
     parentHeight: bodySize.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [new PixelSize(100), new PercentageSize(1), new PixelSize(180)],
+    childSizes: [
+      new PixelSize(90),
+      new PercentOnDesktopPixelOnMobileSize({
+        percentageSize: 1,
+        pixelSize: 600,
+      }),
+      new PixelSize(180),
+    ],
   });
 
   const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
@@ -204,7 +222,7 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             mb={mainSectionSpacing.asPxString()}
-            height={{ md: mainSectionChildSizes[1].asPxString(), xs: "600px" }}
+            height={mainSectionChildSizes[1].asPxString()}
           >
             <UserStatsAndChart
               size={mainSectionChildSizes[1].asNumber()}
@@ -256,19 +274,19 @@ const UserPortal = () => {
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
             height={statsSidebarChildSizes[0].asPxString()}
-            p={DASHBOARD_BOX_SPACING.asPxString()}
+            bg="#FFFFFF"
+            color="#000000"
           >
-            <APYStats />
+            <CurrentAPY />
           </DashboardBox>
 
           <DashboardBox
             width="100%"
             mb={statsSidebarSpacing.asPxString()}
-            height={{ md: statsSidebarChildSizes[1].asPxString(), xs: "110px" }}
-            bg="#FFFFFF"
-            color="#000000"
+            height={statsSidebarChildSizes[1].asPxString()}
+            p={DASHBOARD_BOX_SPACING.asPxString()}
           >
-            <CurrentAPY />
+            <APYStats />
           </DashboardBox>
 
           <DashboardBox
@@ -284,10 +302,19 @@ const UserPortal = () => {
           <DashboardBox
             width="100%"
             height={statsSidebarChildSizes[3].asPxString()}
+            mb={statsSidebarSpacing.asPxString()}
             pt={DASHBOARD_BOX_SPACING.asPxString()}
             px={DASHBOARD_BOX_SPACING.asPxString()}
           >
             <MonthlyReturns />
+          </DashboardBox>
+
+          <DashboardBox
+            width="100%"
+            height={statsSidebarChildSizes[4].asPxString()}
+            px={DASHBOARD_BOX_SPACING.asPxString()}
+          >
+            <NeedHelp height={statsSidebarChildSizes[4].asNumber()} />
           </DashboardBox>
         </Column>
       </RowOnDesktopColumnOnMobile>
@@ -459,7 +486,7 @@ const StrategyAllocation = () => {
       }}
       expand
     >
-      <Heading lineHeight={1} size="sm" mb={2}>
+      <Heading lineHeight={1} size="sm" mb={1}>
         Strategy Allocation
       </Heading>
 
@@ -467,7 +494,7 @@ const StrategyAllocation = () => {
         options={StrategyAllocationChartOptions}
         type="pie"
         width="100%"
-        height="120px"
+        height="110px"
         series={[0.44, 0.64]}
       />
     </Column>
@@ -669,5 +696,38 @@ const RecentTrades = () => {
         </Box>
       ))}
     </Column>
+  );
+};
+
+const NeedHelp = ({ height }: { height: number }) => {
+  const isTall = height > 200;
+
+  return (
+    <Row
+      flexDirection={isTall ? "column" : "row"}
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      expand
+    >
+      <Image
+        flexShrink={0}
+        h={isTall ? "100px" : "55px"}
+        w={isTall ? "100px" : "55px"}
+        src={BookBrain}
+      />
+      <Button
+        bg="#FFFFFF"
+        color="#000000"
+        height="45px"
+        width="100%"
+        ml={isTall ? 0 : 4}
+        mt={isTall ? 4 : 0}
+        fontSize="xl"
+        borderRadius="7px"
+        fontWeight="bold"
+      >
+        FAQ
+      </Button>
+    </Row>
   );
 };
