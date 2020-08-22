@@ -585,12 +585,12 @@ const TransactionHistory = () => {
       {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
           <Text color="#aba6a6" key={event.transactionHash}>
-            {event.event +
-              ": " +
-              format1e18Big(toBig(event.returnValues.amount)) +
-              " " +
-              getCurrencyCodeFromKeccak256(event.returnValues.currencyCode) ??
-              "UNKNOWN_CURRENCY"}
+            {`${event.event}: ${format1e18Big(
+              toBig(event.returnValues.amount)
+            )} ${getCurrencyCodeFromKeccak256(
+              event.returnValues.currencyCode
+            ) ?? "UNKNOWN_CURRENCY"}
+            `}
             <b> ({event.timeSent})</b>
           </Text>
           {index !== events!.length - 1 ? (
