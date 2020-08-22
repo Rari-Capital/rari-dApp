@@ -68,7 +68,7 @@ const PreviewPortal = () => {
   return (
     <Column
       height={isLocked ? "100%" : { md: "100vh", xs: "100%" }}
-      mainAxisAlignment="center"
+      mainAxisAlignment={{ md: "center", xs: "flex-start" }}
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
       px={{ md: "5vw", xs: DASHBOARD_BOX_SPACING.asPxString() }}
@@ -104,7 +104,7 @@ const PreviewPortal = () => {
             p={2}
             pt={3}
             color="#292828"
-            overflowX="hidden"
+            overflow="hidden"
           >
             <Chart
               options={FundReturnChartOptions}
