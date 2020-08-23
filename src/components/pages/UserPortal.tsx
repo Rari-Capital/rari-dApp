@@ -612,7 +612,7 @@ const TransactionHistory = () => {
 
       {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
-          <Text color="#aba6a6" key={event.transactionHash}>
+          <Text fontSize="sm" color="#aba6a6" key={event.transactionHash}>
             {`${event.event}: ${format1e18Big(
               toBig(event.returnValues.amount)
             )} ${getCurrencyCodeFromKeccak256(
@@ -636,27 +636,27 @@ const RecentTrades = () => {
   const recentTrades = [
     {
       transactionHash: "XXXXX",
-      timeSent: "January 1st, 2020",
+      timeSent: "1/6/20",
       returnValues: { percent: 0.4, from: "dYdX DAI", to: "Compound DAI" },
     },
     {
       transactionHash: "YYYYYY",
-      timeSent: "January 2nd, 2020",
+      timeSent: "1/6/20",
       returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX DAI" },
     },
     {
       transactionHash: "ZZZZZZ",
-      timeSent: "January 2nd, 2020",
+      timeSent: "1/5/20",
       returnValues: { percent: 0.3, from: "Compound USDT", to: "dYdX ZRX" },
     },
     {
       transactionHash: "AAAAAAA",
-      timeSent: "January 3rd, 2020",
+      timeSent: "1/5/20",
       returnValues: { percent: 0.1, from: "dYdX REP", to: "Compound USDC" },
     },
     {
       transactionHash: "BBBBBB",
-      timeSent: "January 4th, 2020",
+      timeSent: "1/4/20",
       returnValues: {
         percent: 0.25,
         from: "Compound ETH",
@@ -683,7 +683,7 @@ const RecentTrades = () => {
 
       {recentTrades!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
-          <Text color="#aba6a6" key={event.transactionHash}>
+          <Text fontSize="sm" color="#aba6a6" key={event.transactionHash}>
             {`Move ${event.returnValues.percent * 100}% from ${
               event.returnValues.from
             } to ${event.returnValues.to}`}
