@@ -54,7 +54,7 @@ const UserPortal = () => {
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
-    max: 1300,
+    max: 1900,
   });
 
   const {
