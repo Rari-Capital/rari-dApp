@@ -4,5 +4,5 @@ export function useContractMethod<DataType>(
   methodKey: string,
   callMethod: () => Promise<DataType>
 ) {
-  return useQuery<DataType, string>(methodKey, callMethod);
+  return useQuery<DataType, any>(methodKey, callMethod);
 }

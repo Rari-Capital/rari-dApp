@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Web3 from "web3";
 import FullPageSpinner from "../components/shared/FullPageSpinner";
+import { queryCache } from "react-query";
 
 async function launchModalLazy() {
   const [
@@ -112,7 +113,11 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   }, [setWeb3ModalProvider, setWeb3AuthedAndAddressFromModal]);
 
   const refetchAccountData = useCallback(() => {
+    console.log("New account, clearing the queryCache!");
+
     setWeb3AuthedAndAddressFromModal(web3ModalProvider);
+
+    queryCache.clear();
   }, [setWeb3AuthedAndAddressFromModal, web3ModalProvider]);
 
   const logout = useCallback(() => {
@@ -140,18 +145,15 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     };
   }, [web3ModalProvider, refetchAccountData]);
 
-  let value = useMemo(
-    () => ({
-      web3Network,
-      web3Authed,
-      web3ModalProvider,
-      login,
-      logout,
-      address,
-      isAuthed: web3Authed != null,
-    }),
-    [web3Network, web3Authed, login, logout, address, web3ModalProvider]
-  );
+  const value = {
+    web3Network,
+    web3Authed,
+    web3ModalProvider,
+    login,
+    logout,
+    address,
+    isAuthed: web3Authed != null,
+  };
 
   // If the address is still loading in, don't render children who rely on it.
   if (value.isAuthed && address === null) {

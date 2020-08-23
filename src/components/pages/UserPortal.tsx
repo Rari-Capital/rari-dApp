@@ -590,12 +590,9 @@ const TokenAllocation = () => {
 };
 
 const TransactionHistory = () => {
-  const {
-    isLoading: isEventsLoading,
-    data: events,
-  } = useTransactionHistoryEvents();
+  const { data: events, isLoading } = useTransactionHistoryEvents();
 
-  return isEventsLoading ? (
+  return isLoading ? (
     <Center expand>
       <Spinner />
     </Center>

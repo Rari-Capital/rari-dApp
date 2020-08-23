@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, queryCache } from "react-query";
 import { Contract, Filter, EventData } from "web3-eth-contract";
 import { useContracts } from "../context/ContractsContext";
 import { useAuthedWeb3 } from "../context/Web3Context";
@@ -9,7 +9,7 @@ export function usePastContractEvents<DataType = EventData[]>(
   filter: Filter,
   eventsTransform?: (events: EventData[]) => DataType
 ) {
-  return useQuery<DataType, [string, ...any[]]>(
+  return useQuery<DataType, any>(
     [
       "pastEvents",
       eventType,
@@ -39,8 +39,8 @@ export function useTransactionHistoryEvents() {
 
   const { web3, address } = useAuthedWeb3();
 
-  return useQuery<TransactionEvent[], "transactionHistoryEvents">(
-    "transactionHistoryEvents",
+  return useQuery<TransactionEvent[], any>(
+    "transactionHistoryOf" + address,
     async () => {
       const withdraws = await RariFundManager.getPastEvents("Withdrawal", {
         fromBlock: "earliest",
@@ -73,7 +73,18 @@ export function useTransactionHistoryEvents() {
       // Sort descending by blockNumber
       merged_arrays.sort((a, b) => (a.blockNumber < b.blockNumber ? 1 : -1));
 
-      return merged_arrays;
+      if (
+        merged_arrays[0].event === undefined ||
+        merged_arrays[0].signature === null
+      ) {
+        // If the event data is broken, we reload the page.
+        console.log("Event data broken, reloading!");
+        queryCache.clear();
+        window.location.reload();
+        return [];
+      } else {
+        return merged_arrays;
+      }
     }
   );
 }
