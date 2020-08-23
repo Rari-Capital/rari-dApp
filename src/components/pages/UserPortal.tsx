@@ -9,11 +9,8 @@ import {
   Select,
   CloseButton,
   Icon,
-  Image,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
-
-import BookBrain from "../../static/book-brain.png";
 
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
@@ -22,7 +19,7 @@ import { useContractMethod } from "../../hooks/useContractMethod";
 import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
-import { SmallLogo } from "../shared/Logos";
+import { SmallLogo, BookBrain } from "../shared/Logos";
 import Chart from "react-apexcharts";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -383,7 +380,7 @@ const UserStatsAndChart = ({
         >
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
-          <option value="ytd">Year-To-Date</option>
+          <option value="ytd">YTD</option>
         </Select>
       </RowOnDesktopColumnOnMobile>
 
@@ -707,12 +704,8 @@ const NeedHelp = ({ height }: { height: number }) => {
       crossAxisAlignment="center"
       expand
     >
-      <Image
-        flexShrink={0}
-        h={isTall ? "100px" : "55px"}
-        w={isTall ? "100px" : "55px"}
-        src={BookBrain}
-      />
+      <BookBrain isTall={isTall} />
+
       <Button
         bg="#FFFFFF"
         color="#000000"
@@ -723,6 +716,7 @@ const NeedHelp = ({ height }: { height: number }) => {
         fontSize="xl"
         borderRadius="7px"
         fontWeight="bold"
+        onClick={() => window.open("https://rari.capital/current.html")}
       >
         FAQ
       </Button>

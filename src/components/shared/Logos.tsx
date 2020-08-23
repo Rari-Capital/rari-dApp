@@ -3,6 +3,7 @@ import { Fade, Flip } from "react-awesome-reveal";
 import { Box, Image } from "@chakra-ui/core";
 import LargeLogo from "../../static/wide-logo.png";
 import Logo from "../../static/small-logo.png";
+import BookBrainLogo from "../../static/book-brain.png";
 
 export const WideLogo = React.memo(() => {
   return (
@@ -21,5 +22,22 @@ export const SmallLogo = React.memo(() => {
         <Image alt="" width="37px" height="37px" src={Logo} />
       </Box>
     </Flip>
+  );
+});
+
+export const BookBrain = React.memo(({ isTall }: { isTall: boolean }) => {
+  return (
+    <Box
+      h={isTall ? "100px" : "55px"}
+      w={isTall ? "100px" : "55px"}
+      flexShrink={0}
+    >
+      <Image
+        alt=""
+        h={isTall ? "100px" : "55px"}
+        w={isTall ? "100px" : "55px"}
+        src={BookBrainLogo}
+      />
+    </Box>
   );
 });
