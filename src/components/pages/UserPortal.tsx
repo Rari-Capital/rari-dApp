@@ -192,7 +192,10 @@ const UserPortal = () => {
                 height="100%"
                 mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
               >
-                <Heading fontSize={{ md: 26, xs: "xl" }}>
+                <Heading
+                  fontFamily="'Baloo Bhai 2'"
+                  fontSize={{ md: 27, xs: "xl" }}
+                >
                   Hello, {shortAddress(address)}!
                 </Heading>
                 <Text fontSize="xs">
@@ -415,7 +418,12 @@ const UserStatsAndChart = ({
 const CurrentAPY = () => {
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading fontSize="54px" fontWeight="extrabold">
+      <Heading
+        mt={2}
+        fontFamily="'Baloo Bhai 2'"
+        fontSize="54px"
+        fontWeight="extrabold"
+      >
         12%
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
