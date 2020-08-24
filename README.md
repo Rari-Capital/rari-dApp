@@ -2,6 +2,13 @@
 
 Rari's new React dApp for easy interactions with the Rari fund.
 
+<p float="left">
+  <img src="https://i.imgur.com/9drql0H.png" width="300" />
+  <img src="https://i.imgur.com/TQwLz8V.png" width="300" /> 
+
+</p>
+
+
 ## Notes:
 
 <details>
