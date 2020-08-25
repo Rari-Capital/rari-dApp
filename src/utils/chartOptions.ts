@@ -60,14 +60,6 @@ export const FundReturnChartOptions = {
   },
 };
 
-export const DisabledFundReturnChartOptions = {
-  ...FundReturnChartOptions,
-
-  tooltip: {
-    enabled: false,
-  },
-};
-
 export const StrategyAllocationChartOptions = {
   chart: {
     foreColor: "#a19f9f",
@@ -111,4 +103,10 @@ export const StrategyAllocationChartOptions = {
   colors: ["#4D4D4D", "#aba7a7"],
 
   labels: ["Compound", "dYdX"],
+};
+
+export const DisableChartInteractions = {
+  tooltip: {
+    enabled: false,
+  },
 };

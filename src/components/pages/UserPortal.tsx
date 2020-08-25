@@ -9,6 +9,7 @@ import {
   Select,
   CloseButton,
   Icon,
+  ButtonProps,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
@@ -37,6 +38,7 @@ import {
 import {
   FundReturnChartOptions,
   StrategyAllocationChartOptions,
+  DisableChartInteractions,
 } from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
 
@@ -205,17 +207,7 @@ const UserPortal = () => {
                 </Text>
               </Column>
 
-              <Button
-                bg="#FFFFFF"
-                color="#000000"
-                height="45px"
-                width="170px"
-                fontSize="xl"
-                borderRadius="7px"
-                fontWeight="bold"
-              >
-                Deposit
-              </Button>
+              <DepositButton />
             </RowOnDesktopColumnOnMobile>
           </DashboardBox>
 
@@ -223,12 +215,25 @@ const UserPortal = () => {
             width="100%"
             mb={mainSectionSpacing.asPxString()}
             height={mainSectionChildSizes[1].asPxString()}
+            position="relative"
           >
-            <UserStatsAndChart
-              size={mainSectionChildSizes[1].asNumber()}
-              balance={myBalance}
-              interestEarned={myInterest}
+            <DepositButton
+              display={isFirstTime ? "box" : "none"}
+              zIndex={9999}
+              transform="translate(-50%, -50%); "
+              position="absolute"
+              top="50%"
+              left="50%"
             />
+
+            <Box opacity={isFirstTime ? 0.2 : 1} height="100%">
+              <UserStatsAndChart
+                isFirstTime={isFirstTime}
+                size={mainSectionChildSizes[1].asNumber()}
+                balance={myBalance}
+                interestEarned={myInterest}
+              />
+            </Box>
           </DashboardBox>
 
           <RowOnDesktopColumnOnMobile
@@ -330,10 +335,12 @@ const UserStatsAndChart = ({
   size,
   balance,
   interestEarned,
+  isFirstTime,
 }: {
   size: number;
   balance: string;
   interestEarned: string;
+  isFirstTime: boolean;
 }) => {
   const {
     childSizes: [statsSize, chartSize],
@@ -380,6 +387,7 @@ const UserStatsAndChart = ({
           fontWeight="bold"
           width={{ md: "130px", xs: "100%" }}
           mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+          isDisabled={isFirstTime}
         >
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
@@ -394,7 +402,11 @@ const UserStatsAndChart = ({
         overflow="hidden"
       >
         <Chart
-          options={FundReturnChartOptions}
+          options={
+            isFirstTime
+              ? { ...FundReturnChartOptions, ...DisableChartInteractions }
+              : FundReturnChartOptions
+          }
           type="line"
           width="100%"
           height="100%"
@@ -729,5 +741,26 @@ const NeedHelp = ({ height }: { height: number }) => {
         FAQ
       </Button>
     </Row>
+  );
+};
+
+interface DepositButtonProps extends Omit<ButtonProps, 'children'> {}
+
+const DepositButton = (
+  buttonProps?: DepositButtonProps
+) => {
+  return (
+    <Button
+      bg="#FFFFFF"
+      color="#000000"
+      height="45px"
+      width="170px"
+      fontSize="xl"
+      borderRadius="7px"
+      fontWeight="bold"
+      {...buttonProps}
+    >
+      Deposit
+    </Button>
   );
 };
