@@ -344,7 +344,7 @@ const UserStatsAndChart = ({
   isFirstTime: boolean;
 }) => {
   const {
-    childSizes: [statsSize, chartSize],
+    childSizes: [statsSize, chartSize, bottomSpacing],
   } = useSpacedLayout({
     parentHeight: size,
     spacing: 0,
@@ -418,6 +418,7 @@ const UserStatsAndChart = ({
         height={{ md: chartSize.asPxString(), xs: "69%" }}
         color="#000000"
         overflow="hidden"
+        mb={bottomSpacing.asPxString()}
       >
         <Chart
           options={
