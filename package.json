@@ -9,7 +9,7 @@
     "@emotion/core": "^10.0.35",
     "@emotion/styled": "^10.0.27",
     "@loadable/component": "^5.13.1",
-    "@portis/web3": "^2.0.0-beta.57",
+    "@portis/web3": "^2.0.0-beta.58",
     "@testing-library/cypress": "^6.0.0",
     "@testing-library/jest-dom": "^5.11.2",
     "@testing-library/react": "^10.4.9",
