@@ -34,6 +34,7 @@ import {
   PercentageSize,
   PixelSize,
   PercentOnDesktopPixelOnMobileSize,
+  useIsMobile,
 } from "buttered-chakra";
 import {
   FundReturnChartOptions,
@@ -350,6 +351,8 @@ const UserStatsAndChart = ({
     childSizes: [new PixelSize(75), new PercentageSize(1), new PixelSize(10)],
   });
 
+  const isMobile = useIsMobile();
+
   return (
     <>
       <RowOnDesktopColumnOnMobile
@@ -359,28 +362,43 @@ const UserStatsAndChart = ({
         height={{ md: statsSize.asPxString(), xs: "30%" }}
         width="100%"
       >
-        <CaptionedStat
-          crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-          caption="Account Balance"
-          captionSize="xs"
-          stat={balance}
-          statSize="lg"
-          columnProps={{
-            mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-            mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-          }}
-        />
+        {isFirstTime ? (
+          <CaptionedStat
+            crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+            caption="Fund Performance"
+            captionSize="xs"
+            stat={"+10%"}
+            statSize={isMobile ? "2xl" : "lg"}
+            columnProps={{
+              mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+            }}
+          />
+        ) : (
+          <>
+            <CaptionedStat
+              crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+              caption="Account Balance"
+              captionSize="xs"
+              stat={balance}
+              statSize="lg"
+              columnProps={{
+                mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+                mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+              }}
+            />
 
-        <CaptionedStat
-          crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-          caption="Interest Earned"
-          captionSize="xs"
-          stat={interestEarned}
-          statSize="lg"
-          columnProps={{
-            mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-          }}
-        />
+            <CaptionedStat
+              crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+              caption="Interest Earned"
+              captionSize="xs"
+              stat={interestEarned}
+              statSize="lg"
+              columnProps={{
+                mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+              }}
+            />
+          </>
+        )}
 
         <Select
           color="#000000"
@@ -744,11 +762,9 @@ const NeedHelp = ({ height }: { height: number }) => {
   );
 };
 
-interface DepositButtonProps extends Omit<ButtonProps, 'children'> {}
+interface DepositButtonProps extends Omit<ButtonProps, "children"> {}
 
-const DepositButton = (
-  buttonProps?: DepositButtonProps
-) => {
+const DepositButton = (buttonProps?: DepositButtonProps) => {
   return (
     <Button
       bg="#FFFFFF"

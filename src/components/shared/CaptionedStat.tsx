@@ -7,6 +7,7 @@ import {
   HeadingProps,
 } from "@chakra-ui/core";
 import { MainAxisAlignment, CrossAxisAlignment, Column } from "buttered-chakra";
+import { useResponsiveProp } from "../../utils/useResponsiveProp";
 
 interface Props {
   mainAxisAlignment?: MainAxisAlignment;
@@ -35,6 +36,9 @@ const CaptionedStat = ({
   mainAxisAlignment,
   captionFirst,
 }: Props) => {
+  const crossAxisAlignmentStatic = useResponsiveProp(crossAxisAlignment);
+  const textAlign = crossAxisAlignmentStatic.replace("flex-", "") as any;
+
   return (
     <Column
       mainAxisAlignment={mainAxisAlignment || "center"}
@@ -48,6 +52,7 @@ const CaptionedStat = ({
             letterSpacing="wide"
             color="#858585"
             fontSize={captionSize}
+            textAlign={textAlign}
             {...captionProps}
           >
             {caption}
@@ -66,9 +71,7 @@ const CaptionedStat = ({
             letterSpacing="wide"
             color="#858585"
             fontSize={captionSize}
-            textAlign={
-              crossAxisAlignment.toString().replace("flex-", "") as any
-            }
+            textAlign={textAlign}
             {...captionProps}
           >
             {caption}

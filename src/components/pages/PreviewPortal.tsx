@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Text, Spinner } from "@chakra-ui/core";
+import { Text, Spinner, Box } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
@@ -101,46 +101,11 @@ const PreviewPortal = () => {
           <DashboardBox
             height={chartSize.asPxString()}
             width="100%"
-            p={2}
-            pt={3}
             color="#292828"
             overflow="hidden"
+            px={1}
           >
-            <Chart
-              options={FundReturnChartOptions}
-              type="line"
-              width="100%"
-              height="100%"
-              series={[
-                {
-                  name: "Rari",
-                  data: [
-                    { x: "August 1, 2019", y: 54 },
-                    { x: "August 3, 2019", y: 47 },
-                    { x: "August 4, 2019", y: 64 },
-                    { x: "August 5, 2019", y: 95 },
-                  ],
-                },
-                {
-                  name: "dYdX",
-                  data: [
-                    { x: "August 1, 2019", y: 21 },
-                    { x: "August 3, 2019", y: 24 },
-                    { x: "August 4, 2019", y: 26 },
-                    { x: "August 5, 2019", y: 36 },
-                  ],
-                },
-                {
-                  name: "Compound",
-                  data: [
-                    { x: "August 1, 2019", y: 25 },
-                    { x: "August 3, 2019", y: 38 },
-                    { x: "August 4, 2019", y: 36 },
-                    { x: "August 5, 2019", y: 41 },
-                  ],
-                },
-              ]}
-            />
+            <FundPerformanceChart size={chartSize.asNumber()} />
           </DashboardBox>
 
           <Row
@@ -260,3 +225,76 @@ const FundStats = () => {
     </DashboardBox>
   );
 };
+
+const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
+  const {
+    childSizes: [statsSize, chartSize, bottomPadding],
+  } = useSpacedLayout({
+    parentHeight: size,
+    spacing: 0,
+    childSizes: [new PixelSize(90), new PercentageSize(1), new PixelSize(10)],
+  });
+
+  return (
+    <>
+      <Row
+        color="#FFFFFF"
+        mainAxisAlignment={{ md: "flex-start", xs: "center" }}
+        crossAxisAlignment="center"
+        px={DASHBOARD_BOX_SPACING.asPxString()}
+        height={statsSize.asPxString()}
+        width="100%"
+      >
+        <CaptionedStat
+          crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+          caption="Performance beginning with $10,000 on 1/6/2020"
+          captionSize="xs"
+          stat={"$13,250.43"}
+          statSize="xl"
+        />
+      </Row>
+
+      <Box
+        height={chartSize.asPxString()}
+        overflow="hidden"
+        mb={bottomPadding.asPxString()}
+      >
+        <Chart
+          options={FundReturnChartOptions}
+          type="line"
+          width="100%"
+          height="100%"
+          series={[
+            {
+              name: "Rari",
+              data: [
+                { x: "August 1, 2019", y: 10000 },
+                { x: "August 3, 2019", y: 11120 },
+                { x: "August 4, 2019", y: 12451 },
+                { x: "August 5, 2019", y: 14562 },
+              ],
+            },
+            {
+              name: "dYdX",
+              data: [
+                { x: "August 1, 2019", y: 10000 },
+                { x: "August 3, 2019", y: 10012 },
+                { x: "August 4, 2019", y: 10124 },
+                { x: "August 5, 2019", y: 10321 },
+              ],
+            },
+            {
+              name: "Compound",
+              data: [
+                { x: "August 1, 2019", y: 10000 },
+                { x: "August 3, 2019", y: 10230 },
+                { x: "August 4, 2019", y: 11240 },
+                { x: "August 5, 2019", y: 12112 },
+              ],
+            },
+          ]}
+        />
+      </Box>
+    </>
+  );
+});
