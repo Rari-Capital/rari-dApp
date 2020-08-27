@@ -228,15 +228,16 @@ const UserPortal = () => {
               height={mainSectionChildSizes[1].asPxString()}
               position="relative"
             >
-              <DepositButton
-                display={isFirstTime ? "box" : "none"}
-                zIndex={1}
-                transform="translate(-50%, -50%); "
-                position="absolute"
-                top="50%"
-                left="50%"
-                onClick={openDepositModal}
-              />
+              {isFirstTime ? (
+                <DepositButton
+                  zIndex={1}
+                  transform="translate(-50%, -50%); "
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  onClick={openDepositModal}
+                />
+              ) : null}
 
               <Box opacity={isFirstTime ? 0.2 : 1} height="100%">
                 <UserStatsAndChart
