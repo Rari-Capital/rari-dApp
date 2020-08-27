@@ -28,8 +28,8 @@ const DepositModal = (props: Props) => {
           <ModalOverlay />
           <ModalContent
             {...styles}
-            height="290px"
-            width="450px"
+            height={{ md: "300px", xs: "350px" }}
+            width={{ md: "450px", xs: "92%" }}
             backgroundColor="#121212"
             borderRadius="10px"
             border="1px"
