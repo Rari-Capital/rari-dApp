@@ -71,6 +71,7 @@ const DepositModal = (props: Props) => {
               pr={3}
             >
               <Select
+                style={{ textAlignLast: "center", marginLeft: "15px" }}
                 fontSize="2xl"
                 fontWeight="bold"
                 variant="unstyled"
