@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -8,6 +8,9 @@ import {
   Select,
   Button,
   Heading,
+  Editable,
+  EditablePreview,
+  EditableInput,
 } from "@chakra-ui/core";
 import { Row, Column } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
@@ -21,6 +24,8 @@ interface Props {
 
 const DepositModal = (props: Props) => {
   const initialRef = React.useRef();
+
+  const [amount, setAmount] = useState("0.0");
 
   return (
     <SlideIn
@@ -82,7 +87,19 @@ const DepositModal = (props: Props) => {
                   crossAxisAlignment="center"
                   expand
                 >
-                  <Heading color="#F3B85D">0.0</Heading>
+                  <Editable
+                    selectAllOnFocus
+                    width="50%"
+                    value={amount.toString()}
+                    onChange={(event) => setAmount(event)}
+                    placeholder="0.0"
+                    fontSize="3xl"
+                    fontWeight="bold"
+                    color="#F3B85D"
+                  >
+                    <EditablePreview />
+                    <EditableInput />
+                  </Editable>
                 </Row>
               </DashboardBox>
 
