@@ -25,7 +25,19 @@ interface Props {
 const DepositModal = (props: Props) => {
   const initialRef = React.useRef();
 
-  const [amount, setAmount] = useState("0.0");
+  const [stringAmount, _setStringAmount] = useState("0.0");
+  const [amount, _setAmount] = useState<number | null>(0.0);
+
+  const updateAmount = (amount: string) => {
+    _setStringAmount(amount);
+
+    const parsed = parseFloat(amount);
+    if (isNaN(parsed)) {
+      _setAmount(null);
+    } else {
+      _setAmount(parsed);
+    }
+  };
 
   return (
     <SlideIn
@@ -78,7 +90,11 @@ const DepositModal = (props: Props) => {
               height="100%"
             >
               <Text fontWeight="bold" fontSize="sm">
-                Deposit some crypto to start earning interest with Rari:
+                {amount != null
+                  ? amount === 0.0
+                    ? "Choose which crypto you want to deposit:"
+                    : "Click confirm to start earning interest with Rari:"
+                  : "Please enter a valid amount to deposit:"}
               </Text>
               <DashboardBox width="100%" height="70px">
                 <Row
@@ -90,8 +106,8 @@ const DepositModal = (props: Props) => {
                   <Editable
                     selectAllOnFocus
                     width="50%"
-                    value={amount.toString()}
-                    onChange={(event) => setAmount(event)}
+                    value={stringAmount.toString()}
+                    onChange={(event) => updateAmount(event)}
                     placeholder="0.0"
                     fontSize="3xl"
                     fontWeight="bold"
