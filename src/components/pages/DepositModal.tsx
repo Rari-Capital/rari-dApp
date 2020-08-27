@@ -20,11 +20,19 @@ interface Props {
 }
 
 const DepositModal = (props: Props) => {
+  const initialRef = React.useRef();
+
   return (
     <SlideIn
       isActivted={props.isOpen}
       render={(styles) => (
-        <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
+        <Modal
+          //@ts-ignore
+          initialFocusRef={initialRef}
+          isOpen={props.isOpen}
+          onClose={props.onClose}
+          isCentered
+        >
           <ModalOverlay />
           <ModalContent
             {...styles}
@@ -85,6 +93,7 @@ const DepositModal = (props: Props) => {
                 width="100%"
                 height="70px"
                 bg="#F3B85D"
+                ref={initialRef}
                 _hover={{ transform: "scale(1.02)" }}
                 _active={{ transform: "scale(0.95)" }}
               >
