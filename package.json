@@ -39,6 +39,7 @@
     "react-ios-pwa-prompt": "^1.8.0",
     "react-query": "^2.10.0",
     "react-scripts": "next",
+    "remove-focus-outline": "^1.2.1",
     "toformat": "^2.0.0",
     "typescript": "^4.0.2",
     "web3": "^1.2.11",
