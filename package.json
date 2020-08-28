@@ -37,7 +37,7 @@
     "react-dom": "^16.13.1",
     "react-error-boundary": "^2.3.1",
     "react-ios-pwa-prompt": "^1.8.0",
-    "react-query": "^2.10.0",
+    "react-query": "^2.12.1",
     "react-scripts": "next",
     "remove-focus-outline": "^1.2.1",
     "toformat": "^2.0.0",
