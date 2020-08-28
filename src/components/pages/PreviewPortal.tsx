@@ -117,7 +117,6 @@ const PreviewPortal = () => {
           >
             <DashboardBox
               as="button"
-              outline="none"
               onClick={onLogin}
               width="57%"
               height="100%"
@@ -140,7 +139,6 @@ const PreviewPortal = () => {
             <DashboardBox
               ml={DASHBOARD_BOX_SPACING.asPxString()}
               as="button"
-              outline="none"
               onClick={() =>
                 window.open(
                   "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"

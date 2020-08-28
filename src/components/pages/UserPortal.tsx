@@ -10,6 +10,7 @@ import {
   CloseButton,
   Icon,
   ButtonProps,
+  useDisclosure,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
@@ -46,6 +47,7 @@ import CaptionedStat from "../shared/CaptionedStat";
 import ProgressBar from "../shared/ProgressBar";
 import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
 import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/1e18";
+import DepositModal from "./DepositModal";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -125,6 +127,12 @@ const UserPortal = () => {
       .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
+  const {
+    isOpen: isDepositModalOpen,
+    onOpen: openDepositModal,
+    onClose: closeDepositModal,
+  } = useDisclosure();
+
   if (isBalanceLoading || isInterestLoading) {
     return <FullPageSpinner />;
   }
@@ -134,199 +142,206 @@ const UserPortal = () => {
   const isFirstTime = myBalance === "$0.00";
 
   return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      color="#FFFFFF"
-    >
+    <>
+      <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
       <Column
-        height={headerSize.asPxString()}
-        width="100%"
-        mb={headerAndBodySpacing.asPxString()}
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="flex-start"
-      >
-        <Row
-          mt={3}
-          px={6}
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          overflowX="visible"
-          overflowY="visible"
-          width="100%"
-        >
-          <SmallLogo />
-
-          <CloseButton onClick={logout} />
-        </Row>
-
-        <Box height="1px" width="100%" bg="white" />
-      </Column>
-
-      <RowOnDesktopColumnOnMobile
         mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        px={DASHBOARD_BOX_SPACING.asPxString()}
-        height={{ md: bodySize.asPxString(), xs: "auto" }}
+        crossAxisAlignment="flex-start"
+        color="#FFFFFF"
       >
         <Column
+          height={headerSize.asPxString()}
+          width="100%"
+          mb={headerAndBodySpacing.asPxString()}
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="flex-start"
+        >
+          <Row
+            mt={3}
+            px={6}
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            overflowX="visible"
+            overflowY="visible"
+            width="100%"
+          >
+            <SmallLogo />
+
+            <CloseButton onClick={logout} />
+          </Row>
+
+          <Box height="1px" width="100%" bg="white" />
+        </Column>
+
+        <RowOnDesktopColumnOnMobile
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          height={{ md: "100%", xs: "auto" }}
-          width={{ md: "100%", xs: "100%" }}
+          width="100%"
+          px={DASHBOARD_BOX_SPACING.asPxString()}
+          height={{ md: bodySize.asPxString(), xs: "auto" }}
         >
-          <DashboardBox
-            width="100%"
-            mb={mainSectionSpacing.asPxString()}
-            height={{ md: mainSectionChildSizes[0].asPxString(), xs: "auto" }}
-            overflowX="auto"
-            whiteSpace="nowrap"
-          >
-            <RowOnDesktopColumnOnMobile
-              expand
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
-              p={DASHBOARD_BOX_SPACING.asPxString()}
-            >
-              <Column
-                mainAxisAlignment="center"
-                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-                height="100%"
-                mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-              >
-                <Heading
-                  fontFamily="'Baloo Bhai 2'"
-                  fontSize={{ md: 27, xs: "xl" }}
-                >
-                  Hello, {shortAddress(address)}!
-                </Heading>
-                <Text fontSize="xs">
-                  {isFirstTime
-                    ? "It's nice to see you!"
-                    : "It's good to see you again."}
-                </Text>
-              </Column>
-
-              <DepositButton />
-            </RowOnDesktopColumnOnMobile>
-          </DashboardBox>
-
-          <DashboardBox
-            width="100%"
-            mb={mainSectionSpacing.asPxString()}
-            height={mainSectionChildSizes[1].asPxString()}
-            position="relative"
-          >
-            <DepositButton
-              display={isFirstTime ? "box" : "none"}
-              zIndex={9999}
-              transform="translate(-50%, -50%); "
-              position="absolute"
-              top="50%"
-              left="50%"
-            />
-
-            <Box opacity={isFirstTime ? 0.2 : 1} height="100%">
-              <UserStatsAndChart
-                isFirstTime={isFirstTime}
-                size={mainSectionChildSizes[1].asNumber()}
-                balance={myBalance}
-                interestEarned={myInterest}
-              />
-            </Box>
-          </DashboardBox>
-
-          <RowOnDesktopColumnOnMobile
+          <Column
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            height={{ md: mainSectionChildSizes[2].asPxString(), xs: "auto" }}
-            width="100%"
+            height={{ md: "100%", xs: "auto" }}
+            width={{ md: "100%", xs: "100%" }}
           >
             <DashboardBox
-              mr={{
-                md: DASHBOARD_BOX_SPACING.asPxString(),
-                xs: 0,
-              }}
-              mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-              height={mainSectionChildSizes[2].asPxString()}
-              width={{ md: "50%", xs: "100%" }}
+              width="100%"
+              mb={mainSectionSpacing.asPxString()}
+              height={{ md: mainSectionChildSizes[0].asPxString(), xs: "auto" }}
+              overflowX="auto"
+              whiteSpace="nowrap"
+            >
+              <RowOnDesktopColumnOnMobile
+                expand
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                p={DASHBOARD_BOX_SPACING.asPxString()}
+              >
+                <Column
+                  mainAxisAlignment="center"
+                  crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+                  height="100%"
+                  mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+                >
+                  <Heading
+                    fontFamily="'Baloo Bhai 2'"
+                    fontSize={{ md: 27, xs: "xl" }}
+                  >
+                    Hello, {shortAddress(address)}!
+                  </Heading>
+                  <Text fontSize="xs">
+                    {isFirstTime
+                      ? "It's nice to see you!"
+                      : "It's good to see you again."}
+                  </Text>
+                </Column>
+
+                <DepositButton onClick={openDepositModal} />
+              </RowOnDesktopColumnOnMobile>
+            </DashboardBox>
+
+            <DashboardBox
+              width="100%"
+              mb={mainSectionSpacing.asPxString()}
+              height={mainSectionChildSizes[1].asPxString()}
+              position="relative"
+            >
+              {isFirstTime ? (
+                <DepositButton
+                  zIndex={1}
+                  transform="translate(-50%, -50%); "
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  onClick={openDepositModal}
+                />
+              ) : null}
+
+              <Box opacity={isFirstTime ? 0.2 : 1} height="100%">
+                <UserStatsAndChart
+                  isFirstTime={isFirstTime}
+                  size={mainSectionChildSizes[1].asNumber()}
+                  balance={myBalance}
+                  interestEarned={myInterest}
+                />
+              </Box>
+            </DashboardBox>
+
+            <RowOnDesktopColumnOnMobile
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              height={{ md: mainSectionChildSizes[2].asPxString(), xs: "auto" }}
+              width="100%"
+            >
+              <DashboardBox
+                mr={{
+                  md: DASHBOARD_BOX_SPACING.asPxString(),
+                  xs: 0,
+                }}
+                mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+                height={mainSectionChildSizes[2].asPxString()}
+                width={{ md: "50%", xs: "100%" }}
+                pt={DASHBOARD_BOX_SPACING.asPxString()}
+                px={DASHBOARD_BOX_SPACING.asPxString()}
+              >
+                <TransactionHistoryOrTokenAllocation
+                  isFirstTime={isFirstTime}
+                />
+              </DashboardBox>
+              <DashboardBox
+                height={mainSectionChildSizes[2].asPxString()}
+                width={{ md: "50%", xs: "100%" }}
+                pt={DASHBOARD_BOX_SPACING.asPxString()}
+                px={DASHBOARD_BOX_SPACING.asPxString()}
+              >
+                <RecentTrades />
+              </DashboardBox>
+            </RowOnDesktopColumnOnMobile>
+          </Column>
+
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            flexShrink={0}
+            height={{ md: "100%", xs: "auto" }}
+            width={{ md: "260px", xs: "100%" }}
+            pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+            pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
+          >
+            <DashboardBox
+              width="100%"
+              mb={statsSidebarSpacing.asPxString()}
+              height={statsSidebarChildSizes[0].asPxString()}
+              bg="#FFFFFF"
+              color="#000000"
+            >
+              <CurrentAPY />
+            </DashboardBox>
+
+            <DashboardBox
+              width="100%"
+              mb={statsSidebarSpacing.asPxString()}
+              height={statsSidebarChildSizes[1].asPxString()}
+              p={DASHBOARD_BOX_SPACING.asPxString()}
+            >
+              <APYStats />
+            </DashboardBox>
+
+            <DashboardBox
+              width="100%"
+              mb={statsSidebarSpacing.asPxString()}
+              height={statsSidebarChildSizes[2].asPxString()}
               pt={DASHBOARD_BOX_SPACING.asPxString()}
               px={DASHBOARD_BOX_SPACING.asPxString()}
             >
-              <TransactionHistoryOrTokenAllocation isFirstTime={isFirstTime} />
+              <StrategyAllocation />
             </DashboardBox>
+
             <DashboardBox
-              height={mainSectionChildSizes[2].asPxString()}
-              width={{ md: "50%", xs: "100%" }}
+              width="100%"
+              height={statsSidebarChildSizes[3].asPxString()}
+              mb={statsSidebarSpacing.asPxString()}
               pt={DASHBOARD_BOX_SPACING.asPxString()}
               px={DASHBOARD_BOX_SPACING.asPxString()}
             >
-              <RecentTrades />
+              <MonthlyReturns />
             </DashboardBox>
-          </RowOnDesktopColumnOnMobile>
-        </Column>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          flexShrink={0}
-          height={{ md: "100%", xs: "auto" }}
-          width={{ md: "260px", xs: "100%" }}
-          pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-          pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
-        >
-          <DashboardBox
-            width="100%"
-            mb={statsSidebarSpacing.asPxString()}
-            height={statsSidebarChildSizes[0].asPxString()}
-            bg="#FFFFFF"
-            color="#000000"
-          >
-            <CurrentAPY />
-          </DashboardBox>
+            <DashboardBox
+              width="100%"
+              height={statsSidebarChildSizes[4].asPxString()}
+              px={DASHBOARD_BOX_SPACING.asPxString()}
+            >
+              <NeedHelp height={statsSidebarChildSizes[4].asNumber()} />
+            </DashboardBox>
+          </Column>
+        </RowOnDesktopColumnOnMobile>
 
-          <DashboardBox
-            width="100%"
-            mb={statsSidebarSpacing.asPxString()}
-            height={statsSidebarChildSizes[1].asPxString()}
-            p={DASHBOARD_BOX_SPACING.asPxString()}
-          >
-            <APYStats />
-          </DashboardBox>
-
-          <DashboardBox
-            width="100%"
-            mb={statsSidebarSpacing.asPxString()}
-            height={statsSidebarChildSizes[2].asPxString()}
-            pt={DASHBOARD_BOX_SPACING.asPxString()}
-            px={DASHBOARD_BOX_SPACING.asPxString()}
-          >
-            <StrategyAllocation />
-          </DashboardBox>
-
-          <DashboardBox
-            width="100%"
-            height={statsSidebarChildSizes[3].asPxString()}
-            mb={statsSidebarSpacing.asPxString()}
-            pt={DASHBOARD_BOX_SPACING.asPxString()}
-            px={DASHBOARD_BOX_SPACING.asPxString()}
-          >
-            <MonthlyReturns />
-          </DashboardBox>
-
-          <DashboardBox
-            width="100%"
-            height={statsSidebarChildSizes[4].asPxString()}
-            px={DASHBOARD_BOX_SPACING.asPxString()}
-          >
-            <NeedHelp height={statsSidebarChildSizes[4].asNumber()} />
-          </DashboardBox>
-        </Column>
-      </RowOnDesktopColumnOnMobile>
-
-      <CopyrightSpacer forceShow={isLocked} />
-    </Column>
+        <CopyrightSpacer forceShow={isLocked} />
+      </Column>
+    </>
   );
 };
 
@@ -765,7 +780,7 @@ const NeedHelp = ({ height }: { height: number }) => {
 
 interface DepositButtonProps extends Omit<ButtonProps, "children"> {}
 
-const DepositButton = (buttonProps?: DepositButtonProps) => {
+const DepositButton = (buttonProps: DepositButtonProps) => {
   return (
     <Button
       bg="#FFFFFF"
@@ -775,6 +790,7 @@ const DepositButton = (buttonProps?: DepositButtonProps) => {
       fontSize="xl"
       borderRadius="7px"
       fontWeight="bold"
+      onClick={buttonProps.onClick}
       {...buttonProps}
     >
       Deposit

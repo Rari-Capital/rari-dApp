@@ -19,6 +19,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Web3Provider } from "./context/Web3Context";
 import { ContractsProvider } from "./context/ContractsContext";
 import { TokensProvider } from "./context/TokensContext";
+import "remove-focus-outline";
 
 ReactDOM.render(
   <>
