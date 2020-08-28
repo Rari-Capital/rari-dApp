@@ -178,8 +178,10 @@ const DepositModal = (props: Props) => {
                           mr={2}
                         >
                           <Image
+                            width="100%"
+                            height="100%"
                             borderRadius="50%"
-                            src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+                            src={tokens[selectedToken].logoURL}
                           />
                         </Box>
                         <Row

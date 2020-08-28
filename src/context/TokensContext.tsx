@@ -12,13 +12,21 @@ export interface TokensContextData {
 export interface Token {
   address: string;
   decimals: number;
+  logoURL: string;
 }
 
-interface ZeroXTokenResponse {
+interface ZeroExTokenResponse {
   records: {
     symbol: string;
     address: string;
     decimals: number;
+  }[];
+}
+
+interface UniswapTokenResponse {
+  tokens: {
+    address: string;
+    logoURI: string;
   }[];
 }
 
@@ -36,20 +44,32 @@ export const TokensProvider = ({ children }: { children: JSX.Element }) => {
   );
 
   useEffect(() => {
-    fetch("https://api.0x.org/swap/v0/tokens")
-      .then((response) => response.json())
-      .then((tokenData: ZeroXTokenResponse) => {
-        let tokens: TokensContextData = {};
+    Promise.all([
+      fetch("https://api.0x.org/swap/v0/tokens").then((response) =>
+        response.json()
+      ),
+      fetch("https://tokens.uniswap.org").then((response) => response.json()),
+    ]).then(([_zeroExResponse, _uniswapResponse]) => {
+      const tokenData = _zeroExResponse as ZeroExTokenResponse;
+      const uniTokenData = _uniswapResponse as UniswapTokenResponse;
 
-        for (const token of tokenData.records) {
-          tokens[token.symbol] = {
-            address: token.address,
-            decimals: token.decimals,
-          };
-        }
+      let tokens: TokensContextData = {};
 
-        setTokenData(tokens);
-      });
+      for (const token of tokenData.records) {
+        tokens[token.symbol] = {
+          address: token.address,
+          decimals: token.decimals,
+          logoURL:
+            uniTokenData.tokens.find(
+              (unitoken) =>
+                unitoken.address.toLowerCase() === token.address.toLowerCase()
+            )?.logoURI ??
+            "https://systemuicons.com/images/icons/question_circle.svg",
+        };
+      }
+
+      setTokenData(tokens);
+    });
   }, [setTokenData]);
 
   // Don't render children who depend on token data until they are loaded.
