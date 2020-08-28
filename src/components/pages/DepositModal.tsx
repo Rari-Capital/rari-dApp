@@ -170,20 +170,6 @@ const DepositModal = (props: Props) => {
                         mainAxisAlignment="flex-start"
                         crossAxisAlignment="center"
                       >
-                        <Box
-                          height="25px"
-                          width="25px"
-                          borderRadius="50%"
-                          bg="white"
-                          mr={2}
-                        >
-                          <Image
-                            width="100%"
-                            height="100%"
-                            borderRadius="50%"
-                            src={tokens[selectedToken].logoURL}
-                          />
-                        </Box>
                         <Row
                           mainAxisAlignment="flex-start"
                           crossAxisAlignment="center"
@@ -192,6 +178,20 @@ const DepositModal = (props: Props) => {
                             setCurrentScreen(CurrentScreen.COIN_SELECT)
                           }
                         >
+                          <Box
+                            height="25px"
+                            width="25px"
+                            borderRadius="50%"
+                            bg="white"
+                            mr={2}
+                          >
+                            <Image
+                              width="100%"
+                              height="100%"
+                              borderRadius="50%"
+                              src={tokens[selectedToken].logoURL}
+                            />
+                          </Box>
                           <Heading fontSize="24px">{selectedToken}</Heading>
                           <Icon name="chevron-down" size="32px" />
                         </Row>
