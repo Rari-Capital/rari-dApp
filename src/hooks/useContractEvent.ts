@@ -74,8 +74,9 @@ export function useTransactionHistoryEvents() {
       merged_arrays.sort((a, b) => (a.blockNumber < b.blockNumber ? 1 : -1));
 
       if (
-        merged_arrays[0].event === undefined ||
-        merged_arrays[0].signature === null
+        merged_arrays.length > 0 &&
+        (merged_arrays[0].event === undefined ||
+          merged_arrays[0].signature === null)
       ) {
         // If the event data is broken, we reload the page.
         console.log("Event data broken, reloading!");
