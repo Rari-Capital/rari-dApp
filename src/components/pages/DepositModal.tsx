@@ -209,11 +209,7 @@ const DepositModal = (props: Props) => {
                     }
                     _hover={{ transform: "scale(1.02)" }}
                     _active={{ transform: "scale(0.95)" }}
-                    color={
-                      tokens[selectedToken].color === "#FFFFFF"
-                        ? "#000000"
-                        : "#FFFFFF"
-                    }
+                    color={tokens[selectedToken].overlayTextColor}
                   >
                     Confirm
                   </Button>
@@ -249,8 +245,6 @@ const TokenList = ({
 }) => {
   const tokenKeys = Object.keys(tokens);
   tokenKeys.sort();
-
-  const { web3, address } = useAuthedWeb3();
 
   return (
     <Column
