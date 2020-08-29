@@ -96,7 +96,7 @@ const DepositModal = (props: Props) => {
           <ModalOverlay />
           <ModalContent
             {...styles}
-            height={{ md: "300px", xs: "350px" }}
+            height="300px"
             width={{ md: "450px", xs: "92%" }}
             backgroundColor="#121212"
             borderRadius="10px"
@@ -211,6 +211,9 @@ const DepositModal = (props: Props) => {
                     ref={initialRef}
                     _hover={{ transform: "scale(1.02)" }}
                     _active={{ transform: "scale(0.95)" }}
+                    color={
+                      tokens[selectedToken].isBright ? "#000000" : "#FFFFFF"
+                    }
                   >
                     Confirm
                   </Button>
@@ -251,6 +254,8 @@ const TokenList = ({
   onClick: (symbol: string) => any;
 }) => {
   const tokenKeys = Object.keys(tokens);
+
+  tokenKeys.sort();
 
   const { web3, address } = useAuthedWeb3();
 
@@ -296,13 +301,7 @@ const TokenList = ({
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="flex-start"
               >
-                <Heading
-                  fontSize="20px"
-                  color={token.color}
-                  // textShadow={
-                  //   "-1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;"
-                  // }
-                >
+                <Heading fontSize="20px" color={token.color}>
                   {symbol}
                 </Heading>
                 <Text fontWeight="thin" fontSize="15px">
