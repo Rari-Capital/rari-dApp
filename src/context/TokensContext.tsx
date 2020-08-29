@@ -4,6 +4,8 @@ import Web3 from "web3";
 import { AbiItem } from "web3-utils";
 import ERC20_ABI from "../static/contracts/ERC20.json";
 import { Erc20 } from "../static/contracts/compiled/ERC20";
+//@ts-ignore
+import analyze from "rgbaster";
 
 export interface TokensContextData {
   [symbol: string]: Token;
@@ -13,6 +15,7 @@ export interface Token {
   address: string;
   decimals: number;
   logoURL: string;
+  color: string;
 }
 
 interface ZeroExTokenResponse {
@@ -56,16 +59,25 @@ export const TokensProvider = ({ children }: { children: JSX.Element }) => {
       let tokens: TokensContextData = {};
 
       for (const token of tokenData.records) {
-        tokens[token.symbol] = {
-          address: token.address,
-          decimals: token.decimals,
-          logoURL:
-            uniTokenData.tokens.find(
-              (unitoken) =>
-                unitoken.address.toLowerCase() === token.address.toLowerCase()
-            )?.logoURI ??
-            "https://systemuicons.com/images/icons/question_circle.svg",
-        };
+        const logoURL =
+          uniTokenData.tokens.find(
+            (unitoken) =>
+              unitoken.address.toLowerCase() === token.address.toLowerCase()
+          )?.logoURI ??
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcT-WSqNCkcKAYlmZ0oxrJM2IX81yp3B87VH1VAMOKmVKk0edwVHVHmdQNOxZvKcMOakVJ6JFQBcs7SHLMWoNgBA0_SH1ltbBQCErA&usqp=CAU&ec=45695924";
+
+        analyze(logoURL, {
+          ignore: ["rgb(255,255,255)", "rgb(0,0,0)"],
+          scale: 0.5,
+        }).then(
+          (result: any) =>
+            (tokens[token.symbol] = {
+              address: token.address,
+              decimals: token.decimals,
+              color: result[0].color,
+              logoURL,
+            })
+        );
       }
 
       setTokenData(tokens);

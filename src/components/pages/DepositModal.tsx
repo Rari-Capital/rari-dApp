@@ -5,7 +5,6 @@ import {
   ModalContent,
   Text,
   Box,
-  Select,
   Button,
   Editable,
   EditablePreview,
@@ -18,9 +17,16 @@ import { Row, Column } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
 import SlideIn from "../shared/SlideIn";
 import { Fade } from "react-awesome-reveal";
-import { useTokens, createTokenContract } from "../../context/TokensContext";
+import {
+  useTokens,
+  createTokenContract,
+  Token,
+} from "../../context/TokensContext";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 import { divBigBy1e18, toBig } from "../../utils/1e18";
+import SlowlyLoadedList from "../shared/SlowlyLoadedList";
+import BigWhiteCircle from "../../static/big-white-circle.png";
+import SmallWhiteCircle from "../../static/small-white-circle.png";
 
 interface Props {
   isOpen: boolean;
@@ -101,32 +107,12 @@ const DepositModal = (props: Props) => {
             {currentScreen === CurrentScreen.MAIN ? (
               <>
                 <Row
-                  height="65px"
                   width="100%"
                   mainAxisAlignment="center"
                   crossAxisAlignment="center"
-                  py={4}
-                  pl={4}
-                  pr={3}
+                  p={4}
                 >
-                  <Select
-                    value={mode}
-                    onChange={(event) =>
-                      setMode(
-                        event.target.value === "Deposit"
-                          ? Mode.DEPOSIT
-                          : Mode.WITHDRAW
-                      )
-                    }
-                    style={{ textAlignLast: "center", marginLeft: "15px" }}
-                    fontSize="2xl"
-                    fontWeight="bold"
-                    variant="unstyled"
-                    iconSize="27px"
-                  >
-                    <option value="Deposit">Deposit</option>
-                    <option value="Withdraw">Withdraw</option>
-                  </Select>
+                  <Heading fontSize="27px">Deposit</Heading>
                 </Row>
                 <Box h="1px" bg="#272727" />
                 <Column
@@ -158,7 +144,7 @@ const DepositModal = (props: Props) => {
                           placeholder="0.0"
                           fontSize="3xl"
                           fontWeight="bold"
-                          color="#F3B85D"
+                          color={tokens[selectedToken].color}
                         >
                           <EditablePreview />
                           <EditableInput />
@@ -178,18 +164,14 @@ const DepositModal = (props: Props) => {
                             setCurrentScreen(CurrentScreen.COIN_SELECT)
                           }
                         >
-                          <Box
-                            height="25px"
-                            width="25px"
-                            borderRadius="50%"
-                            bg="white"
-                            mr={2}
-                          >
+                          <Box height="25px" width="25px" mr={2}>
                             <Image
                               width="100%"
                               height="100%"
                               borderRadius="50%"
+                              backgroundImage={`url(${SmallWhiteCircle})`}
                               src={tokens[selectedToken].logoURL}
+                              alt=""
                             />
                           </Box>
                           <Heading fontSize="24px">{selectedToken}</Heading>
@@ -221,7 +203,7 @@ const DepositModal = (props: Props) => {
                     borderRadius="10px"
                     width="100%"
                     height="70px"
-                    bg="#F3B85D"
+                    bg={tokens[selectedToken].color}
                     isDisabled={
                       // Disable the button if the user entered amount is not valid.
                       !amount
@@ -236,13 +218,102 @@ const DepositModal = (props: Props) => {
               </>
             ) : (
               <Fade>
-                <Text>Coin Select</Text>
+                <Row
+                  width="100%"
+                  mainAxisAlignment="center"
+                  crossAxisAlignment="center"
+                  p={4}
+                >
+                  <Heading fontSize="27px">Select a Token</Heading>
+                </Row>
+                <Box h="1px" bg="#272727" />
+                <TokenList
+                  tokens={tokens}
+                  onClick={(symbol) => {
+                    setSelectedToken(symbol);
+                    setCurrentScreen(CurrentScreen.MAIN);
+                  }}
+                />
               </Fade>
             )}
           </ModalContent>
         </Modal>
       )}
     />
+  );
+};
+
+const TokenList = ({
+  tokens,
+  onClick,
+}: {
+  tokens: { [key: string]: Token };
+  onClick: (symbol: string) => any;
+}) => {
+  const tokenKeys = Object.keys(tokens);
+
+  const { web3, address } = useAuthedWeb3();
+
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="center"
+      pt={4}
+      px={4}
+      height="230px"
+      width="400px"
+      overflowY="auto"
+    >
+      <SlowlyLoadedList
+        length={tokenKeys.length}
+        chunkAmount={10}
+        chunkDelayMs={500}
+        renderItem={(index) => {
+          const symbol = tokenKeys[index];
+          const token = tokens[symbol];
+
+          return (
+            <Row
+              key={token.address}
+              as="button"
+              onClick={() => onClick(symbol)}
+              mb={4}
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              width="100%"
+            >
+              <Box height="45px" width="45px" borderRadius="50%" mr={2}>
+                <Image
+                  width="100%"
+                  height="100%"
+                  borderRadius="50%"
+                  backgroundImage={`url(${BigWhiteCircle})`}
+                  src={token.logoURL}
+                  alt=""
+                />
+              </Box>
+              <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+              >
+                <Heading
+                  fontSize="20px"
+                  color={token.color}
+                  // textShadow={
+                  //   "-1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;"
+                  // }
+                >
+                  {symbol}
+                </Heading>
+                <Text fontWeight="thin" fontSize="15px">
+                  {"0.0"}
+                </Text>
+              </Column>
+            </Row>
+          );
+        }}
+      />
+    </Column>
   );
 };
 
