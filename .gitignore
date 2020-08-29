@@ -13,8 +13,8 @@
 /reports
 
 
-/src/static/contracts/compiled
-/src/static/compiled
+/src/static/contracts/compiled/*.ts
+/src/static/compiled/*.json
 
 # production
 /build
