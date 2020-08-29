@@ -17,16 +17,13 @@ import { Row, Column } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
 import SlideIn from "../shared/SlideIn";
 import { Fade } from "react-awesome-reveal";
-import {
-  useTokens,
-  createTokenContract,
-  Token,
-} from "../../context/TokensContext";
+import { Token } from "rari-tokens-generator";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 import { divBigBy1e18, toBig } from "../../utils/1e18";
 import SlowlyLoadedList from "../shared/SlowlyLoadedList";
 import BigWhiteCircle from "../../static/big-white-circle.png";
 import SmallWhiteCircle from "../../static/small-white-circle.png";
+import { tokens, createTokenContract } from "../../utils/tokenUtils";
 
 interface Props {
   isOpen: boolean;
@@ -88,8 +85,6 @@ const DepositModal = (props: Props) => {
   };
 
   const { web3, address } = useAuthedWeb3();
-
-  const tokens = useTokens();
 
   return (
     <SlideIn
@@ -215,7 +210,9 @@ const DepositModal = (props: Props) => {
                     _hover={{ transform: "scale(1.02)" }}
                     _active={{ transform: "scale(0.95)" }}
                     color={
-                      tokens[selectedToken].isBright ? "#000000" : "#FFFFFF"
+                      tokens[selectedToken].color === "#FFFFFF"
+                        ? "#000000"
+                        : "#FFFFFF"
                     }
                   >
                     Confirm
