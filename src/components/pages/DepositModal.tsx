@@ -251,7 +251,6 @@ const TokenList = ({
   onClick: (symbol: string) => any;
 }) => {
   const tokenKeys = Object.keys(tokens);
-
   tokenKeys.sort();
 
   const { web3, address } = useAuthedWeb3();
