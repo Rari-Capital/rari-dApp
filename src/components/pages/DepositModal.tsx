@@ -45,13 +45,17 @@ enum Mode {
 }
 
 const DepositModal = (props: Props) => {
-  const initialRef = React.useRef();
-
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
 
-  const [selectedToken, setSelectedToken] = useState("DAI");
+  const [selectedToken, _setSelectedToken] = useState("DAI");
+
+  const onSelectToken = (symbol: string) => {
+    _setSelectedToken(symbol);
+    setCurrentScreen(CurrentScreen.MAIN);
+    updateAmount("0.0");
+  };
 
   const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
   const [amount, _setAmount] = useState<number | null>(0.0);
@@ -70,29 +74,28 @@ const DepositModal = (props: Props) => {
     }
   };
 
-  const { web3, address } = useAuthedWeb3();
-
-  const tokens = useTokens();
+  const [isMaxLoading, _setIsMaxLoading] = useState(false);
 
   const setToMax = async () => {
+    _setIsMaxLoading(true);
     const balance = await createTokenContract(tokens[selectedToken], web3)
       .methods.balanceOf(address)
       .call();
 
     updateAmount(divBigBy1e18(toBig(balance)).toString());
+
+    _setIsMaxLoading(false);
   };
+
+  const { web3, address } = useAuthedWeb3();
+
+  const tokens = useTokens();
 
   return (
     <SlideIn
       isActivted={props.isOpen}
       render={(styles) => (
-        <Modal
-          //@ts-ignore
-          initialFocusRef={initialRef}
-          isOpen={props.isOpen}
-          onClose={props.onClose}
-          isCentered
-        >
+        <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
           <ModalOverlay />
           <ModalContent
             {...styles}
@@ -190,6 +193,7 @@ const DepositModal = (props: Props) => {
                           _hover={{}}
                           _active={{}}
                           onClick={setToMax}
+                          isLoading={isMaxLoading}
                         >
                           MAX
                         </Button>
@@ -208,7 +212,6 @@ const DepositModal = (props: Props) => {
                       // Disable the button if the user entered amount is not valid.
                       !amount
                     }
-                    ref={initialRef}
                     _hover={{ transform: "scale(1.02)" }}
                     _active={{ transform: "scale(0.95)" }}
                     color={
@@ -230,13 +233,7 @@ const DepositModal = (props: Props) => {
                   <Heading fontSize="27px">Select a Token</Heading>
                 </Row>
                 <Box h="1px" bg="#272727" />
-                <TokenList
-                  tokens={tokens}
-                  onClick={(symbol) => {
-                    setSelectedToken(symbol);
-                    setCurrentScreen(CurrentScreen.MAIN);
-                  }}
-                />
+                <TokenList tokens={tokens} onClick={onSelectToken} />
               </Fade>
             )}
           </ModalContent>
