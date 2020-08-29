@@ -275,6 +275,7 @@ const TokenList = ({
 
           return (
             <Row
+              flexShrink={0}
               key={token.address}
               as="button"
               onClick={() => onClick(symbol)}
