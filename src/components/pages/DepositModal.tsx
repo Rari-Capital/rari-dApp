@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -49,6 +49,11 @@ const DepositModal = (props: Props) => {
 
   const [selectedToken, _setSelectedToken] = useState("DAI");
 
+  const {
+    data: selectedTokenBalance,
+    isLoading: isSelectedTokenBalanceLoading,
+  } = useTokenBalance(tokens[selectedToken]);
+
   const onSelectToken = (symbol: string) => {
     _setSelectedToken(symbol);
     setCurrentScreen(CurrentScreen.MAIN);
@@ -87,6 +92,14 @@ const DepositModal = (props: Props) => {
 
   const { web3, address } = useAuthedWeb3();
 
+  const isAmountGreaterThanSelectedTokenBalance = useMemo(
+    () =>
+      isSelectedTokenBalanceLoading || amount === null
+        ? false
+        : selectedTokenBalance!.lt(amount),
+    [isSelectedTokenBalanceLoading, selectedTokenBalance, amount]
+  );
+
   return (
     <SlideIn
       isActivted={props.isOpen}
@@ -120,10 +133,14 @@ const DepositModal = (props: Props) => {
                   p={4}
                   height="100%"
                 >
-                  <Text fontWeight="bold" fontSize="sm">
+                  <Text fontWeight="bold" fontSize="sm" textAlign="center">
                     {amount != null
                       ? amount === 0
                         ? "Choose which crypto you want to deposit:"
+                        : isSelectedTokenBalanceLoading
+                        ? `Loading your balance of ${selectedToken}...`
+                        : isAmountGreaterThanSelectedTokenBalance
+                        ? `You don't have enough ${selectedToken}, enter a smaller amount!`
                         : "Click confirm to start earning interest:"
                       : "Please enter a valid amount to deposit:"}
                   </Text>
@@ -204,13 +221,13 @@ const DepositModal = (props: Props) => {
                     width="100%"
                     height="70px"
                     bg={tokens[selectedToken].color}
-                    isDisabled={
-                      // Disable the button if the user entered amount is not valid.
-                      !amount
-                    }
                     _hover={{ transform: "scale(1.02)" }}
                     _active={{ transform: "scale(0.95)" }}
                     color={tokens[selectedToken].overlayTextColor}
+                    isLoading={isSelectedTokenBalanceLoading}
+                    isDisabled={
+                      !amount || isAmountGreaterThanSelectedTokenBalance
+                    }
                   >
                     Confirm
                   </Button>
