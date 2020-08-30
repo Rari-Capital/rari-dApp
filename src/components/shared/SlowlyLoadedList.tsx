@@ -16,6 +16,7 @@ const useInterval = (callback: () => any, delay: number | null) => {
     }
   }, [delay]);
 };
+
 interface Props {
   length: number;
   renderItem: (index: number) => JSX.Element;
