@@ -134,7 +134,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   }, [setWeb3Authed, setWeb3ModalProvider, refetchAccountData]);
 
   useEffect(() => {
-    if (web3ModalProvider != null) {
+    if (web3ModalProvider !== null) {
       web3ModalProvider.on("accountsChanged", refetchAccountData);
       web3ModalProvider.on("chainChanged", refetchAccountData);
     }
@@ -152,7 +152,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     login,
     logout,
     address,
-    isAuthed: web3Authed != null,
+    isAuthed: web3Authed !== null,
   };
 
   // If the address is still loading in, don't render children who rely on it.

@@ -25,6 +25,7 @@ import BigWhiteCircle from "../../static/big-white-circle.png";
 import SmallWhiteCircle from "../../static/small-white-circle.png";
 import { tokens, createTokenContract } from "../../utils/tokenUtils";
 import { useTokenBalance } from "../../hooks/useTokenBalance";
+import Big from "big.js";
 
 interface Props {
   isOpen: boolean;
@@ -61,19 +62,22 @@ const DepositModal = (props: Props) => {
   };
 
   const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
-  const [amount, _setAmount] = useState<number | null>(0.0);
+  const [amount, _setAmount] = useState<Big | null>(() => toBig(0.0));
 
   const updateAmount = (amount: string) => {
+    if (amount.startsWith("-")) {
+      return;
+    }
+
     _setUserEnteredAmount(amount);
 
-    const parsed = parseFloat(amount);
-    // If the number converted version of the user input is not a number:
-    if (isNaN(parsed)) {
-      // Set the amount to null to disable confirming.
+    try {
+      // Try to set the amount to Big(amount):
+      const bigAmount = toBig(amount);
+      _setAmount(bigAmount);
+    } catch (e) {
+      // If the number was invalid, set the amount to null to disable confirming:
       _setAmount(null);
-    } else {
-      // Set the amount to the parsed amount.
-      _setAmount(parsed);
     }
   };
 
@@ -134,8 +138,8 @@ const DepositModal = (props: Props) => {
                   height="100%"
                 >
                   <Text fontWeight="bold" fontSize="sm" textAlign="center">
-                    {amount != null
-                      ? amount === 0
+                    {amount !== null
+                      ? !amount.gt(0)
                         ? "Choose which crypto you want to deposit:"
                         : isSelectedTokenBalanceLoading
                         ? `Loading your balance of ${selectedToken}...`
@@ -226,7 +230,9 @@ const DepositModal = (props: Props) => {
                     color={tokens[selectedToken].overlayTextColor}
                     isLoading={isSelectedTokenBalanceLoading}
                     isDisabled={
-                      !amount || isAmountGreaterThanSelectedTokenBalance
+                      amount === null ||
+                      !amount.gt(0) ||
+                      isAmountGreaterThanSelectedTokenBalance
                     }
                   >
                     Confirm
