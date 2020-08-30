@@ -46,7 +46,7 @@ import CaptionedStat from "../shared/CaptionedStat";
 
 import ProgressBar from "../shared/ProgressBar";
 import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
-import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/1e18";
+import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
 
 const UserPortal = () => {

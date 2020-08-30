@@ -5,7 +5,7 @@ import { useWeb3 } from "../../context/Web3Context";
 import { useContracts } from "../../context/ContractsContext";
 import Chart from "react-apexcharts";
 import { useContractMethod } from "../../hooks/useContractMethod";
-import { format1e18BigAsUSD, toBig } from "../../utils/1e18";
+import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { WideLogo } from "../shared/Logos";

@@ -19,11 +19,12 @@ import SlideIn from "../shared/SlideIn";
 import { Fade } from "react-awesome-reveal";
 import { Token } from "rari-tokens-generator";
 import { useAuthedWeb3 } from "../../context/Web3Context";
-import { divBigBy1e18, toBig } from "../../utils/1e18";
+import { divBigBy1e18, toBig, formatBig } from "../../utils/bigUtils";
 import SlowlyLoadedList from "../shared/SlowlyLoadedList";
 import BigWhiteCircle from "../../static/big-white-circle.png";
 import SmallWhiteCircle from "../../static/small-white-circle.png";
 import { tokens, createTokenContract } from "../../utils/tokenUtils";
+import { useTokenBalance } from "../../hooks/useTokenBalance";
 
 interface Props {
   isOpen: boolean;
@@ -236,6 +237,8 @@ const DepositModal = (props: Props) => {
   );
 };
 
+export default DepositModal;
+
 const TokenList = ({
   tokens,
   onClick,
@@ -261,42 +264,10 @@ const TokenList = ({
         chunkAmount={10}
         chunkDelayMs={500}
         renderItem={(index) => {
-          const symbol = tokenKeys[index];
-          const token = tokens[symbol];
+          const token = tokens[tokenKeys[index]];
 
           return (
-            <Row
-              flexShrink={0}
-              key={token.address}
-              as="button"
-              onClick={() => onClick(symbol)}
-              mb={4}
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              width="100%"
-            >
-              <Box height="45px" width="45px" borderRadius="50%" mr={2}>
-                <Image
-                  width="100%"
-                  height="100%"
-                  borderRadius="50%"
-                  backgroundImage={`url(${BigWhiteCircle})`}
-                  src={token.logoURL}
-                  alt=""
-                />
-              </Box>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-              >
-                <Heading fontSize="20px" color={token.color}>
-                  {symbol}
-                </Heading>
-                <Text fontWeight="thin" fontSize="15px">
-                  {"0.0"}
-                </Text>
-              </Column>
-            </Row>
+            <TokenRow key={token.address} token={token} onClick={onClick} />
           );
         }}
       />
@@ -304,4 +275,42 @@ const TokenList = ({
   );
 };
 
-export default DepositModal;
+const TokenRow = (props: {
+  token: Token;
+  onClick: (symbol: string) => any;
+}) => {
+  const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
+    props.token
+  );
+
+  return (
+    <Row
+      flexShrink={0}
+      as="button"
+      onClick={() => props.onClick(props.token.symbol)}
+      mb={4}
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="center"
+      width="100%"
+    >
+      <Box height="45px" width="45px" borderRadius="50%" mr={2}>
+        <Image
+          width="100%"
+          height="100%"
+          borderRadius="50%"
+          backgroundImage={`url(${BigWhiteCircle})`}
+          src={props.token.logoURL}
+          alt=""
+        />
+      </Box>
+      <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+        <Heading fontSize="20px" color={props.token.color}>
+          {props.token.symbol}
+        </Heading>
+        <Text fontWeight="thin" fontSize="15px">
+          {isBalanceLoading ? "$?" : formatBig(balance!)}
+        </Text>
+      </Column>
+    </Row>
+  );
+};
