@@ -26,9 +26,15 @@ interface Props {
 }
 
 const SlowlyLoadedList = (props: Props) => {
-  const [itemsToLoad, setItemsToLoad] = useState(
-    props.initalChunkAmount ?? props.chunkAmount
-  );
+  const [itemsToLoad, setItemsToLoad] = useState(() => {
+    let initalItemsToLoad = props.initalChunkAmount ?? props.chunkAmount;
+
+    if (initalItemsToLoad > props.length) {
+      initalItemsToLoad = props.length;
+    }
+
+    return initalItemsToLoad;
+  });
 
   useInterval(
     () => {
@@ -45,9 +51,9 @@ const SlowlyLoadedList = (props: Props) => {
 
   return (
     <>
-      {Array.from({ length: itemsToLoad }).map((_, index) =>
-        props.renderItem(index)
-      )}
+      {Array.from({
+        length: itemsToLoad,
+      }).map((_, index) => props.renderItem(index))}
     </>
   );
 };

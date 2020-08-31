@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -12,6 +12,9 @@ import {
   Image,
   Heading,
   Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from "@chakra-ui/core";
 import { Row, Column } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
@@ -44,6 +47,8 @@ enum Mode {
 }
 
 const DepositModal = (props: Props) => {
+  const { web3, address } = useAuthedWeb3();
+
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
@@ -55,35 +60,41 @@ const DepositModal = (props: Props) => {
     isLoading: isSelectedTokenBalanceLoading,
   } = useTokenBalance(tokens[selectedToken]);
 
-  const onSelectToken = (symbol: string) => {
-    _setSelectedToken(symbol);
-    setCurrentScreen(CurrentScreen.MAIN);
-    updateAmount("0.0");
-  };
-
   const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
   const [amount, _setAmount] = useState<Big | null>(() => toBig(0.0));
 
-  const updateAmount = (amount: string) => {
-    if (amount.startsWith("-")) {
-      return;
-    }
+  const updateAmount = useCallback(
+    (amount: string) => {
+      if (amount.startsWith("-")) {
+        return;
+      }
 
-    _setUserEnteredAmount(amount);
+      _setUserEnteredAmount(amount);
 
-    try {
-      // Try to set the amount to Big(amount):
-      const bigAmount = toBig(amount);
-      _setAmount(bigAmount);
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
-  };
+      try {
+        // Try to set the amount to Big(amount):
+        const bigAmount = toBig(amount);
+        _setAmount(bigAmount);
+      } catch (e) {
+        // If the number was invalid, set the amount to null to disable confirming:
+        _setAmount(null);
+      }
+    },
+    [_setUserEnteredAmount, _setAmount]
+  );
+
+  const onSelectToken = useCallback(
+    (symbol: string) => {
+      _setSelectedToken(symbol);
+      setCurrentScreen(CurrentScreen.MAIN);
+      updateAmount("0.0");
+    },
+    [_setSelectedToken, setCurrentScreen, updateAmount]
+  );
 
   const [isMaxLoading, _setIsMaxLoading] = useState(false);
 
-  const setToMax = async () => {
+  const setToMax = useCallback(async () => {
     _setIsMaxLoading(true);
     const balance = await createTokenContract(tokens[selectedToken], web3)
       .methods.balanceOf(address)
@@ -92,9 +103,7 @@ const DepositModal = (props: Props) => {
     updateAmount(divBigBy1e18(toBig(balance)).toString());
 
     _setIsMaxLoading(false);
-  };
-
-  const { web3, address } = useAuthedWeb3();
+  }, [_setIsMaxLoading, updateAmount, selectedToken, web3, address]);
 
   const isAmountGreaterThanSelectedTokenBalance = useMemo(
     () =>
@@ -240,18 +249,7 @@ const DepositModal = (props: Props) => {
                 </Column>
               </>
             ) : (
-              <Fade>
-                <Row
-                  width="100%"
-                  mainAxisAlignment="center"
-                  crossAxisAlignment="center"
-                  p={4}
-                >
-                  <Heading fontSize="27px">Select a Token</Heading>
-                </Row>
-                <Box h="1px" bg="#272727" />
-                <TokenList tokens={tokens} onClick={onSelectToken} />
-              </Fade>
+              <TokenSelect onSelectToken={onSelectToken} />
             )}
           </ModalContent>
         </Modal>
@@ -261,6 +259,62 @@ const DepositModal = (props: Props) => {
 };
 
 export default DepositModal;
+
+const TokenSelect = (props: { onSelectToken: (symbol: string) => any }) => {
+  const [searchNeedle, setSearchNeedle] = useState("");
+
+  return (
+    <Fade>
+      <Row
+        width="100%"
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        p={4}
+      >
+        <Heading fontSize="27px">Select a Token</Heading>
+      </Row>
+      <Box h="1px" bg="#272727" />
+      <InputGroup mb={4} mx={4}>
+        <InputLeftElement
+          ml={-1}
+          children={<Icon name="search" color="gray.300" />}
+        />
+        <Input
+          variant="flushed"
+          type="tel"
+          roundedLeft="0"
+          placeholder="Try searching for 'DAI'"
+          focusBorderColor="#FFFFFF"
+          value={searchNeedle}
+          onChange={(event: any) => setSearchNeedle(event.target.value)}
+        />
+      </InputGroup>
+
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        pt={1}
+        px={4}
+        height="175px"
+        width="100%"
+        overflowY="auto"
+      >
+        <TokenList
+          tokens={
+            searchNeedle === ""
+              ? tokens
+              : Object.fromEntries(
+                  Object.entries(tokens).filter(([key, val]) =>
+                    key.toLowerCase().startsWith(searchNeedle.toLowerCase())
+                  )
+                )
+          }
+          onClick={props.onSelectToken}
+        />
+      </Column>
+    </Fade>
+  );
+};
 
 const TokenList = ({
   tokens,
@@ -273,28 +327,18 @@ const TokenList = ({
   tokenKeys.sort();
 
   return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="center"
-      pt={4}
-      px={4}
-      height="230px"
-      width="400px"
-      overflowY="auto"
-    >
-      <SlowlyLoadedList
-        length={tokenKeys.length}
-        chunkAmount={10}
-        chunkDelayMs={500}
-        renderItem={(index) => {
-          const token = tokens[tokenKeys[index]];
+    <SlowlyLoadedList
+      key={tokenKeys.toString()}
+      length={tokenKeys.length}
+      initalChunkAmount={3}
+      chunkAmount={8}
+      chunkDelayMs={500}
+      renderItem={(index) => {
+        const token = tokens[tokenKeys[index]];
 
-          return (
-            <TokenRow key={token.address} token={token} onClick={onClick} />
-          );
-        }}
-      />
-    </Column>
+        return <TokenRow key={token.address} token={token} onClick={onClick} />;
+      }}
+    />
   );
 };
 
