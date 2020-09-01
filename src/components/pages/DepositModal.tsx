@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, CSSProperties } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -23,12 +23,17 @@ import { Fade } from "react-awesome-reveal";
 import { Token } from "rari-tokens-generator";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 import { divBigBy1e18, toBig, formatBig } from "../../utils/bigUtils";
-import SlowlyLoadedList from "../shared/SlowlyLoadedList";
+
 import BigWhiteCircle from "../../static/big-white-circle.png";
 import SmallWhiteCircle from "../../static/small-white-circle.png";
 import { tokens, createTokenContract } from "../../utils/tokenUtils";
 import { useTokenBalance } from "../../hooks/useTokenBalance";
 import Big from "big.js";
+import {
+  FixedSizeList as List,
+  ListChildComponentProps,
+  areEqual,
+} from "react-window";
 
 interface Props {
   isOpen: boolean;
@@ -274,7 +279,7 @@ const TokenSelect = (props: { onSelectToken: (symbol: string) => any }) => {
         <Heading fontSize="27px">Select a Token</Heading>
       </Row>
       <Box h="1px" bg="#272727" />
-      <InputGroup mb={4} mx={4}>
+      <InputGroup mb={2} mx={4}>
         <InputLeftElement
           ml={-1}
           children={<Icon name="search" color="gray.300" />}
@@ -295,18 +300,14 @@ const TokenSelect = (props: { onSelectToken: (symbol: string) => any }) => {
         crossAxisAlignment="center"
         pt={1}
         px={4}
-        height="175px"
         width="100%"
-        overflowY="auto"
       >
         <TokenList
-          tokens={
+          tokenKeys={
             searchNeedle === ""
-              ? tokens
-              : Object.fromEntries(
-                  Object.entries(tokens).filter(([key, val]) =>
-                    key.toLowerCase().startsWith(searchNeedle.toLowerCase())
-                  )
+              ? Object.keys(tokens)
+              : Object.keys(tokens).filter((symbol) =>
+                  symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
                 )
           }
           onClick={props.onSelectToken}
@@ -316,68 +317,90 @@ const TokenSelect = (props: { onSelectToken: (symbol: string) => any }) => {
   );
 };
 
+const TokenRow = React.memo(
+  ({
+    data,
+    index,
+    style,
+  }: {
+    index: number;
+    style: CSSProperties;
+    data: { tokenKeys: string[]; onClick: (symbol: string) => any };
+  }) => {
+    const token = tokens[data.tokenKeys[index]];
+
+    const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
+      token
+    );
+
+    return (
+      <div style={style}>
+        <Row
+          flexShrink={0}
+          as="button"
+          onClick={() => data.onClick(token.symbol)}
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          width="100%"
+        >
+          <Box height="45px" width="45px" borderRadius="50%" mr={2}>
+            <Image
+              width="100%"
+              height="100%"
+              borderRadius="50%"
+              backgroundImage={`url(${BigWhiteCircle})`}
+              src={token.logoURL}
+              alt=""
+            />
+          </Box>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+          >
+            <Heading fontSize="20px" color={token.color}>
+              {token.symbol}
+            </Heading>
+            <Text fontWeight="thin" fontSize="15px">
+              {isBalanceLoading ? "$?" : formatBig(balance!)}
+            </Text>
+          </Column>
+        </Row>
+      </div>
+    );
+  },
+  areEqual
+);
+
 const TokenList = ({
-  tokens,
+  tokenKeys,
   onClick,
 }: {
-  tokens: { [key: string]: Token };
+  tokenKeys: string[];
   onClick: (symbol: string) => any;
 }) => {
-  const tokenKeys = Object.keys(tokens);
-  tokenKeys.sort();
+  const sortedKeys = useMemo(() => {
+    return [...tokenKeys].sort();
+  }, [tokenKeys]);
 
-  return (
-    <SlowlyLoadedList
-      key={tokenKeys.toString()}
-      length={tokenKeys.length}
-      initalChunkAmount={3}
-      chunkAmount={8}
-      chunkDelayMs={500}
-      renderItem={(index) => {
-        const token = tokens[tokenKeys[index]];
-
-        return <TokenRow key={token.address} token={token} onClick={onClick} />;
-      }}
-    />
-  );
-};
-
-const TokenRow = (props: {
-  token: Token;
-  onClick: (symbol: string) => any;
-}) => {
-  const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
-    props.token
+  const itemData = useMemo(
+    () => ({
+      tokenKeys: sortedKeys,
+      onClick,
+    }),
+    [sortedKeys, onClick]
   );
 
   return (
-    <Row
-      flexShrink={0}
-      as="button"
-      onClick={() => props.onClick(props.token.symbol)}
-      mb={4}
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="center"
-      width="100%"
+    <List
+      height={175}
+      itemCount={sortedKeys.length}
+      itemKey={(index, data) => data.tokenKeys[index]}
+      itemSize={55}
+      width={415}
+      itemData={itemData}
+      overscanCount={5}
     >
-      <Box height="45px" width="45px" borderRadius="50%" mr={2}>
-        <Image
-          width="100%"
-          height="100%"
-          borderRadius="50%"
-          backgroundImage={`url(${BigWhiteCircle})`}
-          src={props.token.logoURL}
-          alt=""
-        />
-      </Box>
-      <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-        <Heading fontSize="20px" color={props.token.color}>
-          {props.token.symbol}
-        </Heading>
-        <Text fontWeight="thin" fontSize="15px">
-          {isBalanceLoading ? "$?" : formatBig(balance!)}
-        </Text>
-      </Column>
-    </Row>
+      {TokenRow}
+    </List>
   );
 };
