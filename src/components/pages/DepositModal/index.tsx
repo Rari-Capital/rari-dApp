@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  CSSProperties,
-  useEffect,
-} from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -18,24 +12,18 @@ import {
   Image,
   Heading,
   Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
 } from "@chakra-ui/core";
 import { Row, Column } from "buttered-chakra";
-import DashboardBox from "../shared/DashboardBox";
-import SlideIn from "../shared/SlideIn";
-import { Fade } from "react-awesome-reveal";
+import DashboardBox from "../../shared/DashboardBox";
+import SlideIn from "../../shared/SlideIn";
+import { useAuthedWeb3 } from "../../../context/Web3Context";
+import { divBigBy1e18, toBig } from "../../../utils/bigUtils";
 
-import { useAuthedWeb3 } from "../../context/Web3Context";
-import { divBigBy1e18, toBig, formatBig } from "../../utils/bigUtils";
-
-import BigWhiteCircle from "../../static/big-white-circle.png";
-import SmallWhiteCircle from "../../static/small-white-circle.png";
-import { tokens, createTokenContract } from "../../utils/tokenUtils";
-import { useTokenBalance } from "../../hooks/useTokenBalance";
+import SmallWhiteCircle from "../../../static/small-white-circle.png";
+import { tokens, createTokenContract } from "../../../utils/tokenUtils";
+import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import Big from "big.js";
-import { FixedSizeList as List, areEqual } from "react-window";
+import { TokenSelect } from "./TokenSelect";
 
 enum CurrentScreen {
   MAIN,
@@ -276,158 +264,3 @@ const DepositModal = React.memo((props: Props) => {
 });
 
 export default DepositModal;
-
-const TokenSelect = React.memo(
-  (props: { onSelectToken: (symbol: string) => any }) => {
-    const [searchNeedle, setSearchNeedle] = useState("");
-
-    const tokenKeys = useMemo(
-      () =>
-        searchNeedle === ""
-          ? Object.keys(tokens)
-          : Object.keys(tokens).filter((symbol) =>
-              symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
-            ),
-      [searchNeedle]
-    );
-
-    const onSearch = useCallback(
-      (event: any) => setSearchNeedle(event.target.value),
-      [setSearchNeedle]
-    );
-
-    return (
-      <Fade>
-        <Row
-          width="100%"
-          mainAxisAlignment="center"
-          crossAxisAlignment="center"
-          p={4}
-        >
-          <Heading fontSize="27px">Select a Token</Heading>
-        </Row>
-        <Box h="1px" bg="#272727" />
-        <InputGroup mb={2} mx={4}>
-          <InputLeftElement
-            ml={-1}
-            children={<Icon name="search" color="gray.300" />}
-          />
-          <Input
-            variant="flushed"
-            type="tel"
-            roundedLeft="0"
-            placeholder="Try searching for 'DAI'"
-            focusBorderColor="#FFFFFF"
-            value={searchNeedle}
-            onChange={onSearch}
-          />
-        </InputGroup>
-
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          pt={1}
-          px={4}
-          width="100%"
-        >
-          <TokenList tokenKeys={tokenKeys} onClick={props.onSelectToken} />
-        </Column>
-      </Fade>
-    );
-  }
-);
-
-const TokenRow = React.memo(
-  ({
-    data,
-    index,
-    style,
-  }: {
-    index: number;
-    style: CSSProperties;
-    data: { tokenKeys: string[]; onClick: (symbol: string) => any };
-  }) => {
-    const token = tokens[data.tokenKeys[index]];
-
-    const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
-      token
-    );
-
-    const onClick = useCallback(() => data.onClick(token.symbol), [
-      token.symbol,
-      data.onClick,
-    ]);
-
-    return (
-      <div style={style}>
-        <Row
-          flexShrink={0}
-          as="button"
-          onClick={onClick}
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Box height="45px" width="45px" borderRadius="50%" mr={2}>
-            <Image
-              width="100%"
-              height="100%"
-              borderRadius="50%"
-              backgroundImage={`url(${BigWhiteCircle})`}
-              src={token.logoURL}
-              alt=""
-            />
-          </Box>
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-          >
-            <Heading fontSize="20px" color={token.color}>
-              {token.symbol}
-            </Heading>
-            <Text fontWeight="thin" fontSize="15px">
-              {isBalanceLoading ? "$?" : formatBig(balance!)}
-            </Text>
-          </Column>
-        </Row>
-      </div>
-    );
-  },
-  areEqual
-);
-
-const TokenList = React.memo(
-  ({
-    tokenKeys,
-    onClick,
-  }: {
-    tokenKeys: string[];
-    onClick: (symbol: string) => any;
-  }) => {
-    const sortedKeys = useMemo(() => {
-      return [...tokenKeys].sort();
-    }, [tokenKeys]);
-
-    const itemData = useMemo(
-      () => ({
-        tokenKeys: sortedKeys,
-        onClick,
-      }),
-      [sortedKeys, onClick]
-    );
-
-    return (
-      <List
-        height={175}
-        itemCount={sortedKeys.length}
-        itemKey={(index, data) => data.tokenKeys[index]}
-        itemSize={55}
-        width={415}
-        itemData={itemData}
-        overscanCount={3}
-      >
-        {TokenRow}
-      </List>
-    );
-  }
-);
