@@ -188,7 +188,7 @@ const DepositModal = React.memo((props: Props) => {
                       <Box overflow="hidden" p={2}>
                         <Editable
                           value={userEnteredAmount.toString()}
-                          onChange={(event) => updateAmount(event)}
+                          onChange={updateAmount}
                           placeholder="0.0"
                           fontSize="3xl"
                           fontWeight="bold"
@@ -291,6 +291,11 @@ const TokenSelect = React.memo(
       [searchNeedle]
     );
 
+    const onSearch = useCallback(
+      (event: any) => setSearchNeedle(event.target.value),
+      [setSearchNeedle]
+    );
+
     return (
       <Fade>
         <Row
@@ -314,7 +319,7 @@ const TokenSelect = React.memo(
             placeholder="Try searching for 'DAI'"
             focusBorderColor="#FFFFFF"
             value={searchNeedle}
-            onChange={(event: any) => setSearchNeedle(event.target.value)}
+            onChange={onSearch}
           />
         </InputGroup>
 
@@ -348,12 +353,17 @@ const TokenRow = React.memo(
       token
     );
 
+    const onClick = useCallback(() => data.onClick(token.symbol), [
+      token.symbol,
+      data.onClick,
+    ]);
+
     return (
       <div style={style}>
         <Row
           flexShrink={0}
           as="button"
-          onClick={() => data.onClick(token.symbol)}
+          onClick={onClick}
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
