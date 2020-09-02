@@ -16,6 +16,7 @@ import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { formatBig } from "../../../utils/bigUtils";
 import BigWhiteCircle from "../../../static/big-white-circle.png";
 import { FixedSizeList as List, areEqual } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 export const TokenSelect = React.memo(
   (props: { onSelectToken: (symbol: string) => any }) => {
@@ -63,15 +64,9 @@ export const TokenSelect = React.memo(
           />
         </InputGroup>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          pt={1}
-          px={4}
-          width="100%"
-        >
+        <Box pt={1} px={4} width="100%" height="180px">
           <TokenList tokenKeys={tokenKeys} onClick={props.onSelectToken} />
-        </Column>
+        </Box>
       </Fade>
     );
   }
@@ -157,17 +152,24 @@ const TokenList = React.memo(
     );
 
     return (
-      <List
-        height={175}
-        itemCount={sortedKeys.length}
-        itemKey={(index, data) => data.tokenKeys[index]}
-        itemSize={55}
-        width={415}
-        itemData={itemData}
-        overscanCount={3}
-      >
-        {TokenRow}
-      </List>
+      <AutoSizer>
+        {({ height, width }) => {
+          console.log(height, width);
+          return (
+            <List
+              height={height}
+              width={width}
+              itemCount={sortedKeys.length}
+              itemKey={(index, data) => data.tokenKeys[index]}
+              itemSize={55}
+              itemData={itemData}
+              overscanCount={3}
+            >
+              {TokenRow}
+            </List>
+          );
+        }}
+      </AutoSizer>
     );
   }
 );
