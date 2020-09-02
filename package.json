@@ -40,6 +40,7 @@
     "react-error-boundary": "^2.3.1",
     "react-ios-pwa-prompt": "^1.8.0",
     "react-query": "^2.12.1",
+    "react-query-devtools": "^2.4.5",
     "react-scripts": "next",
     "react-window": "^1.8.5",
     "remove-focus-outline": "^1.2.1",

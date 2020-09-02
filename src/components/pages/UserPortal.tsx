@@ -16,7 +16,6 @@ import { useAuthedWeb3 } from "../../context/Web3Context";
 
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
-import { useContractMethod } from "../../hooks/useContractMethod";
 
 import { shortAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
@@ -48,6 +47,7 @@ import ProgressBar from "../shared/ProgressBar";
 import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
 import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
+import { useQuery } from "react-query";
 
 const UserPortal = () => {
   const { address, logout } = useAuthedWeb3();
@@ -108,8 +108,8 @@ const UserPortal = () => {
     ],
   });
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useContractMethod(
-    "balanceOf" + address,
+  const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
+    address + " balanceOf RFT",
     () =>
       RariFundManager.methods
         .balanceOf(address)
@@ -117,14 +117,13 @@ const UserPortal = () => {
         .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
-  const {
-    isLoading: isInterestLoading,
-    data: interestData,
-  } = useContractMethod("interestAccruedBy" + address, () =>
-    RariFundManager.methods
-      .interestAccruedBy(address)
-      .call()
-      .then((balance) => format1e18BigAsUSD(toBig(balance)))
+  const { isLoading: isInterestLoading, data: interestData } = useQuery(
+    address + " interestAccruedBy",
+    () =>
+      RariFundManager.methods
+        .interestAccruedBy(address)
+        .call()
+        .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
   const {
@@ -347,121 +346,123 @@ const UserPortal = () => {
 
 export default UserPortal;
 
-const UserStatsAndChart = ({
-  size,
-  balance,
-  interestEarned,
-  isFirstTime,
-}: {
-  size: number;
-  balance: string;
-  interestEarned: string;
-  isFirstTime: boolean;
-}) => {
-  const {
-    childSizes: [statsSize, chartSize, bottomSpacing],
-  } = useSpacedLayout({
-    parentHeight: size,
-    spacing: 0,
-    childSizes: [new PixelSize(75), new PercentageSize(1), new PixelSize(10)],
-  });
+const UserStatsAndChart = React.memo(
+  ({
+    size,
+    balance,
+    interestEarned,
+    isFirstTime,
+  }: {
+    size: number;
+    balance: string;
+    interestEarned: string;
+    isFirstTime: boolean;
+  }) => {
+    const {
+      childSizes: [statsSize, chartSize, bottomSpacing],
+    } = useSpacedLayout({
+      parentHeight: size,
+      spacing: 0,
+      childSizes: [new PixelSize(75), new PercentageSize(1), new PixelSize(10)],
+    });
 
-  const isMobile = useIsMobile();
+    const isMobile = useIsMobile();
 
-  return (
-    <>
-      <RowOnDesktopColumnOnMobile
-        mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
-        crossAxisAlignment="center"
-        px={DASHBOARD_BOX_SPACING.asPxString()}
-        height={{ md: statsSize.asPxString(), xs: "30%" }}
-        width="100%"
-      >
-        {isFirstTime ? (
-          <CaptionedStat
-            crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-            caption="Fund Performance"
-            captionSize="xs"
-            stat={"+10%"}
-            statSize={isMobile ? "2xl" : "lg"}
-            columnProps={{
-              mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-            }}
-          />
-        ) : (
-          <>
+    return (
+      <>
+        <RowOnDesktopColumnOnMobile
+          mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
+          crossAxisAlignment="center"
+          px={DASHBOARD_BOX_SPACING.asPxString()}
+          height={{ md: statsSize.asPxString(), xs: "30%" }}
+          width="100%"
+        >
+          {isFirstTime ? (
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-              caption="Account Balance"
+              caption="Fund Performance"
               captionSize="xs"
-              stat={balance}
-              statSize="lg"
+              stat={"+10%"}
+              statSize={isMobile ? "2xl" : "lg"}
               columnProps={{
                 mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-                mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
               }}
             />
+          ) : (
+            <>
+              <CaptionedStat
+                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+                caption="Account Balance"
+                captionSize="xs"
+                stat={balance}
+                statSize="lg"
+                columnProps={{
+                  mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+                }}
+              />
 
-            <CaptionedStat
-              crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-              caption="Interest Earned"
-              captionSize="xs"
-              stat={interestEarned}
-              statSize="lg"
-              columnProps={{
-                mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-              }}
-            />
-          </>
-        )}
+              <CaptionedStat
+                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+                caption="Interest Earned"
+                captionSize="xs"
+                stat={interestEarned}
+                statSize="lg"
+                columnProps={{
+                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
+                }}
+              />
+            </>
+          )}
 
-        <Select
+          <Select
+            color="#000000"
+            fontWeight="bold"
+            width={{ md: "130px", xs: "100%" }}
+            mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+            isDisabled={isFirstTime}
+          >
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="ytd">YTD</option>
+          </Select>
+        </RowOnDesktopColumnOnMobile>
+
+        <Box
+          px={1}
+          height={{ md: chartSize.asPxString(), xs: "69%" }}
           color="#000000"
-          fontWeight="bold"
-          width={{ md: "130px", xs: "100%" }}
-          mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-          isDisabled={isFirstTime}
+          overflow="hidden"
+          mb={bottomSpacing.asPxString()}
         >
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="ytd">YTD</option>
-        </Select>
-      </RowOnDesktopColumnOnMobile>
+          <Chart
+            options={
+              isFirstTime
+                ? { ...FundReturnChartOptions, ...DisableChartInteractions }
+                : FundReturnChartOptions
+            }
+            type="line"
+            width="100%"
+            height="100%"
+            series={[
+              {
+                name: "Rari",
+                data: [
+                  { x: "August 1, 2019", y: 54 },
+                  { x: "August 3, 2019", y: 47 },
+                  { x: "August 4, 2019", y: 64 },
+                  { x: "August 5, 2019", y: 95 },
+                ],
+              },
+            ]}
+          />
+        </Box>
+      </>
+    );
+  }
+);
 
-      <Box
-        px={1}
-        height={{ md: chartSize.asPxString(), xs: "69%" }}
-        color="#000000"
-        overflow="hidden"
-        mb={bottomSpacing.asPxString()}
-      >
-        <Chart
-          options={
-            isFirstTime
-              ? { ...FundReturnChartOptions, ...DisableChartInteractions }
-              : FundReturnChartOptions
-          }
-          type="line"
-          width="100%"
-          height="100%"
-          series={[
-            {
-              name: "Rari",
-              data: [
-                { x: "August 1, 2019", y: 54 },
-                { x: "August 3, 2019", y: 47 },
-                { x: "August 4, 2019", y: 64 },
-                { x: "August 5, 2019", y: 95 },
-              ],
-            },
-          ]}
-        />
-      </Box>
-    </>
-  );
-};
-
-const CurrentAPY = () => {
+const CurrentAPY = React.memo(() => {
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading
@@ -477,9 +478,9 @@ const CurrentAPY = () => {
       </Text>
     </Row>
   );
-};
+});
 
-const APYStats = () => {
+const APYStats = React.memo(() => {
   return (
     <Column
       expand
@@ -526,9 +527,9 @@ const APYStats = () => {
       </Column>
     </Column>
   );
-};
+});
 
-const StrategyAllocation = () => {
+const StrategyAllocation = React.memo(() => {
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -551,9 +552,9 @@ const StrategyAllocation = () => {
       />
     </Column>
   );
-};
+});
 
-const MonthlyReturns = () => {
+const MonthlyReturns = React.memo(() => {
   const returns = { Rari: 94, Compound: 5.4, dYdX: 4.3 };
 
   return (
@@ -596,17 +597,15 @@ const MonthlyReturns = () => {
       })}
     </Column>
   );
-};
+});
 
-const TransactionHistoryOrTokenAllocation = ({
-  isFirstTime,
-}: {
-  isFirstTime: boolean;
-}) => {
-  return isFirstTime ? <TokenAllocation /> : <TransactionHistory />;
-};
+const TransactionHistoryOrTokenAllocation = React.memo(
+  ({ isFirstTime }: { isFirstTime: boolean }) => {
+    return isFirstTime ? <TokenAllocation /> : <TransactionHistory />;
+  }
+);
 
-const TokenAllocation = () => {
+const TokenAllocation = React.memo(() => {
   const allocations = { DAI: 0.4, USDC: 0.3, USDT: 0.2, TUSD: 0.1 };
 
   return (
@@ -638,9 +637,9 @@ const TokenAllocation = () => {
       })}
     </Column>
   );
-};
+});
 
-const TransactionHistory = () => {
+const TransactionHistory = React.memo(() => {
   const { data: events, isLoading } = useTransactionHistoryEvents();
 
   return isLoading ? (
@@ -660,7 +659,7 @@ const TransactionHistory = () => {
 
       {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
-          <Text fontSize="sm" color="#aba6a6" key={event.transactionHash}>
+          <Text fontSize="sm" color="#aba6a6">
             {`${event.event}: ${format1e18Big(
               toBig(event.returnValues.amount)
             )} ${getCurrencyCodeFromKeccak256(
@@ -678,9 +677,9 @@ const TransactionHistory = () => {
       ))}
     </Column>
   );
-};
+});
 
-const RecentTrades = () => {
+const RecentTrades = React.memo(() => {
   const recentTrades = [
     {
       transactionHash: "XXXXX",
@@ -731,7 +730,7 @@ const RecentTrades = () => {
 
       {recentTrades!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
-          <Text fontSize="sm" color="#aba6a6" key={event.transactionHash}>
+          <Text fontSize="sm" color="#aba6a6">
             {`Move ${event.returnValues.percent * 100}% from ${
               event.returnValues.from
             } to ${event.returnValues.to}`}
@@ -746,9 +745,9 @@ const RecentTrades = () => {
       ))}
     </Column>
   );
-};
+});
 
-const NeedHelp = ({ height }: { height: number }) => {
+const NeedHelp = React.memo(({ height }: { height: number }) => {
   const isTall = height > 200;
 
   return (
@@ -776,11 +775,11 @@ const NeedHelp = ({ height }: { height: number }) => {
       </Button>
     </Row>
   );
-};
+});
 
 interface DepositButtonProps extends Omit<ButtonProps, "children"> {}
 
-const DepositButton = (buttonProps: DepositButtonProps) => {
+const DepositButton = React.memo((buttonProps: DepositButtonProps) => {
   return (
     <Button
       bg="#FFFFFF"
@@ -796,4 +795,4 @@ const DepositButton = (buttonProps: DepositButtonProps) => {
       Deposit
     </Button>
   );
-};
+});

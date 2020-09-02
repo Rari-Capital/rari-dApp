@@ -4,7 +4,7 @@ import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
 import Chart from "react-apexcharts";
-import { useContractMethod } from "../../hooks/useContractMethod";
+
 import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
@@ -22,6 +22,7 @@ import {
   PercentOnDesktopPixelOnMobileSize,
 } from "buttered-chakra";
 import CaptionedStat from "../shared/CaptionedStat";
+import { useQuery } from "react-query";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -167,17 +168,16 @@ const PreviewPortal = () => {
 
 export default PreviewPortal;
 
-const FundStats = () => {
+const FundStats = React.memo(() => {
   const { RariFundManager } = useContracts();
 
-  const {
-    isLoading: isFundBalenceLoading,
-    data: fundBalance,
-  } = useContractMethod("getFundBalance", () =>
-    RariFundManager.methods
-      .getFundBalance()
-      .call()
-      .then((balance) => format1e18BigAsUSD(toBig(balance)))
+  const { isLoading: isFundBalenceLoading, data: fundBalance } = useQuery(
+    "getFundBalance",
+    () =>
+      RariFundManager.methods
+        .getFundBalance()
+        .call()
+        .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
   return (
@@ -222,7 +222,7 @@ const FundStats = () => {
       </Column>
     </DashboardBox>
   );
-};
+});
 
 const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {

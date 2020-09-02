@@ -19,9 +19,11 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Web3Provider } from "./context/Web3Context";
 import { ContractsProvider } from "./context/ContractsContext";
 import "remove-focus-outline";
+import { ReactQueryDevtools } from "react-query-devtools";
 
 ReactDOM.render(
   <>
+    <ReactQueryDevtools initialIsOpen={false} />
     <PWAPrompt
       timesToShow={10}
       permanentlyHideOnDismiss={false}

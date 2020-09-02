@@ -6,9 +6,9 @@ interface Props {
   render: (styles: any) => JSX.Element;
 }
 
-const SlideIn = (props: Props) => {
+const SlideIn = React.memo((props: Props) => {
   // @ts-ignore
   return <ChakraSlideIn in={props.isActivted}>{props.render}</ChakraSlideIn>;
-};
+});
 
 export default SlideIn;

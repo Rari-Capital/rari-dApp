@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback, CSSProperties } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  CSSProperties,
+  useEffect,
+} from "react";
 import {
   Modal,
   ModalOverlay,
@@ -20,7 +26,7 @@ import { Row, Column } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
 import SlideIn from "../shared/SlideIn";
 import { Fade } from "react-awesome-reveal";
-import { Token } from "rari-tokens-generator";
+
 import { useAuthedWeb3 } from "../../context/Web3Context";
 import { divBigBy1e18, toBig, formatBig } from "../../utils/bigUtils";
 
@@ -29,11 +35,7 @@ import SmallWhiteCircle from "../../static/small-white-circle.png";
 import { tokens, createTokenContract } from "../../utils/tokenUtils";
 import { useTokenBalance } from "../../hooks/useTokenBalance";
 import Big from "big.js";
-import {
-  FixedSizeList as List,
-  ListChildComponentProps,
-  areEqual,
-} from "react-window";
+import { FixedSizeList as List, areEqual } from "react-window";
 
 interface Props {
   isOpen: boolean;
@@ -55,6 +57,13 @@ const DepositModal = (props: Props) => {
   const { web3, address } = useAuthedWeb3();
 
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
+
+  useEffect(() => {
+    // When the modal closes return to the main screen.
+    if (!props.isOpen) {
+      setCurrentScreen(CurrentScreen.MAIN);
+    }
+  }, [props.isOpen]);
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
 
@@ -265,57 +274,60 @@ const DepositModal = (props: Props) => {
 
 export default DepositModal;
 
-const TokenSelect = (props: { onSelectToken: (symbol: string) => any }) => {
-  const [searchNeedle, setSearchNeedle] = useState("");
+const TokenSelect = React.memo(
+  (props: { onSelectToken: (symbol: string) => any }) => {
+    const [searchNeedle, setSearchNeedle] = useState("");
 
-  return (
-    <Fade>
-      <Row
-        width="100%"
-        mainAxisAlignment="center"
-        crossAxisAlignment="center"
-        p={4}
-      >
-        <Heading fontSize="27px">Select a Token</Heading>
-      </Row>
-      <Box h="1px" bg="#272727" />
-      <InputGroup mb={2} mx={4}>
-        <InputLeftElement
-          ml={-1}
-          children={<Icon name="search" color="gray.300" />}
-        />
-        <Input
-          variant="flushed"
-          type="tel"
-          roundedLeft="0"
-          placeholder="Try searching for 'DAI'"
-          focusBorderColor="#FFFFFF"
-          value={searchNeedle}
-          onChange={(event: any) => setSearchNeedle(event.target.value)}
-        />
-      </InputGroup>
+    const tokenKeys = useMemo(
+      () =>
+        searchNeedle === ""
+          ? Object.keys(tokens)
+          : Object.keys(tokens).filter((symbol) =>
+              symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
+            ),
+      [searchNeedle]
+    );
 
-      <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        pt={1}
-        px={4}
-        width="100%"
-      >
-        <TokenList
-          tokenKeys={
-            searchNeedle === ""
-              ? Object.keys(tokens)
-              : Object.keys(tokens).filter((symbol) =>
-                  symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
-                )
-          }
-          onClick={props.onSelectToken}
-        />
-      </Column>
-    </Fade>
-  );
-};
+    return (
+      <Fade>
+        <Row
+          width="100%"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          p={4}
+        >
+          <Heading fontSize="27px">Select a Token</Heading>
+        </Row>
+        <Box h="1px" bg="#272727" />
+        <InputGroup mb={2} mx={4}>
+          <InputLeftElement
+            ml={-1}
+            children={<Icon name="search" color="gray.300" />}
+          />
+          <Input
+            variant="flushed"
+            type="tel"
+            roundedLeft="0"
+            placeholder="Try searching for 'DAI'"
+            focusBorderColor="#FFFFFF"
+            value={searchNeedle}
+            onChange={(event: any) => setSearchNeedle(event.target.value)}
+          />
+        </InputGroup>
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          pt={1}
+          px={4}
+          width="100%"
+        >
+          <TokenList tokenKeys={tokenKeys} onClick={props.onSelectToken} />
+        </Column>
+      </Fade>
+    );
+  }
+);
 
 const TokenRow = React.memo(
   ({
@@ -371,36 +383,38 @@ const TokenRow = React.memo(
   areEqual
 );
 
-const TokenList = ({
-  tokenKeys,
-  onClick,
-}: {
-  tokenKeys: string[];
-  onClick: (symbol: string) => any;
-}) => {
-  const sortedKeys = useMemo(() => {
-    return [...tokenKeys].sort();
-  }, [tokenKeys]);
+const TokenList = React.memo(
+  ({
+    tokenKeys,
+    onClick,
+  }: {
+    tokenKeys: string[];
+    onClick: (symbol: string) => any;
+  }) => {
+    const sortedKeys = useMemo(() => {
+      return [...tokenKeys].sort();
+    }, [tokenKeys]);
 
-  const itemData = useMemo(
-    () => ({
-      tokenKeys: sortedKeys,
-      onClick,
-    }),
-    [sortedKeys, onClick]
-  );
+    const itemData = useMemo(
+      () => ({
+        tokenKeys: sortedKeys,
+        onClick,
+      }),
+      [sortedKeys, onClick]
+    );
 
-  return (
-    <List
-      height={175}
-      itemCount={sortedKeys.length}
-      itemKey={(index, data) => data.tokenKeys[index]}
-      itemSize={55}
-      width={415}
-      itemData={itemData}
-      overscanCount={5}
-    >
-      {TokenRow}
-    </List>
-  );
-};
+    return (
+      <List
+        height={175}
+        itemCount={sortedKeys.length}
+        itemKey={(index, data) => data.tokenKeys[index]}
+        itemSize={55}
+        width={415}
+        itemData={itemData}
+        overscanCount={3}
+      >
+        {TokenRow}
+      </List>
+    );
+  }
+);
