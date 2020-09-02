@@ -37,12 +37,6 @@ import { useTokenBalance } from "../../hooks/useTokenBalance";
 import Big from "big.js";
 import { FixedSizeList as List, areEqual } from "react-window";
 
-interface Props {
-  isOpen: boolean;
-
-  onClose: () => any;
-}
-
 enum CurrentScreen {
   MAIN,
   COIN_SELECT,
@@ -53,10 +47,21 @@ enum Mode {
   WITHDRAW = "Withdraw",
 }
 
-const DepositModal = (props: Props) => {
+interface Props {
+  isOpen: boolean;
+
+  onClose: () => any;
+}
+
+const DepositModal = React.memo((props: Props) => {
   const { web3, address } = useAuthedWeb3();
 
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
+
+  const openCoinSelect = useCallback(
+    () => () => setCurrentScreen(CurrentScreen.COIN_SELECT),
+    [setCurrentScreen]
+  );
 
   useEffect(() => {
     // When the modal closes return to the main screen.
@@ -203,9 +208,7 @@ const DepositModal = (props: Props) => {
                           mainAxisAlignment="flex-start"
                           crossAxisAlignment="center"
                           as="button"
-                          onClick={() =>
-                            setCurrentScreen(CurrentScreen.COIN_SELECT)
-                          }
+                          onClick={openCoinSelect}
                         >
                           <Box height="25px" width="25px" mr={2}>
                             <Image
@@ -270,7 +273,7 @@ const DepositModal = (props: Props) => {
       )}
     />
   );
-};
+});
 
 export default DepositModal;
 
