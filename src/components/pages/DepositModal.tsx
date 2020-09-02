@@ -59,7 +59,7 @@ const DepositModal = React.memo((props: Props) => {
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
 
   const openCoinSelect = useCallback(
-    () => () => setCurrentScreen(CurrentScreen.COIN_SELECT),
+    () => setCurrentScreen(CurrentScreen.COIN_SELECT),
     [setCurrentScreen]
   );
 
