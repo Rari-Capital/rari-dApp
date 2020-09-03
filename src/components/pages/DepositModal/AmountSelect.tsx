@@ -157,7 +157,6 @@ const TokenNameAndMaxButton = React.memo(
     selectedToken,
     updateAmount,
   }: Props & { updateAmount: (newAmount: string) => any }) => {
-    console.log("re-rendering!");
     const { web3, address } = useAuthedWeb3();
 
     const [isMaxLoading, _setIsMaxLoading] = useState(false);
