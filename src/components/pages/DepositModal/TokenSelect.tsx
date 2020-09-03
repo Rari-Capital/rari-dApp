@@ -154,7 +154,6 @@ const TokenList = React.memo(
     return (
       <AutoSizer>
         {({ height, width }) => {
-          console.log(height, width);
           return (
             <List
               height={height}
