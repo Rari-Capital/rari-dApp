@@ -18,7 +18,7 @@ import BigWhiteCircle from "../../../static/big-white-circle.png";
 import { FixedSizeList as List, areEqual } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-export const TokenSelect = React.memo(
+const TokenSelect = React.memo(
   (props: { onSelectToken: (symbol: string) => any }) => {
     const [searchNeedle, setSearchNeedle] = useState("");
 
@@ -71,6 +71,8 @@ export const TokenSelect = React.memo(
     );
   }
 );
+
+export default TokenSelect;
 
 const TokenRow = React.memo(
   ({

@@ -10,24 +10,26 @@ import {
   Button,
   Text,
   Image,
+  IconButton,
 } from "@chakra-ui/core";
 import DashboardBox from "../../shared/DashboardBox";
 import { tokens, createTokenContract } from "../../../utils/tokenUtils";
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { toBig, divBigBy1e18 } from "../../../utils/bigUtils";
-import { Mode } from ".";
+import { Mode, modeToTitleCaseString, modeToLowerCaseString } from ".";
 import Big from "big.js";
 import { useAuthedWeb3 } from "../../../context/Web3Context";
 
 interface Props {
   selectedToken: string;
   openCoinSelect: () => any;
+  openOptions: () => any;
   mode: Mode;
 }
 
 const AmountSelect = React.memo(
-  ({ selectedToken, openCoinSelect, mode }: Props) => {
+  ({ selectedToken, openCoinSelect, mode, openOptions }: Props) => {
     const {
       data: selectedTokenBalance,
       isLoading: isSelectedTokenBalanceLoading,
@@ -68,11 +70,22 @@ const AmountSelect = React.memo(
       <>
         <Row
           width="100%"
-          mainAxisAlignment="center"
+          mainAxisAlignment="space-between"
           crossAxisAlignment="center"
           p={4}
         >
-          <Heading fontSize="27px">Deposit</Heading>
+          <Box width="40px" />
+          <Heading fontSize="27px">{modeToTitleCaseString(mode)}</Heading>
+          <IconButton
+            width="20px"
+            color="#FFFFFF"
+            variant="ghost"
+            aria-label="Options"
+            icon="settings"
+            _hover={{}}
+            _active={{}}
+            onClick={openOptions}
+          />
         </Row>
         <Box h="1px" bg="#272727" />
         <Column
@@ -84,13 +97,17 @@ const AmountSelect = React.memo(
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
             {amount !== null
               ? !amount.gt(0)
-                ? "Choose which crypto you want to deposit:"
+                ? `Choose which crypto you want to ${modeToLowerCaseString(
+                    mode
+                  )}:`
                 : isSelectedTokenBalanceLoading
                 ? `Loading your balance of ${selectedToken}...`
                 : isAmountGreaterThanSelectedTokenBalance
                 ? `You don't have enough ${selectedToken}, enter a smaller amount!`
                 : "Click confirm to start earning interest:"
-              : "Please enter a valid amount to deposit:"}
+              : `Please enter a valid amount to ${modeToLowerCaseString(
+                  mode
+                )}:`}
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
@@ -156,7 +173,12 @@ const TokenNameAndMaxButton = React.memo(
     openCoinSelect,
     selectedToken,
     updateAmount,
-  }: Props & { updateAmount: (newAmount: string) => any }) => {
+  }: {
+    selectedToken: string;
+    openCoinSelect: () => any;
+    mode: Mode;
+    updateAmount: (newAmount: string) => any;
+  }) => {
     const { web3, address } = useAuthedWeb3();
 
     const [isMaxLoading, _setIsMaxLoading] = useState(false);

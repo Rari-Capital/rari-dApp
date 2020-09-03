@@ -1,17 +1,27 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/core";
 import SlideIn from "../../shared/SlideIn";
-import { TokenSelect } from "./TokenSelect";
+import TokenSelect from "./TokenSelect";
 import AmountSelect from "./AmountSelect";
+import OptionsMenu from "./OptionsMenu";
 
 enum CurrentScreen {
   MAIN,
   COIN_SELECT,
+  OPTIONS,
 }
 
 export enum Mode {
   DEPOSIT,
   WITHDRAW,
+}
+
+export function modeToTitleCaseString(mode: Mode) {
+  return mode === Mode.DEPOSIT ? "Deposit" : "Withdraw";
+}
+
+export function modeToLowerCaseString(mode: Mode) {
+  return modeToTitleCaseString(mode);
 }
 
 interface Props {
@@ -25,6 +35,11 @@ const DepositModal = React.memo((props: Props) => {
 
   const openCoinSelect = useCallback(
     () => setCurrentScreen(CurrentScreen.COIN_SELECT),
+    [setCurrentScreen]
+  );
+
+  const openOptions = useCallback(
+    () => setCurrentScreen(CurrentScreen.OPTIONS),
     [setCurrentScreen]
   );
 
@@ -47,6 +62,14 @@ const DepositModal = React.memo((props: Props) => {
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
 
+  const onSetMode = useCallback(
+    (mode: Mode) => {
+      setMode(mode);
+      setCurrentScreen(CurrentScreen.MAIN);
+    },
+    [setMode, setCurrentScreen]
+  );
+
   return (
     <SlideIn
       isActivted={props.isOpen}
@@ -67,10 +90,13 @@ const DepositModal = React.memo((props: Props) => {
               <AmountSelect
                 selectedToken={selectedToken}
                 openCoinSelect={openCoinSelect}
+                openOptions={openOptions}
                 mode={mode}
               />
-            ) : (
+            ) : currentScreen === CurrentScreen.COIN_SELECT ? (
               <TokenSelect onSelectToken={onSelectToken} />
+            ) : (
+              <OptionsMenu mode={mode} onSetMode={onSetMode} />
             )}
           </ModalContent>
         </Modal>
