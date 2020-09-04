@@ -161,11 +161,12 @@ const TokenNameAndMaxButton = React.memo(
     openCoinSelect,
     selectedToken,
     updateAmount,
+    mode,
   }: {
     selectedToken: string;
     openCoinSelect: () => any;
-    mode: Mode;
     updateAmount: (newAmount: string) => any;
+    mode: Mode;
   }) => {
     const { web3, address } = useAuthedWeb3();
 
@@ -204,23 +205,25 @@ const TokenNameAndMaxButton = React.memo(
           <Icon name="chevron-down" size="32px" />
         </Row>
 
-        <Button
-          ml={1}
-          height="28px"
-          width="58px"
-          bg="transparent"
-          border="2px"
-          borderRadius="8px"
-          borderColor="#272727"
-          fontSize="sm"
-          fontWeight="extrabold"
-          _hover={{}}
-          _active={{}}
-          onClick={setToMax}
-          isLoading={isMaxLoading}
-        >
-          MAX
-        </Button>
+        {mode === Mode.DEPOSIT ? (
+          <Button
+            ml={1}
+            height="28px"
+            width="58px"
+            bg="transparent"
+            border="2px"
+            borderRadius="8px"
+            borderColor="#272727"
+            fontSize="sm"
+            fontWeight="extrabold"
+            _hover={{}}
+            _active={{}}
+            onClick={setToMax}
+            isLoading={isMaxLoading}
+          >
+            MAX
+          </Button>
+        ) : null}
       </Row>
     );
   }
