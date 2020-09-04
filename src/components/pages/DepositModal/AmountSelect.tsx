@@ -3,14 +3,12 @@ import { Row, Column } from "buttered-chakra";
 import {
   Heading,
   Box,
-  Editable,
-  EditablePreview,
-  EditableInput,
   Icon,
   Button,
   Text,
   Image,
   IconButton,
+  Input,
 } from "@chakra-ui/core";
 import DashboardBox from "../../shared/DashboardBox";
 import { tokens, createTokenContract } from "../../../utils/tokenUtils";
@@ -82,7 +80,7 @@ const AmountSelect = React.memo(
             variant="ghost"
             aria-label="Options"
             icon="settings"
-            _hover={{}}
+            _hover={{ transform: "rotate(360deg)" }}
             _active={{}}
             onClick={openOptions}
           />
@@ -111,26 +109,16 @@ const AmountSelect = React.memo(
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
-              py={4}
-              pl={2}
-              pr={4}
+              p={4}
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
               expand
             >
-              <Box overflow="hidden" p={2}>
-                <Editable
-                  value={userEnteredAmount.toString()}
-                  onChange={updateAmount}
-                  placeholder="0.0"
-                  fontSize="3xl"
-                  fontWeight="bold"
-                  color={tokens[selectedToken].color}
-                >
-                  <EditablePreview />
-                  <EditableInput />
-                </Editable>
-              </Box>
+              <AmountInput
+                selectedToken={selectedToken}
+                displayAmount={userEnteredAmount}
+                updateAmount={updateAmount}
+              />
 
               <TokenNameAndMaxButton
                 mode={mode}
@@ -195,7 +183,7 @@ const TokenNameAndMaxButton = React.memo(
     }, [_setIsMaxLoading, updateAmount, selectedToken, web3, address]);
 
     return (
-      <Row ml={4} mainAxisAlignment="flex-start" crossAxisAlignment="center">
+      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
@@ -234,6 +222,37 @@ const TokenNameAndMaxButton = React.memo(
           MAX
         </Button>
       </Row>
+    );
+  }
+);
+
+const AmountInput = React.memo(
+  ({
+    displayAmount,
+    updateAmount,
+    selectedToken,
+  }: {
+    displayAmount: string;
+    updateAmount: (symbol: string) => any;
+    selectedToken: string;
+  }) => {
+    const onChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) =>
+        updateAmount(event.target.value),
+      [updateAmount]
+    );
+
+    return (
+      <Input
+        fontSize="3xl"
+        fontWeight="bold"
+        variant="unstyled"
+        placeholder="0.0"
+        value={displayAmount}
+        color={tokens[selectedToken].color}
+        onChange={onChange}
+        mr={4}
+      />
     );
   }
 );

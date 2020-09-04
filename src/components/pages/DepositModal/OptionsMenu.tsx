@@ -31,7 +31,6 @@ const OptionsMenu = React.memo(
           crossAxisAlignment="center"
         >
           <Button
-            leftIcon="question"
             variantColor="whiteAlpha"
             variant="solid"
             onClick={toggleMode}

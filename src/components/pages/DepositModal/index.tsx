@@ -88,15 +88,15 @@ const DepositModal = React.memo((props: Props) => {
           >
             {currentScreen === CurrentScreen.MAIN ? (
               <AmountSelect
-                selectedToken={selectedToken}
                 openCoinSelect={openCoinSelect}
                 openOptions={openOptions}
+                selectedToken={selectedToken}
                 mode={mode}
               />
             ) : currentScreen === CurrentScreen.COIN_SELECT ? (
               <TokenSelect onSelectToken={onSelectToken} />
             ) : (
-              <OptionsMenu mode={mode} onSetMode={onSetMode} />
+              <OptionsMenu onSetMode={onSetMode} mode={mode} />
             )}
           </ModalContent>
         </Modal>
