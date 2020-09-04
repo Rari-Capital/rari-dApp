@@ -80,7 +80,10 @@ const AmountSelect = React.memo(
             variant="ghost"
             aria-label="Options"
             icon="settings"
-            _hover={{ transform: "rotate(360deg)" }}
+            _hover={{
+              transform: "rotate(360deg)",
+              transition: "all 0.7s ease-in-out",
+            }}
             _active={{}}
             onClick={openOptions}
           />
