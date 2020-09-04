@@ -244,6 +244,8 @@ const AmountInput = React.memo(
 
     return (
       <Input
+        type="number"
+        inputMode="decimal"
         fontSize="3xl"
         fontWeight="bold"
         variant="unstyled"
