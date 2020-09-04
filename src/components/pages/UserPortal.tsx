@@ -564,7 +564,7 @@ const MonthlyReturns = React.memo(() => {
       expand
       overflowY="hidden"
     >
-      <Heading size="sm" lineHeight={1} mb={4}>
+      <Heading size="sm" lineHeight={1} mb={3}>
         Monthly Returns
       </Heading>
 
@@ -575,12 +575,13 @@ const MonthlyReturns = React.memo(() => {
             width="100%"
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-end"
-            mb={4}
+            mb={3}
           >
             <Row
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
               width="100%"
+              mb={1}
             >
               <Text color="#CACACA" fontSize={12}>
                 {key}
