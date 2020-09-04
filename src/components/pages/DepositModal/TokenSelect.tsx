@@ -55,7 +55,6 @@ const TokenSelect = React.memo(
           />
           <Input
             variant="flushed"
-            type="tel"
             roundedLeft="0"
             placeholder="Try searching for 'DAI'"
             focusBorderColor="#FFFFFF"
