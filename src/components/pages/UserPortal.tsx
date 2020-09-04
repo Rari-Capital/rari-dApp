@@ -575,18 +575,17 @@ const MonthlyReturns = React.memo(() => {
             width="100%"
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-end"
-            mb={3}
+            mb={4}
           >
             <Row
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
               width="100%"
-              mb={1}
             >
-              <Text color="#CACACA" fontSize={10}>
+              <Text color="#CACACA" fontSize={12}>
                 {key}
               </Text>
-              <Text color="#CACACA" fontSize={10}>
+              <Text color="#CACACA" fontSize={12}>
                 {value}%
               </Text>
             </Row>

@@ -46,6 +46,14 @@ export const LineChartOptions = {
     horizontalAlign: "left",
     showForSingleSeries: true,
   },
+
+  yaxis: {
+    labels: {
+      style: {
+        fontSize: "13px",
+      },
+    },
+  },
 };
 
 export const FundReturnChartOptions = {
@@ -53,6 +61,7 @@ export const FundReturnChartOptions = {
 
   yaxis: {
     labels: {
+      ...LineChartOptions.yaxis.labels,
       formatter: function(value: string) {
         return "$" + value;
       },
