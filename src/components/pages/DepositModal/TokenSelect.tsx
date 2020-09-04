@@ -8,6 +8,7 @@ import {
   Text,
   Box,
   Icon,
+  CloseButton,
 } from "@chakra-ui/core";
 import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
@@ -19,7 +20,7 @@ import { FixedSizeList as List, areEqual } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 const TokenSelect = React.memo(
-  (props: { onSelectToken: (symbol: string) => any }) => {
+  (props: { onClose: () => any; onSelectToken: (symbol: string) => any }) => {
     const [searchNeedle, setSearchNeedle] = useState("");
 
     const tokenKeys = useMemo(
@@ -41,11 +42,13 @@ const TokenSelect = React.memo(
       <Fade>
         <Row
           width="100%"
-          mainAxisAlignment="center"
+          mainAxisAlignment="space-between"
           crossAxisAlignment="center"
           p={4}
         >
+          <Box width="32px" />
           <Heading fontSize="27px">Select a Token</Heading>
+          <CloseButton onClick={props.onClose} />
         </Row>
         <Box h="1px" bg="#272727" />
         <InputGroup mb={2} mx={4}>

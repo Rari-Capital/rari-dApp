@@ -43,6 +43,11 @@ const DepositModal = React.memo((props: Props) => {
     [setCurrentScreen]
   );
 
+  const openAmountSelect = useCallback(
+    () => setCurrentScreen(CurrentScreen.MAIN),
+    [setCurrentScreen]
+  );
+
   useEffect(() => {
     // When the modal closes return to the main screen.
     if (!props.isOpen) {
@@ -94,7 +99,10 @@ const DepositModal = React.memo((props: Props) => {
                 mode={mode}
               />
             ) : currentScreen === CurrentScreen.COIN_SELECT ? (
-              <TokenSelect onSelectToken={onSelectToken} />
+              <TokenSelect
+                onClose={openAmountSelect}
+                onSelectToken={onSelectToken}
+              />
             ) : (
               <OptionsMenu onSetMode={onSetMode} mode={mode} />
             )}
