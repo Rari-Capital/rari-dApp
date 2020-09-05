@@ -55,25 +55,9 @@ const DepositModal = React.memo((props: Props) => {
     }
   }, [props.isOpen]);
 
-  const [selectedToken, _setSelectedToken] = useState("DAI");
-
-  const onSelectToken = useCallback(
-    (symbol: string) => {
-      _setSelectedToken(symbol);
-      setCurrentScreen(CurrentScreen.MAIN);
-    },
-    [_setSelectedToken, setCurrentScreen]
-  );
+  const [selectedToken, setSelectedToken] = useState("DAI");
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
-
-  const onSetMode = useCallback(
-    (mode: Mode) => {
-      setMode(mode);
-      setCurrentScreen(CurrentScreen.MAIN);
-    },
-    [setMode, setCurrentScreen]
-  );
 
   return (
     <SlideIn
@@ -101,10 +85,14 @@ const DepositModal = React.memo((props: Props) => {
             ) : currentScreen === CurrentScreen.COIN_SELECT ? (
               <TokenSelect
                 onClose={openAmountSelect}
-                onSelectToken={onSelectToken}
+                onSelectToken={setSelectedToken}
               />
             ) : (
-              <OptionsMenu onSetMode={onSetMode} mode={mode} />
+              <OptionsMenu
+                onClose={openAmountSelect}
+                onSetMode={setMode}
+                mode={mode}
+              />
             )}
           </ModalContent>
         </Modal>

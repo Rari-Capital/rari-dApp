@@ -20,7 +20,13 @@ import { FixedSizeList as List, areEqual } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
 const TokenSelect = React.memo(
-  (props: { onClose: () => any; onSelectToken: (symbol: string) => any }) => {
+  ({
+    onSelectToken: _onSelectToken,
+    onClose,
+  }: {
+    onClose: () => any;
+    onSelectToken: (symbol: string) => any;
+  }) => {
     const [searchNeedle, setSearchNeedle] = useState("");
 
     const tokenKeys = useMemo(
@@ -38,6 +44,14 @@ const TokenSelect = React.memo(
       [setSearchNeedle]
     );
 
+    const onTokenClick = useCallback(
+      (symbol: string) => {
+        _onSelectToken(symbol);
+        onClose();
+      },
+      [onClose, _onSelectToken]
+    );
+
     return (
       <Fade>
         <Row
@@ -48,7 +62,7 @@ const TokenSelect = React.memo(
         >
           <Box width="32px" />
           <Heading fontSize="27px">Select a Token</Heading>
-          <CloseButton onClick={props.onClose} />
+          <CloseButton onClick={onClose} />
         </Row>
         <Box h="1px" bg="#272727" />
         <InputGroup mb={2} mx={4}>
@@ -67,7 +81,7 @@ const TokenSelect = React.memo(
         </InputGroup>
 
         <Box pt={1} px={4} width="100%" height="180px">
-          <TokenList tokenKeys={tokenKeys} onClick={props.onSelectToken} />
+          <TokenList tokenKeys={tokenKeys} onClick={onTokenClick} />
         </Box>
       </Fade>
     );
