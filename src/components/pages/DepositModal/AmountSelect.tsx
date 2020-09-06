@@ -31,10 +31,12 @@ interface Props {
 
 const AmountSelect = React.memo(
   ({ selectedToken, openCoinSelect, mode, openOptions }: Props) => {
+    const token = tokens[selectedToken];
+
     const {
       data: selectedTokenBalance,
       isLoading: isSelectedTokenBalanceLoading,
-    } = useTokenBalance(tokens[selectedToken]);
+    } = useTokenBalance(token);
 
     const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
     const [amount, _setAmount] = useState<Big | null>(() => toBig(0.0));
@@ -141,10 +143,10 @@ const AmountSelect = React.memo(
             borderRadius="10px"
             width="100%"
             height="70px"
-            bg={tokens[selectedToken].color}
+            bg={token.color}
             _hover={{ transform: "scale(1.02)" }}
             _active={{ transform: "scale(0.95)" }}
-            color={tokens[selectedToken].overlayTextColor}
+            color={token.overlayTextColor}
             isLoading={isSelectedTokenBalanceLoading}
             isDisabled={
               amount === null ||
@@ -174,6 +176,8 @@ const TokenNameAndMaxButton = React.memo(
     updateAmount: (newAmount: string) => any;
     mode: Mode;
   }) => {
+    const token = tokens[selectedToken];
+
     const { web3, address } = useAuthedWeb3();
 
     const [isMaxLoading, _setIsMaxLoading] = useState(false);
@@ -181,11 +185,7 @@ const TokenNameAndMaxButton = React.memo(
     const setToMax = useCallback(async () => {
       _setIsMaxLoading(true);
 
-      const balance = await getTokenBalance(
-        tokens[selectedToken],
-        web3,
-        address
-      );
+      const balance = await getTokenBalance(token, web3, address);
 
       updateAmount(balance.toString());
 
@@ -206,7 +206,7 @@ const TokenNameAndMaxButton = React.memo(
               height="100%"
               borderRadius="50%"
               backgroundImage={`url(${SmallWhiteCircle})`}
-              src={tokens[selectedToken].logoURL}
+              src={token.logoURL}
               alt=""
             />
           </Box>
@@ -248,6 +248,8 @@ const AmountInput = React.memo(
     updateAmount: (symbol: string) => any;
     selectedToken: string;
   }) => {
+    const token = tokens[selectedToken];
+
     const onChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) =>
         updateAmount(event.target.value),
@@ -263,7 +265,7 @@ const AmountInput = React.memo(
         variant="unstyled"
         placeholder="0.0"
         value={displayAmount}
-        color={tokens[selectedToken].color}
+        color={token.color}
         onChange={onChange}
         mr={4}
       />
