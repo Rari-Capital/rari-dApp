@@ -158,7 +158,7 @@ const TokenList = React.memo(
     onClick: (symbol: string) => any;
   }) => {
     const sortedKeys = useMemo(() => {
-      return [...tokenKeys].sort();
+      return [...tokenKeys].sort(Intl.Collator().compare);
     }, [tokenKeys]);
 
     const itemData = useMemo(
