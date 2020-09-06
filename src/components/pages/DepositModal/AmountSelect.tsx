@@ -11,10 +11,13 @@ import {
   Input,
 } from "@chakra-ui/core";
 import DashboardBox from "../../shared/DashboardBox";
-import { tokens, createTokenContract } from "../../../utils/tokenUtils";
+import { tokens } from "../../../utils/tokenUtils";
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
-import { useTokenBalance } from "../../../hooks/useTokenBalance";
-import { toBig, divBigBy1e18 } from "../../../utils/bigUtils";
+import {
+  useTokenBalance,
+  getTokenBalance,
+} from "../../../hooks/useTokenBalance";
+import { toBig } from "../../../utils/bigUtils";
 import { Mode, modeToTitleCaseString, modeToLowerCaseString } from ".";
 import Big from "big.js";
 import { useAuthedWeb3 } from "../../../context/Web3Context";
@@ -177,11 +180,14 @@ const TokenNameAndMaxButton = React.memo(
 
     const setToMax = useCallback(async () => {
       _setIsMaxLoading(true);
-      const balance = await createTokenContract(tokens[selectedToken], web3)
-        .methods.balanceOf(address)
-        .call();
 
-      updateAmount(divBigBy1e18(toBig(balance)).toString());
+      const balance = await getTokenBalance(
+        tokens[selectedToken],
+        web3,
+        address
+      );
+
+      updateAmount(balance.toString());
 
       _setIsMaxLoading(false);
     }, [_setIsMaxLoading, updateAmount, selectedToken, web3, address]);
