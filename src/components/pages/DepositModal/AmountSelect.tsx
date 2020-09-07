@@ -42,16 +42,16 @@ const AmountSelect = React.memo(
     const [amount, _setAmount] = useState<Big | null>(() => toBig(0.0));
 
     const updateAmount = useCallback(
-      (amount: string) => {
-        if (amount.startsWith("-")) {
+      (newAmount: string) => {
+        if (newAmount.startsWith("-")) {
           return;
         }
 
-        _setUserEnteredAmount(amount);
+        _setUserEnteredAmount(newAmount);
 
         try {
           // Try to set the amount to Big(amount):
-          const bigAmount = toBig(amount);
+          const bigAmount = toBig(newAmount);
           _setAmount(bigAmount);
         } catch (e) {
           // If the number was invalid, set the amount to null to disable confirming:
@@ -190,7 +190,7 @@ const TokenNameAndMaxButton = React.memo(
       updateAmount(balance.toString());
 
       _setIsMaxLoading(false);
-    }, [_setIsMaxLoading, updateAmount, selectedToken, web3, address]);
+    }, [_setIsMaxLoading, updateAmount, token, web3, address]);
 
     return (
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
