@@ -18,7 +18,6 @@ export const getTokenBalance = async (
       .call();
   } else {
     stringBalance = await web3.eth.getBalance(address);
-    console.log(stringBalance);
   }
 
   return toBig(stringBalance).div(10 ** token.decimals);
