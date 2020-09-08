@@ -36,37 +36,13 @@ export function usePastContractEvents<DataType = EventData[]>(
 
 export type TransactionEvent = EventData & { timeSent: string };
 
-async function getPastPayeeEventsFromAllFundManagers(
-  event: string,
-  address: string,
-  web3: Web3
-) {
-  return (
-    await Promise.all(
-      createAllFundManagerContracts(web3).map((contract) => {
-        return contract.getPastEvents(event, {
-          fromBlock: "earliest",
-          filter: { payee: address },
-        });
-      })
-    )
-  ).flat();
-}
-
 export function useTransactionHistoryEvents() {
   const { web3, address } = useAuthedWeb3();
 
   return useQuery("transactionHistoryOf" + address, async () => {
-    const withdraws = await getPastPayeeEventsFromAllFundManagers(
-      "Withdrawal",
-      address,
-      web3
-    );
-
-    const deposits = await getPastPayeeEventsFromAllFundManagers(
-      "Deposit",
-      address,
-      web3
+    const { withdraws, deposits } = await getAllTransactionHistoryEvents(
+      web3,
+      address
     );
 
     let merged_arrays = await Promise.all(
@@ -104,4 +80,39 @@ export function useTransactionHistoryEvents() {
       return merged_arrays;
     }
   });
+}
+
+async function getPastPayeeEventsFromAllPastContracts(
+  event: string,
+  address: string,
+  contracts: any[]
+) {
+  return (
+    await Promise.all(
+      contracts.map((contract) => {
+        return contract.getPastEvents(event, {
+          fromBlock: "earliest",
+          filter: { payee: address },
+        }) as EventData;
+      })
+    )
+  ).flat();
+}
+
+async function getAllTransactionHistoryEvents(web3: Web3, address: string) {
+  const contracts = createAllFundManagerContracts(web3);
+
+  const withdraws = await getPastPayeeEventsFromAllPastContracts(
+    "Withdrawal",
+    address,
+    contracts
+  );
+
+  const deposits = await getPastPayeeEventsFromAllPastContracts(
+    "Deposit",
+    address,
+    contracts
+  );
+
+  return { withdraws, deposits };
 }
