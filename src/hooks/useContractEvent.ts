@@ -1,7 +1,9 @@
 import { useQuery, queryCache } from "react-query";
 import { Contract, Filter, EventData } from "web3-eth-contract";
-import { useContracts } from "../context/ContractsContext";
+
 import { useAuthedWeb3 } from "../context/Web3Context";
+import { createAllFundManagerContracts } from "../utils/contractUtils";
+import Web3 from "web3";
 
 export function usePastContractEvents<DataType = EventData[]>(
   contract: Contract,
@@ -34,21 +36,38 @@ export function usePastContractEvents<DataType = EventData[]>(
 
 export type TransactionEvent = EventData & { timeSent: string };
 
-export function useTransactionHistoryEvents() {
-  const { RariFundManager } = useContracts();
+async function getPastPayeeEventsFromAllFundManagers(
+  event: string,
+  address: string,
+  web3: Web3
+) {
+  return (
+    await Promise.all(
+      createAllFundManagerContracts(web3).map((contract) => {
+        return contract.getPastEvents(event, {
+          fromBlock: "earliest",
+          filter: { payee: address },
+        });
+      })
+    )
+  ).flat();
+}
 
+export function useTransactionHistoryEvents() {
   const { web3, address } = useAuthedWeb3();
 
   return useQuery("transactionHistoryOf" + address, async () => {
-    const withdraws = await RariFundManager.getPastEvents("Withdrawal", {
-      fromBlock: "earliest",
-      filter: { payee: address },
-    });
+    const withdraws = await getPastPayeeEventsFromAllFundManagers(
+      "Withdrawal",
+      address,
+      web3
+    );
 
-    const deposits = await RariFundManager.getPastEvents("Deposit", {
-      fromBlock: "earliest",
-      filter: { payee: address },
-    });
+    const deposits = await getPastPayeeEventsFromAllFundManagers(
+      "Deposit",
+      address,
+      web3
+    );
 
     let merged_arrays = await Promise.all(
       withdraws.concat(deposits).map(async (event) => {

@@ -16,17 +16,28 @@ import { RariFundToken } from "../static/contracts/compiled/RariFundToken";
 import { RariFundProxy } from "../static/contracts/compiled/RariFundProxy";
 import { RariFundManager } from "../static/contracts/compiled/RariFundManager";
 
-export const RARI_FUND_CONTROLLER_ADDRESS =
-  "0x15c4ae284fbb3a6ceb41fa8eb5f3408ac485fabb";
-
 export const RARI_FUND_MANAGER_ADDRESS =
   "0x6bdaf490c5b6bb58564b3e79c8d18e8dfd270464";
+
+export const RARI_FUND_PROXY_ADDRESS =
+  "0xb6b79d857858004bf475e4a57d4a446da4884866";
+
+export const RARI_FUND_CONTROLLER_ADDRESS =
+  "0x15c4ae284fbb3a6ceb41fa8eb5f3408ac485fabb";
 
 export const RARI_FUND_TOKEN_ADDRESS =
   "0x9366B7C00894c3555c7590b0384e5F6a9D55659f";
 
-export const RARI_FUND_PROXY_ADDRESS =
-  "0xb6b79d857858004bf475e4a57d4a446da4884866";
+export const ALL_RARI_FUND_MANAGER_ADDRESSES = [
+  RARI_FUND_MANAGER_ADDRESS,
+  "0x686ac9d046418416d3ed9ea9206f3dace4943027",
+];
+
+export const ALL_RARI_FUND_PROXY_ADDRESSES = [
+  RARI_FUND_MANAGER_ADDRESS,
+  "0x318cfd99b60a63d265d2291a4ab982073fbf245d",
+  "0x27C4E34163b5FD2122cE43a40e3eaa4d58eEbeaF",
+];
 
 export interface ContractsContextData {
   RariFundController: RariFundController;
@@ -58,7 +69,7 @@ export const ContractsProvider = ({ children }: { children: JSX.Element }) => {
     setContractData({
       RariFundController: new web3.eth.Contract(
         RARI_FUND_CONTROLLER_ABI as AbiItem[],
-        RARI_FUND_MANAGER_ADDRESS
+        RARI_FUND_CONTROLLER_ADDRESS
       ) as any,
       RariFundManager: new web3.eth.Contract(
         RARI_FUND_MANAGER_ABI as AbiItem[],
