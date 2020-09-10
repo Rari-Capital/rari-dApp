@@ -7,17 +7,18 @@ import {
   Divider,
   Button,
   Select,
-  CloseButton,
   Icon,
   ButtonProps,
   useDisclosure,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
+// @ts-ignore
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 
-import { shortAddress } from "../../utils/shortAddress";
+import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
 import { SmallLogo, BookBrain } from "../shared/Logos";
@@ -50,9 +51,11 @@ import DepositModal from "./DepositModal";
 import { useQuery } from "react-query";
 
 const UserPortal = () => {
-  const { address, logout } = useAuthedWeb3();
+  const { address } = useAuthedWeb3();
 
   const { RariFundManager } = useContracts();
+
+  const isMobile = useIsMobile();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -156,8 +159,8 @@ const UserPortal = () => {
           crossAxisAlignment="flex-start"
         >
           <Row
-            mt={3}
-            px={6}
+            mt={"9px"}
+            px={DASHBOARD_BOX_SPACING.asPxString()}
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             overflowX="visible"
@@ -166,7 +169,20 @@ const UserPortal = () => {
           >
             <SmallLogo />
 
-            <CloseButton onClick={logout} />
+            <DashboardBox h="40px" as="button">
+              <Row
+                expand
+                mainAxisAlignment="space-around"
+                crossAxisAlignment="center"
+                px={4}
+              >
+                <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
+
+                <Text ml={2} fontWeight="semibold">
+                  {isMobile ? shortAddress(address) : mediumAddress(address)}
+                </Text>
+              </Row>
+            </DashboardBox>
           </Row>
 
           <Box height="1px" width="100%" bg="white" />
