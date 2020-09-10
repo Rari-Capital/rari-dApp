@@ -169,14 +169,18 @@ const UserPortal = () => {
           >
             <SmallLogo />
 
-            <DashboardBox h="40px" as="button">
+            <DashboardBox
+              as="button"
+              height="40px"
+              width={{ md: "245px", xs: "auto" }}
+            >
               <Row
                 expand
-                mainAxisAlignment="space-around"
+                mainAxisAlignment="center"
                 crossAxisAlignment="center"
-                px={4}
+                px={3}
               >
-                <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
+                <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
 
                 <Text ml={2} fontWeight="semibold">
                   {isMobile ? shortAddress(address) : mediumAddress(address)}
