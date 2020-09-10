@@ -13,18 +13,16 @@ import {
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
-// @ts-ignore
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 
-import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
 import { SmallLogo, BookBrain } from "../shared/Logos";
 import Chart from "react-apexcharts";
-import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
+
 import FullPageSpinner from "../shared/FullPageSpinner";
+
 import {
   Column,
   Row,
@@ -49,13 +47,13 @@ import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
 import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
 import { useQuery } from "react-query";
+import { WalletButon } from "../shared/WalletButton";
+import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 
 const UserPortal = () => {
   const { address } = useAuthedWeb3();
 
   const { RariFundManager } = useContracts();
-
-  const isMobile = useIsMobile();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -169,24 +167,7 @@ const UserPortal = () => {
           >
             <SmallLogo />
 
-            <DashboardBox
-              as="button"
-              height="40px"
-              width={{ md: "245px", xs: "auto" }}
-            >
-              <Row
-                expand
-                mainAxisAlignment="center"
-                crossAxisAlignment="center"
-                px={3}
-              >
-                <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
-
-                <Text ml={2} fontWeight="semibold">
-                  {isMobile ? shortAddress(address) : mediumAddress(address)}
-                </Text>
-              </Row>
-            </DashboardBox>
+            <WalletButon />
           </Row>
 
           <Box height="1px" width="100%" bg="white" />

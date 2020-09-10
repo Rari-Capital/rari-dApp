@@ -1,0 +1,152 @@
+import React, { useCallback } from "react";
+import { useAuthedWeb3, useWeb3 } from "../../context/Web3Context";
+import {
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  Heading,
+  Box,
+  Button,
+  Text,
+} from "@chakra-ui/core";
+import { useIsMobile, Row, Column } from "buttered-chakra";
+import DashboardBox from "./DashboardBox";
+
+// @ts-ignore
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+
+import { shortAddress, mediumAddress } from "../../utils/shortAddress";
+
+import SlideIn from "../shared/SlideIn";
+
+export const WalletButon = React.memo(() => {
+  const { address } = useAuthedWeb3();
+  const {
+    isOpen: isWalletModalOpen,
+    onOpen: openWalletModal,
+    onClose: closeWalletModal,
+  } = useDisclosure();
+
+  return (
+    <>
+      <WalletModal isOpen={isWalletModalOpen} onClose={closeWalletModal} />
+      {/* eslint-disable-next-line */}
+      <_WalletButton openWalletModal={openWalletModal} address={address} />
+    </>
+  );
+});
+
+const _WalletButton = React.memo(
+  ({
+    openWalletModal,
+    address,
+  }: {
+    openWalletModal: () => any;
+    address: string;
+  }) => {
+    const isMobile = useIsMobile();
+
+    return (
+      <DashboardBox
+        as="button"
+        height="40px"
+        width={{
+          md: "245px",
+          xs: "auto",
+        }}
+        onClick={openWalletModal}
+      >
+        <Row
+          expand
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          px={3}
+        >
+          <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+
+          <Text ml={2} fontWeight="semibold">
+            {isMobile ? shortAddress(address) : mediumAddress(address)}
+          </Text>
+        </Row>
+      </DashboardBox>
+    );
+  }
+);
+
+export const WalletModal = React.memo(
+  ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
+    const { logout, login } = useWeb3();
+
+    const onSwitch = useCallback(() => {
+      onClose();
+      setTimeout(() => login(), 100);
+    }, [login, onClose]);
+
+    return (
+      <SlideIn
+        isActivted={isOpen}
+        render={(styles) => (
+          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent
+              {...styles}
+              width={{ md: "450px", xs: "92%" }}
+              backgroundColor="#121212"
+              borderRadius="10px"
+              border="1px"
+              borderColor="#272727"
+              color="#FFFFFF"
+            >
+              <Row
+                width="100%"
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                p={4}
+              >
+                <Heading fontSize="27px">Account</Heading>
+              </Row>
+              <Box h="1px" bg="#272727" />
+              <Column
+                width="100%"
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                p={4}
+              >
+                <Button
+                  leftIcon="repeat"
+                  bg="whatsapp.500"
+                  width="100%"
+                  height="45px"
+                  fontSize="xl"
+                  borderRadius="7px"
+                  fontWeight="bold"
+                  onClick={onSwitch}
+                  _hover={{}}
+                  _active={{}}
+                >
+                  Switch Wallet
+                </Button>
+                <Button
+                  mt={4}
+                  leftIcon="unlock"
+                  bg="red.500"
+                  width="100%"
+                  height="45px"
+                  fontSize="xl"
+                  borderRadius="7px"
+                  fontWeight="bold"
+                  onClick={logout}
+                  _hover={{}}
+                  _active={{}}
+                >
+                  Disconnect
+                </Button>
+              </Column>
+            </ModalContent>
+          </Modal>
+        )}
+      />
+    );
+  }
+);
