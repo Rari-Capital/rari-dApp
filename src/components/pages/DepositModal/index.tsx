@@ -21,7 +21,7 @@ export function modeToTitleCaseString(mode: Mode) {
 }
 
 export function modeToLowerCaseString(mode: Mode) {
-  return modeToTitleCaseString(mode);
+  return modeToTitleCaseString(mode).toLowerCase();
 }
 
 interface Props {

@@ -228,12 +228,10 @@ const UserPortal = () => {
                     fontFamily="'Baloo Bhai 2'"
                     fontSize={{ md: 27, xs: "xl" }}
                   >
-                    Hello, {shortAddress(address)}!
+                    {"Stable Fund"}
                   </Heading>
                   <Text fontSize="xs">
-                    {isFirstTime
-                      ? "It's nice to see you!"
-                      : "It's good to see you again."}
+                    {"Safe and stable returns on stablecoins."}
                   </Text>
                 </Column>
 
