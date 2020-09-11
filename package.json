@@ -23,7 +23,7 @@
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
     "@walletconnect/web3-provider": "^1.2.2",
-    "apexcharts": "^3.20.1",
+    "apexcharts": "^3.20.2",
     "authereum": "0.0.4-beta.193",
     "big.js": "^5.2.2",
     "buttered-chakra": "^3.0.0",
