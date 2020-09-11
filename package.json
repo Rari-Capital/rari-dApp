@@ -37,7 +37,7 @@
     "rari-tokens-generator": "^2.0.0",
     "react": "^16.13.1",
     "react-apexcharts": "^1.3.7",
-    "react-awesome-reveal": "^3.0.0",
+    "react-awesome-reveal": "^3.3.0",
     "react-dom": "^16.13.1",
     "react-error-boundary": "^2.3.1",
     "react-ios-pwa-prompt": "^1.8.0",
