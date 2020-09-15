@@ -16,14 +16,6 @@ export enum Mode {
   WITHDRAW,
 }
 
-export function modeToTitleCaseString(mode: Mode) {
-  return mode === Mode.DEPOSIT ? "Deposit" : "Withdraw";
-}
-
-export function modeToLowerCaseString(mode: Mode) {
-  return modeToTitleCaseString(mode).toLowerCase();
-}
-
 interface Props {
   isOpen: boolean;
 

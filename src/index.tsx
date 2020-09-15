@@ -23,6 +23,8 @@ import "focus-visible";
 
 import { ReactQueryDevtools } from "react-query-devtools";
 
+import "./utils/i18n.ts";
+
 ReactDOM.render(
   <>
     <ReactQueryDevtools initialIsOpen={false} />

@@ -18,6 +18,7 @@ import { formatBig } from "../../../utils/bigUtils";
 import BigWhiteCircle from "../../../static/big-white-circle.png";
 import { FixedSizeList as List, areEqual } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
+import { useTranslation } from "react-i18next";
 
 const TokenSelect = React.memo(
   ({
@@ -52,6 +53,8 @@ const TokenSelect = React.memo(
       [onClose, _onSelectToken]
     );
 
+    const { t } = useTranslation();
+
     return (
       <Fade>
         <Row
@@ -61,7 +64,7 @@ const TokenSelect = React.memo(
           p={4}
         >
           <Box width="32px" />
-          <Heading fontSize="27px">Select a Token</Heading>
+          <Heading fontSize="27px">{t("Select A Token")}</Heading>
           <CloseButton onClick={onClose} />
         </Row>
         <Box h="1px" bg="#272727" />
@@ -73,7 +76,7 @@ const TokenSelect = React.memo(
           <Input
             variant="flushed"
             roundedLeft="0"
-            placeholder="Try searching for 'DAI'"
+            placeholder={t("Try searching for 'DAI'")}
             focusBorderColor="#FFFFFF"
             value={searchNeedle}
             onChange={onSearch}

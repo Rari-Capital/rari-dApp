@@ -15,16 +15,21 @@ import {
   AccordionItem,
 } from "@chakra-ui/core";
 import { FallbackProps } from "react-error-boundary";
+import { useTranslation } from "react-i18next";
 
 const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
+  const { t } = useTranslation();
+
   return (
     <Box color="white">
       <Box bg="red.600" width="100%" p={4}>
-        <Heading>Whoops! Looks like something went wrong!</Heading>
+        <Heading>{t("Whoops! Looks like something went wrong!")} </Heading>
         <Text>
-          You can either reload the page, or report this error to us on{" "}
+          {t(
+            "You can either reload the page, or report this error to us on our"
+          )}{" "}
           <Link isExternal href="https://github.com/Rari-Capital/rari-dApp">
-            <u>our GitHub</u>
+            <u>GitHub</u>
             <Icon name="external-link" mx="2px" />
           </Link>
         </Text>
@@ -33,7 +38,7 @@ const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
         <AccordionItem>
           <AccordionHeader>
             <Box flex="1" textAlign="left">
-              Error:
+              {t("Error")}:
             </Box>
             <AccordionIcon />
           </AccordionHeader>

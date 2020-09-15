@@ -6,6 +6,7 @@ import { Fade } from "react-awesome-reveal";
 import { Row, Column } from "buttered-chakra";
 
 import { Mode } from ".";
+import { useTranslation } from "react-i18next";
 
 const OptionsMenu = React.memo(
   ({
@@ -22,6 +23,8 @@ const OptionsMenu = React.memo(
       onClose();
     }, [onSetMode, onClose, mode]);
 
+    const { t } = useTranslation();
+
     return (
       <Fade>
         <Row
@@ -31,7 +34,7 @@ const OptionsMenu = React.memo(
           p={4}
         >
           <Box width="32px" />
-          <Heading fontSize="27px">Options</Heading>
+          <Heading fontSize="27px">{t("Options")}</Heading>
           <CloseButton onClick={onClose} />
         </Row>
         <Box h="1px" bg="#272727" />
@@ -45,7 +48,8 @@ const OptionsMenu = React.memo(
             variant="solid"
             onClick={toggleMode}
           >
-            Want to {mode === Mode.DEPOSIT ? "withdraw" : "deposit"}?
+            {t("Want to")}{" "}
+            {mode === Mode.DEPOSIT ? t("withdraw") : t("deposit")}?
           </Button>
         </Column>
       </Fade>

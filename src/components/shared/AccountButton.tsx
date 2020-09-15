@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   Text,
+  Select,
 } from "@chakra-ui/core";
 import { useIsMobile, Row, Column } from "buttered-chakra";
 import DashboardBox from "./DashboardBox";
@@ -18,9 +19,10 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 
-import SlideIn from "../shared/SlideIn";
+import SlideIn from "./SlideIn";
+import { useTranslation } from "react-i18next";
 
-export const WalletButon = React.memo(() => {
+export const AccountButton = React.memo(() => {
   const { address } = useAuthedWeb3();
   const {
     isOpen: isWalletModalOpen,
@@ -32,12 +34,12 @@ export const WalletButon = React.memo(() => {
     <>
       <WalletModal isOpen={isWalletModalOpen} onClose={closeWalletModal} />
       {/* eslint-disable-next-line */}
-      <_WalletButton openWalletModal={openWalletModal} address={address} />
+      <OpenModalButton openWalletModal={openWalletModal} address={address} />
     </>
   );
 });
 
-const _WalletButton = React.memo(
+const OpenModalButton = React.memo(
   ({
     openWalletModal,
     address,
@@ -83,6 +85,16 @@ export const WalletModal = React.memo(
       setTimeout(() => login(), 100);
     }, [login, onClose]);
 
+    const { t, i18n } = useTranslation();
+
+    const selectLang = useCallback(
+      (event: React.ChangeEvent<HTMLSelectElement>) => {
+        i18n.changeLanguage(event.target.value);
+        localStorage.setItem("rariLang", event.target.value);
+      },
+      [i18n]
+    );
+
     return (
       <SlideIn
         isActivted={isOpen}
@@ -104,7 +116,7 @@ export const WalletModal = React.memo(
                 crossAxisAlignment="center"
                 p={4}
               >
-                <Heading fontSize="27px">Account</Heading>
+                <Heading fontSize="27px">{t("Account")}</Heading>
               </Row>
               <Box h="1px" bg="#272727" />
               <Column
@@ -113,7 +125,20 @@ export const WalletModal = React.memo(
                 crossAxisAlignment="center"
                 p={4}
               >
+                <Select
+                  value={i18n.language}
+                  onChange={selectLang}
+                  color="#000000"
+                  fontWeight="bold"
+                  width="100%"
+                >
+                  <option value="en">{t("English")}</option>
+                  <option value="zh-CN">{t("Chinese Simplified")}</option>
+                  <option value="zh-TW">{t("Chinese Traditional")}</option>
+                </Select>
+
                 <Button
+                  mt={4}
                   leftIcon="repeat"
                   bg="whatsapp.500"
                   width="100%"
@@ -125,7 +150,7 @@ export const WalletModal = React.memo(
                   _hover={{}}
                   _active={{}}
                 >
-                  Switch Wallet
+                  {t("Switch Wallet")}
                 </Button>
                 <Button
                   mt={4}
@@ -140,7 +165,7 @@ export const WalletModal = React.memo(
                   _hover={{}}
                   _active={{}}
                 >
-                  Disconnect
+                  {t("Disconnect")}
                 </Button>
               </Column>
             </ModalContent>

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Text, Spinner, Box } from "@chakra-ui/core";
+import { Text, Spinner, Box, IconButton } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
@@ -23,6 +23,9 @@ import {
 } from "buttered-chakra";
 import CaptionedStat from "../shared/CaptionedStat";
 import { useQuery } from "react-query";
+import { useTranslation } from "react-i18next";
+
+import { MdTranslate } from "react-icons/md";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -38,7 +41,7 @@ const PreviewPortal = () => {
     parentHeight: windowHeight.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
-      new PixelSize(65),
+      new PixelSize(50),
       new PercentageSize(0.7),
       // We have a 0 sized child here because it will now lower the size of the "100%" child
       // by accouting for padding below it, which is 15.
@@ -66,6 +69,8 @@ const PreviewPortal = () => {
     login().catch(() => setLoading(false));
   }, [setLoading, login]);
 
+  const { t } = useTranslation();
+
   return (
     <Column
       height={isLocked ? "100%" : { md: "100vh", xs: "100%" }}
@@ -74,15 +79,32 @@ const PreviewPortal = () => {
       color="#FFFFFF"
       px={{ md: "5vw", xs: DASHBOARD_BOX_SPACING.asPxString() }}
     >
-      <Column
+      <Row
+        mt={DASHBOARD_BOX_SPACING.asPxString()}
         height={headerSize.asPxString()}
         width="100%"
         mb={headerAndBodySpacing.asPxString()}
-        mainAxisAlignment="flex-end"
-        crossAxisAlignment="flex-start"
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
       >
         <WideLogo />
-      </Column>
+
+        <IconButton
+          color="#FFFFFF"
+          variant="ghost"
+          aria-label="Set Language"
+          icon={MdTranslate}
+          fontSize="25px"
+          _hover={{
+            transform: "scale(1.2)",
+            transition: "all 0.3s linear",
+          }}
+          _active={{
+            transform: "scale(0.9)",
+            transition: "all 0.2s linear",
+          }}
+        />
+      </Row>
 
       <RowOnDesktopColumnOnMobile
         width="100%"
@@ -131,7 +153,7 @@ const PreviewPortal = () => {
                     fontWeight="bold"
                     fontSize={{ md: "xl", xs: "lg" }}
                   >
-                    Connect Wallet
+                    {t("Connect Wallet")}
                   </Text>
                 )}
               </Center>
@@ -154,7 +176,7 @@ const PreviewPortal = () => {
                   fontSize={{ md: "xl", xs: "lg" }}
                   textAlign="center"
                 >
-                  Get Wallet
+                  {t("Get Wallet")}
                 </Text>
               </Center>
             </DashboardBox>
@@ -180,6 +202,8 @@ const FundStats = React.memo(() => {
         .then((balance) => format1e18BigAsUSD(toBig(balance)))
   );
 
+  const { t } = useTranslation();
+
   return (
     <DashboardBox
       height="100%"
@@ -196,7 +220,7 @@ const FundStats = React.memo(() => {
       >
         <CaptionedStat
           crossAxisAlignment="center"
-          caption="Today's APY"
+          caption={t("Today's APY")}
           captionSize="xs"
           stat={"14.2%"}
           statSize="xl"
@@ -204,7 +228,7 @@ const FundStats = React.memo(() => {
         />
         <CaptionedStat
           crossAxisAlignment="center"
-          caption="Yearly APY"
+          caption={t("Yearly APY")}
           captionSize="xs"
           stat={"13.3%"}
           statSize="xl"
@@ -213,7 +237,7 @@ const FundStats = React.memo(() => {
 
         <CaptionedStat
           crossAxisAlignment="center"
-          caption="Assets under management"
+          caption={t("Assets Under Management")}
           captionSize="xs"
           stat={isFundBalenceLoading ? "$?" : fundBalance!}
           statSize="lg"
@@ -233,6 +257,8 @@ const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
     childSizes: [new PixelSize(90), new PercentageSize(1), new PixelSize(10)],
   });
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Row
@@ -245,7 +271,7 @@ const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
       >
         <CaptionedStat
           crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-          caption="Performance beginning with $10,000 on 1/6/2020"
+          caption={t("Performance beginning with $10,000 on 6/12/20")}
           captionSize="xs"
           stat={"$13,250.43"}
           statSize="xl"

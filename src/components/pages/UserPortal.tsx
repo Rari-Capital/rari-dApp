@@ -47,8 +47,9 @@ import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
 import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
 import { useQuery } from "react-query";
-import { WalletButon } from "../shared/WalletButton";
+import { AccountButton } from "../shared/AccountButton";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
+import { useTranslation } from "react-i18next";
 
 const UserPortal = () => {
   const { address } = useAuthedWeb3();
@@ -133,6 +134,8 @@ const UserPortal = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const { t } = useTranslation();
+
   if (isBalanceLoading || isInterestLoading) {
     return <FullPageSpinner />;
   }
@@ -167,7 +170,7 @@ const UserPortal = () => {
           >
             <SmallLogo />
 
-            <WalletButon />
+            <AccountButton />
           </Row>
 
           <Box height="1px" width="100%" bg="white" />
@@ -209,11 +212,9 @@ const UserPortal = () => {
                     fontFamily="'Baloo Bhai 2'"
                     fontSize={{ md: 27, xs: "xl" }}
                   >
-                    {"Stable Fund"}
+                    {t("Stable Fund")}
                   </Heading>
-                  <Text fontSize="xs">
-                    {"Safe and stable returns on stablecoins."}
-                  </Text>
+                  <Text fontSize="xs">{t("Safe returns on stablecoins")}</Text>
                 </Column>
 
                 <DepositButton onClick={openDepositModal} />
@@ -367,6 +368,8 @@ const UserStatsAndChart = React.memo(
 
     const isMobile = useIsMobile();
 
+    const { t } = useTranslation();
+
     return (
       <>
         <RowOnDesktopColumnOnMobile
@@ -379,7 +382,7 @@ const UserStatsAndChart = React.memo(
           {isFirstTime ? (
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-              caption="Fund Performance"
+              caption={t("Fund Performance")}
               captionSize="xs"
               stat={"+10%"}
               statSize={isMobile ? "2xl" : "lg"}
@@ -391,7 +394,7 @@ const UserStatsAndChart = React.memo(
             <>
               <CaptionedStat
                 crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-                caption="Account Balance"
+                caption={t("Account Balance")}
                 captionSize="xs"
                 stat={balance}
                 statSize="lg"
@@ -403,7 +406,7 @@ const UserStatsAndChart = React.memo(
 
               <CaptionedStat
                 crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-                caption="Interest Earned"
+                caption={t("Interest Earned")}
                 captionSize="xs"
                 stat={interestEarned}
                 statSize="lg"
@@ -421,9 +424,9 @@ const UserStatsAndChart = React.memo(
             mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
             isDisabled={isFirstTime}
           >
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="ytd">YTD</option>
+            <option value="weekly">{t("Weekly")}</option>
+            <option value="monthly">{t("Monthly")}</option>
+            <option value="ytd">{t("YTD")}</option>
           </Select>
         </RowOnDesktopColumnOnMobile>
 
@@ -462,6 +465,8 @@ const UserStatsAndChart = React.memo(
 );
 
 const CurrentAPY = React.memo(() => {
+  const { t } = useTranslation();
+
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading
@@ -470,16 +475,18 @@ const CurrentAPY = React.memo(() => {
         fontSize="54px"
         fontWeight="extrabold"
       >
-        12%
+        {"12%"}
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
-        Today's APY
+        {t("Today's APY")}
       </Text>
     </Row>
   );
 });
 
 const APYStats = React.memo(() => {
+  const { t } = useTranslation();
+
   return (
     <Column
       expand
@@ -487,7 +494,7 @@ const APYStats = React.memo(() => {
       crossAxisAlignment="flex-start"
     >
       <Heading lineHeight={1} size="sm">
-        APY Stats
+        {t("APY Stats")}
       </Heading>
 
       <Column
@@ -501,7 +508,7 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            Month: <b>42%</b>
+            {t("Month")}: <b>42%</b>
           </Text>
 
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
@@ -515,7 +522,7 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            Week: <b>52%</b>
+            {t("Week")}: <b>52%</b>
           </Text>
 
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
@@ -529,6 +536,8 @@ const APYStats = React.memo(() => {
 });
 
 const StrategyAllocation = React.memo(() => {
+  const { t } = useTranslation();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -539,7 +548,7 @@ const StrategyAllocation = React.memo(() => {
       expand
     >
       <Heading lineHeight={1} size="sm" mb={1}>
-        Strategy Allocation
+        {t("Strategy Allocation")}
       </Heading>
 
       <Chart
@@ -556,6 +565,8 @@ const StrategyAllocation = React.memo(() => {
 const MonthlyReturns = React.memo(() => {
   const returns = { Rari: 94, Compound: 5.4, dYdX: 4.3 };
 
+  const { t } = useTranslation();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -564,7 +575,7 @@ const MonthlyReturns = React.memo(() => {
       overflowY="hidden"
     >
       <Heading size="sm" lineHeight={1} mb={3}>
-        Monthly Returns
+        {t("Monthly Returns")}
       </Heading>
 
       {Object.entries(returns).map(([key, value]) => {
@@ -607,6 +618,8 @@ const TransactionHistoryOrTokenAllocation = React.memo(
 const TokenAllocation = React.memo(() => {
   const allocations = { DAI: 0.4, USDC: 0.3, USDT: 0.2, TUSD: 0.1 };
 
+  const { t } = useTranslation();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -615,7 +628,7 @@ const TokenAllocation = React.memo(() => {
       overflowY="hidden"
     >
       <Heading size="md" lineHeight={1}>
-        Token Allocation
+        {t("Token Allocation")}
       </Heading>
 
       {Object.entries(allocations).map(([key, value]) => {
@@ -641,6 +654,8 @@ const TokenAllocation = React.memo(() => {
 const TransactionHistory = React.memo(() => {
   const { data: events, isLoading } = useTransactionHistoryEvents();
 
+  const { t } = useTranslation();
+
   return isLoading ? (
     <Center expand>
       <Spinner />
@@ -653,7 +668,7 @@ const TransactionHistory = React.memo(() => {
       overflowY="auto"
     >
       <Heading size="sm" mb={2}>
-        Your Transaction History
+        {t("Your Transaction History")}
       </Heading>
 
       {events!.map((event, index) => (
@@ -665,7 +680,7 @@ const TransactionHistory = React.memo(() => {
               event.returnValues.currencyCode
             ) ?? "UNKNOWN_CURRENCY"}
             `}
-            <b> ({event.timeSent})</b>
+            <b>{event.timeSent}</b>
           </Text>
           {index !== events!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />
@@ -711,7 +726,10 @@ const RecentTrades = React.memo(() => {
     },
   ];
 
+  const { t } = useTranslation();
+
   const tradesLoading = false;
+
   return tradesLoading ? (
     <Center expand>
       <Spinner />
@@ -724,15 +742,15 @@ const RecentTrades = React.memo(() => {
       overflowY="auto"
     >
       <Heading size="sm" mb={2}>
-        Recent Trades
+        {t("Recent Trades")}
       </Heading>
 
       {recentTrades!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
           <Text fontSize="sm" color="#aba6a6">
-            {`Move ${event.returnValues.percent * 100}% from ${
+            {`${t("Move")} ${event.returnValues.percent * 100}% ${t("from")} ${
               event.returnValues.from
-            } to ${event.returnValues.to}`}
+            } ${t("to")} ${event.returnValues.to}`}
             <b> ({event.timeSent})</b>
           </Text>
           {index !== recentTrades!.length - 1 ? (
@@ -748,6 +766,8 @@ const RecentTrades = React.memo(() => {
 
 const NeedHelp = React.memo(({ height }: { height: number }) => {
   const isTall = height > 200;
+
+  const { t } = useTranslation();
 
   return (
     <Row
@@ -770,7 +790,7 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
         fontWeight="bold"
         onClick={() => window.open("https://rari.capital/current.html")}
       >
-        FAQ
+        {t("FAQ")}
       </Button>
     </Row>
   );
@@ -779,6 +799,8 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
 interface DepositButtonProps extends Omit<ButtonProps, "children"> {}
 
 const DepositButton = React.memo((buttonProps: DepositButtonProps) => {
+  const { t } = useTranslation();
+
   return (
     <Button
       bg="#FFFFFF"
@@ -791,7 +813,7 @@ const DepositButton = React.memo((buttonProps: DepositButtonProps) => {
       onClick={buttonProps.onClick}
       {...buttonProps}
     >
-      Deposit
+      {t("Deposit")}
     </Button>
   );
 });

@@ -18,9 +18,10 @@ import {
   getTokenBalance,
 } from "../../../hooks/useTokenBalance";
 import { toBig } from "../../../utils/bigUtils";
-import { Mode, modeToTitleCaseString, modeToLowerCaseString } from ".";
+import { Mode } from ".";
 import Big from "big.js";
 import { useAuthedWeb3 } from "../../../context/Web3Context";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   selectedToken: string;
@@ -69,6 +70,8 @@ const AmountSelect = React.memo(
       [isSelectedTokenBalanceLoading, selectedTokenBalance, amount]
     );
 
+    const { t } = useTranslation();
+
     return (
       <>
         <Row
@@ -78,7 +81,9 @@ const AmountSelect = React.memo(
           p={4}
         >
           <Box width="40px" />
-          <Heading fontSize="27px">{modeToTitleCaseString(mode)}</Heading>
+          <Heading fontSize="27px">
+            {mode === Mode.DEPOSIT ? t("Deposit") : t("Withdraw")}
+          </Heading>
           <IconButton
             width="20px"
             color="#FFFFFF"
@@ -103,17 +108,21 @@ const AmountSelect = React.memo(
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
             {amount !== null
               ? !amount.gt(0)
-                ? `Choose which crypto you want to ${modeToLowerCaseString(
-                    mode
-                  )}:`
+                ? mode === Mode.DEPOSIT
+                  ? t("Choose which crypto you want to deposit.")
+                  : t("Choose which crypto you want to withdraw.")
                 : isSelectedTokenBalanceLoading
-                ? `Loading your balance of ${selectedToken}...`
+                ? t("Loading your balance of {{token}}...", {
+                    token: selectedToken,
+                  })
                 : isAmountGreaterThanSelectedTokenBalance
-                ? `You don't have enough ${selectedToken}, enter a smaller amount!`
-                : "Click confirm to start earning interest:"
-              : `Please enter a valid amount to ${modeToLowerCaseString(
-                  mode
-                )}:`}
+                ? t("You don't have enough {{token}}.", {
+                    token: selectedToken,
+                  })
+                : t("Click confirm to start earning interest!")
+              : mode === Mode.DEPOSIT
+              ? t("Enter a valid amount to deposit.")
+              : t("Enter a valid amount to withdraw.")}
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
@@ -154,7 +163,7 @@ const AmountSelect = React.memo(
               isAmountGreaterThanSelectedTokenBalance
             }
           >
-            Confirm
+            {t("Confirm")}
           </Button>
         </Column>
       </>
@@ -191,6 +200,8 @@ const TokenNameAndMaxButton = React.memo(
 
       _setIsMaxLoading(false);
     }, [_setIsMaxLoading, updateAmount, token, web3, address]);
+
+    const { t } = useTranslation();
 
     return (
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
@@ -230,7 +241,7 @@ const TokenNameAndMaxButton = React.memo(
             onClick={setToMax}
             isLoading={isMaxLoading}
           >
-            MAX
+            {t("MAX")}
           </Button>
         ) : null}
       </Row>

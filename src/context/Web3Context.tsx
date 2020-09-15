@@ -2,8 +2,10 @@ import React, { useState, useCallback, useEffect } from "react";
 import Web3 from "web3";
 import FullPageSpinner from "../components/shared/FullPageSpinner";
 import { queryCache } from "react-query";
+import { useTranslation } from "react-i18next";
+import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
-async function launchModalLazy() {
+async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
     WalletConnectProvider,
     Portis,
@@ -21,10 +23,19 @@ async function launchModalLazy() {
   ]);
 
   const providerOptions = {
+    injected: {
+      display: {
+        description: t("Connect with a browser extension"),
+      },
+      package: null,
+    },
     walletconnect: {
       package: WalletConnectProvider.default,
       options: {
         infuraId: process.env.REACT_APP_INFURA_ID,
+      },
+      display: {
+        description: t("Scan with a wallet to connect"),
       },
     },
     fortmatic: {
@@ -32,20 +43,38 @@ async function launchModalLazy() {
       options: {
         key: process.env.REACT_APP_FORTMATIC_KEY,
       },
+      display: {
+        description: t("Connect with your {{provider}} account", {
+          provider: "Fortmatic",
+        }),
+      },
     },
     torus: {
       package: Torus.default,
-      options: {},
+      display: {
+        description: t("Connect with your {{provider}} account", {
+          provider: "Torus",
+        }),
+      },
     },
     portis: {
       package: Portis.default,
       options: {
         id: process.env.REACT_APP_PORTIS_ID,
       },
+      display: {
+        description: t("Connect with your {{provider}} account", {
+          provider: "Portis",
+        }),
+      },
     },
     authereum: {
       package: Authereum.default,
-      options: {},
+      display: {
+        description: t("Connect with your {{provider}} account", {
+          provider: "Authereum",
+        }),
+      },
     },
   };
 
@@ -53,10 +82,10 @@ async function launchModalLazy() {
     cacheProvider: false,
     providerOptions,
     theme: {
-      background: "#121212",
+      background: DASHBOARD_BOX_PROPS.backgroundColor,
       main: "#FFFFFF",
       secondary: "#858585",
-      border: "#272727",
+      border: DASHBOARD_BOX_PROPS.borderColor,
       hover: "#000000",
     },
   });
@@ -79,6 +108,8 @@ export const Web3Context = React.createContext<Web3ContextData | undefined>(
 );
 
 export const Web3Provider = ({ children }: { children: JSX.Element }) => {
+  const { t } = useTranslation();
+
   const [web3Network] = useState<Web3>(
     () =>
       new Web3(
@@ -105,7 +136,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
   );
 
   const login = useCallback(async () => {
-    const provider = await launchModalLazy();
+    const provider = await launchModalLazy(t);
 
     setWeb3ModalProvider(provider);
 

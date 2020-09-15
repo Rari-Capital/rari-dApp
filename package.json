@@ -31,6 +31,7 @@
     "emotion-theming": "^10.0.27",
     "focus-visible": "^5.1.0",
     "fortmatic": "^2.2.1",
+    "i18next": "^19.7.0",
     "istanbul-lib-coverage": "^3.0.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "nyc": "^15.1.0",
@@ -40,6 +41,8 @@
     "react-awesome-reveal": "^3.3.1",
     "react-dom": "^16.13.1",
     "react-error-boundary": "^3.0.1",
+    "react-i18next": "^11.7.2",
+    "react-icons": "^3.11.0",
     "react-ios-pwa-prompt": "^1.8.0",
     "react-jazzicon": "^0.1.3",
     "react-query": "^2.17.1",
@@ -54,6 +57,8 @@
   },
   "scripts": {
     "postinstall": "typechain --target web3-v1 --outDir src/static/contracts/compiled 'src/static/contracts/*.json' && rari-tokens-generator ./src/static/compiled/tokens.json",
+    "translate": "i18next 'src/**/*.{ts,tsx}'",
+    "prestart": "npm run translate",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -80,6 +85,7 @@
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",
     "@types/big.js": "^4.0.5",
+    "i18next-parser": "^3.3.0",
     "typechain": "^2.0.0"
   }
 }
