@@ -125,20 +125,7 @@ export const WalletModal = React.memo(
                 crossAxisAlignment="center"
                 p={4}
               >
-                <Select
-                  value={i18n.language}
-                  onChange={selectLang}
-                  color="#000000"
-                  fontWeight="bold"
-                  width="100%"
-                >
-                  <option value="en">{t("English")}</option>
-                  <option value="zh-CN">{t("Chinese Simplified")}</option>
-                  <option value="zh-TW">{t("Chinese Traditional")}</option>
-                </Select>
-
                 <Button
-                  mt={4}
                   leftIcon="repeat"
                   bg="whatsapp.500"
                   width="100%"
@@ -152,6 +139,7 @@ export const WalletModal = React.memo(
                 >
                   {t("Switch Wallet")}
                 </Button>
+
                 <Button
                   mt={4}
                   leftIcon="unlock"
@@ -167,6 +155,19 @@ export const WalletModal = React.memo(
                 >
                   {t("Disconnect")}
                 </Button>
+
+                <Select
+                  mt={4}
+                  value={i18n.language}
+                  onChange={selectLang}
+                  color="#000000"
+                  fontWeight="bold"
+                  width="100%"
+                >
+                  <option value="en">English</option>
+                  <option value="zh-CN">简体中文</option>
+                  <option value="zh-TW">中國傳統的</option>
+                </Select>
               </Column>
             </ModalContent>
           </Modal>
