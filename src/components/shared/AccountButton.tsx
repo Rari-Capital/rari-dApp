@@ -19,7 +19,7 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 
-import SlideIn from "./SlideIn";
+import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
 
 export const AccountButton = React.memo(() => {
@@ -96,7 +96,7 @@ export const WalletModal = React.memo(
     );
 
     return (
-      <SlideIn
+      <ModalAnimation
         isActivted={isOpen}
         render={(styles) => (
           <Modal isOpen={isOpen} onClose={onClose} isCentered>

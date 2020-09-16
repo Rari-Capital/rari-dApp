@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/core";
-import SlideIn from "../../shared/SlideIn";
+import ModalAnimation from "../../shared/ModalAnimation";
 import TokenSelect from "./TokenSelect";
 import AmountSelect from "./AmountSelect";
 import OptionsMenu from "./OptionsMenu";
@@ -52,7 +52,7 @@ const DepositModal = React.memo((props: Props) => {
   const [mode, setMode] = useState(Mode.DEPOSIT);
 
   return (
-    <SlideIn
+    <ModalAnimation
       isActivted={props.isOpen}
       render={(styles) => (
         <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>

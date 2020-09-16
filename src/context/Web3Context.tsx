@@ -141,7 +141,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     setWeb3ModalProvider(provider);
 
     setWeb3AuthedAndAddressFromModal(provider);
-  }, [setWeb3ModalProvider, setWeb3AuthedAndAddressFromModal]);
+  }, [setWeb3ModalProvider, setWeb3AuthedAndAddressFromModal, t]);
 
   const refetchAccountData = useCallback(() => {
     console.log("New account, clearing the queryCache!");
