@@ -27,7 +27,7 @@
     "authereum": "0.0.4-beta.193",
     "big.js": "^5.2.2",
     "buttered-chakra": "^3.0.0",
-    "cypress": "^5.1.0",
+    "cypress": "^5.2.0",
     "emotion-theming": "^10.0.27",
     "focus-visible": "^5.1.0",
     "fortmatic": "^2.2.1",
