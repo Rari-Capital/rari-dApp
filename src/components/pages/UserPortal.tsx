@@ -680,7 +680,7 @@ const TransactionHistory = React.memo(() => {
               event.returnValues.currencyCode
             ) ?? "UNKNOWN_CURRENCY"}
             `}
-            <b>{event.timeSent}</b>
+            <b>({event.timeSent})</b>
           </Text>
           {index !== events!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />

@@ -1,4 +1,4 @@
-import { useQuery, queryCache } from "react-query";
+import { useQuery, useQueryCache } from "react-query";
 import { Contract, Filter, EventData } from "web3-eth-contract";
 
 import { useAuthedWeb3 } from "../context/Web3Context";
@@ -39,7 +39,9 @@ export type TransactionEvent = EventData & { timeSent: string };
 export function useTransactionHistoryEvents() {
   const { web3, address } = useAuthedWeb3();
 
-  return useQuery("transactionHistoryOf" + address, async () => {
+  const queryCache = useQueryCache();
+
+  return useQuery(address + " transactionHistory", async () => {
     const { withdraws, deposits } = await getAllTransactionHistoryEvents(
       web3,
       address

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Web3 from "web3";
 import FullPageSpinner from "../components/shared/FullPageSpinner";
-import { queryCache } from "react-query";
+import { useQueryCache } from "react-query";
 import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
@@ -122,6 +122,8 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
+  const queryCache = useQueryCache();
+
   const setWeb3AuthedAndAddressFromModal = useCallback(
     (modalProvider) => {
       let authedProvider = new Web3(modalProvider);
@@ -149,7 +151,7 @@ export const Web3Provider = ({ children }: { children: JSX.Element }) => {
     setWeb3AuthedAndAddressFromModal(web3ModalProvider);
 
     queryCache.clear();
-  }, [setWeb3AuthedAndAddressFromModal, web3ModalProvider]);
+  }, [setWeb3AuthedAndAddressFromModal, web3ModalProvider, queryCache]);
 
   const logout = useCallback(() => {
     setWeb3ModalProvider((past: any) => {
