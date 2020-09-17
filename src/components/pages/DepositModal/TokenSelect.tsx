@@ -8,7 +8,6 @@ import {
   Text,
   Box,
   Icon,
-  CloseButton,
 } from "@chakra-ui/core";
 import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
@@ -19,6 +18,7 @@ import BigWhiteCircle from "../../../static/big-white-circle.png";
 import { FixedSizeList as List, areEqual } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
+import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 
 const TokenSelect = React.memo(
   ({
@@ -57,17 +57,11 @@ const TokenSelect = React.memo(
 
     return (
       <Fade>
-        <Row
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          p={4}
-        >
-          <Box width="32px" />
-          <Heading fontSize="27px">{t("Select A Token")}</Heading>
-          <CloseButton onClick={onClose} />
-        </Row>
-        <Box h="1px" bg="#272727" />
+        <ModalTitleWithCloseButton
+          text={t("Select A Token")}
+          onClose={onClose}
+        />
+        <ModalDivider />
         <InputGroup mb={2} mx={4}>
           <InputLeftElement
             ml={-1}

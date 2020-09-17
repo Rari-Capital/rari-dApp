@@ -5,8 +5,6 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  Heading,
-  Box,
   Button,
   Text,
   Select,
@@ -21,32 +19,26 @@ import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 
 import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
+import { MODAL_PROPS, ModalTitle, ModalDivider } from "./Modal";
 
 export const AccountButton = React.memo(() => {
   const { address } = useAuthedWeb3();
   const {
-    isOpen: isWalletModalOpen,
-    onOpen: openWalletModal,
-    onClose: closeWalletModal,
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
   } = useDisclosure();
 
   return (
     <>
-      <WalletModal isOpen={isWalletModalOpen} onClose={closeWalletModal} />
-      {/* eslint-disable-next-line */}
-      <OpenModalButton openWalletModal={openWalletModal} address={address} />
+      <SettingsModal isOpen={isModalOpen} onClose={closeModal} />
+      <AddressButton openModal={openModal} address={address} />
     </>
   );
 });
 
-const OpenModalButton = React.memo(
-  ({
-    openWalletModal,
-    address,
-  }: {
-    openWalletModal: () => any;
-    address: string;
-  }) => {
+const AddressButton = React.memo(
+  ({ openModal, address }: { openModal: () => any; address: string }) => {
     const isMobile = useIsMobile();
 
     return (
@@ -57,7 +49,7 @@ const OpenModalButton = React.memo(
           md: "245px",
           xs: "auto",
         }}
-        onClick={openWalletModal}
+        onClick={openModal}
       >
         <Row
           expand
@@ -76,7 +68,7 @@ const OpenModalButton = React.memo(
   }
 );
 
-export const WalletModal = React.memo(
+export const SettingsModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
     const { logout, login } = useWeb3();
 
@@ -101,24 +93,9 @@ export const WalletModal = React.memo(
         render={(styles) => (
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
-            <ModalContent
-              {...styles}
-              width={{ md: "450px", xs: "92%" }}
-              backgroundColor="#121212"
-              borderRadius="10px"
-              border="1px"
-              borderColor="#272727"
-              color="#FFFFFF"
-            >
-              <Row
-                width="100%"
-                mainAxisAlignment="center"
-                crossAxisAlignment="center"
-                p={4}
-              >
-                <Heading fontSize="27px">{t("Account")}</Heading>
-              </Row>
-              <Box h="1px" bg="#272727" />
+            <ModalContent {...styles} {...MODAL_PROPS}>
+              <ModalTitle text={t("Account")} />
+              <ModalDivider />
               <Column
                 width="100%"
                 mainAxisAlignment="flex-start"

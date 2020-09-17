@@ -22,6 +22,7 @@ import { Mode } from ".";
 import Big from "big.js";
 import { useAuthedWeb3 } from "../../../context/Web3Context";
 import { useTranslation } from "react-i18next";
+import { ModalDivider } from "../../shared/Modal";
 
 interface Props {
   selectedToken: string;
@@ -85,7 +86,6 @@ const AmountSelect = React.memo(
             {mode === Mode.DEPOSIT ? t("Deposit") : t("Withdraw")}
           </Heading>
           <IconButton
-            width="20px"
             color="#FFFFFF"
             variant="ghost"
             aria-label="Options"
@@ -98,7 +98,7 @@ const AmountSelect = React.memo(
             onClick={openOptions}
           />
         </Row>
-        <Box h="1px" bg="#272727" />
+        <ModalDivider />
         <Column
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"

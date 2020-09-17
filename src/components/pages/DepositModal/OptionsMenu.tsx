@@ -1,12 +1,13 @@
 import React, { useCallback } from "react";
 
-import { Heading, Box, Button, CloseButton } from "@chakra-ui/core";
+import { Button } from "@chakra-ui/core";
 
 import { Fade } from "react-awesome-reveal";
-import { Row, Column } from "buttered-chakra";
+import { Column } from "buttered-chakra";
 
 import { Mode } from ".";
 import { useTranslation } from "react-i18next";
+import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 
 const OptionsMenu = React.memo(
   ({
@@ -27,17 +28,8 @@ const OptionsMenu = React.memo(
 
     return (
       <Fade>
-        <Row
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          p={4}
-        >
-          <Box width="32px" />
-          <Heading fontSize="27px">{t("Options")}</Heading>
-          <CloseButton onClick={onClose} />
-        </Row>
-        <Box h="1px" bg="#272727" />
+        <ModalTitleWithCloseButton text={t("Options")} onClose={onClose} />
+        <ModalDivider />
         <Column
           mt={4}
           mainAxisAlignment="space-between"
@@ -48,8 +40,9 @@ const OptionsMenu = React.memo(
             variant="solid"
             onClick={toggleMode}
           >
-            {t("Want to")}{" "}
-            {mode === Mode.DEPOSIT ? t("withdraw") : t("deposit")}?
+            {mode === Mode.DEPOSIT
+              ? t("Want to withdraw?")
+              : t("Want to deposit?")}
           </Button>
         </Column>
       </Fade>

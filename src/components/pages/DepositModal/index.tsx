@@ -4,6 +4,7 @@ import ModalAnimation from "../../shared/ModalAnimation";
 import TokenSelect from "./TokenSelect";
 import AmountSelect from "./AmountSelect";
 import OptionsMenu from "./OptionsMenu";
+import { MODAL_PROPS } from "../../shared/Modal";
 
 enum CurrentScreen {
   MAIN,
@@ -57,16 +58,7 @@ const DepositModal = React.memo((props: Props) => {
       render={(styles) => (
         <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
           <ModalOverlay />
-          <ModalContent
-            {...styles}
-            height="300px"
-            width={{ md: "450px", xs: "92%" }}
-            backgroundColor="#121212"
-            borderRadius="10px"
-            border="1px"
-            borderColor="#272727"
-            color="#FFFFFF"
-          >
+          <ModalContent {...styles} {...MODAL_PROPS} height="300px">
             {currentScreen === CurrentScreen.MAIN ? (
               <AmountSelect
                 openCoinSelect={openCoinSelect}
