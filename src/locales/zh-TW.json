@@ -47,6 +47,7 @@
   "Account": "Account",
   "Switch Wallet": "Switch Wallet",
   "Disconnect": "Disconnect",
+  "Language": "Language",
   "Connect with a browser extension": "Connect with a browser extension",
   "Scan with a wallet to connect": "Scan with a wallet to connect",
   "Connect with your {{provider}} account": "Connect with your {{provider}} account"

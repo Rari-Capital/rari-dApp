@@ -7,7 +7,6 @@ import {
   ModalContent,
   Button,
   Text,
-  Select,
 } from "@chakra-ui/core";
 import { useIsMobile, Row, Column } from "buttered-chakra";
 import DashboardBox from "./DashboardBox";
@@ -20,9 +19,9 @@ import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalTitle, ModalDivider } from "./Modal";
+import { LanguageSelect } from "./TranslateButton";
 
 export const AccountButton = React.memo(() => {
-  const { address } = useAuthedWeb3();
   const {
     isOpen: isModalOpen,
     onOpen: openModal,
@@ -32,41 +31,36 @@ export const AccountButton = React.memo(() => {
   return (
     <>
       <SettingsModal isOpen={isModalOpen} onClose={closeModal} />
-      <AddressButton openModal={openModal} address={address} />
+      <AddressButton openModal={openModal} />
     </>
   );
 });
 
-const AddressButton = React.memo(
-  ({ openModal, address }: { openModal: () => any; address: string }) => {
-    const isMobile = useIsMobile();
+const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
+  const { address } = useAuthedWeb3();
 
-    return (
-      <DashboardBox
-        as="button"
-        height="40px"
-        width={{
-          md: "245px",
-          xs: "auto",
-        }}
-        onClick={openModal}
-      >
-        <Row
-          expand
-          mainAxisAlignment="center"
-          crossAxisAlignment="center"
-          px={3}
-        >
-          <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+  const isMobile = useIsMobile();
 
-          <Text ml={2} fontWeight="semibold">
-            {isMobile ? shortAddress(address) : mediumAddress(address)}
-          </Text>
-        </Row>
-      </DashboardBox>
-    );
-  }
-);
+  return (
+    <DashboardBox
+      as="button"
+      height="40px"
+      width={{
+        md: "245px",
+        xs: "auto",
+      }}
+      onClick={openModal}
+    >
+      <Row expand mainAxisAlignment="center" crossAxisAlignment="center" px={3}>
+        <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+
+        <Text ml={2} fontWeight="semibold">
+          {isMobile ? shortAddress(address) : mediumAddress(address)}
+        </Text>
+      </Row>
+    </DashboardBox>
+  );
+});
 
 export const SettingsModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
@@ -77,15 +71,7 @@ export const SettingsModal = React.memo(
       setTimeout(() => login(), 100);
     }, [login, onClose]);
 
-    const { t, i18n } = useTranslation();
-
-    const selectLang = useCallback(
-      (event: React.ChangeEvent<HTMLSelectElement>) => {
-        i18n.changeLanguage(event.target.value);
-        localStorage.setItem("rariLang", event.target.value);
-      },
-      [i18n]
-    );
+    const { t } = useTranslation();
 
     return (
       <ModalAnimation
@@ -118,7 +104,7 @@ export const SettingsModal = React.memo(
                 </Button>
 
                 <Button
-                  mt={4}
+                  my={4}
                   leftIcon="unlock"
                   bg="red.500"
                   width="100%"
@@ -133,18 +119,7 @@ export const SettingsModal = React.memo(
                   {t("Disconnect")}
                 </Button>
 
-                <Select
-                  mt={4}
-                  value={i18n.language}
-                  onChange={selectLang}
-                  color="#000000"
-                  fontWeight="bold"
-                  width="100%"
-                >
-                  <option value="en">English</option>
-                  <option value="zh-CN">简体中文</option>
-                  <option value="zh-TW">中國傳統的</option>
-                </Select>
+                <LanguageSelect />
               </Column>
             </ModalContent>
           </Modal>

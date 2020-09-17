@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Text, Spinner, Box, IconButton } from "@chakra-ui/core";
+import { Text, Spinner, Box } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
@@ -24,8 +24,7 @@ import {
 import CaptionedStat from "../shared/CaptionedStat";
 import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
-
-import { MdTranslate } from "react-icons/md";
+import { TranslateButton } from "../shared/TranslateButton";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -88,22 +87,7 @@ const PreviewPortal = () => {
         crossAxisAlignment="center"
       >
         <WideLogo />
-
-        <IconButton
-          color="#FFFFFF"
-          variant="ghost"
-          aria-label="Set Language"
-          icon={MdTranslate}
-          fontSize="25px"
-          _hover={{
-            transform: "scale(1.2)",
-            transition: "all 0.3s linear",
-          }}
-          _active={{
-            transform: "scale(0.9)",
-            transition: "all 0.2s linear",
-          }}
-        />
+        <TranslateButton />
       </Row>
 
       <RowOnDesktopColumnOnMobile

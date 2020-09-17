@@ -47,6 +47,7 @@
   "Account": "帐户",
   "Switch Wallet": "开关钱包",
   "Disconnect": "断开",
+  "Language": "语言",
   "Connect with a browser extension": "连接浏览器扩展",
   "Scan with a wallet to connect": "用钱包扫描以进行连接",
   "Connect with your {{provider}} account": "与您的{{provider}}帐户关联"
