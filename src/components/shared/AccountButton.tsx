@@ -18,7 +18,7 @@ import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 
 import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
-import { MODAL_PROPS, ModalTitle, ModalDivider } from "./Modal";
+import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
 export const AccountButton = React.memo(() => {
@@ -66,7 +66,7 @@ export const SettingsModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
     const { logout, login } = useWeb3();
 
-    const onSwitch = useCallback(() => {
+    const onSwitchWallet = useCallback(() => {
       onClose();
       setTimeout(() => login(), 100);
     }, [login, onClose]);
@@ -80,7 +80,10 @@ export const SettingsModal = React.memo(
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent {...styles} {...MODAL_PROPS}>
-              <ModalTitle text={t("Account")} />
+              <ModalTitleWithCloseButton
+                text={t("Account")}
+                onClose={onClose}
+              />
               <ModalDivider />
               <Column
                 width="100%"
@@ -96,7 +99,7 @@ export const SettingsModal = React.memo(
                   fontSize="xl"
                   borderRadius="7px"
                   fontWeight="bold"
-                  onClick={onSwitch}
+                  onClick={onSwitchWallet}
                   _hover={{}}
                   _active={{}}
                 >

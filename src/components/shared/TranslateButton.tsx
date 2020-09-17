@@ -11,7 +11,7 @@ import {
 import { MdTranslate } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import ModalAnimation from "./ModalAnimation";
-import { MODAL_PROPS, ModalTitle, ModalDivider } from "./Modal";
+import { MODAL_PROPS, ModalTitleWithCloseButton, ModalDivider } from "./Modal";
 import { Column } from "buttered-chakra";
 
 export const TranslateButton = React.memo(() => {
@@ -63,7 +63,10 @@ export const TranslateModal = React.memo(
           <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent {...styles} {...MODAL_PROPS}>
-              <ModalTitle text={t("Language")} />
+              <ModalTitleWithCloseButton
+                text={t("Language")}
+                onClose={onClose}
+              />
               <ModalDivider />
               <Column
                 width="100%"
