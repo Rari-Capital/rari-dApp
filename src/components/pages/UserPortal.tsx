@@ -393,7 +393,7 @@ const UserStatsAndChart = React.memo(
               caption={t("Fund Performance")}
               captionSize="xs"
               stat={"+15%"}
-              statSize={"4xl"}
+              statSize="4xl"
             />
           ) : (
             <>
