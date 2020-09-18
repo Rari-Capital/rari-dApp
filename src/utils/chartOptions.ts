@@ -76,7 +76,7 @@ export const SelfReturnChartOptions = {
     padding: {
       // No legend so we need to remove the top padding.
       // This will not shift anything up, just increases the size of the chart.
-      top: -10,
+      top: -15,
     },
   },
 };

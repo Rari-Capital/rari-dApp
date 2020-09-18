@@ -405,7 +405,7 @@ const UserStatsAndChart = React.memo(
                 caption={t("Account Balance")}
                 captionSize="xs"
                 stat={balance}
-                statSize="4xl"
+                statSize="3xl"
               />
 
               <CaptionedStat
@@ -413,7 +413,7 @@ const UserStatsAndChart = React.memo(
                 caption={t("Interest Earned")}
                 captionSize="xs"
                 stat={interestEarned}
-                statSize="4xl"
+                statSize="3xl"
               />
             </>
           )}
