@@ -74,7 +74,7 @@ export const SelfReturnChartOptions = {
   grid: {
     ...FundReturnChartOptions.grid,
     padding: {
-      top: -5,
+      top: -10,
     },
   },
 };
