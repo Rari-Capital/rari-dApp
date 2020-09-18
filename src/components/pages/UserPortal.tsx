@@ -13,7 +13,10 @@ import {
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
+import DashboardBox, {
+  DASHBOARD_BOX_SPACING,
+  DASHBOARD_BOX_PROPS,
+} from "../shared/DashboardBox";
 import { useContracts } from "../../context/ContractsContext";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
@@ -160,7 +163,7 @@ const UserPortal = () => {
           crossAxisAlignment="flex-start"
         >
           <Row
-            mt={"9px"}
+            mt="9px"
             px={DASHBOARD_BOX_SPACING.asPxString()}
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
@@ -416,7 +419,8 @@ const UserStatsAndChart = React.memo(
           )}
 
           <Select
-            color="#000000"
+            {...DASHBOARD_BOX_PROPS}
+            borderRadius="7px"
             fontWeight="bold"
             width={{ md: "130px", xs: "100%" }}
             isDisabled={isFirstTime}
@@ -769,20 +773,19 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
     >
       <BookBrain isTall={isTall} />
 
-      <Button
-        bg="#FFFFFF"
-        color="#000000"
+      <DashboardBox
+        as="button"
         height="45px"
         width="100%"
+        borderRadius="7px"
         ml={isTall ? 0 : 4}
         mt={isTall ? 4 : 0}
         fontSize="xl"
-        borderRadius="7px"
         fontWeight="bold"
         onClick={() => window.open("https://rari.capital/current.html")}
       >
         {t("FAQ")}
-      </Button>
+      </DashboardBox>
     </Row>
   );
 });
