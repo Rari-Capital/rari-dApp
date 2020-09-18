@@ -75,7 +75,7 @@ export const SelfReturnChartOptions = {
     ...FundReturnChartOptions.grid,
     padding: {
       // No legend so we need to remove the top padding.
-      // This will not shift anything up, just increases the size of the chart.
+      // This will not shift anything up, just increases the size of the chart to expand vertically.
       top: -15,
     },
   },
