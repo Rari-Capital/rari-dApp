@@ -20,6 +20,7 @@ import {
   PixelSize,
   PercentageSize,
   PercentOnDesktopPixelOnMobileSize,
+  useIsMobile,
 } from "buttered-chakra";
 import CaptionedStat from "../shared/CaptionedStat";
 import { useQuery } from "react-query";
@@ -125,7 +126,7 @@ const PreviewPortal = () => {
             <DashboardBox
               as="button"
               onClick={onLogin}
-              width="57%"
+              width={{ md: "50%", xs: "57%" }}
               height="100%"
             >
               <Center>
@@ -151,7 +152,7 @@ const PreviewPortal = () => {
                   "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-Started-With-MetaMask-Part-1"
                 )
               }
-              width="43%"
+              width={{ md: "50%", xs: "43%" }}
               height="100%"
             >
               <Center>
@@ -207,7 +208,9 @@ const FundStats = React.memo(() => {
           caption={t("Today's APY")}
           captionSize="xs"
           stat={"14.2%"}
-          statSize="xl"
+          statSize="4xl"
+          spacing={1}
+          columnProps={{ mb: 3 }}
           captionFirst={false}
         />
         <CaptionedStat
@@ -215,7 +218,9 @@ const FundStats = React.memo(() => {
           caption={t("Yearly APY")}
           captionSize="xs"
           stat={"13.3%"}
-          statSize="xl"
+          statSize="4xl"
+          spacing={1}
+          columnProps={{ mb: 3 }}
           captionFirst={false}
         />
 
@@ -224,7 +229,8 @@ const FundStats = React.memo(() => {
           caption={t("Assets Under Management")}
           captionSize="xs"
           stat={isFundBalenceLoading ? "$?" : fundBalance!}
-          statSize="lg"
+          statSize="2xl"
+          spacing={1}
           captionFirst={false}
         />
       </Column>
@@ -233,12 +239,20 @@ const FundStats = React.memo(() => {
 });
 
 const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
+  const isMobile = useIsMobile();
+
   const {
-    childSizes: [statsSize, chartSize, bottomPadding],
+    childSizes: [topPadding, statsSize, chartSize],
   } = useSpacedLayout({
     parentHeight: size,
     spacing: 0,
-    childSizes: [new PixelSize(90), new PercentageSize(1), new PixelSize(10)],
+    childSizes: [
+      new PixelSize(10),
+      new PixelSize(isMobile ? 80 : 65),
+      new PercentageSize(1),
+      // This accounts for 10px of bottom padding
+      new PixelSize(10),
+    ],
   });
 
   const { t } = useTranslation();
@@ -250,23 +264,20 @@ const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
         mainAxisAlignment={{ md: "flex-start", xs: "center" }}
         crossAxisAlignment="center"
         px={DASHBOARD_BOX_SPACING.asPxString()}
+        mt={topPadding.asPxString()}
         height={statsSize.asPxString()}
         width="100%"
       >
         <CaptionedStat
           crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-          caption={t("Performance beginning with $10,000 on 6/12/20")}
+          caption={t("Performance beginning with $10,000 on 8/1/2020")}
           captionSize="xs"
           stat={"$13,250.43"}
-          statSize="xl"
+          statSize="4xl"
         />
       </Row>
 
-      <Box
-        height={chartSize.asPxString()}
-        overflow="hidden"
-        mb={bottomPadding.asPxString()}
-      >
+      <Box height={chartSize.asPxString()} overflow="hidden">
         <Chart
           options={FundReturnChartOptions}
           type="line"
@@ -274,30 +285,30 @@ const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
           height="100%"
           series={[
             {
-              name: "Rari",
+              name: "Yield Fund",
               data: [
-                { x: "August 1, 2019", y: 10000 },
-                { x: "August 3, 2019", y: 11120 },
-                { x: "August 4, 2019", y: 12451 },
-                { x: "August 5, 2019", y: 14562 },
+                { x: "August 1, 2020", y: 10000 },
+                { x: "August 3, 2020", y: 12120 },
+                { x: "August 4, 2020", y: 15451 },
+                { x: "August 5, 2020", y: 18562 },
               ],
             },
             {
-              name: "dYdX",
+              name: "Stable Fund",
               data: [
-                { x: "August 1, 2019", y: 10000 },
-                { x: "August 3, 2019", y: 10012 },
-                { x: "August 4, 2019", y: 10124 },
-                { x: "August 5, 2019", y: 10321 },
+                { x: "August 1, 2020", y: 10000 },
+                { x: "August 3, 2020", y: 10012 },
+                { x: "August 4, 2020", y: 10124 },
+                { x: "August 5, 2020", y: 12721 },
               ],
             },
             {
-              name: "Compound",
+              name: "ETH Fund",
               data: [
-                { x: "August 1, 2019", y: 10000 },
-                { x: "August 3, 2019", y: 10230 },
-                { x: "August 4, 2019", y: 11240 },
-                { x: "August 5, 2019", y: 12112 },
+                { x: "August 1, 2020", y: 10000 },
+                { x: "August 3, 2020", y: 10230 },
+                { x: "August 4, 2020", y: 11240 },
+                { x: "August 5, 2020", y: 13112 },
               ],
             },
           ]}

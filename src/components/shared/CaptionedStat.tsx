@@ -13,10 +13,10 @@ interface Props {
   mainAxisAlignment?: MainAxisAlignment;
   crossAxisAlignment: CrossAxisAlignment;
   stat: string;
-  statSize: "xl" | "2xl" | "lg" | "md" | "sm" | "xs";
+  statSize: { md: string; xs: string } | string;
   caption: string;
-  captionSize: "xl" | "2xl" | "lg" | "md" | "sm" | "xs";
-
+  captionSize: { md: string; xs: string } | string;
+  spacing?: string | number;
   captionProps?: BoxProps;
   statProps?: HeadingProps;
   columnProps?: FlexProps;
@@ -30,6 +30,7 @@ const CaptionedStat = React.memo(
     caption,
     captionProps,
     captionSize,
+    spacing,
     statProps,
     statSize,
     columnProps,
@@ -54,17 +55,18 @@ const CaptionedStat = React.memo(
               color="#858585"
               fontSize={captionSize}
               textAlign={textAlign}
+              mt={spacing ?? 0}
               {...captionProps}
             >
               {caption}
             </Text>
-            <Heading size={statSize} {...statProps}>
+            <Heading fontSize={statSize} {...statProps}>
               {stat}
             </Heading>
           </>
         ) : (
           <>
-            <Heading size={statSize} {...statProps}>
+            <Heading fontSize={statSize} {...statProps}>
               {stat}
             </Heading>
             <Text
@@ -73,6 +75,7 @@ const CaptionedStat = React.memo(
               color="#858585"
               fontSize={captionSize}
               textAlign={textAlign}
+              mt={spacing ?? 0}
               {...captionProps}
             >
               {caption}

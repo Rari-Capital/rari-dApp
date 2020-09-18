@@ -44,7 +44,7 @@ export const LineChartOptions = {
   legend: {
     position: "top",
     horizontalAlign: "left",
-    showForSingleSeries: true,
+    showForSingleSeries: false,
   },
 
   yaxis: {
@@ -65,6 +65,16 @@ export const FundReturnChartOptions = {
       formatter: function(value: string) {
         return "$" + value;
       },
+    },
+  },
+};
+
+export const SelfReturnChartOptions = {
+  ...FundReturnChartOptions,
+  grid: {
+    ...FundReturnChartOptions.grid,
+    padding: {
+      top: -5,
     },
   },
 };

@@ -36,7 +36,7 @@ import {
   useIsMobile,
 } from "buttered-chakra";
 import {
-  FundReturnChartOptions,
+  SelfReturnChartOptions,
   StrategyAllocationChartOptions,
   DisableChartInteractions,
 } from "../../utils/chartOptions";
@@ -358,15 +358,22 @@ const UserStatsAndChart = React.memo(
     interestEarned: string;
     isFirstTime: boolean;
   }) => {
+    const isMobile = useIsMobile();
+
     const {
-      childSizes: [statsSize, chartSize, bottomSpacing],
+      childSizes: [topPadding, statsSize, chartSize],
     } = useSpacedLayout({
       parentHeight: size,
       spacing: 0,
-      childSizes: [new PixelSize(75), new PercentageSize(1), new PixelSize(10)],
+      childSizes: [
+        // Add this to account for 5px top padding
+        new PixelSize(5),
+        new PixelSize(isMobile ? 230 : 75),
+        new PercentageSize(1),
+        // Add this to account for 5px bottom padding
+        new PixelSize(5),
+      ],
     });
-
-    const isMobile = useIsMobile();
 
     const { t } = useTranslation();
 
@@ -376,7 +383,8 @@ const UserStatsAndChart = React.memo(
           mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
           crossAxisAlignment="center"
           px={DASHBOARD_BOX_SPACING.asPxString()}
-          height={{ md: statsSize.asPxString(), xs: "30%" }}
+          mt={{ md: topPadding.asPxString(), xs: 0 }}
+          height={statsSize.asPxString()}
           width="100%"
         >
           {isFirstTime ? (
@@ -384,11 +392,8 @@ const UserStatsAndChart = React.memo(
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
               caption={t("Fund Performance")}
               captionSize="xs"
-              stat={"+10%"}
-              statSize={isMobile ? "2xl" : "lg"}
-              columnProps={{
-                mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-              }}
+              stat={"+15%"}
+              statSize={"4xl"}
             />
           ) : (
             <>
@@ -397,11 +402,7 @@ const UserStatsAndChart = React.memo(
                 caption={t("Account Balance")}
                 captionSize="xs"
                 stat={balance}
-                statSize="lg"
-                columnProps={{
-                  mt: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-                }}
+                statSize="4xl"
               />
 
               <CaptionedStat
@@ -409,10 +410,7 @@ const UserStatsAndChart = React.memo(
                 caption={t("Interest Earned")}
                 captionSize="xs"
                 stat={interestEarned}
-                statSize="lg"
-                columnProps={{
-                  mb: { md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() },
-                }}
+                statSize="4xl"
               />
             </>
           )}
@@ -421,7 +419,6 @@ const UserStatsAndChart = React.memo(
             color="#000000"
             fontWeight="bold"
             width={{ md: "130px", xs: "100%" }}
-            mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
             isDisabled={isFirstTime}
           >
             <option value="weekly">{t("Weekly")}</option>
@@ -430,18 +427,12 @@ const UserStatsAndChart = React.memo(
           </Select>
         </RowOnDesktopColumnOnMobile>
 
-        <Box
-          px={1}
-          height={{ md: chartSize.asPxString(), xs: "69%" }}
-          color="#000000"
-          overflow="hidden"
-          mb={bottomSpacing.asPxString()}
-        >
+        <Box height={chartSize.asPxString()} color="#000000" overflow="hidden">
           <Chart
             options={
               isFirstTime
-                ? { ...FundReturnChartOptions, ...DisableChartInteractions }
-                : FundReturnChartOptions
+                ? { ...SelfReturnChartOptions, ...DisableChartInteractions }
+                : SelfReturnChartOptions
             }
             type="line"
             width="100%"
@@ -697,27 +688,27 @@ const RecentTrades = React.memo(() => {
   const recentTrades = [
     {
       transactionHash: "XXXXX",
-      timeSent: "1/6/20",
+      timeSent: "01/6/20",
       returnValues: { percent: 0.4, from: "dYdX DAI", to: "Compound DAI" },
     },
     {
       transactionHash: "YYYYYY",
-      timeSent: "1/6/20",
+      timeSent: "01/6/20",
       returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX DAI" },
     },
     {
       transactionHash: "ZZZZZZ",
-      timeSent: "1/5/20",
+      timeSent: "01/5/20",
       returnValues: { percent: 0.3, from: "Compound USDT", to: "dYdX ZRX" },
     },
     {
       transactionHash: "AAAAAAA",
-      timeSent: "1/5/20",
+      timeSent: "01/5/20",
       returnValues: { percent: 0.1, from: "dYdX REP", to: "Compound USDC" },
     },
     {
       transactionHash: "BBBBBB",
-      timeSent: "1/4/20",
+      timeSent: "01/4/20",
       returnValues: {
         percent: 0.25,
         from: "Compound ETH",

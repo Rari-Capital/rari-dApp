@@ -56,10 +56,9 @@ export function useTransactionHistoryEvents() {
         return {
           ...event,
           timeSent: date.toLocaleDateString("en-US", {
-            weekday: "long",
             year: "numeric",
-            month: "long",
-            day: "numeric",
+            month: "2-digit",
+            day: "2-digit",
           }),
         } as TransactionEvent;
       })
