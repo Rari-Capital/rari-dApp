@@ -15,7 +15,11 @@ import { Row, Column } from "buttered-chakra";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 import { formatBig } from "../../../utils/bigUtils";
 import BigWhiteCircle from "../../../static/big-white-circle.png";
-import { FixedSizeList as List, areEqual } from "react-window";
+import {
+  FixedSizeList as List,
+  areEqual,
+  ListItemKeySelector,
+} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
@@ -166,6 +170,11 @@ const TokenList = React.memo(
       [sortedKeys, onClick]
     );
 
+    const getItemKey = useCallback<ListItemKeySelector>(
+      (index, data) => data.tokenKeys[index],
+      []
+    );
+
     return (
       <AutoSizer>
         {({ height, width }) => {
@@ -174,7 +183,7 @@ const TokenList = React.memo(
               height={height}
               width={width}
               itemCount={sortedKeys.length}
-              itemKey={(index, data) => data.tokenKeys[index]}
+              itemKey={getItemKey}
               itemSize={55}
               itemData={itemData}
               overscanCount={3}
