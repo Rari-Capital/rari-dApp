@@ -22,6 +22,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
+    "@types/big.js": "^4.0.5",
     "@walletconnect/web3-provider": "^1.2.2",
     "apexcharts": "^3.20.2",
     "authereum": "0.0.4-beta.193",
@@ -56,17 +57,16 @@
     "web3modal": "^1.9.0"
   },
   "scripts": {
-    "postinstall": "typechain --target web3-v1 --outDir src/static/contracts/compiled 'src/static/contracts/*.json' && rari-tokens-generator ./src/static/compiled/tokens.json",
-    "translate": "i18next-scanner",
-    "check-translations": "if grep -q \"__NOT_TRANSLATED__\" src/locales/*.json; then echo \"Translations missing!\"; exit 1; else echo \"All translations present!\"; fi",
-    "prestart": "npm run translate",
+    "prestart": "typechain --target web3-v1 --outDir src/static/contracts/compiled 'src/static/contracts/*.json' && rari-tokens-generator ./src/static/compiled/tokens.json",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "unit-test": "react-scripts test --coverage --watchAll=false --coverageDirectory='jest-coverage'",
     "e2e-test": "cypress run",
-    "test-all-with-coverage": "npm run unit-test && npm run e2e-test && npx merge-cypress-jest-coverage"
+    "test-all-with-coverage": "npm run unit-test && npm run e2e-test && npx merge-cypress-jest-coverage",
+    "translate": "i18next-scanner",
+    "check-translations": "if grep -q \"__NOT_TRANSLATED__\" src/locales/*.json; then echo \"Translations missing!\"; exit 1; else echo \"All translations present!\"; fi"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -85,7 +85,6 @@
   },
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",
-    "@types/big.js": "^4.0.5",
     "i18next-scanner": "^2.11.0",
     "typechain": "^2.0.0"
   }
