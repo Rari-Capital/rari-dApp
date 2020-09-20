@@ -1,13 +1,13 @@
 module.exports = {
-  input: ["src/**/*.{ts,tsx}"],
-  output: "src/locales",
+  input: ["./src/**/*.{ts,tsx}"],
+  output: "./",
   options: {
     debug: true,
 
     removeUnusedKeys: true,
 
     func: {
-      list: ["t", "t"],
+      list: ["t"],
       extensions: [".ts", ".tsx"],
     },
 
@@ -27,8 +27,8 @@ module.exports = {
     },
 
     resource: {
-      loadPath: "{{lng}}.json",
-      savePath: "{{lng}}.json",
+      loadPath: "./src/locales/{{lng}}.json",
+      savePath: "./src/locales/{{lng}}.json",
     },
 
     nsSeparator: false,
