@@ -692,27 +692,27 @@ const RecentTrades = React.memo(() => {
   const recentTrades = [
     {
       transactionHash: "XXXXX",
-      timeSent: "01/6/20",
+      timeSent: "01/6/2020",
       returnValues: { percent: 0.4, from: "dYdX DAI", to: "Compound DAI" },
     },
     {
       transactionHash: "YYYYYY",
-      timeSent: "01/6/20",
+      timeSent: "01/6/2020",
       returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX DAI" },
     },
     {
       transactionHash: "ZZZZZZ",
-      timeSent: "01/5/20",
+      timeSent: "01/5/2020",
       returnValues: { percent: 0.3, from: "Compound USDT", to: "dYdX ZRX" },
     },
     {
       transactionHash: "AAAAAAA",
-      timeSent: "01/5/20",
+      timeSent: "01/5/2020",
       returnValues: { percent: 0.1, from: "dYdX REP", to: "Compound USDC" },
     },
     {
       transactionHash: "BBBBBB",
-      timeSent: "01/4/20",
+      timeSent: "01/4/2020",
       returnValues: {
         percent: 0.25,
         from: "Compound ETH",
