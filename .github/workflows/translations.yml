@@ -3,7 +3,7 @@ name: Translations
 on: [push]
 
 jobs:
-  e2e-and-unit:
+  check-translations:
     runs-on: ubuntu-16.04
 
     steps:
