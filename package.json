@@ -57,7 +57,8 @@
   },
   "scripts": {
     "postinstall": "typechain --target web3-v1 --outDir src/static/contracts/compiled 'src/static/contracts/*.json' && rari-tokens-generator ./src/static/compiled/tokens.json",
-    "translate": "i18next 'src/**/*.{ts,tsx}'",
+    "translate": "i18next-scanner",
+    "check-translations": "if grep -q \"__NOT_TRANSLATED__\" src/locales/*.json; then echo \"Translations missing!\"; exit 1; else echo \"All translations present!\"; fi",
     "prestart": "npm run translate",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
@@ -85,7 +86,7 @@
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",
     "@types/big.js": "^4.0.5",
-    "i18next-parser": "^3.3.0",
+    "i18next-scanner": "^2.11.0",
     "typechain": "^2.0.0"
   }
 }

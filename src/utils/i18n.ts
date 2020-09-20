@@ -51,6 +51,8 @@ i18n.use(initReactI18next).init({
 
   keySeparator: false,
 
+  nsSeparator: false,
+
   interpolation: {
     escapeValue: false,
   },
