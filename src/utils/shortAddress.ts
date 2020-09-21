@@ -8,7 +8,7 @@ export function shortAddress(address: string) {
 
 export function mediumAddress(address: string) {
   return (
-    address.substring(0, 9) +
+    address.substring(0, 8) +
     "..." +
     address.substring(address.length - 8, address.length)
   );

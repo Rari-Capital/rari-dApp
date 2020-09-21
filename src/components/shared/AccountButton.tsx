@@ -51,7 +51,12 @@ const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
       }}
       onClick={openModal}
     >
-      <Row expand mainAxisAlignment="center" crossAxisAlignment="center" px={3}>
+      <Row
+        expand
+        mainAxisAlignment="space-around"
+        crossAxisAlignment="center"
+        px={3}
+      >
         <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
 
         <Text ml={2} fontWeight="semibold">
