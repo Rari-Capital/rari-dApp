@@ -213,7 +213,7 @@ const UserPortal = () => {
                   mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
                 >
                   <Heading
-                    fontFamily={`'Baloo Bhai 2', ${theme.fonts.heading}`}
+                    fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
                     fontSize={{ md: 27, xs: "xl" }}
                   >
                     {t("Stable Fund")}
@@ -467,7 +467,7 @@ const CurrentAPY = React.memo(() => {
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading
         mt={2}
-        fontFamily={`'Baloo Bhai 2', ${theme.fonts.heading}`}
+        fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
         fontSize="54px"
         fontWeight="extrabold"
       >
