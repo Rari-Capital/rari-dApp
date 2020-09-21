@@ -466,7 +466,6 @@ const CurrentAPY = React.memo(() => {
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading
-        mt={2}
         fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
         fontSize="54px"
         fontWeight="extrabold"
