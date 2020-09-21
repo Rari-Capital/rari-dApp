@@ -34,7 +34,7 @@ html {
     url(AvenirNext-Bold.woff) format("woff");
   font-weight: bold;
   font-style: normal;
-  font-display: swap;
+  font-display: fallback;
 }
 
 @font-face {
@@ -43,5 +43,5 @@ html {
     url(AvenirNext-Regular.woff) format("woff");
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: fallback;
 }
