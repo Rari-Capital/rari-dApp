@@ -12,7 +12,7 @@ import "./index.css";
 // @ts-ignore
 import PWAPrompt from "react-ios-pwa-prompt";
 
-import { ThemeProvider, CSSReset } from "@chakra-ui/core";
+import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
 
 import ErrorPage from "./components/pages/ErrorPage";
 import { ErrorBoundary } from "react-error-boundary";
@@ -25,6 +25,15 @@ import { ReactQueryDevtools } from "react-query-devtools";
 
 import "./utils/i18n.ts";
 
+const customTheme = {
+  ...theme,
+  fonts: {
+    ...theme.fonts,
+    body: `'Avenir Next', ${theme.fonts.body}`,
+    heading: `'Avenir Next', ${theme.fonts.heading}`,
+  },
+};
+
 ReactDOM.render(
   <>
     <ReactQueryDevtools initialIsOpen={false} />
@@ -35,7 +44,7 @@ ReactDOM.render(
       copyBody="The Rari Portal works best when added to your homescreen. Without doing this, you may have a degraded experience."
       copyClosePrompt="Close"
     />
-    <ThemeProvider>
+    <ThemeProvider theme={customTheme}>
       <CSSReset />
 
       <ErrorBoundary FallbackComponent={ErrorPage}>

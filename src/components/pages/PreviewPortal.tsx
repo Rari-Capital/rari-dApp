@@ -247,7 +247,7 @@ const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
     parentHeight: size,
     spacing: 0,
     childSizes: [
-      new PixelSize(10),
+      new PixelSize(15),
       new PixelSize(isMobile ? 80 : 65),
       new PercentageSize(1),
       // This accounts for 10px of bottom padding
