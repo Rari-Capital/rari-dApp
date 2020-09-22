@@ -5,15 +5,10 @@ import loadable from "@loadable/component";
 import FullPageSpinner from "./shared/FullPageSpinner";
 import { useWeb3 } from "../context/Web3Context";
 
+import PreviewPortal from "./pages/PreviewPortal";
+
 const UserPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/UserPortal"),
-  {
-    fallback: <FullPageSpinner />,
-  }
-);
-
-const PreviewPortal = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/PreviewPortal"),
   {
     fallback: <FullPageSpinner />,
   }
