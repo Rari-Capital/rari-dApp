@@ -28,14 +28,14 @@ export const SmallLogo = React.memo(() => {
 export const BookBrain = React.memo(({ isTall }: { isTall: boolean }) => {
   return (
     <Box
-      h={isTall ? "100px" : "55px"}
-      w={isTall ? "100px" : "55px"}
+      h={isTall ? "80px" : "55px"}
+      w={isTall ? "80px" : "55px"}
       flexShrink={0}
     >
       <Image
         alt=""
-        h={isTall ? "100px" : "55px"}
-        w={isTall ? "100px" : "55px"}
+        h={isTall ? "80px" : "55px"}
+        w={isTall ? "80px" : "55px"}
         src={BookBrainLogo}
       />
     </Box>

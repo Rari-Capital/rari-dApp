@@ -761,7 +761,7 @@ const RecentTrades = React.memo(() => {
 });
 
 const NeedHelp = React.memo(({ height }: { height: number }) => {
-  const isTall = height > 200;
+  const isTall = height > 175;
 
   const { t } = useTranslation();
 
@@ -780,7 +780,7 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
         width="100%"
         borderRadius="7px"
         ml={isTall ? 0 : 4}
-        mt={isTall ? 4 : 0}
+        mt={isTall ? 6 : 0}
         fontSize="xl"
         fontWeight="bold"
         onClick={() => window.open("https://rari.capital/current.html")}
