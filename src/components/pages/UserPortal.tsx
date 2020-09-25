@@ -797,18 +797,37 @@ const DepositButton = React.memo((buttonProps: DepositButtonProps) => {
   const { t } = useTranslation();
 
   return (
-    <Button
-      bg="#FFFFFF"
-      color="#000000"
-      height="45px"
-      width="170px"
-      fontSize="xl"
-      borderRadius="7px"
-      fontWeight="bold"
-      onClick={buttonProps.onClick}
-      {...buttonProps}
+    <Box
+      padding="3px"
+      borderRadius="10px"
+      background="linear-gradient(45deg,
+        rgb(255, 0, 0) 0%,
+        rgb(255, 154, 0) 10%,
+        rgb(208, 222, 33) 20%,
+        rgb(79, 220, 74) 30%,
+        rgb(63, 218, 216) 40%,
+        rgb(47, 201, 226) 50%,
+        rgb(28, 127, 238) 60%,
+        rgb(95, 21, 242) 70%,
+        rgb(186, 12, 248) 80%,
+        rgb(251, 7, 217) 90%,
+        rgb(255, 0, 0) 100%)"
+      backgroundSize="500% 500%"
+      animation="GradientBackgroundAnimation 6s linear infinite"
     >
-      {t("Deposit")}
-    </Button>
+      <Button
+        bg="#FFFFFF"
+        color="#000000"
+        height="45px"
+        width="170px"
+        fontSize="xl"
+        borderRadius="7px"
+        fontWeight="bold"
+        onClick={buttonProps.onClick}
+        {...buttonProps}
+      >
+        {t("Deposit")}
+      </Button>
+    </Box>
   );
 });
