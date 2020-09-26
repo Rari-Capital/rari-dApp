@@ -11,6 +11,7 @@ import {
   ButtonProps,
   useDisclosure,
   theme,
+  BoxProps,
 } from "@chakra-ui/core";
 import { useAuthedWeb3 } from "../../context/Web3Context";
 
@@ -233,11 +234,13 @@ const UserPortal = () => {
             >
               {isFirstTime ? (
                 <DepositButton
-                  zIndex={1}
-                  transform="translate(-50%, -50%); "
-                  position="absolute"
-                  top="50%"
-                  left="50%"
+                  boxProps={{
+                    zIndex: 1,
+                    transform: "translate(-50%, -50%)",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                  }}
                   onClick={openDepositModal}
                 />
               ) : null}
@@ -791,16 +794,26 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
   );
 });
 
-interface DepositButtonProps extends Omit<ButtonProps, "children"> {}
+interface DepositButtonProps
+  extends Omit<Omit<ButtonProps, "children">, "onClick"> {}
 
-const DepositButton = React.memo((buttonProps: DepositButtonProps) => {
-  const { t } = useTranslation();
+const DepositButton = React.memo(
+  ({
+    boxProps,
+    buttonProps,
+    onClick,
+  }: {
+    boxProps?: BoxProps;
+    buttonProps?: DepositButtonProps;
+    onClick: () => any;
+  }) => {
+    const { t } = useTranslation();
 
-  return (
-    <Box
-      padding="3px"
-      borderRadius="10px"
-      background="linear-gradient(45deg,
+    return (
+      <Box
+        padding="3px"
+        borderRadius="10px"
+        background="linear-gradient(45deg,
         rgb(255, 0, 0) 0%,
         rgb(255, 154, 0) 10%,
         rgb(208, 222, 33) 20%,
@@ -812,22 +825,26 @@ const DepositButton = React.memo((buttonProps: DepositButtonProps) => {
         rgb(186, 12, 248) 80%,
         rgb(251, 7, 217) 90%,
         rgb(255, 0, 0) 100%)"
-      backgroundSize="500% 500%"
-      animation="GradientBackgroundAnimation 6s linear infinite"
-    >
-      <Button
-        bg="#FFFFFF"
-        color="#000000"
-        height="45px"
+        backgroundSize="500% 500%"
+        animation="GradientBackgroundAnimation 6s linear infinite"
         width="170px"
-        fontSize="xl"
-        borderRadius="7px"
-        fontWeight="bold"
-        onClick={buttonProps.onClick}
-        {...buttonProps}
+        height="50px"
+        {...boxProps}
       >
-        {t("Deposit")}
-      </Button>
-    </Box>
-  );
-});
+        <Button
+          bg="#FFFFFF"
+          color="#000000"
+          fontSize="xl"
+          borderRadius="7px"
+          fontWeight="bold"
+          width="164px"
+          height="44px"
+          onClick={onClick}
+          {...buttonProps}
+        >
+          {t("Deposit")}
+        </Button>
+      </Box>
+    );
+  }
+);
