@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Text,
@@ -13,7 +13,7 @@ import {
   theme,
   BoxProps,
 } from "@chakra-ui/core";
-import { useAuthedWeb3 } from "../../context/Web3Context";
+import { useWeb3 } from "../../context/Web3Context";
 
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -56,8 +56,22 @@ import { AccountButton } from "../shared/AccountButton";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
 
-const UserPortal = () => {
-  const { address } = useAuthedWeb3();
+const PoolPortal = React.memo(() => {
+  const { forceLogin, isAuthed } = useWeb3();
+
+  useEffect(() => {
+    if (!isAuthed) {
+      setTimeout(() => forceLogin(), 500);
+    }
+  }, [forceLogin, isAuthed]);
+
+  return <PoolPortalContent />;
+});
+
+export default PoolPortal;
+
+const PoolPortalContent = React.memo(() => {
+  const { address } = useWeb3();
 
   const { RariFundManager } = useContracts();
 
@@ -68,12 +82,13 @@ const UserPortal = () => {
 
   const {
     spacing: headerAndBodySpacing,
-    childSizes: [headerSize, bodySize],
+    childSizes: [_, headerSize, bodySize],
   } = useSpacedLayout({
     parentHeight: windowHeight.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
-      new PixelSize(60),
+      new PixelSize(0),
+      new PixelSize(38),
       new PercentageSize(1),
       // We have a 0 sized child here because it will now lower the size of the "100%" child
       // by accouting for padding below it, which is 15.
@@ -157,29 +172,20 @@ const UserPortal = () => {
         crossAxisAlignment="flex-start"
         color="#FFFFFF"
       >
-        <Column
+        <Row
           height={headerSize.asPxString()}
-          width="100%"
-          mb={headerAndBodySpacing.asPxString()}
+          my={headerAndBodySpacing.asPxString()}
+          px={DASHBOARD_BOX_SPACING.asPxString()}
           mainAxisAlignment="space-between"
-          crossAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          overflowX="visible"
+          overflowY="visible"
+          width="100%"
         >
-          <Row
-            mt="9px"
-            px={DASHBOARD_BOX_SPACING.asPxString()}
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            overflowX="visible"
-            overflowY="visible"
-            width="100%"
-          >
-            <SmallLogo />
+          <SmallLogo />
 
-            <AccountButton />
-          </Row>
-
-          <Box height="1px" width="100%" bg="white" />
-        </Column>
+          <AccountButton />
+        </Row>
 
         <RowOnDesktopColumnOnMobile
           mainAxisAlignment="flex-start"
@@ -349,9 +355,7 @@ const UserPortal = () => {
       </Column>
     </>
   );
-};
-
-export default UserPortal;
+});
 
 const UserStatsAndChart = React.memo(
   ({

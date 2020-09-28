@@ -24,6 +24,7 @@ import "focus-visible";
 import { ReactQueryDevtools } from "react-query-devtools";
 
 import "./utils/i18n.ts";
+import { BrowserRouter } from "react-router-dom";
 
 const customTheme = {
   ...theme,
@@ -50,7 +51,9 @@ ReactDOM.render(
       <ErrorBoundary FallbackComponent={ErrorPage}>
         <Web3Provider>
           <ContractsProvider>
-            <App />
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
           </ContractsProvider>
         </Web3Provider>
       </ErrorBoundary>

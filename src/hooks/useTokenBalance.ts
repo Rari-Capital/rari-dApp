@@ -2,8 +2,9 @@ import { useQuery } from "react-query";
 import { Token } from "rari-tokens-generator";
 import { createTokenContract } from "../utils/tokenUtils";
 import { toBig } from "../utils/bigUtils";
-import { useAuthedWeb3 } from "../context/Web3Context";
+
 import Web3 from "web3";
+import { useWeb3 } from "../context/Web3Context";
 
 export const getTokenBalance = async (
   token: Token,
@@ -24,7 +25,7 @@ export const getTokenBalance = async (
 };
 
 export function useTokenBalance(token: Token) {
-  const { web3, address } = useAuthedWeb3();
+  const { web3, address } = useWeb3();
 
   return useQuery(address + " balanceOf " + token.symbol, () =>
     getTokenBalance(token, web3, address)

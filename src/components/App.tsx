@@ -3,10 +3,11 @@ import React from "react";
 import loadable from "@loadable/component";
 
 import FullPageSpinner from "./shared/FullPageSpinner";
-import { useWeb3 } from "../context/Web3Context";
 
-const UserPortal = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/UserPortal"),
+import { Route, Routes } from "react-router-dom";
+
+const PoolPortal = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/PoolPortal"),
   {
     fallback: <FullPageSpinner />,
   }
@@ -19,12 +20,13 @@ const PreviewPortal = loadable(
   }
 );
 
-export default function App() {
-  const { isAuthed } = useWeb3();
+const App = React.memo(() => {
+  return (
+    <Routes>
+      <Route path="/stable" element={<PoolPortal />} />
+      <Route path="/" element={<PreviewPortal />} />
+    </Routes>
+  );
+});
 
-  if (isAuthed) {
-    return <UserPortal />;
-  } else {
-    return <PreviewPortal />;
-  }
-}
+export default App;

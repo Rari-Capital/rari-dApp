@@ -1,9 +1,9 @@
 import { useQuery, useQueryCache } from "react-query";
 import { Contract, Filter, EventData } from "web3-eth-contract";
 
-import { useAuthedWeb3 } from "../context/Web3Context";
 import { createAllFundManagerContracts } from "../utils/contractUtils";
 import Web3 from "web3";
+import { useWeb3 } from "../context/Web3Context";
 
 export function usePastContractEvents<DataType = EventData[]>(
   contract: Contract,
@@ -37,7 +37,7 @@ export function usePastContractEvents<DataType = EventData[]>(
 export type TransactionEvent = EventData & { timeSent: string };
 
 export function useTransactionHistoryEvents() {
-  const { web3, address } = useAuthedWeb3();
+  const { web3, address } = useWeb3();
 
   const queryCache = useQueryCache();
 

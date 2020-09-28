@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useAuthedWeb3, useWeb3 } from "../../context/Web3Context";
+import { useWeb3 } from "../../context/Web3Context";
 import {
   useDisclosure,
   Modal,
@@ -20,6 +20,7 @@ import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
+import { useNavigate } from "react-router-dom";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -37,7 +38,7 @@ export const AccountButton = React.memo(() => {
 });
 
 const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
-  const { address } = useAuthedWeb3();
+  const { address } = useWeb3();
 
   const isMobile = useIsMobile();
 
@@ -75,6 +76,13 @@ export const SettingsModal = React.memo(
       onClose();
       setTimeout(() => login(), 100);
     }, [login, onClose]);
+
+    const navigate = useNavigate();
+
+    const onLogout = useCallback(() => {
+      logout();
+      navigate("/");
+    }, [logout, navigate]);
 
     const { t } = useTranslation();
 
@@ -120,7 +128,7 @@ export const SettingsModal = React.memo(
                   fontSize="xl"
                   borderRadius="7px"
                   fontWeight="bold"
-                  onClick={logout}
+                  onClick={onLogout}
                   _hover={{}}
                   _active={{}}
                 >

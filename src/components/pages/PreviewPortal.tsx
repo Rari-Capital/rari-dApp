@@ -26,6 +26,7 @@ import CaptionedStat from "../shared/CaptionedStat";
 import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 import { TranslateButton } from "../shared/TranslateButton";
+import { useNavigate } from "react-router-dom";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -64,10 +65,14 @@ const PreviewPortal = () => {
     ],
   });
 
+  const navigate = useNavigate();
+
   const onLogin = useCallback(() => {
     setLoading(true);
-    login().catch(() => setLoading(false));
-  }, [setLoading, login]);
+    login()
+      .catch(() => setLoading(false))
+      .then(() => navigate(`/stable`));
+  }, [setLoading, login, navigate]);
 
   const { t } = useTranslation();
 

@@ -39,7 +39,7 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
     url(AvenirNext-Bold.woff) format("woff");
   font-weight: bold;
   font-style: normal;
-  font-display: swap;
+  font-display: fallback;
 }
 
 @font-face {
@@ -48,7 +48,7 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
     url(AvenirNext-Regular.woff) format("woff");
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: fallback;
 }
 
 @-webkit-keyframes GradientBackgroundAnimation {
@@ -83,4 +83,13 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* 
+This fixes these weird white borders around loading base64 images.
+
+More info here: https://stackoverflow.com/questions/13151340/how-to-remove-borders-around-broken-images-in-webkit/33387257
+*/
+img:not([src]) {
+  display: none;
 }

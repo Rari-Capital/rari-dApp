@@ -20,9 +20,10 @@ import {
 import { toBig } from "../../../utils/bigUtils";
 import { Mode } from ".";
 import Big from "big.js";
-import { useAuthedWeb3 } from "../../../context/Web3Context";
+
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
+import { useWeb3 } from "../../../context/Web3Context";
 
 interface Props {
   selectedToken: string;
@@ -187,7 +188,7 @@ const TokenNameAndMaxButton = React.memo(
   }) => {
     const token = tokens[selectedToken];
 
-    const { web3, address } = useAuthedWeb3();
+    const { web3, address } = useWeb3();
 
     const [isMaxLoading, _setIsMaxLoading] = useState(false);
 

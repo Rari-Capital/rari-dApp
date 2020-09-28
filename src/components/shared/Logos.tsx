@@ -17,7 +17,7 @@ export const WideLogo = React.memo(() => {
 
 export const SmallLogo = React.memo(() => {
   return (
-    <Flip delay={200}>
+    <Flip delay={300}>
       <Box width="37px" height="37px" flexShrink={0}>
         <Image alt="" width="37px" height="37px" src={Logo} />
       </Box>
