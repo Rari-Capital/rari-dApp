@@ -70,8 +70,8 @@ const PreviewPortal = () => {
   const onLogin = useCallback(() => {
     setLoading(true);
     login()
-      .catch(() => setLoading(false))
-      .then(() => navigate(`/stable`));
+      .then(() => navigate(`/stable`))
+      .catch(() => setLoading(false));
   }, [setLoading, login, navigate]);
 
   const { t } = useTranslation();
