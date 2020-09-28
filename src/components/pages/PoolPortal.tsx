@@ -813,6 +813,8 @@ const DepositButton = React.memo(
   }) => {
     const { t } = useTranslation();
 
+    const { isAuthed } = useWeb3();
+
     return (
       <Box
         padding="3px"
@@ -843,7 +845,9 @@ const DepositButton = React.memo(
           fontWeight="bold"
           width="164px"
           height="44px"
+          isDisabled={!isAuthed}
           onClick={onClick}
+          _disabled={{}}
           {...buttonProps}
         >
           {t("Deposit")}

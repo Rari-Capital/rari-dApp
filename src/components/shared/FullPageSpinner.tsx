@@ -6,7 +6,11 @@ const FullPageSpinner = React.memo(() => {
   const [isText, setIsText] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setIsText(false), 3000);
+    const timer = setTimeout(() => setIsText(false), 3000);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [setIsText]);
 
   return isText ? (

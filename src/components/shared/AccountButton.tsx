@@ -22,6 +22,8 @@ import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 import { useNavigate } from "react-router-dom";
 
+function noop() {}
+
 export const AccountButton = React.memo(() => {
   const {
     isOpen: isModalOpen,
@@ -38,7 +40,7 @@ export const AccountButton = React.memo(() => {
 });
 
 const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
-  const { address } = useWeb3();
+  const { isAuthed, address } = useWeb3();
 
   const isMobile = useIsMobile();
 
@@ -50,7 +52,7 @@ const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
         md: "245px",
         xs: "auto",
       }}
-      onClick={openModal}
+      onClick={isAuthed ? openModal : noop}
     >
       <Row
         expand
