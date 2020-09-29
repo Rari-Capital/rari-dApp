@@ -11,13 +11,13 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: "12"
+          node-version: "12.13.1"
 
       - name: Install dev dependencies
         run: npm install --only=dev
 
       - name: Check node node version
-        run: node -v
+        run: npm -v
 
       - name: Check all text has been translated
         run: npm run check-translations
