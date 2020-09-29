@@ -23,7 +23,7 @@ import { useContracts } from "../../context/ContractsContext";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
-import { SmallLogo, BookBrain } from "../shared/Logos";
+import { SmallLogo, BookBrain, AnimatedSmallLogo } from "../shared/Logos";
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -71,7 +71,7 @@ const PoolPortal = React.memo(() => {
 export default PoolPortal;
 
 const PoolPortalContent = React.memo(() => {
-  const { address } = useWeb3();
+  const { isAuthed, address } = useWeb3();
 
   const { RariFundManager } = useContracts();
 
@@ -182,7 +182,7 @@ const PoolPortalContent = React.memo(() => {
           overflowY="visible"
           width="100%"
         >
-          <SmallLogo />
+          {isAuthed ? <AnimatedSmallLogo /> : <SmallLogo />}
 
           <AccountButton />
         </Row>

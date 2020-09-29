@@ -8,7 +8,7 @@ import Chart from "react-apexcharts";
 import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
-import { WideLogo } from "../shared/Logos";
+import { AnimatedWideLogo } from "../shared/Logos";
 import { FundReturnChartOptions } from "../../utils/chartOptions";
 import {
   Column,
@@ -92,7 +92,7 @@ const PreviewPortal = () => {
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
       >
-        <WideLogo />
+        <AnimatedWideLogo />
         <TranslateButton />
       </Row>
 
