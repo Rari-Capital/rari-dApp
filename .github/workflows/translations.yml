@@ -14,7 +14,10 @@ jobs:
           node-version: "12"
 
       - name: Install dev dependencies
-        run: npm install
+        run: npm install --only=dev
+
+      - name: Check node node version
+        run: node -v
 
       - name: Check all text has been translated
         run: npm run check-translations
