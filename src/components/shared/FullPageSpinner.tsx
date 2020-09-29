@@ -16,7 +16,6 @@ const FullPageSpinner = React.memo(() => {
   return isText ? (
     <Text
       color="#FFF"
-      fontFamily={theme.fonts.body}
       fontSize="xl"
       style={{
         position: "fixed",
