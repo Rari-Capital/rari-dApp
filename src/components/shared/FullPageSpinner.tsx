@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import React, { useEffect, useState } from "react";
-import { Spinner, Text, theme } from "@chakra-ui/core";
+import { Spinner, Text } from "@chakra-ui/core";
 
 const FullPageSpinner = React.memo(() => {
   const [isText, setIsText] = useState(true);
