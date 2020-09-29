@@ -9,6 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+
       - name: Run our Cypress E2E tests
         uses: cypress-io/github-action@v1
         with:
