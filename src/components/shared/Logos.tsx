@@ -7,11 +7,11 @@ import BookBrainLogo from "../../static/book-brain.png";
 
 export const AnimatedWideLogo = React.memo(() => {
   return (
-    <Flip delay={300}>
+    <Fade direction="down" delay={200}>
       <Box width="200px" height="50px" flexShrink={0}>
         <Image width="200px" height="50px" alt="" src={LargeLogo} />
       </Box>
-    </Flip>
+    </Fade>
   );
 });
 
