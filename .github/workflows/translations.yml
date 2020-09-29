@@ -9,15 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "12"
-
-      - name: Install dev dependencies
-        run: npm install
-
-      - name: Check node node version
-        run: npm -v
-
       - name: Check all text has been translated
         run: npm run check-translations

@@ -67,7 +67,7 @@
     "unit-test": "react-scripts test --coverage --watchAll=false --coverageDirectory='jest-coverage'",
     "e2e-test": "cypress run",
     "test-all-with-coverage": "npm run unit-test && npm run e2e-test && npx merge-cypress-jest-coverage",
-    "translate": "i18next-scanner",
+    "translate": "npx i18next-scanner@2.11.0",
     "check-translations": "npm run translate && if grep -q \"__NOT_TRANSLATED__\" src/locales/*.json; then echo \"Translations missing!\"; exit 1; else echo \"All translations present!\"; fi"
   },
   "eslintConfig": {
@@ -87,7 +87,6 @@
   },
   "devDependencies": {
     "@typechain/web3-v1": "^1.0.0",
-    "i18next-scanner": "^2.11.0",
     "typechain": "^2.0.0"
   }
 }
