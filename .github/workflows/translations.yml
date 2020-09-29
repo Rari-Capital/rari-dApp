@@ -9,8 +9,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install dev dependencies
-        run: npm install --only=dev
-
       - name: Check all text has been translated
         run: npm run check-translations

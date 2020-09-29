@@ -15,6 +15,7 @@ const FullPageSpinner = React.memo(() => {
 
   return isText ? (
     <Text
+      data-testid="full-page-spinner"
       color="#FFF"
       fontSize="xl"
       style={{
