@@ -848,6 +848,7 @@ const DepositButton = React.memo(
           isDisabled={!isAuthed}
           onClick={onClick}
           _disabled={{}}
+          _focus={{ boxShadow: "0 0 3pt 3pt #2F74AF" }}
           {...buttonProps}
         >
           {t("Deposit")}
