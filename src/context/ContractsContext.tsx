@@ -4,7 +4,6 @@ import { AbiItem } from "web3-utils";
 import { useWeb3 } from "./Web3Context";
 
 import FullPageSpinner from "../components/shared/FullPageSpinner";
-import Web3 from "web3";
 
 import RARI_FUND_MANAGER_ABI from "../static/contracts/RariFundManager.json";
 import { RariFundManager } from "../static/contracts/compiled/RariFundManager";
@@ -40,21 +39,13 @@ export const ContractsContext = React.createContext<
 >(undefined);
 
 export const ContractsProvider = ({ children }: { children: JSX.Element }) => {
-  const { web3Authed, web3Network, isAuthed } = useWeb3();
+  const { web3 } = useWeb3();
 
   const [contractData, setContractData] = useState<
     ContractsContextData | undefined
   >(undefined);
 
   useEffect(() => {
-    let web3: Web3;
-
-    if (isAuthed) {
-      web3 = web3Authed!;
-    } else {
-      web3 = web3Network;
-    }
-
     setContractData({
       // RariFundController: new web3.eth.Contract(
       //   RARI_FUND_CONTROLLER_ABI as AbiItem[],
@@ -69,7 +60,7 @@ export const ContractsProvider = ({ children }: { children: JSX.Element }) => {
         RARI_FUND_MANAGER_ADDRESS
       ) as any,
     });
-  }, [isAuthed, web3Authed, web3Network]);
+  }, [web3]);
 
   // Don't render children who depend on contracts until they are loaded.
   if (contractData === undefined) {
