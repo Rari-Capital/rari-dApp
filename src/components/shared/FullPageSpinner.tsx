@@ -22,8 +22,8 @@ const FullPageSpinner = React.memo(() => {
         position: "fixed",
         left: "50%",
         top: "50%",
-        marginTop: "-1.5rem",
-        marginLeft: "-1.5rem",
+        marginTop: "-15px",
+        marginLeft: "-45px",
       }}
     >
       Loading...
