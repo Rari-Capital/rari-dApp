@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 
 import App from "./components/App";
@@ -24,7 +24,7 @@ import "focus-visible";
 import { ReactQueryDevtools } from "react-query-devtools";
 
 import "./utils/i18n.ts";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 
 const customTheme = {
   ...theme,
@@ -34,6 +34,17 @@ const customTheme = {
     heading: `'Avenir Next', ${theme.fonts.heading}`,
   },
 };
+
+// Scrolls to the top of the new page when we switch pages
+export function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 
 ReactDOM.render(
   <>
@@ -52,6 +63,7 @@ ReactDOM.render(
         <Web3Provider>
           <ContractsProvider>
             <BrowserRouter>
+              <ScrollToTop />
               <App />
             </BrowserRouter>
           </ContractsProvider>

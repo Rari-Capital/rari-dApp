@@ -88,7 +88,7 @@ const MultiPoolPortal = React.memo(() => {
         >
           <DashboardBox
             width={{ md: "50%", xs: "100%" }}
-            height="100%"
+            height={{ md: "100%", xs: "102px" }}
             mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
             mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
           >
@@ -107,7 +107,10 @@ const MultiPoolPortal = React.memo(() => {
               />
             </Column>
           </DashboardBox>
-          <DashboardBox width={{ md: "50%", xs: "100%" }} height="100%">
+          <DashboardBox
+            width={{ md: "50%", xs: "100%" }}
+            height={{ md: "100%", xs: "102px" }}
+          >
             <Column
               expand
               mainAxisAlignment="center"
