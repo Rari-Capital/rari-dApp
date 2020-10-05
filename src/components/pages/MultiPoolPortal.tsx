@@ -144,17 +144,20 @@ const MultiPoolPortal = React.memo(() => {
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
           >
-            <Row
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              px={4}
-              py={3}
-            >
-              <Box as={FaTwitter} size="20px" />
-              <Heading ml={2} size="sm">
-                {t("Latest Rari News")}
-              </Heading>
-            </Row>
+            <Link href="https://twitter.com/RariCapital" isExternal>
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                px={4}
+                py={3}
+              >
+                <Box as={FaTwitter} size="20px" />
+
+                <Heading ml={2} size="sm">
+                  {t("Latest Rari News")}
+                </Heading>
+              </Row>
+            </Link>
 
             <ModalDivider />
 
