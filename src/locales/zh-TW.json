@@ -50,5 +50,16 @@
   "Language": "語言",
   "Connect with a browser extension": "連接瀏覽器擴展",
   "Scan with a wallet to connect": "用錢包掃描以進行連接",
-  "Connect with your {{provider}} account": "與您的{{provider}}帳戶關聯"
+  "Connect with your {{provider}} account": "與您的{{provider}}帳戶關聯",
+  "Latest Rari News": "最新拉里新聞",
+  "ETH Pool": "ETH池",
+  "Stable Pool": "穩定池",
+  "Yield Pool": "收益池",
+  "Safe returns on ETH": "ETH的安全收益",
+  "Safe on stablecoins": "穩定幣安全",
+  "High risk, high reward": "高風險，高回報",
+  "You have {{amount}} in this pool": "您在此基金中有{{amount}}",
+  "Total Value Locked": "總價值鎖定",
+  "Total Interest Earned This Week": "本週賺取的總利息",
+  "Access": "訪問"
 }

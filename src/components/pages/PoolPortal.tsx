@@ -12,6 +12,7 @@ import {
   useDisclosure,
   theme,
   BoxProps,
+  Link,
 } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
@@ -36,10 +37,11 @@ import {
   useSpacedLayout,
   RowOnDesktopColumnOnMobile,
   PercentageSize,
+  ResponsivePixelSize,
   PixelSize,
   PercentOnDesktopPixelOnMobileSize,
-  useIsMobile,
 } from "buttered-chakra";
+
 import {
   SelfReturnChartOptions,
   StrategyAllocationChartOptions,
@@ -55,15 +57,11 @@ import { useQuery } from "react-query";
 import { AccountButton } from "../shared/AccountButton";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
+import { useForceAuth } from "../../hooks/useForceAuth";
+import { useLocation } from "react-router-dom";
 
 const PoolPortal = React.memo(() => {
-  const { forceLogin, isAuthed } = useWeb3();
-
-  useEffect(() => {
-    if (!isAuthed) {
-      setTimeout(() => forceLogin(), 500);
-    }
-  }, [forceLogin, isAuthed]);
+  useForceAuth();
 
   return <PoolPortalContent />;
 });
@@ -82,7 +80,7 @@ const PoolPortalContent = React.memo(() => {
 
   const {
     spacing: headerAndBodySpacing,
-    childSizes: [_, headerSize, bodySize],
+    childSizes: [, headerSize, bodySize],
   } = useSpacedLayout({
     parentHeight: windowHeight.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
@@ -153,6 +151,15 @@ const PoolPortalContent = React.memo(() => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
+
+  const location = useLocation();
+
+  // Open deposit modal on auth if query params includes "forceDeposit"
+  useEffect(() => {
+    if (location.search.includes("forceDeposit") && isAuthed) {
+      setTimeout(() => openDepositModal(), 1300);
+    }
+  }, [location, openDepositModal, isAuthed]);
 
   const { t } = useTranslation();
 
@@ -369,8 +376,6 @@ const UserStatsAndChart = React.memo(
     interestEarned: string;
     isFirstTime: boolean;
   }) => {
-    const isMobile = useIsMobile();
-
     const {
       childSizes: [topPadding, statsSize, chartSize],
     } = useSpacedLayout({
@@ -379,7 +384,7 @@ const UserStatsAndChart = React.memo(
       childSizes: [
         // Add this to account for 5px top padding
         new PixelSize(5),
-        new PixelSize(isMobile ? 230 : 75),
+        new ResponsivePixelSize({ desktop: 75, mobile: 230 }),
         new PercentageSize(1),
         // Add this to account for 5px bottom padding
         new PixelSize(5),
@@ -781,19 +786,24 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
     >
       <BookBrain isTall={isTall} />
 
-      <DashboardBox
-        as="button"
-        height="45px"
-        width="100%"
-        borderRadius="7px"
+      <Link
         ml={isTall ? 0 : 4}
         mt={isTall ? 6 : 0}
-        fontSize="xl"
-        fontWeight="bold"
-        onClick={() => window.open("https://rari.capital/current.html")}
+        width="100%"
+        isExternal
+        href="https://rari.capital/current.html"
       >
-        {t("FAQ")}
-      </DashboardBox>
+        <DashboardBox
+          as="button"
+          height="45px"
+          width="100%"
+          borderRadius="7px"
+          fontSize="xl"
+          fontWeight="bold"
+        >
+          {t("FAQ")}
+        </DashboardBox>
+      </Link>
     </Row>
   );
 });

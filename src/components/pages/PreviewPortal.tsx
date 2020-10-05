@@ -1,32 +1,31 @@
 import React, { useState, useCallback } from "react";
-import { Text, Spinner, Box } from "@chakra-ui/core";
+import { Text, Spinner } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
 import { useContracts } from "../../context/ContractsContext";
-import Chart from "react-apexcharts";
 
 import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { AnimatedWideLogo } from "../shared/Logos";
-import { FundReturnChartOptions } from "../../utils/chartOptions";
+
 import {
   Column,
   Center,
   Row,
   RowOnDesktopColumnOnMobile,
-  useLockedViewHeight,
   useSpacedLayout,
   PixelSize,
   PercentageSize,
   PercentOnDesktopPixelOnMobileSize,
-  useIsMobile,
+  useLockedViewHeight,
 } from "buttered-chakra";
 import CaptionedStat from "../shared/CaptionedStat";
 import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 import { TranslateButton } from "../shared/TranslateButton";
 import { useNavigate } from "react-router-dom";
+import FundPerformanceChart from "../shared/FundPerformance";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -70,7 +69,7 @@ const PreviewPortal = () => {
   const onLogin = useCallback(() => {
     setLoading(true);
     login()
-      .then(() => navigate(`/stable`))
+      .then(() => navigate(`/pools`))
       .catch(() => setLoading(false));
   }, [setLoading, login, navigate]);
 
@@ -118,7 +117,7 @@ const PreviewPortal = () => {
             overflow="hidden"
             px={1}
           >
-            <FundPerformanceChart size={chartSize.asNumber()} />
+            <FundPerformanceChart size={chartSize.asNumber()} showAmount />
           </DashboardBox>
 
           <Row
@@ -240,85 +239,5 @@ const FundStats = React.memo(() => {
         />
       </Column>
     </DashboardBox>
-  );
-});
-
-const FundPerformanceChart = React.memo(({ size }: { size: number }) => {
-  const isMobile = useIsMobile();
-
-  const {
-    childSizes: [topPadding, statsSize, chartSize],
-  } = useSpacedLayout({
-    parentHeight: size,
-    spacing: 0,
-    childSizes: [
-      new PixelSize(15),
-      new PixelSize(isMobile ? 80 : 65),
-      new PercentageSize(1),
-      // This accounts for 10px of bottom padding
-      new PixelSize(10),
-    ],
-  });
-
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <Row
-        color="#FFFFFF"
-        mainAxisAlignment={{ md: "flex-start", xs: "center" }}
-        crossAxisAlignment="center"
-        px={DASHBOARD_BOX_SPACING.asPxString()}
-        mt={topPadding.asPxString()}
-        height={statsSize.asPxString()}
-        width="100%"
-      >
-        <CaptionedStat
-          crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-          caption={t("Performance beginning with $10,000 on 8/1/2020")}
-          captionSize="xs"
-          stat={"$13,250.43"}
-          statSize="4xl"
-        />
-      </Row>
-
-      <Box height={chartSize.asPxString()} overflow="hidden">
-        <Chart
-          options={FundReturnChartOptions}
-          type="line"
-          width="100%"
-          height="100%"
-          series={[
-            {
-              name: "Yield Fund",
-              data: [
-                { x: "August 1, 2020", y: 10000 },
-                { x: "August 3, 2020", y: 12120 },
-                { x: "August 4, 2020", y: 15451 },
-                { x: "August 5, 2020", y: 18562 },
-              ],
-            },
-            {
-              name: "Stable Fund",
-              data: [
-                { x: "August 1, 2020", y: 10000 },
-                { x: "August 3, 2020", y: 10012 },
-                { x: "August 4, 2020", y: 10124 },
-                { x: "August 5, 2020", y: 12721 },
-              ],
-            },
-            {
-              name: "ETH Fund",
-              data: [
-                { x: "August 1, 2020", y: 10000 },
-                { x: "August 3, 2020", y: 10230 },
-                { x: "August 4, 2020", y: 11240 },
-                { x: "August 5, 2020", y: 13112 },
-              ],
-            },
-          ]}
-        />
-      </Box>
-    </>
   );
 });

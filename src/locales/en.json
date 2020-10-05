@@ -50,5 +50,16 @@
   "Language": "Language",
   "Connect with a browser extension": "Connect with a browser extension",
   "Scan with a wallet to connect": "Scan with a wallet to connect",
-  "Connect with your {{provider}} account": "Connect with your {{provider}} account"
+  "Connect with your {{provider}} account": "Connect with your {{provider}} account",
+  "Latest Rari News": "Latest Rari News",
+  "ETH Pool": "ETH Pool",
+  "Stable Pool": "Stable Pool",
+  "Yield Pool": "Yield Pool",
+  "Safe returns on ETH": "Safe returns on ETH",
+  "Safe on stablecoins": "Safe on stablecoins",
+  "High risk, high reward": "High risk, high reward",
+  "You have {{amount}} in this pool": "You have {{amount}} in this pool",
+  "Total Value Locked": "Total Value Locked",
+  "Total Interest Earned This Week": "Total Interest Earned This Week",
+  "Access": "Access"
 }
