@@ -36,23 +36,6 @@ const MultiPoolPortal = React.memo(() => {
 
   const { t } = useTranslation();
 
-  const [news, setNews] = useState<string[]>([]);
-
-  useEffect(() => {
-    let isCanceled = false;
-    fetch("/api/news")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!isCanceled) {
-          setNews(data);
-        }
-      });
-
-    return () => {
-      isCanceled = true;
-    };
-  }, [setNews]);
-
   const { width } = useWindowSize();
 
   // Determine the column width based on the width of the window.
@@ -139,55 +122,7 @@ const MultiPoolPortal = React.memo(() => {
           width="100%"
           height="100px"
         >
-          <Column
-            expand
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-          >
-            <Link href="https://twitter.com/RariCapital" isExternal>
-              <Row
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-                px={4}
-                py={3}
-              >
-                <Box as={FaTwitter} size="20px" />
-
-                <Heading ml={2} size="sm">
-                  {t("Latest Rari News")}
-                </Heading>
-              </Row>
-            </Link>
-
-            <ModalDivider />
-
-            <Column
-              expand
-              px={4}
-              mainAxisAlignment="center"
-              crossAxisAlignment="flex-start"
-            >
-              <Box
-                whiteSpace="nowrap"
-                overflow="hidden"
-                width="100%"
-                fontSize="sm"
-              >
-                {news.length === 0 ? (
-                  "Loading..."
-                ) : (
-                  <MarqueeIfAuthed>
-                    {news.map((text: string) => (
-                      <span key={text}>
-                        {text}
-                        <NewsMarqueeSpacer />
-                      </span>
-                    ))}
-                  </MarqueeIfAuthed>
-                )}
-              </Box>
-            </Column>
-          </Column>
+          <NewsAndTwitterLink />
         </DashboardBox>
 
         <DashboardBox
@@ -347,11 +282,84 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
   );
 });
 
-export const NewsMarqueeSpacer = React.memo(() => {
+const NewsAndTwitterLink = React.memo(() => {
+  const { t } = useTranslation();
+
+  return (
+    <Column
+      expand
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+    >
+      <Link href="https://twitter.com/RariCapital" isExternal>
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          px={4}
+          py={3}
+        >
+          <Box as={FaTwitter} size="20px" />
+
+          <Heading ml={2} size="sm">
+            {t("Latest Rari News")}
+          </Heading>
+        </Row>
+      </Link>
+
+      <ModalDivider />
+
+      <Column
+        expand
+        px={4}
+        mainAxisAlignment="center"
+        crossAxisAlignment="flex-start"
+      >
+        <NewsMarquee />
+      </Column>
+    </Column>
+  );
+});
+
+const NewsMarquee = React.memo(() => {
+  const [news, setNews] = useState<string[]>([]);
+  useEffect(() => {
+    let isCanceled = false;
+    fetch("/api/news")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isCanceled) {
+          setNews(data);
+        }
+      });
+
+    return () => {
+      isCanceled = true;
+    };
+  }, [setNews]);
+
+  return (
+    <Box whiteSpace="nowrap" overflow="hidden" width="100%" fontSize="sm">
+      {news.length === 0 ? (
+        "Loading..."
+      ) : (
+        <MarqueeIfAuthed>
+          {news.map((text: string) => (
+            <span key={text}>
+              {text}
+              <NewsMarqueeSpacer />
+            </span>
+          ))}
+        </MarqueeIfAuthed>
+      )}
+    </Box>
+  );
+});
+
+const NewsMarqueeSpacer = React.memo(() => {
   return <b> &nbsp;&nbsp;&nbsp;&nbsp;📣 &nbsp;&nbsp;&nbsp;&nbsp; </b>;
 });
 
-export const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
+const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
   const { isAuthed } = useWeb3();
 
   return isAuthed ? (
