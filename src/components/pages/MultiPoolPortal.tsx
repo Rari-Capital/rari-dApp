@@ -5,6 +5,7 @@ import {
   Column,
   Row,
   RowOnDesktopColumnOnMobile,
+  useWindowSize,
 } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import { AccountButton } from "../shared/AccountButton";
@@ -52,14 +53,19 @@ const MultiPoolPortal = React.memo(() => {
     };
   }, [setNews]);
 
+  const { width } = useWindowSize();
+
+  // Determine the column width based on the width of the window.
+  const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";
+
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
       mx="auto"
-      width={{ md: "700px", xs: "100%" }}
-      px={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+      width={columnWidth}
+      px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
     >
       <Row
         height="38px"
