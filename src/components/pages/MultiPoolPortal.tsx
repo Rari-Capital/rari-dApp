@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 import {
   Center,
@@ -34,6 +34,23 @@ const MultiPoolPortal = React.memo(() => {
   const isAuthed = useForceAuth();
 
   const { t } = useTranslation();
+
+  const [news, setNews] = useState<string[]>([]);
+
+  useEffect(() => {
+    let isCanceled = false;
+    fetch("/api/news")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isCanceled) {
+          setNews(data);
+        }
+      });
+
+    return () => {
+      isCanceled = true;
+    };
+  }, [setNews]);
 
   return (
     <Column
@@ -144,15 +161,18 @@ const MultiPoolPortal = React.memo(() => {
                 width="100%"
                 fontSize="sm"
               >
-                <MarqueeIfAuthed>
-                  RGT distributions are live! Deposit into one of our three
-                  funds and start staking to earn 200%+ APY!
-                  <NewsMarqueeSpacer />
-                  There are now over 500,000 RSPT holders!
-                  <NewsMarqueeSpacer />
-                  The Yield pool is now earning over 200% APY!
-                  <NewsMarqueeSpacer />
-                </MarqueeIfAuthed>
+                {news.length === 0 ? (
+                  "Loading..."
+                ) : (
+                  <MarqueeIfAuthed>
+                    {news.map((text: string) => (
+                      <span key={text}>
+                        {text}
+                        <NewsMarqueeSpacer />
+                      </span>
+                    ))}
+                  </MarqueeIfAuthed>
+                )}
               </Box>
             </Column>
           </Column>
