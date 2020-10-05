@@ -21,5 +21,6 @@ export default async (request: NowRequest, response: NowResponse) => {
     tweets.push(tweet.text);
   });
 
+  response.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate");
   response.json(tweets);
 };
