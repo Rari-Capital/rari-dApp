@@ -33,7 +33,7 @@
     "focus-visible": "^5.1.0",
     "fortmatic": "^2.2.1",
     "history": "^5.0.0",
-    "i18next": "^19.7.0",
+    "i18next": "^19.8.2",
     "istanbul-lib-coverage": "^3.0.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "nyc": "^15.1.0",
