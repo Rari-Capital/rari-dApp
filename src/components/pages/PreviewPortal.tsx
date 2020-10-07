@@ -25,7 +25,7 @@ import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 import { TranslateButton } from "../shared/TranslateButton";
 import { useNavigate } from "react-router-dom";
-import FundPerformanceChart from "../shared/FundPerformance";
+import PoolsPerformanceChart from "../shared/PoolsPerformance";
 
 const PreviewPortal = () => {
   const [loading, setLoading] = useState(false);
@@ -101,7 +101,7 @@ const PreviewPortal = () => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
       >
-        <FundStats />
+        <PoolsStats />
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
@@ -117,7 +117,7 @@ const PreviewPortal = () => {
             overflow="hidden"
             px={1}
           >
-            <FundPerformanceChart size={chartSize.asNumber()} showAmount />
+            <PoolsPerformanceChart size={chartSize.asNumber()} showAmount />
           </DashboardBox>
 
           <Row
@@ -179,7 +179,7 @@ const PreviewPortal = () => {
 
 export default PreviewPortal;
 
-const FundStats = React.memo(() => {
+const PoolsStats = React.memo(() => {
   const { RariFundManager } = useContracts();
 
   const { isLoading: isFundBalenceLoading, data: fundBalance } = useQuery(

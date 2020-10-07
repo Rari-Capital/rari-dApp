@@ -230,7 +230,7 @@ const PoolPortalContent = React.memo(() => {
                     fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
                     fontSize={{ md: 27, xs: "xl" }}
                   >
-                    {t("Stable Fund")}
+                    {t("Stable Pool")}
                   </Heading>
                   <Text fontSize="xs">{t("Safe returns on stablecoins")}</Text>
                 </Column>
@@ -406,7 +406,7 @@ const UserStatsAndChart = React.memo(
           {isFirstTime ? (
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
-              caption={t("Fund Performance")}
+              caption={t("Pool Performance")}
               captionSize="xs"
               stat={"+15%"}
               statSize="4xl"

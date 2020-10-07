@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import { AbiItem } from "web3-utils";
 
 import { useWeb3 } from "./Web3Context";
@@ -38,7 +38,7 @@ export const ContractsContext = React.createContext<
   ContractsContextData | undefined
 >(undefined);
 
-export const ContractsProvider = ({ children }: { children: JSX.Element }) => {
+export const ContractsProvider = ({ children }: { children: ReactNode }) => {
   const { web3 } = useWeb3();
 
   const [contractData, setContractData] = useState<

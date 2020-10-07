@@ -21,7 +21,7 @@ import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
 import Marquee from "react-double-marquee";
 import { useWeb3 } from "../../context/Web3Context";
-import FundPerformanceChart from "../shared/FundPerformance";
+import PoolsPerformanceChart from "../shared/PoolsPerformance";
 
 import { AiFillLock } from "react-icons/ai";
 import { GoRocket } from "react-icons/go";
@@ -133,7 +133,7 @@ const MultiPoolPortal = React.memo(() => {
           overflow="hidden"
           px={1}
         >
-          <FundPerformanceChart size={300} showAmount={false} />
+          <PoolsPerformanceChart size={300} showAmount={false} />
         </DashboardBox>
 
         <RowOnDesktopColumnOnMobile

@@ -56,7 +56,7 @@ export const LineChartOptions = {
   },
 };
 
-export const FundReturnChartOptions = {
+export const PoolReturnChartOptions = {
   ...LineChartOptions,
 
   yaxis: {
@@ -70,9 +70,9 @@ export const FundReturnChartOptions = {
 };
 
 export const SelfReturnChartOptions = {
-  ...FundReturnChartOptions,
+  ...PoolReturnChartOptions,
   grid: {
-    ...FundReturnChartOptions.grid,
+    ...PoolReturnChartOptions.grid,
     padding: {
       // No legend so we need to remove the top padding.
       // This will not shift anything up, just increases the size of the chart to expand vertically.

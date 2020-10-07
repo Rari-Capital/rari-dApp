@@ -8,13 +8,13 @@ import {
 } from "buttered-chakra";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FundReturnChartOptions } from "../../utils/chartOptions";
+import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import Chart from "react-apexcharts";
 import CaptionedStat from "./CaptionedStat";
 
-const FundPerformanceChart = React.memo(
+const PoolsPerformanceChart = React.memo(
   ({ size, showAmount }: { size: number; showAmount: boolean }) => {
     const {
       childSizes: [topPadding, statsSize, chartSize],
@@ -69,13 +69,13 @@ const FundPerformanceChart = React.memo(
 
         <Box height={chartSize.asPxString()} overflow="hidden">
           <Chart
-            options={FundReturnChartOptions}
+            options={PoolReturnChartOptions}
             type="line"
             width="100%"
             height="100%"
             series={[
               {
-                name: "Yield Fund",
+                name: "Yield Pool",
                 data: [
                   { x: "August 1, 2020", y: 10000 },
                   { x: "August 3, 2020", y: 12120 },
@@ -84,7 +84,7 @@ const FundPerformanceChart = React.memo(
                 ],
               },
               {
-                name: "Stable Fund",
+                name: "Stable Pool",
                 data: [
                   { x: "August 1, 2020", y: 10000 },
                   { x: "August 3, 2020", y: 10012 },
@@ -93,7 +93,7 @@ const FundPerformanceChart = React.memo(
                 ],
               },
               {
-                name: "ETH Fund",
+                name: "ETH Pool",
                 data: [
                   { x: "August 1, 2020", y: 10000 },
                   { x: "August 3, 2020", y: 10230 },
@@ -109,4 +109,4 @@ const FundPerformanceChart = React.memo(
   }
 );
 
-export default FundPerformanceChart;
+export default PoolsPerformanceChart;

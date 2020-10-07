@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  ReactNode,
+} from "react";
 import Web3 from "web3";
 import FullPageSpinner from "../components/shared/FullPageSpinner";
 import { useQueryCache } from "react-query";
@@ -109,7 +115,7 @@ export const Web3Context = React.createContext<Web3ContextData | undefined>(
   undefined
 );
 
-export const Web3Provider = ({ children }: { children: JSX.Element }) => {
+export const Web3Provider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
   const [web3Network] = useState<Web3>(
