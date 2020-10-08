@@ -78,11 +78,7 @@ const MultiPoolPortal = React.memo(() => {
             mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
             mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
           >
-            <Column
-              expand
-              mainAxisAlignment="center"
-              crossAxisAlignment="center"
-            >
+            <Center expand>
               <CaptionedStat
                 stat="$50,000.00"
                 statSize="4xl"
@@ -91,17 +87,13 @@ const MultiPoolPortal = React.memo(() => {
                 crossAxisAlignment="center"
                 captionFirst={false}
               />
-            </Column>
+            </Center>
           </DashboardBox>
           <DashboardBox
             width={{ md: "50%", xs: "100%" }}
             height={{ md: "100%", xs: "102px" }}
           >
-            <Column
-              expand
-              mainAxisAlignment="center"
-              crossAxisAlignment="center"
-            >
+            <Center expand>
               <CaptionedStat
                 stat="$1,000.00"
                 statSize="4xl"
@@ -110,7 +102,7 @@ const MultiPoolPortal = React.memo(() => {
                 crossAxisAlignment="center"
                 captionFirst={false}
               />
-            </Column>
+            </Center>
           </DashboardBox>
         </RowOnDesktopColumnOnMobile>
 
@@ -218,14 +210,13 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         >
           <DashboardBox
             mt={DASHBOARD_BOX_SPACING.asPxString()}
-            as="button"
             width="100%"
             height="45px"
             borderRadius="7px"
             fontSize="xl"
             fontWeight="bold"
           >
-            {t("Access")}
+            <Center expand>{t("Access")}</Center>
           </DashboardBox>
         </Link>
 
