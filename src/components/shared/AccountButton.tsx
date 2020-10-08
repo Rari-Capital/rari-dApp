@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/core";
 import { useIsMobile, Row, Column } from "buttered-chakra";
-import DashboardBox from "./DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
@@ -20,9 +20,6 @@ import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
-import { useNavigate } from "react-router-dom";
-
-function noop() {}
 
 export const AccountButton = React.memo(() => {
   const {
@@ -40,7 +37,7 @@ export const AccountButton = React.memo(() => {
 });
 
 const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
-  const { isAuthed, address } = useWeb3();
+  const { address } = useWeb3();
 
   const isMobile = useIsMobile();
 
@@ -52,7 +49,7 @@ const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
         md: "245px",
         xs: "auto",
       }}
-      onClick={isAuthed ? openModal : noop}
+      onClick={openModal}
     >
       <Row
         expand
@@ -72,19 +69,12 @@ const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
 
 export const SettingsModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
-    const { logout, login } = useWeb3();
+    const { login } = useWeb3();
 
     const onSwitchWallet = useCallback(() => {
       onClose();
       setTimeout(() => login(), 100);
     }, [login, onClose]);
-
-    const navigate = useNavigate();
-
-    const onLogout = useCallback(() => {
-      logout();
-      navigate("/");
-    }, [logout, navigate]);
 
     const { t } = useTranslation();
 
@@ -104,7 +94,7 @@ export const SettingsModal = React.memo(
                 width="100%"
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="center"
-                p={4}
+                p={DASHBOARD_BOX_SPACING.asPxString()}
               >
                 <Button
                   leftIcon="repeat"
@@ -117,24 +107,9 @@ export const SettingsModal = React.memo(
                   onClick={onSwitchWallet}
                   _hover={{}}
                   _active={{}}
+                  mb={DASHBOARD_BOX_SPACING.asPxString()}
                 >
                   {t("Switch Wallet")}
-                </Button>
-
-                <Button
-                  my={4}
-                  leftIcon="unlock"
-                  bg="red.500"
-                  width="100%"
-                  height="45px"
-                  fontSize="xl"
-                  borderRadius="7px"
-                  fontWeight="bold"
-                  onClick={onLogout}
-                  _hover={{}}
-                  _active={{}}
-                >
-                  {t("Disconnect")}
                 </Button>
 
                 <LanguageSelect />

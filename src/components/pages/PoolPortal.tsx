@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Box,
   Text,
@@ -24,7 +24,7 @@ import { useContracts } from "../../context/ContractsContext";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
-import { SmallLogo, BookBrain, AnimatedSmallLogo } from "../shared/Logos";
+import { PoolLogo, BookBrain, AnimatedPoolLogo } from "../shared/Logos";
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -58,12 +58,20 @@ import { AccountButton } from "../shared/AccountButton";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
 import { useForceAuth } from "../../hooks/useForceAuth";
-import { useLocation } from "react-router-dom";
+import {
+  Pool,
+  PoolTypeProvider,
+  usePoolInfoFromContext,
+} from "../../context/PoolContext";
 
-const PoolPortal = React.memo(() => {
+const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   useForceAuth();
 
-  return <PoolPortalContent />;
+  return (
+    <PoolTypeProvider pool={pool}>
+      <PoolPortalContent />
+    </PoolTypeProvider>
+  );
 });
 
 export default PoolPortal;
@@ -152,16 +160,9 @@ const PoolPortalContent = React.memo(() => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const location = useLocation();
-
-  // Open deposit modal on auth if query params includes "forceDeposit"
-  useEffect(() => {
-    if (location.search.includes("forceDeposit") && isAuthed) {
-      setTimeout(() => openDepositModal(), 1300);
-    }
-  }, [location, openDepositModal, isAuthed]);
-
   const { t } = useTranslation();
+
+  const { poolName, poolType } = usePoolInfoFromContext();
 
   if (isBalanceLoading || isInterestLoading) {
     return <FullPageSpinner />;
@@ -189,7 +190,7 @@ const PoolPortalContent = React.memo(() => {
           overflowY="visible"
           width="100%"
         >
-          {isAuthed ? <AnimatedSmallLogo /> : <SmallLogo />}
+          {isAuthed ? <AnimatedPoolLogo /> : <PoolLogo />}
 
           <AccountButton />
         </Row>
@@ -230,9 +231,15 @@ const PoolPortalContent = React.memo(() => {
                     fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
                     fontSize={{ md: 27, xs: "xl" }}
                   >
-                    {t("Stable Pool")}
+                    {poolName}
                   </Heading>
-                  <Text fontSize="xs">{t("Safe returns on stablecoins")}</Text>
+                  <Text fontSize="xs">
+                    {poolType === Pool.STABLE
+                      ? t("Safe returns on stablecoins")
+                      : poolType === Pool.ETH
+                      ? t("Safe returns on ETH")
+                      : t("High risk, high reward")}
+                  </Text>
                 </Column>
 
                 <DepositButton onClick={openDepositModal} />
@@ -823,8 +830,6 @@ const DepositButton = React.memo(
   }) => {
     const { t } = useTranslation();
 
-    const { isAuthed } = useWeb3();
-
     return (
       <Box
         padding="3px"
@@ -855,7 +860,6 @@ const DepositButton = React.memo(
           fontWeight="bold"
           width="164px"
           height="44px"
-          isDisabled={!isAuthed}
           onClick={onClick}
           _disabled={{}}
           _focus={{ boxShadow: "0 0 3pt 3pt #2F74AF" }}

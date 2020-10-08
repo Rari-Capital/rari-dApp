@@ -10,7 +10,7 @@ import {
   IconButton,
   Input,
 } from "@chakra-ui/core";
-import DashboardBox from "../../shared/DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { tokens } from "../../../utils/tokenUtils";
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
 import {
@@ -80,7 +80,7 @@ const AmountSelect = React.memo(
           width="100%"
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
-          p={4}
+          p={DASHBOARD_BOX_SPACING.asPxString()}
         >
           <Box width="40px" />
           <Heading fontSize="27px">
@@ -103,7 +103,7 @@ const AmountSelect = React.memo(
         <Column
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
-          p={4}
+          p={DASHBOARD_BOX_SPACING.asPxString()}
           height="100%"
         >
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
@@ -127,7 +127,7 @@ const AmountSelect = React.memo(
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
-              p={4}
+              p={DASHBOARD_BOX_SPACING.asPxString()}
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
               expand
@@ -279,7 +279,7 @@ const AmountInput = React.memo(
         value={displayAmount}
         color={token.color}
         onChange={onChange}
-        mr={4}
+        mr={DASHBOARD_BOX_SPACING.asPxString()}
       />
     );
   }

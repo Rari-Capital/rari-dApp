@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import ModalAnimation from "./ModalAnimation";
 import { MODAL_PROPS, ModalTitleWithCloseButton, ModalDivider } from "./Modal";
 import { Column } from "buttered-chakra";
+import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 
 export const TranslateButton = React.memo(() => {
   const {
@@ -72,7 +73,7 @@ export const TranslateModal = React.memo(
                 width="100%"
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="center"
-                p={4}
+                p={DASHBOARD_BOX_SPACING.asPxString()}
               >
                 <LanguageSelect />
               </Column>

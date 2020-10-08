@@ -7,6 +7,7 @@ import FullPageSpinner from "./shared/FullPageSpinner";
 import { Outlet, Route, Routes } from "react-router-dom";
 
 import { Heading } from "@chakra-ui/core";
+import { Pool } from "../context/PoolContext";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -21,19 +22,6 @@ const PoolPortal = loadable(
     fallback: <FullPageSpinner />,
   }
 );
-
-const PreviewPortal = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/PreviewPortal"),
-  {
-    fallback: <FullPageSpinner />,
-  }
-);
-
-export enum Pool {
-  STABLE = "stable",
-  YIELD = "yield",
-  ETH = "eth",
-}
 
 const PageNotFound = React.memo(() => {
   return (
@@ -56,14 +44,20 @@ const App = React.memo(() => {
   return (
     <Routes>
       <Route path="/pools" element={<Outlet />}>
-        {Object.values(Pool).map((pool: string) => {
-          return <Route key={pool} path={pool} element={<PoolPortal />} />;
+        {Object.values(Pool).map((pool) => {
+          return (
+            <Route
+              key={pool}
+              path={pool}
+              element={<PoolPortal pool={pool} />}
+            />
+          );
         })}
 
         <Route path="/" element={<MultiPoolPortal />} />
       </Route>
 
-      <Route path="/" element={<PreviewPortal />} />
+      <Route path="/" element={<MultiPoolPortal />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

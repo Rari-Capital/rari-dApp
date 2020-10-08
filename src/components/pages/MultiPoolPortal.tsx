@@ -16,20 +16,17 @@ import { useForceAuth } from "../../hooks/useForceAuth";
 import CaptionedStat from "../shared/CaptionedStat";
 
 import { FaTwitter } from "react-icons/fa";
-import { Box, Heading, Link, Text } from "@chakra-ui/core";
+import { Box, Heading, Link, Text, Image, Tooltip } from "@chakra-ui/core";
 import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
 import Marquee from "react-double-marquee";
 import { useWeb3 } from "../../context/Web3Context";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 
-import { AiFillLock } from "react-icons/ai";
-import { GoRocket } from "react-icons/go";
-import { FaEthereum } from "react-icons/fa";
-import { Pool } from "../App";
 import { MdSwapHoriz } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
+import { Pool, usePoolInfo } from "../../context/PoolContext";
 
 const MultiPoolPortal = React.memo(() => {
   const isAuthed = useForceAuth();
@@ -174,6 +171,8 @@ export default MultiPoolPortal;
 const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
+  const { poolName, poolLogo } = usePoolInfo(pool);
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -181,56 +180,29 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
       expand
       p={DASHBOARD_BOX_SPACING.asPxString()}
     >
-      <Box
-        as={
-          pool === Pool.ETH
-            ? FaEthereum
-            : pool === Pool.STABLE
-            ? AiFillLock
-            : pool === Pool.YIELD
-            ? GoRocket
-            : FaEthereum
-        }
-        size="30px"
-      />
+      <Image src={poolLogo} />
 
       <Heading fontSize="xl" mt={3}>
-        {pool === Pool.ETH
-          ? t("ETH Pool")
-          : pool === Pool.STABLE
-          ? t("Stable Pool")
-          : pool === Pool.YIELD
-          ? t("Yield Pool")
-          : null}
+        {poolName}
       </Heading>
 
-      <Text mt={1}>
-        {pool === Pool.ETH
-          ? t("Safe returns on ETH")
-          : pool === Pool.STABLE
-          ? t("Safe on stablecoins")
-          : pool === Pool.YIELD
-          ? t("High risk, high reward")
-          : null}
-      </Text>
-
-      <Text mt={3} fontSize="xs" textAlign="center">
-        {pool === Pool.ETH
-          ? t("You have {{amount}} in this pool", { amount: "$25,000" })
-          : pool === Pool.STABLE
-          ? t("You have {{amount}} in this pool", { amount: "$10,500,000" })
-          : pool === Pool.YIELD
-          ? t("You have {{amount}} in this pool", { amount: "$250,000" })
-          : null}
-      </Text>
+      <Tooltip
+        hasArrow
+        bg="#000"
+        aria-label={t("Your balance in this pool")}
+        label={t("Your balance in this pool")}
+        placement="top"
+      >
+        <Text my={5} fontSize="md" textAlign="center">
+          {"$25,000"}
+        </Text>
+      </Tooltip>
       <Text fontWeight="bold">
         {pool === Pool.ETH
           ? "25% APY / 0.04% DPY"
           : pool === Pool.STABLE
           ? "25% APY / 0.04% DPY"
-          : pool === Pool.YIELD
-          ? "200% APY / 1.04% DPY"
-          : null}
+          : "200% APY / 1.04% DPY"}
       </Text>
 
       <Row
@@ -242,10 +214,10 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           /* @ts-ignore */
           as={RouterLink}
           width="100%"
-          to={pool.toString()}
+          to={"/pools/" + pool.toString()}
         >
           <DashboardBox
-            mt={4}
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
             as="button"
             width="100%"
             height="45px"
@@ -256,27 +228,22 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
             {t("Access")}
           </DashboardBox>
         </Link>
-        <Link
-          /* @ts-ignore */
-          as={RouterLink}
-          to={pool.toString() + "?forceDeposit"}
+
+        <DashboardBox
+          mt={DASHBOARD_BOX_SPACING.asPxString()}
+          flexShrink={0}
+          as="button"
+          height="45px"
+          ml={2}
+          width="45px"
+          borderRadius="7px"
+          fontSize="xl"
+          fontWeight="bold"
         >
-          <DashboardBox
-            mt={4}
-            flexShrink={0}
-            as="button"
-            height="45px"
-            ml={2}
-            width="45px"
-            borderRadius="7px"
-            fontSize="xl"
-            fontWeight="bold"
-          >
-            <Center expand>
-              <Box as={MdSwapHoriz} size="30px" />
-            </Center>
-          </DashboardBox>
-        </Link>
+          <Center expand>
+            <Box as={MdSwapHoriz} size="30px" />
+          </Center>
+        </DashboardBox>
       </Row>
     </Column>
   );
@@ -295,7 +262,7 @@ const NewsAndTwitterLink = React.memo(() => {
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          px={4}
+          px={DASHBOARD_BOX_SPACING.asPxString()}
           py={3}
         >
           <Box as={FaTwitter} size="20px" />
@@ -310,7 +277,7 @@ const NewsAndTwitterLink = React.memo(() => {
 
       <Column
         expand
-        px={4}
+        px={DASHBOARD_BOX_SPACING.asPxString()}
         mainAxisAlignment="center"
         crossAxisAlignment="flex-start"
       >

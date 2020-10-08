@@ -4,6 +4,7 @@ import { Box, Image } from "@chakra-ui/core";
 import LargeLogo from "../../static/wide-logo.png";
 import Logo from "../../static/small-logo.png";
 import BookBrainLogo from "../../static/book-brain.png";
+import { usePoolInfoFromContext } from "../../context/PoolContext";
 
 export const AnimatedWideLogo = React.memo(() => {
   return (
@@ -27,6 +28,24 @@ export const SmallLogo = React.memo(() => {
   return (
     <Box width="37px" height="37px" flexShrink={0}>
       <Image alt="" width="37px" height="37px" src={Logo} />
+    </Box>
+  );
+});
+
+export const AnimatedPoolLogo = React.memo(() => {
+  return (
+    <Flip delay={300}>
+      <PoolLogo />
+    </Flip>
+  );
+});
+
+export const PoolLogo = React.memo(() => {
+  const { poolLogo } = usePoolInfoFromContext();
+
+  return (
+    <Box width="37px" height="37px" flexShrink={0}>
+      <Image alt="" width="37px" height="37px" src={poolLogo} />
     </Box>
   );
 });

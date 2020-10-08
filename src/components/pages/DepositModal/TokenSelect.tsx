@@ -23,6 +23,7 @@ import {
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
+import { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 
 const TokenSelect = React.memo(
   ({
@@ -66,7 +67,7 @@ const TokenSelect = React.memo(
           onClose={onClose}
         />
         <ModalDivider />
-        <InputGroup mb={2} mx={4}>
+        <InputGroup mb={2} mx={DASHBOARD_BOX_SPACING.asPxString()}>
           <InputLeftElement
             ml={-1}
             children={<Icon name="search" color="gray.300" />}
@@ -81,7 +82,12 @@ const TokenSelect = React.memo(
           />
         </InputGroup>
 
-        <Box pt={1} px={4} width="100%" height="180px">
+        <Box
+          pt={1}
+          px={DASHBOARD_BOX_SPACING.asPxString()}
+          width="100%"
+          height="180px"
+        >
           <TokenList tokenKeys={tokenKeys} onClick={onTokenClick} />
         </Box>
       </Fade>
