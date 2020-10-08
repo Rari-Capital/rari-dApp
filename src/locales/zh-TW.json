@@ -18,11 +18,7 @@
   "Whoops! Looks like something went wrong!": "哎呀！ 好像出了點問題！",
   "You can either reload the page, or report this error to us on our": "您可以重新加載頁面，也可以在我們的頁面上向我們報告此錯誤",
   "Error": "錯誤",
-  "Connect Wallet": "連接錢包",
-  "Get Wallet": "獲取錢包",
   "Today's APY": "今天的APY",
-  "Yearly APY": "每年APY",
-  "Assets Under Management": "管理資產",
   "Performance beginning with $10,000 on 8/1/2020": "表演從2020年8月1日的$ 10,000起",
   "Safe returns on stablecoins": "穩定幣的安全回報",
   "Pool Performance": "泳池表現",
@@ -45,7 +41,6 @@
   "FAQ": "常問問題",
   "Account": "帳戶",
   "Switch Wallet": "開關錢包",
-  "Disconnect": "斷開",
   "Language": "語言",
   "Connect with a browser extension": "連接瀏覽器擴展",
   "Scan with a wallet to connect": "用錢包掃描以進行連接",
@@ -57,8 +52,8 @@
   "Safe returns on ETH": "ETH的安全收益",
   "Safe on stablecoins": "穩定幣安全",
   "High risk, high reward": "高風險，高回報",
-  "You have {{amount}} in this pool": "您在此池中有{{amount}}",
   "Total Value Locked": "總價值鎖定",
   "Total Interest Earned This Week": "本週賺取的總利息",
-  "Access": "訪問"
+  "Access": "訪問",
+  "Your balance in this pool": "您在此池中的餘額"
 }

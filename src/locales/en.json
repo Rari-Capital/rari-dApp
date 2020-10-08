@@ -18,11 +18,7 @@
   "Whoops! Looks like something went wrong!": "Whoops! Looks like something went wrong!",
   "You can either reload the page, or report this error to us on our": "You can either reload the page, or report this error to us on our",
   "Error": "Error",
-  "Connect Wallet": "Connect Wallet",
-  "Get Wallet": "Get Wallet",
   "Today's APY": "Today's APY",
-  "Yearly APY": "Yearly APY",
-  "Assets Under Management": "Assets Under Management",
   "Performance beginning with $10,000 on 8/1/2020": "Performance beginning with $10,000 on 8/1/2020",
   "Safe returns on stablecoins": "Safe returns on stablecoins",
   "Pool Performance": "Pool Performance",
@@ -45,7 +41,6 @@
   "FAQ": "FAQ",
   "Account": "Account",
   "Switch Wallet": "Switch Wallet",
-  "Disconnect": "Disconnect",
   "Language": "Language",
   "Connect with a browser extension": "Connect with a browser extension",
   "Scan with a wallet to connect": "Scan with a wallet to connect",
@@ -57,8 +52,8 @@
   "Safe returns on ETH": "Safe returns on ETH",
   "Safe on stablecoins": "Safe on stablecoins",
   "High risk, high reward": "High risk, high reward",
-  "You have {{amount}} in this pool": "You have {{amount}} in this pool",
   "Total Value Locked": "Total Value Locked",
   "Total Interest Earned This Week": "Total Interest Earned This Week",
-  "Access": "Access"
+  "Access": "Access",
+  "Your balance in this pool": "Your balance in this pool"
 }
