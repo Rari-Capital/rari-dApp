@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 
 import FullPageSpinner from "./shared/FullPageSpinner";
 
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import { Heading } from "@chakra-ui/core";
 import { Pool } from "../context/PoolContext";
@@ -54,7 +54,7 @@ const App = React.memo(() => {
           );
         })}
 
-        <Route path="/" element={<MultiPoolPortal />} />
+        <Route path="/" element={<Navigate to="/" replace={true} />} />
       </Route>
 
       <Route path="/" element={<MultiPoolPortal />} />
