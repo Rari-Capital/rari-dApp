@@ -200,7 +200,7 @@ const FundStats = React.memo(() => {
             caption={
               hasNotDeposited
                 ? t("Rari Governance Token Price")
-                : t("Interest Earned This Week")
+                : t("Total Interest Earned")
             }
             crossAxisAlignment="center"
             captionFirst={false}
