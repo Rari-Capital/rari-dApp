@@ -16,7 +16,16 @@ import { useForceAuth } from "../../hooks/useForceAuth";
 import CaptionedStat from "../shared/CaptionedStat";
 
 import { FaTwitter } from "react-icons/fa";
-import { Box, Heading, Link, Text, Image, Tooltip } from "@chakra-ui/core";
+import {
+  Box,
+  Heading,
+  Link,
+  Text,
+  Image,
+  Tooltip,
+  Spinner,
+  useDisclosure,
+} from "@chakra-ui/core";
 import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
 import Marquee from "react-double-marquee";
@@ -26,12 +35,15 @@ import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { MdSwapHoriz } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import { Pool, usePoolInfo } from "../../context/PoolContext";
+import { Pool } from "../../context/PoolContext";
+import { usePoolInfo } from "../../hooks/usePoolInfo";
+import { useQuery } from "react-query";
+import { useContracts } from "../../context/ContractsContext";
+import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
+import DepositModal from "./DepositModal";
 
 const MultiPoolPortal = React.memo(() => {
   const isAuthed = useForceAuth();
-
-  const { t } = useTranslation();
 
   const { width } = useWindowSize();
 
@@ -66,45 +78,7 @@ const MultiPoolPortal = React.memo(() => {
         height="auto"
         width="100%"
       >
-        <RowOnDesktopColumnOnMobile
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          height={{ md: "140px", xs: "220px" }}
-        >
-          <DashboardBox
-            width={{ md: "50%", xs: "100%" }}
-            height={{ md: "100%", xs: "102px" }}
-            mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
-            mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-          >
-            <Center expand>
-              <CaptionedStat
-                stat="$50,000.00"
-                statSize="4xl"
-                captionSize="xs"
-                caption={t("Total Value Locked")}
-                crossAxisAlignment="center"
-                captionFirst={false}
-              />
-            </Center>
-          </DashboardBox>
-          <DashboardBox
-            width={{ md: "50%", xs: "100%" }}
-            height={{ md: "100%", xs: "102px" }}
-          >
-            <Center expand>
-              <CaptionedStat
-                stat="$1,000.00"
-                statSize="4xl"
-                captionSize="xs"
-                caption={t("Total Interest Earned This Week")}
-                crossAxisAlignment="center"
-                captionFirst={false}
-              />
-            </Center>
-          </DashboardBox>
-        </RowOnDesktopColumnOnMobile>
+        <FundStats />
 
         <DashboardBox
           mt={DASHBOARD_BOX_SPACING.asPxString()}
@@ -160,83 +134,172 @@ const MultiPoolPortal = React.memo(() => {
 
 export default MultiPoolPortal;
 
+const FundStats = React.memo(() => {
+  const { t } = useTranslation();
+
+  const { RariFundManager } = useContracts();
+
+  const { address } = useWeb3();
+
+  //TODO: Actually fetch all pool balance
+  const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
+    address + " allPoolBalance",
+    () =>
+      RariFundManager.methods
+        .balanceOf(address)
+        .call()
+        .then((balance) => format1e18BigAsUSD(toBig(balance)))
+  );
+
+  if (isBalanceLoading) {
+    return (
+      <Center height="140px">
+        <Spinner />
+      </Center>
+    );
+  }
+
+  const myBalance = balanceData!;
+  const hasNotDeposited = myBalance === "$0.00";
+
+  return (
+    <RowOnDesktopColumnOnMobile
+      mainAxisAlignment="space-between"
+      crossAxisAlignment="center"
+      width="100%"
+      height={{ md: "140px", xs: "220px" }}
+    >
+      <DashboardBox
+        width={{ md: "50%", xs: "100%" }}
+        height={{ md: "100%", xs: "102px" }}
+        mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
+        mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+      >
+        <Center expand>
+          <CaptionedStat
+            stat={hasNotDeposited ? "$10,000,000" : "$50,000.00"}
+            statSize="4xl"
+            captionSize="xs"
+            caption={
+              hasNotDeposited ? t("Total Value Locked") : t("Account Balance")
+            }
+            crossAxisAlignment="center"
+            captionFirst={false}
+          />
+        </Center>
+      </DashboardBox>
+      <DashboardBox
+        width={{ md: "50%", xs: "100%" }}
+        height={{ md: "100%", xs: "102px" }}
+      >
+        <Center expand>
+          <CaptionedStat
+            stat={hasNotDeposited ? "$255.14" : "$1,000.00"}
+            statSize="4xl"
+            captionSize="xs"
+            caption={
+              hasNotDeposited
+                ? t("Rari Governance Token Price")
+                : t("Interest Earned This Week")
+            }
+            crossAxisAlignment="center"
+            captionFirst={false}
+          />
+        </Center>
+      </DashboardBox>
+    </RowOnDesktopColumnOnMobile>
+  );
+});
+
 const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
   const { poolName, poolLogo } = usePoolInfo(pool);
 
+  const {
+    isOpen: isDepositModalOpen,
+    onOpen: openDepositModal,
+    onClose: closeDepositModal,
+  } = useDisclosure();
+
   return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="center"
-      expand
-      p={DASHBOARD_BOX_SPACING.asPxString()}
-    >
-      <Image src={poolLogo} />
-
-      <Heading fontSize="xl" mt={3}>
-        {poolName}
-      </Heading>
-
-      <Tooltip
-        hasArrow
-        bg="#000"
-        aria-label={t("Your balance in this pool")}
-        label={t("Your balance in this pool")}
-        placement="top"
-      >
-        <Text my={5} fontSize="md" textAlign="center">
-          {"$25,000"}
-        </Text>
-      </Tooltip>
-      <Text fontWeight="bold">
-        {pool === Pool.ETH
-          ? "25% APY / 0.04% DPY"
-          : pool === Pool.STABLE
-          ? "25% APY / 0.04% DPY"
-          : "200% APY / 1.04% DPY"}
-      </Text>
-
-      <Row
+    <>
+      <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
+      <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
-        width="100%"
+        expand
+        p={DASHBOARD_BOX_SPACING.asPxString()}
       >
-        <Link
-          /* @ts-ignore */
-          as={RouterLink}
-          width="100%"
-          to={"/pools/" + pool.toString()}
+        <Box width="50px" height="50px" flexShrink={0}>
+          <Image src={poolLogo} />
+        </Box>
+
+        <Heading fontSize="xl" mt={3}>
+          {poolName}
+        </Heading>
+
+        <Tooltip
+          hasArrow
+          bg="#000"
+          aria-label={t("Your balance in this pool")}
+          label={t("Your balance in this pool")}
+          placement="top"
         >
+          <Text my={5} fontSize="md" textAlign="center">
+            {"$25,000"}
+          </Text>
+        </Tooltip>
+        <Text fontWeight="bold">
+          {pool === Pool.ETH
+            ? "25% APY / 0.04% DPY"
+            : pool === Pool.STABLE
+            ? "25% APY / 0.04% DPY"
+            : "200% APY / 1.04% DPY"}
+        </Text>
+
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          width="100%"
+        >
+          <Link
+            /* @ts-ignore */
+            as={RouterLink}
+            width="100%"
+            to={"/pools/" + pool.toString()}
+          >
+            <DashboardBox
+              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              width="100%"
+              height="45px"
+              borderRadius="7px"
+              fontSize="xl"
+              fontWeight="bold"
+            >
+              <Center expand>{t("Access")}</Center>
+            </DashboardBox>
+          </Link>
+
           <DashboardBox
             mt={DASHBOARD_BOX_SPACING.asPxString()}
-            width="100%"
+            flexShrink={0}
+            as="button"
+            onClick={openDepositModal}
             height="45px"
+            ml={2}
+            width="45px"
             borderRadius="7px"
             fontSize="xl"
             fontWeight="bold"
           >
-            <Center expand>{t("Access")}</Center>
+            <Center expand>
+              <Box as={MdSwapHoriz} size="30px" />
+            </Center>
           </DashboardBox>
-        </Link>
-
-        <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          flexShrink={0}
-          as="button"
-          height="45px"
-          ml={2}
-          width="45px"
-          borderRadius="7px"
-          fontSize="xl"
-          fontWeight="bold"
-        >
-          <Center expand>
-            <Box as={MdSwapHoriz} size="30px" />
-          </Center>
-        </DashboardBox>
-      </Row>
-    </Column>
+        </Row>
+      </Column>
+    </>
   );
 });
 

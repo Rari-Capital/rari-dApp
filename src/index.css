@@ -39,7 +39,7 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
     url(AvenirNext-Bold.woff) format("woff");
   font-weight: bold;
   font-style: normal;
-  font-display: fallback;
+  font-display: swap;
 }
 
 @font-face {
@@ -48,7 +48,7 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
     url(AvenirNext-Regular.woff) format("woff");
   font-weight: normal;
   font-style: normal;
-  font-display: fallback;
+  font-display: swap;
 }
 
 @-webkit-keyframes GradientBackgroundAnimation {

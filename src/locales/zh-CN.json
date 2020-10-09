@@ -53,7 +53,8 @@
   "Safe on stablecoins": "稳定币安全",
   "High risk, high reward": "高风险，高回报",
   "Total Value Locked": "总价值锁定",
-  "Total Interest Earned This Week": "本周赚取的总利息",
   "Access": "访问",
-  "Your balance in this pool": "您在此池中的余额"
+  "Your balance in this pool": "您在此池中的余额",
+  "Rari Governance Token Price": "Rari Governance Token价格",
+  "Interest Earned This Week": "本周赚取的利息"
 }

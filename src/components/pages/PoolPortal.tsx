@@ -58,11 +58,8 @@ import { AccountButton } from "../shared/AccountButton";
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
 import { useForceAuth } from "../../hooks/useForceAuth";
-import {
-  Pool,
-  PoolTypeProvider,
-  usePoolInfoFromContext,
-} from "../../context/PoolContext";
+import { Pool, PoolTypeProvider } from "../../context/PoolContext";
+import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   useForceAuth();
@@ -168,13 +165,15 @@ const PoolPortalContent = React.memo(() => {
     return <FullPageSpinner />;
   }
 
-  const myBalance = balanceData!;
   const myInterest = interestData!;
-  const isFirstTime = myBalance === "$0.00";
+  const myBalance = balanceData!;
+  const hasNotDeposited = myBalance === "$0.00";
 
   return (
     <>
-      <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
+      {isDepositModalOpen ? (
+        <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
+      ) : null}
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
@@ -252,7 +251,7 @@ const PoolPortalContent = React.memo(() => {
               height={mainSectionChildSizes[1].asPxString()}
               position="relative"
             >
-              {isFirstTime ? (
+              {hasNotDeposited ? (
                 <DepositButton
                   boxProps={{
                     zIndex: 1,
@@ -265,9 +264,9 @@ const PoolPortalContent = React.memo(() => {
                 />
               ) : null}
 
-              <Box opacity={isFirstTime ? 0.2 : 1} height="100%">
+              <Box opacity={hasNotDeposited ? 0.2 : 1} height="100%">
                 <UserStatsAndChart
-                  isFirstTime={isFirstTime}
+                  hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
                   balance={myBalance}
                   interestEarned={myInterest}
@@ -293,7 +292,7 @@ const PoolPortalContent = React.memo(() => {
                 px={DASHBOARD_BOX_SPACING.asPxString()}
               >
                 <TransactionHistoryOrTokenAllocation
-                  isFirstTime={isFirstTime}
+                  hasNotDeposited={hasNotDeposited}
                 />
               </DashboardBox>
               <DashboardBox
@@ -376,12 +375,12 @@ const UserStatsAndChart = React.memo(
     size,
     balance,
     interestEarned,
-    isFirstTime,
+    hasNotDeposited,
   }: {
     size: number;
     balance: string;
     interestEarned: string;
-    isFirstTime: boolean;
+    hasNotDeposited: boolean;
   }) => {
     const {
       childSizes: [topPadding, statsSize, chartSize],
@@ -410,7 +409,7 @@ const UserStatsAndChart = React.memo(
           height={statsSize.asPxString()}
           width="100%"
         >
-          {isFirstTime ? (
+          {hasNotDeposited ? (
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
               caption={t("Pool Performance")}
@@ -443,7 +442,7 @@ const UserStatsAndChart = React.memo(
             borderRadius="7px"
             fontWeight="bold"
             width={{ md: "130px", xs: "100%" }}
-            isDisabled={isFirstTime}
+            isDisabled={hasNotDeposited}
           >
             <option value="weekly">{t("Weekly")}</option>
             <option value="monthly">{t("Monthly")}</option>
@@ -454,7 +453,7 @@ const UserStatsAndChart = React.memo(
         <Box height={chartSize.asPxString()} color="#000000" overflow="hidden">
           <Chart
             options={
-              isFirstTime
+              hasNotDeposited
                 ? { ...SelfReturnChartOptions, ...DisableChartInteractions }
                 : SelfReturnChartOptions
             }
@@ -625,8 +624,8 @@ const MonthlyReturns = React.memo(() => {
 });
 
 const TransactionHistoryOrTokenAllocation = React.memo(
-  ({ isFirstTime }: { isFirstTime: boolean }) => {
-    return isFirstTime ? <TokenAllocation /> : <TransactionHistory />;
+  ({ hasNotDeposited }: { hasNotDeposited: boolean }) => {
+    return hasNotDeposited ? <TokenAllocation /> : <TransactionHistory />;
   }
 );
 
