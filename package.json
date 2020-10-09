@@ -23,7 +23,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
-    "@walletconnect/web3-provider": "^1.2.2",
+    "@walletconnect/web3-provider": "^1.3.0",
     "apexcharts": "^3.20.2",
     "authereum": "0.0.4-beta.201",
     "big.js": "^6.0.1",
