@@ -8,9 +8,8 @@ import {
   useWindowSize,
 } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
-import { AccountButton } from "../shared/AccountButton";
+
 import CopyrightSpacer from "../shared/CopyrightSpacer";
-import { AnimatedSmallLogo, SmallLogo } from "../shared/Logos";
 
 import { useForceAuth } from "../../hooks/useForceAuth";
 import CaptionedStat from "../shared/CaptionedStat";

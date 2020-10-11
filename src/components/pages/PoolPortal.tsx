@@ -24,7 +24,7 @@ import { useContracts } from "../../context/ContractsContext";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
-import { PoolLogo, BookBrain, AnimatedPoolLogo } from "../shared/Logos";
+import { BookBrain } from "../shared/Logos";
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -54,13 +54,13 @@ import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
 import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
 import { useQuery } from "react-query";
-import { AccountButton } from "../shared/AccountButton";
+
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
 import { useForceAuth } from "../../hooks/useForceAuth";
 import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
-import { Header } from "../shared/Header";
+import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   useForceAuth();
@@ -85,14 +85,12 @@ const PoolPortalContent = React.memo(() => {
   });
 
   const {
-    spacing: headerAndBodySpacing,
-    childSizes: [, headerSize, bodySize],
+    childSizes: [, bodySize],
   } = useSpacedLayout({
     parentHeight: windowHeight.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
-      new PixelSize(0),
-      new PixelSize(38),
+      HeaderHeightWithTopPadding,
       new PercentageSize(1),
       // We have a 0 sized child here because it will now lower the size of the "100%" child
       // by accouting for padding below it, which is 15.

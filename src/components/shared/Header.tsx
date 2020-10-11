@@ -1,13 +1,20 @@
 import { Link, Text } from "@chakra-ui/core";
-import { Row } from "buttered-chakra";
+import { PixelSize, Row } from "buttered-chakra";
 import React from "react";
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { AnimatedSmallLogo, SmallLogo } from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+export const HeaderHeightWithTopPadding = new PixelSize(
+  38 + DASHBOARD_BOX_SPACING.asNumber()
+);
 
 export const Header = React.memo(
   ({ isAuthed, padding }: { isAuthed: boolean; padding?: boolean }) => {
+    const { t } = useTranslation();
+
     return (
       <Row
         px={padding ? DASHBOARD_BOX_SPACING.asPxString() : 0}
@@ -30,10 +37,10 @@ export const Header = React.memo(
           overflowY="hidden"
           transform="translate(0px, 7px)"
         >
-          <HeaderLink mr={4} name="Pools" route="/" />
-          <HeaderLink mr={4} name="Stable Pool" route="/pools/stable" />
-          <HeaderLink mr={4} name="Yield Pool" route="/pools/yield" />
-          <HeaderLink mr={4} name="ETH Pool" route="/pools/eth" />
+          <HeaderLink mr={4} name={t("Pools")} route="/" />
+          <HeaderLink mr={4} name={t("Stable Pool")} route="/pools/stable" />
+          <HeaderLink mr={4} name={t("Yield Pool")} route="/pools/yield" />
+          <HeaderLink mr={4} name={t("ETH Pool")} route="/pools/eth" />
         </Row>
 
         <AccountButton />
