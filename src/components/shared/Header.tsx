@@ -6,6 +6,8 @@ import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { AnimatedSmallLogo, SmallLogo } from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Pool } from "../../context/PoolContext";
+import { usePoolInfo } from "../../hooks/usePoolInfo";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -38,13 +40,32 @@ export const Header = React.memo(
           transform="translate(0px, 7px)"
         >
           <HeaderLink mr={4} name={t("Pools")} route="/" />
-          <HeaderLink mr={4} name={t("Stable Pool")} route="/pools/stable" />
-          <HeaderLink mr={4} name={t("Yield Pool")} route="/pools/yield" />
-          <HeaderLink mr={4} name={t("ETH Pool")} route="/pools/eth" />
+
+          {Object.values(Pool).map(
+            (pool: Pool, index: number, array: Pool[]) => {
+              return (
+                <PoolLink pool={pool} isLast={index === array.length - 1} />
+              );
+            }
+          )}
         </Row>
 
         <AccountButton />
       </Row>
+    );
+  }
+);
+
+export const PoolLink = React.memo(
+  ({ pool, isLast }: { pool: Pool; isLast: boolean }) => {
+    const { poolName } = usePoolInfo(pool);
+
+    return (
+      <HeaderLink
+        mr={isLast ? 0 : 4}
+        name={poolName}
+        route={"/pools/" + pool}
+      />
     );
   }
 );
