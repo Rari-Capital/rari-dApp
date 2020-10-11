@@ -3,7 +3,12 @@ import { PixelSize, Row } from "buttered-chakra";
 import React from "react";
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
-import { AnimatedSmallLogo, SmallLogo } from "./Logos";
+import {
+  AnimatedPoolLogo,
+  AnimatedSmallLogo,
+  PoolLogo,
+  SmallLogo,
+} from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Pool } from "../../context/PoolContext";
@@ -14,7 +19,15 @@ export const HeaderHeightWithTopPadding = new PixelSize(
 );
 
 export const Header = React.memo(
-  ({ isAuthed, padding }: { isAuthed: boolean; padding?: boolean }) => {
+  ({
+    isAuthed,
+    isPool,
+    padding,
+  }: {
+    isAuthed: boolean;
+    isPool?: boolean;
+    padding?: boolean;
+  }) => {
     const { t } = useTranslation();
 
     return (
@@ -28,7 +41,17 @@ export const Header = React.memo(
         overflowY="visible"
         width="100%"
       >
-        {isAuthed ? <AnimatedSmallLogo /> : <SmallLogo />}
+        {isAuthed ? (
+          isPool ? (
+            <AnimatedPoolLogo />
+          ) : (
+            <AnimatedSmallLogo />
+          )
+        ) : isPool ? (
+          <PoolLogo />
+        ) : (
+          <SmallLogo />
+        )}
 
         <Row
           mx={4}

@@ -178,7 +178,7 @@ const PoolPortalContent = React.memo(() => {
         crossAxisAlignment="flex-start"
         color="#FFFFFF"
       >
-        <Header padding isAuthed={isAuthed} />
+        <Header isPool padding isAuthed={isAuthed} />
         <RowOnDesktopColumnOnMobile
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
