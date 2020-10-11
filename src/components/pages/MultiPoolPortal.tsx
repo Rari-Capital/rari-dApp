@@ -35,12 +35,13 @@ import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { MdSwapHoriz } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import { Pool } from "../../context/PoolContext";
+import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
 import { useContracts } from "../../context/ContractsContext";
 import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
+import { Header } from "../shared/Header";
 
 const MultiPoolPortal = React.memo(() => {
   const isAuthed = useForceAuth();
@@ -59,19 +60,7 @@ const MultiPoolPortal = React.memo(() => {
       width={columnWidth}
       px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
     >
-      <Row
-        height="38px"
-        my={DASHBOARD_BOX_SPACING.asPxString()}
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        overflowX="visible"
-        overflowY="visible"
-        width="100%"
-      >
-        {isAuthed ? <AnimatedSmallLogo /> : <SmallLogo />}
-
-        <AccountButton />
-      </Row>
+      <Header isAuthed={isAuthed} />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -153,7 +142,7 @@ const FundStats = React.memo(() => {
 
   if (isBalanceLoading) {
     return (
-      <Center height="140px">
+      <Center height={{ md: "140px", xs: "220px" }}>
         <Spinner />
       </Center>
     );
@@ -224,7 +213,14 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
   return (
     <>
-      <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
+      {isDepositModalOpen ? (
+        <PoolTypeProvider pool={pool}>
+          <DepositModal
+            isOpen={isDepositModalOpen}
+            onClose={closeDepositModal}
+          />
+        </PoolTypeProvider>
+      ) : null}
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"

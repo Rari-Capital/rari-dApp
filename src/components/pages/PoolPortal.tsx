@@ -60,6 +60,7 @@ import { useTranslation } from "react-i18next";
 import { useForceAuth } from "../../hooks/useForceAuth";
 import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
+import { Header } from "../shared/Header";
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   useForceAuth();
@@ -179,21 +180,7 @@ const PoolPortalContent = React.memo(() => {
         crossAxisAlignment="flex-start"
         color="#FFFFFF"
       >
-        <Row
-          height={headerSize.asPxString()}
-          my={headerAndBodySpacing.asPxString()}
-          px={DASHBOARD_BOX_SPACING.asPxString()}
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          overflowX="visible"
-          overflowY="visible"
-          width="100%"
-        >
-          {isAuthed ? <AnimatedPoolLogo /> : <PoolLogo />}
-
-          <AccountButton />
-        </Row>
-
+        <Header padding isAuthed={isAuthed} />
         <RowOnDesktopColumnOnMobile
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
