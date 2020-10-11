@@ -28,13 +28,12 @@ export const Header = React.memo(
           crossAxisAlignment="flex-start"
           overflowX="auto"
           overflowY="hidden"
-          verticalAlign="bottom"
           transform="translate(0px, 7px)"
         >
+          <HeaderLink mr={4} name="Pools" route="/" />
           <HeaderLink mr={4} name="Stable Pool" route="/pools/stable" />
           <HeaderLink mr={4} name="Yield Pool" route="/pools/yield" />
           <HeaderLink mr={4} name="ETH Pool" route="/pools/eth" />
-          <HeaderLink mr={4} name="Pools" route="/" />
         </Row>
 
         <AccountButton />
