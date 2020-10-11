@@ -67,7 +67,11 @@ export const Header = React.memo(
           {Object.values(Pool).map(
             (pool: Pool, index: number, array: Pool[]) => {
               return (
-                <PoolLink pool={pool} isLast={index === array.length - 1} />
+                <PoolLink
+                  key={pool}
+                  pool={pool}
+                  isLast={index === array.length - 1}
+                />
               );
             }
           )}

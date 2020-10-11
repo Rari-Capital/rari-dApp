@@ -139,7 +139,6 @@ const AmountSelect = React.memo(
               />
 
               <TokenNameAndMaxButton
-                mode={mode}
                 openCoinSelect={openCoinSelect}
                 selectedToken={selectedToken}
                 updateAmount={updateAmount}
@@ -179,12 +178,10 @@ const TokenNameAndMaxButton = React.memo(
     openCoinSelect,
     selectedToken,
     updateAmount,
-    mode,
   }: {
     selectedToken: string;
     openCoinSelect: () => any;
     updateAmount: (newAmount: string) => any;
-    mode: Mode;
   }) => {
     const token = tokens[selectedToken];
 
@@ -226,25 +223,23 @@ const TokenNameAndMaxButton = React.memo(
           <Icon name="chevron-down" size="32px" />
         </Row>
 
-        {mode === Mode.DEPOSIT ? (
-          <Button
-            ml={1}
-            height="28px"
-            width="58px"
-            bg="transparent"
-            border="2px"
-            borderRadius="8px"
-            borderColor="#272727"
-            fontSize="sm"
-            fontWeight="extrabold"
-            _hover={{}}
-            _active={{}}
-            onClick={setToMax}
-            isLoading={isMaxLoading}
-          >
-            {t("MAX")}
-          </Button>
-        ) : null}
+        <Button
+          ml={1}
+          height="28px"
+          width="58px"
+          bg="transparent"
+          border="2px"
+          borderRadius="8px"
+          borderColor="#272727"
+          fontSize="sm"
+          fontWeight="extrabold"
+          _hover={{}}
+          _active={{}}
+          onClick={setToMax}
+          isLoading={isMaxLoading}
+        >
+          {t("MAX")}
+        </Button>
       </Row>
     );
   }

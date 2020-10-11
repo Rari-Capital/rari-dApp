@@ -103,8 +103,7 @@ export interface Web3ContextData {
   web3: Web3;
   web3ModalProvider: any | null;
   isAuthed: boolean;
-  login: () => any;
-  forceLogin: () => any;
+  login: () => Promise<any>;
   logout: () => any;
   address: string;
 }
@@ -144,20 +143,6 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
     },
     [setWeb3Authed, setAddress]
   );
-
-  const forceLogin = useCallback(async () => {
-    try {
-      const provider = await launchModalLazy(t);
-
-      setWeb3ModalProvider(provider);
-
-      setWeb3AuthedAndAddressFromModal(provider);
-    } catch (e) {
-      if (e === "Modal closed by user") {
-        forceLogin();
-      }
-    }
-  }, [setWeb3ModalProvider, setWeb3AuthedAndAddressFromModal, t]);
 
   const login = useCallback(async () => {
     const provider = await launchModalLazy(t);
@@ -210,19 +195,11 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
       web3: web3Authed !== null ? web3Authed : web3Network,
       isAuthed: web3Authed !== null,
       login,
-      forceLogin,
+
       logout,
       address,
     }),
-    [
-      web3Authed,
-      web3Network,
-      web3ModalProvider,
-      login,
-      forceLogin,
-      logout,
-      address,
-    ]
+    [web3Authed, web3Network, web3ModalProvider, login, logout, address]
   );
 
   // If the address is still loading in, don't render children who rely on it.

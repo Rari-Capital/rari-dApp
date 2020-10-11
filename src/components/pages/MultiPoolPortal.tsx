@@ -11,7 +11,6 @@ import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
-import { useForceAuth } from "../../hooks/useForceAuth";
 import CaptionedStat from "../shared/CaptionedStat";
 
 import { FaTwitter } from "react-icons/fa";
@@ -41,82 +40,84 @@ import { useContracts } from "../../context/ContractsContext";
 import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
 import { Header } from "../shared/Header";
+import ForceAuthModal from "../shared/ForceAuthModal";
 
 const MultiPoolPortal = React.memo(() => {
-  const isAuthed = useForceAuth();
-
   const { width } = useWindowSize();
 
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";
 
   return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      color="#FFFFFF"
-      mx="auto"
-      width={columnWidth}
-      px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-    >
-      <Header isAuthed={isAuthed} />
+    <>
+      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        height="auto"
-        width="100%"
+        crossAxisAlignment="flex-start"
+        color="#FFFFFF"
+        mx="auto"
+        width={columnWidth}
+        px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
-        <FundStats />
-
-        <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          width="100%"
-          height="100px"
-        >
-          <NewsAndTwitterLink />
-        </DashboardBox>
-
-        <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          height="300px"
-          width="100%"
-          color="#292828"
-          overflow="hidden"
-          px={1}
-        >
-          <PoolsPerformanceChart size={300} showAmount={false} />
-        </DashboardBox>
-
-        <RowOnDesktopColumnOnMobile
-          mainAxisAlignment="space-between"
+        <Header isAuthed={false} />
+        <Column
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
+          height="auto"
           width="100%"
         >
-          {Object.values(Pool).map(
-            (pool: Pool, index: number, array: Pool[]) => {
-              return (
-                <DashboardBox
-                  key={pool}
-                  width={{ md: "33%", xs: "100%" }}
-                  mt={DASHBOARD_BOX_SPACING.asPxString()}
-                  mr={{
-                    md:
-                      // Don't add right margin on the last child
-                      index === array.length - 1
-                        ? 0
-                        : DASHBOARD_BOX_SPACING.asPxString(),
-                    xs: 0,
-                  }}
-                >
-                  <PoolDetailCard pool={pool} />
-                </DashboardBox>
-              );
-            }
-          )}
-        </RowOnDesktopColumnOnMobile>
+          <FundStats />
+
+          <DashboardBox
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            width="100%"
+            height="100px"
+          >
+            <NewsAndTwitterLink />
+          </DashboardBox>
+
+          <DashboardBox
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            height="300px"
+            width="100%"
+            color="#292828"
+            overflow="hidden"
+            px={1}
+          >
+            <PoolsPerformanceChart size={300} showAmount={false} />
+          </DashboardBox>
+
+          <RowOnDesktopColumnOnMobile
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+          >
+            {Object.values(Pool).map(
+              (pool: Pool, index: number, array: Pool[]) => {
+                return (
+                  <DashboardBox
+                    key={pool}
+                    width={{ md: "33%", xs: "100%" }}
+                    mt={DASHBOARD_BOX_SPACING.asPxString()}
+                    mr={{
+                      md:
+                        // Don't add right margin on the last child
+                        index === array.length - 1
+                          ? 0
+                          : DASHBOARD_BOX_SPACING.asPxString(),
+                      xs: 0,
+                    }}
+                  >
+                    <PoolDetailCard pool={pool} />
+                  </DashboardBox>
+                );
+              }
+            )}
+          </RowOnDesktopColumnOnMobile>
+        </Column>
+        <CopyrightSpacer forceShow />
       </Column>
-      <CopyrightSpacer forceShow />
-    </Column>
+    </>
   );
 });
 

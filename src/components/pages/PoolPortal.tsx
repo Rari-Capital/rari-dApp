@@ -57,14 +57,13 @@ import { useQuery } from "react-query";
 
 import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
-import { useForceAuth } from "../../hooks/useForceAuth";
+
 import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
+import ForceAuthModal from "../shared/ForceAuthModal";
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
-  useForceAuth();
-
   return (
     <PoolTypeProvider pool={pool}>
       <PoolPortalContent />
@@ -170,6 +169,7 @@ const PoolPortalContent = React.memo(() => {
 
   return (
     <>
+      <ForceAuthModal />
       {isDepositModalOpen ? (
         <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
       ) : null}
@@ -845,7 +845,6 @@ const DepositButton = React.memo(
           width="164px"
           height="44px"
           onClick={onClick}
-          _disabled={{}}
           _focus={{ boxShadow: "0 0 3pt 3pt #2F74AF" }}
           {...buttonProps}
         >
