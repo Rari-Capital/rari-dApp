@@ -9,7 +9,7 @@ import {
   PseudoBox,
 } from "@chakra-ui/core";
 import { Center, Column } from "buttered-chakra";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 
 import { MODAL_PROPS } from "./Modal";
 import { VscDebugDisconnect } from "react-icons/vsc";
@@ -30,9 +30,14 @@ const GetOrConnectModal = React.memo(() => {
 
   const [isLoading, setLoading] = useState(false);
 
-  const connectWallet = useCallback(() => {
-    let isCanceled = false;
+  const componentIsMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      componentIsMounted.current = false;
+    };
+  }, []);
 
+  const connectWallet = useCallback(() => {
     const loadAndLogin = async () => {
       setLoading(true);
 
@@ -40,18 +45,16 @@ const GetOrConnectModal = React.memo(() => {
         await login();
       } catch (_) {}
 
-      if (!isCanceled) {
+      if (componentIsMounted.current) {
         setLoading(false);
       }
     };
 
     loadAndLogin();
-
-    return () => (isCanceled = true);
   }, [setLoading, login]);
 
   return (
-    <Modal isOpen={true} isCentered>
+    <Modal isOpen isCentered>
       <ModalOverlay zIndex={1} />
       <ModalContent
         zIndex={1}
@@ -75,7 +78,7 @@ const GetOrConnectModal = React.memo(() => {
               display="flex"
               _focus={{ bg: "#1a1a1a", outline: "none" }}
               flexDirection="column"
-              height="100%"
+              height="150px"
               width="100%"
               justifyContent="center"
               alignItems="center"
@@ -91,7 +94,7 @@ const GetOrConnectModal = React.memo(() => {
           <Box h="1px" width="100%" bg="#272727" />
 
           <Link
-            height="100%"
+            height="150px"
             width="100%"
             isExternal
             href="https://ethereum.org/en/wallets/"

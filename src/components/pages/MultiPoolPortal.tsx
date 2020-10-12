@@ -45,6 +45,8 @@ import ForceAuthModal from "../shared/ForceAuthModal";
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
 
+  const { isAuthed } = useWeb3();
+
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";
 
@@ -59,7 +61,7 @@ const MultiPoolPortal = React.memo(() => {
         width={columnWidth}
         px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
-        <Header isAuthed={false} />
+        <Header isAuthed={isAuthed} />
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
@@ -166,7 +168,7 @@ const FundStats = React.memo(() => {
       >
         <Center expand>
           <CaptionedStat
-            stat={hasNotDeposited ? "$10,000,000" : "$50,000.00"}
+            stat={hasNotDeposited ? "$10,000,000" : "$85,000.00"}
             statSize="4xl"
             captionSize="xs"
             caption={
@@ -183,7 +185,7 @@ const FundStats = React.memo(() => {
       >
         <Center expand>
           <CaptionedStat
-            stat={hasNotDeposited ? "$255.14" : "$1,000.00"}
+            stat={hasNotDeposited ? "$255.14" : "$2,500.00"}
             statSize="4xl"
             captionSize="xs"
             caption={
