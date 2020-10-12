@@ -86,7 +86,7 @@ const MultiPoolPortal = React.memo(() => {
             overflow="hidden"
             px={1}
           >
-            <PoolsPerformanceChart size={300} showAmount={false} />
+            <PoolsPerformanceChart size={300} />
           </DashboardBox>
 
           <RowOnDesktopColumnOnMobile
