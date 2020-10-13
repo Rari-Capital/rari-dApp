@@ -9,6 +9,8 @@ import {
 } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 
+import SmallLogo from "../../static/small-logo.png";
+
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
 import CaptionedStat from "../shared/CaptionedStat";
@@ -20,7 +22,6 @@ import {
   Link,
   Text,
   Image,
-  Tooltip,
   Spinner,
   useDisclosure,
 } from "@chakra-ui/core";
@@ -41,6 +42,7 @@ import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
 import DepositModal from "./DepositModal";
 import { Header } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
+import { SimpleTooltip } from "../shared/SimpleTooltip";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -116,6 +118,7 @@ const MultiPoolPortal = React.memo(() => {
               }
             )}
           </RowOnDesktopColumnOnMobile>
+          <GovernanceStats />
         </Column>
         <CopyrightSpacer forceShow />
       </Column>
@@ -124,6 +127,56 @@ const MultiPoolPortal = React.memo(() => {
 });
 
 export default MultiPoolPortal;
+
+const GovernanceStats = React.memo(() => {
+  const { t } = useTranslation();
+
+  return (
+    <DashboardBox
+      width="100%"
+      height={{ md: "100px", xs: "250px" }}
+      mt={DASHBOARD_BOX_SPACING.asPxString()}
+    >
+      <RowOnDesktopColumnOnMobile
+        expand
+        mainAxisAlignment="space-around"
+        crossAxisAlignment="center"
+      >
+        <Center expand>
+          <CaptionedStat
+            stat={"10,000,000"}
+            statSize="3xl"
+            captionSize="xs"
+            caption={t("RGT Supply")}
+            crossAxisAlignment="center"
+            captionFirst={false}
+          />
+        </Center>
+
+        <Center expand>
+          <CaptionedStat
+            stat={"$255.14"}
+            statSize="3xl"
+            captionSize="xs"
+            caption={t("RGT Price")}
+            crossAxisAlignment="center"
+            captionFirst={false}
+          />
+        </Center>
+        <Center expand>
+          <CaptionedStat
+            stat={"200 RGT"}
+            statSize="3xl"
+            captionSize="xs"
+            caption={t("RGT Balance")}
+            crossAxisAlignment="center"
+            captionFirst={false}
+          />
+        </Center>
+      </RowOnDesktopColumnOnMobile>
+    </DashboardBox>
+  );
+});
 
 const FundStats = React.memo(() => {
   const { t } = useTranslation();
@@ -164,10 +217,11 @@ const FundStats = React.memo(() => {
         width={{ md: "50%", xs: "100%" }}
         height={{ md: "100%", xs: "100px" }}
         mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
+        mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
       >
         <Center expand>
           <CaptionedStat
-            stat={hasNotDeposited ? "$100,000,000,000" : "$85,000.00"}
+            stat={hasNotDeposited ? "$10,000,000,000" : "$85,000.00"}
             statSize="4xl"
             captionSize="xs"
             caption={
@@ -237,31 +291,20 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           {poolName}
         </Heading>
 
-        <Tooltip
-          hasArrow
-          bg="#000"
-          aria-label={t("Your balance in this pool")}
-          label={t("Your balance in this pool")}
-          placement="top"
-        >
+        <SimpleTooltip label={t("Your balance in this pool")}>
           <Text my={5} fontSize="md" textAlign="center">
             {"$25,000"}
           </Text>
-        </Tooltip>
-        <Text fontWeight="bold" textAlign="center">
-          {pool === Pool.ETH
-            ? "25% APY + (45% 🏎)"
-            : pool === Pool.STABLE
-            ? "27% APY + (45% 🏎)"
-            : "200% APY + (45% 🏎)"}
-        </Text>
+        </SimpleTooltip>
 
-        <Text textAlign="center" mt={1}>
-          {pool === Pool.ETH
-            ? "0.1% DPY + (1% 🏎)"
-            : pool === Pool.STABLE
-            ? "0.1% DPY + (1% 🏎)"
-            : "2% DPY + (1% 🏎)"}
+        <Text fontWeight="bold" textAlign="center">
+          {pool === Pool.ETH ? "25% " : pool === Pool.STABLE ? "27% " : "56%"}{" "}
+          APY +{" "}
+          <SimpleTooltip label={t("Extra yield from $RGT")}>
+            <span>
+              (45% <Image display="inline" src={SmallLogo} size="20px" />)
+            </span>
+          </SimpleTooltip>
         </Text>
 
         <Row
