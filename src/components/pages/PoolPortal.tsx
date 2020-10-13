@@ -170,9 +170,9 @@ const PoolPortalContent = React.memo(() => {
   return (
     <>
       <ForceAuthModal />
-      {isDepositModalOpen ? (
-        <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
-      ) : null}
+
+      <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
+
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"

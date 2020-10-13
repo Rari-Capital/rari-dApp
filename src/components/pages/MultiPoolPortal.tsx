@@ -57,44 +57,45 @@ const MultiPoolPortal = React.memo(() => {
       <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
+        crossAxisAlignment="center"
         color="#FFFFFF"
         mx="auto"
         width={columnWidth}
         px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
         <Header isAuthed={isAuthed} />
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          height="auto"
+
+        <FundStats />
+
+        <DashboardBox
+          mt={DASHBOARD_BOX_SPACING.asPxString()}
           width="100%"
+          height="100px"
         >
-          <FundStats />
+          <NewsAndTwitterLink />
+        </DashboardBox>
 
-          <DashboardBox
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
-            width="100%"
-            height="100px"
-          >
-            <NewsAndTwitterLink />
-          </DashboardBox>
+        <DashboardBox
+          mt={DASHBOARD_BOX_SPACING.asPxString()}
+          height="300px"
+          width="100%"
+          color="#292828"
+          overflow="hidden"
+          px={1}
+        >
+          <PoolsPerformanceChart size={300} />
+        </DashboardBox>
 
-          <DashboardBox
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
-            height="300px"
-            width="100%"
-            color="#292828"
-            overflow="hidden"
-            px={1}
-          >
-            <PoolsPerformanceChart size={300} />
-          </DashboardBox>
-
+        <DashboardBox
+          width="100%"
+          height={{ md: "100px", xs: "250px" }}
+          mt={DASHBOARD_BOX_SPACING.asPxString()}
+        >
           <GovernanceStats />
+        </DashboardBox>
 
-          <PoolCards />
-        </Column>
+        <PoolCards />
+
         <CopyrightSpacer forceShow />
       </Column>
     </>
@@ -107,49 +108,43 @@ const GovernanceStats = React.memo(() => {
   const { t } = useTranslation();
 
   return (
-    <DashboardBox
-      width="100%"
-      height={{ md: "100px", xs: "250px" }}
-      mt={DASHBOARD_BOX_SPACING.asPxString()}
+    <RowOnDesktopColumnOnMobile
+      expand
+      mainAxisAlignment="space-around"
+      crossAxisAlignment="center"
     >
-      <RowOnDesktopColumnOnMobile
-        expand
-        mainAxisAlignment="space-around"
-        crossAxisAlignment="center"
-      >
-        <Center expand>
-          <CaptionedStat
-            stat={"10,000,000"}
-            statSize="3xl"
-            captionSize="xs"
-            caption={t("RGT Supply")}
-            crossAxisAlignment="center"
-            captionFirst={false}
-          />
-        </Center>
+      <Center expand>
+        <CaptionedStat
+          stat={"10,000,000"}
+          statSize="3xl"
+          captionSize="xs"
+          caption={t("RGT Supply")}
+          crossAxisAlignment="center"
+          captionFirst={false}
+        />
+      </Center>
 
-        <Center expand>
-          <CaptionedStat
-            stat={"$255.14"}
-            statSize="3xl"
-            captionSize="xs"
-            caption={t("RGT Price")}
-            crossAxisAlignment="center"
-            captionFirst={false}
-          />
-        </Center>
-        <Center expand>
-          <CaptionedStat
-            stat={"200 RGT"}
-            statSize="3xl"
-            captionSize="xs"
-            caption={t("RGT Balance")}
-            crossAxisAlignment="center"
-            captionFirst={false}
-          />
-        </Center>
-      </RowOnDesktopColumnOnMobile>
-    </DashboardBox>
+      <Center expand>
+        <CaptionedStat
+          stat={"$255.14"}
+          statSize="3xl"
+          captionSize="xs"
+          caption={t("RGT Price")}
+          crossAxisAlignment="center"
+          captionFirst={false}
+        />
+      </Center>
+      <Center expand>
+        <CaptionedStat
+          stat={"200 RGT"}
+          statSize="3xl"
+          captionSize="xs"
+          caption={t("RGT Balance")}
+          crossAxisAlignment="center"
+          captionFirst={false}
+        />
+      </Center>
+    </RowOnDesktopColumnOnMobile>
   );
 });
 
