@@ -144,7 +144,7 @@ const FundStats = React.memo(() => {
 
   if (isBalanceLoading) {
     return (
-      <Center height={{ md: "140px", xs: "220px" }}>
+      <Center height={{ md: "140px", xs: "215px" }}>
         <Spinner />
       </Center>
     );
@@ -158,17 +158,16 @@ const FundStats = React.memo(() => {
       mainAxisAlignment="space-between"
       crossAxisAlignment="center"
       width="100%"
-      height={{ md: "140px", xs: "220px" }}
+      height={{ md: "140px", xs: "auto" }}
     >
       <DashboardBox
         width={{ md: "50%", xs: "100%" }}
-        height={{ md: "100%", xs: "102px" }}
+        height={{ md: "100%", xs: "100px" }}
         mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
-        mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
       >
         <Center expand>
           <CaptionedStat
-            stat={hasNotDeposited ? "$10,000,000" : "$85,000.00"}
+            stat={hasNotDeposited ? "$100,000,000,000" : "$85,000.00"}
             statSize="4xl"
             captionSize="xs"
             caption={
@@ -179,9 +178,10 @@ const FundStats = React.memo(() => {
           />
         </Center>
       </DashboardBox>
+
       <DashboardBox
         width={{ md: "50%", xs: "100%" }}
-        height={{ md: "100%", xs: "102px" }}
+        height={{ md: "100%", xs: "100px" }}
       >
         <Center expand>
           <CaptionedStat
@@ -248,12 +248,20 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
             {"$25,000"}
           </Text>
         </Tooltip>
-        <Text fontWeight="bold">
+        <Text fontWeight="bold" textAlign="center">
           {pool === Pool.ETH
-            ? "25% APY / 0.04% DPY"
+            ? "25% APY + (45% 🏎)"
             : pool === Pool.STABLE
-            ? "25% APY / 0.04% DPY"
-            : "200% APY / 1.04% DPY"}
+            ? "27% APY + (45% 🏎)"
+            : "200% APY + (45% 🏎)"}
+        </Text>
+
+        <Text textAlign="center" mt={1}>
+          {pool === Pool.ETH
+            ? "0.1% DPY + (1% 🏎)"
+            : pool === Pool.STABLE
+            ? "0.1% DPY + (1% 🏎)"
+            : "2% DPY + (1% 🏎)"}
         </Text>
 
         <Row
