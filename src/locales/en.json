@@ -59,5 +59,9 @@
   "Total Interest Earned": "Total Interest Earned",
   "Pools": "Pools",
   "Connect Wallet": "Connect Wallet",
-  "Get Wallet": "Get Wallet"
+  "Get Wallet": "Get Wallet",
+  "RGT Supply": "RGT Supply",
+  "RGT Price": "RGT Price",
+  "RGT Balance": "RGT Balance",
+  "Extra yield from $RGT": "Extra yield from $RGT"
 }
