@@ -91,34 +91,9 @@ const MultiPoolPortal = React.memo(() => {
             <PoolsPerformanceChart size={300} />
           </DashboardBox>
 
-          <RowOnDesktopColumnOnMobile
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-          >
-            {Object.values(Pool).map(
-              (pool: Pool, index: number, array: Pool[]) => {
-                return (
-                  <DashboardBox
-                    key={pool}
-                    width={{ md: "33%", xs: "100%" }}
-                    mt={DASHBOARD_BOX_SPACING.asPxString()}
-                    mr={{
-                      md:
-                        // Don't add right margin on the last child
-                        index === array.length - 1
-                          ? 0
-                          : DASHBOARD_BOX_SPACING.asPxString(),
-                      xs: 0,
-                    }}
-                  >
-                    <PoolDetailCard pool={pool} />
-                  </DashboardBox>
-                );
-              }
-            )}
-          </RowOnDesktopColumnOnMobile>
           <GovernanceStats />
+
+          <PoolCards />
         </Column>
         <CopyrightSpacer forceShow />
       </Column>
@@ -197,7 +172,7 @@ const FundStats = React.memo(() => {
 
   if (isBalanceLoading) {
     return (
-      <Center height={{ md: "140px", xs: "215px" }}>
+      <Center height={{ md: "120px", xs: "215px" }}>
         <Spinner />
       </Center>
     );
@@ -211,7 +186,7 @@ const FundStats = React.memo(() => {
       mainAxisAlignment="space-between"
       crossAxisAlignment="center"
       width="100%"
-      height={{ md: "140px", xs: "auto" }}
+      height={{ md: "120px", xs: "auto" }}
     >
       <DashboardBox
         width={{ md: "50%", xs: "100%" }}
@@ -252,6 +227,36 @@ const FundStats = React.memo(() => {
           />
         </Center>
       </DashboardBox>
+    </RowOnDesktopColumnOnMobile>
+  );
+});
+
+const PoolCards = React.memo(() => {
+  return (
+    <RowOnDesktopColumnOnMobile
+      mainAxisAlignment="space-between"
+      crossAxisAlignment="center"
+      width="100%"
+      mt={DASHBOARD_BOX_SPACING.asPxString()}
+    >
+      {Object.values(Pool).map((pool: Pool, index: number, array: Pool[]) => {
+        return (
+          <DashboardBox
+            key={pool}
+            width={{ md: "33%", xs: "100%" }}
+            mr={{
+              md:
+                // Don't add right margin on the last child
+                index === array.length - 1
+                  ? 0
+                  : DASHBOARD_BOX_SPACING.asPxString(),
+              xs: 0,
+            }}
+          >
+            <PoolDetailCard pool={pool} />
+          </DashboardBox>
+        );
+      })}
     </RowOnDesktopColumnOnMobile>
   );
 });
