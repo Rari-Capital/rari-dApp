@@ -12,7 +12,6 @@ import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import Chart from "react-apexcharts";
-import CaptionedStat from "./CaptionedStat";
 
 const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {
