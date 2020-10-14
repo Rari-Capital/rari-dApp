@@ -232,7 +232,6 @@ const PoolCards = React.memo(() => {
       mainAxisAlignment="space-between"
       crossAxisAlignment="center"
       width="100%"
-      mt={DASHBOARD_BOX_SPACING.asPxString()}
     >
       {Object.values(Pool).map((pool: Pool, index: number, array: Pool[]) => {
         return (
@@ -247,6 +246,7 @@ const PoolCards = React.memo(() => {
                   : DASHBOARD_BOX_SPACING.asPxString(),
               xs: 0,
             }}
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
           >
             <PoolDetailCard pool={pool} />
           </DashboardBox>
