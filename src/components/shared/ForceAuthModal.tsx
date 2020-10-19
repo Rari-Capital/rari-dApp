@@ -14,17 +14,17 @@ import React, { useCallback, useState, useRef, useEffect } from "react";
 import { MODAL_PROPS } from "./Modal";
 import { VscDebugDisconnect } from "react-icons/vsc";
 import { FaWallet } from "react-icons/fa";
-import { useWeb3 } from "../../context/Web3Context";
+import { useRari } from "../../context/RariContext";
 import { useTranslation } from "react-i18next";
 
 const ForceAuthModal = React.memo(() => {
-  const { isAuthed } = useWeb3();
+  const { isAuthed } = useRari();
 
   return !isAuthed ? <GetOrConnectModal /> : null;
 });
 
 const GetOrConnectModal = React.memo(() => {
-  const { login } = useWeb3();
+  const { login } = useRari();
 
   const { t } = useTranslation();
 

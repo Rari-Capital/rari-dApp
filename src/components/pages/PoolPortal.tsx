@@ -11,7 +11,7 @@ import {
   theme,
   BoxProps,
 } from "@chakra-ui/core";
-import { useWeb3 } from "../../context/Web3Context";
+import { useRari } from "../../context/RariContext";
 
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -73,7 +73,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = React.memo(() => {
-  const { isAuthed, address } = useWeb3();
+  const { isAuthed, address } = useRari();
 
   const { RariFundManager } = useContracts();
 

@@ -23,7 +23,7 @@ import Big from "big.js";
 
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
-import { useWeb3 } from "../../../context/Web3Context";
+import { useRari } from "../../../context/RariContext";
 
 interface Props {
   selectedToken: string;
@@ -185,7 +185,7 @@ const TokenNameAndMaxButton = React.memo(
   }) => {
     const token = tokens[selectedToken];
 
-    const { web3, address } = useWeb3();
+    const { web3, address } = useRari();
 
     const [isMaxLoading, _setIsMaxLoading] = useState(false);
 

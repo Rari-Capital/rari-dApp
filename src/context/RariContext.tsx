@@ -11,6 +11,8 @@ import { useQueryCache } from "react-query";
 import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
+const Rari = require("../rari-sdk/index.js");
+
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
     WalletConnectProvider,
@@ -99,8 +101,8 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
   return web3Modal.connect();
 }
 
-export interface Web3ContextData {
-  web3: Web3;
+export interface RariContextData {
+  rari: any;
   web3ModalProvider: any | null;
   isAuthed: boolean;
   login: () => Promise<any>;
@@ -110,38 +112,33 @@ export interface Web3ContextData {
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const Web3Context = React.createContext<Web3ContextData | undefined>(
+export const RariContext = React.createContext<RariContextData | undefined>(
   undefined
 );
 
-export const Web3Provider = ({ children }: { children: ReactNode }) => {
+export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [web3Network] = useState<Web3>(
-    () =>
-      new Web3(
-        `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
-      )
-  );
+  //`https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
 
-  const [web3Authed, setWeb3Authed] = useState<Web3 | null>(null);
+  const [rari, setRari] = useState<any | null>(null);
   const [address, setAddress] = useState<string>(EmptyAddress);
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
   const queryCache = useQueryCache();
 
-  const setWeb3AuthedAndAddressFromModal = useCallback(
+  const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       let authedProvider = new Web3(modalProvider);
 
-      setWeb3Authed(authedProvider);
+      setRari(new Rari(authedProvider));
 
       authedProvider.eth
         .getAccounts()
         .then((addresses) => setAddress(addresses[0]));
     },
-    [setWeb3Authed, setAddress]
+    [setRari, setAddress]
   );
 
   const login = useCallback(async () => {
@@ -149,16 +146,16 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
 
     setWeb3ModalProvider(provider);
 
-    setWeb3AuthedAndAddressFromModal(provider);
-  }, [setWeb3ModalProvider, setWeb3AuthedAndAddressFromModal, t]);
+    setRariAndAddressFromModal(provider);
+  }, [setWeb3ModalProvider, setRariAndAddressFromModal, t]);
 
   const refetchAccountData = useCallback(() => {
     console.log("New account, clearing the queryCache!");
 
-    setWeb3AuthedAndAddressFromModal(web3ModalProvider);
+    setRariAndAddressFromModal(web3ModalProvider);
 
     queryCache.clear();
-  }, [setWeb3AuthedAndAddressFromModal, web3ModalProvider, queryCache]);
+  }, [setRariAndAddressFromModal, web3ModalProvider, queryCache]);
 
   const logout = useCallback(() => {
     setWeb3ModalProvider((past: any) => {
@@ -170,10 +167,8 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
       return null;
     });
 
-    setWeb3Authed(null);
-
     setAddress(EmptyAddress);
-  }, [setWeb3Authed, setWeb3ModalProvider, refetchAccountData]);
+  }, [setWeb3ModalProvider, refetchAccountData]);
 
   useEffect(() => {
     if (web3ModalProvider !== null && web3ModalProvider.on) {
@@ -192,14 +187,13 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
   const value = useMemo(
     () => ({
       web3ModalProvider,
-      web3: web3Authed !== null ? web3Authed : web3Network,
-      isAuthed: web3Authed !== null,
+      rari,
+      isAuthed: address !== EmptyAddress,
       login,
-
       logout,
       address,
     }),
-    [web3Authed, web3Network, web3ModalProvider, login, logout, address]
+    [rari, web3ModalProvider, login, logout, address]
   );
 
   // If the address is still loading in, don't render children who rely on it.
@@ -207,14 +201,14 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
     return <FullPageSpinner />;
   }
 
-  return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;
+  return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
 };
 
-export function useWeb3() {
-  const context = React.useContext(Web3Context);
+export function useRari() {
+  const context = React.useContext(RariContext);
 
   if (context === undefined) {
-    throw new Error(`useWeb3Network must be used within a Web3NetworkProvider`);
+    throw new Error(`useRari must be used within a RariProvider`);
   }
 
   return context;

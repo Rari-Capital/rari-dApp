@@ -14,8 +14,7 @@ import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
 
 import ErrorPage from "./components/pages/ErrorPage";
 import { ErrorBoundary } from "react-error-boundary";
-import { Web3Provider } from "./context/Web3Context";
-import { ContractsProvider } from "./context/ContractsContext";
+import { RariProvider } from "./context/RariContext";
 
 import "focus-visible";
 
@@ -58,14 +57,12 @@ ReactDOM.render(
       <CSSReset />
 
       <ErrorBoundary FallbackComponent={ErrorPage}>
-        <Web3Provider>
-          <ContractsProvider>
-            <BrowserRouter>
-              <ScrollToTop />
-              <App />
-            </BrowserRouter>
-          </ContractsProvider>
-        </Web3Provider>
+        <RariProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <App />
+          </BrowserRouter>
+        </RariProvider>
       </ErrorBoundary>
     </ThemeProvider>
   </>,

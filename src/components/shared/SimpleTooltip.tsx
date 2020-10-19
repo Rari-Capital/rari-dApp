@@ -5,7 +5,7 @@ export const SimpleTooltip = React.memo(
   ({ label, children }: { label: string; children: ReactNode }) => {
     return (
       <Tooltip
-        p={3}
+        p={1}
         hasArrow
         bg="#000"
         textAlign="center"

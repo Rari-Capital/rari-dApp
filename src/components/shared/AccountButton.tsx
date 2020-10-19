@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useWeb3 } from "../../context/Web3Context";
+import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
   Modal,
@@ -54,7 +54,7 @@ export const AccountButton = React.memo(() => {
 });
 
 const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
-  const { address } = useWeb3();
+  const { address } = useRari();
 
   const isMobile = useIsMobile();
 
@@ -97,7 +97,7 @@ export const SettingsModal = React.memo(
   }) => {
     const { t } = useTranslation();
 
-    const { login } = useWeb3();
+    const { login } = useRari();
 
     const onSwitchWallet = useCallback(() => {
       onClose();

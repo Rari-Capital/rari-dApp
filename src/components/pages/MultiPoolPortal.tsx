@@ -28,7 +28,7 @@ import {
 import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
 import Marquee from "react-double-marquee";
-import { useWeb3 } from "../../context/Web3Context";
+import { useRari } from "../../context/RariContext";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 
 import { MdSwapHoriz } from "react-icons/md";
@@ -81,7 +81,7 @@ export const RGTStat = React.memo(() => {
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
 
-  const { isAuthed } = useWeb3();
+  const { isAuthed } = useRari();
 
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";
@@ -180,7 +180,7 @@ const FundStats = React.memo(() => {
 
   const { RariFundManager } = useContracts();
 
-  const { address } = useWeb3();
+  const { address } = useRari();
 
   //TODO: Actually fetch all pool balance
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
@@ -480,7 +480,7 @@ const NewsMarqueeSpacer = React.memo(() => {
 });
 
 const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
-  const { isAuthed } = useWeb3();
+  const { isAuthed } = useRari();
 
   return isAuthed ? (
     <Marquee delay={1200} childMargin={0} speed={0.015}>
