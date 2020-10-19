@@ -43,6 +43,40 @@ import DepositModal from "./DepositModal";
 import { Header } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
+import {
+  APYMovingStat,
+  APYWithRefreshMovingStat,
+  RefetchMovingStat,
+} from "../shared/MovingStat";
+
+function usdFormatter(num: number) {
+  const formatter = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 5,
+  });
+
+  return formatter.format(num);
+}
+
+export const RGTStat = React.memo(() => {
+  const { t } = useTranslation();
+
+  return (
+    <RefetchMovingStat
+      queryKey="rgtPrice"
+      interval={5000}
+      //TODO: ACTUAL FETCHING PLS
+      fetch={() => usdFormatter(Date.now() / 10000000000)}
+      loadingPlaceholder="$?"
+      statSize="3xl"
+      captionSize="xs"
+      caption={t("Rari Governance Token Price")}
+      crossAxisAlignment="center"
+      captionFirst={false}
+    />
+  );
+});
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -125,14 +159,7 @@ const GovernanceStats = React.memo(() => {
       </Center>
 
       <Center expand>
-        <CaptionedStat
-          stat={"$255.14"}
-          statSize="3xl"
-          captionSize="xs"
-          caption={t("RGT Price")}
-          crossAxisAlignment="center"
-          captionFirst={false}
-        />
+        <RGTStat />
       </Center>
       <Center expand>
         <CaptionedStat
@@ -190,16 +217,35 @@ const FundStats = React.memo(() => {
         mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
       >
         <Center expand>
-          <CaptionedStat
-            stat={hasNotDeposited ? "$10,000,000,000" : "$85,000.00"}
-            statSize="4xl"
-            captionSize="xs"
-            caption={
-              hasNotDeposited ? t("Total Value Locked") : t("Account Balance")
-            }
-            crossAxisAlignment="center"
-            captionFirst={false}
-          />
+          {hasNotDeposited ? (
+            <APYWithRefreshMovingStat
+              formatStat={usdFormatter}
+              startingAmount={10000000}
+              fetchInterval={5000}
+              apyInterval={100}
+              // TODO: Actually fetch
+              fetch={() => Date.now() / 100000}
+              queryKey={"totalValueLocked"}
+              apy={2}
+              statSize="3xl"
+              captionSize="xs"
+              caption={t("Total Value Locked")}
+              crossAxisAlignment="center"
+              captionFirst={false}
+            />
+          ) : (
+            <APYMovingStat
+              formatStat={usdFormatter}
+              startingAmount={100000}
+              interval={100}
+              apy={0.1}
+              statSize="3xl"
+              captionSize="xs"
+              caption={t("Account Balance")}
+              crossAxisAlignment="center"
+              captionFirst={false}
+            />
+          )}
         </Center>
       </DashboardBox>
 
@@ -208,18 +254,22 @@ const FundStats = React.memo(() => {
         height={{ md: "100%", xs: "100px" }}
       >
         <Center expand>
-          <CaptionedStat
-            stat={hasNotDeposited ? "$255.14" : "$2,500.00"}
-            statSize="4xl"
-            captionSize="xs"
-            caption={
-              hasNotDeposited
-                ? t("Rari Governance Token Price")
-                : t("Total Interest Earned")
-            }
-            crossAxisAlignment="center"
-            captionFirst={false}
-          />
+          {hasNotDeposited ? (
+            <RGTStat />
+          ) : (
+            <RefetchMovingStat
+              queryKey="interestEarned"
+              interval={100}
+              //TODO: ACTUAL FETCH
+              fetch={() => usdFormatter(Date.now() / 100000000)}
+              loadingPlaceholder="$?"
+              statSize="3xl"
+              captionSize="xs"
+              caption={t("Interest Earned")}
+              crossAxisAlignment="center"
+              captionFirst={false}
+            />
+          )}
         </Center>
       </DashboardBox>
     </RowOnDesktopColumnOnMobile>

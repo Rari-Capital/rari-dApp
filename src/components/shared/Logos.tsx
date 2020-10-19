@@ -2,51 +2,54 @@ import React from "react";
 import { Flip } from "react-awesome-reveal";
 import { Box, Image } from "@chakra-ui/core";
 import Logo from "../../static/small-logo.png";
-import BookBrainLogo from "../../static/book-brain.png";
+import TransparentLogo from "../../static/small-transparent-logo.png";
+
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 
-export const AnimatedSmallLogo = React.memo(() => {
+export const ExtraSmallTransparentLogo = React.memo(() => {
+  return <SmallTransparentLogo size="20px" />;
+});
+
+export const AnimatedSmallLogo = React.memo(({ size }: { size?: string }) => {
   return (
     <Flip delay={300}>
-      <SmallLogo />
+      <SmallLogo size={size} />
     </Flip>
   );
 });
 
-export const SmallLogo = React.memo(() => {
+export const SmallLogo = React.memo(({ size }: { size?: string }) => {
   return (
-    <Box width="37px" height="37px" flexShrink={0}>
-      <Image src={Logo} />
+    <Box size={size ?? "37px"} flexShrink={0}>
+      <Image size={size ?? "37px"} src={Logo} />
     </Box>
   );
 });
 
-export const AnimatedPoolLogo = React.memo(() => {
+export const SmallTransparentLogo = React.memo(
+  ({ size }: { size?: string }) => {
+    return (
+      <Box size={size ?? "37px"} flexShrink={0}>
+        <Image size={size ?? "37px"} src={TransparentLogo} />
+      </Box>
+    );
+  }
+);
+
+export const AnimatedPoolLogo = React.memo(({ size }: { size?: string }) => {
   return (
     <Flip delay={300}>
-      <PoolLogo />
+      <PoolLogo size={size} />
     </Flip>
   );
 });
 
-export const PoolLogo = React.memo(() => {
+export const PoolLogo = React.memo(({ size }: { size?: string }) => {
   const { poolLogo } = usePoolInfoFromContext();
 
   return (
-    <Box width="37px" height="37px" flexShrink={0}>
-      <Image src={poolLogo} />
-    </Box>
-  );
-});
-
-export const BookBrain = React.memo(({ isTall }: { isTall: boolean }) => {
-  return (
-    <Box
-      h={isTall ? "80px" : "55px"}
-      w={isTall ? "80px" : "55px"}
-      flexShrink={0}
-    >
-      <Image src={BookBrainLogo} />
+    <Box size={size ?? "37px"} flexShrink={0}>
+      <Image size={size ?? "37px"} src={poolLogo} />
     </Box>
   );
 });

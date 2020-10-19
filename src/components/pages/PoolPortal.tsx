@@ -5,14 +5,11 @@ import {
   Heading,
   Spinner,
   Divider,
-  Button,
   Select,
   Icon,
-  ButtonProps,
   useDisclosure,
   theme,
   BoxProps,
-  Link,
 } from "@chakra-ui/core";
 import { useWeb3 } from "../../context/Web3Context";
 
@@ -24,7 +21,6 @@ import { useContracts } from "../../context/ContractsContext";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
-import { BookBrain } from "../shared/Logos";
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -62,6 +58,9 @@ import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
+import { SmallLogo } from "../shared/Logos";
+import { GlowingButton } from "../shared/GlowingButton";
+import { ClaimRGTModal } from "../shared/ClaimRGTModal";
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   return (
@@ -238,13 +237,11 @@ const PoolPortalContent = React.memo(() => {
             >
               {hasNotDeposited ? (
                 <DepositButton
-                  boxProps={{
-                    zIndex: 1,
-                    transform: "translate(-50%, -50%)",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                  }}
+                  zIndex={1}
+                  transform="translate(-50%, -50%)"
+                  position="absolute"
+                  top="50%"
+                  left="50%"
                   onClick={openDepositModal}
                 />
               ) : null}
@@ -768,6 +765,12 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
 
   const { t } = useTranslation();
 
+  const {
+    isOpen: isClaimRGTModalOpen,
+    onOpen: openClaimRGTModal,
+    onClose: closeClaimRGTModal,
+  } = useDisclosure();
+
   return (
     <Row
       flexDirection={isTall ? "column" : "row"}
@@ -775,82 +778,45 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
       crossAxisAlignment="center"
       expand
     >
-      <BookBrain isTall={isTall} />
+      <SmallLogo size="44px" />
 
-      <Link
-        ml={isTall ? 0 : 4}
+      <ClaimRGTModal
+        isOpen={isClaimRGTModalOpen}
+        onClose={closeClaimRGTModal}
+      />
+
+      <DashboardBox
+        as="button"
+        onClick={openClaimRGTModal}
+        ml={isTall ? 0 : 3}
         mt={isTall ? 6 : 0}
+        height="45px"
         width="100%"
-        isExternal
-        href="https://rari.capital/current.html"
+        borderRadius="7px"
+        fontSize="xl"
+        fontWeight="bold"
       >
-        <DashboardBox
-          as="button"
-          height="45px"
-          width="100%"
-          borderRadius="7px"
-          fontSize="xl"
-          fontWeight="bold"
-        >
-          {t("FAQ")}
-        </DashboardBox>
-      </Link>
+        {t("Claim RGT")}
+      </DashboardBox>
     </Row>
   );
 });
 
-interface DepositButtonProps
-  extends Omit<Omit<ButtonProps, "children">, "onClick"> {}
-
 const DepositButton = React.memo(
-  ({
-    boxProps,
-    buttonProps,
-    onClick,
-  }: {
-    boxProps?: BoxProps;
-    buttonProps?: DepositButtonProps;
-    onClick: () => any;
-  }) => {
+  (
+    props: BoxProps & {
+      onClick: () => any;
+    }
+  ) => {
     const { t } = useTranslation();
 
     return (
-      <Box
-        padding="3px"
-        borderRadius="10px"
-        background="linear-gradient(45deg,
-        rgb(255, 0, 0) 0%,
-        rgb(255, 154, 0) 10%,
-        rgb(208, 222, 33) 20%,
-        rgb(79, 220, 74) 30%,
-        rgb(63, 218, 216) 40%,
-        rgb(47, 201, 226) 50%,
-        rgb(28, 127, 238) 60%,
-        rgb(95, 21, 242) 70%,
-        rgb(186, 12, 248) 80%,
-        rgb(251, 7, 217) 90%,
-        rgb(255, 0, 0) 100%)"
-        backgroundSize="500% 500%"
-        animation="GradientBackgroundAnimation 6s linear infinite"
+      <GlowingButton
+        label={t("Deposit")}
         width="170px"
         height="50px"
-        {...boxProps}
-      >
-        <Button
-          bg="#FFFFFF"
-          color="#000000"
-          fontSize="xl"
-          borderRadius="7px"
-          fontWeight="bold"
-          width="164px"
-          height="44px"
-          onClick={onClick}
-          _focus={{ boxShadow: "0 0 3pt 3pt #2F74AF" }}
-          {...buttonProps}
-        >
-          {t("Deposit")}
-        </Button>
-      </Box>
+        {...props}
+      />
     );
   }
 );

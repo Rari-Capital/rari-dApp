@@ -1,88 +1,97 @@
 import React from "react";
-import {
-  BoxProps,
-  Heading,
-  Text,
-  FlexProps,
-  HeadingProps,
-} from "@chakra-ui/core";
-import { MainAxisAlignment, CrossAxisAlignment, Column } from "buttered-chakra";
+import { Heading, Text } from "@chakra-ui/core";
+import { CrossAxisAlignment, Column } from "buttered-chakra";
 import { useResponsiveProp } from "../../utils/useResponsiveProp";
 
-interface Props {
-  mainAxisAlignment?: MainAxisAlignment;
+export interface CaptionedStatProps {
   crossAxisAlignment: CrossAxisAlignment;
   stat: string;
-  statSize: { md: string; xs: string } | string;
+  statSize: string;
   caption: string;
-  captionSize: { md: string; xs: string } | string;
+  captionSize: string;
   spacing?: string | number;
-  captionProps?: BoxProps;
-  statProps?: HeadingProps;
-  columnProps?: FlexProps;
-
   captionFirst?: boolean;
 }
 
 const CaptionedStat = ({
   stat,
   caption,
-  captionProps,
   captionSize,
   spacing,
-  statProps,
   statSize,
-  columnProps,
   crossAxisAlignment,
-  mainAxisAlignment,
   captionFirst,
-}: Props) => {
+}: CaptionedStatProps) => {
   const crossAxisAlignmentStatic = useResponsiveProp(crossAxisAlignment);
   const textAlign = crossAxisAlignmentStatic.replace("flex-", "") as any;
 
   return (
-    <Column
-      mainAxisAlignment={mainAxisAlignment || "center"}
-      crossAxisAlignment={crossAxisAlignment}
-      {...columnProps}
-    >
+    <Column mainAxisAlignment="center" crossAxisAlignment={crossAxisAlignment}>
       {captionFirst ?? true ? (
         <>
-          <Text
-            textTransform="uppercase"
-            letterSpacing="wide"
-            color="#858585"
-            fontSize={captionSize}
+          <Caption
+            size={captionSize}
+            spacing={spacing ?? 0}
             textAlign={textAlign}
-            mt={spacing ?? 0}
-            {...captionProps}
-          >
-            {caption}
-          </Text>
-          <Heading fontSize={statSize} {...statProps}>
-            {stat}
-          </Heading>
+            text={caption}
+          />
+          <Stat size={statSize} text={stat} />
         </>
       ) : (
         <>
-          <Heading fontSize={statSize} {...statProps}>
-            {stat}
-          </Heading>
-          <Text
-            textTransform="uppercase"
-            letterSpacing="wide"
-            color="#858585"
-            fontSize={captionSize}
+          <Stat size={statSize} text={stat} />
+          <Caption
+            size={captionSize}
+            spacing={spacing ?? 0}
             textAlign={textAlign}
-            mt={spacing ?? 0}
-            {...captionProps}
-          >
-            {caption}
-          </Text>
+            text={caption}
+          />
         </>
       )}
     </Column>
   );
 };
+
+const Stat = React.memo(
+  ({
+    size,
+    text,
+  }: {
+    size: { md: string; xs: string } | string;
+    text: string;
+  }) => {
+    return <Heading fontSize={size}>{text}</Heading>;
+  }
+);
+
+const Caption = React.memo(
+  ({
+    size,
+    textAlign,
+    spacing,
+    text,
+  }: {
+    size: { md: string; xs: string } | string;
+
+    textAlign: any;
+
+    spacing: string | number;
+
+    text: string;
+  }) => {
+    return (
+      <Text
+        textTransform="uppercase"
+        letterSpacing="wide"
+        color="#858585"
+        fontSize={size}
+        textAlign={textAlign}
+        mt={spacing ?? 0}
+      >
+        {text}
+      </Text>
+    );
+  }
+);
 
 export default CaptionedStat;

@@ -21,17 +21,34 @@ import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
+import { GlowingButton } from "./GlowingButton";
+import { ClaimRGTModal } from "./ClaimRGTModal";
+
 export const AccountButton = React.memo(() => {
   const {
-    isOpen: isModalOpen,
-    onOpen: openModal,
-    onClose: closeModal,
+    isOpen: isSettingsModalOpen,
+    onOpen: openSettingsModal,
+    onClose: closeSettingsModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isClaimRGTModalOpen,
+    onOpen: openClaimRGTModal,
+    onClose: closeClaimRGTModal,
   } = useDisclosure();
 
   return (
     <>
-      <SettingsModal isOpen={isModalOpen} onClose={closeModal} />
-      <AddressButton openModal={openModal} />
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={closeSettingsModal}
+        openClaimRGTModal={openClaimRGTModal}
+      />
+      <ClaimRGTModal
+        isOpen={isClaimRGTModalOpen}
+        onClose={closeClaimRGTModal}
+      />
+      <AddressButton openModal={openSettingsModal} />
     </>
   );
 });
@@ -45,6 +62,7 @@ const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
     <DashboardBox
       as="button"
       height="40px"
+      flexShrink={0}
       width={{
         md: "245px",
         xs: "auto",
@@ -68,7 +86,17 @@ const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
 });
 
 export const SettingsModal = React.memo(
-  ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
+  ({
+    isOpen,
+    onClose,
+    openClaimRGTModal,
+  }: {
+    isOpen: boolean;
+    onClose: () => any;
+    openClaimRGTModal: () => any;
+  }) => {
+    const { t } = useTranslation();
+
     const { login } = useWeb3();
 
     const onSwitchWallet = useCallback(() => {
@@ -76,7 +104,10 @@ export const SettingsModal = React.memo(
       setTimeout(() => login(), 100);
     }, [login, onClose]);
 
-    const { t } = useTranslation();
+    const onClaimRGT = useCallback(() => {
+      onClose();
+      setTimeout(() => openClaimRGTModal(), 100);
+    }, [onClose, openClaimRGTModal]);
 
     return (
       <ModalAnimation
@@ -89,13 +120,23 @@ export const SettingsModal = React.memo(
                 text={t("Account")}
                 onClose={onClose}
               />
+
               <ModalDivider />
+
               <Column
                 width="100%"
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="center"
                 p={DASHBOARD_BOX_SPACING.asPxString()}
               >
+                <GlowingButton
+                  label={t("Claim RGT")}
+                  onClick={onClaimRGT}
+                  width="100%"
+                  height="51px"
+                  mb={DASHBOARD_BOX_SPACING.asPxString()}
+                />
+
                 <Button
                   leftIcon="repeat"
                   bg="whatsapp.500"

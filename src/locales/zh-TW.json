@@ -38,7 +38,6 @@
   "Move": "移動",
   "from": "從",
   "to": "至",
-  "FAQ": "常問問題",
   "Account": "帳戶",
   "Switch Wallet": "開關錢包",
   "Language": "語言",
@@ -55,13 +54,16 @@
   "Total Value Locked": "總價值鎖定",
   "Access": "訪問",
   "Your balance in this pool": "您在此池中的餘額",
-  "Rari Governance Token Price": "Rari Governance Token價格",
-  "Total Interest Earned": "賺取的總利息",
   "Pools": "泳池",
   "Connect Wallet": "連接錢包",
   "Get Wallet": "獲取錢包",
   "RGT Supply": "RGT供應",
-  "RGT Price": "RGT價格",
   "RGT Balance": "RGT餘額",
-  "Extra yield from $RGT": "RGT的額外收益"
+  "Extra yield from $RGT": "RGT的額外收益",
+  "Claim RGT": "索取RGT",
+  "Claimable RGT": "可索賠的RGT",
+  "Claim": "要求",
+  "Rari Governance Token Price": "Rari Governance Token價格",
+  "Transferring your RGT after claiming before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前提出版權聲明後再轉讓您的RGT，將導致一部分被刻錄並發送回協議。 所消耗量的70％將被燃燒，而30％將被重新消耗到協議中。 該數量從33％線性下降到19％時達到0％。",
+  "Transferring RGT (after claiming) now will result in a {{amount}}% burn/takeback": "現在（聲明後）轉移RGT將導致{{amount}}％的燒錄/收回"
 }

@@ -38,7 +38,6 @@
   "Move": "Move",
   "from": "from",
   "to": "to",
-  "FAQ": "FAQ",
   "Account": "Account",
   "Switch Wallet": "Switch Wallet",
   "Language": "Language",
@@ -55,13 +54,16 @@
   "Total Value Locked": "Total Value Locked",
   "Access": "Access",
   "Your balance in this pool": "Your balance in this pool",
-  "Rari Governance Token Price": "Rari Governance Token Price",
-  "Total Interest Earned": "Total Interest Earned",
   "Pools": "Pools",
   "Connect Wallet": "Connect Wallet",
   "Get Wallet": "Get Wallet",
   "RGT Supply": "RGT Supply",
-  "RGT Price": "RGT Price",
   "RGT Balance": "RGT Balance",
-  "Extra yield from $RGT": "Extra yield from $RGT"
+  "Extra yield from $RGT": "Extra yield from $RGT",
+  "Claim RGT": "Claim RGT",
+  "Claimable RGT": "Claimable RGT",
+  "Claim": "Claim",
+  "Rari Governance Token Price": "Rari Governance Token Price",
+  "Transferring your RGT after claiming before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "Transferring your RGT after claiming before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.",
+  "Transferring RGT (after claiming) now will result in a {{amount}}% burn/takeback": "Transferring RGT (after claiming) now will result in a {{amount}}% burn/takeback"
 }
