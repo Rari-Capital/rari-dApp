@@ -452,6 +452,28 @@ const UserStatsAndChart = React.memo(
       }
     );
 
+    const { data: apy, isLoading: isAPYLoading } = useQuery(
+      poolType + " apy",
+      async () => {
+        let poolRawAPY;
+
+        if (poolType === Pool.ETH) {
+          poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
+        } else if (poolType === Pool.STABLE) {
+          poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
+        } else {
+          poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
+        }
+
+        //TODO; fix this this is so ugly
+        const poolAPY = parseFloat(
+          rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+        ).toFixed(1);
+
+        return poolAPY;
+      }
+    );
+
     const { t } = useTranslation();
 
     return (
@@ -469,7 +491,7 @@ const UserStatsAndChart = React.memo(
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
               caption={t("Pool Performance")}
               captionSize="xs"
-              stat={"+15%"}
+              stat={isAPYLoading ? "$?" : apy! + "% APY"}
               statSize="4xl"
             />
           ) : (
@@ -528,10 +550,10 @@ const UserStatsAndChart = React.memo(
                   name: poolName,
                   data: hasNotDeposited
                     ? [
-                        { x: "October 1, 2020", y: 54 },
-                        { x: "October 3, 2020", y: 47 },
-                        { x: "October 4, 2020", y: 64 },
-                        { x: "October 5, 2020", y: 95 },
+                        { x: "October 1, 2020", y: 1000 },
+                        { x: "October 3, 2020", y: 1001 },
+                        { x: "October 4, 2020", y: 1003 },
+                        { x: "October 5, 2020", y: 1005 },
                       ]
                     : chartData.map((point: any) => ({
                         x: new Date(point.timestamp).toLocaleDateString(
@@ -552,18 +574,18 @@ const UserStatsAndChart = React.memo(
 const CurrentAPY = React.memo(() => {
   const { t } = useTranslation();
 
-  const pool = usePoolType();
+  const poolType = usePoolType();
 
   const { rari } = useRari();
 
   const { data: apy, isLoading: isAPYLoading } = useQuery(
-    pool + " apy",
+    poolType + " apy",
     async () => {
       let poolRawAPY;
 
-      if (pool === Pool.ETH) {
+      if (poolType === Pool.ETH) {
         poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
-      } else if (pool === Pool.STABLE) {
+      } else if (poolType === Pool.STABLE) {
         poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
       } else {
         poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
