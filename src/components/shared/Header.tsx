@@ -114,11 +114,13 @@ export const HeaderLink = React.memo(
         /* @ts-ignore */
         as={RouterLink}
         to={name === "ETH Pool" ? "#" : route}
-        onClick={() =>
-          alert(
-            "This pool is coming today! Ask us questions in our Telegram or Discord or mention us @RariCapital on Twitter!"
-          )
-        }
+        onClick={() => {
+          if (name === "ETH Pool") {
+            alert(
+              "This pool is coming today! Ask us questions in our Telegram or Discord or mention us @RariCapital on Twitter!"
+            );
+          }
+        }}
         mr={mr ?? 0}
         whiteSpace="nowrap"
       >
