@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import Web3 from "web3";
-import FullPageSpinner from "../components/shared/FullPageSpinner";
+
 import { useQueryCache } from "react-query";
 import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
@@ -126,8 +126,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       )
   );
 
-  console.log(rari);
-
   const [address, setAddress] = useState<string>(EmptyAddress);
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
@@ -140,9 +138,9 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
       setRari(new Rari(authedProvider));
 
-      authedProvider.eth
-        .getAccounts()
-        .then((addresses) => setAddress(addresses[0]));
+      authedProvider.eth.getAccounts().then((addresses) => {
+        setAddress(addresses[0]);
+      });
     },
     [setRari, setAddress]
   );
@@ -201,11 +199,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     }),
     [rari, web3ModalProvider, login, logout, address]
   );
-
-  // If the address is still loading in, don't render children who rely on it.
-  if (value.isAuthed && address === EmptyAddress) {
-    return <FullPageSpinner />;
-  }
 
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
 };

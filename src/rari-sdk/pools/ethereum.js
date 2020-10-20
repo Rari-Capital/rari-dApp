@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Web3 from "web3";
 
 import StablePool from "./stable.js";

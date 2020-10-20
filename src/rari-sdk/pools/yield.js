@@ -1,3 +1,4 @@
+/* eslint-disable */
 import StablePool from "./stable.js";
 
 const contractAddresses = {

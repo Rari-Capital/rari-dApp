@@ -64,7 +64,7 @@ const AmountSelect = React.memo(
           _setAmount(null);
         }
       },
-      [_setUserEnteredAmount, _setAmount]
+      [_setUserEnteredAmount, _setAmount, rari.web3.utils]
     );
 
     const isAmountGreaterThanSelectedTokenBalance = useMemo(
