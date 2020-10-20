@@ -17,9 +17,8 @@ import {
   useTokenBalance,
   getTokenBalance,
 } from "../../../hooks/useTokenBalance";
-import { toBig } from "../../../utils/bigUtils";
+
 import { Mode } from ".";
-import Big from "big.js";
 
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
@@ -36,13 +35,17 @@ const AmountSelect = React.memo(
   ({ selectedToken, openCoinSelect, mode, openOptions }: Props) => {
     const token = tokens[selectedToken];
 
+    const { rari } = useRari();
+
     const {
       data: selectedTokenBalance,
       isLoading: isSelectedTokenBalanceLoading,
     } = useTokenBalance(token);
 
     const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
-    const [amount, _setAmount] = useState<Big | null>(() => toBig(0.0));
+
+    //TODO: this is ugly af fix this later
+    const [amount, _setAmount] = useState<any>(() => rari.web3.utils.BN(0.0));
 
     const updateAmount = useCallback(
       (newAmount: string) => {
@@ -54,7 +57,7 @@ const AmountSelect = React.memo(
 
         try {
           // Try to set the amount to Big(amount):
-          const bigAmount = toBig(newAmount);
+          const bigAmount = rari.web3.utils.BN(newAmount);
           _setAmount(bigAmount);
         } catch (e) {
           // If the number was invalid, set the amount to null to disable confirming:
@@ -185,19 +188,19 @@ const TokenNameAndMaxButton = React.memo(
   }) => {
     const token = tokens[selectedToken];
 
-    const { web3, address } = useRari();
+    const { rari, address } = useRari();
 
     const [isMaxLoading, _setIsMaxLoading] = useState(false);
 
     const setToMax = useCallback(async () => {
       _setIsMaxLoading(true);
 
-      const balance = await getTokenBalance(token, web3, address);
+      const balance = await getTokenBalance(token, rari, address);
 
       updateAmount(balance.toString());
 
       _setIsMaxLoading(false);
-    }, [_setIsMaxLoading, updateAmount, token, web3, address]);
+    }, [_setIsMaxLoading, updateAmount, token, rari, address]);
 
     const { t } = useTranslation();
 

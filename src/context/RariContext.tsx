@@ -11,7 +11,7 @@ import { useQueryCache } from "react-query";
 import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
-const Rari = require("../rari-sdk/index.js");
+import Rari from "../rari-sdk/index";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -119,9 +119,15 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  //`https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+  const [rari, setRari] = useState<any>(
+    () =>
+      new Rari(
+        `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+      )
+  );
 
-  const [rari, setRari] = useState<any | null>(null);
+  console.log(rari);
+
   const [address, setAddress] = useState<string>(EmptyAddress);
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);

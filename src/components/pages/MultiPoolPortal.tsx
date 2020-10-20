@@ -37,8 +37,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
-import { useContracts } from "../../context/ContractsContext";
-import { format1e18BigAsUSD, toBig } from "../../utils/bigUtils";
+
 import DepositModal from "./DepositModal";
 import { Header } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
@@ -48,16 +47,7 @@ import {
   APYWithRefreshMovingStat,
   RefetchMovingStat,
 } from "../shared/MovingStat";
-
-function usdFormatter(num: number) {
-  const formatter = Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 5,
-  });
-
-  return formatter.format(num);
-}
+import { usdFormatter } from "../../utils/bigUtils";
 
 export const RGTStat = React.memo(() => {
   const { t } = useTranslation();
@@ -178,18 +168,12 @@ const GovernanceStats = React.memo(() => {
 const FundStats = React.memo(() => {
   const { t } = useTranslation();
 
-  const { RariFundManager } = useContracts();
-
   const { address } = useRari();
 
   //TODO: Actually fetch all pool balance
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
-    () =>
-      RariFundManager.methods
-        .balanceOf(address)
-        .call()
-        .then((balance) => format1e18BigAsUSD(toBig(balance)))
+    () => "$20"
   );
 
   if (isBalanceLoading) {

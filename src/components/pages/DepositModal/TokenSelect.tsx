@@ -13,7 +13,7 @@ import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
 import { Row, Column } from "buttered-chakra";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
-import { formatBig } from "../../../utils/bigUtils";
+
 import BigWhiteCircle from "../../../static/big-white-circle.png";
 import {
   FixedSizeList as List,
@@ -24,6 +24,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 import { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import { usdFormatter } from "../../../utils/bigUtils";
 
 const TokenSelect = React.memo(
   ({
@@ -146,7 +147,7 @@ const TokenRow = React.memo(
               {token.symbol}
             </Heading>
             <Text fontWeight="thin" fontSize="15px">
-              {isBalanceLoading ? "$?" : formatBig(balance!)}
+              {isBalanceLoading ? "$?" : usdFormatter(balance!.toNumber())}
             </Text>
           </Column>
         </Row>

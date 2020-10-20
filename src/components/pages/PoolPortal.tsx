@@ -17,7 +17,6 @@ import DashboardBox, {
   DASHBOARD_BOX_SPACING,
   DASHBOARD_BOX_PROPS,
 } from "../shared/DashboardBox";
-import { useContracts } from "../../context/ContractsContext";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
@@ -46,12 +45,10 @@ import {
 import CaptionedStat from "../shared/CaptionedStat";
 
 import ProgressBar from "../shared/ProgressBar";
-import { getCurrencyCodeFromKeccak256 } from "../../utils/cryptoUtils";
-import { format1e18BigAsUSD, format1e18Big, toBig } from "../../utils/bigUtils";
+
 import DepositModal from "./DepositModal";
 import { useQuery } from "react-query";
 
-import { useTransactionHistoryEvents } from "../../hooks/useContractEvent";
 import { useTranslation } from "react-i18next";
 
 import { Pool, PoolTypeProvider } from "../../context/PoolContext";
@@ -74,8 +71,6 @@ export default PoolPortal;
 
 const PoolPortalContent = React.memo(() => {
   const { isAuthed, address } = useRari();
-
-  const { RariFundManager } = useContracts();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -132,20 +127,12 @@ const PoolPortalContent = React.memo(() => {
 
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " balanceOf RFT",
-    () =>
-      RariFundManager.methods
-        .balanceOf(address)
-        .call()
-        .then((balance) => format1e18BigAsUSD(toBig(balance)))
+    () => "test"
   );
 
   const { isLoading: isInterestLoading, data: interestData } = useQuery(
     address + " interestAccruedBy",
-    () =>
-      RariFundManager.methods
-        .interestAccruedBy(address)
-        .call()
-        .then((balance) => format1e18BigAsUSD(toBig(balance)))
+    () => "test"
   );
 
   const {
@@ -648,9 +635,9 @@ const TokenAllocation = React.memo(() => {
 });
 
 const TransactionHistory = React.memo(() => {
-  const { data: events, isLoading } = useTransactionHistoryEvents();
-
   const { t } = useTranslation();
+
+  const isLoading = false;
 
   return isLoading ? (
     <Center expand>
@@ -667,14 +654,15 @@ const TransactionHistory = React.memo(() => {
         {t("Your Transaction History")}
       </Heading>
 
-      {events!.map((event, index) => (
+      {/* {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
           <Text fontSize="sm" color="#aba6a6">
             {`${event.event}: ${format1e18Big(
               toBig(event.returnValues.amount)
-            )} ${getCurrencyCodeFromKeccak256(
-              event.returnValues.currencyCode
-            ) ?? "UNKNOWN_CURRENCY"}
+            )} ${
+              getCurrencyCodeFromKeccak256(event.returnValues.currencyCode) ??
+              "UNKNOWN_CURRENCY"
+            }
             `}
             <b>({event.timeSent})</b>
           </Text>
@@ -684,7 +672,7 @@ const TransactionHistory = React.memo(() => {
             <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
           )}
         </Box>
-      ))}
+      ))} */}
     </Column>
   );
 });
