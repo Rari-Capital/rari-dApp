@@ -113,11 +113,17 @@ export const HeaderLink = React.memo(
       <Link
         /* @ts-ignore */
         as={RouterLink}
-        to={route}
+        to={name === "ETH Pool" ? "#" : route}
+        onClick={() =>
+          alert(
+            "This pool is coming today! Ask us questions in our Telegram or Discord or mention us @RariCapital on Twitter!"
+          )
+        }
         mr={mr ?? 0}
         whiteSpace="nowrap"
       >
         <Text
+          opacity={name === "ETH Pool" ? 0.3 : 1}
           as={
             location.pathname === route ||
             location.pathname.replace(/\/+$/, "") === route
@@ -126,7 +132,7 @@ export const HeaderLink = React.memo(
           }
           fontWeight="bold"
         >
-          {name}
+          {name === "ETH Pool" ? "ETH Pool (Coming soon)" : name}
         </Text>
       </Link>
     );
