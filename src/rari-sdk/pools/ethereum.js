@@ -5,10 +5,10 @@ import StablePool from "./stable.js";
 import { get0xSwapOrders } from "../0x.js";
 
 const contractAddresses = {
-  RariFundController: "0x0000000000000000000000000000000000000000",
-  RariFundManager: "0x0000000000000000000000000000000000000000",
-  RariFundToken: "0x0000000000000000000000000000000000000000",
-  RariFundProxy: "0x0000000000000000000000000000000000000000",
+  RariFundController: "0xD9F223A36C2e398B0886F945a7e556B41EF91A3C",
+  RariFundManager: "0xD6e194aF3d9674b62D1b30Ec676030C23961275e",
+  RariFundToken: "0xCda4770d65B4211364Cb870aD6bE19E7Ef1D65f4",
+  RariFundProxy: "0xa3cc9e4B9784c80a05B3Af215C32ff223C3ebE5c",
 };
 
 var abis = {};

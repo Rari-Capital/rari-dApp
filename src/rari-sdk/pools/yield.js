@@ -2,11 +2,11 @@
 import StablePool from "./stable.js";
 
 const contractAddresses = {
-  RariFundController: "0x0000000000000000000000000000000000000000",
-  RariFundManager: "0x0000000000000000000000000000000000000000",
-  RariFundToken: "0x0000000000000000000000000000000000000000",
-  RariFundPriceConsumer: "0x0000000000000000000000000000000000000000",
-  RariFundProxy: "0x0000000000000000000000000000000000000000",
+  "RariFundController": "0x6afE6C37bF75f80D512b9D89C19EC0B346b09a8d",
+  "RariFundManager": "0x59FA438cD0731EBF5F4cDCaf72D4960EFd13FCe6",
+  "RariFundToken": "0x3baa6B7Af0D72006d3ea770ca29100Eb848559ae",
+  "RariFundPriceConsumer": "0x00815e0e9d118769542ce24be95f8e21c60e5561",
+  "RariFundProxy": "0x6dd8e1Df9F366e6494c2601e515813e0f9219A88"
 };
 
 export default class YieldPool extends StablePool {

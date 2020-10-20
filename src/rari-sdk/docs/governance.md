@@ -57,45 +57,30 @@ See [EIP-20: ERC-20 Token Standard](https://eips.ethereum.org/EIPS/eip-20) for r
 
 ## **Claiming RGT**
 
-### **Claim all unclaimed RGT:** `governance.rgt.distributions.claim(holder, options)`
+### **Claim unclaimed RGT:** `governance.rgt.distributions.claim(amount, options)`
 
-Claims all unclaimed RGT earned by `holder` in all pools (and returns the quantity of RGT claimed).
+Claims `amount` unclaimed RGT earned by the sender via liquidity mining across all pools.
 
 * Parameters:
-    * `holder`: A string indicating the Ethereum address for which to claim RGT.
+    * `amount`: The amount of RGT to claim.
     * `options`: An object specifying `from` (required) and, optionally, `gas`, and/or `gasPrice` ([see the web3.js docs for details](https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send)).
 
-### **Claim unclaimed RGT from one pool:** `governance.rgt.distributions.claimByPool(holder, pool, options)`
+### **Claim all unclaimed RGT:** `governance.rgt.distributions.claimAll(options)`
 
-Claims all unclaimed RGT earned by `holder` in `pool` (and returns the quantity of RGT claimed).
+Claims all unclaimed RGT earned by the sender via liquidity mining across all pools.
 
 * Parameters:
-    * `holder`: A string indicating the Ethereum address for which to claim RGT.
-    * `pool`: A `Number` indicating the `RariGovernanceTokenDistributor.RariPool` for which to claim RGT.
-        * `Stable = 0`
-        * `Yield = 1`
-        * `Ethereum = 2`
     * `options`: An object specifying `from` (required) and, optionally, `gas`, and/or `gasPrice` ([see the web3.js docs for details](https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send)).
 
 ## **Get Unclaimed RGT**
 
 ### **Get all unclaimed RGT:** `governance.rgt.distributions.getUnclaimed(holder)`
 
-Returns the quantity of unclaimed RGT earned by `holder` in all pools.
+Returns the quantity of unclaimed RGT earned by `holder` via liquidity mining across all pools.
 
 * Parameters:
     * `holder`: A string indicating the Ethereum address to check.
-
-### **Get unclaimed RGT from one pool:** `governance.rgt.distributions.getUnclaimedByPool(holder, pool)`
-
-Returns the quantity of unclaimed RGT earned by `holder` in `pool`.
-
-* Parameters:
-    * `holder`: A string indicating the Ethereum address to check.
-    * `pool`: A `Number` indicating the `RariGovernanceTokenDistributor.RariPool` to check.
-        * `Stable = 0`
-        * `Yield = 1`
-        * `Ethereum = 2`
+* Return value: The quantity of unclaimed RGT.
 
 ## **RGT Distribution APY**
 

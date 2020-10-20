@@ -39,68 +39,68 @@ export default class Governance {
       getExchangeRate: async function () {
         // TODO: RGT price getter function
         /* return self.cache.getOrUpdate("rgtUsdPrice", async function() {
-                    try {
-                        return Web3.utils.toBN((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=rgt")).data.rgt.usd * 1e18);
-                    } catch (error) {
-                        throw "Error retrieving data from Rari API: " + error;
-                    }
-                }); */
+            try {
+                return Web3.utils.toBN((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=rgt")).data.rgt.usd * 1e18);
+            } catch (error) {
+                throw "Error retrieving data from Rari API: " + error;
+            }
+        }); */
         return Web3.utils.toBN(2e18);
       },
       distributions: {
-        DISTRIBUTION_START_BLOCK: 11090000,
-        DISTRIBUTION_PERIOD: 345600,
+        DISTRIBUTION_START_BLOCK: 11094200,
+        DISTRIBUTION_PERIOD: 390000,
         DISTRIBUTION_END_BLOCK:
           this.DISTRIBUTION_START_BLOCK + this.DISTRIBUTION_PERIOD,
         FINAL_RGT_DISTRIBUTION: Web3.utils.toBN("8750000000000000000000000"),
         getDistributedAtBlock: function (blockNumber) {
           var startBlock = self.rgt.distributions.DISTRIBUTION_START_BLOCK;
           if (blockNumber <= startBlock) return Web3.utils.toBN(0);
-          if (blockNumber >= startBlock + 345600)
+          if (blockNumber >= startBlock + self.rgt.distributions.DISTRIBUTION_PERIOD)
             return Web3.utils.toBN(8750000).mul(Web3.utils.toBN(1e18));
           var blocks = blockNumber - startBlock;
-          if (blocks < 86400)
+          if (blocks < 6500 * 15)
             return Web3.utils
-              .toBN("1625000000000000000000")
-              .mul(Web3.utils.toBN(blocks).pow(Web3.utils.toBN(2)))
-              .divn(3483648)
+            .toBN(1e18)
+            .mul(Web3.utils.toBN(blocks).pow(Web3.utils.toBN(2)))
+              .divn(2730)
               .add(
                 Web3.utils
-                  .toBN("18125000000000000000000")
+                  .toBN("1450000000000000000000")
                   .muln(blocks)
-                  .divn(3024)
+                  .divn(273)
               );
-          if (blocks < 172800)
+          if (blocks < 6500 * 30)
             return Web3.utils
-              .toBN("45625000000000000000000")
+              .toBN("14600000000000000000000")
               .muln(blocks)
-              .divn(756)
+              .divn(273)
               .sub(
                 Web3.utils
-                  .toBN("125000000000000000000")
+                  .toBN("2000000000000000000")
                   .mul(Web3.utils.toBN(blocks).pow(Web3.utils.toBN(2)))
-                  .divn(870912)
+                  .divn(17745)
               )
               .sub(Web3.utils.toBN("1000000000000000000000000").divn(7));
-          if (blocks < 259200)
+          if (blocks < 6500 * 45)
             return Web3.utils
-              .toBN("125000000000000000000")
+              .toBN(1e18)
               .mul(Web3.utils.toBN(blocks).pow(Web3.utils.toBN(2)))
-              .divn(3483648)
+              .divn(35490)
               .add(Web3.utils.toBN("39250000000000000000000000").divn(7))
               .sub(
                 Web3.utils
-                  .toBN("11875000000000000000000")
+                  .toBN("950000000000000000000")
                   .muln(blocks)
-                  .divn(3024)
+                  .divn(273)
               );
           return Web3.utils
-            .toBN("125000000000000000000")
+            .toBN(1e18)
             .mul(Web3.utils.toBN(blocks).pow(Web3.utils.toBN(2)))
-            .divn(3483648)
+            .divn(35490)
             .add(Web3.utils.toBN("34750000000000000000000000").divn(7))
             .sub(
-              Web3.utils.toBN("625000000000000000000").muln(blocks).divn(432)
+              Web3.utils.toBN("50000000000000000000").muln(blocks).divn(39)
             );
         },
         getCurrentApy: async function () {
@@ -124,21 +124,14 @@ export default class Governance {
               .call()
           );
         },
-        getUnclaimedByPool: async function (account, pool) {
-          return Web3.utils.toBN(
-            await self.contracts.RariGovernanceToken.methods
-              .getUnclaimedRgt(account, pool)
-              .call()
-          );
-        },
-        claim: async function (account, options) {
+        claim: async function (amount, options) {
           return await self.contracts.RariGovernanceTokenDistributor.methods
-            .claimRgt(account)
+            .claimRgt(amount)
             .send(options);
         },
-        claimByPool: async function (account, pool, options) {
+        claimAll: async function (options) {
           return await self.contracts.RariGovernanceTokenDistributor.methods
-            .claimRgt(account, pool)
+            .claimAllRgt()
             .send(options);
         },
         refreshDistributionSpeeds: async function (options) {
