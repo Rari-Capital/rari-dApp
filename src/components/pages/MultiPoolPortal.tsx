@@ -379,7 +379,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
       const rgtAPY = parseFloat(
         rari.web3.utils.fromWei(rgtRawAPY.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(2);
+      ).toFixed(0);
 
       return { rgtAPY, poolAPY };
     }
