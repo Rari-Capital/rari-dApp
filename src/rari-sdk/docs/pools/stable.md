@@ -434,7 +434,7 @@ Returns an array of `RariFundProxy.PostWithdrawalExchange` [event objects](https
     * `outputAmount`: A string indicating the amount of `outputErc20Contract` sent to the user.
     * `outputAmountUsd`: A string indicating the amount sent to the user in USD.
 
-### **Get RSPT transfer history:** `pools.stable.history.getRsftTransferHistory([fromBlock[, toBlock[, filter]]])`
+### **Get RSPT transfer history:** `pools.stable.history.getRsptTransferHistory([fromBlock[, toBlock[, filter]]])`
 
 Returns an array of RSPT `Transfer` [event objects](https://web3js.readthedocs.io/en/v1.2.0/web3-eth-contract.html#contract-events-return) from `fromBlock` to `toBlock` filtered by the filter parameter.
 

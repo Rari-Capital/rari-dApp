@@ -19,3 +19,6 @@ The SDK's `Rari.pools.ethereum` object is identical to [the `Rari.pools.stable` 
 * `pools.ethereum.withdrawals.validateWithdrawal(currencyCode, amount, sender)` returns the ETH amount (scaled by 1e18) actually removed from the sender's REP balance.
 * `pools.ethereum.withdrawals.withdraw(currencyCode, amount, minEthAmount, options)` accepts `minEthAmount`, not `minUsdAmount`.
 * `pools.ethereum.history.getCurrencyExchangeHistory` returns `RariFundController.CompToEthTrade` events.
+* `pools.ethereum.history.getPoolAllocationHistory` returns events without `currencyCode` parameters.
+* `pools.ethereum.history.getReptExchangeRateHistory`
+* `pools.ethereum.history.getReptTransferHistory`

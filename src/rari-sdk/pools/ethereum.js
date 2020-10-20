@@ -479,6 +479,9 @@ export default class EthereumPool extends StablePool {
       }
     };
 
+    this.history.getReptExchangeRateHistory = this.history.getRsptExchangeRateHistory;
+    delete this.history.getRsptExchangeRateHistory;
+
     this.history.getPoolAllocationHistory = async function (
       fromBlock,
       toBlock,
@@ -559,7 +562,9 @@ export default class EthereumPool extends StablePool {
         : [];
     };
 
-    this.history.getRsptTransferHistory = async function (
+    delete this.history.getRsptTransferHistory;
+
+    this.history.getReptTransferHistory = async function (
       fromBlock,
       toBlock,
       filter

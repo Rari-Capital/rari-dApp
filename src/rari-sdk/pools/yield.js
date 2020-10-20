@@ -42,6 +42,9 @@ export default class YieldPool extends StablePool {
       mUSD: ["mStable"],
     };
 
+    this.history.getRyptExchangeRateHistory = this.history.getRsptExchangeRateHistory;
+    delete this.history.getRsptExchangeRateHistory;
+
     this.history.getPoolAllocationHistory = async function (
       fromBlock,
       toBlock,
@@ -122,7 +125,9 @@ export default class YieldPool extends StablePool {
         : [];
     };
 
-    this.history.getRsptTransferHistory = async function (
+    delete this.history.getRsptTransferHistory;
+
+    this.history.getRyptTransferHistory = async function (
       fromBlock,
       toBlock,
       filter
