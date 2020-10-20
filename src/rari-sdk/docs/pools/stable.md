@@ -150,7 +150,7 @@ Approves (if necessary) and deposits `amount` of `currencyCode` to the Rari Stab
     * `amount`: A `BN` (scaled by 10 to the power of the decimal precision of `currencyCode`) indicating the deposit amount.
     * `minUsdAmount`: A `BN` (scaled by 1e18) indicating the minimum USD amount to be added to the sender's RSP balance to execute the transaction.
     * `options`: An object specifying `from` (required) and, optionally, `gas`, and/or `gasPrice` ([see the web3.js docs for details](https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send)).
-* Return value: An array containing a `BN` (scaled by 1e18) indicating the USD amount that was removed from the sender's RSP balance, the transaction receipt of the approval transaction (if any), and the transaction receipt of the deposit transaction.
+* Return value: An array containing a `BN` (scaled by 1e18) indicating the USD amount that was removed from the sender's RSP balance, a `BN` (scaled by 1e18) indicating the 0x exchange protocol fee (if any), the approval transaction receipt (if any), and the deposit transaction receipt.
 
 ## **Withdrawals**
 
@@ -175,14 +175,14 @@ Returns the USD amount (scaled by 1e18) actually removed from the sender's RSP b
 
 ### **Withdraw funds from Rari:** `pools.stable.withdrawals.withdraw(currencyCode, amount, maxUsdAmount, options)`
 
-Approves RSPT (if necessary) and withdraws `amount` of `currencyCode` from the Rari Stable Pool (unless the USD amount removed from the sender's RSP balance is greater than `maxUsdAmount`).
+Withdraws `amount` of `currencyCode` from the Rari Stable Pool (unless the USD amount removed from the sender's RSP balance is greater than `maxUsdAmount`).
 
 * Parameters:
     * `currencyCode`: A string indicating the symbol of the currency to withdraw.
     * `amount`: A `BN` (scaled by 10 to the power of the decimal precision of `currencyCode`) indicating the withdrawal amount.
     * `maxUsdAmount`: A `BN` (scaled by 1e18) indicating the maximum USD amount to be removed from the sender's RSP balance to execute the transaction.
     * `options`: An object specifying `from` (required) and, optionally, `gas`, and/or `gasPrice` ([see the web3.js docs for details](https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send)).
-* Return value: A `BN` (scaled by 1e18) indicating the USD amount that was removed from the sender's RSP balance.
+* Return value: An array containing a `BN` (scaled by 1e18) indicating the USD amount that was removed from the sender's RSP balance, a `BN` (scaled by 1e18) indicating the 0x exchange protocol fee (if any), and a withdrawal transaction receipt.
 
 ## **RSPT (Rari Stable Pool Token)**
 

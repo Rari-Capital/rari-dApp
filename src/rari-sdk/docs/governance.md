@@ -1,4 +1,4 @@
-# Rari SDK: Stable Pool
+# Rari SDK: Governance
 
 The SDK's `Rari.governance` object includes `web3.eth.Contract` objects for each contract as well as wrapper methods and constants for easy implementation.
 
@@ -99,15 +99,9 @@ Returns the quantity of unclaimed RGT earned by `holder` in `pool`.
 
 ## **RGT Distribution APY**
 
-### **Get current RGT distribution APY:** `governance.rgt.distributions.getCurrentApy(pool)`
+### **Get current RGT distribution APY:** `governance.rgt.distributions.getCurrentApy()`
 
-Returns the APY currently earned by `pool` holders from RGT distributions.
-
-* Parameters:
-    * `pool`: A `Number` indicating the `RariGovernanceTokenDistributor.RariPool` to check.
-        * `Stable = 0`
-        * `Yield = 1`
-        * `Ethereum = 2`
+Returns the APY currently earned by all Rari Stable Pool, Yield Pool, and Ethereum Pool holders from RGT distributions.
 
 ## **Distribution Constants**
 

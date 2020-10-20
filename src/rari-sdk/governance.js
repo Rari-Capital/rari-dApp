@@ -103,14 +103,13 @@ export default class Governance {
               Web3.utils.toBN("625000000000000000000").muln(blocks).divn(432)
             );
         },
-        getCurrentApy: async function (pool) {
+        getCurrentApy: async function () {
           try {
             return Web3.utils.toBN(
               (
                 await axios.get(
                   self.API_BASE_URL +
-                    "rgt/apy/" +
-                    ["stable", "yield", "ethereum"][pool]
+                    "rgt/apy"
                 )
               ).data
             );
