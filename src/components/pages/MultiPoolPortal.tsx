@@ -48,6 +48,7 @@ import {
   RefetchMovingStat,
 } from "../shared/MovingStat";
 import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
+import { usePoolBalance } from "../../hooks/usePoolBalance";
 
 export const RGTPrice = React.memo(() => {
   const { t } = useTranslation();
@@ -352,25 +353,9 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const { rari, address } = useRari();
+  const { rari } = useRari();
 
-  const { data: poolBalance, isLoading: isPoolBalanceLoading } = useQuery(
-    address + " " + pool + " balance",
-    async () => {
-      // TODO: THIS NEEDS BN type
-      let balance;
-
-      if (pool === Pool.ETH) {
-        balance = await rari.pools.ethereum.balances.balanceOf(address);
-      } else if (pool === Pool.STABLE) {
-        balance = await rari.pools.stable.balances.balanceOf(address);
-      } else {
-        balance = await rari.pools.yield.balances.balanceOf(address);
-      }
-
-      return stringUsdFormatter(rari.web3.utils.fromWei(balance));
-    }
-  );
+  const { poolBalance, isPoolBalanceLoading } = usePoolBalance(pool);
 
   const { data: apy, isLoading: isAPYLoading } = useQuery(
     pool + " apy",

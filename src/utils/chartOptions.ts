@@ -62,7 +62,7 @@ export const PoolReturnChartOptions = {
   yaxis: {
     labels: {
       ...LineChartOptions.yaxis.labels,
-      formatter: function(value: string) {
+      formatter: function (value: string) {
         return "$" + value;
       },
     },
@@ -111,6 +111,10 @@ export const StrategyAllocationChartOptions = {
     },
   },
 
+  legend: {
+    fontSize: "10px",
+  },
+
   dataLabels: {
     dropShadow: {
       enabled: false,
@@ -121,9 +125,7 @@ export const StrategyAllocationChartOptions = {
     show: false,
   },
 
-  colors: ["#4D4D4D", "#aba7a7"],
-
-  labels: ["Compound", "dYdX"],
+  colors: ["#fcba03", "#2a9c94", "#9436c7", "#d1246f"],
 };
 
 export const DisableChartInteractions = {
