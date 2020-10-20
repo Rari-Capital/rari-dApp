@@ -2288,13 +2288,13 @@ export default class StablePool {
 
     this.history = {
       getApyHistory: async function (
-        fromTimestamp = "latest",
-        toTimestamp = "latest",
+        fromTimestamp,
+        toTimestamp,
         intervalSeconds = 86400
       ) {
-        if (!fromTimestamp || fromTimestamp === "latest")
+        if (fromTimestamp === undefined || fromTimestamp === "latest")
           fromTimestamp = Math.trunc(new Date().getTime() / 1000);
-        if (!toTimestamp || toTimestamp === "latest")
+        if (toTimestamp === undefined || toTimestamp === "latest")
           toTimestamp = Math.trunc(new Date().getTime() / 1000);
         if (!intervalSeconds) intervalSeconds = 86400;
 
@@ -2313,9 +2313,9 @@ export default class StablePool {
         toTimestamp = "latest",
         intervalSeconds = 86400
       ) {
-        if (!fromTimestamp || fromTimestamp === "latest")
+        if (fromTimestamp === undefined || fromTimestamp === "latest")
           fromTimestamp = Math.trunc(new Date().getTime() / 1000);
-        if (!toTimestamp || toTimestamp === "latest")
+        if (toTimestamp === undefined || toTimestamp === "latest")
           toTimestamp = Math.trunc(new Date().getTime() / 1000);
         if (!intervalSeconds) intervalSeconds = 86400;
 
@@ -2331,14 +2331,14 @@ export default class StablePool {
       },
       getBalanceHistoryOf: async function (
         account,
-        fromTimestamp = "latest",
-        toTimestamp = "latest",
+        fromTimestamp,
+        toTimestamp,
         intervalSeconds = 86400
       ) {
         if (!account) throw "No account specified";
-        if (!fromTimestamp || fromTimestamp === "latest")
+        if (fromTimestamp === undefined || fromTimestamp === "latest")
           fromTimestamp = Math.trunc(new Date().getTime() / 1000);
-        if (!toTimestamp || toTimestamp === "latest")
+        if (toTimestamp === undefined || toTimestamp === "latest")
           toTimestamp = Math.trunc(new Date().getTime() / 1000);
         if (!intervalSeconds) intervalSeconds = 86400;
 
@@ -2353,13 +2353,13 @@ export default class StablePool {
         }
       },
       getRsptExchangeRateHistory: async function (
-        fromTimestamp = "latest",
-        toTimestamp = "latest",
+        fromTimestamp,
+        toTimestamp,
         intervalSeconds = 86400
       ) {
-        if (!fromTimestamp || fromTimestamp === "latest")
+        if (fromTimestamp === undefined || fromTimestamp === "latest")
           fromTimestamp = Math.trunc(new Date().getTime() / 1000);
-        if (!toTimestamp || toTimestamp === "latest")
+        if (toTimestamp === undefined || toTimestamp === "latest")
           toTimestamp = Math.trunc(new Date().getTime() / 1000);
         if (!intervalSeconds) intervalSeconds = 86400;
 

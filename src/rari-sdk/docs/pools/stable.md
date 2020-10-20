@@ -302,11 +302,12 @@ Returns an array of objects containing `blockNumber`, `timestamp`, and `totalSup
     * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
 * Return value: An array of objects containing `blockNumber`, `timestamp`, and `totalSupply` (by all users, in USD, scaled by 1e18, in string format).
 
-### **Get account USD supply balance history:** `pools.stable.history.getBalanceHistoryOf([fromTimestamp[, toTimestamp[, intervalSeconds]]])`
+### **Get account USD supply balance history:** `pools.stable.history.getBalanceHistoryOf(account[, fromTimestamp[, toTimestamp[, intervalSeconds]]])`
 
-Returns an array of objects containing `blockNumber`, `timestamp`, and `balance` (in USD, scaled by 1e18, in string format) from `fromTimestamp` to `toTimestamp`.
+Returns an array of objects containing `blockNumber`, `timestamp`, and `balance` (of `account`, in USD, scaled by 1e18, in string format) from `fromTimestamp` to `toTimestamp`.
 
 * Parameters:
+    * `account`: A string indicating the Ethereum account address in question.
     * `fromTimestamp`: A `Number` (or the string `"latest"`) indicating the minimum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `toTimestamp`: A `Number` (or the string `"latest"`) indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
