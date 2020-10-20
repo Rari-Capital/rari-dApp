@@ -119,7 +119,7 @@ export default class Governance {
         },
         getUnclaimed: async function (account) {
           return Web3.utils.toBN(
-            await self.contracts.RariGovernanceToken.methods
+            await self.contracts.RariGovernanceTokenDistributor.methods
               .getUnclaimedRgt(account)
               .call()
           );
