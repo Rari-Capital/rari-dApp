@@ -29,6 +29,13 @@ import StablePool from "../../../rari-sdk/pools/stable";
 import EthereumPool from "../../../rari-sdk/pools/ethereum";
 import YieldPool from "../../../rari-sdk/pools/yield";
 
+import Notify from "bnc-notify";
+
+const notify = Notify({
+  dappId: "0855eca3-50ec-49da-b80c-b4734bd51de6", // [String] The API key created by step one above
+  networkId: 0, // [Integer] The Ethereum network ID your Dapp uses.
+});
+
 interface Props {
   selectedToken: string;
   openCoinSelect: () => any;
@@ -165,7 +172,12 @@ const AmountSelect = React.memo(
           })
         )
       ) {
-        pool.withdrawals.withdraw(
+        const [
+          ,
+          ,
+          approvalReceipt,
+          depositReceipt,
+        ] = await pool.withdrawals.withdraw(
           token.symbol,
           amountInTheirTokenScaledWithDecimal,
           amountToBeRemoved,
@@ -173,6 +185,14 @@ const AmountSelect = React.memo(
             from: address,
           }
         );
+
+        if (approvalReceipt?.transactionHash) {
+          notify.hash(approvalReceipt?.transactionHash);
+        }
+
+        if (depositReceipt?.transactionHash) {
+          notify.hash(depositReceipt?.transactionHash);
+        }
       }
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
