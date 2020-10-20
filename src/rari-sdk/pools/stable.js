@@ -2352,7 +2352,7 @@ export default class StablePool {
           throw "Error in Rari API: " + error;
         }
       },
-      getRsptExchangeRateHistory: async function (
+      getPoolTokenExchangeRateHistory: async function (
         fromTimestamp,
         toTimestamp,
         intervalSeconds = 86400
@@ -2373,6 +2373,7 @@ export default class StablePool {
           throw "Error in Rari API: " + error;
         }
       },
+      getRsptExchangeRateHistory: this.getPoolTokenExchangeRateHistory,
       getPredictedDailyRawFundApyHistoryLastYear: async function () {
         // TODO: Get results from app.rari.capital
       },
@@ -2567,7 +2568,7 @@ export default class StablePool {
           );
         return events;
       },
-      getRsptTransferHistory: async function (fromBlock, toBlock, filter) {
+      getPoolTokenTransferHistory: async function (fromBlock, toBlock, filter) {
         var events = [];
         if (toBlock >= 10365607 && fromBlock <= 10890985)
           events = await self.legacyContracts[
@@ -2587,6 +2588,7 @@ export default class StablePool {
           );
         return events;
       },
+      getRsptTransferHistory: this.getPoolTokenTransferHistory
     };
   }
 }
