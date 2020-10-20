@@ -321,7 +321,7 @@ Returns an array of objects containing `blockNumber`, `timestamp`, and `rate` (i
     * `fromTimestamp`: A `Number` (or the string `"latest"`) indicating the minimum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `toTimestamp`: A `Number` (or the string `"latest"`) indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
-* Return value: An array of objects containing `blockNumber`, `timestamp`, and `balance` (in USD, scaled by 1e18, in string format).
+* Return value: An array of objects containing `blockNumber`, `timestamp`, and `rate` (in USD, scaled by 1e18, in string format).
 
 ### **Get pool allocation history:** `pools.stable.history.getPoolAllocationHistory([fromBlock[, toBlock[, filter]]])`
 
