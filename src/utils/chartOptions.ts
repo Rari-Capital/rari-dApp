@@ -125,7 +125,7 @@ export const StrategyAllocationChartOptions = {
     show: false,
   },
 
-  colors: ["#fcba03", "#2a9c94", "#9436c7", "#d1246f"],
+  colors: ["#282828", "#929292", "#5E5E5E", "#4C4C4C", "#343434"],
 };
 
 export const DisableChartInteractions = {

@@ -10,6 +10,8 @@ import {
   theme,
   BoxProps,
   Image,
+  Button,
+  Link,
 } from "@chakra-ui/core";
 import { useRari } from "../../context/RariContext";
 
@@ -875,13 +877,24 @@ const TokenAllocation = React.memo(() => {
 const TransactionHistory = React.memo(() => {
   const { t } = useTranslation();
 
-  const isLoading = false;
+  const { address, rari } = useRari();
 
-  return isLoading ? (
-    <Center expand>
-      <Spinner />
-    </Center>
-  ) : (
+  const poolType = usePoolType();
+
+  let poolAddress: string;
+
+  if (poolType === Pool.ETH) {
+    //@ts-ignore
+    poolAddress = rari.pools.ethereum.contracts.RariFundToken.options.address;
+  } else if (poolType === Pool.STABLE) {
+    //@ts-ignore
+    poolAddress = rari.pools.stable.contracts.RariFundToken.options.address;
+  } else {
+    //@ts-ignore
+    poolAddress = rari.pools.yield.contracts.RariFundToken.options.address;
+  }
+
+  return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
@@ -891,6 +904,13 @@ const TransactionHistory = React.memo(() => {
       <Heading size="sm" mb={2}>
         {t("Your Transaction History")}
       </Heading>
+
+      <Link
+        href={`https://etherscan.io/token/${poolAddress}?a=${address}`}
+        isExternal
+      >
+        <Button variantColor="teal">{t("View on Etherscan")}</Button>
+      </Link>
 
       {/* {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
@@ -962,9 +982,10 @@ const RecentTrades = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="auto"
+      opacity={0.1}
     >
       <Heading size="sm" mb={2}>
-        {t("Recent Trades")}
+        {t("Recent Trades (WIP)")}
       </Heading>
 
       {recentTrades!.map((event, index) => (
