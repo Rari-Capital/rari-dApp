@@ -196,6 +196,36 @@ const AmountSelect = React.memo(
       }
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
+    let depositOrWithdrawAlert;
+
+    if (amount === null) {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("Enter a valid amount to deposit.")
+          : t("Enter a valid amount to withdraw.");
+    } else if (amount.isZero()) {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("Choose which crypto you want to deposit.")
+          : t("Choose which crypto you want to withdraw.");
+    } else if (isSelectedTokenBalanceLoading) {
+      depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
+        token: selectedToken,
+      });
+    } else if (
+      isAmountGreaterThanSelectedTokenBalance &&
+      mode === Mode.DEPOSIT
+    ) {
+      depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
+        token: selectedToken,
+      });
+    } else {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("Click confirm to start earning interest!")
+          : t("Click confirm to withdraw.");
+    }
+
     return (
       <>
         <Row
@@ -229,26 +259,7 @@ const AmountSelect = React.memo(
           height="100%"
         >
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
-            {amount !== null
-              ? !amount.gt(0)
-                ? mode === Mode.DEPOSIT
-                  ? t("Choose which crypto you want to deposit.")
-                  : t("Choose which crypto you want to withdraw.")
-                : isSelectedTokenBalanceLoading
-                ? t("Loading your balance of {{token}}...", {
-                    token: selectedToken,
-                  })
-                : isAmountGreaterThanSelectedTokenBalance &&
-                  mode === Mode.DEPOSIT
-                ? t("You don't have enough {{token}}.", {
-                    token: selectedToken,
-                  })
-                : mode === Mode.DEPOSIT
-                ? t("Click confirm to start earning interest!")
-                : t("Click confirm to withdraw.")
-              : mode === Mode.DEPOSIT
-              ? t("Enter a valid amount to deposit.")
-              : t("Enter a valid amount to withdraw.")}
+            {depositOrWithdrawAlert}
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
@@ -286,7 +297,7 @@ const AmountSelect = React.memo(
             onClick={mode === Mode.DEPOSIT ? onDeposit : onWithdraw}
             isDisabled={
               amount === null ||
-              !amount.gt(0) ||
+              amount.isZero() ||
               (isAmountGreaterThanSelectedTokenBalance && mode === Mode.DEPOSIT)
             }
           >
