@@ -297,7 +297,8 @@ export default class EthereumPool extends StablePool {
 
     this.withdrawals.validateWithdrawal = async function (
       currencyCode,
-      amount
+      amount,
+      sender
     ) {
       var allTokens = await this.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
@@ -561,7 +562,6 @@ export default class EthereumPool extends StablePool {
           )
         : [];
     };
-
 
     this.history.getPoolTokenTransferHistory = async function (
       fromBlock,

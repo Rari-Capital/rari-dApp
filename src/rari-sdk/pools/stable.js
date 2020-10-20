@@ -1424,7 +1424,7 @@ export default class StablePool {
       getWithdrawalCurrenciesWithoutSlippage: async function () {
         return await self.allocations.getRawCurrencyAllocations();
       },
-      validateWithdrawal: async function (currencyCode, amount) {
+      validateWithdrawal: async function (currencyCode, amount, sender) {
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
           throw "Invalid currency code!";

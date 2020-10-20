@@ -141,7 +141,7 @@ Returns the USD amount (scaled by 1e18) actually added to the sender's RSP balan
     * `currencyCode`: A string indicating the symbol of the currency to deposit.
     * `amount`: A `BN` (scaled by 10 to the power of the decimal precision of `currencyCode`) indicating the deposit amount.
     * `sender`: The `sender` of the deposit.
-* Return value: A `BN` (scaled by 1e18) indicating the USD amount that would actually be added to the sender's RSP balance.
+* Return value: An array containing a `BN` (scaled by 1e18) indicating the USD amount that would actually be added to the sender's RSP balance and a `BN` (scaled by 1e18) indicating the 0x exchange protocol fee (if any).
 
 ### **Deposit funds to Rari:** `pools.stable.deposits.deposit(currencyCode, amount, minUsdAmount, options)`
 
@@ -173,7 +173,7 @@ Returns the USD amount (scaled by 1e18) actually removed from the sender's RSP b
 * Parameters:
     * `currencyCode`: A string indicating the symbol of the currency to withdraw.
     * `amount`: A `BN` (scaled by 10 to the power of the decimal precision of `currencyCode`) indicating the withdrawal amount.
-* Return value: A `BN` (scaled by 1e18) indicating the USD amount that would actually be removed from the sender's RSP balance.
+* Return value: An array containing a `BN` (scaled by 1e18) indicating the USD amount that would actually be removed from the sender's RSP balance and a `BN` (scaled by 1e18) indicating the 0x exchange protocol fee (if any).
 
 ### **Withdraw funds from Rari:** `pools.stable.withdrawals.withdraw(currencyCode, amount, maxUsdAmount, options)`
 
