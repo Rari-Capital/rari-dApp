@@ -62,7 +62,7 @@ See [EIP-20: ERC-20 Token Standard](https://eips.ethereum.org/EIPS/eip-20) for r
 Claims `amount` unclaimed RGT earned by the sender via liquidity mining across all pools.
 
 * Parameters:
-    * `amount`: The amount of RGT to claim.
+    * `amount`: The amount of RGT to claim (as a `BN` scaled by 1e18).
     * `options`: An object specifying `from` (required) and, optionally, `gas`, and/or `gasPrice` ([see the web3.js docs for details](https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#methods-mymethod-send)).
 
 ### **Claim all unclaimed RGT:** `governance.rgt.distributions.claimAll(options)`
@@ -80,13 +80,13 @@ Returns the quantity of unclaimed RGT earned by `holder` via liquidity mining ac
 
 * Parameters:
     * `holder`: A string indicating the Ethereum address to check.
-* Return value: The quantity of unclaimed RGT.
+* Return value: The quantity of unclaimed RGT (as a `BN` scaled by 1e18).
 
 ## **RGT Distribution APY**
 
 ### **Get current RGT distribution APY:** `governance.rgt.distributions.getCurrentApy()`
 
-Returns the APY currently earned by all Rari Stable Pool, Yield Pool, and Ethereum Pool holders from RGT distributions.
+Returns the APY currently earned by all Rari Stable Pool, Yield Pool, and Ethereum Pool holders from RGT distributions (as a `BN` scaled by 1e18).
 
 ## **Distribution Constants**
 
