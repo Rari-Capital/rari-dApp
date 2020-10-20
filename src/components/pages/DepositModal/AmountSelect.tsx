@@ -128,7 +128,7 @@ const AmountSelect = React.memo(
           }
         );
       }
-    }, [address, poolType, rari.pools, rari.web3.utils, token, amount]);
+    }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
     const onWithdraw = useCallback(async () => {
       let pool: StablePool | EthereumPool | YieldPool;
@@ -174,7 +174,7 @@ const AmountSelect = React.memo(
           }
         );
       }
-    }, [address, poolType, rari.pools, rari.web3.utils, token, amount]);
+    }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
     return (
       <>

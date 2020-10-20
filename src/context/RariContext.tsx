@@ -5,7 +5,6 @@ import React, {
   useMemo,
   ReactNode,
 } from "react";
-import Web3 from "web3";
 
 import { useQueryCache } from "react-query";
 import { useTranslation } from "react-i18next";
@@ -134,11 +133,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
-      let authedProvider = new Web3(modalProvider);
+      const rariInstance = new Rari(modalProvider);
 
-      setRari(new Rari(authedProvider));
+      setRari(rariInstance);
 
-      authedProvider.eth.getAccounts().then((addresses) => {
+      rariInstance.web3.eth.getAccounts().then((addresses) => {
         setAddress(addresses[0]);
       });
     },

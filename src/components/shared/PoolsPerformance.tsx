@@ -123,7 +123,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       <Box height={chartSize.asPxString()} overflow="hidden">
         {isChartDataLoading ? (
           <Center expand>
-            <Spinner />
+            <Spinner color="#FFF" />
           </Center>
         ) : (
           <Chart
