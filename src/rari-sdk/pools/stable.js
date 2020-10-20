@@ -118,6 +118,7 @@ var getCurrencyUsdRates = function (currencyCodes) {
 
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
+  POOL_TOKEN_SYMBOL = "RSPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static CONTRACT_ABIS = abis;
@@ -2365,7 +2366,7 @@ export default class StablePool {
 
         try {
           return (
-            await axios.get(self.API_BASE_URL + "rspt/rates", {
+            await axios.get(self.API_BASE_URL + self.POOL_TOKEN_SYMBOL.toLowerCase() + "/rates", {
               params: { fromTimestamp, toTimestamp, intervalSeconds },
             })
           ).data;
