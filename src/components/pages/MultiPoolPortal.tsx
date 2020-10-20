@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 
 import {
   Center,
@@ -47,17 +47,24 @@ import {
   APYWithRefreshMovingStat,
   RefetchMovingStat,
 } from "../shared/MovingStat";
-import { usdFormatter } from "../../utils/bigUtils";
+import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
 
-export const RGTStat = React.memo(() => {
+export const RGTPrice = React.memo(() => {
   const { t } = useTranslation();
+
+  const { rari } = useRari();
+
+  const fetch = useCallback(() => {
+    return rari.governance.rgt.getExchangeRate().then((data) => {
+      return stringUsdFormatter(rari.web3.utils.fromWei(data));
+    });
+  }, [rari.governance.rgt, rari.web3.utils]);
 
   return (
     <RefetchMovingStat
       queryKey="rgtPrice"
       interval={5000}
-      //TODO: ACTUAL FETCHING PLS
-      fetch={() => usdFormatter(Date.now() / 10000000000)}
+      fetch={fetch}
       loadingPlaceholder="$?"
       statSize="3xl"
       captionSize="xs"
@@ -131,6 +138,14 @@ export default MultiPoolPortal;
 const GovernanceStats = React.memo(() => {
   const { t } = useTranslation();
 
+  const { rari, address } = useRari();
+
+  const { data, isLoading } = useQuery(address + " balanceOf RGT", () => {
+    return rari.governance.rgt.balanceOf(address).then((data) => {
+      return stringUsdFormatter(rari.web3.utils.fromWei(data));
+    });
+  });
+
   return (
     <RowOnDesktopColumnOnMobile
       expand
@@ -149,11 +164,11 @@ const GovernanceStats = React.memo(() => {
       </Center>
 
       <Center expand>
-        <RGTStat />
+        <RGTPrice />
       </Center>
       <Center expand>
         <CaptionedStat
-          stat={"200 RGT"}
+          stat={isLoading ? "$?" : data!}
           statSize="3xl"
           captionSize="xs"
           caption={t("RGT Balance")}
@@ -168,12 +183,49 @@ const GovernanceStats = React.memo(() => {
 const FundStats = React.memo(() => {
   const { t } = useTranslation();
 
-  const { address } = useRari();
+  const { rari, address } = useRari();
 
-  //TODO: Actually fetch all pool balance
+  const getAccountBalance = useCallback(async () => {
+    const stablebal = await rari.pools.stable.balances.balanceOf(address);
+
+    const yieldbal = await rari.pools.yield.balances.balanceOf(address);
+
+    const ethbal = await rari.pools.yield.balances.balanceOf(address);
+
+    return parseFloat(
+      rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
+    );
+  }, [rari.pools, rari.web3.utils, address]);
+
+  const getAccountInterest = useCallback(async () => {
+    const stablebal = await rari.pools.stable.balances.interestAccruedBy(
+      address
+    );
+
+    const yieldbal = await rari.pools.yield.balances.interestAccruedBy(address);
+
+    const ethbal = await rari.pools.yield.balances.interestAccruedBy(address);
+
+    return stringUsdFormatter(
+      rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
+    );
+  }, [rari.pools, rari.web3.utils, address]);
+
+  const getTVL = useCallback(async () => {
+    const stablebal = await rari.pools.stable.balances.getTotalSupply();
+
+    const yieldbal = await rari.pools.yield.balances.getTotalSupply();
+
+    const ethbal = await rari.pools.yield.balances.getTotalSupply();
+
+    return parseFloat(
+      rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
+    );
+  }, [rari.pools, rari.web3.utils]);
+
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
-    () => "$20"
+    getAccountBalance
   );
 
   if (isBalanceLoading) {
@@ -185,7 +237,7 @@ const FundStats = React.memo(() => {
   }
 
   const myBalance = balanceData!;
-  const hasNotDeposited = myBalance === "$0.00";
+  const hasNotDeposited = myBalance === 0;
 
   return (
     <RowOnDesktopColumnOnMobile
@@ -204,11 +256,10 @@ const FundStats = React.memo(() => {
           {hasNotDeposited ? (
             <APYWithRefreshMovingStat
               formatStat={usdFormatter}
-              startingAmount={10000000}
               fetchInterval={5000}
+              loadingPlaceholder="$?"
               apyInterval={100}
-              // TODO: Actually fetch
-              fetch={() => Date.now() / 100000}
+              fetch={getTVL}
               queryKey={"totalValueLocked"}
               apy={2}
               statSize="3xl"
@@ -220,7 +271,7 @@ const FundStats = React.memo(() => {
           ) : (
             <APYMovingStat
               formatStat={usdFormatter}
-              startingAmount={100000}
+              startingAmount={myBalance}
               interval={100}
               apy={0.1}
               statSize="3xl"
@@ -239,13 +290,12 @@ const FundStats = React.memo(() => {
       >
         <Center expand>
           {hasNotDeposited ? (
-            <RGTStat />
+            <RGTPrice />
           ) : (
             <RefetchMovingStat
               queryKey="interestEarned"
-              interval={100}
-              //TODO: ACTUAL FETCH
-              fetch={() => usdFormatter(Date.now() / 100000000)}
+              interval={5000}
+              fetch={getAccountInterest}
               loadingPlaceholder="$?"
               statSize="3xl"
               captionSize="xs"
@@ -272,6 +322,7 @@ const PoolCards = React.memo(() => {
           <DashboardBox
             key={pool}
             width={{ md: "33%", xs: "100%" }}
+            height="280px"
             mr={{
               md:
                 // Don't add right margin on the last child
@@ -301,6 +352,54 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const { rari, address } = useRari();
+
+  const { data: poolBalance, isLoading: isPoolBalanceLoading } = useQuery(
+    address + " " + pool + " balance",
+    async () => {
+      // TODO: THIS NEEDS BN type
+      let balance;
+
+      if (pool === Pool.ETH) {
+        balance = await rari.pools.ethereum.balances.balanceOf(address);
+      } else if (pool === Pool.STABLE) {
+        balance = await rari.pools.stable.balances.balanceOf(address);
+      } else {
+        balance = await rari.pools.yield.balances.balanceOf(address);
+      }
+
+      return stringUsdFormatter(rari.web3.utils.fromWei(balance));
+    }
+  );
+
+  const { data: apy, isLoading: isAPYLoading } = useQuery(
+    pool + " apy",
+    async () => {
+      let poolRawAPY;
+
+      if (pool === Pool.ETH) {
+        poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
+      } else if (pool === Pool.STABLE) {
+        poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
+      } else {
+        poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
+      }
+
+      //TODO; fix this this is so ugly
+      const poolAPY = parseFloat(
+        rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+      ).toFixed(2);
+
+      const rgtRawAPY = await rari.governance.rgt.distributions.getCurrentApy();
+
+      const rgtAPY = parseFloat(
+        rari.web3.utils.fromWei(rgtRawAPY.mul(rari.web3.utils.toBN(100)))
+      ).toFixed(2);
+
+      return { rgtAPY, poolAPY };
+    }
+  );
+
   return (
     <>
       {isDepositModalOpen ? (
@@ -327,16 +426,16 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text my={5} fontSize="md" textAlign="center">
-            {"$25,000"}
+            {isPoolBalanceLoading ? "$?" : poolBalance}
           </Text>
         </SimpleTooltip>
 
         <Text fontWeight="bold" textAlign="center">
-          {pool === Pool.ETH ? "25% " : pool === Pool.STABLE ? "27% " : "56%"}{" "}
-          APY +{" "}
+          {isAPYLoading ? "?" : apy?.poolAPY}% APY +{" "}
           <SimpleTooltip label={t("Extra yield from $RGT")}>
             <span>
-              (45% <Image display="inline" src={SmallLogo} size="20px" />)
+              ({isAPYLoading ? "?" : apy?.rgtAPY}%{" "}
+              <Image display="inline" src={SmallLogo} size="20px" />)
             </span>
           </SimpleTooltip>
         </Text>
@@ -345,6 +444,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
+          mt="auto"
         >
           <Link
             /* @ts-ignore */
@@ -353,7 +453,6 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
             to={"/pools/" + pool.toString()}
           >
             <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
               width="100%"
               height="45px"
               borderRadius="7px"
@@ -365,7 +464,6 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           </Link>
 
           <DashboardBox
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
             flexShrink={0}
             as="button"
             onClick={openDepositModal}

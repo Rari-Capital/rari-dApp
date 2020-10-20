@@ -102,7 +102,7 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
 }
 
 export interface RariContextData {
-  rari: any;
+  rari: Rari;
   web3ModalProvider: any | null;
   isAuthed: boolean;
   login: () => Promise<any>;
