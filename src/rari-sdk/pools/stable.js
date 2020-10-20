@@ -226,6 +226,7 @@ export default class StablePool {
       ) {
         if (!fromBlock) fromBlock = 0;
         if (toBlock === undefined) toBlock = "latest";
+
         if (fromBlock == 0 && toBlock === "latest")
           return await Web3.utils.toBN(
             self.contracts.RariFundManager.methods.getInterestAccrued().call()
@@ -249,12 +250,22 @@ export default class StablePool {
           .balanceOf(account)
           .call();
       },
-      interestAccruedBy: async function (account) {
+      interestAccruedBy: async function (
+        account,
+        fromBlock = 0,
+        toBlock = "latest"
+      ) {
         if (!account) throw "No account specified";
+        if (!fromBlock) fromBlock = 0;
+        if (toBlock === undefined) toBlock = "latest";
 
         try {
           return Web3.utils.toBN(
-            (await axios.get(self.API_BASE_URL + "interest/" + account)).data
+            (
+              await axios.get(self.API_BASE_URL + "interest/" + account, {
+                params: { fromBlock, toBlock },
+              })
+            ).data
           );
         } catch (error) {
           throw "Error in Rari API: " + error;
@@ -270,6 +281,7 @@ export default class StablePool {
           throw "Amount is not a valid BN instance greater than 0.";
         if (!options || !options.from)
           throw "Options parameter not set or from address not set.";
+        
         var fundBalanceBN = Web3.utils.toBN(
           await self.contracts.RariFundManager.methods.getFundBalance().call()
         );

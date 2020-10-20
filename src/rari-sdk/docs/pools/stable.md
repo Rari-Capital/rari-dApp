@@ -88,13 +88,15 @@ Returns the total balance supplied to the Rari Stable Pool by `account` in USD (
     * `account`: A string indicating the Ethereum account address in question.
 * Return value: A `BN` (scaled by 1e18) indicating the balance supplied by `account` in USD.
 
-### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account)`
+### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, fromBlock[, toBlock]])`)`
 
 Returns the total amount of interest accrued by `account` in USD (scaled by 1e18).
 
 * Please note that this method makes use of the [Rari API](https://github.com/Rari-Capital/rari-api).
 * Parameters:
     * `account`: A string indicating the Ethereum account address in question.
+    * `fromBlock`: An optional `Number` (or the string `"latest"`) indicating the minimum block number to track. Defaults to 0.
+    * `toBlock`: An optional `Number` (or the string `"latest"`) indicating the maximum block number to track. Defaults to `"latest"`.
 * Return value: A `BN` (scaled by 1e18) indicating the amount of interest accrued by `account` in USD.
 
 ### **Transfer my USD holdings:** `pools.stable.balances.transfer(recipient, amount, options)`
@@ -231,8 +233,8 @@ Returns the Rari Stable Pool's total investor balance (all RSPT holders' funds b
 Returns the total amount of interest accrued by past and current RSPT holders (excluding the fees paid on interest) in USD (scaled by 1e18).
 
 * Parameters:
-    * `fromBlock`: A `Number` (or the string `"latest"`) indicating the minimum block number to track. Defaults to 0.
-    * `toBlock`: A `Number` (or the string `"latest"`) indicating the maximum block number to track. Defaults to `"latest"`.
+    * `fromBlock`: An optional `Number` (or the string `"latest"`) indicating the minimum block number to track. Defaults to 0.
+    * `toBlock`: An optional `Number` (or the string `"latest"`) indicating the maximum block number to track. Defaults to `"latest"`.
 
 ## **Fees on Interest**
 
