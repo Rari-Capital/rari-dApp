@@ -10,7 +10,7 @@ const contractAddresses = {
 };
 
 export default class YieldPool extends StablePool {
-  API_BASE_URL = "http://localhost:3000/pools/yield/";
+  API_BASE_URL = "https://api.rari.capital/pools/yield/";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static LEGACY_CONTRACT_ADDRESSES = undefined;

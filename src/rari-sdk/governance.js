@@ -5,8 +5,8 @@ import axios from "axios";
 import Cache from "./cache.js";
 
 const contractAddresses = {
-  RariGovernanceToken: "0x0000000000000000000000000000000000000000",
-  RariGovernanceTokenDistributor: "0x0000000000000000000000000000000000000000",
+  RariGovernanceToken: "0xD291E7a03283640FDc51b121aC401383A46cC623",
+  RariGovernanceTokenDistributor: "0x9C0CaEb986c003417D21A7Daaf30221d61FC1043"
 };
 
 var abis = {};
@@ -17,7 +17,7 @@ for (const contractName of Object.keys(contractAddresses))
     ".json");
 
 export default class Governance {
-  API_BASE_URL = "http://localhost:3000/governance/";
+  API_BASE_URL = "https://api.rari.capital/governance/";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static CONTRACT_ABIS = abis;

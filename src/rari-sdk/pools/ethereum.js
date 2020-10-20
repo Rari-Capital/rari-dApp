@@ -19,7 +19,7 @@ for (const contractName of Object.keys(contractAddresses))
     ".json");
 
 export default class EthereumPool extends StablePool {
-  API_BASE_URL = "http://localhost:3000/pools/ethereum/";
+  API_BASE_URL = "https://api.rari.capital/pools/ethereum/";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static CONTRACT_ABIS = abis;

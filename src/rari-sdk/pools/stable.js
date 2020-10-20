@@ -117,7 +117,7 @@ var getCurrencyUsdRates = function (currencyCodes) {
 };
 
 export default class StablePool {
-  API_BASE_URL = "http://localhost:3000/pools/stable/";
+  API_BASE_URL = "https://api.rari.capital/pools/stable/";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static CONTRACT_ABIS = abis;
