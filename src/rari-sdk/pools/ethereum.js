@@ -387,7 +387,7 @@ export default class EthereumPool extends StablePool {
         // If we can withdraw everything directly, do so
         try {
           var receipt = await this.contracts.RariFundManager.methods
-            .withdraw(amount)
+            .withdraw(currencyCode, amount)
             .send(options);
         } catch (err) {
           throw (
