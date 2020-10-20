@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   Box,
   Text,
@@ -6,12 +6,16 @@ import {
   Spinner,
   Divider,
   Select,
-  Icon,
   useDisclosure,
   theme,
   BoxProps,
+  Image,
+  Button,
+  Link,
 } from "@chakra-ui/core";
 import { useRari } from "../../context/RariContext";
+
+import SmallRGTLogo from "../../static/small-logo.png";
 
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -51,13 +55,19 @@ import { useQuery } from "react-query";
 
 import { useTranslation } from "react-i18next";
 
-import { Pool, PoolTypeProvider } from "../../context/PoolContext";
+import { Pool, PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
 import { SmallLogo } from "../shared/Logos";
 import { GlowingButton } from "../shared/GlowingButton";
 import { ClaimRGTModal } from "../shared/ClaimRGTModal";
+
+import { usePoolBalance } from "../../hooks/usePoolBalance";
+import { stringUsdFormatter } from "../../utils/bigUtils";
+import { SimpleTooltip } from "../shared/SimpleTooltip";
+
+const millisecondsPerDay = 86400000;
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   return (
@@ -70,7 +80,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = React.memo(() => {
-  const { isAuthed, address } = useRari();
+  const { isAuthed } = useRari();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -125,15 +135,9 @@ const PoolPortalContent = React.memo(() => {
     ],
   });
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
-    address + " balanceOf RFT",
-    () => "test"
-  );
+  const { poolName, poolType } = usePoolInfoFromContext();
 
-  const { isLoading: isInterestLoading, data: interestData } = useQuery(
-    address + " interestAccruedBy",
-    () => "test"
-  );
+  const { poolBalance, isPoolBalanceLoading } = usePoolBalance(poolType);
 
   const {
     isOpen: isDepositModalOpen,
@@ -143,15 +147,12 @@ const PoolPortalContent = React.memo(() => {
 
   const { t } = useTranslation();
 
-  const { poolName, poolType } = usePoolInfoFromContext();
-
-  if (isBalanceLoading || isInterestLoading) {
+  if (isPoolBalanceLoading) {
     return <FullPageSpinner />;
   }
 
-  const myInterest = interestData!;
-  const myBalance = balanceData!;
-  const hasNotDeposited = myBalance === "$0.00";
+  const myBalance = poolBalance!;
+  const hasNotDeposited = myBalance === "$0.00000";
 
   return (
     <>
@@ -238,7 +239,6 @@ const PoolPortalContent = React.memo(() => {
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
                   balance={myBalance}
-                  interestEarned={myInterest}
                 />
               </Box>
             </DashboardBox>
@@ -343,14 +343,26 @@ const UserStatsAndChart = React.memo(
   ({
     size,
     balance,
-    interestEarned,
+
     hasNotDeposited,
   }: {
     size: number;
     balance: string;
-    interestEarned: string;
     hasNotDeposited: boolean;
   }) => {
+    const { address, rari } = useRari();
+
+    const { poolType, poolName } = usePoolInfoFromContext();
+
+    const [timeRange, setTimeRange] = useState("max");
+
+    const onTimeRangeChange = useCallback(
+      (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setTimeRange(event.target.value);
+      },
+      [setTimeRange]
+    );
+
     const {
       childSizes: [topPadding, statsSize, chartSize],
     } = useSpacedLayout({
@@ -365,6 +377,102 @@ const UserStatsAndChart = React.memo(
         new PixelSize(5),
       ],
     });
+
+    const {
+      data: interestEarned,
+      isLoading: isInterestEarnedLoading,
+    } = useQuery(address + " interestAccrued " + timeRange, async () => {
+      const latestBlock = await rari.web3.eth.getBlockNumber();
+
+      const blocksPerDay = 6594;
+
+      const startingBlock =
+        timeRange === "month"
+          ? latestBlock - blocksPerDay * 30
+          : timeRange === "year"
+          ? latestBlock - blocksPerDay * 365
+          : timeRange === "week"
+          ? latestBlock - blocksPerDay * 7
+          : 0;
+
+      let interestRaw;
+
+      if (poolType === Pool.ETH) {
+        interestRaw = await rari.pools.ethereum.balances.interestAccruedBy(
+          address,
+          startingBlock
+        );
+      } else if (poolType === Pool.STABLE) {
+        interestRaw = await rari.pools.stable.balances.interestAccruedBy(
+          address,
+          startingBlock
+        );
+      } else {
+        interestRaw = await rari.pools.yield.balances.interestAccruedBy(
+          address,
+          startingBlock
+        );
+      }
+
+      return stringUsdFormatter(rari.web3.utils.fromWei(interestRaw));
+    });
+
+    const { data: chartData, isLoading: isChartDataLoading } = useQuery(
+      address + " balanceHistory",
+      async () => {
+        const millisecondStart =
+          timeRange === "month"
+            ? Date.now() - millisecondsPerDay * 30
+            : timeRange === "year"
+            ? Date.now() - millisecondsPerDay * 365
+            : timeRange === "week"
+            ? Date.now() - millisecondsPerDay * 7
+            : 0;
+
+        let rawData;
+
+        if (poolType === Pool.ETH) {
+          rawData = await rari.pools.ethereum.history.getBalanceHistoryOf(
+            address,
+            millisecondStart
+          );
+        } else if (poolType === Pool.STABLE) {
+          rawData = await rari.pools.stable.history.getBalanceHistoryOf(
+            address,
+            millisecondStart
+          );
+        } else {
+          rawData = await rari.pools.yield.history.getBalanceHistoryOf(
+            address,
+            millisecondStart
+          );
+        }
+
+        return rawData;
+      }
+    );
+
+    const { data: apy, isLoading: isAPYLoading } = useQuery(
+      poolType + " apy",
+      async () => {
+        let poolRawAPY;
+
+        if (poolType === Pool.ETH) {
+          poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
+        } else if (poolType === Pool.STABLE) {
+          poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
+        } else {
+          poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
+        }
+
+        //TODO; fix this this is so ugly
+        const poolAPY = parseFloat(
+          rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+        ).toFixed(1);
+
+        return poolAPY;
+      }
+    );
 
     const { t } = useTranslation();
 
@@ -383,7 +491,7 @@ const UserStatsAndChart = React.memo(
               crossAxisAlignment={{ md: "flex-start", xs: "center" }}
               caption={t("Pool Performance")}
               captionSize="xs"
-              stat={"+15%"}
+              stat={isAPYLoading ? "$?" : apy! + "% APY"}
               statSize="4xl"
             />
           ) : (
@@ -400,7 +508,7 @@ const UserStatsAndChart = React.memo(
                 crossAxisAlignment={{ md: "flex-start", xs: "center" }}
                 caption={t("Interest Earned")}
                 captionSize="xs"
-                stat={interestEarned}
+                stat={isInterestEarnedLoading ? "$?" : interestEarned!}
                 statSize="3xl"
               />
             </>
@@ -412,35 +520,51 @@ const UserStatsAndChart = React.memo(
             fontWeight="bold"
             width={{ md: "130px", xs: "100%" }}
             isDisabled={hasNotDeposited}
+            value={timeRange}
+            onChange={onTimeRangeChange}
           >
-            <option value="weekly">{t("Weekly")}</option>
-            <option value="monthly">{t("Monthly")}</option>
-            <option value="ytd">{t("YTD")}</option>
+            <option value="week">{t("Week")}</option>
+            <option value="month">{t("Month")}</option>
+            <option value="year">{t("Year")}</option>
+            <option value="max">{t("Max")}</option>
           </Select>
         </RowOnDesktopColumnOnMobile>
 
         <Box height={chartSize.asPxString()} color="#000000" overflow="hidden">
-          <Chart
-            options={
-              hasNotDeposited
-                ? { ...SelfReturnChartOptions, ...DisableChartInteractions }
-                : SelfReturnChartOptions
-            }
-            type="line"
-            width="100%"
-            height="100%"
-            series={[
-              {
-                name: "Rari",
-                data: [
-                  { x: "August 1, 2019", y: 54 },
-                  { x: "August 3, 2019", y: 47 },
-                  { x: "August 4, 2019", y: 64 },
-                  { x: "August 5, 2019", y: 95 },
-                ],
-              },
-            ]}
-          />
+          {isChartDataLoading && !hasNotDeposited ? (
+            <Center expand>
+              <Spinner color="#FFF" />
+            </Center>
+          ) : (
+            <Chart
+              options={
+                hasNotDeposited
+                  ? { ...SelfReturnChartOptions, ...DisableChartInteractions }
+                  : SelfReturnChartOptions
+              }
+              type="line"
+              width="100%"
+              height="100%"
+              series={[
+                {
+                  name: poolName,
+                  data: hasNotDeposited
+                    ? [
+                        { x: "October 1, 2020", y: 1000 },
+                        { x: "October 3, 2020", y: 1001 },
+                        { x: "October 4, 2020", y: 1003 },
+                        { x: "October 5, 2020", y: 1005 },
+                      ]
+                    : chartData.map((point: any) => ({
+                        x: new Date(point.timestamp).toLocaleDateString(
+                          "en-US"
+                        ),
+                        y: (parseFloat(point.balance) / 1e18).toFixed(2),
+                      })),
+                },
+              ]}
+            />
+          )}
         </Box>
       </>
     );
@@ -450,6 +574,32 @@ const UserStatsAndChart = React.memo(
 const CurrentAPY = React.memo(() => {
   const { t } = useTranslation();
 
+  const poolType = usePoolType();
+
+  const { rari } = useRari();
+
+  const { data: apy, isLoading: isAPYLoading } = useQuery(
+    poolType + " apy",
+    async () => {
+      let poolRawAPY;
+
+      if (poolType === Pool.ETH) {
+        poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
+      } else if (poolType === Pool.STABLE) {
+        poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
+      } else {
+        poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
+      }
+
+      //TODO; fix this this is so ugly
+      const poolAPY = parseFloat(
+        rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+      ).toFixed(1);
+
+      return poolAPY;
+    }
+  );
+
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading
@@ -458,10 +608,10 @@ const CurrentAPY = React.memo(() => {
         fontSize="54px"
         fontWeight="extrabold"
       >
-        {"12%"}
+        {isAPYLoading ? <Spinner size="lg" mr={4} /> : <>{apy}%</>}
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
-        {t("Today's APY")}
+        {t("Current APY")}
       </Text>
     </Row>
   );
@@ -469,6 +619,58 @@ const CurrentAPY = React.memo(() => {
 
 const APYStats = React.memo(() => {
   const { t } = useTranslation();
+
+  const pool = usePoolType();
+
+  const { rari } = useRari();
+
+  const { data: apys, isLoading: areAPYsLoading } = useQuery(
+    pool + " monthly and weekly apys",
+    async () => {
+      let monthRaw;
+      let weekRaw;
+
+      if (pool === Pool.ETH) {
+        monthRaw = await rari.pools.ethereum.apy.getApyOverTime(
+          Date.now() - millisecondsPerDay * 30
+        );
+        weekRaw = await rari.pools.ethereum.apy.getApyOverTime(
+          Date.now() - millisecondsPerDay * 7
+        );
+      } else if (pool === Pool.STABLE) {
+        monthRaw = await rari.pools.stable.apy.getApyOverTime(
+          Date.now() - millisecondsPerDay * 30
+        );
+        weekRaw = await rari.pools.stable.apy.getApyOverTime(
+          Date.now() - millisecondsPerDay * 7
+        );
+      } else {
+        monthRaw = await rari.pools.yield.apy.getApyOverTime(
+          Date.now() - millisecondsPerDay * 30
+        );
+        weekRaw = await rari.pools.yield.apy.getApyOverTime(
+          Date.now() - millisecondsPerDay * 7
+        );
+      }
+
+      //TODO; fix this this is so ugly
+      const month = parseFloat(
+        rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
+      ).toFixed(1);
+
+      const week = parseFloat(
+        rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
+      ).toFixed(1);
+
+      const rgtRawAPY = await rari.governance.rgt.distributions.getCurrentApy();
+
+      const rgtAPY = parseFloat(
+        rari.web3.utils.fromWei(rgtRawAPY.mul(rari.web3.utils.toBN(100)))
+      ).toFixed(2);
+
+      return { month, week, rgtAPY };
+    }
+  );
 
   return (
     <Column
@@ -491,13 +693,17 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("Month")}: <b>42%</b>
+            {t("Month")}: <b>{areAPYsLoading ? "?" : apys?.month}%</b>
           </Text>
 
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Text fontSize="sm">+ 12%</Text>
-            <Icon ml={1} name="arrow-up" />
-          </Row>
+          <Text fontWeight="bold" textAlign="center">
+            <SimpleTooltip label={t("Extra yield from $RGT")}>
+              <span>
+                + ({areAPYsLoading ? "?" : apys?.rgtAPY}%{" "}
+                <Image display="inline" src={SmallRGTLogo} size="20px" />)
+              </span>
+            </SimpleTooltip>
+          </Text>
         </Row>
         <Row
           mainAxisAlignment="space-between"
@@ -505,13 +711,17 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("Week")}: <b>52%</b>
+            {t("Week")}: <b>{areAPYsLoading ? "?" : apys?.week}%</b>
           </Text>
 
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Text fontSize="sm">+ 10%</Text>
-            <Icon ml={1} name="arrow-up" />
-          </Row>
+          <Text fontWeight="bold" textAlign="center">
+            <SimpleTooltip label={t("Extra yield from $RGT")}>
+              <span>
+                + ({areAPYsLoading ? "?" : apys?.rgtAPY}%{" "}
+                <Image display="inline" src={SmallRGTLogo} size="20px" />)
+              </span>
+            </SimpleTooltip>
+          </Text>
         </Row>
       </Column>
     </Column>
@@ -520,6 +730,47 @@ const APYStats = React.memo(() => {
 
 const StrategyAllocation = React.memo(() => {
   const { t } = useTranslation();
+
+  const { rari } = useRari();
+
+  const poolType = usePoolType();
+
+  const { data: allocations, isLoading: isAllocationsLoading } = useQuery(
+    "allocations",
+    async () => {
+      let rawAllocations: object;
+
+      if (poolType === Pool.ETH) {
+        rawAllocations = await rari.pools.ethereum.allocations.getRawPoolAllocations();
+      } else if (poolType === Pool.STABLE) {
+        rawAllocations = await rari.pools.stable.allocations.getRawPoolAllocations();
+      } else {
+        rawAllocations = await rari.pools.yield.allocations.getRawPoolAllocations();
+      }
+
+      let allocations: { [key: string]: number } = {};
+
+      for (const [subpool, amount] of Object.entries(rawAllocations)) {
+        if (subpool === "_cash") {
+          continue;
+        }
+
+        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount as any));
+
+        if (parsedAmount > 5) {
+          allocations[subpool] = parsedAmount;
+        }
+      }
+
+      const keys = Object.keys(allocations);
+
+      const values: number[] = [];
+
+      keys.forEach((key) => values.push(allocations[key]));
+
+      return [keys, values];
+    }
+  );
 
   return (
     <Column
@@ -534,19 +785,28 @@ const StrategyAllocation = React.memo(() => {
         {t("Strategy Allocation")}
       </Heading>
 
-      <Chart
-        options={StrategyAllocationChartOptions}
-        type="pie"
-        width="100%"
-        height="110px"
-        series={[0.44, 0.64]}
-      />
+      {isAllocationsLoading ? (
+        <Center expand>
+          <Spinner />
+        </Center>
+      ) : (
+        <Chart
+          options={{
+            ...StrategyAllocationChartOptions,
+            labels: allocations![0],
+          }}
+          type="pie"
+          width="100%"
+          height="110px"
+          series={allocations![1]}
+        />
+      )}
     </Column>
   );
 });
 
 const MonthlyReturns = React.memo(() => {
-  const returns = { Rari: 94, Compound: 5.4, dYdX: 4.3 };
+  const returns = { Rari: 9, Compound: 5.4, dYdX: 4.3 };
 
   const { t } = useTranslation();
 
@@ -556,9 +816,10 @@ const MonthlyReturns = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="hidden"
+      opacity={0.1}
     >
       <Heading size="sm" lineHeight={1} mb={3}>
-        {t("Monthly Returns")}
+        {t("Compare Returns (WIP)")}
       </Heading>
 
       {Object.entries(returns).map(([key, value]) => {
@@ -609,9 +870,10 @@ const TokenAllocation = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="hidden"
+      opacity={0.1}
     >
       <Heading size="md" lineHeight={1}>
-        {t("Token Allocation")}
+        {t("Token Allocation (WIP)")}
       </Heading>
 
       {Object.entries(allocations).map(([key, value]) => {
@@ -637,13 +899,24 @@ const TokenAllocation = React.memo(() => {
 const TransactionHistory = React.memo(() => {
   const { t } = useTranslation();
 
-  const isLoading = false;
+  const { address, rari } = useRari();
 
-  return isLoading ? (
-    <Center expand>
-      <Spinner />
-    </Center>
-  ) : (
+  const poolType = usePoolType();
+
+  let poolAddress: string;
+
+  if (poolType === Pool.ETH) {
+    //@ts-ignore
+    poolAddress = rari.pools.ethereum.contracts.RariFundToken.options.address;
+  } else if (poolType === Pool.STABLE) {
+    //@ts-ignore
+    poolAddress = rari.pools.stable.contracts.RariFundToken.options.address;
+  } else {
+    //@ts-ignore
+    poolAddress = rari.pools.yield.contracts.RariFundToken.options.address;
+  }
+
+  return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
@@ -653,6 +926,13 @@ const TransactionHistory = React.memo(() => {
       <Heading size="sm" mb={2}>
         {t("Your Transaction History")}
       </Heading>
+
+      <Link
+        href={`https://etherscan.io/token/${poolAddress}?a=${address}`}
+        isExternal
+      >
+        <Button variantColor="teal">{t("View on Etherscan")}</Button>
+      </Link>
 
       {/* {events!.map((event, index) => (
         <Box key={event.transactionHash} width="100%">
@@ -724,9 +1004,10 @@ const RecentTrades = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="auto"
+      opacity={0.1}
     >
       <Heading size="sm" mb={2}>
-        {t("Recent Trades")}
+        {t("Recent Trades (WIP)")}
       </Heading>
 
       {recentTrades!.map((event, index) => (

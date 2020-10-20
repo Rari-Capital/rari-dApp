@@ -7,8 +7,11 @@ import {
   Icon,
 } from "@chakra-ui/core";
 import { Column, Row } from "buttered-chakra";
-import React from "react";
+
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
+import { useRari } from "../../context/RariContext";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { GlowingButton } from "./GlowingButton";
@@ -35,6 +38,23 @@ export const ClaimRGTModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
     const { t } = useTranslation();
 
+    const { address, rari } = useRari();
+
+    const { data: unclaimed, isLoading: isUnclaimedLoading } = useQuery(
+      address + " unclaimed RGT",
+      async () => {
+        return parseFloat(
+          rari.web3.utils.fromWei(
+            await rari.governance.rgt.distributions.getUnclaimed(address)
+          )
+        ).toFixed(3);
+      }
+    );
+
+    const claimRGT = useCallback(() => {
+      rari.governance.rgt.distributions.claim(address, { from: address });
+    }, [rari.governance.rgt.distributions, address]);
+
     return (
       <ModalAnimation
         isActivted={isOpen}
@@ -57,7 +77,7 @@ export const ClaimRGTModal = React.memo(
               >
                 <AnimatedSmallLogo size="50px" />
                 <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
-                  20,000
+                  {isUnclaimedLoading ? "$?" : unclaimed}
                 </Heading>
 
                 <Row
@@ -115,7 +135,7 @@ export const ClaimRGTModal = React.memo(
                 <GlowingButton
                   label={t("Claim")}
                   fontSize="2xl"
-                  onClick={() => {}}
+                  onClick={claimRGT}
                   width="100%"
                   height="60px"
                 />

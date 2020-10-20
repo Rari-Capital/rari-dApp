@@ -1,10 +1,11 @@
-import { Box, Text } from "@chakra-ui/core";
+import { Box, Spinner, Text } from "@chakra-ui/core";
 import {
   useSpacedLayout,
   PixelSize,
   ResponsivePixelSize,
   PercentageSize,
   Row,
+  Center,
 } from "buttered-chakra";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -12,6 +13,10 @@ import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import Chart from "react-apexcharts";
+import { useRari } from "../../context/RariContext";
+import { useQuery } from "react-query";
+
+const millisecondsPerYear = 3.154e10;
 
 const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {
@@ -33,6 +38,66 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
   const { t } = useTranslation();
 
+  const { rari } = useRari();
+
+  const { data: chartData, isLoading: isChartDataLoading } = useQuery(
+    "fundPerformance",
+    async () => {
+      const startingPoint = Date.now() - millisecondsPerYear;
+
+      const rawStablePoints = await rari.pools.stable.history.getPoolTokenExchangeRateHistory(
+        startingPoint
+      );
+
+      const firstRawStablePointRate =
+        parseFloat(rawStablePoints[0].rate) / 1e18;
+
+      const stablePoints = rawStablePoints.map((point: any) => {
+        return {
+          x: new Date(point.timestamp).toLocaleDateString("en-US"),
+          y: (
+            (10000 * (parseFloat(point.balance) / 1e18)) /
+            firstRawStablePointRate
+          ).toFixed(2),
+        };
+      });
+
+      const rawYieldPoints = await rari.pools.yield.history.getPoolTokenExchangeRateHistory(
+        startingPoint
+      );
+
+      const firstRawYieldPointRate = parseFloat(rawYieldPoints[0].rate) / 1e18;
+
+      const yieldPoints = rawYieldPoints.map((point: any) => {
+        return {
+          x: new Date(point.timestamp).toLocaleDateString("en-US"),
+          y: (
+            (10000 * (parseFloat(point.balance) / 1e18)) /
+            firstRawYieldPointRate
+          ).toFixed(2),
+        };
+      });
+
+      const rawETHPoints = await rari.pools.ethereum.history.getPoolTokenExchangeRateHistory(
+        startingPoint
+      );
+
+      const firstRawETHPointRate = parseFloat(rawETHPoints[0].rate) / 1e18;
+
+      const ethPoints = rawETHPoints.map((point: any) => {
+        return {
+          x: new Date(point.timestamp).toLocaleDateString("en-US"),
+          y: (
+            (10000 * (parseFloat(point.balance) / 1e18)) /
+            firstRawETHPointRate
+          ).toFixed(2),
+        };
+      });
+
+      return { ethPoints, yieldPoints, stablePoints };
+    }
+  );
+
   return (
     <>
       <Row
@@ -51,46 +116,37 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
           letterSpacing="wide"
           color="#858585"
         >
-          {t("Performance beginning with $10,000 on 8/1/2020")}
+          {t("Performance beginning with $10,000 deposited 1 year ago")}
         </Text>
       </Row>
 
       <Box height={chartSize.asPxString()} overflow="hidden">
-        <Chart
-          options={PoolReturnChartOptions}
-          type="line"
-          width="100%"
-          height="100%"
-          series={[
-            {
-              name: "Yield Pool",
-              data: [
-                { x: "August 1, 2020", y: 10000 },
-                { x: "August 3, 2020", y: 12120 },
-                { x: "August 4, 2020", y: 15451 },
-                { x: "August 5, 2020", y: 18562 },
-              ],
-            },
-            {
-              name: "Stable Pool",
-              data: [
-                { x: "August 1, 2020", y: 10000 },
-                { x: "August 3, 2020", y: 10012 },
-                { x: "August 4, 2020", y: 10124 },
-                { x: "August 5, 2020", y: 12721 },
-              ],
-            },
-            {
-              name: "ETH Pool",
-              data: [
-                { x: "August 1, 2020", y: 10000 },
-                { x: "August 3, 2020", y: 10230 },
-                { x: "August 4, 2020", y: 11240 },
-                { x: "August 5, 2020", y: 13112 },
-              ],
-            },
-          ]}
-        />
+        {isChartDataLoading ? (
+          <Center expand>
+            <Spinner />
+          </Center>
+        ) : (
+          <Chart
+            options={PoolReturnChartOptions}
+            type="line"
+            width="100%"
+            height="100%"
+            series={[
+              {
+                name: "Yield Pool",
+                data: chartData?.yieldPoints,
+              },
+              {
+                name: "Stable Pool",
+                data: chartData?.stablePoints,
+              },
+              {
+                name: "ETH Pool",
+                data: chartData?.ethPoints,
+              },
+            ]}
+          />
+        )}
       </Box>
     </>
   );
