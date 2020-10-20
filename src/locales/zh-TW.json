@@ -65,5 +65,8 @@
   "Token Allocation (WIP)": "令牌分配（WIP）",
   "Performance beginning with $10,000 deposited 1 year ago": "性能始於1年之前的$ 10,000",
   "Recent Trades (WIP)": "最近交易（WIP）",
-  "View on Etherscan": "在Etherscan上查看"
+  "View on Etherscan": "在Etherscan上查看",
+  "Click confirm to withdraw.": "點擊確認退出。",
+  "You will deposit {{amount}}. Do you approve?": "您將存入{{amount}}。 你贊成嗎",
+  "You will withdraw {{amount}}. Do you approve?": "您將提取{{amount}}。 你贊成嗎"
 }

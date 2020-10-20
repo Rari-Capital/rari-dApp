@@ -23,6 +23,11 @@ import { Mode } from ".";
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
 import { useRari } from "../../../context/RariContext";
+import { Pool, usePoolType } from "../../../context/PoolContext";
+import { stringUsdFormatter } from "../../../utils/bigUtils";
+import StablePool from "../../../rari-sdk/pools/stable";
+import EthereumPool from "../../../rari-sdk/pools/ethereum";
+import YieldPool from "../../../rari-sdk/pools/yield";
 
 interface Props {
   selectedToken: string;
@@ -35,7 +40,9 @@ const AmountSelect = React.memo(
   ({ selectedToken, openCoinSelect, mode, openOptions }: Props) => {
     const token = tokens[selectedToken];
 
-    const { rari } = useRari();
+    const poolType = usePoolType();
+
+    const { rari, address } = useRari();
 
     const {
       data: selectedTokenBalance,
@@ -76,6 +83,98 @@ const AmountSelect = React.memo(
     );
 
     const { t } = useTranslation();
+
+    const onDeposit = useCallback(async () => {
+      let pool: StablePool | EthereumPool | YieldPool;
+
+      if (poolType === Pool.ETH) {
+        pool = rari.pools.ethereum;
+      } else if (poolType === Pool.STABLE) {
+        pool = rari.pools.stable;
+      } else {
+        pool = rari.pools.yield;
+      }
+
+      const amountInTheirTokenScaledWithDecimal = rari.web3.utils
+        .toBN(10 ** token.decimals)
+        .mul(amount);
+
+      const [amountToBeAdded] = await pool.deposits.validateDeposit(
+        token.symbol,
+        amountInTheirTokenScaledWithDecimal,
+        address
+      );
+
+      const amountToBeAddedInFormat =
+        poolType === Pool.ETH
+          ? rari.web3.utils.fromWei(amountToBeAdded).toString() + " ETH"
+          : stringUsdFormatter(
+              rari.web3.utils.fromWei(amountToBeAdded).toString()
+            );
+
+      if (
+        window.confirm(
+          t("You will deposit {{amount}}. Do you approve?", {
+            amount: amountToBeAddedInFormat,
+          })
+        )
+      ) {
+        pool.deposits.deposit(
+          token.symbol,
+          amountInTheirTokenScaledWithDecimal,
+          amountToBeAdded,
+          {
+            from: address,
+          }
+        );
+      }
+    }, [address, poolType, rari.pools, rari.web3.utils, token, amount]);
+
+    const onWithdraw = useCallback(async () => {
+      let pool: StablePool | EthereumPool | YieldPool;
+
+      if (poolType === Pool.ETH) {
+        pool = rari.pools.ethereum;
+      } else if (poolType === Pool.STABLE) {
+        pool = rari.pools.stable;
+      } else {
+        pool = rari.pools.yield;
+      }
+
+      const amountInTheirTokenScaledWithDecimal = rari.web3.utils
+        .toBN(10 ** token.decimals)
+        .mul(amount);
+
+      const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
+        token.symbol,
+        amountInTheirTokenScaledWithDecimal,
+        address
+      );
+
+      const amountToBeRemovedInFormat =
+        poolType === Pool.ETH
+          ? rari.web3.utils.fromWei(amountToBeRemoved).toString() + " ETH"
+          : stringUsdFormatter(
+              rari.web3.utils.fromWei(amountToBeRemoved).toString()
+            );
+
+      if (
+        window.confirm(
+          t("You will withdraw {{amount}}. Do you approve?", {
+            amount: amountToBeRemovedInFormat,
+          })
+        )
+      ) {
+        pool.withdrawals.withdraw(
+          token.symbol,
+          amountInTheirTokenScaledWithDecimal,
+          amountToBeRemoved,
+          {
+            from: address,
+          }
+        );
+      }
+    }, [address, poolType, rari.pools, rari.web3.utils, token, amount]);
 
     return (
       <>
@@ -119,11 +218,14 @@ const AmountSelect = React.memo(
                 ? t("Loading your balance of {{token}}...", {
                     token: selectedToken,
                   })
-                : isAmountGreaterThanSelectedTokenBalance
+                : isAmountGreaterThanSelectedTokenBalance &&
+                  mode === Mode.DEPOSIT
                 ? t("You don't have enough {{token}}.", {
                     token: selectedToken,
                   })
-                : t("Click confirm to start earning interest!")
+                : mode === Mode.DEPOSIT
+                ? t("Click confirm to start earning interest!")
+                : t("Click confirm to withdraw.")
               : mode === Mode.DEPOSIT
               ? t("Enter a valid amount to deposit.")
               : t("Enter a valid amount to withdraw.")}
@@ -145,6 +247,7 @@ const AmountSelect = React.memo(
                 openCoinSelect={openCoinSelect}
                 selectedToken={selectedToken}
                 updateAmount={updateAmount}
+                mode={mode}
               />
             </Row>
           </DashboardBox>
@@ -160,10 +263,11 @@ const AmountSelect = React.memo(
             _active={{ transform: "scale(0.95)" }}
             color={token.overlayTextColor}
             isLoading={isSelectedTokenBalanceLoading}
+            onClick={mode === Mode.DEPOSIT ? onDeposit : onWithdraw}
             isDisabled={
               amount === null ||
               !amount.gt(0) ||
-              isAmountGreaterThanSelectedTokenBalance
+              (isAmountGreaterThanSelectedTokenBalance && mode === Mode.DEPOSIT)
             }
           >
             {t("Confirm")}
@@ -181,10 +285,12 @@ const TokenNameAndMaxButton = React.memo(
     openCoinSelect,
     selectedToken,
     updateAmount,
+    mode,
   }: {
     selectedToken: string;
     openCoinSelect: () => any;
     updateAmount: (newAmount: string) => any;
+    mode: Mode;
   }) => {
     const token = tokens[selectedToken];
 
@@ -226,23 +332,25 @@ const TokenNameAndMaxButton = React.memo(
           <Icon name="chevron-down" size="32px" />
         </Row>
 
-        <Button
-          ml={1}
-          height="28px"
-          width="58px"
-          bg="transparent"
-          border="2px"
-          borderRadius="8px"
-          borderColor="#272727"
-          fontSize="sm"
-          fontWeight="extrabold"
-          _hover={{}}
-          _active={{}}
-          onClick={setToMax}
-          isLoading={isMaxLoading}
-        >
-          {t("MAX")}
-        </Button>
+        {mode === Mode.WITHDRAW ? null : (
+          <Button
+            ml={1}
+            height="28px"
+            width="58px"
+            bg="transparent"
+            border="2px"
+            borderRadius="8px"
+            borderColor="#272727"
+            fontSize="sm"
+            fontWeight="extrabold"
+            _hover={{}}
+            _active={{}}
+            onClick={setToMax}
+            isLoading={isMaxLoading}
+          >
+            {t("MAX")}
+          </Button>
+        )}
       </Row>
     );
   }

@@ -2,15 +2,16 @@ import { useQuery } from "react-query";
 import { Token } from "rari-tokens-generator";
 
 import { useRari } from "../context/RariContext";
+import Rari from "../rari-sdk/index";
 
 export const getTokenBalance = async (
   token: Token,
-  rari: any,
+  rari: Rari,
   address: string
 ) => {
   let stringBalance;
 
-  const allTokens = rari.getAllTokens();
+  const allTokens = await rari.getAllTokens();
 
   if (token.symbol !== "ETH") {
     stringBalance = await allTokens[token.symbol].contract.methods
@@ -21,14 +22,14 @@ export const getTokenBalance = async (
   }
 
   return rari.web3.utils
-    .BN(stringBalance)
-    .div(rari.web3.utils.BN(10 ** token.decimals));
+    .toBN(stringBalance)
+    .div(rari.web3.utils.toBN(10 ** token.decimals));
 };
 
 export function useTokenBalance(token: Token) {
   const { rari, address } = useRari();
 
   return useQuery(address + " balanceOf " + token.symbol, () =>
-    getTokenBalance(token, rari.web3, address)
+    getTokenBalance(token, rari, address)
   );
 }

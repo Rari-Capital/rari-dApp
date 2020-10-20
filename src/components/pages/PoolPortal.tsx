@@ -555,7 +555,7 @@ const UserStatsAndChart = React.memo(
                         { x: "October 4, 2020", y: 1003 },
                         { x: "October 5, 2020", y: 1005 },
                       ]
-                    : chartData.map((point: any) => ({
+                    : (chartData ?? []).map((point: any) => ({
                         x: new Date(point.timestamp).toLocaleDateString(
                           "en-US"
                         ),
