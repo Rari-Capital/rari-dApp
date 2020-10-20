@@ -45,7 +45,7 @@ const AmountSelect = React.memo(
     const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
 
     //TODO: this is ugly af fix this later
-    const [amount, _setAmount] = useState<any>(() => rari.web3.utils.BN(0.0));
+    const [amount, _setAmount] = useState<any>(() => rari.web3.utils.toBN(0.0));
 
     const updateAmount = useCallback(
       (newAmount: string) => {
@@ -57,7 +57,7 @@ const AmountSelect = React.memo(
 
         try {
           // Try to set the amount to Big(amount):
-          const bigAmount = rari.web3.utils.BN(newAmount);
+          const bigAmount = rari.web3.utils.toBN(newAmount);
           _setAmount(bigAmount);
         } catch (e) {
           // If the number was invalid, set the amount to null to disable confirming:

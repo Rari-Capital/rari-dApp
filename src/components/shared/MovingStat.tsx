@@ -24,7 +24,7 @@ type RefetchMovingStatProps = Omit<CaptionedStatProps, "stat"> & {
   queryKey: string;
   /** In milliseconds like: 1000, 500, 20, 10, 221 */
   interval: number;
-  fetch: () => string;
+  fetch: () => Promise<string>;
   loadingPlaceholder: string;
 };
 
@@ -88,12 +88,12 @@ export const APYMovingStat = React.memo(
   }
 );
 
-type APYWithRefreshMovingProps = Omit<APYMovingStatProps, "interval"> &
-  Omit<
-    Omit<Omit<RefetchMovingStatProps, "interval">, "fetch">,
-    "loadingPlaceholder"
-  > & {
-    fetch: () => number;
+type APYWithRefreshMovingProps = Omit<
+  Omit<APYMovingStatProps, "interval">,
+  "startingAmount"
+> &
+  Omit<Omit<RefetchMovingStatProps, "interval">, "fetch"> & {
+    fetch: () => Promise<number>;
     fetchInterval: number;
     apyInterval: number;
   };
@@ -101,10 +101,10 @@ type APYWithRefreshMovingProps = Omit<APYMovingStatProps, "interval"> &
 export const APYWithRefreshMovingStat = React.memo(
   ({
     queryKey,
-    startingAmount,
     formatStat,
     fetchInterval,
     apyInterval,
+    loadingPlaceholder,
     fetch,
     apy,
     ...statProps
@@ -118,7 +118,7 @@ export const APYWithRefreshMovingStat = React.memo(
       return percentIncreasePerInterval;
     }, [apyInterval, apy]);
 
-    const [currentStat, setCurrentStat] = useState(startingAmount);
+    const [currentStat, setCurrentStat] = useState(0);
 
     const formattedStat = useMemo(() => formatStat(currentStat), [
       formatStat,
@@ -139,6 +139,11 @@ export const APYWithRefreshMovingStat = React.memo(
       }
     }, [data]);
 
-    return <CaptionedStat {...statProps} stat={formattedStat} />;
+    return (
+      <CaptionedStat
+        {...statProps}
+        stat={!data ? loadingPlaceholder : formattedStat}
+      />
+    );
   }
 );
