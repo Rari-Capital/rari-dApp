@@ -797,7 +797,7 @@ export default class StablePool {
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
             ? web3.eth.getBalance(sender)
-            : allTokens[currencyCode].contract.methods.balanceOf(sender))
+            : allTokens[currencyCode].contract.methods.balanceOf(sender).call())
         );
         if (amount.gt(accountBalanceBN))
           throw "Not enough balance in your account to make a deposit of this amount.";
@@ -1478,7 +1478,7 @@ export default class StablePool {
             if (allBalances["0"][i] !== currencyCode) {
               var rawFundBalanceBN = Web3.utils.toBN(0);
               for (var j = 0; j < allBalances["3"][i].length; j++)
-                rawFundBalanceBN.iadd(allBalances["3"][i][j]);
+                rawFundBalanceBN.iadd(Web3.utils.toBN(allBalances["3"][i][j]));
               if (rawFundBalanceBN.gt(Web3.utils.toBN(0)))
                 inputCandidates.push({
                   currencyCode: allBalances["0"][i],
