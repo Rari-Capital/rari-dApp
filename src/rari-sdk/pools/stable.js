@@ -163,7 +163,7 @@ export default class StablePool {
     this.balances = {
       getTotalSupply: async function () {
         return Web3.utils.toBN(
-          self.contracts.RariFundManager.methods.getFundBalance().call()
+          await self.contracts.RariFundManager.methods.getFundBalance().call()
         );
       },
       getTotalInterestAccrued: async function (
@@ -174,8 +174,10 @@ export default class StablePool {
         if (toBlock === undefined) toBlock = "latest";
 
         if (fromBlock == 0 && toBlock === "latest")
-          return await Web3.utils.toBN(
-            self.contracts.RariFundManager.methods.getInterestAccrued().call()
+          return Web3.utils.toBN(
+            await self.contracts.RariFundManager.methods
+              .getInterestAccrued()
+              .call()
           );
         else
           try {
@@ -192,9 +194,9 @@ export default class StablePool {
       },
       balanceOf: async function (account) {
         if (!account) throw "No account specified";
-        return Web3.utils.toBN(await self.contracts.RariFundManager.methods
-          .balanceOf(account)
-          .call());
+        return Web3.utils.toBN(
+          await self.contracts.RariFundManager.methods.balanceOf(account).call()
+        );
       },
       interestAccruedBy: async function (
         account,
@@ -227,7 +229,7 @@ export default class StablePool {
           throw "Amount is not a valid BN instance greater than 0.";
         if (!options || !options.from)
           throw "Options parameter not set or from address not set.";
-        
+
         var fundBalanceBN = Web3.utils.toBN(
           await self.contracts.RariFundManager.methods.getFundBalance().call()
         );
@@ -249,7 +251,11 @@ export default class StablePool {
           var apyBNs = {};
 
           for (var i = 0; i < data.markets.length; i++)
-            if (self.allocations.CURRENCIES_BY_POOL.dYdX.indexOf(data.markets[i].symbol) >= 0)
+            if (
+              self.allocations.CURRENCIES_BY_POOL.dYdX.indexOf(
+                data.markets[i].symbol
+              ) >= 0
+            )
               apyBNs[data.markets[i].symbol] = Web3.utils.toBN(
                 Math.trunc(parseFloat(data.markets[i].totalSupplyAPR) * 1e18)
               );
@@ -274,7 +280,10 @@ export default class StablePool {
                 Math.trunc(parseFloat(data.cToken[i].supply_rate.value) * 1e18)
               );
               var compApy = Web3.utils.toBN(
-                Math.trunc(parseFloat(cToken.comp_supply_apy.value) / 100 * 1e18)
+                Math.trunc(
+                  (parseFloat(data.cToken[i].comp_supply_apy.value) / 100) *
+                    1e18
+                )
               );
               apyBNs[data.cToken[i].underlying_symbol] = [supplyApy, compApy];
             }
@@ -294,13 +303,20 @@ export default class StablePool {
       },
       Aave: {
         getCurrencyApys: async function () {
+          let currencyCodes = self.allocations.CURRENCIES_BY_POOL.Aave.slice();
+
+          currencyCodes[currencyCodes.indexOf("sUSD")] = "SUSD";
+
           const data = (
             await axios.post(
               "https://api.thegraph.com/subgraphs/name/aave/protocol-multy-raw",
               {
-                query: `{
+                query:
+                  `{
                         reserves(where: {
-                            symbol_in: ` + JSON.stringify(self.allocations.CURRENCIES_BY_POOL.Aave) + `
+                            symbol_in: ` +
+                  JSON.stringify(currencyCodes) +
+                  `
                         }) {
                             symbol
                             liquidityRate
@@ -386,16 +402,18 @@ export default class StablePool {
           return { mUSD: await self.pools.mStable.getMUsdSavingsApy() };
         },
         getMUsdSwapFeeBN: async function () {
-          const data = (await axios.post(
-            "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-            {
-              query: `{
+          const data = (
+            await axios.post(
+              "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
+              {
+                query: `{
                     massets(where: { id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5" }) {
                     feeRate
                     }
                 }`,
-            }
-          )).data;
+              }
+            )
+          ).data;
 
           return Web3.utils.toBN(data.data.massets[0].feeRate);
         },
@@ -415,10 +433,10 @@ export default class StablePool {
         mUSD: ["mStable"],
       },
       CURRENCIES_BY_POOL: {
-        "dYdX": ["DAI", "USDC"],
-        "Compound": ["DAI", "USDC", "USDT"],
-        "Aave": ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD"],
-        "mStable": ["mUSD"]
+        dYdX: ["DAI", "USDC"],
+        Compound: ["DAI", "USDC", "USDT"],
+        Aave: ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD"],
+        mStable: ["mUSD"],
       },
       getRawCurrencyAllocations: async function () {
         var allocationsByCurrency = {
@@ -555,7 +573,10 @@ export default class StablePool {
 
         // Get pool APYs
         var poolApyBNs = [];
-        for (var i = 0; i < self.allocations.POOLS.length; i++) poolApyBNs[i] = await self.pools[self.allocations.POOLS[i]].getCurrencyApys();
+        for (var i = 0; i < self.allocations.POOLS.length; i++)
+          poolApyBNs[i] = await self.pools[
+            self.allocations.POOLS[i]
+          ].getCurrencyApys();
 
         // Get all balances
         var allBalances = await self.cache.getOrUpdate(
@@ -569,6 +590,7 @@ export default class StablePool {
           var currencyCode = allBalances["0"][i];
           var priceInUsdBN = Web3.utils.toBN(allBalances["4"][i]);
           var contractBalanceBN = Web3.utils.toBN(allBalances["1"][i]);
+
           var contractBalanceUsdBN = contractBalanceBN
             .mul(priceInUsdBN)
             .div(
@@ -582,6 +604,7 @@ export default class StablePool {
           for (var j = 0; j < pools.length; j++) {
             var pool = pools[j];
             var poolBalanceBN = Web3.utils.toBN(poolBalances[j]);
+
             var poolBalanceUsdBN = poolBalanceBN
               .mul(priceInUsdBN)
               .div(
@@ -589,6 +612,7 @@ export default class StablePool {
                   10 ** self.internalTokens[currencyCode].decimals
                 )
               );
+
             factors.push([poolBalanceUsdBN, poolApyBNs[pool][currencyCode]]);
             totalBalanceUsdBN = totalBalanceUsdBN.add(poolBalanceUsdBN);
           }
@@ -602,8 +626,10 @@ export default class StablePool {
         }
 
         var apyBN = Web3.utils.toBN(0);
-        for (var i = 0; i < factors.length; i++)
+        for (var i = 0; i < factors.length; i++) {
           apyBN.iadd(factors[i][0].mul(factors[i][1]).div(totalBalanceUsdBN));
+        }
+
         return apyBN;
       },
       getCurrentApy: async function () {
@@ -629,8 +655,11 @@ export default class StablePool {
         const SECONDS_PER_YEAR = 365 * 86400;
         var timeDiff = endTimestamp - startTimestamp;
         return Web3.utils.toBN(
-          (((endRsptExchangeRate.toString() / startRsptExchangeRate.toString()) **
-            (SECONDS_PER_YEAR / timeDiff)) - 1) * 1e18
+          ((endRsptExchangeRate.toString() /
+            startRsptExchangeRate.toString()) **
+            (SECONDS_PER_YEAR / timeDiff) -
+            1) *
+            1e18
         );
       },
       getApyOverBlocks: async function (fromBlock = 0, toBlock = "latest") {
@@ -2255,9 +2284,14 @@ export default class StablePool {
 
         try {
           return (
-            await axios.get(self.API_BASE_URL + self.POOL_TOKEN_SYMBOL.toLowerCase() + "/rates", {
-              params: { fromTimestamp, toTimestamp, intervalSeconds },
-            })
+            await axios.get(
+              self.API_BASE_URL +
+                self.POOL_TOKEN_SYMBOL.toLowerCase() +
+                "/rates",
+              {
+                params: { fromTimestamp, toTimestamp, intervalSeconds },
+              }
+            )
           ).data;
         } catch (error) {
           throw "Error in Rari API: " + error;
@@ -2478,7 +2512,7 @@ export default class StablePool {
           );
         return events;
       },
-      getRsptTransferHistory: this.getPoolTokenTransferHistory
+      getRsptTransferHistory: this.getPoolTokenTransferHistory,
     };
   }
 }

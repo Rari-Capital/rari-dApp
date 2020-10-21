@@ -42,6 +42,8 @@ export default class EthereumPool extends StablePool {
     delete this.legacyContracts;
     delete this.externalContracts;
 
+    var self = this;
+
     delete this.internalTokens;
 
     this.rept = this.rspt;
@@ -51,11 +53,11 @@ export default class EthereumPool extends StablePool {
     this.allocations.POOLS = ["dYdX", "Compound", "KeeperDAO", "Aave"];
     delete this.allocations.POOLS_BY_CURRENCY;
     this.allocations.CURRENCIES_BY_POOL = {
-      "dYdX": ["ETH"],
-      "Compound": ["ETH"],
-      "KeeperDAO": ["ETH"],
-      "Aave": ["ETH"]
-    }
+      dYdX: ["ETH"],
+      Compound: ["ETH"],
+      KeeperDAO: ["ETH"],
+      Aave: ["ETH"],
+    };
     delete this.allocations.getAllocationsByCurrency;
     delete this.allocations.getRawAllocations;
     delete this.allocations.getCurrencyUsdPrices;
@@ -68,9 +70,9 @@ export default class EthereumPool extends StablePool {
         KeeperDAO: Web3.utils.toBN(0),
         Aave: Web3.utils.toBN(0),
       };
-      var allBalances = await this.cache.getOrUpdate(
+      var allBalances = await self.cache.getOrUpdate(
         "allBalances",
-        this.contracts.RariFundController.methods.getRawFundBalances().call
+        self.contracts.RariFundController.methods.getRawFundBalances().call
       );
 
       allocationsByPool._cash = Web3.utils.toBN(allBalances["0"]);
@@ -80,17 +82,19 @@ export default class EthereumPool extends StablePool {
       for (var i = 0; i < pools.length; i++) {
         var pool = pools[i];
         var poolBalanceBN = Web3.utils.toBN(poolBalances[i]);
-        allocationsByPool[this.allocations.POOLS[pool]] = poolBalanceBN;
+        allocationsByPool[self.allocations.POOLS[pool]] = poolBalanceBN;
       }
 
       return allocationsByPool;
     };
 
     delete this.pools.mStable;
-    
-    this.pools.KeeperDAO.getCurrencyApys = function() {
-      // TODO: yVault APYs
-      return { "ETH": Web3.utils.toBN(0) };
+
+    this.pools.KeeperDAO = {};
+
+    this.pools.KeeperDAO.getCurrencyApys = function () {
+      // TODO: keeperdao APYs
+      return { ETH: Web3.utils.toBN(0) };
     };
 
     this.apy.getCurrentRawApy = async function () {
@@ -99,12 +103,15 @@ export default class EthereumPool extends StablePool {
 
       // Get pool APYs
       var poolApyBNs = [];
-      for (var i = 0; i < this.allocations.POOLS.length; i++) poolApyBNs[i] = this.pools[this.allocations.POOLS[i]].getCurrencyApys();
+      for (var i = 0; i < self.allocations.POOLS.length; i++)
+        poolApyBNs[i] = await self.pools[
+          self.allocations.POOLS[i]
+        ].getCurrencyApys();
 
       // Get all raw balances
-      var allBalances = await this.cache.getOrUpdate(
+      var allBalances = await self.cache.getOrUpdate(
         "allBalances",
-        this.contracts.RariFundProxy.methods.getRawFundBalances().call
+        self.contracts.RariFundController.methods.getRawFundBalances().call
       );
 
       // Get array of APY factors
@@ -117,7 +124,8 @@ export default class EthereumPool extends StablePool {
       for (var i = 0; i < pools.length; i++) {
         var pool = pools[i];
         var poolBalanceBN = Web3.utils.toBN(poolBalances[i]);
-        factors.push([poolBalanceBN, poolApyBNs[pool][currencyCode]]);
+
+        factors.push([poolBalanceBN, poolApyBNs[pool]["ETH"]]);
         totalBalanceBN.iadd(poolBalanceBN);
       }
 
@@ -145,14 +153,14 @@ export default class EthereumPool extends StablePool {
     ) {
       // Input validation
       if (!sender) throw "Sender parameter not set.";
-      var allTokens = await this.getAllTokens();
+      var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
         throw "Invalid currency code!";
       if (!amount || amount.lte(Web3.utils.toBN(0)))
         throw "Deposit amount must be greater than 0!";
       var accountBalanceBN = Web3.utils.toBN(
         await (currencyCode == "ETH"
-          ? this.web3.eth.getBalance(sender)
+          ? self.web3.eth.getBalance(sender)
           : allTokens[currencyCode].contract.methods.balanceOf(sender))
       );
       if (amount.gt(accountBalanceBN))
@@ -208,14 +216,14 @@ export default class EthereumPool extends StablePool {
       // Input validation
       if (!options || !options.from)
         throw "Options parameter not set or from address not set.";
-      var allTokens = await this.getAllTokens();
+      var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
         throw "Invalid currency code!";
       if (!amount || amount.lte(Web3.utils.toBN(0)))
         throw "Deposit amount must be greater than 0!";
       var accountBalanceBN = Web3.utils.toBN(
         await (currencyCode == "ETH"
-          ? this.web3.eth.getBalance(options.from)
+          ? self.web3.eth.getBalance(options.from)
           : allTokens[currencyCode].contract.methods.balanceOf(options.from))
       );
       if (amount.gt(accountBalanceBN))
@@ -233,7 +241,7 @@ export default class EthereumPool extends StablePool {
         // Deposit tokens to RariFundManager
         try {
           options.value = amount;
-          var receipt = await this.contracts.RariFundManager.methods
+          var receipt = await self.contracts.RariFundManager.methods
             .deposit()
             .send(options);
         } catch (err) {
@@ -283,7 +291,7 @@ export default class EthereumPool extends StablePool {
             await allTokens[currencyCode].contract.methods
               .allowance(
                 options.from,
-                this.contracts.RariFundProxy.options.address
+                self.contracts.RariFundProxy.options.address
               )
               .call()
           );
@@ -324,7 +332,7 @@ export default class EthereumPool extends StablePool {
 
         // Exchange and deposit tokens via RariFundProxy
         try {
-          var receipt = await this.contracts.RariFundProxy.methods
+          var receipt = await self.contracts.RariFundProxy.methods
             .exchangeAndDeposit(
               allTokens[currencyCode].address,
               amount,
@@ -342,7 +350,7 @@ export default class EthereumPool extends StablePool {
           );
         }
 
-        this.cache.clear("allBalances");
+        self.cache.clear("allBalances");
         return [
           makerAssetFilledAmountBN,
           Web3.utils.toBN(protocolFee),
@@ -357,7 +365,7 @@ export default class EthereumPool extends StablePool {
       amount,
       sender
     ) {
-      var allTokens = await this.getAllTokens();
+      var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
         throw "Invalid currency code!";
       if (!amount || amount.lte(Web3.utils.toBN(0)))
@@ -430,7 +438,7 @@ export default class EthereumPool extends StablePool {
       maxEthAmount,
       options
     ) {
-      var allTokens = await this.getAllTokens();
+      var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
         throw "Invalid currency code!";
       if (!amount || amount.lte(Web3.utils.toBN(0)))
@@ -443,7 +451,7 @@ export default class EthereumPool extends StablePool {
 
         // If we can withdraw everything directly, do so
         try {
-          var receipt = await this.contracts.RariFundManager.methods
+          var receipt = await self.contracts.RariFundManager.methods
             .withdraw(amount)
             .send(options);
         } catch (err) {
@@ -511,7 +519,7 @@ export default class EthereumPool extends StablePool {
 
         // Withdraw and exchange tokens via RariFundProxy
         try {
-          var receipt = await this.contracts.RariFundProxy.methods
+          var receipt = await self.contracts.RariFundProxy.methods
             .withdrawAndExchange(
               inputFilledAmountBN,
               allTokens[currencyCode].address,
@@ -546,7 +554,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundController.getPastEvents(
+        ? await self.contracts.RariFundController.getPastEvents(
             "PoolAllocation",
             { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
           )
@@ -559,7 +567,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundController.getPastEvents(
+        ? await self.contracts.RariFundController.getPastEvents(
             "CompToEthTrade",
             { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
           )
@@ -572,7 +580,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundManager.getPastEvents("Deposit", {
+        ? await self.contracts.RariFundManager.getPastEvents("Deposit", {
             fromBlock: Math.max(fromBlock, 11085000),
             toBlock,
             filter,
@@ -586,7 +594,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundManager.getPastEvents("Withdrawal", {
+        ? await self.contracts.RariFundManager.getPastEvents("Withdrawal", {
             fromBlock: Math.max(fromBlock, 11085000),
             toBlock,
             filter,
@@ -600,7 +608,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundProxy.getPastEvents(
+        ? await self.contracts.RariFundProxy.getPastEvents(
             "PreDepositExchange",
             { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
           )
@@ -613,7 +621,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundProxy.getPastEvents(
+        ? await self.contracts.RariFundProxy.getPastEvents(
             "PostWithdrawalExchange",
             { fromBlock: Math.max(fromBlock, 20000001), toBlock, filter }
           )
@@ -626,7 +634,7 @@ export default class EthereumPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundToken.getPastEvents("Transfer", {
+        ? await self.contracts.RariFundToken.getPastEvents("Transfer", {
             fromBlock: Math.max(fromBlock, 10909582),
             toBlock,
             filter,

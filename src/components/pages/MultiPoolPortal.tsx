@@ -29,11 +29,10 @@ import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
 import Marquee from "react-double-marquee";
 import { useRari } from "../../context/RariContext";
-import PoolsPerformanceChart from "../shared/PoolsPerformance";
 
 import { MdSwapHoriz } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink } from "react-router-dom";
+
 import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
@@ -107,7 +106,7 @@ const MultiPoolPortal = React.memo(() => {
           <NewsAndTwitterLink />
         </DashboardBox>
 
-        <DashboardBox
+        {/* <DashboardBox
           mt={DASHBOARD_BOX_SPACING.asPxString()}
           height="300px"
           width="100%"
@@ -116,7 +115,7 @@ const MultiPoolPortal = React.memo(() => {
           px={1}
         >
           <PoolsPerformanceChart size={300} />
-        </DashboardBox>
+        </DashboardBox> */}
 
         <DashboardBox
           width="100%"
@@ -259,7 +258,7 @@ const FundStats = React.memo(() => {
           {hasNotDeposited ? (
             <APYWithRefreshMovingStat
               formatStat={usdFormatter}
-              fetchInterval={5000}
+              fetchInterval={40000}
               loadingPlaceholder="$?"
               apyInterval={100}
               fetch={getTVL}
@@ -433,30 +432,12 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           width="100%"
           mt="auto"
         >
-          <Link
-            /* @ts-ignore */
-            as={RouterLink}
-            width="100%"
-            to={"/pools/" + pool.toString()}
-          >
-            <DashboardBox
-              width="100%"
-              height="45px"
-              borderRadius="7px"
-              fontSize="xl"
-              fontWeight="bold"
-            >
-              <Center expand>{t("Access")}</Center>
-            </DashboardBox>
-          </Link>
-
           <DashboardBox
             flexShrink={0}
             as="button"
             onClick={openDepositModal}
             height="45px"
-            ml={2}
-            width="45px"
+            width="100%"
             borderRadius="7px"
             fontSize="xl"
             fontWeight="bold"

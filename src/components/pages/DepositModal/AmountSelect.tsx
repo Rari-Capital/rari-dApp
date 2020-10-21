@@ -28,13 +28,7 @@ import { stringUsdFormatter } from "../../../utils/bigUtils";
 import StablePool from "../../../rari-sdk/pools/stable";
 import EthereumPool from "../../../rari-sdk/pools/ethereum";
 import YieldPool from "../../../rari-sdk/pools/yield";
-
-import Notify from "bnc-notify";
-
-const notify = Notify({
-  dappId: "0855eca3-50ec-49da-b80c-b4734bd51de6", // [String] The API key created by step one above
-  networkId: 0, // [Integer] The Ethereum network ID your Dapp uses.
-});
+import { notify } from "../../../utils/notify";
 
 interface Props {
   selectedToken: string;
@@ -71,21 +65,23 @@ const AmountSelect = React.memo(
 
         try {
           // Try to set the amount to Big(amount):
-          const bigAmount = rari.web3.utils.toBN(newAmount);
+          const bigAmount = rari.web3.utils.toBN(
+            parseFloat(newAmount) * 10 ** token.decimals
+          );
           _setAmount(bigAmount);
         } catch (e) {
           // If the number was invalid, set the amount to null to disable confirming:
           _setAmount(null);
         }
       },
-      [_setUserEnteredAmount, _setAmount, rari.web3.utils]
+      [_setUserEnteredAmount, _setAmount, rari.web3.utils, token.decimals]
     );
 
     const isAmountGreaterThanSelectedTokenBalance = useMemo(
       () =>
         isSelectedTokenBalanceLoading || amount === null
           ? false
-          : selectedTokenBalance!.lt(amount),
+          : amount.gt(selectedTokenBalance!),
       [isSelectedTokenBalanceLoading, selectedTokenBalance, amount]
     );
 
@@ -102,13 +98,9 @@ const AmountSelect = React.memo(
         pool = rari.pools.yield;
       }
 
-      const amountInTheirTokenScaledWithDecimal = rari.web3.utils
-        .toBN(10 ** token.decimals)
-        .mul(amount);
-
       const [amountToBeAdded] = await pool.deposits.validateDeposit(
         token.symbol,
-        amountInTheirTokenScaledWithDecimal,
+        amount,
         address
       );
 
@@ -126,14 +118,9 @@ const AmountSelect = React.memo(
           })
         )
       ) {
-        pool.deposits.deposit(
-          token.symbol,
-          amountInTheirTokenScaledWithDecimal,
-          amountToBeAdded,
-          {
-            from: address,
-          }
-        );
+        pool.deposits.deposit(token.symbol, amount, amountToBeAdded, {
+          from: address,
+        });
       }
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
@@ -334,7 +321,9 @@ const TokenNameAndMaxButton = React.memo(
 
       const balance = await getTokenBalance(token, rari, address);
 
-      updateAmount(balance.toString());
+      updateAmount(
+        (parseFloat(balance.toString()) / 10 ** token.decimals).toString()
+      );
 
       _setIsMaxLoading(false);
     }, [_setIsMaxLoading, updateAmount, token, rari, address]);

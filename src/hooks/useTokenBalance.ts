@@ -21,9 +21,7 @@ export const getTokenBalance = async (
     stringBalance = await rari.web3.eth.getBalance(address);
   }
 
-  return rari.web3.utils
-    .toBN(stringBalance)
-    .div(rari.web3.utils.toBN(10 ** token.decimals));
+  return rari.web3.utils.toBN(stringBalance);
 };
 
 export function useTokenBalance(token: Token) {
