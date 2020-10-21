@@ -191,7 +191,7 @@ const FundStats = React.memo(() => {
 
     const yieldbal = await rari.pools.yield.balances.balanceOf(address);
 
-    const ethbal = await rari.pools.yield.balances.balanceOf(address);
+    const ethbal = await rari.pools.ethereum.balances.balanceOf(address);
 
     return parseFloat(
       rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
@@ -205,7 +205,9 @@ const FundStats = React.memo(() => {
 
     const yieldbal = await rari.pools.yield.balances.interestAccruedBy(address);
 
-    const ethbal = await rari.pools.yield.balances.interestAccruedBy(address);
+    const ethbal = await rari.pools.ethereum.balances.interestAccruedBy(
+      address
+    );
 
     return stringUsdFormatter(
       rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
@@ -217,7 +219,7 @@ const FundStats = React.memo(() => {
 
     const yieldbal = await rari.pools.yield.balances.getTotalSupply();
 
-    const ethbal = await rari.pools.yield.balances.getTotalSupply();
+    const ethbal = await rari.pools.ethereum.balances.getTotalSupply();
 
     return parseFloat(
       rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))

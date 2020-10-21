@@ -72,7 +72,6 @@ export const ClaimRGTModal = React.memo(
       );
     }, [rari.governance.rgt.distributions, amount, rari.web3.utils, address]);
 
-    console.log(unclaimed);
     return (
       <ModalAnimation
         isActivted={isOpen}
