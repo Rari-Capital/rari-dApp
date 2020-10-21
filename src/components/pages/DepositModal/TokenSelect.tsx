@@ -147,7 +147,14 @@ const TokenRow = React.memo(
               {token.symbol}
             </Heading>
             <Text fontWeight="thin" fontSize="15px">
-              {isBalanceLoading ? "$?" : usdFormatter(balance!.toNumber())}
+              {
+                //TODO don't use USD formatter for this
+                isBalanceLoading
+                  ? "?"
+                  : usdFormatter(
+                      parseFloat(balance!.toString()) / 10 ** token.decimals
+                    ).replace("$", "")
+              }
             </Text>
           </Column>
         </Row>

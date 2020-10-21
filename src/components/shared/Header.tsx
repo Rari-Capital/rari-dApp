@@ -10,7 +10,7 @@ import {
   SmallLogo,
 } from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+
 import { Pool } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 
@@ -28,8 +28,6 @@ export const Header = React.memo(
     isPool?: boolean;
     padding?: boolean;
   }) => {
-    const { t } = useTranslation();
-
     return (
       <Row
         px={padding ? DASHBOARD_BOX_SPACING.asPxString() : 0}
@@ -62,9 +60,9 @@ export const Header = React.memo(
           overflowY="hidden"
           transform="translate(0px, 7px)"
         >
-          <HeaderLink mr={4} name={t("Pools")} route="/" />
+          {/* <HeaderLink mr={4} name={t("Pools")} route="/" /> */}
 
-          {Object.values(Pool).map(
+          {/* {Object.values(Pool).map(
             (pool: Pool, index: number, array: Pool[]) => {
               return (
                 <PoolLink
@@ -74,7 +72,7 @@ export const Header = React.memo(
                 />
               );
             }
-          )}
+          )} */}
         </Row>
 
         <AccountButton />

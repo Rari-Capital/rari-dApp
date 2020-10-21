@@ -39,6 +39,11 @@ function calculateRGTBurn() {
   return (33 - (33 / 60) * daysPast).toFixed(2);
 }
 
+function toFixed(num: number, fixed: number) {
+  var re = new RegExp("^-?\\d+(?:.\\d{0," + (fixed || -1) + "})?");
+  return num.toString().match(re)![0];
+}
+
 export const ClaimRGTModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
     const { t } = useTranslation();
@@ -94,7 +99,7 @@ export const ClaimRGTModal = React.memo(
               >
                 <AnimatedSmallLogo size="50px" />
                 <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
-                  {isUnclaimedLoading ? "?" : unclaimed?.toFixed(3)}
+                  {isUnclaimedLoading ? "?" : toFixed(unclaimed!, 5)}
                 </Heading>
 
                 <Row

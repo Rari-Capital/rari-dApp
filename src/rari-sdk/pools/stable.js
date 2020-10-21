@@ -335,7 +335,10 @@ export default class StablePool {
                 Math.trunc(parseFloat(data.cToken[i].supply_rate.value) * 1e18)
               );
               var compApy = Web3.utils.toBN(
-                Math.trunc(parseFloat(cToken.comp_supply_apy.value) / 100 * 1e18)
+                Math.trunc(
+                  (parseFloat(data.cToken[i].comp_supply_apy.value) / 100) *
+                    1e18
+                )
               );
               apyBNs[data.cToken[i].underlying_symbol] = [supplyApy, compApy];
             }
@@ -355,10 +358,9 @@ export default class StablePool {
       },
       Aave: {
         getCurrencyApys: async function () {
+          let currencyCodes = self.allocations.CURRENCIES_BY_POOL.Aave.slice();
 
-        let currencyCodes = self.allocations.CURRENCIES_BY_POOL.Aave.slice();
-
-        currencyCodes[currencyCodes.indexOf("sUSD")] = "SUSD";
+          currencyCodes[currencyCodes.indexOf("sUSD")] = "SUSD";
 
           const data = (
             await axios.post(
@@ -455,16 +457,18 @@ export default class StablePool {
           return { mUSD: await self.pools.mStable.getMUsdSavingsApy() };
         },
         getMUsdSwapFeeBN: async function () {
-          const data = (await axios.post(
-            "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-            {
-              query: `{
+          const data = (
+            await axios.post(
+              "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
+              {
+                query: `{
                     massets(where: { id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5" }) {
                     feeRate
                     }
                 }`,
-            }
-          )).data;
+              }
+            )
+          ).data;
 
           return Web3.utils.toBN(data.data.massets[0].feeRate);
         },
@@ -672,21 +676,15 @@ export default class StablePool {
         if (totalBalanceUsdBN.isZero()) {
           var maxApyBN = Web3.utils.toBN(0);
           for (var i = 0; i < factors.length; i++)
-
             if (factors[i][1].gt(maxApyBN)) maxApyBN = factors[i][1];
           return maxApyBN;
         }
-
-
-
 
         var apyBN = Web3.utils.toBN(0);
         for (var i = 0; i < factors.length; i++) {
           apyBN.iadd(factors[i][0].mul(factors[i][1]).div(totalBalanceUsdBN));
         }
 
-
-         
         return apyBN;
       },
       getCurrentApy: async function () {
