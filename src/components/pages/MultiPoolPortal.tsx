@@ -259,7 +259,7 @@ const FundStats = React.memo(() => {
           {hasNotDeposited ? (
             <APYWithRefreshMovingStat
               formatStat={usdFormatter}
-              fetchInterval={5000}
+              fetchInterval={40000}
               loadingPlaceholder="$?"
               apyInterval={100}
               fetch={getTVL}
@@ -366,7 +366,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
       if (pool === Pool.ETH) {
         poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
-      } else if (pool === Pool.STABLE) {
+      } else if (pool === Pool.STABLE) {          
         poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
       } else {
         poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
