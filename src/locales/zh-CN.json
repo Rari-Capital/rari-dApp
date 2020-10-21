@@ -56,8 +56,6 @@
   "Claimable RGT": "可索赔的RGT",
   "Claim": "要求",
   "Rari Governance Token Price": "Rari Governance Token价格",
-  "Transferring your RGT after claiming before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前提出版权声明后再转让您的RGT，将导致一部分被刻录并发送回协议。 所消耗量的70％将被燃烧，而30％将被重新消耗到协议中。 该数量从33％线性降低到19％时达到0％。",
-  "Transferring RGT (after claiming) now will result in a {{amount}}% burn/takeback": "现在（声明后）转移RGT将导致{{amount}}％的烧录/收回",
   "Year": "年",
   "Max": "最高",
   "Current APY": "当前APY",
@@ -68,5 +66,7 @@
   "View on Etherscan": "在Etherscan上查看",
   "Click confirm to withdraw.": "点击确认退出。",
   "You will deposit {{amount}}. Do you approve?": "您将存入{{amount}}。 你赞成吗",
-  "You will withdraw {{amount}}. Do you approve?": "您将提取{{amount}}。 你赞成吗"
+  "You will withdraw {{amount}}. Do you approve?": "您将提取{{amount}}。 你赞成吗",
+  "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前索取您的RGT，将导致一部分被烧毁并发送回协议。 所消耗量的70％将被燃烧，而30％将被重新消耗到协议中。 该数量从33％线性降低到19％时达到0％。",
+  "Claiming RGT now will result in a {{amount}}% burn/takeback": "现在声明RGT将导致{{amount}}％的烧录/收回"
 }
