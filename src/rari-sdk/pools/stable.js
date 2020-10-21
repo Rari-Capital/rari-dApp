@@ -61,61 +61,6 @@ for (const contractName of Object.keys(externalContractAddresses))
     contractName +
     ".json");
 
-var getCurrencyUsdRates = function (currencyCodes) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      var decoded = (
-        await axios.get("https://api.coingecko.com/api/v3/coins/list")
-      ).data;
-    } catch (error) {
-      return reject(
-        "Error requesting currency rates from CoinGecko: " + error.message
-      );
-    }
-
-    if (!decoded) return reject("Failed to decode coins list from CoinGecko");
-    var currencyCodesByCoinGeckoIds = {};
-
-    for (const currencyCode of currencyCodes) {
-      if (currencyCode === "COMP")
-        currencyCodesByCoinGeckoIds["compound-governance-token"] = "COMP";
-      else if (currencyCode === "REP")
-        currencyCodesByCoinGeckoIds["augur"] = "REP";
-      else
-        currencyCodesByCoinGeckoIds[
-          decoded.find(
-            (coin) => coin.symbol.toLowerCase() === currencyCode.toLowerCase()
-          ).id
-        ] = currencyCode;
-    }
-
-    try {
-      var decoded = (
-        await axios.get(
-          "https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=" +
-            Object.keys(currencyCodesByCoinGeckoIds).join("%2C")
-        )
-      ).data;
-    } catch (error) {
-      return reject(
-        "Error requesting currency rates from CoinGecko: " + error.message
-      );
-    }
-
-    if (!decoded)
-      return reject("Failed to decode USD exchange rates from CoinGecko");
-    var prices = {};
-    for (const key of Object.keys(decoded))
-      prices[currencyCodesByCoinGeckoIds[key]] =
-        ["DAI", "USDC", "USDT", "SAI"].indexOf(
-          currencyCodesByCoinGeckoIds[key]
-        ) >= 0
-          ? 1.0
-          : decoded[key].usd; // TODO: Assumes that stablecoins are $1 becasue CoinGecko is wrong sometimes
-    resolve(prices);
-  });
-};
-
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
   POOL_TOKEN_SYMBOL = "RSPT";

@@ -37,15 +37,30 @@ export default class Governance {
 
     this.rgt = {
       getExchangeRate: async function () {
-        // TODO: RGT price getter function
-        /* return self.cache.getOrUpdate("rgtUsdPrice", async function() {
-            try {
-                return Web3.utils.toBN((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=rgt")).data.rgt.usd * 1e18);
-            } catch (error) {
-                throw "Error retrieving data from Rari API: " + error;
+        // TODO: RGT price getter function from Coingecko
+        return self.cache.getOrUpdate("rgtUsdPrice", async function() {
+          /* try {
+            return Web3.utils.toBN(Math.trunc((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=rgt")).data.rgt.usd * 1e18));
+          } catch (error) {
+            throw "Error retrieving data from Coingecko API: " + error;
+          } */
+
+          try {
+            var data = (await axios.post("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", { query: `{
+              ethRgtPair: pair(id: "0xdc2b82bc1106c9c5286e59344896fb0ceb932f53") {
+                token0Price
+              }
+              ethUsdtPair: pair(id: "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852") {
+                token1Price
+              }
             }
-        }); */
-        return Web3.utils.toBN(2e18);
+            ` })).data;
+            
+            return Web3.utils.toBN(Math.trunc(data.data.ethRgtPair.token0Price * data.data.ethUsdtPair.token1Price * 1e18));
+          } catch (error) {
+            throw "Error retrieving data from The Graph API: " + error;
+          }
+        });
       },
       distributions: {
         DISTRIBUTION_START_BLOCK: 11094200,
