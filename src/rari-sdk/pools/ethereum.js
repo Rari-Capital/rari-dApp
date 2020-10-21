@@ -50,6 +50,12 @@ export default class EthereumPool extends StablePool {
     delete this.allocations.CURRENCIES;
     this.allocations.POOLS = ["dYdX", "Compound", "KeeperDAO", "Aave"];
     delete this.allocations.POOLS_BY_CURRENCY;
+    this.allocations.CURRENCIES_BY_POOL = {
+      "dYdX": ["ETH"],
+      "Compound": ["ETH"],
+      "KeeperDAO": ["ETH"],
+      "Aave": ["ETH"]
+    }
     delete this.allocations.getAllocationsByCurrency;
     delete this.allocations.getRawAllocations;
     delete this.allocations.getCurrencyUsdPrices;
@@ -78,6 +84,56 @@ export default class EthereumPool extends StablePool {
       }
 
       return allocationsByPool;
+    };
+
+    delete this.pools.mStable;
+    
+    this.pools.KeeperDAO.getCurrencyApys = function() {
+      // TODO: yVault APYs
+      return { "ETH": Web3.utils.toBN(0) };
+    };
+
+    this.apy.getCurrentRawApy = async function () {
+      var factors = [];
+      var totalBalanceBN = Web3.utils.toBN(0);
+
+      // Get pool APYs
+      var poolApyBNs = [];
+      for (var i = 0; i < this.allocations.POOLS.length; i++) poolApyBNs[i] = this.pools[this.allocations.POOLS[i]].getCurrencyApys();
+
+      // Get all raw balances
+      var allBalances = await this.cache.getOrUpdate(
+        "allBalances",
+        this.contracts.RariFundProxy.methods.getRawFundBalances().call
+      );
+
+      // Get array of APY factors
+      var contractBalanceBN = Web3.utils.toBN(allBalances["0"]);
+      factors.push([contractBalanceBN, Web3.utils.toBN(0)]);
+      totalBalanceBN.iadd(contractBalanceBN);
+      var pools = allBalances["1"];
+      var poolBalances = allBalances["2"];
+
+      for (var i = 0; i < pools.length; i++) {
+        var pool = pools[i];
+        var poolBalanceBN = Web3.utils.toBN(poolBalances[i]);
+        factors.push([poolBalanceBN, poolApyBNs[pool][currencyCode]]);
+        totalBalanceBN.iadd(poolBalanceBN);
+      }
+
+      // If balance = 0, choose the maximum
+      if (totalBalanceBN.isZero()) {
+        var maxApyBN = Web3.utils.toBN(0);
+        for (var i = 0; i < factors.length; i++)
+          if (factors[i][1].gt(maxApyBN)) maxApyBN = factors[i][1];
+        return maxApyBN;
+      }
+
+      // If balance > 0, calculate the APY using the factors
+      var apyBN = Web3.utils.toBN(0);
+      for (var i = 0; i < factors.length; i++)
+        apyBN.iadd(factors[i][0].mul(factors[i][1]).div(totalBalanceBN));
+      return apyBN;
     };
 
     delete this.deposits.getDirectDepositCurrencies;

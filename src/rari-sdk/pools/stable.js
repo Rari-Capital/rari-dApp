@@ -304,7 +304,7 @@ export default class StablePool {
           var apyBNs = {};
 
           for (var i = 0; i < data.markets.length; i++)
-            if (["DAI", "USDC", "USDT"].indexOf(data.markets[i].symbol) >= 0)
+            if (self.allocations.CURRENCIES_BY_POOL.dYdX.indexOf(data.markets[i].symbol) >= 0)
               apyBNs[data.markets[i].symbol] = Web3.utils.toBN(
                 Math.trunc(parseFloat(data.markets[i].totalSupplyAPR) * 1e18)
               );
@@ -376,7 +376,7 @@ export default class StablePool {
 
           for (var i = 0; i < data.cToken.length; i++) {
             if (
-              ["DAI", "USDC", "USDT"].indexOf(
+              self.allocations.CURRENCIES_BY_POOL.Compound.indexOf(
                 data.cToken[i].underlying_symbol
               ) >= 0
             ) {
@@ -415,7 +415,7 @@ export default class StablePool {
               {
                 query: `{
                         reserves(where: {
-                            symbol_in: ["DAI", "USDC", "USDT", "TUSD", "BUSD", "SUSD"]
+                            symbol_in: ` + JSON.stringify(self.allocations.CURRENCIES_BY_POOL.Aave) + `
                         }) {
                             symbol
                             liquidityRate
@@ -528,6 +528,12 @@ export default class StablePool {
         BUSD: ["Aave"],
         sUSD: ["Aave"],
         mUSD: ["mStable"],
+      },
+      CURRENCIES_BY_POOL: {
+        "dYdX": ["DAI", "USDC"],
+        "Compound": ["DAI", "USDC", "USDT"],
+        "Aave": ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD"],
+        "mStable": ["mUSD"]
       },
       getRawCurrencyAllocations: async function () {
         var allocationsByCurrency = {
@@ -661,12 +667,10 @@ export default class StablePool {
       getCurrentRawApy: async function () {
         var factors = [];
         var totalBalanceUsdBN = Web3.utils.toBN(0);
-        var poolApyBNs = [
-          await self.pools["dYdX"].getCurrencyApys(),
-          await self.pools["Compound"].getCurrencyApys(),
-          await self.pools["Aave"].getCurrencyApys(),
-          await self.pools["mStable"].getCurrencyApys(),
-        ];
+
+        // Get pool APYs
+        var poolApyBNs = [];
+        for (var i = 0; i < self.allocations.POOLS.length; i++) poolApyBNs[i] = await self.pools[self.allocations.POOLS[i]].getCurrencyApys();
 
         // Get all balances
         var allBalances = await self.cache.getOrUpdate(

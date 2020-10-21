@@ -42,6 +42,18 @@ export default class YieldPool extends StablePool {
       sUSD: ["Aave"],
       mUSD: ["mStable"],
     };
+    this.allocations.CURRENCIES_BY_POOL = {
+      "dYdX": ["DAI", "USDC"],
+      "Compound": ["DAI", "USDC", "USDT"],
+      "Aave": ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD"],
+      "mStable": ["mUSD"],
+      "yVault": ["DAI", "USDC", "USDT", "TUSD"]
+    };
+
+    this.pools.yVault.getCurrencyApys = function() {
+      // TODO: yVault APYs
+      return { "DAI": Web3.utils.toBN(0), "USDC": Web3.utils.toBN(0), "USDT": Web3.utils.toBN(0), "TUSD": Web3.utils.toBN(0) };
+    };
 
     delete this.history.getRsptExchangeRateHistory;
     this.history.getRyptExchangeRateHistory = this.history.getPoolTokenExchangeRateHistory;
