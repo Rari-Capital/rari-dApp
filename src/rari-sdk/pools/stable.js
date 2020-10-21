@@ -402,20 +402,23 @@ export default class StablePool {
           return { mUSD: await self.pools.mStable.getMUsdSavingsApy() };
         },
         getMUsdSwapFeeBN: async function () {
-          const data = (
-            await axios.post(
-              "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-              {
-                query: `{
-                    massets(where: { id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5" }) {
-                    feeRate
-                    }
-                }`,
-              }
-            )
-          ).data;
-
-          return Web3.utils.toBN(data.data.massets[0].feeRate);
+          try {
+            const data = (
+              await axios.post(
+                "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
+                {
+                  query: `{
+                      massets(where: { id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5" }) {
+                      feeRate
+                      }
+                  }`,
+                }
+              )
+            ).data;
+            return Web3.utils.toBN(data.data.massets[0].feeRate);
+          } catch (err) {
+            throw "Failed to get mUSD swap fee: " + err;
+          }
         },
       },
     };
@@ -763,9 +766,9 @@ export default class StablePool {
           );
           var amountUsdBN = amount
             .mul(
-              allBalances["4"][
+              Web3.utils.toBN(allBalances["4"][
                 self.allocations.CURRENCIES.indexOf(currencyCode)
-              ]
+              ])
             )
             .div(
               Web3.utils
@@ -823,13 +826,14 @@ export default class StablePool {
                     continue;
                   }
 
-                  if (
-                    !maxSwap ||
-                    !maxSwap["0"] ||
-                    amount.gt(Web3.utils.toBN(maxSwap["2"]))
-                  )
-                    continue;
-                  mStableOutputAmountAfterFeeBN = Web3.utils.toBN(maxSwap["3"]);
+                  if (!maxSwap || !maxSwap["0"] || amount.gt(Web3.utils.toBN(maxSwap["2"]))) continue;
+                  var outputAmountBeforeFeesBN = amount.mul(Web3.utils.toBN(10 ** self.internalTokens[acceptedCurrency].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals));
+    
+                  if (acceptedCurrency === "mUSD") mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
+                  else {
+                    var swapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(swapFeeBN).div(Web3.utils.toBN(1e18)));
+                  }
                 }
 
                 mStableOutputCurrency = acceptedCurrency;
@@ -847,9 +851,9 @@ export default class StablePool {
             );
             var outputAmountUsdBN = mStableOutputAmountAfterFeeBN
               .mul(
-                allBalances["4"][
+                Web3.utils.toBN(allBalances["4"][
                   self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
-                ]
+                ])
               )
               .div(
                 Web3.utils
@@ -895,9 +899,9 @@ export default class StablePool {
             );
             var makerAssetFilledAmountUsdBN = makerAssetFilledAmountBN
               .mul(
-                allBalances["4"][
+                Web3.utils.toBN(allBalances["4"][
                   self.allocations.CURRENCIES.indexOf(acceptedCurrency)
-                ]
+                ])
               )
               .div(
                 Web3.utils
@@ -950,7 +954,7 @@ export default class StablePool {
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
             ? web3.eth.getBalance(options.from)
-            : allTokens[currencyCode].contract.methods.balanceOf(options.from))
+            : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
         );
         if (amount.gt(accountBalanceBN))
           throw "Not enough balance in your account to make a deposit of this amount.";
@@ -971,9 +975,9 @@ export default class StablePool {
           );
           var amountUsdBN = amount
             .mul(
-              allBalances["4"][
+              Web3.utils.toBN(allBalances["4"][
                 self.allocations.CURRENCIES.indexOf(currencyCode)
-              ]
+              ])
             )
             .div(
               Web3.utils
@@ -1102,9 +1106,9 @@ export default class StablePool {
             );
             var outputAmountUsdBN = mStableOutputAmountAfterFeeBN
               .mul(
-                allBalances["4"][
+                Web3.utils.toBN(allBalances["4"][
                   self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
-                ]
+                ])
               )
               .div(
                 Web3.utils
@@ -1193,9 +1197,9 @@ export default class StablePool {
             );
             var makerAssetFilledAmountUsdBN = makerAssetFilledAmountBN
               .mul(
-                allBalances["4"][
+                Web3.utils.toBN(allBalances["4"][
                   self.allocations.CURRENCIES.indexOf(acceptedCurrency)
-                ]
+                ])
               )
               .div(
                 Web3.utils
@@ -1452,7 +1456,7 @@ export default class StablePool {
 
               // Get swap fee and calculate input amount needed to fill output amount
               if (currencyCode !== "mUSD" && mStableSwapFeeBN === null)
-                mStableSwapFeeBN = self.pools["mStable"].getMUsdSwapFeeBN();
+                mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
               var inputAmountBN = amount
                 .sub(amountWithdrawnBN)
                 .mul(Web3.utils.toBN(1e18))

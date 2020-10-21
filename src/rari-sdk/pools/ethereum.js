@@ -161,7 +161,7 @@ export default class EthereumPool extends StablePool {
       var accountBalanceBN = Web3.utils.toBN(
         await (currencyCode == "ETH"
           ? self.web3.eth.getBalance(sender)
-          : allTokens[currencyCode].contract.methods.balanceOf(sender))
+          : allTokens[currencyCode].contract.methods.balanceOf(sender).call())
       );
       if (amount.gt(accountBalanceBN))
         throw "Not enough balance in your account to make a deposit of this amount.";
@@ -224,7 +224,7 @@ export default class EthereumPool extends StablePool {
       var accountBalanceBN = Web3.utils.toBN(
         await (currencyCode == "ETH"
           ? self.web3.eth.getBalance(options.from)
-          : allTokens[currencyCode].contract.methods.balanceOf(options.from))
+          : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
       );
       if (amount.gt(accountBalanceBN))
         throw "Not enough balance in your account to make a deposit of this amount.";
