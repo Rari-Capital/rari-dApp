@@ -372,7 +372,7 @@ export default class EthereumPool extends StablePool {
         throw "Withdrawal amount must be greater than 0!";
 
       // Get user fund balance
-      var accountBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(account).call());
+      var accountBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
 
       // Check if withdrawal currency is ETH
       if (currencyCode === "ETH") {
