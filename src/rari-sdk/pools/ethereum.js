@@ -198,7 +198,7 @@ export default class EthereumPool extends StablePool {
           );
 
         // Make sure we have enough ETH for the protocol fee
-        var ethBalanceBN = await web3.eth.getBalance(sender);
+        var ethBalanceBN = Web3.utils.toBN(await web3.eth.getBalance(sender));
         if (Web3.utils.toBN(protocolFee).gt(ethBalanceBN))
           throw "ETH balance too low to cover 0x exchange protocol fee.";
 
@@ -235,8 +235,8 @@ export default class EthereumPool extends StablePool {
         if (options.value && options.value.toString() !== amount.toString())
           throw "Value set in options paramater but not equal to amount parameter.";
 
-        // Check amountUsdBN against minUsdAmount
-        if (amount.lt(minEthAmount)) return [amount];
+        // Check amountUsdBN against minEthAmount
+        if (typeof minEthAmount !== undefined && minEthAmount !== null && amount.lt(minEthAmount)) return [amount];
 
         // Deposit tokens to RariFundManager
         try {
@@ -277,12 +277,12 @@ export default class EthereumPool extends StablePool {
           );
 
         // Make sure we have enough ETH for the protocol fee
-        var ethBalanceBN = await web3.eth.getBalance(options.from);
+        var ethBalanceBN = Web3.utils.toBN(await web3.eth.getBalance(options.from));
         if (Web3.utils.toBN(protocolFee).gt(ethBalanceBN))
           throw "ETH balance too low to cover 0x exchange protocol fee.";
 
         // Check makerAssetFilledAmountUsdBN against minUsdAmount
-        if (makerAssetFilledAmountBN.lt(minEthAmount))
+        if (typeof minEthAmount !== undefined && minEthAmount !== null && makerAssetFilledAmountBN.lt(minEthAmount))
           return [makerAssetFilledAmountBN];
 
         // Approve tokens to RariFundProxy
@@ -447,7 +447,7 @@ export default class EthereumPool extends StablePool {
       // Check if withdrawal currency is ETH
       if (currencyCode === "ETH") {
         // Check maxEthAmount
-        if (amount.gt(maxEthAmount)) return [amount];
+        if (typeof maxEthAmount !== undefined && maxEthAmount !== null && amount.gt(maxEthAmount)) return [amount];
 
         // If we can withdraw everything directly, do so
         try {
@@ -515,7 +515,7 @@ export default class EthereumPool extends StablePool {
           );
 
         // Check maxEthAmount
-        if (inputFilledAmountBN.gt(maxEthAmount)) return [inputFilledAmountBN];
+        if (typeof maxEthAmount !== undefined && maxEthAmount !== null && inputFilledAmountBN.gt(maxEthAmount)) return [inputFilledAmountBN];
 
         // Withdraw and exchange tokens via RariFundProxy
         try {

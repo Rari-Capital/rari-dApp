@@ -988,7 +988,7 @@ export default class StablePool {
             );
 
           // Check amountUsdBN against minUsdAmount
-          if (amountUsdBN.lt(minUsdAmount)) return [amountUsdBN];
+          if (typeof minUsdAmount !== undefined && minUsdAmount !== null && amountUsdBN.lt(minUsdAmount)) return [amountUsdBN];
 
           // Get deposit contract
           var useGsn = /* amountUsdBN.gte(Web3.utils.toBN(250e18)) && myFundBalanceBN.isZero() */ false;
@@ -1121,14 +1121,14 @@ export default class StablePool {
               );
 
             // Check outputAmountUsdBN against minUsdAmount
-            if (outputAmountUsdBN.lt(minUsdAmount)) return [outputAmountUsdBN];
+            if (typeof minUsdAmount !== undefined && minUsdAmount !== null && outputAmountUsdBN.lt(minUsdAmount)) return [outputAmountUsdBN];
 
             // Approve tokens to RariFundProxy
             try {
               var allowanceBN = Web3.utils.toBN(
                 await self.internalTokens[currencyCode].contract.methods
                   .allowance(
-                    options.sender,
+                    options.from,
                     self.contracts.RariFundProxy.options.address
                   )
                   .call()
@@ -1236,7 +1236,7 @@ export default class StablePool {
               throw "ETH balance too low to cover 0x exchange protocol fee.";
 
             // Check makerAssetFilledAmountUsdBN against minUsdAmount
-            if (makerAssetFilledAmountUsdBN.lt(minUsdAmount))
+            if (typeof minUsdAmount !== undefined && minUsdAmount !== null && makerAssetFilledAmountUsdBN.lt(minUsdAmount))
               return [makerAssetFilledAmountUsdBN];
 
             // Approve tokens to RariFundProxy if token is not ETH
@@ -1770,7 +1770,7 @@ export default class StablePool {
                     .toBN(10)
                     .pow(Web3.utils.toBN(allTokens[currencyCode].decimals - 18))
                 );
-          if (amountUsdBN.gt(maxUsdAmount)) return [amountUsdBN];
+          if (typeof maxUsdAmount !== undefined && maxUsdAmount !== null && amountUsdBN.gt(maxUsdAmount)) return [amountUsdBN];
 
           // If we can withdraw everything directly, do so
           try {
@@ -2122,7 +2122,7 @@ export default class StablePool {
           }
 
           // Check maxUsdAmount
-          if (amountInputtedUsdBN.gt(maxUsdAmount))
+          if (typeof maxUsdAmount !== undefined && maxUsdAmount !== null && amountInputtedUsdBN.gt(maxUsdAmount))
             return [amountInputtedUsdBN];
 
           // Withdraw and exchange tokens via RariFundProxy
