@@ -1372,19 +1372,21 @@ export default class StablePool {
         }
 
         if (tokenRawFundBalanceBN.gte(amount)) {
-          // Return amountUsdBN
-          var amountUsdBN =
-            18 >= allTokens[currencyCode].decimals
-              ? amount.mul(
-                  Web3.utils
-                    .toBN(10)
-                    .pow(Web3.utils.toBN(18 - allTokens[currencyCode].decimals))
+          var amountUsdBN = amount
+            .mul(
+              Web3.utils.toBN(allBalances["4"][
+                self.allocations.CURRENCIES.indexOf(currencyCode)
+              ])
+            )
+            .div(
+              Web3.utils
+                .toBN(10)
+                .pow(
+                  Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
                 )
-              : amount.div(
-                  Web3.utils
-                    .toBN(10)
-                    .pow(Web3.utils.toBN(allTokens[currencyCode].decimals - 18))
-                );
+            );
+
+          // Return amountUsdBN
           return [amountUsdBN];
         } else {
           // Otherwise, exchange as few currencies as possible (ideally those with the lowest balances)
