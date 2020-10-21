@@ -510,8 +510,7 @@ export default class EthereumPool extends StablePool {
               allTokens[currencyCode].address,
               orders,
               signatures,
-              makerAssetFilledAmountBN,
-              protocolFee
+              makerAssetFilledAmountBN
             )
             .send({
               from: options.from,
