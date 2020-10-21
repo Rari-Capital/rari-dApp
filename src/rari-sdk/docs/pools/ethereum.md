@@ -5,6 +5,7 @@ The SDK's `Rari.pools.ethereum` object is identical to [the `Rari.pools.stable` 
 * No USD quantities are accepted or returned: all of these quantities are based in ETH, unless the user is depositing or withdrawing another currency.
 * `pools.ethereum.contracts.RariFundPriceConsumer` does not exist: the Ethereum Pool does not make use of a `RariFundPriceConsumer` because the pool is based only in ETH.
 * `pools.ethereum.rept`: wrapper functions for the Rari Ethereum Pool Token.
+* `pools.ethereum.rept.getExchangeRate([blockNumber])` returns the ETH price of REPT.
 * `pools.ethereum.allocations.CURRENCIES` does not exist: the only currency allocated to by the Ethereum Pool is ETH.
 * `pools.ethereum.allocations.POOLS = ["dYdX", "Compound", "KeeperDAO", "Aave"]`
 * `pools.yield.allocations.POOLS_BY_CURRENCY` does not exist: the only currency allocated to by the Ethereum Pool is ETH.
