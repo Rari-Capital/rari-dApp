@@ -132,7 +132,7 @@ export default class StablePool {
         abis[contractName],
         contractAddresses[contractName]
       );
-    // this.gsnContracts = { RariFundProxy: new web3Gsn.eth.Contract(abis.RariFundProxy, contractAddresses.RariFundProxy) };
+    // this.gsnContracts = { RariFundProxy: new this.web3Gsn.eth.Contract(abis.RariFundProxy, contractAddresses.RariFundProxy) };
     this.legacyContracts = {};
 
     for (const version of Object.keys(legacyContractAddresses)) {
@@ -153,7 +153,7 @@ export default class StablePool {
         externalContractAddresses[contractName]
       );
     for (const currencyCode of Object.keys(this.internalTokens))
-      this.internalTokens[currencyCode].contract = new web3.eth.Contract(
+      this.internalTokens[currencyCode].contract = new this.web3.eth.Contract(
         erc20Abi,
         this.internalTokens[currencyCode].address
       );
@@ -675,8 +675,8 @@ export default class StablePool {
           toBlock !== undefined && toBlock !== "latest"
             ? Math.min(toBlock, blockNumber)
             : blockNumber;
-        var fromTimestamp = (await web3.eth.getBlock(fromBlock)).timestamp;
-        var toTimestamp = (await web3.eth.getBlock(toBlock)).timestamp;
+        var fromTimestamp = (await self.web3.eth.getBlock(fromBlock)).timestamp;
+        var toTimestamp = (await self.web3.eth.getBlock(toBlock)).timestamp;
         return await self.apy.calculateApy(
           fromTimestamp,
           await self.poolToken.getExchangeRate(fromBlock),
@@ -744,7 +744,7 @@ export default class StablePool {
           throw "Deposit amount must be greater than 0!";
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
-            ? web3.eth.getBalance(sender)
+            ? self.web3.eth.getBalance(sender)
             : allTokens[currencyCode].contract.methods.balanceOf(sender).call())
         );
         if (amount.gt(accountBalanceBN))
@@ -925,7 +925,7 @@ export default class StablePool {
             var ethBalanceBN =
               currencyCode == "ETH"
                 ? accountBalanceBN
-                : await web3.eth.getBalance(sender);
+                : Web3.utils.toBN(await self.web3.eth.getBalance(sender));
             if (
               Web3.utils
                 .toBN(protocolFee)
@@ -953,7 +953,7 @@ export default class StablePool {
           throw "Deposit amount must be greater than 0!";
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
-            ? web3.eth.getBalance(options.from)
+            ? self.web3.eth.getBalance(options.from)
             : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
         );
         if (amount.gt(accountBalanceBN))
@@ -1223,7 +1223,7 @@ export default class StablePool {
             var ethBalanceBN =
               currencyCode == "ETH"
                 ? accountBalanceBN
-                : await web3.eth.getBalance(options.from);
+                : Web3.utils.toBN(await self.web3.eth.getBalance(options.from));
             if (
               Web3.utils
                 .toBN(protocolFee)
@@ -2154,7 +2154,7 @@ export default class StablePool {
                 from: options.from,
                 value: totalProtocolFeeBN,
                 gasPrice: gasPrice,
-                nonce: await web3.eth.getTransactionCount(options.from),
+                nonce: await self.web3.eth.getTransactionCount(options.from),
               });
           } catch (err) {
             throw (

@@ -10,7 +10,7 @@ export const get0xSwapOrders = function (
 ) {
   return new Promise(async function (resolve, reject) {
     try {
-      var decoded = await axios.get(
+      var decoded = (await axios.get(
         "https://api.0x.org/swap/v0/quote?sellToken=" +
           inputTokenAddress +
           "&buyToken=" +
@@ -18,7 +18,7 @@ export const get0xSwapOrders = function (
           (maxMakerAssetFillAmountBN !== undefined
             ? "&buyAmount=" + maxMakerAssetFillAmountBN.toString()
             : "&sellAmount=" + maxInputAmountBN.toString())
-      );
+      )).data;
     } catch (error) {
       reject("Error requesting quote from 0x swap API: " + error.message);
     }
