@@ -136,8 +136,8 @@ export const get0xSwapOrders = function (
 
       // Check if we have hit maxInputAmountBN or maxTakerAssetFillAmountBN
       if (
-        inputFilledAmountBN.gte(maxInputAmountBN) ||
-        (maxMakerAssetFillAmountBN !== undefined &&
+        (maxInputAmountBN !== undefined && maxInputAmountBN !== null && inputFilledAmountBN.gte(maxInputAmountBN)) ||
+        (maxMakerAssetFillAmountBN !== undefined && maxMakerAssetFillAmountBN !== null &&
           makerAssetFilledAmountBN.gte(maxMakerAssetFillAmountBN))
       )
         break;
