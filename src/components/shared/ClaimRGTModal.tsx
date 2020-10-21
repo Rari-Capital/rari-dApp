@@ -5,10 +5,15 @@ import {
   Text,
   Heading,
   Icon,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
 } from "@chakra-ui/core";
 import { Column, Row } from "buttered-chakra";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
@@ -47,14 +52,27 @@ export const ClaimRGTModal = React.memo(
           rari.web3.utils.fromWei(
             await rari.governance.rgt.distributions.getUnclaimed(address)
           )
-        ).toFixed(3);
-      }
+        );
+      },
+      { refetchInterval: 1000 }
+    );
+
+    const [amount, setAmount] = useState(0);
+    const handleAmountChange = useCallback(
+      (value) => {
+        setAmount(value);
+      },
+      [setAmount]
     );
 
     const claimRGT = useCallback(() => {
-      rari.governance.rgt.distributions.claim(address, { from: address });
-    }, [rari.governance.rgt.distributions, address]);
+      rari.governance.rgt.distributions.claim(
+        rari.web3.utils.toBN((amount * 1e18).toString()),
+        { from: address }
+      );
+    }, [rari.governance.rgt.distributions, amount, rari.web3.utils, address]);
 
+    console.log(unclaimed);
     return (
       <ModalAnimation
         isActivted={isOpen}
@@ -77,7 +95,7 @@ export const ClaimRGTModal = React.memo(
               >
                 <AnimatedSmallLogo size="50px" />
                 <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
-                  {isUnclaimedLoading ? "$?" : unclaimed}
+                  {isUnclaimedLoading ? "?" : unclaimed?.toFixed(3)}
                 </Heading>
 
                 <Row
@@ -96,11 +114,26 @@ export const ClaimRGTModal = React.memo(
                   </Text>
                 </Row>
 
+                <NumberInput
+                  color="#000"
+                  mb={DASHBOARD_BOX_SPACING.asPxString()}
+                  min={0}
+                  max={unclaimed ?? 0}
+                  onChange={handleAmountChange}
+                  value={amount}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+
                 <Row
                   mainAxisAlignment="center"
                   crossAxisAlignment="center"
                   width="100%"
-                  mb={6}
+                  mb={DASHBOARD_BOX_SPACING.asPxString()}
                 >
                   <Text
                     textTransform="uppercase"
@@ -111,12 +144,12 @@ export const ClaimRGTModal = React.memo(
                   >
                     <SimpleTooltip
                       label={t(
-                        "Transferring your RGT after claiming before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%."
+                        "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%."
                       )}
                     >
                       <span>
                         {t(
-                          "Transferring RGT (after claiming) now will result in a {{amount}}% burn/takeback",
+                          "Claiming RGT now will result in a {{amount}}% burn/takeback",
                           { amount: calculateRGTBurn() }
                         )}
 
@@ -133,8 +166,9 @@ export const ClaimRGTModal = React.memo(
                 </Row>
 
                 <GlowingButton
-                  label={t("Claim")}
+                  label={t("Claim") + " " + amount + " RGT"}
                   fontSize="2xl"
+                  disabled={amount > (unclaimed ?? 0)}
                   onClick={claimRGT}
                   width="100%"
                   height="60px"

@@ -8,11 +8,13 @@ export const GlowingButton = React.memo(
     label,
     onClick,
     leftIcon,
+    disabled,
     ...boxProps
   }: BoxProps & {
     leftIcon?: Icons | React.ComponentType;
     onClick: () => any;
     label: string;
+    disabled?: boolean;
   }) => {
     return (
       <Box
@@ -43,7 +45,9 @@ export const GlowingButton = React.memo(
           height="100%"
           leftIcon={leftIcon}
           onClick={onClick}
+          isDisabled={disabled ?? false}
           _focus={{ boxShadow: "0 0 3pt 3pt #2F74AF" }}
+          _disabled={{ cursor: "not-allowed" }}
           fontSize={boxProps.fontSize ?? "xl"}
         >
           {label}
