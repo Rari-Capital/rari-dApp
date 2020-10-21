@@ -15,7 +15,7 @@ export const get0xSwapOrders = function (
           inputTokenAddress +
           "&buyToken=" +
           outputTokenAddress +
-          (maxMakerAssetFillAmountBN !== undefined
+          (maxMakerAssetFillAmountBN !== undefined && maxMakerAssetFillAmountBN !== null
             ? "&buyAmount=" + maxMakerAssetFillAmountBN.toString()
             : "&sellAmount=" + maxInputAmountBN.toString())
       )).data;
@@ -54,7 +54,7 @@ export const get0xSwapOrders = function (
         decoded.orders[i].makerAssetAmount
       );
 
-      if (maxMakerAssetFillAmountBN !== undefined) {
+      if (maxMakerAssetFillAmountBN !== undefined && maxMakerAssetFillAmountBN !== null) {
         // maxMakerAssetFillAmountBN is specified, so use it
         if (
           maxMakerAssetFillAmountBN
@@ -95,7 +95,7 @@ export const get0xSwapOrders = function (
 
         // If this order input amount is higher than the remaining input, calculate orderTakerAssetFillAmountBN and orderMakerAssetFillAmountBN from the remaining maxInputAmountBN as usual
         if (
-          orderInputFillAmountBN.gt(maxInputAmountBN.sub(inputFilledAmountBN))
+          maxInputAmountBN !== undefined && maxInputAmountBN !== null && orderInputFillAmountBN.gt(maxInputAmountBN.sub(inputFilledAmountBN))
         ) {
           orderInputFillAmountBN = maxInputAmountBN.sub(inputFilledAmountBN);
           orderTakerAssetFillAmountBN = orderInputFillAmountBN
@@ -107,7 +107,7 @@ export const get0xSwapOrders = function (
         }
       } else {
         // maxMakerAssetFillAmountBN is not specified, so use maxInputAmountBN
-        if (maxInputAmountBN.sub(inputFilledAmountBN).lte(orderInputAmountBN)) {
+        if (maxInputAmountBN !== undefined && maxInputAmountBN !== null && maxInputAmountBN.sub(inputFilledAmountBN).lte(orderInputAmountBN)) {
           // Calculate orderInputFillAmountBN and orderTakerAssetFillAmountBN from the remaining maxInputAmountBN as usual
           var orderInputFillAmountBN = maxInputAmountBN.sub(
             inputFilledAmountBN

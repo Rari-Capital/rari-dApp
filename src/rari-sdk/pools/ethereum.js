@@ -42,8 +42,6 @@ export default class EthereumPool extends StablePool {
     delete this.legacyContracts;
     delete this.externalContracts;
 
-    var self = this;
-
     delete this.internalTokens;
 
     this.rept = this.rspt;
@@ -61,6 +59,8 @@ export default class EthereumPool extends StablePool {
     delete this.allocations.getAllocationsByCurrency;
     delete this.allocations.getRawAllocations;
     delete this.allocations.getCurrencyUsdPrices;
+
+    var self = this;
 
     this.allocations.getRawPoolAllocations = async function () {
       var allocationsByPool = {
@@ -297,7 +297,7 @@ export default class EthereumPool extends StablePool {
           );
           if (allowanceBN.lt(amount))
             var approvalReceipt = await allTokens[currencyCode].contract.methods
-              .approve(this.contracts.RariFundProxy.options.address, amount)
+              .approve(self.contracts.RariFundProxy.options.address, amount)
               .send(options);
         } catch (err) {
           throw (
@@ -371,8 +371,14 @@ export default class EthereumPool extends StablePool {
       if (!amount || amount.lte(Web3.utils.toBN(0)))
         throw "Withdrawal amount must be greater than 0!";
 
+      // Get user fund balance
+      var accountBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(account).call());
+
       // Check if withdrawal currency is ETH
       if (currencyCode === "ETH") {
+        // Check account balance
+        if (amount.gt(accountBalance)) throw "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance.";
+
         // Return amount
         return [amount];
       } else {
@@ -395,29 +401,8 @@ export default class EthereumPool extends StablePool {
           throw "Failed to get swap orders from 0x API: " + err;
         }
 
-        // Build array of orders and signatures
-        var signatures = [];
-
-        for (var j = 0; j < orders.length; j++) {
-          signatures[j] = orders[j].signature;
-
-          orders[j] = {
-            makerAddress: orders[j].makerAddress,
-            takerAddress: orders[j].takerAddress,
-            feeRecipientAddress: orders[j].feeRecipientAddress,
-            senderAddress: orders[j].senderAddress,
-            makerAssetAmount: orders[j].makerAssetAmount,
-            takerAssetAmount: orders[j].takerAssetAmount,
-            makerFee: orders[j].makerFee,
-            takerFee: orders[j].takerFee,
-            expirationTimeSeconds: orders[j].expirationTimeSeconds,
-            salt: orders[j].salt,
-            makerAssetData: orders[j].makerAssetData,
-            takerAssetData: orders[j].takerAssetData,
-            makerFeeAssetData: orders[j].makerFeeAssetData,
-            takerFeeAssetData: orders[j].takerFeeAssetData,
-          };
-        }
+        // Check account balance
+        if (takerAssetFilledAmountBN.gt(accountBalance)) throw "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance.";
 
         // Make sure input amount is completely filled
         if (makerAssetFilledAmountBN.lt(amount))
