@@ -247,9 +247,9 @@ export default class StablePool {
       },
       balanceOf: async function (account) {
         if (!account) throw "No account specified";
-        return await self.contracts.RariFundManager.methods
+        return Web3.utils.toBN(await self.contracts.RariFundManager.methods
           .balanceOf(account)
-          .call();
+          .call());
       },
       interestAccruedBy: async function (
         account,
