@@ -313,61 +313,6 @@ export default class StablePool {
         },
       },
       Compound: {
-        getCompApy: async function (currencyCode, cTokens) {
-          // Get cToken USD prices
-          var currencyCodes = ["COMP"];
-          var priceMissing = false;
-
-          for (const cToken of cTokens) {
-            currencyCodes.push(cToken.underlying_symbol);
-            if (
-              !self.cache._raw.usdPrices ||
-              !self.cache._raw.usdPrices.value ||
-              !self.cache._raw.usdPrices.value[cToken.underlying_symbol]
-            )
-              priceMissing = true;
-          }
-
-          var usdPrices = priceMissing
-            ? self.cache.update(
-                "usdPrices",
-                await getCurrencyUsdRates(currencyCodes)
-              )
-            : await self.cache.getOrUpdate("usdPrices", async function () {
-                return await getCurrencyUsdRates(currencyCodes);
-              });
-
-          // Get currency APY and total yearly interest
-          var currencyUnderlyingSupply = 0;
-          var currencyBorrowUsd = 0;
-          var totalBorrowUsd = 0;
-
-          for (const cToken of cTokens) {
-            var underlyingBorrow =
-              cToken.total_borrows.value * cToken.exchange_rate.value;
-            var borrowUsd =
-              underlyingBorrow * usdPrices[cToken.underlying_symbol];
-
-            if (cToken.underlying_symbol === currencyCode) {
-              currencyUnderlyingSupply =
-                cToken.total_supply.value * cToken.exchange_rate.value;
-              currencyBorrowUsd = borrowUsd;
-            }
-
-            totalBorrowUsd += borrowUsd;
-          }
-
-          // Get APY from COMP per block for this currency
-          var compPerBlock = 0.5;
-          var marketCompPerBlock =
-            compPerBlock * (currencyBorrowUsd / totalBorrowUsd);
-          var marketSupplierCompPerBlock = marketCompPerBlock / 2;
-          var marketSupplierCompPerBlockPerUsd =
-            marketSupplierCompPerBlock / currencyUnderlyingSupply; // TODO: Assumes that the value of currencyCode is $1
-          var marketSupplierUsdFromCompPerBlockPerUsd =
-            marketSupplierCompPerBlockPerUsd * usdPrices["COMP"];
-          return marketSupplierUsdFromCompPerBlockPerUsd * 2102400;
-        },
         getCurrencySupplierAndCompApys: async function () {
           const data = (
             await axios.get("https://api.compound.finance/api/v2/ctoken")
@@ -384,12 +329,7 @@ export default class StablePool {
                 Math.trunc(parseFloat(data.cToken[i].supply_rate.value) * 1e18)
               );
               var compApy = Web3.utils.toBN(
-                Math.trunc(
-                  (await self.pools.Compound.getCompApy(
-                    data.cToken[i].underlying_symbol,
-                    data.cToken
-                  )) * 1e18
-                )
+                Math.trunc(parseFloat(cToken.comp_supply_apy.value) / 100 * 1e18)
               );
               apyBNs[data.cToken[i].underlying_symbol] = [supplyApy, compApy];
             }
@@ -501,7 +441,7 @@ export default class StablePool {
           return { mUSD: await self.pools.mStable.getMUsdSavingsApy() };
         },
         getMUsdSwapFeeBN: async function () {
-          const data = await axios.post(
+          const data = (await axios.post(
             "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
             {
               query: `{
@@ -510,7 +450,7 @@ export default class StablePool {
                     }
                 }`,
             }
-          );
+          )).data;
 
           return Web3.utils.toBN(data.data.massets[0].feeRate);
         },
