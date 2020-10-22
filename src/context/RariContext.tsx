@@ -118,7 +118,7 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [rari, setRari] = useState<any>(
+  const [rari, setRari] = useState<Rari>(
     () =>
       new Rari(
         `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
