@@ -1,6 +1,4 @@
 /* eslint-disable */
-import Web3 from "web3";
-
 export default class YVaultSubpool {
   constructor(web3) {
     this.web3 = web3;

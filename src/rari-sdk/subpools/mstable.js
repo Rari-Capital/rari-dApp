@@ -73,8 +73,9 @@ export default class MStableSubpool {
   }
 
   async getCurrencyApys() {
-    return await this.cache.getOrUpdate("mStableCurrencyApys", async function() {
-      return { mUSD: await this.getMUsdSavingsApy() };
+    var self = this;
+    return await self.cache.getOrUpdate("mStableCurrencyApys", async function() {
+      return { mUSD: await self.getMUsdSavingsApy() };
     });
   }
 
