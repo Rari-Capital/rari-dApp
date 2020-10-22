@@ -107,11 +107,21 @@ const AmountSelect = React.memo(
         pool = rari.pools.yield;
       }
 
-      const [amountToBeAdded] = await pool.deposits.validateDeposit(
-        token.symbol,
-        amountBN,
-        address
-      );
+      let amountToBeAdded;
+
+      try {
+        const [_amountToBeAdded] = await pool.deposits.validateDeposit(
+          token.symbol,
+          amountBN,
+          address
+        );
+
+        amountToBeAdded = _amountToBeAdded;
+      } catch (e) {
+        alert(e);
+
+        return;
+      }
 
       const amountToBeAddedInFormat =
         poolType === Pool.ETH
@@ -179,11 +189,20 @@ const AmountSelect = React.memo(
         pool = rari.pools.yield;
       }
 
-      const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
-        token.symbol,
-        amountBN,
-        address
-      );
+      let amountToBeRemoved;
+      try {
+        const [_amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
+          token.symbol,
+          amountBN,
+          address
+        );
+
+        amountToBeRemoved = _amountToBeRemoved;
+      } catch (e) {
+        alert(e);
+
+        return;
+      }
 
       const amountToBeRemovedInFormat =
         poolType === Pool.ETH
