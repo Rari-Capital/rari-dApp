@@ -29,6 +29,7 @@ import StablePool from "../../../rari-sdk/pools/stable";
 import EthereumPool from "../../../rari-sdk/pools/ethereum";
 import YieldPool from "../../../rari-sdk/pools/yield";
 import { notify } from "../../../utils/notify";
+import Big from "big.js";
 
 interface Props {
   selectedToken: string;
@@ -50,10 +51,11 @@ const AmountSelect = React.memo(
       isLoading: isSelectedTokenBalanceLoading,
     } = useTokenBalance(token);
 
+    const [areTransactionsRunning, setAreTransactionsRunning] = useState(false);
+
     const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
 
-    //TODO: this is ugly af fix this later
-    const [amount, _setAmount] = useState<any>(() => rari.web3.utils.toBN(0.0));
+    const [amount, _setAmount] = useState<Big | null>(() => Big(0));
 
     const updateAmount = useCallback(
       (newAmount: string) => {
@@ -65,30 +67,37 @@ const AmountSelect = React.memo(
 
         try {
           // Try to set the amount to Big(amount):
-          const bigAmount = rari.web3.utils.toBN(
-            parseFloat(newAmount) * 10 ** token.decimals
-          );
-          _setAmount(bigAmount);
+          const bigAmount = Big(newAmount);
+          _setAmount(bigAmount.mul(10 ** token.decimals));
         } catch (e) {
           // If the number was invalid, set the amount to null to disable confirming:
           _setAmount(null);
         }
       },
-      [_setUserEnteredAmount, _setAmount, rari.web3.utils, token.decimals]
+      [_setUserEnteredAmount, _setAmount, token.decimals]
     );
 
     const isAmountGreaterThanSelectedTokenBalance = useMemo(
       () =>
         isSelectedTokenBalanceLoading || amount === null
           ? false
-          : amount.gt(selectedTokenBalance!),
-      [isSelectedTokenBalanceLoading, selectedTokenBalance, amount]
+          : // @ts-ignore
+            amount.gt(rari.web3.utils.toBN(selectedTokenBalance!)),
+      [
+        isSelectedTokenBalanceLoading,
+        selectedTokenBalance,
+        amount,
+        rari.web3.utils,
+      ]
     );
 
     const { t } = useTranslation();
 
     const onDeposit = useCallback(async () => {
       let pool: StablePool | EthereumPool | YieldPool;
+
+      //@ts-ignore
+      const amountBN = rari.web3.utils.toBN(amount);
 
       if (poolType === Pool.ETH) {
         pool = rari.pools.ethereum;
@@ -100,7 +109,7 @@ const AmountSelect = React.memo(
 
       const [amountToBeAdded] = await pool.deposits.validateDeposit(
         token.symbol,
-        amount,
+        amountBN,
         address
       );
 
@@ -118,14 +127,49 @@ const AmountSelect = React.memo(
           })
         )
       ) {
-        pool.deposits.deposit(token.symbol, amount, amountToBeAdded, {
-          from: address,
-        });
+        setAreTransactionsRunning(true);
+
+        let approvalReceipt: { transactionHash: string } | undefined;
+        let depositReceipt: { transactionHash: string } | undefined;
+
+        try {
+          const [
+            ,
+            ,
+            _approvalReceipt,
+            _depositReceipt,
+          ] = await pool.deposits.deposit(
+            token.symbol,
+            amountBN,
+            amountToBeAdded,
+            {
+              from: address,
+            }
+          );
+
+          approvalReceipt = _approvalReceipt;
+          depositReceipt = _depositReceipt;
+        } catch (e) {
+          alert(e);
+        }
+
+        if (approvalReceipt?.transactionHash) {
+          notify.hash(approvalReceipt?.transactionHash);
+        }
+
+        if (depositReceipt?.transactionHash) {
+          notify.hash(depositReceipt?.transactionHash);
+        }
+
+        setAreTransactionsRunning(false);
       }
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
     const onWithdraw = useCallback(async () => {
       let pool: StablePool | EthereumPool | YieldPool;
+
+      //@ts-ignore
+      const amountBN = rari.web3.utils.toBN(amount);
 
       if (poolType === Pool.ETH) {
         pool = rari.pools.ethereum;
@@ -135,13 +179,9 @@ const AmountSelect = React.memo(
         pool = rari.pools.yield;
       }
 
-      const amountInTheirTokenScaledWithDecimal = rari.web3.utils
-        .toBN(10 ** token.decimals)
-        .mul(amount);
-
       const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
         token.symbol,
-        amountInTheirTokenScaledWithDecimal,
+        amountBN,
         address
       );
 
@@ -159,27 +199,30 @@ const AmountSelect = React.memo(
           })
         )
       ) {
-        const [
-          ,
-          ,
-          approvalReceipt,
-          depositReceipt,
-        ] = await pool.withdrawals.withdraw(
-          token.symbol,
-          amountInTheirTokenScaledWithDecimal,
-          amountToBeRemoved,
-          {
-            from: address,
-          }
-        );
+        setAreTransactionsRunning(true);
 
-        if (approvalReceipt?.transactionHash) {
-          notify.hash(approvalReceipt?.transactionHash);
+        let receipt: { transactionHash: string } | undefined;
+
+        try {
+          const [, , _receipt] = await pool.withdrawals.withdraw(
+            token.symbol,
+            amountBN,
+            amountToBeRemoved,
+            {
+              from: address,
+            }
+          );
+
+          receipt = _receipt;
+        } catch (e) {
+          alert(e);
         }
 
-        if (depositReceipt?.transactionHash) {
-          notify.hash(depositReceipt?.transactionHash);
+        if (receipt?.transactionHash) {
+          notify.hash(receipt?.transactionHash);
         }
+
+        setAreTransactionsRunning(false);
       }
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
@@ -190,7 +233,7 @@ const AmountSelect = React.memo(
         mode === Mode.DEPOSIT
           ? t("Enter a valid amount to deposit.")
           : t("Enter a valid amount to withdraw.");
-    } else if (amount.isZero()) {
+    } else if (!amount.gt(0)) {
       depositOrWithdrawAlert =
         mode === Mode.DEPOSIT
           ? t("Choose which crypto you want to deposit.")
@@ -280,11 +323,11 @@ const AmountSelect = React.memo(
             _hover={{ transform: "scale(1.02)" }}
             _active={{ transform: "scale(0.95)" }}
             color={token.overlayTextColor}
-            isLoading={isSelectedTokenBalanceLoading}
+            isLoading={isSelectedTokenBalanceLoading || areTransactionsRunning}
             onClick={mode === Mode.DEPOSIT ? onDeposit : onWithdraw}
             isDisabled={
               amount === null ||
-              amount.isZero() ||
+              !amount.gt(0) ||
               (isAmountGreaterThanSelectedTokenBalance && mode === Mode.DEPOSIT)
             }
           >
@@ -322,7 +365,10 @@ const TokenNameAndMaxButton = React.memo(
       const balance = await getTokenBalance(token, rari, address);
 
       updateAmount(
-        (parseFloat(balance.toString()) / 10 ** token.decimals).toString()
+        //@ts-ignore
+        Big(balance)
+          .div(10 ** token.decimals)
+          .toString()
       );
 
       _setIsMaxLoading(false);

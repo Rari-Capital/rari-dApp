@@ -13,10 +13,11 @@ import {
 } from "@chakra-ui/core";
 import { Column, Row } from "buttered-chakra";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
+import { notify } from "../../utils/notify";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { GlowingButton } from "./GlowingButton";
@@ -39,16 +40,19 @@ function calculateRGTBurn() {
   return (33 - (33 / 60) * daysPast).toFixed(2);
 }
 
-function toFixed(num: number, fixed: number) {
-  var re = new RegExp("^-?\\d+(?:.\\d{0," + (fixed || -1) + "})?");
-  return num.toString().match(re)![0];
-}
-
 export const ClaimRGTModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
     const { t } = useTranslation();
 
     const { address, rari } = useRari();
+
+    const [amount, setAmount] = useState(0);
+    const handleAmountChange = useCallback(
+      (value: any) => {
+        setAmount(value);
+      },
+      [setAmount]
+    );
 
     const { data: unclaimed, isLoading: isUnclaimedLoading } = useQuery(
       address + " unclaimed RGT",
@@ -62,19 +66,21 @@ export const ClaimRGTModal = React.memo(
       { refetchInterval: 1000 }
     );
 
-    const [amount, setAmount] = useState(0);
-    const handleAmountChange = useCallback(
-      (value) => {
-        setAmount(value);
-      },
-      [setAmount]
-    );
+    // When we get a number for uncalimed, set the amount to it.
+    useEffect(() => {
+      if (unclaimed) {
+        setAmount(Math.floor(unclaimed * 1000000) / 1000000);
+      }
+    }, [unclaimed]);
 
-    const claimRGT = useCallback(() => {
-      rari.governance.rgt.distributions.claim(
+    const claimRGT = useCallback(async () => {
+      const receipt = await rari.governance.rgt.distributions.claim(
+        //TODO use a to WEI function that takes a normal number
         rari.web3.utils.toBN((amount * 1e18).toString()),
         { from: address }
       );
+
+      notify.hash(receipt.transactionHash);
     }, [rari.governance.rgt.distributions, amount, rari.web3.utils, address]);
 
     return (
@@ -99,7 +105,9 @@ export const ClaimRGTModal = React.memo(
               >
                 <AnimatedSmallLogo size="50px" />
                 <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
-                  {isUnclaimedLoading ? "?" : toFixed(unclaimed!, 5)}
+                  {isUnclaimedLoading
+                    ? "?"
+                    : Math.floor(unclaimed! * 10000) / 10000}
                 </Heading>
 
                 <Row

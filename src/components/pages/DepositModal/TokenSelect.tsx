@@ -25,6 +25,9 @@ import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 import { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { usdFormatter } from "../../../utils/bigUtils";
+import { Pool, usePoolType } from "../../../context/PoolContext";
+import { useRari } from "../../../context/RariContext";
+import { useQuery } from "react-query";
 
 const TokenSelect = React.memo(
   ({
@@ -36,15 +39,19 @@ const TokenSelect = React.memo(
   }) => {
     const [searchNeedle, setSearchNeedle] = useState("");
 
-    const tokenKeys = useMemo(
-      () =>
-        searchNeedle === ""
-          ? Object.keys(tokens)
-          : Object.keys(tokens).filter((symbol) =>
-              symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
-            ),
-      [searchNeedle]
-    );
+    const poolType = usePoolType();
+
+    const tokenKeys = useMemo(() => {
+      if (poolType === Pool.ETH) {
+        return ["ETH"];
+      }
+
+      return searchNeedle === ""
+        ? Object.keys(tokens)
+        : Object.keys(tokens).filter((symbol) =>
+            symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
+          );
+    }, [searchNeedle, poolType]);
 
     const onSearch = useCallback(
       (event: any) => setSearchNeedle(event.target.value),
@@ -58,6 +65,31 @@ const TokenSelect = React.memo(
       },
       [onClose, _onSelectToken]
     );
+
+    const pool = usePoolType();
+
+    const { rari } = useRari();
+
+    const {
+      data: noSlippageCurrencies,
+      isLoading: isNoSlippageCurrenciesLoading,
+    } = useQuery(pool + " noSlippageCurrencies", async () => {
+      let noSlippageCurrencies;
+
+      if (pool === Pool.STABLE) {
+        noSlippageCurrencies = await rari.pools.stable.deposits.getDirectDepositCurrencies();
+      } else if (pool === Pool.YIELD) {
+        noSlippageCurrencies = await rari.pools.yield.deposits.getDirectDepositCurrencies();
+      } else {
+        noSlippageCurrencies = ["ETH"];
+      }
+
+      if (noSlippageCurrencies.length === 0) {
+        return ["None"];
+      }
+
+      return noSlippageCurrencies;
+    });
 
     const { t } = useTranslation();
 
@@ -82,12 +114,27 @@ const TokenSelect = React.memo(
             onChange={onSearch}
           />
         </InputGroup>
+        <Box px={DASHBOARD_BOX_SPACING.asPxString()}>
+          No Slippage:{" "}
+          <b>
+            {isNoSlippageCurrenciesLoading
+              ? " Loading..."
+              : noSlippageCurrencies.map((token: string, index: number) => {
+                  return (
+                    token +
+                    (index === (noSlippageCurrencies as string[]).length - 1
+                      ? ""
+                      : ", ")
+                  );
+                })}
+          </b>
+        </Box>
 
         <Box
-          pt={1}
+          pt={2}
           px={DASHBOARD_BOX_SPACING.asPxString()}
           width="100%"
-          height="180px"
+          height="160px"
         >
           <TokenList tokenKeys={tokenKeys} onClick={onTokenClick} />
         </Box>
@@ -104,7 +151,10 @@ const TokenRow = React.memo(
     index,
     style,
   }: {
-    data: { tokenKeys: string[]; onClick: (symbol: string) => any };
+    data: {
+      tokenKeys: string[];
+      onClick: (symbol: string) => any;
+    };
     index: number;
     style: CSSProperties;
   }) => {

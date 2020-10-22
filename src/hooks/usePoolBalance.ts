@@ -20,7 +20,15 @@ export const usePoolBalance = (pool: Pool) => {
         balance = await rari.pools.yield.balances.balanceOf(address);
       }
 
-      return stringUsdFormatter(rari.web3.utils.fromWei(balance));
+      let formattedBalance = stringUsdFormatter(
+        rari.web3.utils.fromWei(balance)
+      );
+
+      if (pool === Pool.ETH) {
+        return formattedBalance.replace("$", "") + " ETH";
+      }
+
+      return formattedBalance;
     }
   );
 

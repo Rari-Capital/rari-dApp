@@ -11,9 +11,9 @@ export const getTokenBalance = async (
 ) => {
   let stringBalance;
 
-  const allTokens = await rari.getAllTokens();
-
   if (token.symbol !== "ETH") {
+    const allTokens = await rari.getAllTokens();
+
     stringBalance = await allTokens[token.symbol].contract.methods
       .balanceOf(address)
       .call();

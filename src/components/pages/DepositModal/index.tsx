@@ -5,6 +5,7 @@ import TokenSelect from "./TokenSelect";
 import AmountSelect from "./AmountSelect";
 import OptionsMenu from "./OptionsMenu";
 import { MODAL_PROPS } from "../../shared/Modal";
+import { Pool, usePoolType } from "../../../context/PoolContext";
 
 enum CurrentScreen {
   MAIN,
@@ -48,7 +49,15 @@ const DepositModal = React.memo((props: Props) => {
     }
   }, [props.isOpen]);
 
-  const [selectedToken, setSelectedToken] = useState("DAI");
+  const poolType = usePoolType();
+
+  const [selectedToken, setSelectedToken] = useState(() => {
+    if (poolType === Pool.ETH) {
+      return "ETH";
+    } else {
+      return "USDC";
+    }
+  });
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
 

@@ -15,6 +15,22 @@ export default class Rari {
     this.web3 = new Web3(web3Provider);
     this.cache = new Cache({ allTokens: 86400 });
 
+    this.getEthUsdPriceBN = async function () {
+      try {
+        return Web3.utils.toBN(
+          Math.trunc(
+            (
+              await axios.get(
+                "https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum"
+              )
+            ).data.ethereum.usd * 1e18
+          )
+        );
+      } catch (error) {
+        throw "Error retrieving data from Coingecko API: " + error;
+      }
+    };
+
     /* const approveFunction = async ({ from, to, encodedFunctionCall, txFee, gasPrice, gas, nonce, relayerAddress, relayHubAddress }) => {
             try {
                 var response = await request.post("https://app.rari.capital/checkSig.php", { data: JSON.stringify({ from, to, encodedFunctionCall, txFee, gasPrice, gas, nonce, relayerAddress, relayHubAddress }), contentType: 'application/json', });

@@ -142,7 +142,7 @@ const GovernanceStats = React.memo(() => {
 
   const { data, isLoading } = useQuery(address + " balanceOf RGT", () => {
     return rari.governance.rgt.balanceOf(address).then((data) => {
-      return stringUsdFormatter(rari.web3.utils.fromWei(data));
+      return stringUsdFormatter(rari.web3.utils.fromWei(data)).replace("$", "");
     });
   });
 
@@ -190,12 +190,16 @@ const FundStats = React.memo(() => {
 
     const yieldbal = await rari.pools.yield.balances.balanceOf(address);
 
-    const ethbal = await rari.pools.ethereum.balances.balanceOf(address);
+    const ethPriceBN = await rari.getEthUsdPriceBN();
+
+    const ethbal = (await rari.pools.ethereum.balances.balanceOf(address)).mul(
+      ethPriceBN.div(rari.web3.utils.toBN(1e18))
+    );
 
     return parseFloat(
       rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
     );
-  }, [rari.pools, rari.web3.utils, address]);
+  }, [rari, address]);
 
   const getAccountInterest = useCallback(async () => {
     const stablebal = await rari.pools.stable.balances.interestAccruedBy(
@@ -204,26 +208,32 @@ const FundStats = React.memo(() => {
 
     const yieldbal = await rari.pools.yield.balances.interestAccruedBy(address);
 
-    const ethbal = await rari.pools.ethereum.balances.interestAccruedBy(
-      address
-    );
+    const ethPriceBN = await rari.getEthUsdPriceBN();
+
+    const ethbal = (
+      await rari.pools.ethereum.balances.interestAccruedBy(address)
+    ).mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
 
     return stringUsdFormatter(
       rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
     );
-  }, [rari.pools, rari.web3.utils, address]);
+  }, [rari, address]);
 
   const getTVL = useCallback(async () => {
     const stablebal = await rari.pools.stable.balances.getTotalSupply();
 
     const yieldbal = await rari.pools.yield.balances.getTotalSupply();
 
-    const ethbal = await rari.pools.ethereum.balances.getTotalSupply();
+    const ethPriceBN = await rari.getEthUsdPriceBN();
+
+    const ethbal = (await rari.pools.ethereum.balances.getTotalSupply()).mul(
+      ethPriceBN.div(rari.web3.utils.toBN(1e18))
+    );
 
     return parseFloat(
       rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
     );
-  }, [rari.pools, rari.web3.utils]);
+  }, [rari]);
 
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
