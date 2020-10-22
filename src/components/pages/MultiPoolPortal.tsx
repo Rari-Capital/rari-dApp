@@ -171,7 +171,7 @@ const GovernanceStats = React.memo(() => {
           stat={isLoading ? "$?" : data!}
           statSize="3xl"
           captionSize="xs"
-          caption={t("RGT Balance (Unclaimed)")}
+          caption={t("RGT Balance (Claimed)")}
           crossAxisAlignment="center"
           captionFirst={false}
         />
