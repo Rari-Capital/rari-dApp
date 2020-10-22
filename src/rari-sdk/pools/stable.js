@@ -754,7 +754,10 @@ export default class StablePool {
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
-        if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
+        if (
+          !directlyDepositableCurrencyCodes ||
+          directlyDepositableCurrencyCodes.length == 0
+        )
           throw "No directly depositable currencies found.";
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
@@ -766,9 +769,11 @@ export default class StablePool {
           );
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -826,13 +831,35 @@ export default class StablePool {
                     continue;
                   }
 
-                  if (!maxSwap || !maxSwap["0"] || amount.gt(Web3.utils.toBN(maxSwap["2"]))) continue;
-                  var outputAmountBeforeFeesBN = amount.mul(Web3.utils.toBN(10 ** self.internalTokens[acceptedCurrency].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals));
-    
-                  if (acceptedCurrency === "mUSD") mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
+                  if (
+                    !maxSwap ||
+                    !maxSwap["0"] ||
+                    amount.gt(Web3.utils.toBN(maxSwap["2"]))
+                  )
+                    continue;
+                  var outputAmountBeforeFeesBN = amount
+                    .mul(
+                      Web3.utils.toBN(
+                        10 ** self.internalTokens[acceptedCurrency].decimals
+                      )
+                    )
+                    .div(
+                      Web3.utils.toBN(
+                        10 ** self.internalTokens[currencyCode].decimals
+                      )
+                    );
+
+                  if (acceptedCurrency === "mUSD")
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
                   else {
-                    var swapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
-                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(swapFeeBN).div(Web3.utils.toBN(1e18)));
+                    var swapFeeBN = await self.pools[
+                      "mStable"
+                    ].getMUsdSwapFeeBN();
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(
+                      outputAmountBeforeFeesBN
+                        .mul(swapFeeBN)
+                        .div(Web3.utils.toBN(1e18))
+                    );
                   }
                 }
 
@@ -851,9 +878,11 @@ export default class StablePool {
             );
             var outputAmountUsdBN = mStableOutputAmountAfterFeeBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -899,9 +928,11 @@ export default class StablePool {
             );
             var makerAssetFilledAmountUsdBN = makerAssetFilledAmountBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(acceptedCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(acceptedCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -954,7 +985,9 @@ export default class StablePool {
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
             ? self.web3.eth.getBalance(options.from)
-            : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
+            : allTokens[currencyCode].contract.methods
+                .balanceOf(options.from)
+                .call())
         );
         if (amount.gt(accountBalanceBN))
           throw "Not enough balance in your account to make a deposit of this amount.";
@@ -963,7 +996,10 @@ export default class StablePool {
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
-        if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
+        if (
+          !directlyDepositableCurrencyCodes ||
+          directlyDepositableCurrencyCodes.length == 0
+        )
           throw "No directly depositable currencies found.";
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
@@ -975,9 +1011,11 @@ export default class StablePool {
           );
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -988,7 +1026,12 @@ export default class StablePool {
             );
 
           // Check amountUsdBN against minUsdAmount
-          if (typeof minUsdAmount !== undefined && minUsdAmount !== null && amountUsdBN.lt(minUsdAmount)) return [amountUsdBN];
+          if (
+            typeof minUsdAmount !== undefined &&
+            minUsdAmount !== null &&
+            amountUsdBN.lt(minUsdAmount)
+          )
+            return [amountUsdBN];
 
           // Get deposit contract
           var useGsn = /* amountUsdBN.gte(Web3.utils.toBN(250e18)) && myFundBalanceBN.isZero() */ false;
@@ -1106,9 +1149,11 @@ export default class StablePool {
             );
             var outputAmountUsdBN = mStableOutputAmountAfterFeeBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -1121,7 +1166,12 @@ export default class StablePool {
               );
 
             // Check outputAmountUsdBN against minUsdAmount
-            if (typeof minUsdAmount !== undefined && minUsdAmount !== null && outputAmountUsdBN.lt(minUsdAmount)) return [outputAmountUsdBN];
+            if (
+              typeof minUsdAmount !== undefined &&
+              minUsdAmount !== null &&
+              outputAmountUsdBN.lt(minUsdAmount)
+            )
+              return [outputAmountUsdBN];
 
             // Approve tokens to RariFundProxy
             try {
@@ -1197,9 +1247,11 @@ export default class StablePool {
             );
             var makerAssetFilledAmountUsdBN = makerAssetFilledAmountBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(acceptedCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(acceptedCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -1236,7 +1288,11 @@ export default class StablePool {
               throw "ETH balance too low to cover 0x exchange protocol fee.";
 
             // Check makerAssetFilledAmountUsdBN against minUsdAmount
-            if (typeof minUsdAmount !== undefined && minUsdAmount !== null && makerAssetFilledAmountUsdBN.lt(minUsdAmount))
+            if (
+              typeof minUsdAmount !== undefined &&
+              minUsdAmount !== null &&
+              makerAssetFilledAmountUsdBN.lt(minUsdAmount)
+            )
               return [makerAssetFilledAmountUsdBN];
 
             // Approve tokens to RariFundProxy if token is not ETH
@@ -1374,9 +1430,11 @@ export default class StablePool {
         if (tokenRawFundBalanceBN.gte(amount)) {
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -1458,7 +1516,9 @@ export default class StablePool {
 
               // Get swap fee and calculate input amount needed to fill output amount
               if (currencyCode !== "mUSD" && mStableSwapFeeBN === null)
-                mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
+                mStableSwapFeeBN = await self.pools[
+                  "mStable"
+                ].getMUsdSwapFeeBN();
               var inputAmountBN = amount
                 .sub(amountWithdrawnBN)
                 .mul(Web3.utils.toBN(1e18))
@@ -1772,7 +1832,12 @@ export default class StablePool {
                     .toBN(10)
                     .pow(Web3.utils.toBN(allTokens[currencyCode].decimals - 18))
                 );
-          if (typeof maxUsdAmount !== undefined && maxUsdAmount !== null && amountUsdBN.gt(maxUsdAmount)) return [amountUsdBN];
+          if (
+            typeof maxUsdAmount !== undefined &&
+            maxUsdAmount !== null &&
+            amountUsdBN.gt(maxUsdAmount)
+          )
+            return [amountUsdBN];
 
           // If we can withdraw everything directly, do so
           try {
@@ -2124,7 +2189,11 @@ export default class StablePool {
           }
 
           // Check maxUsdAmount
-          if (typeof maxUsdAmount !== undefined && maxUsdAmount !== null && amountInputtedUsdBN.gt(maxUsdAmount))
+          if (
+            typeof maxUsdAmount !== undefined &&
+            maxUsdAmount !== null &&
+            amountInputtedUsdBN.gt(maxUsdAmount)
+          )
             return [amountInputtedUsdBN];
 
           // Withdraw and exchange tokens via RariFundProxy
