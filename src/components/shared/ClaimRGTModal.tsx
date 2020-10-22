@@ -62,8 +62,7 @@ export const ClaimRGTModal = React.memo(
             await rari.governance.rgt.distributions.getUnclaimed(address)
           )
         );
-      },
-      { refetchInterval: 1000 }
+      }
     );
 
     // When we get a number for uncalimed, set the amount to it.

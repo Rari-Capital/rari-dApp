@@ -8,7 +8,7 @@ import {
   Button,
   Text,
 } from "@chakra-ui/core";
-import { useIsMobile, Row, Column } from "buttered-chakra";
+import { useIsMobile, Row, Column, Center } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 
 // @ts-ignore
@@ -48,42 +48,63 @@ export const AccountButton = React.memo(() => {
         isOpen={isClaimRGTModalOpen}
         onClose={closeClaimRGTModal}
       />
-      <AddressButton openModal={openSettingsModal} />
+      <AddressButton
+        openModal={openSettingsModal}
+        openClaimRGTModal={openClaimRGTModal}
+      />
     </>
   );
 });
 
-const AddressButton = React.memo(({ openModal }: { openModal: () => any }) => {
-  const { address } = useRari();
+const AddressButton = React.memo(
+  ({
+    openModal,
+    openClaimRGTModal,
+  }: {
+    openModal: () => any;
+    openClaimRGTModal: () => any;
+  }) => {
+    const { address } = useRari();
 
-  const isMobile = useIsMobile();
+    const isMobile = useIsMobile();
 
-  return (
-    <DashboardBox
-      as="button"
-      height="40px"
-      flexShrink={0}
-      width={{
-        md: "245px",
-        xs: "auto",
-      }}
-      onClick={openModal}
-    >
-      <Row
-        expand
-        mainAxisAlignment="space-around"
-        crossAxisAlignment="center"
-        px={3}
-      >
-        <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+    return (
+      <>
+        <DashboardBox
+          as="button"
+          height="40px"
+          flexShrink={0}
+          width="auto"
+          onClick={openModal}
+        >
+          <Row
+            expand
+            mainAxisAlignment="space-around"
+            crossAxisAlignment="center"
+            px={3}
+          >
+            <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
 
-        <Text ml={2} fontWeight="semibold">
-          {isMobile ? shortAddress(address) : mediumAddress(address)}
-        </Text>
-      </Row>
-    </DashboardBox>
-  );
-});
+            <Text mx={2} fontWeight="semibold">
+              {isMobile ? shortAddress(address) : mediumAddress(address)}
+            </Text>
+          </Row>
+        </DashboardBox>
+        <DashboardBox
+          ml={DASHBOARD_BOX_SPACING.asPxString()}
+          as="button"
+          height="40px"
+          flexShrink={0}
+          width="100px"
+          onClick={openClaimRGTModal}
+          fontWeight="bold"
+        >
+          <Center expand>Claim RGT</Center>
+        </DashboardBox>
+      </>
+    );
+  }
+);
 
 export const SettingsModal = React.memo(
   ({
