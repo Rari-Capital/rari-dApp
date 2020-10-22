@@ -9,6 +9,7 @@ import {
   Image,
   IconButton,
   Input,
+  Link,
 } from "@chakra-ui/core";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { tokens } from "../../../utils/tokenUtils";
@@ -269,10 +270,9 @@ const AmountSelect = React.memo(
         token: selectedToken,
       });
     } else {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("Be aware that there is a 9.5% fee on interest earned.")
-          : t("Be aware that there is a 0.5% withdrawal fee.");
+      depositOrWithdrawAlert = t(
+        "Click to learn about our performance/withdrawal fees."
+      );
     }
 
     return (
@@ -308,7 +308,9 @@ const AmountSelect = React.memo(
           height="100%"
         >
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
-            {depositOrWithdrawAlert}
+            <Link href="https://www.notion.so/Fees-e4689d7b800f485098548dd9e9d0a69f">
+              {depositOrWithdrawAlert}
+            </Link>
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
