@@ -271,8 +271,8 @@ const AmountSelect = React.memo(
     } else {
       depositOrWithdrawAlert =
         mode === Mode.DEPOSIT
-          ? t("Click confirm to start earning interest!")
-          : t("Click confirm to withdraw.");
+          ? t("Be aware that there is a 9.5% fee on interest earned.")
+          : t("Be aware that there is a 0.5% withdrawal fee.");
     }
 
     return (

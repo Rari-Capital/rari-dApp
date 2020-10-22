@@ -5,7 +5,6 @@
   "Choose which crypto you want to withdraw.": "Choose which crypto you want to withdraw.",
   "Loading your balance of {{token}}...": "Loading your balance of {{token}}...",
   "You don't have enough {{token}}.": "You don't have enough {{token}}.",
-  "Click confirm to start earning interest!": "Click confirm to start earning interest!",
   "Enter a valid amount to deposit.": "Enter a valid amount to deposit.",
   "Enter a valid amount to withdraw.": "Enter a valid amount to withdraw.",
   "Confirm": "Confirm",
@@ -62,10 +61,11 @@
   "Performance beginning with $10,000 deposited 1 year ago": "Performance beginning with $10,000 deposited 1 year ago",
   "Recent Trades (WIP)": "Recent Trades (WIP)",
   "View on Etherscan": "View on Etherscan",
-  "Click confirm to withdraw.": "Click confirm to withdraw.",
   "You will deposit {{amount}}. Do you approve?": "You will deposit {{amount}}. Do you approve?",
   "You will withdraw {{amount}}. Do you approve?": "You will withdraw {{amount}}. Do you approve?",
   "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.",
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "Claiming RGT now will result in a {{amount}}% burn/takeback",
-  "RGT Balance (Claimed)": "RGT Balance (Claimed)"
+  "RGT Balance (Claimed)": "RGT Balance (Claimed)",
+  "Be aware that there is a 9.5% fee on interest earned.": "Be aware that there is a 9.5% fee on interest earned.",
+  "Be aware that there is a 0.5% withdrawal fee.": "Be aware that there is a 0.5% withdrawal fee."
 }

@@ -5,7 +5,6 @@
   "Choose which crypto you want to withdraw.": "选择您要提取的加密货币。",
   "Loading your balance of {{token}}...": "正在加载您的{{token}}余额...",
   "You don't have enough {{token}}.": "您没有足够的{{token}}。",
-  "Click confirm to start earning interest!": "点击确认开始赚取利息！",
   "Enter a valid amount to deposit.": "输入有效的存款金额。",
   "Enter a valid amount to withdraw.": "输入有效的提款金额。",
   "Confirm": "确认",
@@ -62,10 +61,11 @@
   "Performance beginning with $10,000 deposited 1 year ago": "性能始于1年之前的$ 10,000",
   "Recent Trades (WIP)": "最近交易（WIP）",
   "View on Etherscan": "在Etherscan上查看",
-  "Click confirm to withdraw.": "点击确认退出。",
   "You will deposit {{amount}}. Do you approve?": "您将存入{{amount}}。 你赞成吗",
   "You will withdraw {{amount}}. Do you approve?": "您将提取{{amount}}。 你赞成吗",
   "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前索取您的RGT，将导致一部分被烧毁并发送回协议。 所消耗量的70％将被燃烧，而30％将被重新消耗到协议中。 该数量从33％线性降低到19％时达到0％。",
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "现在声明RGT将导致{{amount}}％的烧录/收回",
-  "RGT Balance (Claimed)": "RGT余额（已声明）"
+  "RGT Balance (Claimed)": "RGT余额（已声明）",
+  "Be aware that there is a 9.5% fee on interest earned.": "请注意，所赚取的利息为9.5％的费用。",
+  "Be aware that there is a 0.5% withdrawal fee.": "请注意，要收取0.5％的取款费。"
 }
