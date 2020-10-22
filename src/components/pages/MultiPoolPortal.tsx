@@ -252,20 +252,14 @@ const FundStats = React.memo(() => {
   const hasNotDeposited = myBalance === 0;
 
   return (
-    <RowOnDesktopColumnOnMobile
-      mainAxisAlignment="space-between"
-      crossAxisAlignment="center"
-      width="100%"
-      height={{ md: "120px", xs: "auto" }}
-    >
-      <DashboardBox
-        width={{ md: "50%", xs: "100%" }}
-        height={{ md: "100%", xs: "100px" }}
-        mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
-        mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-      >
-        <Center expand>
-          {hasNotDeposited ? (
+    <>
+      {hasNotDeposited ? null : (
+        <DashboardBox
+          width="100%"
+          height="100px"
+          mb={DASHBOARD_BOX_SPACING.asPxString()}
+        >
+          <Center expand>
             <APYWithRefreshMovingStat
               formatStat={usdFormatter}
               fetchInterval={40000}
@@ -280,45 +274,78 @@ const FundStats = React.memo(() => {
               crossAxisAlignment="center"
               captionFirst={false}
             />
-          ) : (
-            <APYMovingStat
-              formatStat={usdFormatter}
-              startingAmount={myBalance}
-              interval={100}
-              apy={0.1}
-              statSize="3xl"
-              captionSize="xs"
-              caption={t("Account Balance")}
-              crossAxisAlignment="center"
-              captionFirst={false}
-            />
-          )}
-        </Center>
-      </DashboardBox>
+          </Center>
+        </DashboardBox>
+      )}
 
-      <DashboardBox
-        width={{ md: "50%", xs: "100%" }}
-        height={{ md: "100%", xs: "100px" }}
+      <RowOnDesktopColumnOnMobile
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
+        width="100%"
+        height={{ md: "120px", xs: "auto" }}
       >
-        <Center expand>
-          {hasNotDeposited ? (
-            <RGTPrice />
-          ) : (
-            <RefetchMovingStat
-              queryKey="interestEarned"
-              interval={5000}
-              fetch={getAccountInterest}
-              loadingPlaceholder="$?"
-              statSize="3xl"
-              captionSize="xs"
-              caption={t("Interest Earned")}
-              crossAxisAlignment="center"
-              captionFirst={false}
-            />
-          )}
-        </Center>
-      </DashboardBox>
-    </RowOnDesktopColumnOnMobile>
+        <DashboardBox
+          width={{ md: "50%", xs: "100%" }}
+          height={{ md: "100%", xs: "100px" }}
+          mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
+          mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+        >
+          <Center expand>
+            {hasNotDeposited ? (
+              <APYWithRefreshMovingStat
+                formatStat={usdFormatter}
+                fetchInterval={40000}
+                loadingPlaceholder="$?"
+                apyInterval={100}
+                fetch={getTVL}
+                queryKey={"totalValueLocked"}
+                apy={2}
+                statSize="3xl"
+                captionSize="xs"
+                caption={t("Total Value Locked")}
+                crossAxisAlignment="center"
+                captionFirst={false}
+              />
+            ) : (
+              <APYMovingStat
+                formatStat={usdFormatter}
+                startingAmount={myBalance}
+                interval={100}
+                apy={0.1}
+                statSize="3xl"
+                captionSize="xs"
+                caption={t("Account Balance")}
+                crossAxisAlignment="center"
+                captionFirst={false}
+              />
+            )}
+          </Center>
+        </DashboardBox>
+
+        <DashboardBox
+          width={{ md: "50%", xs: "100%" }}
+          height={{ md: "100%", xs: "100px" }}
+        >
+          <Center expand>
+            {hasNotDeposited ? (
+              <RGTPrice />
+            ) : (
+              <RefetchMovingStat
+                queryKey="interestEarned"
+                interval={5000}
+                fetch={getAccountInterest}
+                loadingPlaceholder="$?"
+                statSize="3xl"
+                captionSize="xs"
+                caption={t("Interest Earned")}
+                crossAxisAlignment="center"
+                captionFirst={false}
+              />
+            )}
+          </Center>
+        </DashboardBox>
+      </RowOnDesktopColumnOnMobile>
+    </>
   );
 });
 
