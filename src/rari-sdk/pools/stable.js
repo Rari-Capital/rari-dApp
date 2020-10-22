@@ -754,7 +754,7 @@ export default class StablePool {
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
-        if (!directlyDepositableCurrencyCodes)
+        if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
           throw "No directly depositable currencies found.";
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
@@ -963,7 +963,7 @@ export default class StablePool {
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
-        if (!directlyDepositableCurrencyCodes)
+        if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
           throw "No directly depositable currencies found.";
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
