@@ -117,8 +117,9 @@ export default class StablePool {
     },
   };
 
-  constructor(web3, getAllTokens) {
+  constructor(web3, subpools, getAllTokens) {
     this.web3 = web3;
+    this.pools = subpools;
     this.getAllTokens = getAllTokens;
     this.cache = new Cache({
       usdPrices: 900,
@@ -240,186 +241,6 @@ export default class StablePool {
         return await self.contracts.RariFundToken.methods
           .transfer(recipient, rftAmountBN)
           .send(options);
-      },
-    };
-
-    this.pools = {
-      dYdX: {
-        getCurrencyApys: async function () {
-          const data = (await axios.get("https://api.dydx.exchange/v1/markets"))
-            .data;
-          var apyBNs = {};
-
-          for (var i = 0; i < data.markets.length; i++)
-            if (
-              self.allocations.CURRENCIES_BY_POOL.dYdX.indexOf(
-                data.markets[i].symbol
-              ) >= 0
-            )
-              apyBNs[data.markets[i].symbol] = Web3.utils.toBN(
-                Math.trunc(parseFloat(data.markets[i].totalSupplyAPR) * 1e18)
-              );
-
-          return apyBNs;
-        },
-      },
-      Compound: {
-        getCurrencySupplierAndCompApys: async function () {
-          const data = (
-            await axios.get("https://api.compound.finance/api/v2/ctoken")
-          ).data;
-          var apyBNs = {};
-
-          for (var i = 0; i < data.cToken.length; i++) {
-            if (
-              self.allocations.CURRENCIES_BY_POOL.Compound.indexOf(
-                data.cToken[i].underlying_symbol
-              ) >= 0
-            ) {
-              var supplyApy = Web3.utils.toBN(
-                Math.trunc(parseFloat(data.cToken[i].supply_rate.value) * 1e18)
-              );
-              var compApy = Web3.utils.toBN(
-                Math.trunc(
-                  (parseFloat(data.cToken[i].comp_supply_apy.value) / 100) *
-                    1e18
-                )
-              );
-              apyBNs[data.cToken[i].underlying_symbol] = [supplyApy, compApy];
-            }
-          }
-
-          return apyBNs;
-        },
-        getCurrencyApys: async function () {
-          var compoundApyBNs = await self.pools.Compound.getCurrencySupplierAndCompApys();
-          var compoundCombinedApyBNs = {};
-          for (const currencyCode of Object.keys(compoundApyBNs))
-            compoundCombinedApyBNs[currencyCode] = compoundApyBNs[
-              currencyCode
-            ][0].add(compoundApyBNs[currencyCode][1]);
-          return compoundCombinedApyBNs;
-        },
-      },
-      Aave: {
-        getCurrencyApys: async function () {
-          let currencyCodes = self.allocations.CURRENCIES_BY_POOL.Aave.slice();
-
-          currencyCodes[currencyCodes.indexOf("sUSD")] = "SUSD";
-
-          const data = (
-            await axios.post(
-              "https://api.thegraph.com/subgraphs/name/aave/protocol-multy-raw",
-              {
-                query:
-                  `{
-                        reserves(where: {
-                            symbol_in: ` +
-                  JSON.stringify(currencyCodes) +
-                  `
-                        }) {
-                            symbol
-                            liquidityRate
-                        }
-                    }`,
-              }
-            )
-          ).data;
-
-          var apyBNs = {};
-
-          for (var i = 0; i < data.data.reserves.length; i++)
-            apyBNs[
-              data.data.reserves[i].symbol == "SUSD"
-                ? "sUSD"
-                : data.data.reserves[i].symbol
-            ] = Web3.utils
-              .toBN(data.data.reserves[i].liquidityRate)
-              .div(Web3.utils.toBN(1e9));
-
-          return apyBNs;
-        },
-      },
-      mStable: {
-        getMUsdSavingsApy: async function () {
-          // TODO: Get exchange rates from contracts instead of The Graph
-          // TODO: Use instantaneous APY instead of 24-hour APY?
-          // Calculate APY with calculateApy using exchange rates from The Graph
-          var epochNow = Math.floor(new Date().getTime() / 1000);
-          var epoch24HrsAgo = epochNow - 86400;
-
-          const data = (
-            await axios.post(
-              "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-              {
-                operationName: "ExchangeRates",
-                variables: { day0: epoch24HrsAgo, day1: epochNow },
-                query:
-                  "query ExchangeRates($day0: Int!, $day1: Int!) {\n  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {\n    ...ER\n    __typename\n  }\n  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {\n    ...ER\n    __typename\n  }\n}\n\nfragment ER on ExchangeRate {\n  exchangeRate\n  timestamp\n  __typename\n}\n",
-              }
-            )
-          ).data;
-
-          if (!data || !data.data)
-            return console.error(
-              "Failed to decode exchange rates from The Graph when calculating mStable 24-hour APY"
-            );
-          return self.pools.mStable.calculateMUsdSavingsApy(
-            epoch24HrsAgo,
-            data.data.day0[0].exchangeRate,
-            epochNow,
-            data.data.day1[0].exchangeRate
-          );
-        },
-        calculateMUsdSavingsApy: function (
-          startTimestamp,
-          startExchangeRate,
-          endTimestamp,
-          endExchangeRate
-        ) {
-          const SCALE = 1e18;
-          const YEAR_BN = 365 * 24 * 60 * 60;
-
-          const rateDiff =
-            (endExchangeRate * SCALE) / startExchangeRate - SCALE;
-          const timeDiff = endTimestamp - startTimestamp;
-
-          const portionOfYear = (timeDiff * SCALE) / YEAR_BN;
-          const portionsInYear = SCALE / portionOfYear;
-          const rateDecimals = (SCALE + rateDiff) / SCALE;
-
-          if (rateDecimals > 0) {
-            const diff = rateDecimals ** portionsInYear;
-            const parsed = diff * SCALE;
-            return (
-              Web3.utils.toBN((parsed - SCALE).toFixed(0)) || Web3.utils.toBN(0)
-            );
-          }
-
-          return Web3.utils.toBN(0);
-        },
-        getCurrencyApys: async function () {
-          return { mUSD: await self.pools.mStable.getMUsdSavingsApy() };
-        },
-        getMUsdSwapFeeBN: async function () {
-          try {
-            const data = (
-              await axios.post(
-                "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-                {
-                  query: `{
-                      massets(where: { id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5" }) {
-                      feeRate
-                      }
-                  }`,
-                }
-              )
-            ).data;
-            return Web3.utils.toBN(data.data.massets[0].feeRate);
-          } catch (err) {
-            throw "Failed to get mUSD swap fee: " + err;
-          }
-        },
       },
     };
 
@@ -1412,11 +1233,17 @@ export default class StablePool {
 
             amountInputtedUsdBN.iadd(
               tokenRawFundBalanceBN
-                .mul(Web3.utils.toBN(1e18))
+                .mul(
+                  Web3.utils.toBN(allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(currencyCode)
+                  ])
+                )
                 .div(
-                  Web3.utils.toBN(
-                    10 ** self.internalTokens[currencyCode].decimals
-                  )
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                    )
                 )
             );
             amountWithdrawnBN.iadd(tokenRawFundBalanceBN);
@@ -1544,13 +1371,17 @@ export default class StablePool {
 
               amountInputtedUsdBN.iadd(
                 inputAmountBN
-                  .mul(Web3.utils.toBN(1e18))
+                  .mul(
+                    Web3.utils.toBN(allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                    ])
+                  )
                   .div(
-                    Web3.utils.toBN(
-                      10 **
-                        self.internalTokens[inputCandidates[i].currencyCode]
-                          .decimals
-                    )
+                    Web3.utils
+                      .toBN(10)
+                      .pow(
+                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      )
                   )
               );
               amountWithdrawnBN.iadd(outputAmountBN);
@@ -1665,13 +1496,17 @@ export default class StablePool {
 
                 amountInputtedUsdBN.iadd(
                   thisInputAmountBN
-                    .mul(Web3.utils.toBN(1e18))
+                    .mul(
+                      Web3.utils.toBN(allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                      ])
+                    )
                     .div(
-                      Web3.utils.toBN(
-                        10 **
-                          self.internalTokens[inputCandidates[i].currencyCode]
-                            .decimals
-                      )
+                      Web3.utils
+                        .toBN(10)
+                        .pow(
+                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        )
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
@@ -1697,13 +1532,17 @@ export default class StablePool {
 
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
-                    .mul(Web3.utils.toBN(1e18))
+                    .mul(
+                      Web3.utils.toBN(allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                      ])
+                    )
                     .div(
-                      Web3.utils.toBN(
-                        10 **
-                          self.internalTokens[inputCandidates[i].currencyCode]
-                            .decimals
-                      )
+                      Web3.utils
+                        .toBN(10)
+                        .pow(
+                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        )
                     )
                 );
                 amountWithdrawnBN.iadd(
@@ -1813,11 +1652,17 @@ export default class StablePool {
 
             amountInputtedUsdBN.iadd(
               tokenRawFundBalanceBN
-                .mul(Web3.utils.toBN(1e18))
+                .mul(
+                  Web3.utils.toBN(allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(currencyCode)
+                  ])
+                )
                 .div(
-                  Web3.utils.toBN(
-                    10 ** self.internalTokens[currencyCode].decimals
-                  )
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                    )
                 )
             );
             amountWithdrawnBN.iadd(tokenRawFundBalanceBN);
@@ -1938,13 +1783,17 @@ export default class StablePool {
 
               amountInputtedUsdBN.iadd(
                 inputAmountBN
-                  .mul(Web3.utils.toBN(1e18))
+                  .mul(
+                    Web3.utils.toBN(allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                    ])
+                  )
                   .div(
-                    Web3.utils.toBN(
-                      10 **
-                        self.internalTokens[inputCandidates[i].currencyCode]
-                          .decimals
-                    )
+                    Web3.utils
+                      .toBN(10)
+                      .pow(
+                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      )
                   )
               );
               amountWithdrawnBN.iadd(outputAmountBN);
@@ -2059,13 +1908,17 @@ export default class StablePool {
 
                 amountInputtedUsdBN.iadd(
                   thisInputAmountBN
-                    .mul(Web3.utils.toBN(1e18))
+                    .mul(
+                      Web3.utils.toBN(allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                      ])
+                    )
                     .div(
-                      Web3.utils.toBN(
-                        10 **
-                          self.internalTokens[inputCandidates[i].currencyCode]
-                            .decimals
-                      )
+                      Web3.utils
+                        .toBN(10)
+                        .pow(
+                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        )
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
@@ -2091,13 +1944,17 @@ export default class StablePool {
 
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
-                    .mul(Web3.utils.toBN(1e18))
+                    .mul(
+                      Web3.utils.toBN(allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                      ])
+                    )
                     .div(
-                      Web3.utils.toBN(
-                        10 **
-                          self.internalTokens[inputCandidates[i].currencyCode]
-                            .decimals
-                      )
+                      Web3.utils
+                        .toBN(10)
+                        .pow(
+                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        )
                     )
                 );
                 amountWithdrawnBN.iadd(

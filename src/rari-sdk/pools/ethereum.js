@@ -29,8 +29,8 @@ export default class EthereumPool extends StablePool {
   static EXTERNAL_CONTRACT_ADDRESSES = undefined;
   static EXTERNAL_CONTRACT_ABIS = undefined;
 
-  constructor(web3, getAllTokens) {
-    super(web3, getAllTokens);
+  constructor(web3, subpools, getAllTokens) {
+    super(web3, subpools, getAllTokens);
 
     this.contracts = {};
     for (const contractName of Object.keys(contractAddresses))
@@ -86,15 +86,6 @@ export default class EthereumPool extends StablePool {
       }
 
       return allocationsByPool;
-    };
-
-    delete this.pools.mStable;
-
-    this.pools.KeeperDAO = {};
-
-    this.pools.KeeperDAO.getCurrencyApys = function () {
-      // TODO: keeperdao APYs
-      return { ETH: Web3.utils.toBN(0) };
     };
 
     this.apy.getCurrentRawApy = async function () {

@@ -2,10 +2,19 @@
 import Web3 from "web3";
 import axios from "axios";
 
+import DydxSubpool from "./subpools/dydx.js";
+import CompoundSubpool from "./subpools/compound.js";
+import AaveSubpool from "./subpools/aave.js";
+import MStableSubpool from "./subpools/mstable.js";
+import YVaultSubpool from "./subpools/yvault.js";
+import KeeperDAOSubpool from "./subpools/keeperdao.js";
+
 import StablePool from "./pools/stable.js";
 import YieldPool from "./pools/yield.js";
 import EthereumPool from "./pools/ethereum.js";
+
 import Governance from "./governance.js";
+
 import Cache from "./cache.js";
 
 var erc20Abi = require(__dirname + "/abi/ERC20.json");
@@ -85,10 +94,19 @@ export default class Rari {
       });
     };
 
+    let subpools = {
+      "dYdX": new DydxSubpool(this.web3),
+      "Compound": new CompoundSubpool(this.web3),
+      "Aave": new AaveSubpool(this.web3),
+      "mStable": new MStableSubpool(this.web3),
+      "yVault": new YVaultSubpool(this.web3),
+      "KeeperDAO": new KeeperDAOSubpool(this.web3)
+    };
+
     this.pools = {
-      stable: new StablePool(this.web3, this.getAllTokens),
-      yield: new YieldPool(this.web3, this.getAllTokens),
-      ethereum: new EthereumPool(this.web3, this.getAllTokens),
+      stable: new StablePool(this.web3, { "dYdX": subpools["dYdX"], "Compound": subpools["Compound"], "Aave": subpools["Aave"], "mStable": subpools["mStable"] }, this.getAllTokens),
+      yield: new YieldPool(this.web3, { "dYdX": subpools["dYdX"], "Compound": subpools["Compound"], "Aave": subpools["Aave"], "mStable": subpools["mStable"], "yVault": subpools["yVault"] }, this.getAllTokens),
+      ethereum: new EthereumPool(this.web3, { "dYdX": subpools["dYdX"], "Compound": subpools["Compound"], "KeeperDAO": subpools["KeeperDAO"], "Aave": subpools["Aave"] }, this.getAllTokens)
     };
 
     this.governance = new Governance(this.web3);

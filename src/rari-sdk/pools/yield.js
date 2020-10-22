@@ -1,8 +1,6 @@
 /* eslint-disable */
 import StablePool from "./stable.js";
 
-import Web3 from "web3";
-
 const contractAddresses = {
   RariFundController: "0x6afE6C37bF75f80D512b9D89C19EC0B346b09a8d",
   RariFundManager: "0x59FA438cD0731EBF5F4cDCaf72D4960EFd13FCe6",
@@ -19,8 +17,8 @@ export default class YieldPool extends StablePool {
   static LEGACY_CONTRACT_ADDRESSES = undefined;
   static LEGACY_CONTRACT_ABIS = undefined;
 
-  constructor(web3, getAllTokens) {
-    super(web3, getAllTokens);
+  constructor(web3, subpools, getAllTokens) {
+    super(web3, subpools, getAllTokens);
 
     this.contracts = {};
     for (const contractName of Object.keys(contractAddresses))
@@ -50,18 +48,6 @@ export default class YieldPool extends StablePool {
       Aave: ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD"],
       mStable: ["mUSD"],
       yVault: ["DAI", "USDC", "USDT", "TUSD"],
-    };
-
-    this.pools.yVault = {};
-
-    this.pools.yVault.getCurrencyApys = function () {
-      // TODO: yVault APYs
-      return {
-        DAI: Web3.utils.toBN(0),
-        USDC: Web3.utils.toBN(0),
-        USDT: Web3.utils.toBN(0),
-        TUSD: Web3.utils.toBN(0),
-      };
     };
 
     delete this.history.getRsptExchangeRateHistory;
