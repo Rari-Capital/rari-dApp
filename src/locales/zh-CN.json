@@ -66,5 +66,6 @@
   "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前索取您的RGT，将导致一部分被烧毁并发送回协议。 所消耗量的70％将被燃烧，而30％将被重新消耗到协议中。 该数量从33％线性降低到19％时达到0％。",
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "现在声明RGT将导致{{amount}}％的烧录/收回",
   "RGT Balance (Claimed)": "RGT余额（已声明）",
-  "Click to learn about our performance/withdrawal fees.": "单击以了解您的性能/取款费用。"
+  "Click to learn about our performance/withdrawal fees.": "单击以了解您的性能/取款费用。",
+  "Extra returns from $RGT": "$ RGT带来的额外收益"
 }

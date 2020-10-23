@@ -49,6 +49,30 @@ import {
 import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
 import { usePoolBalance } from "../../hooks/usePoolBalance";
 
+const useTVL = () => {
+  const { rari } = useRari();
+
+  const getTVL = useCallback(async () => {
+    const stablebal = await rari.pools.stable.balances.getTotalSupply();
+
+    const yieldbal = await rari.pools.yield.balances.getTotalSupply();
+
+    const ethPriceBN = await rari.getEthUsdPriceBN();
+
+    const ethbal = (await rari.pools.ethereum.balances.getTotalSupply()).mul(
+      ethPriceBN.div(rari.web3.utils.toBN(1e18))
+    );
+
+    return stablebal.add(yieldbal).add(ethbal);
+  }, [rari]);
+
+  const getNumberTVL = useCallback(async () => {
+    return parseFloat(rari.web3.utils.fromWei(await getTVL()));
+  }, [rari, getTVL]);
+
+  return { getNumberTVL, getTVL };
+};
+
 export const RGTPrice = React.memo(() => {
   const { t } = useTranslation();
 
@@ -219,26 +243,12 @@ const FundStats = React.memo(() => {
     );
   }, [rari, address]);
 
-  const getTVL = useCallback(async () => {
-    const stablebal = await rari.pools.stable.balances.getTotalSupply();
-
-    const yieldbal = await rari.pools.yield.balances.getTotalSupply();
-
-    const ethPriceBN = await rari.getEthUsdPriceBN();
-
-    const ethbal = (await rari.pools.ethereum.balances.getTotalSupply()).mul(
-      ethPriceBN.div(rari.web3.utils.toBN(1e18))
-    );
-
-    return parseFloat(
-      rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
-    );
-  }, [rari]);
-
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
     getAccountBalance
   );
+
+  const { getNumberTVL } = useTVL();
 
   if (isBalanceLoading) {
     return (
@@ -265,7 +275,7 @@ const FundStats = React.memo(() => {
               fetchInterval={40000}
               loadingPlaceholder="$?"
               apyInterval={100}
-              fetch={getTVL}
+              fetch={getNumberTVL}
               queryKey={"totalValueLocked"}
               apy={2}
               statSize="3xl"
@@ -297,7 +307,7 @@ const FundStats = React.memo(() => {
                 fetchInterval={40000}
                 loadingPlaceholder="$?"
                 apyInterval={100}
-                fetch={getTVL}
+                fetch={getNumberTVL}
                 queryKey={"totalValueLocked"}
                 apy={2}
                 statSize="3xl"
@@ -395,6 +405,8 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
   const { poolBalance, isPoolBalanceLoading } = usePoolBalance(pool);
 
+  const { getTVL } = useTVL();
+
   const { data: apy, isLoading: isAPYLoading } = useQuery(
     pool + " apy",
     async () => {
@@ -413,13 +425,20 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
       ).toFixed(2);
 
-      const rgtRawAPY = await rari.governance.rgt.distributions.getCurrentApy();
+      const blockNumber = await rari.web3.eth.getBlockNumber();
 
-      const rgtAPY = parseFloat(
-        rari.web3.utils.fromWei(rgtRawAPY.mul(rari.web3.utils.toBN(100)))
+      const tvl = await getTVL();
+
+      const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
+        blockNumber,
+        tvl
+      );
+
+      const rgtAPR = parseFloat(
+        rari.web3.utils.fromWei(rgtRawAPR.mul(rari.web3.utils.toBN(100)))
       ).toFixed(0);
 
-      return { rgtAPY, poolAPY };
+      return { rgtAPR, poolAPY };
     }
   );
 
@@ -455,9 +474,9 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
         <Text fontWeight="bold" textAlign="center">
           {isAPYLoading ? "?" : apy?.poolAPY}% APY +{" "}
-          <SimpleTooltip label={t("Extra yield from $RGT")}>
+          <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>
-              ({isAPYLoading ? "?" : apy?.rgtAPY}%{" "}
+              ({isAPYLoading ? "?" : apy?.rgtAPR}%{" "}
               <Image display="inline" src={SmallLogo} size="20px" />)
             </span>
           </SimpleTooltip>
