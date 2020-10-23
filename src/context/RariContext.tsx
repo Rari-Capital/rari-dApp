@@ -119,11 +119,14 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
   const [rari, setRari] = useState<Rari>(() => {
-    if (typeof window.ethereum !== "undefined") {
+    if (window.ethereum) {
+      console.log("Using window.ethereum!");
       return new Rari(window.ethereum);
-    } else if (typeof window.web3 !== "undefined") {
+    } else if (window.web3) {
+      console.log("Using window.web3!");
       return new Rari(window.web3.currentProvider);
     } else {
+      console.log("Using infura!");
       return new Rari(
         `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
       );
