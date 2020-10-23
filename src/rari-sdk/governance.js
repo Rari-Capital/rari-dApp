@@ -134,7 +134,7 @@ export default class Governance {
             }
           } else {
             // Get APY from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
-            var rgtDistributedPastHour = self.rgt.getDistributedAtBlock(blockNumber).sub(self.rgt.getDistributedAtBlock(blockNumber - 270));
+            var rgtDistributedPastHour = self.rgt.distributions.getDistributedAtBlock(blockNumber).sub(self.rgt.distributions.getDistributedAtBlock(blockNumber - 270));
             var rgtDistributedPastHourPerUsd = rgtDistributedPastHour.mul(Web3.utils.toBN(1e18)).div(tvl);
             var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd.mul(await self.rgt.getExchangeRate()).div(Web3.utils.toBN(1e18));
             return res.status(200).json(Math.trunc((((1 + (rgtDistributedPastHourPerUsdInUsd / 1e18)) ** (24 * 365)) - 1) * 1e18));
@@ -142,7 +142,7 @@ export default class Governance {
         },
         getCurrentApr: async function (blockNumber, tvl) {
           // Get APR from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
-          var rgtDistributedPastHour = self.rgt.getDistributedAtBlock(blockNumber).sub(self.rgt.getDistributedAtBlock(blockNumber - 270));
+          var rgtDistributedPastHour = self.rgt.distributions.getDistributedAtBlock(blockNumber).sub(self.rgt.distributions.getDistributedAtBlock(blockNumber - 270));
           var rgtDistributedPastHourPerUsd = rgtDistributedPastHour.mul(Web3.utils.toBN(1e18)).div(tvl);
           var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd.mul(await self.rgt.getExchangeRate()).div(Web3.utils.toBN(1e18));
           return res.status(200).json(rgtDistributedPastHourPerUsdInUsd.muln(24 * 365).toString());
