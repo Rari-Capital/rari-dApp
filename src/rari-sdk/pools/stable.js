@@ -478,13 +478,7 @@ export default class StablePool {
       ) {
         const SECONDS_PER_YEAR = 365 * 86400;
         var timeDiff = endTimestamp - startTimestamp;
-        return Web3.utils.toBN(
-          ((endRsptExchangeRate.toString() /
-            startRsptExchangeRate.toString()) **
-            (SECONDS_PER_YEAR / timeDiff) -
-            1) *
-            1e18
-        );
+        return Web3.utils.toBN((((endRsptExchangeRate.toString() / startRsptExchangeRate.toString()) ** (SECONDS_PER_YEAR / timeDiff)) - 1) * 1e18);
       },
       getApyOverBlocks: async function (fromBlock = 0, toBlock = "latest") {
         var blockNumber = await self.web3.eth.getBlockNumber();
