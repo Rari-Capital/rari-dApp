@@ -67,7 +67,11 @@ const DepositModal = React.memo((props: Props) => {
       render={(styles) => (
         <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
           <ModalOverlay />
-          <ModalContent {...styles} {...MODAL_PROPS} height="300px">
+          <ModalContent
+            {...styles}
+            {...MODAL_PROPS}
+            height={{ md: "320px", xs: "350px" }}
+          >
             {currentScreen === CurrentScreen.MAIN ? (
               <AmountSelect
                 openCoinSelect={openCoinSelect}

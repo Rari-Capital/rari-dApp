@@ -134,7 +134,7 @@ const TokenSelect = React.memo(
           pt={2}
           px={DASHBOARD_BOX_SPACING.asPxString()}
           width="100%"
-          height="160px"
+          height={{ md: "180px", xs: "210px" }}
         >
           <TokenList tokenKeys={tokenKeys} onClick={onTokenClick} />
         </Box>

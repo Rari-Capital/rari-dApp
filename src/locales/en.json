@@ -67,5 +67,6 @@
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "Claiming RGT now will result in a {{amount}}% burn/takeback",
   "RGT Balance (Claimed)": "RGT Balance (Claimed)",
   "Click to learn about our performance/withdrawal fees.": "Click to learn about our performance/withdrawal fees.",
-  "Extra returns from $RGT": "Extra returns from $RGT"
+  "Extra returns from $RGT": "Extra returns from $RGT",
+  "You may suffer divergence loss in this multi asset pool. Click for more info.": "You may suffer divergence loss in this multi asset pool. Click for more info."
 }

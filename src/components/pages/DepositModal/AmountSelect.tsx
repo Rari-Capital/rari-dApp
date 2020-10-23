@@ -353,6 +353,19 @@ const AmountSelect = React.memo(
           >
             {t("Confirm")}
           </Button>
+
+          {poolType !== Pool.ETH ? (
+            <Link
+              href="https://www.notion.so/Capital-Allocation-Risks-f4bccf324a594f46b849e6358e0a2464#631d223f598b42e28f9758541c1b1525"
+              isExternal
+            >
+              <Text fontSize="xs" textAlign="center">
+                {t(
+                  "You may suffer divergence loss in this multi asset pool. Click for more info."
+                )}
+              </Text>
+            </Link>
+          ) : null}
         </Column>
       </>
     );

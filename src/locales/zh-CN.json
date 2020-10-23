@@ -67,5 +67,6 @@
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "现在声明RGT将导致{{amount}}％的烧录/收回",
   "RGT Balance (Claimed)": "RGT余额（已声明）",
   "Click to learn about our performance/withdrawal fees.": "单击以了解您的性能/取款费用。",
-  "Extra returns from $RGT": "$ RGT带来的额外收益"
+  "Extra returns from $RGT": "$ RGT带来的额外收益",
+  "You may suffer divergence loss in this multi asset pool. Click for more info.": "您可能会在此多资产池中遭受分歧损失。 单击以获取更多信息。"
 }
