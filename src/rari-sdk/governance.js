@@ -72,7 +72,7 @@ export default class Governance {
           var startBlock = self.rgt.distributions.DISTRIBUTION_START_BLOCK;
           if (blockNumber <= startBlock) return Web3.utils.toBN(0);
           if (blockNumber >= startBlock + self.rgt.distributions.DISTRIBUTION_PERIOD)
-            return Web3.utils.toBN(8750000).mul(Web3.utils.toBN(1e18));
+            return self.rgt.distributions.FINAL_RGT_DISTRIBUTION;
           var blocks = blockNumber - startBlock;
           if (blocks < 6500 * 15)
             return Web3.utils
@@ -137,7 +137,7 @@ export default class Governance {
             var rgtDistributedPastHour = self.rgt.distributions.getDistributedAtBlock(blockNumber).sub(self.rgt.distributions.getDistributedAtBlock(blockNumber - 270));
             var rgtDistributedPastHourPerUsd = rgtDistributedPastHour.mul(Web3.utils.toBN(1e18)).div(tvl);
             var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd.mul(await self.rgt.getExchangeRate()).div(Web3.utils.toBN(1e18));
-            return res.status(200).json(Math.trunc((((1 + (rgtDistributedPastHourPerUsdInUsd / 1e18)) ** (24 * 365)) - 1) * 1e18));
+            return Web3.utils.toBN(Math.trunc((((1 + (rgtDistributedPastHourPerUsdInUsd / 1e18)) ** (24 * 365)) - 1) * 1e18));
           }
         },
         getCurrentApr: async function (blockNumber, tvl) {
@@ -145,7 +145,7 @@ export default class Governance {
           var rgtDistributedPastHour = self.rgt.distributions.getDistributedAtBlock(blockNumber).sub(self.rgt.distributions.getDistributedAtBlock(blockNumber - 270));
           var rgtDistributedPastHourPerUsd = rgtDistributedPastHour.mul(Web3.utils.toBN(1e18)).div(tvl);
           var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd.mul(await self.rgt.getExchangeRate()).div(Web3.utils.toBN(1e18));
-          return res.status(200).json(rgtDistributedPastHourPerUsdInUsd.muln(24 * 365).toString());
+          return rgtDistributedPastHourPerUsdInUsd.muln(24 * 365);
         },
         getUnclaimed: async function (account) {
           return Web3.utils.toBN(
