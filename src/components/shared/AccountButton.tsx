@@ -175,6 +175,10 @@ export const SettingsModal = React.memo(
                 </Button>
 
                 <LanguageSelect />
+
+                <Text mt={DASHBOARD_BOX_SPACING.asPxString()} fontSize="10px">
+                  Version 0.5.1
+                </Text>
               </Column>
             </ModalContent>
           </Modal>

@@ -11,6 +11,7 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/core";
+import BigNumber from "bignumber.js";
 import { Column, Row } from "buttered-chakra";
 
 import React, { useCallback, useEffect, useState } from "react";
@@ -74,8 +75,9 @@ export const ClaimRGTModal = React.memo(
 
     const claimRGT = useCallback(async () => {
       const receipt = await rari.governance.rgt.distributions.claim(
-        //TODO use a to WEI function that takes a normal number
-        rari.web3.utils.toBN((amount * 1e18).toString()),
+        rari.web3.utils.toBN(
+          new BigNumber(amount).multipliedBy(1e18).toString()
+        ),
         { from: address }
       );
 
