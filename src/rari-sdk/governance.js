@@ -118,19 +118,34 @@ export default class Governance {
               Web3.utils.toBN("50000000000000000000").muln(blocks).divn(39)
             );
         },
-        getCurrentApy: async function () {
-          try {
-            return Web3.utils.toBN(
-              (
-                await axios.get(
-                  self.API_BASE_URL +
-                    "rgt/apy"
-                )
-              ).data
-            );
-          } catch (error) {
-            throw "Error retrieving data from Rari API: " + error;
+        getCurrentApy: async function (blockNumber, tvl) {
+          if (blockNumber === undefined && tvl === undefined) {
+            try {
+              return Web3.utils.toBN(
+                (
+                  await axios.get(
+                    self.API_BASE_URL +
+                      "rgt/apy"
+                  )
+                ).data
+              );
+            } catch (error) {
+              throw "Error retrieving data from Rari API: " + error;
+            }
+          } else {
+            // Get APY from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
+            var rgtDistributedPastHour = self.rgt.getDistributedAtBlock(blockNumber).sub(self.rgt.getDistributedAtBlock(blockNumber - 270));
+            var rgtDistributedPastHourPerUsd = rgtDistributedPastHour.mul(Web3.utils.toBN(1e18)).div(tvl);
+            var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd.mul(await self.rgt.getExchangeRate()).div(Web3.utils.toBN(1e18));
+            return res.status(200).json(Math.trunc((((1 + (rgtDistributedPastHourPerUsdInUsd / 1e18)) ** (24 * 365)) - 1) * 1e18));
           }
+        },
+        getCurrentApr: async function (blockNumber, tvl) {
+          // Get APR from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
+          var rgtDistributedPastHour = self.rgt.getDistributedAtBlock(blockNumber).sub(self.rgt.getDistributedAtBlock(blockNumber - 270));
+          var rgtDistributedPastHourPerUsd = rgtDistributedPastHour.mul(Web3.utils.toBN(1e18)).div(tvl);
+          var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd.mul(await self.rgt.getExchangeRate()).div(Web3.utils.toBN(1e18));
+          return res.status(200).json(rgtDistributedPastHourPerUsdInUsd.muln(24 * 365).toString());
         },
         getUnclaimed: async function (account) {
           return Web3.utils.toBN(
