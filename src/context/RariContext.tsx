@@ -118,12 +118,17 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [rari, setRari] = useState<Rari>(
-    () =>
-      new Rari(
+  const [rari, setRari] = useState<Rari>(() => {
+    if (typeof window.ethereum !== "undefined") {
+      return new Rari(window.ethereum);
+    } else if (typeof window.web3 !== "undefined") {
+      return new Rari(window.web3.currentProvider);
+    } else {
+      return new Rari(
         `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
-      )
-  );
+      );
+    }
+  });
 
   const [address, setAddress] = useState<string>(EmptyAddress);
 
