@@ -200,7 +200,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     console.log("Setting Honeybadger context to new address: " + address);
     Honeybadger.setContext({
-      address,
+      user_id: address,
     });
   }, [address]);
 

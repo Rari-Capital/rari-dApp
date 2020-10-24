@@ -48,7 +48,7 @@ export function ScrollToTop() {
 
 Honeybadger.configure({
   apiKey: "d90cb361",
-  environment: "production",
+  environment: process.env.NODE_ENV,
 });
 
 ReactDOM.render(
