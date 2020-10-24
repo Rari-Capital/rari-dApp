@@ -12,6 +12,8 @@ import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
 
+import Honeybadger from "honeybadger-js";
+
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
     WalletConnectProvider,
@@ -194,6 +196,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       }
     };
   }, [web3ModalProvider, refetchAccountData]);
+
+  useEffect(() => {
+    console.log("Setting Honeybadger context to new address: " + address);
+    Honeybadger.setContext({
+      address,
+    });
+  }, [address]);
 
   const value = useMemo(
     () => ({

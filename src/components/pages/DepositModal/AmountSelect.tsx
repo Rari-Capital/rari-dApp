@@ -31,6 +31,7 @@ import EthereumPool from "../../../rari-sdk/pools/ethereum";
 import YieldPool from "../../../rari-sdk/pools/yield";
 import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
+import Honeybadger from "honeybadger-js";
 
 interface Props {
   selectedToken: string;
@@ -165,12 +166,13 @@ const AmountSelect = React.memo(
           if (depositReceipt?.transactionHash) {
             notify.hash(depositReceipt?.transactionHash);
           }
-
-          setAreTransactionsRunning(false);
         }
       } catch (e) {
+        Honeybadger.notify(e);
         alert(e);
       }
+
+      setAreTransactionsRunning(false);
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
     const onWithdraw = useCallback(async () => {
@@ -237,12 +239,13 @@ const AmountSelect = React.memo(
           if (receipt?.transactionHash) {
             notify.hash(receipt?.transactionHash);
           }
-
-          setAreTransactionsRunning(false);
         }
       } catch (e) {
+        Honeybadger.notify(e);
         alert(e);
       }
+
+      setAreTransactionsRunning(false);
     }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
 
     let depositOrWithdrawAlert;

@@ -13,7 +13,7 @@ import PWAPrompt from "react-ios-pwa-prompt";
 import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
 
 import ErrorPage from "./components/pages/ErrorPage";
-import { ErrorBoundary } from "react-error-boundary";
+
 import { RariProvider } from "./context/RariContext";
 
 import "focus-visible";
@@ -22,6 +22,9 @@ import { ReactQueryDevtools } from "react-query-devtools";
 
 import "./utils/i18n.ts";
 import { BrowserRouter, useLocation } from "react-router-dom";
+
+import Honeybadger from "honeybadger-js";
+import ErrorBoundary from "@honeybadger-io/react";
 
 const customTheme = {
   ...theme,
@@ -43,6 +46,11 @@ export function ScrollToTop() {
   return null;
 }
 
+Honeybadger.configure({
+  apiKey: "d90cb361",
+  environment: "production",
+});
+
 ReactDOM.render(
   <>
     <ReactQueryDevtools initialIsOpen={false} />
@@ -55,8 +63,7 @@ ReactDOM.render(
     />
     <ThemeProvider theme={customTheme}>
       <CSSReset />
-
-      <ErrorBoundary FallbackComponent={ErrorPage}>
+      <ErrorBoundary honeybadger={Honeybadger} ErrorComponent={ErrorPage}>
         <RariProvider>
           <BrowserRouter>
             <ScrollToTop />

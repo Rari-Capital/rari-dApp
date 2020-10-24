@@ -237,7 +237,7 @@ const TokenList = React.memo(
         onClick,
         mode,
       }),
-      [sortedKeys, onClick]
+      [sortedKeys, onClick, mode]
     );
 
     const getItemKey = useCallback<ListItemKeySelector>(

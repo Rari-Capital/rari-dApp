@@ -14,10 +14,10 @@ import {
   AccordionPanel,
   AccordionItem,
 } from "@chakra-ui/core";
-import { FallbackProps } from "react-error-boundary";
+
 import { useTranslation } from "react-i18next";
 
-const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
+const ErrorPage = ({ error }: { error: string }) => {
   const { t } = useTranslation();
 
   return (
@@ -43,7 +43,7 @@ const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
             <AccordionIcon />
           </AccordionHeader>
           <AccordionPanel pb={4}>
-            <Code variantColor="red">{error?.toString()}</Code>
+            <Code variantColor="red">{error.toString()}</Code>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
