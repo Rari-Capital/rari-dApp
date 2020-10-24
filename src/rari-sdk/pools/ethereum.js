@@ -26,8 +26,6 @@ export default class EthereumPool extends StablePool {
   static CONTRACT_ABIS = abis;
   static LEGACY_CONTRACT_ADDRESSES = undefined;
   static LEGACY_CONTRACT_ABIS = undefined;
-  static EXTERNAL_CONTRACT_ADDRESSES = undefined;
-  static EXTERNAL_CONTRACT_ABIS = undefined;
 
   constructor(web3, subpools, getAllTokens) {
     super(web3, subpools, getAllTokens);
@@ -40,7 +38,6 @@ export default class EthereumPool extends StablePool {
       );
     // this.gsnContracts = { RariFundProxy: new web3Gsn.eth.Contract(abis.RariFundProxy, contractAddresses.RariFundProxy) };
     delete this.legacyContracts;
-    delete this.externalContracts;
 
     delete this.internalTokens;
 

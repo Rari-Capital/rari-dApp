@@ -4,13 +4,35 @@ import axios from "axios";
 
 import Cache from "../cache.js";
 
+const externalContractAddresses = {
+  Masset: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+  MassetValidationHelper: "0xabcc93c3be238884cc3309c19afd128fafc16911"
+};
+
+var externalAbis = {};
+for (const contractName of Object.keys(externalContractAddresses))
+  externalAbis[contractName] = require(__dirname +
+    "/mstable/abi/" +
+    contractName +
+    ".json");
+
 export default class MStableSubpool {
+  static EXTERNAL_CONTRACT_ADDRESSES = externalContractAddresses;
+  static EXTERNAL_CONTRACT_ABIS = externalAbis;
+  
   constructor(web3) {
     this.web3 = web3;
     this.cache = new Cache({
       mStableCurrencyApys: 60,
       mUsdSwapFee: 3600
     });
+
+    this.externalContracts = {};
+    for (const contractName of Object.keys(externalContractAddresses))
+      this.externalContracts[contractName] = new this.web3.eth.Contract(
+        externalAbis[contractName],
+        externalContractAddresses[contractName]
+      );
   }
 
   async getMUsdSavingsApy() {
@@ -80,9 +102,10 @@ export default class MStableSubpool {
   }
 
   async getMUsdSwapFeeBN() {
+    var self = this;
     return await this.cache.getOrUpdate("mUsdSwapFee", async function() {
       try {
-        const data = (
+        /* const data = (
           await axios.post(
             "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
             {
@@ -94,7 +117,9 @@ export default class MStableSubpool {
             }
           )
         ).data;
-        return Web3.utils.toBN(data.data.massets[0].feeRate);
+        return Web3.utils.toBN(data.data.massets[0].feeRate); */
+        
+        return Web3.utils.toBN(await self.externalContracts.Masset.methods.swapFee().call());
       } catch (err) {
         throw "Failed to get mUSD swap fee: " + err;
       }
