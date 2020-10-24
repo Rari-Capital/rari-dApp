@@ -50,17 +50,6 @@ for (const version of Object.keys(legacyContractAddresses))
       ".json");
   }
 
-const externalContractAddresses = {
-  MassetValidationHelper: "0xabcc93c3be238884cc3309c19afd128fafc16911",
-};
-
-var externalAbis = {};
-for (const contractName of Object.keys(externalContractAddresses))
-  externalAbis[contractName] = require(__dirname +
-    "/stable/abi/external/" +
-    contractName +
-    ".json");
-
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
   POOL_TOKEN_SYMBOL = "RSPT";
@@ -69,8 +58,6 @@ export default class StablePool {
   static CONTRACT_ABIS = abis;
   static LEGACY_CONTRACT_ADDRESSES = legacyContractAddresses;
   static LEGACY_CONTRACT_ABIS = legacyAbis;
-  static EXTERNAL_CONTRACT_ADDRESSES = externalContractAddresses;
-  static EXTERNAL_CONTRACT_ABIS = externalAbis;
 
   internalTokens = {
     DAI: {
@@ -146,13 +133,7 @@ export default class StablePool {
           legacyContractAddresses[version][contractName]
         );
     }
-
-    this.externalContracts = {};
-    for (const contractName of Object.keys(externalContractAddresses))
-      this.externalContracts[contractName] = new this.web3.eth.Contract(
-        externalAbis[contractName],
-        externalContractAddresses[contractName]
-      );
+    
     for (const currencyCode of Object.keys(this.internalTokens))
       this.internalTokens[currencyCode].contract = new this.web3.eth.Contract(
         erc20Abi,
@@ -611,7 +592,7 @@ export default class StablePool {
               ) {
                 if (currencyCode === "mUSD") {
                   try {
-                    var redeemValidity = await self.externalContracts.MassetValidationHelper.methods
+                    var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
                       .getRedeemValidity(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         amount,
@@ -629,7 +610,7 @@ export default class StablePool {
                   );
                 } else {
                   try {
-                    var maxSwap = await self.externalContracts.MassetValidationHelper.methods
+                    var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
                       .getMaxSwap(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         self.internalTokens[currencyCode].address,
@@ -867,7 +848,7 @@ export default class StablePool {
               ) {
                 if (currencyCode === "mUSD") {
                   try {
-                    var redeemValidity = await self.externalContracts.MassetValidationHelper.methods
+                    var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
                       .getRedeemValidity(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         amount,
@@ -885,7 +866,7 @@ export default class StablePool {
                   );
                 } else {
                   try {
-                    var maxSwap = await self.externalContracts.MassetValidationHelper.methods
+                    var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
                       .getMaxSwap(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         self.internalTokens[currencyCode].address,
