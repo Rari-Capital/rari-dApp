@@ -17,6 +17,8 @@ import { FaWallet } from "react-icons/fa";
 import { useRari } from "../../context/RariContext";
 import { useTranslation } from "react-i18next";
 
+function noop() {}
+
 const ForceAuthModal = React.memo(() => {
   const { isAuthed } = useRari();
 
@@ -54,7 +56,7 @@ const GetOrConnectModal = React.memo(() => {
   }, [setLoading, login]);
 
   return (
-    <Modal isOpen isCentered>
+    <Modal isOpen isCentered onClose={noop}>
       <ModalOverlay zIndex={1} />
       <ModalContent
         zIndex={1}
