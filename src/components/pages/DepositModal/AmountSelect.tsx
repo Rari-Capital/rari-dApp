@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Row, Column } from "buttered-chakra";
+import { useToast } from "@chakra-ui/core";
 import {
   Heading,
   Box,
@@ -96,6 +97,7 @@ const AmountSelect = React.memo(
     );
 
     const { t } = useTranslation();
+    const toast = useToast();
 
     const onDeposit = useCallback(async () => {
       try {
@@ -169,7 +171,13 @@ const AmountSelect = React.memo(
         }
       } catch (e) {
         Honeybadger.notify(e);
-        alert(e);
+        toast({
+          title: "Error!",
+          description: e.toString(),
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
       }
 
       setAreTransactionsRunning(false);
@@ -242,7 +250,13 @@ const AmountSelect = React.memo(
         }
       } catch (e) {
         Honeybadger.notify(e);
-        alert(e);
+        toast({
+          title: "Error!",
+          description: e.toString(),
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        })
       }
 
       setAreTransactionsRunning(false);
