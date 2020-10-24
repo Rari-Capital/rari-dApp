@@ -105,7 +105,6 @@ const AmountSelect = React.memo(
       try {
         let pool: StablePool | EthereumPool | YieldPool;
 
-        console.log(amount?.toString());
         //@ts-ignore
         const amountBN = rari.web3.utils.toBN(amount);
 
