@@ -11,6 +11,7 @@ import {
   IconButton,
   Input,
   Link,
+  useToast,
 } from "@chakra-ui/core";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { tokens } from "../../../utils/tokenUtils";
@@ -99,6 +100,8 @@ const AmountSelect = React.memo(
     const { t } = useTranslation();
     const toast = useToast();
 
+    const toast = useToast();
+
     const onDeposit = useCallback(async () => {
       try {
         let pool: StablePool | EthereumPool | YieldPool;
@@ -177,7 +180,8 @@ const AmountSelect = React.memo(
           status: "error",
           duration: 9000,
           isClosable: true,
-        })
+          position: "top-right",
+        });
       }
 
       setAreTransactionsRunning(false);
@@ -256,7 +260,8 @@ const AmountSelect = React.memo(
           status: "error",
           duration: 9000,
           isClosable: true,
-        })
+          position: "top-right",
+        });
       }
 
       setAreTransactionsRunning(false);
