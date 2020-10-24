@@ -53,17 +53,16 @@ const useTVL = () => {
   const { rari } = useRari();
 
   const getTVL = useCallback(async () => {
-    const stablebal = await rari.pools.stable.balances.getTotalSupply();
+    const [stableTVL, yieldTVL, ethTVLInETH, ethPriceBN] = await Promise.all([
+      rari.pools.stable.balances.getTotalSupply(),
+      rari.pools.yield.balances.getTotalSupply(),
+      rari.pools.ethereum.balances.getTotalSupply(),
+      rari.getEthUsdPriceBN(),
+    ]);
 
-    const yieldbal = await rari.pools.yield.balances.getTotalSupply();
+    const ethTVL = ethTVLInETH.mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
 
-    const ethPriceBN = await rari.getEthUsdPriceBN();
-
-    const ethbal = (await rari.pools.ethereum.balances.getTotalSupply()).mul(
-      ethPriceBN.div(rari.web3.utils.toBN(1e18))
-    );
-
-    return stablebal.add(yieldbal).add(ethbal);
+    return stableTVL.add(yieldTVL).add(ethTVL);
   }, [rari]);
 
   const getNumberTVL = useCallback(async () => {
@@ -207,39 +206,44 @@ const GovernanceStats = React.memo(() => {
 const FundStats = React.memo(() => {
   const { t } = useTranslation();
 
-  const { rari, address } = useRari();
+  const { rari, address, isAuthed } = useRari();
 
   const getAccountBalance = useCallback(async () => {
-    const stablebal = await rari.pools.stable.balances.balanceOf(address);
+    const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
+      rari.pools.stable.balances.balanceOf(address),
+      rari.pools.yield.balances.balanceOf(address),
+      rari.pools.ethereum.balances.balanceOf(address),
+      rari.getEthUsdPriceBN(),
+    ]);
 
-    const yieldbal = await rari.pools.yield.balances.balanceOf(address);
-
-    const ethPriceBN = await rari.getEthUsdPriceBN();
-
-    const ethbal = (await rari.pools.ethereum.balances.balanceOf(address)).mul(
-      ethPriceBN.div(rari.web3.utils.toBN(1e18))
-    );
+    const ethBal = ethBalInETH.mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
 
     return parseFloat(
-      rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
+      rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
     );
   }, [rari, address]);
 
   const getAccountInterest = useCallback(async () => {
-    const stablebal = await rari.pools.stable.balances.interestAccruedBy(
-      address
+    const [
+      stableInterest,
+      yieldInterest,
+      ethInterestInETH,
+      ethPriceBN,
+    ] = await Promise.all([
+      rari.pools.stable.balances.interestAccruedBy(address),
+      rari.pools.yield.balances.interestAccruedBy(address),
+      rari.pools.ethereum.balances.interestAccruedBy(address),
+      rari.getEthUsdPriceBN(),
+    ]);
+
+    const ethInterest = ethInterestInETH.mul(
+      ethPriceBN.div(rari.web3.utils.toBN(1e18))
     );
 
-    const yieldbal = await rari.pools.yield.balances.interestAccruedBy(address);
-
-    const ethPriceBN = await rari.getEthUsdPriceBN();
-
-    const ethbal = (
-      await rari.pools.ethereum.balances.interestAccruedBy(address)
-    ).mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
-
     return stringUsdFormatter(
-      rari.web3.utils.fromWei(stablebal.add(yieldbal).add(ethbal))
+      rari.web3.utils.fromWei(
+        stableInterest.add(yieldInterest).add(ethInterest)
+      )
     );
   }, [rari, address]);
 
@@ -252,7 +256,12 @@ const FundStats = React.memo(() => {
 
   if (isBalanceLoading) {
     return (
-      <Center height={{ md: "120px", xs: "215px" }}>
+      <Center
+        height={{
+          md: isAuthed ? "235px" : "120px",
+          xs: isAuthed ? "330px" : "215px",
+        }}
+      >
         <Spinner />
       </Center>
     );
@@ -410,24 +419,25 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
   const { data: apy, isLoading: isAPYLoading } = useQuery(
     pool + " apy",
     async () => {
-      let poolRawAPY;
+      let poolRawAPYPromise;
 
       if (pool === Pool.ETH) {
-        poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
+        poolRawAPYPromise = rari.pools.ethereum.apy.getCurrentRawApy();
       } else if (pool === Pool.STABLE) {
-        poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
+        poolRawAPYPromise = rari.pools.stable.apy.getCurrentRawApy();
       } else {
-        poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
+        poolRawAPYPromise = rari.pools.yield.apy.getCurrentRawApy();
       }
 
-      //TODO; fix this this is so ugly
+      const [poolRawAPY, blockNumber, tvl] = await Promise.all([
+        poolRawAPYPromise,
+        rari.web3.eth.getBlockNumber(),
+        getTVL(),
+      ]);
+
       const poolAPY = parseFloat(
         rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
       ).toFixed(2);
-
-      const blockNumber = await rari.web3.eth.getBlockNumber();
-
-      const tvl = await getTVL();
 
       const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
         blockNumber,

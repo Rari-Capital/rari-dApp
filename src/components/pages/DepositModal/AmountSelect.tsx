@@ -361,7 +361,7 @@ const AmountSelect = React.memo(
             >
               <Text fontSize="xs" textAlign="center">
                 {t(
-                  "You may suffer divergence loss in this multi asset pool. Click for more info."
+                  "You may experience divergence loss in this pool. Click for more info."
                 )}
               </Text>
             </Link>
