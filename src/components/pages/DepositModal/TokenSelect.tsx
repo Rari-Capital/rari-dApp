@@ -28,12 +28,15 @@ import { usdFormatter } from "../../../utils/bigUtils";
 import { Pool, usePoolType } from "../../../context/PoolContext";
 import { useRari } from "../../../context/RariContext";
 import { useQuery } from "react-query";
+import { Mode } from ".";
 
 const TokenSelect = React.memo(
   ({
     onSelectToken: _onSelectToken,
     onClose,
+    mode,
   }: {
+    mode: Mode;
     onClose: () => any;
     onSelectToken: (symbol: string) => any;
   }) => {
@@ -136,7 +139,7 @@ const TokenSelect = React.memo(
           width="100%"
           height={{ md: "180px", xs: "210px" }}
         >
-          <TokenList tokenKeys={tokenKeys} onClick={onTokenClick} />
+          <TokenList mode={mode} tokenKeys={tokenKeys} onClick={onTokenClick} />
         </Box>
       </Fade>
     );
@@ -147,13 +150,14 @@ export default TokenSelect;
 
 const TokenRow = React.memo(
   ({
-    data: { tokenKeys, onClick },
+    data: { tokenKeys, onClick, mode },
     index,
     style,
   }: {
     data: {
       tokenKeys: string[];
       onClick: (symbol: string) => any;
+      mode: Mode;
     };
     index: number;
     style: CSSProperties;
@@ -197,14 +201,13 @@ const TokenRow = React.memo(
               {token.symbol}
             </Heading>
             <Text fontWeight="thin" fontSize="15px">
-              {
-                //TODO don't use USD formatter for this
-                isBalanceLoading
+              {mode === Mode.DEPOSIT
+                ? isBalanceLoading
                   ? "?"
                   : usdFormatter(
                       parseFloat(balance!.toString()) / 10 ** token.decimals
                     ).replace("$", "")
-              }
+                : null}
             </Text>
           </Column>
         </Row>
@@ -218,9 +221,11 @@ const TokenList = React.memo(
   ({
     tokenKeys,
     onClick,
+    mode,
   }: {
     tokenKeys: string[];
     onClick: (symbol: string) => any;
+    mode: Mode;
   }) => {
     const sortedKeys = useMemo(() => {
       return [...tokenKeys].sort(Intl.Collator().compare);
@@ -230,6 +235,7 @@ const TokenList = React.memo(
       () => ({
         tokenKeys: sortedKeys,
         onClick,
+        mode,
       }),
       [sortedKeys, onClick]
     );

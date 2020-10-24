@@ -83,6 +83,7 @@ const DepositModal = React.memo((props: Props) => {
               <TokenSelect
                 onClose={openAmountSelect}
                 onSelectToken={setSelectedToken}
+                mode={mode}
               />
             ) : (
               <OptionsMenu
