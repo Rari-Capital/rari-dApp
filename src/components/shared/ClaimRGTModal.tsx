@@ -179,7 +179,7 @@ export const ClaimRGTModal = React.memo(
                 </Row>
 
                 <GlowingButton
-                  label={t("Claim") + " " + amount + " RGT"}
+                  label={t("Claim RGT")}
                   fontSize="2xl"
                   disabled={amount > (unclaimed ?? 0)}
                   onClick={claimRGT}
