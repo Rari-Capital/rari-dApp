@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Row, Column } from "buttered-chakra";
-import { useToast } from "@chakra-ui/core";
+
 import {
   Heading,
   Box,
@@ -98,7 +98,6 @@ const AmountSelect = React.memo(
     );
 
     const { t } = useTranslation();
-    const toast = useToast();
 
     const toast = useToast();
 
