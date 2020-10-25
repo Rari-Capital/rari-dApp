@@ -183,7 +183,16 @@ const AmountSelect = React.memo(
       }
 
       setAreTransactionsRunning(false);
-    }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
+    }, [
+      address,
+      poolType,
+      rari.pools,
+      rari.web3.utils,
+      token,
+      amount,
+      t,
+      toast,
+    ]);
 
     const onWithdraw = useCallback(async () => {
       try {
@@ -263,7 +272,16 @@ const AmountSelect = React.memo(
       }
 
       setAreTransactionsRunning(false);
-    }, [address, poolType, rari.pools, rari.web3.utils, token, amount, t]);
+    }, [
+      address,
+      poolType,
+      rari.pools,
+      rari.web3.utils,
+      token,
+      amount,
+      t,
+      toast,
+    ]);
 
     let depositOrWithdrawAlert;
 
