@@ -197,8 +197,10 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   }, [web3ModalProvider, refetchAccountData]);
 
   useEffect(() => {
-    console.log("Setting Logrocket user to new address: " + address);
-    LogRocket.identify(address);
+    if (address !== EmptyAddress) {
+      console.log("Setting Logrocket user to new address: " + address);
+      LogRocket.identify(address);
+    }
   }, [address]);
 
   const value = useMemo(
