@@ -33,7 +33,7 @@ import EthereumPool from "../../../rari-sdk/pools/ethereum";
 import YieldPool from "../../../rari-sdk/pools/yield";
 import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
-import Honeybadger from "honeybadger-js";
+import LogRocket from "logrocket";
 
 interface Props {
   selectedToken: string;
@@ -72,10 +72,14 @@ const AmountSelect = React.memo(
         _setUserEnteredAmount(newAmount);
 
         try {
-          // Try to set the amount to BigNumber(amount):
+          BigNumber.DEBUG = true;
+
+          // Try to set the amount to BigNumber(newAmount):
           const bigAmount = new BigNumber(newAmount);
           _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
         } catch (e) {
+          console.log(e);
+
           // If the number was invalid, set the amount to null to disable confirming:
           _setAmount(null);
         }
@@ -171,7 +175,7 @@ const AmountSelect = React.memo(
           }
         }
       } catch (e) {
-        Honeybadger.notify(e);
+        LogRocket.captureException(e);
         toast({
           title: "Error!",
           description: e.toString(),
@@ -260,7 +264,7 @@ const AmountSelect = React.memo(
           }
         }
       } catch (e) {
-        Honeybadger.notify(e);
+        LogRocket.captureException(e);
         toast({
           title: "Error!",
           description: e.toString(),

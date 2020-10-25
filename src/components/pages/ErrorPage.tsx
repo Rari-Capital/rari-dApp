@@ -17,13 +17,15 @@ import {
 
 import { useTranslation } from "react-i18next";
 
-const ErrorPage = ({ error }: { error: string }) => {
+import { FallbackProps } from "react-error-boundary";
+
+const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
   const { t } = useTranslation();
 
   return (
     <Box color="white">
       <Box bg="red.600" width="100%" p={4}>
-        <Heading>{t("Whoops! Looks like something went wrong!")} </Heading>
+        <Heading>{t("Whoops! Looks like something went wrong!")}</Heading>
         <Text>
           {t(
             "You can either reload the page, or report this error to us on our"
@@ -43,7 +45,7 @@ const ErrorPage = ({ error }: { error: string }) => {
             <AccordionIcon />
           </AccordionHeader>
           <AccordionPanel pb={4}>
-            <Code variantColor="red">{error.toString()}</Code>
+            <Code variantColor="red">{error?.toString()}</Code>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

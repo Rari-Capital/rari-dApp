@@ -11,8 +11,7 @@ import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
-
-import Honeybadger from "honeybadger-js";
+import LogRocket from "logrocket";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -198,10 +197,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   }, [web3ModalProvider, refetchAccountData]);
 
   useEffect(() => {
-    console.log("Setting Honeybadger context to new address: " + address);
-    Honeybadger.setContext({
-      user_id: address,
-    });
+    console.log("Setting Logrocket user to new address: " + address);
+    LogRocket.identify(address);
   }, [address]);
 
   const value = useMemo(
