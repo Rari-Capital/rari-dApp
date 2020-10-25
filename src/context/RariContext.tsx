@@ -12,6 +12,7 @@ import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
 import LogRocket from "logrocket";
+import { useToast } from "@chakra-ui/core";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -140,6 +141,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const queryCache = useQueryCache();
 
+  const toast = useToast();
+
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
@@ -149,8 +152,22 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         setAddress(addresses[0] ?? EmptyAddress);
       });
+
+      rariInstance.web3.eth.net.getId().then((id) => {
+        if (id !== 1) {
+          toast({
+            title: "Wrong network!",
+            description:
+              "You are on the wrong network! Switch to the mainnet and reload this page!",
+            status: "warning",
+            position: "top-right",
+            duration: 300000,
+            isClosable: true,
+          });
+        }
+      });
     },
-    [setRari, setAddress]
+    [setRari, setAddress, toast]
   );
 
   const login = useCallback(async () => {

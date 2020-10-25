@@ -30,11 +30,13 @@ import { ErrorBoundary } from "react-error-boundary";
 // after calling LogRocket.init()
 setupLogRocketReact(LogRocket);
 
-LogRocket.init("eczu2e/rari-capital", {
-  console: {
-    shouldAggregateConsoleErrors: true,
-  },
-});
+if (process.env.NODE_ENV === "production") {
+  LogRocket.init("eczu2e/rari-capital", {
+    console: {
+      shouldAggregateConsoleErrors: true,
+    },
+  });
+}
 
 const customTheme = {
   ...theme,
