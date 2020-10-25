@@ -175,7 +175,7 @@ const AmountSelect = React.memo(
           }
         }
       } catch (e) {
-        LogRocket.captureException(e);
+        LogRocket.captureMessage(e.toString());
         toast({
           title: "Error!",
           description: e.toString(),
@@ -264,7 +264,7 @@ const AmountSelect = React.memo(
           }
         }
       } catch (e) {
-        LogRocket.captureException(e);
+        LogRocket.captureMessage(e.toString());
         toast({
           title: "Error!",
           description: e.toString(),
