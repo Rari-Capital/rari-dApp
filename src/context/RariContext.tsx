@@ -147,7 +147,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       setRari(rariInstance);
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
-        setAddress(addresses[0]);
+        setAddress(addresses[0] ?? EmptyAddress);
       });
     },
     [setRari, setAddress]
