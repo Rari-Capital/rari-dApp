@@ -34,6 +34,7 @@ import YieldPool from "../../../rari-sdk/pools/yield";
 import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
+import { queryCache, useQueryCache } from "react-query";
 
 interface Props {
   selectedToken: string;
@@ -105,6 +106,8 @@ const AmountSelect = React.memo(
 
     const toast = useToast();
 
+    const queryCache = useQueryCache();
+
     const onDeposit = useCallback(async () => {
       try {
         let pool: StablePool | EthereumPool | YieldPool;
@@ -173,6 +176,8 @@ const AmountSelect = React.memo(
           if (depositReceipt?.transactionHash) {
             notify.hash(depositReceipt?.transactionHash);
           }
+
+          queryCache.refetchQueries();
         }
       } catch (e) {
         LogRocket.captureMessage(e.toString());
@@ -262,6 +267,8 @@ const AmountSelect = React.memo(
           if (receipt?.transactionHash) {
             notify.hash(receipt?.transactionHash);
           }
+
+          queryCache.refetchQueries();
         }
       } catch (e) {
         LogRocket.captureMessage(e.toString());
