@@ -34,7 +34,7 @@ import YieldPool from "../../../rari-sdk/pools/yield";
 import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
-import { queryCache, useQueryCache } from "react-query";
+import { useQueryCache } from "react-query";
 
 interface Props {
   selectedToken: string;
@@ -92,14 +92,8 @@ const AmountSelect = React.memo(
       () =>
         isSelectedTokenBalanceLoading || amount === null
           ? false
-          : // @ts-ignore
-            amount.gt(rari.web3.utils.toBN(selectedTokenBalance!)),
-      [
-        isSelectedTokenBalanceLoading,
-        selectedTokenBalance,
-        amount,
-        rari.web3.utils,
-      ]
+          : amount.gt(new BigNumber(selectedTokenBalance!.toString())),
+      [isSelectedTokenBalanceLoading, selectedTokenBalance, amount]
     );
 
     const { t } = useTranslation();
@@ -113,7 +107,7 @@ const AmountSelect = React.memo(
         let pool: StablePool | EthereumPool | YieldPool;
 
         //@ts-ignore
-        const amountBN = rari.web3.utils.toBN(amount);
+        const amountBN = rari.web3.utils.toBN(amount?.decimalPlaces(0));
 
         if (poolType === Pool.ETH) {
           pool = rari.pools.ethereum;
@@ -123,15 +117,13 @@ const AmountSelect = React.memo(
           pool = rari.pools.yield;
         }
 
-        let amountToBeAdded;
+        setAreTransactionsRunning(true);
 
-        const [_amountToBeAdded] = await pool.deposits.validateDeposit(
+        const [amountToBeAdded] = await pool.deposits.validateDeposit(
           token.symbol,
           amountBN,
           address
         );
-
-        amountToBeAdded = _amountToBeAdded;
 
         const amountToBeAddedInFormat =
           poolType === Pool.ETH
@@ -147,16 +139,11 @@ const AmountSelect = React.memo(
             })
           )
         ) {
-          setAreTransactionsRunning(true);
-
-          let approvalReceipt: { transactionHash: string } | undefined;
-          let depositReceipt: { transactionHash: string } | undefined;
-
           const [
             ,
             ,
-            _approvalReceipt,
-            _depositReceipt,
+            approvalReceipt,
+            depositReceipt,
           ] = await pool.deposits.deposit(
             token.symbol,
             amountBN,
@@ -165,9 +152,6 @@ const AmountSelect = React.memo(
               from: address,
             }
           );
-
-          approvalReceipt = _approvalReceipt;
-          depositReceipt = _depositReceipt;
 
           if (approvalReceipt?.transactionHash) {
             notify.hash(approvalReceipt?.transactionHash);
@@ -201,6 +185,7 @@ const AmountSelect = React.memo(
       amount,
       t,
       toast,
+      queryCache,
     ]);
 
     const onWithdraw = useCallback(async () => {
@@ -208,7 +193,7 @@ const AmountSelect = React.memo(
         let pool: StablePool | EthereumPool | YieldPool;
 
         //@ts-ignore
-        const amountBN = rari.web3.utils.toBN(amount);
+        const amountBN = rari.web3.utils.toBN(amount?.decimalPlaces(0));
 
         if (poolType === Pool.ETH) {
           pool = rari.pools.ethereum;
@@ -218,22 +203,13 @@ const AmountSelect = React.memo(
           pool = rari.pools.yield;
         }
 
-        let amountToBeRemoved;
-        try {
-          const [
-            _amountToBeRemoved,
-          ] = await pool.withdrawals.validateWithdrawal(
-            token.symbol,
-            amountBN,
-            address
-          );
+        setAreTransactionsRunning(true);
 
-          amountToBeRemoved = _amountToBeRemoved;
-        } catch (e) {
-          alert(e);
-
-          return;
-        }
+        const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
+          token.symbol,
+          amountBN,
+          address
+        );
 
         const amountToBeRemovedInFormat =
           poolType === Pool.ETH
@@ -249,11 +225,7 @@ const AmountSelect = React.memo(
             })
           )
         ) {
-          setAreTransactionsRunning(true);
-
-          let receipt: { transactionHash: string } | undefined;
-
-          const [, , _receipt] = await pool.withdrawals.withdraw(
+          const [, , receipt] = await pool.withdrawals.withdraw(
             token.symbol,
             amountBN,
             amountToBeRemoved,
@@ -261,8 +233,6 @@ const AmountSelect = React.memo(
               from: address,
             }
           );
-
-          receipt = _receipt;
 
           if (receipt?.transactionHash) {
             notify.hash(receipt?.transactionHash);
@@ -292,6 +262,7 @@ const AmountSelect = React.memo(
       amount,
       t,
       toast,
+      queryCache,
     ]);
 
     let depositOrWithdrawAlert;
@@ -447,10 +418,7 @@ const TokenNameAndMaxButton = React.memo(
       const balance = await getTokenBalance(token, rari, address);
 
       updateAmount(
-        //@ts-ignore
-        BigNumber(balance)
-          .div(10 ** token.decimals)
-          .toString()
+        new BigNumber(balance.toString()).div(10 ** token.decimals).toString()
       );
 
       _setIsMaxLoading(false);

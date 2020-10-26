@@ -75,8 +75,10 @@ export const ClaimRGTModal = React.memo(
 
     const claimRGT = useCallback(async () => {
       const receipt = await rari.governance.rgt.distributions.claim(
-        //@ts-ignore
-        rari.web3.utils.toBN(new BigNumber(amount).multipliedBy(1e18)),
+        rari.web3.utils.toBN(
+          //@ts-ignore
+          new BigNumber(amount).multipliedBy(1e18).decimalPlaces(0)
+        ),
         { from: address }
       );
 
