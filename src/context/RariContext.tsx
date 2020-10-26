@@ -151,6 +151,10 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         console.log("Address array: ", addresses);
+        if (addresses.length === 0) {
+          console.log("Address array was empty. Reloading!");
+          location.reload();
+        }
         setAddress(addresses[0]);
       });
 
