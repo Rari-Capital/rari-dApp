@@ -153,7 +153,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         console.log("Address array: ", addresses);
         if (addresses.length === 0) {
           console.log("Address array was empty. Reloading!");
-          location.reload();
+          window.location.reload();
         }
         setAddress(addresses[0]);
       });
