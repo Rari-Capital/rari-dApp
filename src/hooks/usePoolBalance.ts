@@ -9,7 +9,6 @@ export const usePoolBalance = (pool: Pool) => {
   const { data: poolBalance, isLoading: isPoolBalanceLoading } = useQuery(
     address + " " + pool + " balance",
     async () => {
-      // TODO: THIS NEEDS BN type
       let balance;
 
       if (pool === Pool.ETH) {
@@ -25,12 +24,12 @@ export const usePoolBalance = (pool: Pool) => {
       );
 
       if (pool === Pool.ETH) {
-        return formattedBalance.replace("$", "") + " ETH";
+        formattedBalance = formattedBalance.replace("$", "") + " ETH";
       }
 
-      return formattedBalance;
+      return { formattedBalance, bigBalance: balance };
     }
   );
 
-  return { poolBalance, isPoolBalanceLoading };
+  return { balanceData: poolBalance, isPoolBalanceLoading };
 };

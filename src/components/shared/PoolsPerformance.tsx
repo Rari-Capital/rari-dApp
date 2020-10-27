@@ -134,15 +134,15 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
             series={[
               {
                 name: "Yield Pool",
-                data: chartData?.yieldPoints,
+                data: chartData!.yieldPoints,
               },
               {
                 name: "Stable Pool",
-                data: chartData?.stablePoints,
+                data: chartData!.stablePoints,
               },
               {
                 name: "ETH Pool",
-                data: chartData?.ethPoints,
+                data: chartData!.ethPoints,
               },
             ]}
           />

@@ -351,7 +351,7 @@ const FundStats = React.memo(() => {
             ) : (
               <RefetchMovingStat
                 queryKey="interestEarned"
-                interval={5000}
+                interval={60000}
                 fetch={getAccountInterest}
                 loadingPlaceholder="$?"
                 statSize="3xl"
@@ -412,7 +412,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
   const { rari } = useRari();
 
-  const { poolBalance, isPoolBalanceLoading } = usePoolBalance(pool);
+  const { balanceData, isPoolBalanceLoading } = usePoolBalance(pool);
 
   const { getTVL } = useTVL();
 
@@ -478,15 +478,15 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text my={5} fontSize="md" textAlign="center">
-            {isPoolBalanceLoading ? "$?" : poolBalance}
+            {isPoolBalanceLoading ? "$?" : balanceData!.formattedBalance}
           </Text>
         </SimpleTooltip>
 
         <Text fontWeight="bold" textAlign="center">
-          {isAPYLoading ? "?" : apy?.poolAPY}% APY +{" "}
+          {isAPYLoading ? "?" : apy!.poolAPY}% APY +{" "}
           <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>
-              ({isAPYLoading ? "?" : apy?.rgtAPR}%{" "}
+              ({isAPYLoading ? "?" : apy!.rgtAPR}%{" "}
               <Image display="inline" src={SmallLogo} size="20px" />)
             </span>
           </SimpleTooltip>

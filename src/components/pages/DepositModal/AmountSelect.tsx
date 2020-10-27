@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { Row, Column } from "buttered-chakra";
 
 import {
@@ -35,6 +35,7 @@ import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { useQueryCache } from "react-query";
+import { usePoolBalance } from "../../../hooks/usePoolBalance";
 
 interface Props {
   selectedToken: string;
@@ -106,9 +107,6 @@ const AmountSelect = React.memo(
       try {
         let pool: StablePool | EthereumPool | YieldPool;
 
-        //@ts-ignore
-        const amountBN = rari.web3.utils.toBN(amount?.decimalPlaces(0));
-
         if (poolType === Pool.ETH) {
           pool = rari.pools.ethereum;
         } else if (poolType === Pool.STABLE) {
@@ -116,6 +114,9 @@ const AmountSelect = React.memo(
         } else {
           pool = rari.pools.yield;
         }
+
+        //@ts-ignore
+        const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
 
         setAreTransactionsRunning(true);
 
@@ -154,11 +155,11 @@ const AmountSelect = React.memo(
           );
 
           if (approvalReceipt?.transactionHash) {
-            notify.hash(approvalReceipt?.transactionHash);
+            notify.hash(approvalReceipt!.transactionHash);
           }
 
           if (depositReceipt?.transactionHash) {
-            notify.hash(depositReceipt?.transactionHash);
+            notify.hash(depositReceipt!.transactionHash);
           }
 
           queryCache.refetchQueries();
@@ -192,9 +193,6 @@ const AmountSelect = React.memo(
       try {
         let pool: StablePool | EthereumPool | YieldPool;
 
-        //@ts-ignore
-        const amountBN = rari.web3.utils.toBN(amount?.decimalPlaces(0));
-
         if (poolType === Pool.ETH) {
           pool = rari.pools.ethereum;
         } else if (poolType === Pool.STABLE) {
@@ -202,6 +200,9 @@ const AmountSelect = React.memo(
         } else {
           pool = rari.pools.yield;
         }
+
+        //@ts-ignore
+        const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
 
         setAreTransactionsRunning(true);
 
@@ -235,7 +236,7 @@ const AmountSelect = React.memo(
           );
 
           if (receipt?.transactionHash) {
-            notify.hash(receipt?.transactionHash);
+            notify.hash(receipt!.transactionHash);
           }
 
           queryCache.refetchQueries();
@@ -410,19 +411,60 @@ const TokenNameAndMaxButton = React.memo(
 
     const { rari, address } = useRari();
 
+    const poolType = usePoolType();
+
+    const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
+
     const [isMaxLoading, _setIsMaxLoading] = useState(false);
+
+    useEffect(() => {
+      // Make the max button load if the pool balance is loading
+      if (!isMaxLoading) {
+        _setIsMaxLoading(isPoolBalanceLoading);
+      }
+    }, [isMaxLoading, isPoolBalanceLoading]);
 
     const setToMax = useCallback(async () => {
       _setIsMaxLoading(true);
 
-      const balance = await getTokenBalance(token, rari, address);
+      if (mode === Mode.DEPOSIT) {
+        const balance = await getTokenBalance(token, rari, address);
 
-      updateAmount(
-        new BigNumber(balance.toString()).div(10 ** token.decimals).toString()
-      );
+        updateAmount(
+          new BigNumber(balance.toString()).div(10 ** token.decimals).toString()
+        );
+      } else if (mode === Mode.WITHDRAW) {
+        let pool: StablePool | EthereumPool | YieldPool;
+
+        if (poolType === Pool.ETH) {
+          pool = rari.pools.ethereum;
+        } else if (poolType === Pool.STABLE) {
+          pool = rari.pools.stable;
+        } else {
+          pool = rari.pools.yield;
+        }
+
+        const [amount] = await pool.withdrawals.getMaxWithdrawalAmount(
+          token.symbol,
+          balanceData!.bigBalance
+        );
+
+        updateAmount(
+          new BigNumber(amount.toString()).div(10 ** token.decimals).toString()
+        );
+      }
 
       _setIsMaxLoading(false);
-    }, [_setIsMaxLoading, updateAmount, token, rari, address]);
+    }, [
+      _setIsMaxLoading,
+      updateAmount,
+      token,
+      rari,
+      address,
+      balanceData,
+      mode,
+      poolType,
+    ]);
 
     const { t } = useTranslation();
 
@@ -448,25 +490,23 @@ const TokenNameAndMaxButton = React.memo(
           <Icon name="chevron-down" size="32px" />
         </Row>
 
-        {mode === Mode.WITHDRAW ? null : (
-          <Button
-            ml={1}
-            height="28px"
-            width="58px"
-            bg="transparent"
-            border="2px"
-            borderRadius="8px"
-            borderColor="#272727"
-            fontSize="sm"
-            fontWeight="extrabold"
-            _hover={{}}
-            _active={{}}
-            onClick={setToMax}
-            isLoading={isMaxLoading}
-          >
-            {t("MAX")}
-          </Button>
-        )}
+        <Button
+          ml={1}
+          height="28px"
+          width="58px"
+          bg="transparent"
+          border="2px"
+          borderRadius="8px"
+          borderColor="#272727"
+          fontSize="sm"
+          fontWeight="extrabold"
+          _hover={{}}
+          _active={{}}
+          onClick={setToMax}
+          isLoading={isMaxLoading}
+        >
+          {t("MAX")}
+        </Button>
       </Row>
     );
   }
@@ -484,12 +524,6 @@ const AmountInput = React.memo(
   }) => {
     const token = tokens[selectedToken];
 
-    const onChange = useCallback(
-      (event: React.ChangeEvent<HTMLInputElement>) =>
-        updateAmount(event.target.value),
-      [updateAmount]
-    );
-
     return (
       <Input
         type="number"
@@ -500,7 +534,8 @@ const AmountInput = React.memo(
         placeholder="0.0"
         value={displayAmount}
         color={token.color}
-        onChange={onChange}
+        // @ts-ignore
+        onChange={updateAmount}
         mr={DASHBOARD_BOX_SPACING.asPxString()}
       />
     );

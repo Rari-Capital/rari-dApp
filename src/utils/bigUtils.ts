@@ -11,7 +11,3 @@ export function stringUsdFormatter(num: string) {
 export function usdFormatter(num: number) {
   return formatter.format(num);
 }
-
-export function weiUSDFormatter(num: number) {
-  weiUSDFormatter(num / 1e18);
-}

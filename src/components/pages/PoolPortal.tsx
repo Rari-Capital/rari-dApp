@@ -137,7 +137,7 @@ const PoolPortalContent = React.memo(() => {
 
   const { poolName, poolType } = usePoolInfoFromContext();
 
-  const { poolBalance, isPoolBalanceLoading } = usePoolBalance(poolType);
+  const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
 
   const {
     isOpen: isDepositModalOpen,
@@ -151,7 +151,7 @@ const PoolPortalContent = React.memo(() => {
     return <FullPageSpinner />;
   }
 
-  const myBalance = poolBalance!;
+  const { formattedBalance: myBalance } = balanceData!;
   const hasNotDeposited = myBalance === "$0.00000";
 
   return (
@@ -693,13 +693,13 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("Month")}: <b>{areAPYsLoading ? "?" : apys?.month}%</b>
+            {t("Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
           <Text fontWeight="bold" textAlign="center">
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
-                + ({areAPYsLoading ? "?" : apys?.rgtAPY}%{" "}
+                + ({areAPYsLoading ? "?" : apys!.rgtAPY}%{" "}
                 <Image display="inline" src={SmallRGTLogo} size="20px" />)
               </span>
             </SimpleTooltip>
@@ -711,13 +711,13 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("Week")}: <b>{areAPYsLoading ? "?" : apys?.week}%</b>
+            {t("Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
           <Text fontWeight="bold" textAlign="center">
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
-                + ({areAPYsLoading ? "?" : apys?.rgtAPY}%{" "}
+                + ({areAPYsLoading ? "?" : apys!.rgtAPY}%{" "}
                 <Image display="inline" src={SmallRGTLogo} size="20px" />)
               </span>
             </SimpleTooltip>
