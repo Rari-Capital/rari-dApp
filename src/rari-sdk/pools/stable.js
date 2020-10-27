@@ -1185,6 +1185,20 @@ export default class StablePool {
               ])
             );
 
+          if ((maxWithdrawalAmountBN
+            .mul(
+              Web3.utils.toBN(allBalances["4"][
+                self.allocations.CURRENCIES.indexOf(currencyCode)
+              ])
+            )
+            .div(
+              Web3.utils
+                .toBN(10)
+                .pow(
+                  Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                )
+            )).gt(senderUsdBalance)) maxWithdrawalAmountBN.isubn(1);
+
           // If tokenRawFundBalanceBN >= maxWithdrawalAmountBN, return maxWithdrawalAmountBN
           if (tokenRawFundBalanceBN.gte(maxWithdrawalAmountBN)) return [maxWithdrawalAmountBN];
         }
@@ -1240,6 +1254,19 @@ export default class StablePool {
                     self.allocations.CURRENCIES.indexOf(inputCurrencyCode)
                   ])
                 );
+                if ((maxInputAmountLeftBN
+                  .mul(
+                    Web3.utils.toBN(allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(inputCurrencyCode)
+                    ])
+                  )
+                  .div(
+                    Web3.utils
+                      .toBN(10)
+                      .pow(
+                        Web3.utils.toBN(self.internalTokens[inputCurrencyCode].decimals)
+                      )
+                  )).gt(usdAmountLeft)) maxInputAmountLeftBN.isubn(1);
               var inputAmountBN = Web3.utils.BN.min(maxInputAmountLeftBN, rawFundBalanceBN);
               
               inputCandidates.push({
