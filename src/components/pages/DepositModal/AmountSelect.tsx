@@ -165,7 +165,12 @@ const AmountSelect = React.memo(
           queryCache.refetchQueries();
         }
       } catch (e) {
-        LogRocket.captureMessage(e.toString());
+        if (e instanceof Error) {
+          LogRocket.captureException(e);
+        } else {
+          LogRocket.captureException(new Error(e));
+        }
+
         toast({
           title: "Error!",
           description: e.toString(),
@@ -242,7 +247,12 @@ const AmountSelect = React.memo(
           queryCache.refetchQueries();
         }
       } catch (e) {
-        LogRocket.captureMessage(e.toString());
+        if (e instanceof Error) {
+          LogRocket.captureException(e);
+        } else {
+          LogRocket.captureException(new Error(e));
+        }
+
         toast({
           title: "Error!",
           description: e.toString(),
