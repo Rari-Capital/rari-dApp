@@ -27,14 +27,21 @@ import LogRocket from "logrocket";
 import setupLogRocketReact from "logrocket-react";
 import { ErrorBoundary } from "react-error-boundary";
 
+import { version } from "../package.json";
+
+export { version };
+
 // after calling LogRocket.init()
 setupLogRocketReact(LogRocket);
 
 if (process.env.NODE_ENV === "production") {
+  console.log("Version " + version);
+
   LogRocket.init("eczu2e/rari-capital", {
     console: {
       shouldAggregateConsoleErrors: true,
     },
+    release: version,
   });
 }
 
@@ -48,7 +55,7 @@ const customTheme = {
 };
 
 // Scrolls to the top of the new page when we switch pages
-export function ScrollToTop() {
+function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {

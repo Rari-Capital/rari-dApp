@@ -23,6 +23,7 @@ import { LanguageSelect } from "./TranslateButton";
 
 import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
+import { version } from "../..";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -177,7 +178,7 @@ export const SettingsModal = React.memo(
                 <LanguageSelect />
 
                 <Text mt={DASHBOARD_BOX_SPACING.asPxString()} fontSize="10px">
-                  Version 0.6.1
+                  Version {version}
                 </Text>
               </Column>
             </ModalContent>
