@@ -524,6 +524,12 @@ const AmountInput = React.memo(
   }) => {
     const token = tokens[selectedToken];
 
+    const onChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) =>
+        updateAmount(event.target.value),
+      [updateAmount]
+    );
+
     return (
       <Input
         type="number"
@@ -534,8 +540,7 @@ const AmountInput = React.memo(
         placeholder="0.0"
         value={displayAmount}
         color={token.color}
-        // @ts-ignore
-        onChange={updateAmount}
+        onChange={onChange}
         mr={DASHBOARD_BOX_SPACING.asPxString()}
       />
     );

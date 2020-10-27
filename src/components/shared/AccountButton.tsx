@@ -177,7 +177,7 @@ export const SettingsModal = React.memo(
                 <LanguageSelect />
 
                 <Text mt={DASHBOARD_BOX_SPACING.asPxString()} fontSize="10px">
-                  Version 0.6
+                  Version 0.6.1
                 </Text>
               </Column>
             </ModalContent>
