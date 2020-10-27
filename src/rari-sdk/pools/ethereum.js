@@ -454,6 +454,8 @@ export default class EthereumPool extends StablePool {
       maxEthAmount,
       options
     ) {
+      if (!options || !options.from)
+        throw "Options parameter not set or from address not set.";
       var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
         throw "Invalid currency code!";

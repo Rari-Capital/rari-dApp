@@ -1835,6 +1835,8 @@ export default class StablePool {
         }
       },
       withdraw: async function (currencyCode, amount, maxUsdAmount, options) {
+        if (!options || !options.from)
+          throw "Options parameter not set or from address not set.";
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
           throw "Invalid currency code!";
