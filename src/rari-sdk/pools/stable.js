@@ -1143,6 +1143,314 @@ export default class StablePool {
       getWithdrawalCurrenciesWithoutSlippage: async function () {
         return await self.allocations.getRawCurrencyAllocations();
       },
+      getMaxWithdrawalAmount: async function (currencyCode, senderUsdBalance) {
+        var allTokens = await self.getAllTokens();
+        if (currencyCode !== "ETH" && !allTokens[currencyCode])
+          throw "Invalid currency code!";
+        if (!senderUsdBalance || senderUsdBalance.lte(Web3.utils.toBN(0)))
+          throw "Sender USD balance must be greater than 0!";
+
+        // Get user fund balance
+        if (senderUsdBalance === undefined) senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+
+        // Check balances to find withdrawal source
+        var allBalances = await self.cache.getOrUpdate(
+          "allBalances",
+          self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
+            .call
+        );
+
+        // See how much we can withdraw directly if token is supported by the fund
+        var i = allBalances["0"].indexOf(currencyCode);
+        var tokenRawFundBalanceBN = Web3.utils.toBN(0);
+
+        if (i >= 0) {
+          tokenRawFundBalanceBN = Web3.utils.toBN(allBalances["1"][i]);
+          for (var j = 0; j < allBalances["3"][i].length; j++)
+            tokenRawFundBalanceBN.iadd(Web3.utils.toBN(allBalances["3"][i][j]));
+        }
+
+        if (tokenRawFundBalanceBN.gt(Web3.utils.toBN(0))) {
+          var maxWithdrawalAmountBN = senderUsdBalance
+            .mul(
+              Web3.utils
+                .toBN(10)
+                .pow(
+                  Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                )
+            )
+            .div(
+              Web3.utils.toBN(allBalances["4"][
+                self.allocations.CURRENCIES.indexOf(currencyCode)
+              ])
+            );
+
+          // If tokenRawFundBalanceBN >= maxWithdrawalAmountBN, return maxWithdrawalAmountBN
+          if (tokenRawFundBalanceBN.gte(maxWithdrawalAmountBN)) return [maxWithdrawalAmountBN];
+        }
+
+        // Otherwise, exchange as few currencies as possible (ideally those with the lowest balances)
+        var amountInputtedUsdBN = Web3.utils.toBN(0);
+        var amountWithdrawnBN = Web3.utils.toBN(0);
+        var totalProtocolFeeBN = Web3.utils.toBN(0);
+
+        // Withdraw as much as we can of the output token first
+        if (tokenRawFundBalanceBN.gt(Web3.utils.toBN(0))) {
+          amountInputtedUsdBN.iadd(
+            tokenRawFundBalanceBN
+              .mul(
+                Web3.utils.toBN(allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ])
+              )
+              .div(
+                Web3.utils
+                  .toBN(10)
+                  .pow(
+                    Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                  )
+              )
+          );
+          amountWithdrawnBN.iadd(tokenRawFundBalanceBN);
+        }
+
+        // Get input candidates
+        var inputCandidates = [];
+
+        for (var i = 0; i < allBalances["0"].length; i++) {
+          var inputCurrencyCode = allBalances["0"][i];
+          if (inputCurrencyCode !== currencyCode) {
+            var rawFundBalanceBN = Web3.utils.toBN(0);
+            for (var j = 0; j < allBalances["3"][i].length; j++)
+              rawFundBalanceBN.iadd(Web3.utils.toBN(allBalances["3"][i][j]));
+
+            if (rawFundBalanceBN.gt(Web3.utils.toBN(0))) {
+              // Calculate inputAmountBN as maximum of sender USD balance left and rawFundBalanceBN
+              var usdAmountLeft = senderUsdBalance.sub(amountInputtedUsdBN);
+              var maxInputAmountLeftBN = usdAmountLeft
+                .mul(
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(self.internalTokens[inputCurrencyCode].decimals)
+                    )
+                )
+                .div(
+                  Web3.utils.toBN(allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(inputCurrencyCode)
+                  ])
+                );
+              var inputAmountBN = Web3.utils.BN.min(maxInputAmountLeftBN, rawFundBalanceBN);
+              
+              inputCandidates.push({
+                currencyCode: inputCurrencyCode,
+                inputAmountBN
+              });
+            }
+          }
+        }
+
+        // TODO: Sort candidates from lowest to highest inputAmountUsdBN (or highest to lowest inputAmountUsdBN?)
+        /* inputCandidates.sort((a, b) =>
+          a.inputAmountUsdBN.gt(b.inputAmountUsdBN) ? 1 : -1
+        ); */
+
+        // mStable
+        var mStableSwapFeeBN = null;
+
+        if (
+          ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
+        )
+          for (var i = 0; i < inputCandidates.length; i++) {
+            if (
+              ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
+                inputCandidates[i].currencyCode
+              ) < 0
+            )
+              continue;
+
+            // Get swap fee and calculate input amount needed to fill output amount
+            if (currencyCode !== "mUSD" && mStableSwapFeeBN === null)
+              mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
+            var outputAmountBeforeFeesBN = inputCandidates[i].inputAmountBN
+              .mul(Web3.utils.toBN(10 ** allTokens[currencyCode].decimals))
+              .div(
+                Web3.utils.toBN(
+                  10 **
+                    self.internalTokens[inputCandidates[i].currencyCode]
+                      .decimals
+                )
+              );
+            var outputAmountBN =
+              currencyCode === "mUSD"
+                ? outputAmountBeforeFeesBN
+                : outputAmountBeforeFeesBN.sub(
+                    outputAmountBeforeFeesBN
+                      .mul(mStableSwapFeeBN)
+                      .div(Web3.utils.toBN(1e18))
+                  );
+
+            amountInputtedUsdBN.iadd(
+              inputCandidates[i].inputAmountBN
+                .mul(
+                  Web3.utils.toBN(allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                  ])
+                )
+                .div(
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                    )
+                )
+            );
+            amountWithdrawnBN.iadd(outputAmountBN);
+
+            // TODO: Check max mint/swap/redeem
+            inputCandidates[i].inputAmountBN.isub(inputCandidates[i].inputAmountBN);
+            if (inputCandidates[i].inputAmountBN.isZero())
+              inputCandidates = inputCandidates.splice(i, 1);
+
+            // Stop if we have filled the USD amount
+            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw "Amount inputted in USD greater than sender USD fund balance";
+            if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
+          }
+
+        // Use 0x if necessary
+        // Deal with amountInputtedUsdBN.lt(senderUsdBalance) not being accurate better than 1 cent margin of error
+        if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))) && inputCandidates.length > 0) {
+          // Get orders from 0x swap API for each input currency candidate
+          for (var i = 0; i < inputCandidates.length; i++) {
+            try {
+              var [
+                orders,
+                inputFilledAmountBN,
+                protocolFee,
+                takerAssetFilledAmountBN,
+                makerAssetFilledAmountBN,
+                gasPrice,
+              ] = await get0xSwapOrders(
+                self.internalTokens[inputCandidates[i].currencyCode].address,
+                currencyCode === "ETH"
+                  ? "WETH"
+                  : allTokens[currencyCode].address,
+                inputCandidates[i].inputAmountBN
+              );
+            } catch (err) {
+              throw "Failed to get swap orders from 0x API: " + err;
+            }
+
+            inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
+            inputCandidates[i].protocolFee = protocolFee;
+            inputCandidates[
+              i
+            ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
+            inputCandidates[
+              i
+            ].makerAssetFillAmountBN = makerAssetFilledAmountBN;
+          }
+
+          // Sort candidates from lowest to highest makerAssetFillAmount
+          inputCandidates.sort((a, b) =>
+            a.makerAssetFillAmountBN.gt(b.makerAssetFillAmountBN) ? 1 : -1
+          );
+
+          // Loop through input currency candidates until we fill the withdrawal
+          for (var i = 0; i < inputCandidates.length; i++) {
+            // If there is enough input in the fund and enough 0x orders to fulfill the rest of the withdrawal amount, withdraw and exchange
+            var usdAmountLeft = senderUsdBalance.sub(amountInputtedUsdBN);
+            var inputFillAmountUsdBN = inputCandidates[i].inputFillAmountBN
+              .mul(
+                Web3.utils.toBN(allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                ])
+              )
+              .div(
+                Web3.utils
+                  .toBN(10)
+                  .pow(
+                    Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                  )
+              );
+            if (
+              inputFillAmountUsdBN.gte(usdAmountLeft)
+            ) {
+              var thisInputAmountBN = inputCandidates[i].inputFillAmountBN
+                .mul(usdAmountLeft)
+                .div(inputFillAmountUsdBN);
+              var thisOutputAmountBN = inputCandidates[i].makerAssetFillAmountBN
+                .mul(usdAmountLeft)
+                .div(inputFillAmountUsdBN);
+
+              amountInputtedUsdBN.iadd(
+                thisInputAmountBN
+                  .mul(
+                    Web3.utils.toBN(allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                    ])
+                  )
+                  .div(
+                    Web3.utils
+                      .toBN(10)
+                      .pow(
+                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      )
+                  )
+              );
+              amountWithdrawnBN.iadd(thisOutputAmountBN);
+              totalProtocolFeeBN.iadd(
+                Web3.utils.toBN(inputCandidates[i].protocolFee)
+              );
+
+              break;
+            }
+
+            // Add all that we can of the last one, then go through them again
+            if (i == inputCandidates.length - 1) {
+              amountInputtedUsdBN.iadd(
+                inputCandidates[i].inputFillAmountBN
+                  .mul(
+                    Web3.utils.toBN(allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                    ])
+                  )
+                  .div(
+                    Web3.utils
+                      .toBN(10)
+                      .pow(
+                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      )
+                  )
+              );
+              amountWithdrawnBN.iadd(
+                inputCandidates[i].makerAssetFillAmountBN
+              );
+              totalProtocolFeeBN.iadd(
+                Web3.utils.toBN(inputCandidates[i].protocolFee)
+              );
+
+              i = -1;
+              inputCandidates.pop();
+            }
+
+            // Stop if we have filled the USD amount
+            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw "Amount inputted in USD greater than sender USD fund balance";
+            if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
+          }
+
+          // Make sure input amount is completely filled
+          if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))))
+            throw (
+              "Unable to find enough liquidity to exchange withdrawn tokens to " +
+              currencyCode +
+              "."
+            );
+        }
+
+        // Return amountWithdrawnBN and totalProtocolFeeBN
+        return [amountWithdrawnBN, totalProtocolFeeBN];
+      },
       validateWithdrawal: async function (currencyCode, amount, sender) {
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
@@ -1186,26 +1494,12 @@ export default class StablePool {
           return [amountUsdBN];
         } else {
           // Otherwise, exchange as few currencies as possible (ideally those with the lowest balances)
-          var inputCurrencyCodes = [];
-          var inputAmountBNs = [];
-          var allOrders = [];
-          var allSignatures = [];
-          var makerAssetFillAmountBNs = [];
-          var protocolFeeBNs = [];
-
           var amountInputtedUsdBN = Web3.utils.toBN(0);
           var amountWithdrawnBN = Web3.utils.toBN(0);
           var totalProtocolFeeBN = Web3.utils.toBN(0);
 
           // Withdraw as much as we can of the output token first
           if (tokenRawFundBalanceBN.gt(Web3.utils.toBN(0))) {
-            inputCurrencyCodes.push(currencyCode);
-            inputAmountBNs.push(tokenRawFundBalanceBN);
-            allOrders.push([]);
-            allSignatures.push([]);
-            makerAssetFillAmountBNs.push(0);
-            protocolFeeBNs.push(0);
-
             amountInputtedUsdBN.iadd(
               tokenRawFundBalanceBN
                 .mul(
@@ -1239,10 +1533,10 @@ export default class StablePool {
                 });
             }
 
-          // Sort candidates from lowest to highest rawFundBalanceBN
-          inputCandidates.sort((a, b) =>
-            a.rawFundBalanceBN.gt(b.rawFundBalanceBN) ? 1 : -1
-          );
+          // TODO: Sort candidates from lowest to highest rawFundBalanceUsdBN (or highest to lowest?)
+          /* inputCandidates.sort((a, b) =>
+            a.rawFundBalanceUsdBN.gt(b.rawFundBalanceUsdBN) ? 1 : -1
+          ); */
 
           // mStable
           var mStableSwapFeeBN = null;
@@ -1337,13 +1631,6 @@ export default class StablePool {
                       );
               }
 
-              inputCurrencyCodes.push(inputCandidates[i].currencyCode);
-              inputAmountBNs.push(inputAmountBN);
-              allOrders.push([]);
-              allSignatures.push([]);
-              makerAssetFillAmountBNs.push(0);
-              protocolFeeBNs.push(0);
-
               amountInputtedUsdBN.iadd(
                 inputAmountBN
                   .mul(
@@ -1393,32 +1680,6 @@ export default class StablePool {
                 throw "Failed to get swap orders from 0x API: " + err;
               }
 
-              // Build array of orders and signatures
-              var signatures = [];
-
-              for (var j = 0; j < orders.length; j++) {
-                signatures[j] = orders[j].signature;
-
-                orders[j] = {
-                  makerAddress: orders[j].makerAddress,
-                  takerAddress: orders[j].takerAddress,
-                  feeRecipientAddress: orders[j].feeRecipientAddress,
-                  senderAddress: orders[j].senderAddress,
-                  makerAssetAmount: orders[j].makerAssetAmount,
-                  takerAssetAmount: orders[j].takerAssetAmount,
-                  makerFee: orders[j].makerFee,
-                  takerFee: orders[j].takerFee,
-                  expirationTimeSeconds: orders[j].expirationTimeSeconds,
-                  salt: orders[j].salt,
-                  makerAssetData: orders[j].makerAssetData,
-                  takerAssetData: orders[j].takerAssetData,
-                  makerFeeAssetData: orders[j].makerFeeAssetData,
-                  takerFeeAssetData: orders[j].takerFeeAssetData,
-                };
-              }
-
-              inputCandidates[i].orders = orders;
-              inputCandidates[i].signatures = signatures;
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
               inputCandidates[i].protocolFee = protocolFee;
               inputCandidates[
@@ -1460,15 +1721,6 @@ export default class StablePool {
                   tries++;
                 }
 
-                inputCurrencyCodes.push(inputCandidates[i].currencyCode);
-                inputAmountBNs.push(thisInputAmountBN);
-                allOrders.push(inputCandidates[i].orders);
-                allSignatures.push(inputCandidates[i].signatures);
-                makerAssetFillAmountBNs.push(thisOutputAmountBN);
-                protocolFeeBNs.push(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
-
                 amountInputtedUsdBN.iadd(
                   thisInputAmountBN
                     .mul(
@@ -1494,17 +1746,6 @@ export default class StablePool {
 
               // Add all that we can of the last one, then go through them again
               if (i == inputCandidates.length - 1) {
-                inputCurrencyCodes.push(inputCandidates[i].currencyCode);
-                inputAmountBNs.push(inputCandidates[i].inputFillAmountBN);
-                allOrders.push(inputCandidates[i].orders);
-                allSignatures.push(inputCandidates[i].signatures);
-                makerAssetFillAmountBNs.push(
-                  inputCandidates[i].makerAssetFillAmountBN
-                );
-                protocolFeeBNs.push(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
-
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
                     .mul(
@@ -1658,10 +1899,10 @@ export default class StablePool {
                 });
             }
 
-          // Sort candidates from lowest to highest rawFundBalanceBN
-          inputCandidates.sort((a, b) =>
-            a.rawFundBalanceBN.gt(b.rawFundBalanceBN) ? 1 : -1
-          );
+          // TODO: Sort candidates from lowest to highest rawFundBalanceUsdBN (or highest to lowest?)
+          /* inputCandidates.sort((a, b) =>
+            a.rawFundBalanceUsdBN.gt(b.rawFundBalanceUsdBN) ? 1 : -1
+          ); */
 
           // mStable
           var mStableSwapFeeBN = null;

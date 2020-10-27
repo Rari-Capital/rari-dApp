@@ -348,6 +348,49 @@ export default class EthereumPool extends StablePool {
       }
     };
 
+    this.withdrawals.getMaxWithdrawalAmount = async function (currencyCode, senderEthBalance) {
+      var allTokens = await self.getAllTokens();
+      if (currencyCode !== "ETH" && !allTokens[currencyCode])
+        throw "Invalid currency code!";
+      if (!senderEthBalance || senderEthBalance.lte(Web3.utils.toBN(0)))
+        throw "Sender ETH balance must be greater than 0!";
+
+      // Get user fund balance
+      if (senderEthBalance === undefined) senderEthBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+
+      // If currency is ETH, return account balance
+      if (currencyCode === "ETH") return [senderEthBalance];
+
+      // Otherwise, get orders from 0x swap API
+      try {
+        var [
+          orders,
+          inputFilledAmountBN,
+          protocolFee,
+          takerAssetFilledAmountBN,
+          makerAssetFilledAmountBN,
+          gasPrice,
+        ] = await get0xSwapOrders(
+          "WETH",
+          allTokens[currencyCode].address,
+          senderEthBalance
+        );
+      } catch (err) {
+        throw "Failed to get swap orders from 0x API: " + err;
+      }
+
+      // If there are enough 0x orders to fulfill the rest of the withdrawal amount, withdraw and exchange
+      if (inputFilledAmountBN.lt(senderEthBalance)) throw (
+          "Unable to find enough liquidity to exchange withdrawn tokens to " +
+          currencyCode +
+          "."
+        );
+
+      // Return amountWithdrawnBN and totalProtocolFeeBN
+      var amountWithdrawnBN = makerAssetFilledAmountBN.mul(senderEthBalance).div(inputFilledAmountBN);
+      return [amountWithdrawnBN, Web3.utils.toBN(protocolFee)];
+    }
+
     this.withdrawals.validateWithdrawal = async function (
       currencyCode,
       amount,
