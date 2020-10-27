@@ -89,7 +89,7 @@ const AmountSelect = React.memo(
       [_setUserEnteredAmount, _setAmount, token.decimals]
     );
 
-    const isAmountGreaterThanSelectedTokenBalance = useMemo(
+    const hasEnoughToWithdrawOrDeposit = useMemo(
       () =>
         isSelectedTokenBalanceLoading || amount === null
           ? false
@@ -282,10 +282,7 @@ const AmountSelect = React.memo(
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
         token: selectedToken,
       });
-    } else if (
-      isAmountGreaterThanSelectedTokenBalance &&
-      mode === Mode.DEPOSIT
-    ) {
+    } else if (hasEnoughToWithdrawOrDeposit && mode === Mode.DEPOSIT) {
       depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
         token: selectedToken,
       });
@@ -369,7 +366,7 @@ const AmountSelect = React.memo(
             isDisabled={
               amount === null ||
               !amount.gt(0) ||
-              (isAmountGreaterThanSelectedTokenBalance && mode === Mode.DEPOSIT)
+              (hasEnoughToWithdrawOrDeposit && mode === Mode.DEPOSIT)
             }
           >
             {t("Confirm")}
