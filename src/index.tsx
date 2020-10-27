@@ -24,19 +24,15 @@ import "./utils/i18n.ts";
 import { BrowserRouter, useLocation } from "react-router-dom";
 
 import LogRocket from "logrocket";
-import setupLogRocketReact from "logrocket-react";
+
 import { ErrorBoundary } from "react-error-boundary";
 
 import { version } from "../package.json";
-
 export { version };
 
-// after calling LogRocket.init()
-setupLogRocketReact(LogRocket);
+console.log("Version " + version);
 
 if (process.env.NODE_ENV === "production") {
-  console.log("Version " + version);
-
   LogRocket.init("eczu2e/rari-capital", {
     console: {
       shouldAggregateConsoleErrors: true,
