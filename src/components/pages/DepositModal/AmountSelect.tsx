@@ -172,7 +172,7 @@ const AmountSelect = React.memo(
         if (e instanceof Error) {
           LogRocket.captureException(e);
         } else {
-          LogRocket.captureException(new Error(e));
+          LogRocket.captureException(new Error(e.toString()));
         }
 
         toast({
@@ -258,7 +258,7 @@ const AmountSelect = React.memo(
         if (e instanceof Error) {
           LogRocket.captureException(e);
         } else {
-          LogRocket.captureException(new Error(e));
+          LogRocket.captureException(new Error(e.toString()));
         }
 
         toast({
