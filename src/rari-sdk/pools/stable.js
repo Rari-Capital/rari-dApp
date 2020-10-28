@@ -265,6 +265,37 @@ export default class StablePool {
 
         for (var i = 0; i < allBalances["0"].length; i++) {
           var currencyCode = allBalances["0"][i];
+          var contractBalanceBN = Web3.utils.toBN(allBalances["1"][i]);
+          allocationsByCurrency[currencyCode] = contractBalanceBN;
+          var pools = allBalances["2"][i];
+          var poolBalances = allBalances["3"][i];
+
+          for (var j = 0; j < pools.length; j++) {
+            var poolBalanceBN = Web3.utils.toBN(poolBalances[j]);
+            allocationsByCurrency[currencyCode].iadd(poolBalanceBN);
+          }
+        }
+
+        return allocationsByCurrency;
+      },
+      getRawCurrencyAllocationsInUsd: async function () {
+        var allocationsByCurrency = {
+          DAI: Web3.utils.toBN(0),
+          USDC: Web3.utils.toBN(0),
+          USDT: Web3.utils.toBN(0),
+          TUSD: Web3.utils.toBN(0),
+          BUSD: Web3.utils.toBN(0),
+          sUSD: Web3.utils.toBN(0),
+          mUSD: Web3.utils.toBN(0),
+        };
+        var allBalances = await self.cache.getOrUpdate(
+          "allBalances",
+          self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
+            .call
+        );
+
+        for (var i = 0; i < allBalances["0"].length; i++) {
+          var currencyCode = allBalances["0"][i];
           var priceInUsdBN = Web3.utils.toBN(allBalances["4"][i]);
           var contractBalanceBN = Web3.utils.toBN(allBalances["1"][i]);
           var contractBalanceUsdBN = contractBalanceBN
