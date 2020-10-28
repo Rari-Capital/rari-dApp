@@ -2162,11 +2162,24 @@ export default class StablePool {
               inputCandidates[
                 i
               ].makerAssetFillAmountBN = makerAssetFilledAmountBN;
+              inputCandidates[i].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
+                .mul(
+                  Web3.utils.toBN(allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
+                  ])
+                )
+                .div(
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                    )
+                );
             }
 
-            // Sort candidates from lowest to highest makerAssetFillAmount
+            // Sort candidates from highest to lowest output per USD burned
             inputCandidates.sort((a, b) =>
-              a.makerAssetFillAmountBN.gt(b.makerAssetFillAmountBN) ? 1 : -1
+              b.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(b.takerAssetFillAmountUsdBN).gt(a.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(a.takerAssetFillAmountUsdBN)) ? 1 : -1
             );
 
             // Loop through input currency candidates until we fill the withdrawal
