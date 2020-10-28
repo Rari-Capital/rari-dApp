@@ -155,12 +155,16 @@ const AmountSelect = React.memo(
           );
 
           if (approvalReceipt?.transactionHash) {
-            notify.hash(approvalReceipt!.transactionHash);
+            notify.hash(approvalReceipt.transactionHash);
           }
 
-          if (depositReceipt?.transactionHash) {
-            notify.hash(depositReceipt!.transactionHash);
+          if (!depositReceipt) {
+            throw Error(
+              "Prices and/or slippage have changed. Please try again. If the problem persists, please contact us."
+            );
           }
+
+          notify.hash(depositReceipt.transactionHash);
 
           queryCache.refetchQueries();
         }
@@ -240,9 +244,13 @@ const AmountSelect = React.memo(
             }
           );
 
-          if (receipt?.transactionHash) {
-            notify.hash(receipt!.transactionHash);
+          if (!receipt) {
+            throw Error(
+              "Prices and/or slippage have changed. Please try again. If the problem persists, please contact us."
+            );
           }
+
+          notify.hash(receipt.transactionHash);
 
           queryCache.refetchQueries();
         }
