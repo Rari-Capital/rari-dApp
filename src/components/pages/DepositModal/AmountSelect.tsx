@@ -159,7 +159,7 @@ const AmountSelect = React.memo(
           }
 
           if (!depositReceipt) {
-            throw Error(
+            throw new Error(
               "Prices and/or slippage have changed. Please reload and try again. If the problem persists, please contact us."
             );
           }
@@ -245,7 +245,7 @@ const AmountSelect = React.memo(
           );
 
           if (!receipt) {
-            throw Error(
+            throw new Error(
               "Prices and/or slippage have changed. Please reload and try again. If the problem persists, please contact us."
             );
           }
