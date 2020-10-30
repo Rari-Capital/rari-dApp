@@ -1305,7 +1305,7 @@ export default class StablePool {
                   )).gt(usdAmountLeft)) maxInputAmountLeftBN.isubn(1);
               var inputAmountBN = Web3.utils.BN.min(maxInputAmountLeftBN, rawFundBalanceBN);
               
-              inputCandidates.push({
+              if (inputAmountBN.gt(Web3.utils.toBN(0))) inputCandidates.push({
                 currencyCode: inputCurrencyCode,
                 inputAmountBN
               });
@@ -1411,7 +1411,7 @@ export default class StablePool {
         // Deal with amountInputtedUsdBN.lt(senderUsdBalance) not being accurate better than 1 cent margin of error
         if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))) && inputCandidates.length > 0) {
           // Get orders from 0x swap API for each input currency candidate
-          for (var i = 0; i < inputCandidates.length; i++) {
+          for (var i = 0; i < inputCandidates.length; i++) if (inputCandidates[i].inputAmountBN.gt(Web3.utils.toBN(0))) {
             try {
               var [
                 orders,
