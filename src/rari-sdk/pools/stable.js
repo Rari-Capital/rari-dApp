@@ -11,7 +11,7 @@ const contractAddresses = {
   RariFundController: "0xEe7162bB5191E8EC803F7635dE9A920159F1F40C",
   RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
   RariFundToken: "0x016bf078ABcaCB987f0589a6d3BEAdD4316922B0",
-  RariFundPriceConsumer: "0x77a817077cd7Cf0c6e0d4d2c4464648FF6C3fdB8",
+  RariFundPriceConsumer: "0xFE98A52bCAcC86432E7aa76376751DcFAB202244",
   RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e"
 };
 
@@ -913,13 +913,14 @@ export default class StablePool {
                     continue;
                   }
 
-                  if (
-                    !maxSwap ||
-                    !maxSwap["0"] ||
-                    amount.gt(Web3.utils.toBN(maxSwap["2"]))
-                  )
-                    continue;
-                  mStableOutputAmountAfterFeeBN = Web3.utils.toBN(maxSwap["3"]);
+                  if (!maxSwap || !maxSwap["0"] || amount.gt(Web3.utils.toBN(maxSwap["2"]))) continue;
+                  var outputAmountBeforeFeesBN = amount.mul(Web3.utils.toBN(10 ** self.internalTokens[acceptedCurrency].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals));
+    
+                  if (acceptedCurrency === "mUSD") mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
+                  else {
+                    var swapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(swapFeeBN).div(Web3.utils.toBN(1e18)));
+                  }
                 }
 
                 mStableOutputCurrency = acceptedCurrency;
@@ -1318,11 +1319,11 @@ export default class StablePool {
         ); */
 
         // mStable
-        var mStableSwapFeeBN = null;
-
         if (
           ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
-        )
+        ) {
+          var mStableSwapFeeBN = null;
+
           for (var i = 0; i < inputCandidates.length; i++) {
             if (
               ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
@@ -1331,29 +1332,55 @@ export default class StablePool {
             )
               continue;
 
-            // Get swap fee and calculate input amount needed to fill output amount
-            if (currencyCode !== "mUSD" && mStableSwapFeeBN === null)
-              mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
-            var outputAmountBeforeFeesBN = inputCandidates[i].inputAmountBN
-              .mul(Web3.utils.toBN(10 ** allTokens[currencyCode].decimals))
-              .div(
-                Web3.utils.toBN(
-                  10 **
-                    self.internalTokens[inputCandidates[i].currencyCode]
-                      .decimals
-                )
+            var mStableInputAmountBN = inputCandidates[i].inputAmountBN;
+            var mStableOutputAmountAfterFeesBN = Web3.utils.toBN(0);
+
+            // Check max swap/redeem validity
+            if (inputCandidates[i].currencyCode === "mUSD") {
+              try {
+                var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                  .getRedeemValidity(
+                    "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+                    mStableInputAmountBN,
+                    self.internalTokens[currencyCode].address
+                  )
+                  .call();
+              } catch (err) {
+                console.error("Failed to check mUSD redeem validity:", err);
+                continue;
+              }
+
+              if (!redeemValidity || !redeemValidity["0"]) continue;
+              mStableOutputAmountAfterFeesBN = Web3.utils.toBN(
+                redeemValidity["2"]
               );
-            var outputAmountBN =
-              currencyCode === "mUSD"
-                ? outputAmountBeforeFeesBN
-                : outputAmountBeforeFeesBN.sub(
-                    outputAmountBeforeFeesBN
-                      .mul(mStableSwapFeeBN)
-                      .div(Web3.utils.toBN(1e18))
-                  );
+            } else {
+              try {
+                var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                  .getMaxSwap(
+                    "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+                    self.internalTokens[inputCandidates[i].currencyCode].address,
+                    self.internalTokens[currencyCode].address
+                  )
+                  .call();
+              } catch (err) {
+                console.error("Failed to check mUSD max swap:", err);
+                continue;
+              }
+
+              if (!maxSwap || !maxSwap["0"] || Web3.utils.toBN(maxSwap["2"]).lte(Web3.utils.toBN(0))) continue;
+              mStableInputAmountBN = Web3.utils.BN.min(mStableInputAmountBN, Web3.utils.toBN(maxSwap["2"]));
+              var outputAmountBeforeFeesBN = mStableInputAmountBN.mul(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[inputCandidates[i].currencyCode].decimals));
+
+              if (currencyCode === "mUSD") mStableOutputAmountAfterFeesBN = outputAmountBeforeFeesBN;
+              else {
+                if (mStableSwapFeeBN === null) mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
+                mStableOutputAmountAfterFeesBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(mStableSwapFeeBN).div(Web3.utils.toBN(1e18)));
+              }
+            }
 
             amountInputtedUsdBN.iadd(
-              inputCandidates[i].inputAmountBN
+              mStableInputAmountBN
                 .mul(
                   Web3.utils.toBN(allBalances["4"][
                     self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
@@ -1367,10 +1394,10 @@ export default class StablePool {
                     )
                 )
             );
-            amountWithdrawnBN.iadd(outputAmountBN);
+            amountWithdrawnBN.iadd(mStableOutputAmountAfterFeesBN);
 
-            // TODO: Check max mint/swap/redeem
-            inputCandidates[i].inputAmountBN.isub(inputCandidates[i].inputAmountBN);
+            // Update inputCandidates[i]
+            inputCandidates[i].inputAmountBN.isub(mStableInputAmountBN);
             if (inputCandidates[i].inputAmountBN.isZero())
               inputCandidates = inputCandidates.splice(i, 1);
 
@@ -1378,6 +1405,7 @@ export default class StablePool {
             if (amountInputtedUsdBN.gt(senderUsdBalance)) throw "Amount inputted in USD greater than sender USD fund balance";
             if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
           }
+        }
 
         // Use 0x if necessary
         // Deal with amountInputtedUsdBN.lt(senderUsdBalance) not being accurate better than 1 cent margin of error
@@ -1610,11 +1638,12 @@ export default class StablePool {
           ); */
 
           // mStable
-          var mStableSwapFeeBN = null;
 
           if (
             ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
-          )
+          ) {
+            var mStableSwapFeeBN = null;
+
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
                 ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
@@ -1702,6 +1731,40 @@ export default class StablePool {
                       );
               }
 
+              // Check max swap/redeem validity
+              if (inputCandidates[i].currencyCode === "mUSD") {
+                try {
+                  var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    .getRedeemValidity(
+                      "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+                      inputAmountBN,
+                      self.internalTokens[currencyCode].address
+                    )
+                    .call();
+                } catch (err) {
+                  console.error("Failed to check mUSD redeem validity:", err);
+                  continue;
+                }
+  
+                if (!redeemValidity || !redeemValidity["0"]) continue;
+                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw "Predicted mStable output amount and output amount returned by getRedeemValidity not equal.";
+              } else {
+                try {
+                  var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    .getMaxSwap(
+                      "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+                      self.internalTokens[inputCandidates[i].currencyCode].address,
+                      self.internalTokens[currencyCode].address
+                    )
+                    .call();
+                } catch (err) {
+                  console.error("Failed to check mUSD max swap:", err);
+                  continue;
+                }
+  
+                if (!maxSwap || !maxSwap["0"] || Web3.utils.toBN(maxSwap["2"]).lt(inputAmountBN)) continue;
+              }
+
               amountInputtedUsdBN.iadd(
                 inputAmountBN
                   .mul(
@@ -1726,6 +1789,7 @@ export default class StablePool {
               // Stop if we have filled the withdrawal
               if (amountWithdrawnBN.gte(amount)) break;
             }
+          }
 
           // Use 0x if necessary
           if (amountWithdrawnBN.lt(amount)) {
@@ -1987,11 +2051,11 @@ export default class StablePool {
           ); */
 
           // mStable
-          var mStableSwapFeeBN = null;
-
           if (
             ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
-          )
+          ) {
+            var mStableSwapFeeBN = null;
+
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
                 ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
@@ -2072,6 +2136,40 @@ export default class StablePool {
                 );
               }
 
+              // Check max swap/redeem validity
+              if (inputCandidates[i].currencyCode === "mUSD") {
+                try {
+                  var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    .getRedeemValidity(
+                      "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+                      inputAmountBN,
+                      self.internalTokens[currencyCode].address
+                    )
+                    .call();
+                } catch (err) {
+                  console.error("Failed to check mUSD redeem validity:", err);
+                  continue;
+                }
+  
+                if (!redeemValidity || !redeemValidity["0"]) continue;
+                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw "Predicted mStable output amount and output amount returned by getRedeemValidity not equal.";
+              } else {
+                try {
+                  var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    .getMaxSwap(
+                      "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
+                      self.internalTokens[inputCandidates[i].currencyCode].address,
+                      self.internalTokens[currencyCode].address
+                    )
+                    .call();
+                } catch (err) {
+                  console.error("Failed to check mUSD max swap:", err);
+                  continue;
+                }
+  
+                if (!maxSwap || !maxSwap["0"] || Web3.utils.toBN(maxSwap["2"]).lt(inputAmountBN)) continue;
+              }
+
               inputCurrencyCodes.push(inputCandidates[i].currencyCode);
               inputAmountBNs.push(inputAmountBN);
               allOrders.push([]);
@@ -2103,6 +2201,7 @@ export default class StablePool {
               // Stop if we have filled the withdrawal
               if (amountWithdrawnBN.gte(amount)) break;
             }
+          }
 
           // Use 0x if necessary
           if (amountWithdrawnBN.lt(amount)) {
