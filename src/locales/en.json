@@ -13,7 +13,7 @@
   "Want to withdraw?": "Want to withdraw?",
   "Want to deposit?": "Want to deposit?",
   "Select A Token": "Select A Token",
-  "Try searching for 'DAI'": "Try searching for 'DAI'",
+  "Try searching for 'USDC'": "Try searching for 'USDC'",
   "Whoops! Looks like something went wrong!": "Whoops! Looks like something went wrong!",
   "You can either reload the page, or report this error to us on our": "You can either reload the page, or report this error to us on our",
   "Error": "Error",
@@ -67,5 +67,6 @@
   "RGT Balance (Claimed)": "RGT Balance (Claimed)",
   "Click to learn about our performance/withdrawal fees.": "Click to learn about our performance/withdrawal fees.",
   "Extra returns from $RGT": "Extra returns from $RGT",
-  "You may experience divergence loss in this pool. Click for more info.": "You may experience divergence loss in this pool. Click for more info."
+  "You may experience divergence loss in this pool. Click for more info.": "You may experience divergence loss in this pool. Click for more info.",
+  "You cannot withdraw this much {{token}}.": "You cannot withdraw this much {{token}}."
 }

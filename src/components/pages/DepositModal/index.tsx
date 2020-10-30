@@ -6,6 +6,7 @@ import AmountSelect from "./AmountSelect";
 import OptionsMenu from "./OptionsMenu";
 import { MODAL_PROPS } from "../../shared/Modal";
 import { Pool, usePoolType } from "../../../context/PoolContext";
+import { poolHasDivergenceRisk } from "../../../utils/poolUtils";
 
 enum CurrentScreen {
   MAIN,
@@ -70,7 +71,10 @@ const DepositModal = React.memo((props: Props) => {
           <ModalContent
             {...styles}
             {...MODAL_PROPS}
-            height={{ md: "320px", xs: "350px" }}
+            height={{
+              md: poolHasDivergenceRisk(poolType) ? "320px" : "295px",
+              xs: poolHasDivergenceRisk(poolType) ? "350px" : "325px",
+            }}
           >
             {currentScreen === CurrentScreen.MAIN ? (
               <AmountSelect

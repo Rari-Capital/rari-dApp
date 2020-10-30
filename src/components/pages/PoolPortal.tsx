@@ -64,8 +64,9 @@ import { GlowingButton } from "../shared/GlowingButton";
 import { ClaimRGTModal } from "../shared/ClaimRGTModal";
 
 import { usePoolBalance } from "../../hooks/usePoolBalance";
-import { stringUsdFormatter } from "../../utils/bigUtils";
+import { BN, stringUsdFormatter } from "../../utils/bigUtils";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
+import { getSDKPool } from "../../utils/poolUtils";
 
 const millisecondsPerDay = 86400000;
 
@@ -395,24 +396,10 @@ const UserStatsAndChart = React.memo(
           ? latestBlock - blocksPerDay * 7
           : 0;
 
-      let interestRaw;
-
-      if (poolType === Pool.ETH) {
-        interestRaw = await rari.pools.ethereum.balances.interestAccruedBy(
-          address,
-          startingBlock
-        );
-      } else if (poolType === Pool.STABLE) {
-        interestRaw = await rari.pools.stable.balances.interestAccruedBy(
-          address,
-          startingBlock
-        );
-      } else {
-        interestRaw = await rari.pools.yield.balances.interestAccruedBy(
-          address,
-          startingBlock
-        );
-      }
+      const interestRaw = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).balances.interestAccruedBy(address, startingBlock);
 
       return stringUsdFormatter(rari.web3.utils.fromWei(interestRaw));
     });
@@ -429,24 +416,10 @@ const UserStatsAndChart = React.memo(
             ? Date.now() - millisecondsPerDay * 7
             : 0;
 
-        let rawData;
-
-        if (poolType === Pool.ETH) {
-          rawData = await rari.pools.ethereum.history.getBalanceHistoryOf(
-            address,
-            millisecondStart
-          );
-        } else if (poolType === Pool.STABLE) {
-          rawData = await rari.pools.stable.history.getBalanceHistoryOf(
-            address,
-            millisecondStart
-          );
-        } else {
-          rawData = await rari.pools.yield.history.getBalanceHistoryOf(
-            address,
-            millisecondStart
-          );
-        }
+        const rawData = await getSDKPool({
+          rari,
+          pool: poolType,
+        }).history.getBalanceHistoryOf(address, millisecondStart);
 
         return rawData;
       }
@@ -455,17 +428,11 @@ const UserStatsAndChart = React.memo(
     const { data: apy, isLoading: isAPYLoading } = useQuery(
       poolType + " apy",
       async () => {
-        let poolRawAPY;
+        const poolRawAPY = await getSDKPool({
+          rari,
+          pool: poolType,
+        }).apy.getCurrentRawApy();
 
-        if (poolType === Pool.ETH) {
-          poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
-        } else if (poolType === Pool.STABLE) {
-          poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
-        } else {
-          poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
-        }
-
-        //TODO; fix this this is so ugly
         const poolAPY = parseFloat(
           rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
         ).toFixed(1);
@@ -581,17 +548,11 @@ const CurrentAPY = React.memo(() => {
   const { data: apy, isLoading: isAPYLoading } = useQuery(
     poolType + " apy",
     async () => {
-      let poolRawAPY;
+      const poolRawAPY = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).apy.getCurrentRawApy();
 
-      if (poolType === Pool.ETH) {
-        poolRawAPY = await rari.pools.ethereum.apy.getCurrentRawApy();
-      } else if (poolType === Pool.STABLE) {
-        poolRawAPY = await rari.pools.stable.apy.getCurrentRawApy();
-      } else {
-        poolRawAPY = await rari.pools.yield.apy.getCurrentRawApy();
-      }
-
-      //TODO; fix this this is so ugly
       const poolAPY = parseFloat(
         rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
       ).toFixed(1);
@@ -627,33 +588,16 @@ const APYStats = React.memo(() => {
   const { data: apys, isLoading: areAPYsLoading } = useQuery(
     pool + " monthly and weekly apys",
     async () => {
-      let monthRaw;
-      let weekRaw;
+      const monthRaw: BN = await getSDKPool({
+        rari,
+        pool,
+      }).apy.getApyOverTime(Date.now() - millisecondsPerDay * 30);
 
-      if (pool === Pool.ETH) {
-        monthRaw = await rari.pools.ethereum.apy.getApyOverTime(
-          Date.now() - millisecondsPerDay * 30
-        );
-        weekRaw = await rari.pools.ethereum.apy.getApyOverTime(
-          Date.now() - millisecondsPerDay * 7
-        );
-      } else if (pool === Pool.STABLE) {
-        monthRaw = await rari.pools.stable.apy.getApyOverTime(
-          Date.now() - millisecondsPerDay * 30
-        );
-        weekRaw = await rari.pools.stable.apy.getApyOverTime(
-          Date.now() - millisecondsPerDay * 7
-        );
-      } else {
-        monthRaw = await rari.pools.yield.apy.getApyOverTime(
-          Date.now() - millisecondsPerDay * 30
-        );
-        weekRaw = await rari.pools.yield.apy.getApyOverTime(
-          Date.now() - millisecondsPerDay * 7
-        );
-      }
+      let weekRaw: BN = await getSDKPool({
+        rari,
+        pool,
+      }).apy.getApyOverTime(Date.now() - millisecondsPerDay * 7);
 
-      //TODO; fix this this is so ugly
       const month = parseFloat(
         rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
       ).toFixed(1);
@@ -738,27 +682,22 @@ const StrategyAllocation = React.memo(() => {
   const { data: allocations, isLoading: isAllocationsLoading } = useQuery(
     "allocations",
     async () => {
-      let rawAllocations: object;
-
-      if (poolType === Pool.ETH) {
-        rawAllocations = await rari.pools.ethereum.allocations.getRawPoolAllocations();
-      } else if (poolType === Pool.STABLE) {
-        rawAllocations = await rari.pools.stable.allocations.getRawPoolAllocations();
-      } else {
-        rawAllocations = await rari.pools.yield.allocations.getRawPoolAllocations();
-      }
+      const rawAllocations: { [key: string]: BN } = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).allocations.getRawPoolAllocations();
 
       let allocations: { [key: string]: number } = {};
 
-      for (const [subpool, amount] of Object.entries(rawAllocations)) {
-        if (subpool === "_cash") {
+      for (const [token, amount] of Object.entries(rawAllocations)) {
+        if (token === "_cash") {
           continue;
         }
 
-        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount as any));
+        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount));
 
         if (parsedAmount > 5) {
-          allocations[subpool] = parsedAmount;
+          allocations[token] = parsedAmount;
         }
       }
 
@@ -903,18 +842,8 @@ const TransactionHistory = React.memo(() => {
 
   const poolType = usePoolType();
 
-  let poolAddress: string;
-
-  if (poolType === Pool.ETH) {
-    //@ts-ignore
-    poolAddress = rari.pools.ethereum.contracts.RariFundToken.options.address;
-  } else if (poolType === Pool.STABLE) {
-    //@ts-ignore
-    poolAddress = rari.pools.stable.contracts.RariFundToken.options.address;
-  } else {
-    //@ts-ignore
-    poolAddress = rari.pools.yield.contracts.RariFundToken.options.address;
-  }
+  const poolAddress: string = getSDKPool({ rari, pool: poolType }).contracts //@ts-ignore
+    .RariFundToken.options.address;
 
   return (
     <Column

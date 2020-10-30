@@ -27,15 +27,15 @@ import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
 import { useRari } from "../../../context/RariContext";
 import { Pool, usePoolType } from "../../../context/PoolContext";
-import { stringUsdFormatter } from "../../../utils/bigUtils";
-import StablePool from "../../../rari-sdk/pools/stable";
-import EthereumPool from "../../../rari-sdk/pools/ethereum";
-import YieldPool from "../../../rari-sdk/pools/yield";
+import { BN, stringUsdFormatter } from "../../../utils/bigUtils";
+
 import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { useQueryCache } from "react-query";
 import { usePoolBalance } from "../../../hooks/usePoolBalance";
+import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import { useMaxWithdraw } from "../../../hooks/useMaxWithdraw";
 
 interface Props {
   selectedToken: string;
@@ -89,15 +89,66 @@ const AmountSelect = React.memo(
       [_setUserEnteredAmount, _setAmount, token.decimals]
     );
 
-    const hasEnoughToWithdrawOrDeposit = useMemo(
-      () =>
-        isSelectedTokenBalanceLoading || amount === null
-          ? false
-          : amount.gt(new BigNumber(selectedTokenBalance!.toString())),
-      [isSelectedTokenBalanceLoading, selectedTokenBalance, amount]
-    );
+    const { max, isMaxLoading } = useMaxWithdraw(token.symbol);
+
+    const amountIsValid = useMemo(() => {
+      if (amount === null || amount.isZero()) {
+        return false;
+      }
+
+      if (mode === Mode.DEPOSIT) {
+        if (isSelectedTokenBalanceLoading) {
+          return false;
+        }
+
+        return amount.lte(selectedTokenBalance!.toString());
+      } else {
+        if (isMaxLoading) {
+          return false;
+        }
+        return amount.lte(max!.toString());
+      }
+    }, [
+      isSelectedTokenBalanceLoading,
+      selectedTokenBalance,
+      amount,
+      isMaxLoading,
+      max,
+      mode,
+    ]);
 
     const { t } = useTranslation();
+
+    let depositOrWithdrawAlert;
+
+    if (amount === null) {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("Enter a valid amount to deposit.")
+          : t("Enter a valid amount to withdraw.");
+    } else if (amount.isZero()) {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("Choose which crypto you want to deposit.")
+          : t("Choose which crypto you want to withdraw.");
+    } else if (isSelectedTokenBalanceLoading) {
+      depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
+        token: selectedToken,
+      });
+    } else if (!amountIsValid) {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("You don't have enough {{token}}.", {
+              token: selectedToken,
+            })
+          : t("You cannot withdraw this much {{token}}.", {
+              token: selectedToken,
+            });
+    } else {
+      depositOrWithdrawAlert = t(
+        "Click to learn about our performance/withdrawal fees."
+      );
+    }
 
     const toast = useToast();
 
@@ -105,15 +156,7 @@ const AmountSelect = React.memo(
 
     const onDeposit = useCallback(async () => {
       try {
-        let pool: StablePool | EthereumPool | YieldPool;
-
-        if (poolType === Pool.ETH) {
-          pool = rari.pools.ethereum;
-        } else if (poolType === Pool.STABLE) {
-          pool = rari.pools.stable;
-        } else {
-          pool = rari.pools.yield;
-        }
+        const pool = getSDKPool({ rari, pool: poolType });
 
         //@ts-ignore
         const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
@@ -186,29 +229,11 @@ const AmountSelect = React.memo(
       }
 
       setAreTransactionsRunning(false);
-    }, [
-      address,
-      poolType,
-      rari.pools,
-      rari.web3.utils,
-      token,
-      amount,
-      t,
-      toast,
-      queryCache,
-    ]);
+    }, [address, poolType, rari, token, amount, t, toast, queryCache]);
 
     const onWithdraw = useCallback(async () => {
       try {
-        let pool: StablePool | EthereumPool | YieldPool;
-
-        if (poolType === Pool.ETH) {
-          pool = rari.pools.ethereum;
-        } else if (poolType === Pool.STABLE) {
-          pool = rari.pools.stable;
-        } else {
-          pool = rari.pools.yield;
-        }
+        const pool = getSDKPool({ rari, pool: poolType });
 
         //@ts-ignore
         const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
@@ -272,43 +297,7 @@ const AmountSelect = React.memo(
       }
 
       setAreTransactionsRunning(false);
-    }, [
-      address,
-      poolType,
-      rari.pools,
-      rari.web3.utils,
-      token,
-      amount,
-      t,
-      toast,
-      queryCache,
-    ]);
-
-    let depositOrWithdrawAlert;
-
-    if (amount === null) {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("Enter a valid amount to deposit.")
-          : t("Enter a valid amount to withdraw.");
-    } else if (!amount.gt(0)) {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("Choose which crypto you want to deposit.")
-          : t("Choose which crypto you want to withdraw.");
-    } else if (isSelectedTokenBalanceLoading) {
-      depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
-        token: selectedToken,
-      });
-    } else if (hasEnoughToWithdrawOrDeposit && mode === Mode.DEPOSIT) {
-      depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
-        token: selectedToken,
-      });
-    } else {
-      depositOrWithdrawAlert = t(
-        "Click to learn about our performance/withdrawal fees."
-      );
-    }
+    }, [address, poolType, rari, token, amount, t, toast, queryCache]);
 
     return (
       <>
@@ -381,16 +370,12 @@ const AmountSelect = React.memo(
             color={token.overlayTextColor}
             isLoading={isSelectedTokenBalanceLoading || areTransactionsRunning}
             onClick={mode === Mode.DEPOSIT ? onDeposit : onWithdraw}
-            isDisabled={
-              amount === null ||
-              !amount.gt(0) ||
-              (hasEnoughToWithdrawOrDeposit && mode === Mode.DEPOSIT)
-            }
+            isDisabled={!amountIsValid}
           >
             {t("Confirm")}
           </Button>
 
-          {poolType !== Pool.ETH ? (
+          {poolHasDivergenceRisk(poolType) ? (
             <Link
               href="https://www.notion.so/Capital-Allocation-Risks-f4bccf324a594f46b849e6358e0a2464#631d223f598b42e28f9758541c1b1525"
               isExternal
@@ -442,32 +427,26 @@ const TokenNameAndMaxButton = React.memo(
     const setToMax = useCallback(async () => {
       _setIsMaxLoading(true);
 
+      let maxBN: BN;
+
       if (mode === Mode.DEPOSIT) {
         const balance = await getTokenBalance(token, rari, address);
 
-        updateAmount(
-          new BigNumber(balance.toString()).div(10 ** token.decimals).toString()
-        );
-      } else if (mode === Mode.WITHDRAW) {
-        let pool: StablePool | EthereumPool | YieldPool;
-
-        if (poolType === Pool.ETH) {
-          pool = rari.pools.ethereum;
-        } else if (poolType === Pool.STABLE) {
-          pool = rari.pools.stable;
-        } else {
-          pool = rari.pools.yield;
-        }
+        maxBN = balance;
+      } else {
+        const pool = getSDKPool({ rari, pool: poolType });
 
         const [amount] = await pool.withdrawals.getMaxWithdrawalAmount(
           token.symbol,
           balanceData!.bigBalance
         );
 
-        updateAmount(
-          new BigNumber(amount.toString()).div(10 ** token.decimals).toString()
-        );
+        maxBN = amount;
       }
+
+      updateAmount(
+        new BigNumber(maxBN.toString()).div(10 ** token.decimals).toString()
+      );
 
       _setIsMaxLoading(false);
     }, [

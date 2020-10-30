@@ -29,6 +29,7 @@ import { Pool, usePoolType } from "../../../context/PoolContext";
 import { useRari } from "../../../context/RariContext";
 import { useQuery } from "react-query";
 import { Mode } from ".";
+import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
 
 const TokenSelect = React.memo(
   ({
@@ -77,14 +78,15 @@ const TokenSelect = React.memo(
       data: noSlippageCurrencies,
       isLoading: isNoSlippageCurrenciesLoading,
     } = useQuery(pool + " noSlippageCurrencies", async () => {
-      let noSlippageCurrencies;
+      let noSlippageCurrencies: string[];
 
-      if (pool === Pool.STABLE) {
-        noSlippageCurrencies = await rari.pools.stable.deposits.getDirectDepositCurrencies();
-      } else if (pool === Pool.YIELD) {
-        noSlippageCurrencies = await rari.pools.yield.deposits.getDirectDepositCurrencies();
-      } else {
+      if (pool === Pool.ETH) {
         noSlippageCurrencies = ["ETH"];
+      } else {
+        noSlippageCurrencies = await getSDKPool({
+          rari,
+          pool,
+        }).deposits.getDirectDepositCurrencies();
       }
 
       if (noSlippageCurrencies.length === 0) {
@@ -111,7 +113,7 @@ const TokenSelect = React.memo(
           <Input
             variant="flushed"
             roundedLeft="0"
-            placeholder={t("Try searching for 'DAI'")}
+            placeholder={t("Try searching for 'USDC'")}
             focusBorderColor="#FFFFFF"
             value={searchNeedle}
             onChange={onSearch}
@@ -122,7 +124,7 @@ const TokenSelect = React.memo(
           <b>
             {isNoSlippageCurrenciesLoading
               ? " Loading..."
-              : noSlippageCurrencies.map((token: string, index: number) => {
+              : noSlippageCurrencies!.map((token: string, index: number) => {
                   return (
                     token +
                     (index === (noSlippageCurrencies as string[]).length - 1
@@ -137,7 +139,10 @@ const TokenSelect = React.memo(
           pt={2}
           px={DASHBOARD_BOX_SPACING.asPxString()}
           width="100%"
-          height={{ md: "180px", xs: "210px" }}
+          height={{
+            md: poolHasDivergenceRisk(poolType) ? "182px" : "157px",
+            xs: poolHasDivergenceRisk(poolType) ? "210px" : "185px",
+          }}
         >
           <TokenList mode={mode} tokenKeys={tokenKeys} onClick={onTokenClick} />
         </Box>

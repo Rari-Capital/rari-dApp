@@ -48,6 +48,7 @@ import {
 } from "../shared/MovingStat";
 import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
 import { usePoolBalance } from "../../hooks/usePoolBalance";
+import { getSDKPool } from "../../utils/poolUtils";
 
 const useTVL = () => {
   const { rari } = useRari();
@@ -419,15 +420,10 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
   const { data: apy, isLoading: isAPYLoading } = useQuery(
     pool + " apy",
     async () => {
-      let poolRawAPYPromise;
-
-      if (pool === Pool.ETH) {
-        poolRawAPYPromise = rari.pools.ethereum.apy.getCurrentRawApy();
-      } else if (pool === Pool.STABLE) {
-        poolRawAPYPromise = rari.pools.stable.apy.getCurrentRawApy();
-      } else {
-        poolRawAPYPromise = rari.pools.yield.apy.getCurrentRawApy();
-      }
+      const poolRawAPYPromise = getSDKPool({
+        rari,
+        pool,
+      }).apy.getCurrentRawApy();
 
       const [poolRawAPY, blockNumber, tvl] = await Promise.all([
         poolRawAPYPromise,

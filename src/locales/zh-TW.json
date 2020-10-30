@@ -13,7 +13,7 @@
   "Want to withdraw?": "要退出嗎？",
   "Want to deposit?": "要存款嗎？",
   "Select A Token": "選擇一個令牌",
-  "Try searching for 'DAI'": "嘗試搜索“ DAI”",
+  "Try searching for 'USDC'": "嘗試搜索“ USDC”",
   "Whoops! Looks like something went wrong!": "哎呀！ 好像出了點問題！",
   "You can either reload the page, or report this error to us on our": "您可以重新加載頁面，也可以在我們的頁面上向我們報告此錯誤",
   "Error": "錯誤",
@@ -67,5 +67,6 @@
   "RGT Balance (Claimed)": "RGT餘額（已聲明）",
   "Click to learn about our performance/withdrawal fees.": "單擊以了解您的性能/取款費用。",
   "Extra returns from $RGT": "$ RGT帶來的額外收益",
-  "You may experience divergence loss in this pool. Click for more info.": "您可能會在此池中遇到發散損失。 單擊以獲取更多信息。"
+  "You may experience divergence loss in this pool. Click for more info.": "您可能會在此池中遇到發散損失。 單擊以獲取更多信息。",
+  "You cannot withdraw this much {{token}}.": "{{token}}不能抽出這麼多錢。"
 }

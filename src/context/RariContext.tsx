@@ -158,8 +158,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         setAddress(addresses[0]);
       });
 
-      rariInstance.web3.eth.net.getId().then((id) => {
-        if (id !== 1) {
+      Promise.all([
+        rariInstance.web3.eth.net.getId(),
+        rariInstance.web3.eth.getChainId(),
+      ]).then(([netId, chainId]) => {
+        if (netId !== 1 || chainId !== 1) {
           toast({
             title: "Wrong network!",
             description:

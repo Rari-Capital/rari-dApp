@@ -1,3 +1,5 @@
+import Web3 from "web3";
+
 const formatter = Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -11,3 +13,7 @@ export function stringUsdFormatter(num: string) {
 export function usdFormatter(num: number) {
   return formatter.format(num);
 }
+
+const toBN = Web3.utils.toBN;
+
+export type BN = ReturnType<typeof toBN>;
