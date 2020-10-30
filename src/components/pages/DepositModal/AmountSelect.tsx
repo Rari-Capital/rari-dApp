@@ -62,7 +62,7 @@ const AmountSelect = React.memo(
 
     const [areTransactionsRunning, setAreTransactionsRunning] = useState(false);
 
-    const [userEnteredAmount, _setUserEnteredAmount] = useState("0.0");
+    const [userEnteredAmount, _setUserEnteredAmount] = useState("");
 
     const [amount, _setAmount] = useState<BigNumber | null>(
       () => new BigNumber(0)
@@ -109,6 +109,7 @@ const AmountSelect = React.memo(
         if (isMaxLoading) {
           return false;
         }
+
         return amount.lte(max!.toString());
       }
     }, [
@@ -515,6 +516,7 @@ const AmountInput = React.memo(
         fontSize="3xl"
         fontWeight="bold"
         variant="unstyled"
+        _placeholder={{ color: token.color }}
         placeholder="0.0"
         value={displayAmount}
         color={token.color}
