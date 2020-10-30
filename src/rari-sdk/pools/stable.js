@@ -1398,8 +1398,7 @@ export default class StablePool {
 
             // Update inputCandidates[i]
             inputCandidates[i].inputAmountBN.isub(mStableInputAmountBN);
-            if (inputCandidates[i].inputAmountBN.isZero())
-              inputCandidates = inputCandidates.splice(i, 1);
+            if (inputCandidates[i].inputAmountBN.isZero()) inputCandidates.splice(i, 1);
 
             // Stop if we have filled the USD amount
             if (amountInputtedUsdBN.gt(senderUsdBalance)) throw "Amount inputted in USD greater than sender USD fund balance";
@@ -1411,7 +1410,7 @@ export default class StablePool {
         // Deal with amountInputtedUsdBN.lt(senderUsdBalance) not being accurate better than 1 cent margin of error
         if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))) && inputCandidates.length > 0) {
           // Get orders from 0x swap API for each input currency candidate
-          for (var i = 0; i < inputCandidates.length; i++) if (inputCandidates[i].inputAmountBN.gt(Web3.utils.toBN(0))) {
+          for (var i = 0; i < inputCandidates.length; i++) {
             try {
               var [
                 orders,
@@ -1783,8 +1782,7 @@ export default class StablePool {
               amountWithdrawnBN.iadd(outputAmountBN);
 
               inputCandidates[i].rawFundBalanceBN.isub(inputAmountBN);
-              if (inputCandidates[i].rawFundBalanceBN.isZero())
-                inputCandidates = inputCandidates.splice(i, 1);
+              if (inputCandidates[i].rawFundBalanceBN.isZero()) inputCandidates.splice(i, 1);
 
               // Stop if we have filled the withdrawal
               if (amountWithdrawnBN.gte(amount)) break;
@@ -2195,8 +2193,7 @@ export default class StablePool {
               amountWithdrawnBN.iadd(outputAmountBN);
 
               inputCandidates[i].rawFundBalanceBN.isub(inputAmountBN);
-              if (inputCandidates[i].rawFundBalanceBN.isZero())
-                inputCandidates = inputCandidates.splice(i, 1);
+              if (inputCandidates[i].rawFundBalanceBN.isZero()) inputCandidates.splice(i, 1);
 
               // Stop if we have filled the withdrawal
               if (amountWithdrawnBN.gte(amount)) break;
