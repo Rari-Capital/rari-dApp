@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo, useEffect } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import { Row, Column } from "buttered-chakra";
 
 import {
@@ -18,7 +18,7 @@ import { tokens } from "../../../utils/tokenUtils";
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
 import {
   useTokenBalance,
-  getTokenBalance,
+  fetchTokenBalance,
 } from "../../../hooks/useTokenBalance";
 
 import { Mode } from ".";
@@ -33,9 +33,12 @@ import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { useQueryCache } from "react-query";
-import { usePoolBalance } from "../../../hooks/usePoolBalance";
+
 import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
-import { useMaxWithdraw } from "../../../hooks/useMaxWithdraw";
+import {
+  fetchMaxWithdraw,
+  useMaxWithdraw,
+} from "../../../hooks/useMaxWithdraw";
 
 interface Props {
   selectedToken: string;
@@ -413,52 +416,33 @@ const TokenNameAndMaxButton = React.memo(
 
     const poolType = usePoolType();
 
-    const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
-
-    const [isMaxLoading, _setIsMaxLoading] = useState(false);
-
-    useEffect(() => {
-      // Make the max button load if the pool balance is loading
-      if (!isMaxLoading) {
-        _setIsMaxLoading(isPoolBalanceLoading);
-      }
-    }, [isMaxLoading, isPoolBalanceLoading]);
+    const [isMaxLoading, setIsMaxLoading] = useState(false);
 
     const setToMax = useCallback(async () => {
-      _setIsMaxLoading(true);
-
+      setIsMaxLoading(true);
       let maxBN: BN;
 
       if (mode === Mode.DEPOSIT) {
-        const balance = await getTokenBalance(token, rari, address);
+        const balance = await fetchTokenBalance(token, rari, address);
 
         maxBN = balance;
       } else {
-        const pool = getSDKPool({ rari, pool: poolType });
+        const max = await fetchMaxWithdraw({
+          rari,
+          address,
+          poolType,
+          symbol: token.symbol,
+        });
 
-        const [amount] = await pool.withdrawals.getMaxWithdrawalAmount(
-          token.symbol,
-          balanceData!.bigBalance
-        );
-
-        maxBN = amount;
+        maxBN = max;
       }
 
       updateAmount(
         new BigNumber(maxBN.toString()).div(10 ** token.decimals).toString()
       );
 
-      _setIsMaxLoading(false);
-    }, [
-      _setIsMaxLoading,
-      updateAmount,
-      token,
-      rari,
-      address,
-      balanceData,
-      mode,
-      poolType,
-    ]);
+      setIsMaxLoading(false);
+    }, [updateAmount, token, rari, address, mode, poolType]);
 
     const { t } = useTranslation();
 

@@ -1184,7 +1184,7 @@ export default class StablePool {
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
           throw "Invalid currency code!";
         if (!senderUsdBalance || senderUsdBalance.lte(Web3.utils.toBN(0)))
-          throw "Sender USD balance must be greater than 0!";
+          return [Web3.utils.toBN(0)];
 
         // Get user fund balance
         if (senderUsdBalance === undefined) senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());

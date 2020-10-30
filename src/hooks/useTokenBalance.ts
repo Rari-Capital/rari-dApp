@@ -4,7 +4,7 @@ import { Token } from "rari-tokens-generator";
 import { useRari } from "../context/RariContext";
 import Rari from "../rari-sdk/index";
 
-export const getTokenBalance = async (
+export const fetchTokenBalance = async (
   token: Token,
   rari: Rari,
   address: string
@@ -28,6 +28,6 @@ export function useTokenBalance(token: Token) {
   const { rari, address } = useRari();
 
   return useQuery(address + " balanceOf " + token.symbol, () =>
-    getTokenBalance(token, rari, address)
+    fetchTokenBalance(token, rari, address)
   );
 }
