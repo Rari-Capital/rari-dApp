@@ -135,6 +135,28 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
+  // Check the user's network:
+  useEffect(() => {
+    Promise.all([rari.web3.eth.net.getId(), rari.web3.eth.getChainId()]).then(
+      ([netId, chainId]) => {
+        console.log("Network ID: " + netId, "Chain ID: " + chainId);
+        if (netId !== 1 || chainId !== 1) {
+          setTimeout(() => {
+            toast({
+              title: "Wrong network!",
+              description:
+                "You are on the wrong network! Switch to the mainnet and reload this page!",
+              status: "warning",
+              position: "top-right",
+              duration: 300000,
+              isClosable: true,
+            });
+          }, 1500);
+        }
+      }
+    );
+  }, [rari]);
+
   const [address, setAddress] = useState<string>(EmptyAddress);
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
@@ -156,23 +178,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
           window.location.reload();
         }
         setAddress(addresses[0]);
-      });
-
-      Promise.all([
-        rariInstance.web3.eth.net.getId(),
-        rariInstance.web3.eth.getChainId(),
-      ]).then(([netId, chainId]) => {
-        if (netId !== 1 || chainId !== 1) {
-          toast({
-            title: "Wrong network!",
-            description:
-              "You are on the wrong network! Switch to the mainnet and reload this page!",
-            status: "warning",
-            position: "top-right",
-            duration: 300000,
-            isClosable: true,
-          });
-        }
       });
     },
     [setRari, setAddress, toast]
