@@ -24,7 +24,10 @@ export const get0xSwapOrders = function (
     }
 
     if (!decoded) return reject("Failed to decode quote from 0x swap API");
-    if (!decoded.orders) return reject("No orders found on 0x swap API");
+    if (!decoded.orders) {
+      if (decoded.validationErrors && decoded.validationErrors[0].reason === "INSUFFICIENT_ASSET_LIQUIDITY") return reject("Insufficient liquidity");
+      else return reject("No orders found on 0x swap API");
+    }
 
     decoded.orders.sort((a, b) =>
       a.makerAssetAmount / (a.takerAssetAmount + a.takerFee) <

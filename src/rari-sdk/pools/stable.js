@@ -1427,6 +1427,7 @@ export default class StablePool {
                 inputCandidates[i].inputAmountBN
               );
             } catch (err) {
+              if (err === "Insufficient liquidity") continue;
               throw new Error("Failed to get swap orders from 0x API: " + err);
             }
 
@@ -1806,6 +1807,7 @@ export default class StablePool {
                   amount.sub(amountWithdrawnBN)
                 );
               } catch (err) {
+                if (err === "Insufficient liquidity") continue;
                 throw new Error("Failed to get swap orders from 0x API: " + err);
               }
 
@@ -2217,6 +2219,7 @@ export default class StablePool {
                   amount.sub(amountWithdrawnBN)
                 );
               } catch (err) {
+                if (err === "Insufficient liquidity") continue;
                 throw new Error("Failed to get swap orders from 0x API: " + err);
               }
 
