@@ -45,18 +45,6 @@ const TokenSelect = React.memo(
 
     const poolType = usePoolType();
 
-    const tokenKeys = useMemo(() => {
-      if (poolType === Pool.ETH) {
-        return ["ETH"];
-      }
-
-      return searchNeedle === ""
-        ? Object.keys(tokens)
-        : Object.keys(tokens).filter((symbol) =>
-            symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
-          );
-    }, [searchNeedle, poolType]);
-
     const onSearch = useCallback(
       (event: any) => setSearchNeedle(event.target.value),
       [setSearchNeedle]
@@ -95,6 +83,38 @@ const TokenSelect = React.memo(
 
       return noSlippageCurrencies;
     });
+
+    const tokenKeys = useMemo(() => {
+      if (poolType === Pool.ETH) {
+        return ["ETH"];
+      }
+
+      return searchNeedle === ""
+        ? Object.keys(tokens).sort((a, b) => {
+            // First items shown last, last items shown at the top!
+            const priorityCurrencies = [
+              "sUSD",
+              "WETH",
+              "ETH",
+              "DAI",
+              "mUSD",
+              "USDT",
+              "USDC",
+            ];
+
+            if (priorityCurrencies.indexOf(a) < priorityCurrencies.indexOf(b)) {
+              return 1;
+            }
+            if (priorityCurrencies.indexOf(a) > priorityCurrencies.indexOf(b)) {
+              return -1;
+            }
+
+            return 0;
+          })
+        : Object.keys(tokens).filter((symbol) =>
+            symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
+          );
+    }, [searchNeedle, poolType]);
 
     const { t } = useTranslation();
 
@@ -232,17 +252,13 @@ const TokenList = React.memo(
     onClick: (symbol: string) => any;
     mode: Mode;
   }) => {
-    const sortedKeys = useMemo(() => {
-      return [...tokenKeys].sort(Intl.Collator().compare);
-    }, [tokenKeys]);
-
     const itemData = useMemo(
       () => ({
-        tokenKeys: sortedKeys,
+        tokenKeys,
         onClick,
         mode,
       }),
-      [sortedKeys, onClick, mode]
+      [tokenKeys, onClick, mode]
     );
 
     const getItemKey = useCallback<ListItemKeySelector>(
@@ -257,7 +273,7 @@ const TokenList = React.memo(
             <List
               height={height}
               width={width}
-              itemCount={sortedKeys.length}
+              itemCount={tokenKeys.length}
               itemKey={getItemKey}
               itemSize={55}
               itemData={itemData}
