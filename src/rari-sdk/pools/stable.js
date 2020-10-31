@@ -175,11 +175,11 @@ export default class StablePool {
               ).data
             );
           } catch (error) {
-            throw "Error in Rari API: " + error;
+            throw new Error("Error in Rari API: " + error);
           }
       },
       balanceOf: async function (account) {
-        if (!account) throw "No account specified";
+        if (!account) throw new Error("No account specified");
         return Web3.utils.toBN(
           await self.contracts.RariFundManager.methods.balanceOf(account).call()
         );
@@ -189,7 +189,7 @@ export default class StablePool {
         fromBlock = 0,
         toBlock = "latest"
       ) {
-        if (!account) throw "No account specified";
+        if (!account) throw new Error("No account specified");
         if (!fromBlock) fromBlock = 0;
         if (toBlock === undefined) toBlock = "latest";
 
@@ -202,19 +202,19 @@ export default class StablePool {
             ).data
           );
         } catch (error) {
-          throw "Error in Rari API: " + error;
+          throw new Error("Error in Rari API: " + error);
         }
       },
       transfer: async function (recipient, amount, options) {
-        if (!recipient) throw "No recipient specified.";
+        if (!recipient) throw new Error("No recipient specified.");
         if (
           !amount ||
           !Web3.utils.BN.isBN(amount) ||
           !amount.gt(Web3.utils.toBN(0))
         )
-          throw "Amount is not a valid BN instance greater than 0.";
+          throw new Error("Amount is not a valid BN instance greater than 0.");
         if (!options || !options.from)
-          throw "Options parameter not set or from address not set.";
+          throw new Error("Options parameter not set or from address not set.");
 
         var fundBalanceBN = Web3.utils.toBN(
           await self.contracts.RariFundManager.methods.getFundBalance().call()
@@ -535,7 +535,7 @@ export default class StablePool {
             })
           ).data;
         } catch (error) {
-          throw "Error in Rari API: " + error;
+          throw new Error("Error in Rari API: " + error);
         }
       },
     };
@@ -567,26 +567,26 @@ export default class StablePool {
       },
       validateDeposit: async function (currencyCode, amount, sender) {
         // Input validation
-        if (!sender) throw "Sender parameter not set.";
+        if (!sender) throw new Error("Sender parameter not set.");
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
-          throw "Invalid currency code!";
+          throw new Error("Invalid currency code!");
         if (!amount || amount.lte(Web3.utils.toBN(0)))
-          throw "Deposit amount must be greater than 0!";
+          throw new Error("Deposit amount must be greater than 0!");
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
             ? self.web3.eth.getBalance(sender)
             : allTokens[currencyCode].contract.methods.balanceOf(sender).call())
         );
         if (amount.gt(accountBalanceBN))
-          throw "Not enough balance in your account to make a deposit of this amount.";
+          throw new Error("Not enough balance in your account to make a deposit of this amount.");
 
         // Check if currency is directly depositable
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
         if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
-          throw "No directly depositable currencies found.";
+          throw new Error("No directly depositable currencies found.");
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
           // Get USD amount added to sender's fund balance
@@ -719,7 +719,7 @@ export default class StablePool {
                 amount
               );
             } catch (err) {
-              throw "Failed to get swap orders from 0x API: " + err;
+              throw new Error("Failed to get swap orders from 0x API: " + err);
             }
 
             // Get USD amount added to sender's fund balance
@@ -746,7 +746,7 @@ export default class StablePool {
 
             // Make sure input amount is completely filled
             if (inputFilledAmountBN.lt(amount))
-              throw (
+              throw new Error(
                 "Unable to find enough liquidity to exchange " +
                 currencyCode +
                 " before depositing."
@@ -766,7 +766,7 @@ export default class StablePool {
                     : ethBalanceBN
                 )
             )
-              throw "ETH balance too low to cover 0x exchange protocol fee.";
+              throw new Error("ETH balance too low to cover 0x exchange protocol fee.");
 
             // Return makerAssetFilledAmountUsdBN and protocolFee
             return [makerAssetFilledAmountUsdBN, Web3.utils.toBN(protocolFee)];
@@ -776,26 +776,26 @@ export default class StablePool {
       deposit: async function (currencyCode, amount, minUsdAmount, options) {
         // Input validation
         if (!options || !options.from)
-          throw "Options parameter not set or from address not set.";
+          throw new Error("Options parameter not set or from address not set.");
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
-          throw "Invalid currency code!";
+          throw new Error("Invalid currency code!");
         if (!amount || amount.lte(Web3.utils.toBN(0)))
-          throw "Deposit amount must be greater than 0!";
+          throw new Error("Deposit amount must be greater than 0!");
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
             ? self.web3.eth.getBalance(options.from)
             : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
         );
         if (amount.gt(accountBalanceBN))
-          throw "Not enough balance in your account to make a deposit of this amount.";
+          throw new Error("Not enough balance in your account to make a deposit of this amount.");
 
         // Check if currency is directly depositable
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
         if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
-          throw "No directly depositable currencies found.";
+          throw new Error("No directly depositable currencies found.");
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
           // Get USD amount added to sender's fund balance
@@ -844,7 +844,7 @@ export default class StablePool {
                   .approve(depositContract.options.address, amount)
                   .send(options);
             } catch (err) {
-              throw (
+              throw new Error(
                 "Failed to approve tokens: " + (err.message ? err.message : err)
               );
             }
@@ -860,7 +860,7 @@ export default class StablePool {
                 return await approveAndDeposit();
               }
 
-              throw err.message ? err.message : err;
+              throw err;
             }
           };
 
@@ -972,7 +972,7 @@ export default class StablePool {
                   .approve(self.contracts.RariFundProxy.options.address, amount)
                   .send(options);
             } catch (err) {
-              throw (
+              throw new Error(
                 "Failed to approve tokens to RariFundProxy: " +
                 (err.message ? err.message : err)
               );
@@ -984,7 +984,7 @@ export default class StablePool {
                 "exchangeAndDeposit(string,uint256,string)"
               ](currencyCode, amount, mStableOutputCurrency).send(options);
             } catch (err) {
-              throw (
+              throw new Error(
                 "RariFundProxy.exchangeAndDeposit failed: " +
                 (err.message ? err.message : err)
               );
@@ -1018,7 +1018,7 @@ export default class StablePool {
                 amount
               );
             } catch (err) {
-              throw "Failed to get swap orders from 0x API: " + err;
+              throw new Error("Failed to get swap orders from 0x API: " + err);
             }
 
             // Get USD amount added to sender's fund balance
@@ -1045,7 +1045,7 @@ export default class StablePool {
 
             // Make sure input amount is completely filled
             if (inputFilledAmountBN.lt(amount))
-              throw (
+              throw new Error(
                 "Unable to find enough liquidity to exchange " +
                 currencyCode +
                 " before depositing."
@@ -1065,7 +1065,7 @@ export default class StablePool {
                     : ethBalanceBN
                 )
             )
-              throw "ETH balance too low to cover 0x exchange protocol fee.";
+              throw new Error("ETH balance too low to cover 0x exchange protocol fee.");
 
             // Check makerAssetFilledAmountUsdBN against minUsdAmount
             if (typeof minUsdAmount !== undefined && minUsdAmount !== null && makerAssetFilledAmountUsdBN.lt(minUsdAmount))
@@ -1092,7 +1092,7 @@ export default class StablePool {
                     )
                     .send(options);
               } catch (err) {
-                throw (
+                throw new Error(
                   "Failed to approve tokens to RariFundProxy: " +
                   (err.message ? err.message : err)
                 );
@@ -1148,7 +1148,7 @@ export default class StablePool {
                   )
                 );
             } catch (err) {
-              throw (
+              throw new Error(
                 "RariFundProxy.exchangeAndDeposit failed: " +
                 (err.message ? err.message : err)
               );
@@ -1182,7 +1182,7 @@ export default class StablePool {
       getMaxWithdrawalAmount: async function (currencyCode, senderUsdBalance) {
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
-          throw "Invalid currency code!";
+          throw new Error("Invalid currency code!");
         if (!senderUsdBalance || senderUsdBalance.lte(Web3.utils.toBN(0)))
           return [Web3.utils.toBN(0)];
 
@@ -1401,7 +1401,7 @@ export default class StablePool {
             if (inputCandidates[i].inputAmountBN.isZero()) inputCandidates.splice(i, 1);
 
             // Stop if we have filled the USD amount
-            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw "Amount inputted in USD greater than sender USD fund balance";
+            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw new Error("Amount inputted in USD greater than sender USD fund balance");
             if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
           }
         }
@@ -1427,7 +1427,7 @@ export default class StablePool {
                 inputCandidates[i].inputAmountBN
               );
             } catch (err) {
-              throw "Failed to get swap orders from 0x API: " + err;
+              throw new Error("Failed to get swap orders from 0x API: " + err);
             }
 
             inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
@@ -1533,17 +1533,13 @@ export default class StablePool {
             }
 
             // Stop if we have filled the USD amount
-            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw "Amount inputted in USD greater than sender USD fund balance";
+            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw new Error("Amount inputted in USD greater than sender USD fund balance");
             if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
           }
 
           // Make sure input amount is completely filled
           if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))))
-            throw (
-              "Unable to find enough liquidity to exchange withdrawn tokens to " +
-              currencyCode +
-              "."
-            );
+            throw new Error("Unable to find enough liquidity to exchange withdrawn tokens to " + currencyCode + ".");   
         }
 
         // Return amountWithdrawnBN and totalProtocolFeeBN
@@ -1552,9 +1548,9 @@ export default class StablePool {
       validateWithdrawal: async function (currencyCode, amount, sender) {
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
-          throw "Invalid currency code!";
+          throw new Error("Invalid currency code!");
         if (!amount || amount.lte(Web3.utils.toBN(0)))
-          throw "Withdrawal amount must be greater than 0!";
+          throw new Error("Withdrawal amount must be greater than 0!");
 
         // Check balances to find withdrawal source
         var allBalances = await self.cache.getOrUpdate(
@@ -1687,7 +1683,7 @@ export default class StablePool {
               var tries = 0;
               while (outputAmountBN.lt(amount.sub(amountWithdrawnBN))) {
                 if (tries >= 1000)
-                  throw "Failed to get increment order input amount to achieve desired output amount.";
+                  throw new Error("Failed to get increment order input amount to achieve desired output amount.");
                 inputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input amount to receive amount.sub(amountWithdrawnBN)
                 outputAmountBeforeFeesBN = inputAmountBN
                   .mul(Web3.utils.toBN(10 ** allTokens[currencyCode].decimals))
@@ -1746,7 +1742,7 @@ export default class StablePool {
                 }
   
                 if (!redeemValidity || !redeemValidity["0"]) continue;
-                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw "Predicted mStable output amount and output amount returned by getRedeemValidity not equal.";
+                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw new Error("Predicted mStable output amount and output amount returned by getRedeemValidity not equal.");
               } else {
                 try {
                   var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
@@ -1810,7 +1806,7 @@ export default class StablePool {
                   amount.sub(amountWithdrawnBN)
                 );
               } catch (err) {
-                throw "Failed to get swap orders from 0x API: " + err;
+                throw new Error("Failed to get swap orders from 0x API: " + err);
               }
 
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
@@ -1858,7 +1854,7 @@ export default class StablePool {
                     .lt(thisOutputAmountBN)
                 ) {
                   if (tries >= 1000)
-                    throw "Failed to get increment order input amount to achieve desired output amount.";
+                    throw new Error("Failed to get increment order input amount to achieve desired output amount.");
                   thisInputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input fill amount to achieve this maker asset fill amount
                   tries++;
                 }
@@ -1920,7 +1916,7 @@ export default class StablePool {
 
             // Make sure input amount is completely filled
             if (amountWithdrawnBN.lt(amount))
-              throw (
+              throw new Error(
                 "Unable to find enough liquidity to exchange withdrawn tokens to " +
                 currencyCode +
                 "."
@@ -1933,12 +1929,12 @@ export default class StablePool {
       },
       withdraw: async function (currencyCode, amount, maxUsdAmount, options) {
         if (!options || !options.from)
-          throw "Options parameter not set or from address not set.";
+          throw new Error("Options parameter not set or from address not set.");
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
-          throw "Invalid currency code!";
+          throw new Error("Invalid currency code!");
         if (!amount || amount.lte(Web3.utils.toBN(0)))
-          throw "Withdrawal amount must be greater than 0!";
+          throw new Error("Withdrawal amount must be greater than 0!");
 
         // Check balances to find withdrawal source
         var allBalances = await self.cache.getOrUpdate(
@@ -1980,7 +1976,7 @@ export default class StablePool {
               .withdraw(currencyCode, amount)
               .send(options);
           } catch (err) {
-            throw (
+            throw new Error(
               "RariFundManager.withdraw failed: " +
               (err.message ? err.message : err)
             );
@@ -2097,7 +2093,7 @@ export default class StablePool {
               var tries = 0;
               while (outputAmountBN.lt(amount.sub(amountWithdrawnBN))) {
                 if (tries >= 1000)
-                  throw "Failed to get increment order input amount to achieve desired output amount.";
+                  throw new Error("Failed to get increment order input amount to achieve desired output amount.");
                 inputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input amount to receive amount.sub(amountWithdrawnBN)
                 outputAmountBeforeFeesBN = inputAmountBN
                   .mul(Web3.utils.toBN(10 ** allTokens[currencyCode].decimals))
@@ -2150,7 +2146,7 @@ export default class StablePool {
                 }
   
                 if (!redeemValidity || !redeemValidity["0"]) continue;
-                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw "Predicted mStable output amount and output amount returned by getRedeemValidity not equal.";
+                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw new Error("Predicted mStable output amount and output amount returned by getRedeemValidity not equal.");
               } else {
                 try {
                   var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
@@ -2221,7 +2217,7 @@ export default class StablePool {
                   amount.sub(amountWithdrawnBN)
                 );
               } catch (err) {
-                throw "Failed to get swap orders from 0x API: " + err;
+                throw new Error("Failed to get swap orders from 0x API: " + err);
               }
 
               // Build array of orders and signatures
@@ -2299,7 +2295,7 @@ export default class StablePool {
                     .lt(thisOutputAmountBN)
                 ) {
                   if (tries >= 1000)
-                    throw "Failed to get increment order input amount to achieve desired output amount.";
+                    throw new Error("Failed to get increment order input amount to achieve desired output amount.");
                   thisInputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input fill amount to achieve this maker asset fill amount
                   tries++;
                 }
@@ -2381,7 +2377,7 @@ export default class StablePool {
 
             // Make sure input amount is completely filled
             if (amountWithdrawnBN.lt(amount))
-              throw (
+              throw new Error(
                 "Unable to find enough liquidity to exchange withdrawn tokens to " +
                 currencyCode +
                 "."
@@ -2424,7 +2420,7 @@ export default class StablePool {
                 nonce: await self.web3.eth.getTransactionCount(options.from),
               });
           } catch (err) {
-            throw (
+            throw new Error(
               "RariFundProxy.withdrawAndExchange failed: " +
               (err.message ? err.message : err)
             );
@@ -2495,7 +2491,7 @@ export default class StablePool {
             })
           ).data;
         } catch (error) {
-          throw "Error in Rari API: " + error;
+          throw new Error("Error in Rari API: " + error);
         }
       },
       getTotalSupplyHistory: async function (
@@ -2516,7 +2512,7 @@ export default class StablePool {
             })
           ).data;
         } catch (error) {
-          throw "Error in Rari API: " + error;
+          throw new Error("Error in Rari API: " + error);
         }
       },
       getBalanceHistoryOf: async function (
@@ -2525,7 +2521,7 @@ export default class StablePool {
         toTimestamp,
         intervalSeconds = 86400
       ) {
-        if (!account) throw "No account specified";
+        if (!account) throw new Error("No account specified");
         if (fromTimestamp === undefined || fromTimestamp === "latest")
           fromTimestamp = Math.trunc(new Date().getTime() / 1000);
         if (toTimestamp === undefined || toTimestamp === "latest")
@@ -2539,7 +2535,7 @@ export default class StablePool {
             })
           ).data;
         } catch (error) {
-          throw "Error in Rari API: " + error;
+          throw new Error("Error in Rari API: " + error);
         }
       },
       getPoolTokenExchangeRateHistory: async function (
@@ -2565,7 +2561,7 @@ export default class StablePool {
             )
           ).data;
         } catch (error) {
-          throw "Error in Rari API: " + error;
+          throw new Error("Error in Rari API: " + error);
         }
       },
       getRsptExchangeRateHistory: this.getPoolTokenExchangeRateHistory,

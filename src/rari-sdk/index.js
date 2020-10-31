@@ -36,7 +36,7 @@ export default class Rari {
           )
         );
       } catch (error) {
-        throw "Error retrieving data from Coingecko API: " + error;
+        throw new Error("Error retrieving data from Coingecko API: " + error);
       }
     };
 
@@ -95,18 +95,46 @@ export default class Rari {
     };
 
     let subpools = {
-      "dYdX": new DydxSubpool(this.web3),
-      "Compound": new CompoundSubpool(this.web3),
-      "Aave": new AaveSubpool(this.web3),
-      "mStable": new MStableSubpool(this.web3),
-      "yVault": new YVaultSubpool(this.web3),
-      "KeeperDAO": new KeeperDAOSubpool(this.web3)
+      dYdX: new DydxSubpool(this.web3),
+      Compound: new CompoundSubpool(this.web3),
+      Aave: new AaveSubpool(this.web3),
+      mStable: new MStableSubpool(this.web3),
+      yVault: new YVaultSubpool(this.web3),
+      KeeperDAO: new KeeperDAOSubpool(this.web3),
     };
 
     this.pools = {
-      stable: new StablePool(this.web3, { "dYdX": subpools["dYdX"], "Compound": subpools["Compound"], "Aave": subpools["Aave"], "mStable": subpools["mStable"] }, this.getAllTokens),
-      yield: new YieldPool(this.web3, { "dYdX": subpools["dYdX"], "Compound": subpools["Compound"], "Aave": subpools["Aave"], "mStable": subpools["mStable"], "yVault": subpools["yVault"] }, this.getAllTokens),
-      ethereum: new EthereumPool(this.web3, { "dYdX": subpools["dYdX"], "Compound": subpools["Compound"], "KeeperDAO": subpools["KeeperDAO"], "Aave": subpools["Aave"] }, this.getAllTokens)
+      stable: new StablePool(
+        this.web3,
+        {
+          dYdX: subpools["dYdX"],
+          Compound: subpools["Compound"],
+          Aave: subpools["Aave"],
+          mStable: subpools["mStable"],
+        },
+        this.getAllTokens
+      ),
+      yield: new YieldPool(
+        this.web3,
+        {
+          dYdX: subpools["dYdX"],
+          Compound: subpools["Compound"],
+          Aave: subpools["Aave"],
+          mStable: subpools["mStable"],
+          yVault: subpools["yVault"],
+        },
+        this.getAllTokens
+      ),
+      ethereum: new EthereumPool(
+        this.web3,
+        {
+          dYdX: subpools["dYdX"],
+          Compound: subpools["Compound"],
+          KeeperDAO: subpools["KeeperDAO"],
+          Aave: subpools["Aave"],
+        },
+        this.getAllTokens
+      ),
     };
 
     this.governance = new Governance(this.web3);

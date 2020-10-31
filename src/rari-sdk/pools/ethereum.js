@@ -140,19 +140,21 @@ export default class EthereumPool extends StablePool {
       sender
     ) {
       // Input validation
-      if (!sender) throw "Sender parameter not set.";
+      if (!sender) throw new Error("Sender parameter not set.");
       var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
-        throw "Invalid currency code!";
+        throw new Error("Invalid currency code!");
       if (!amount || amount.lte(Web3.utils.toBN(0)))
-        throw "Deposit amount must be greater than 0!";
+        throw new Error("Deposit amount must be greater than 0!");
       var accountBalanceBN = Web3.utils.toBN(
         await (currencyCode == "ETH"
           ? self.web3.eth.getBalance(sender)
           : allTokens[currencyCode].contract.methods.balanceOf(sender).call())
       );
       if (amount.gt(accountBalanceBN))
-        throw "Not enough balance in your account to make a deposit of this amount.";
+        throw new Error(
+          "Not enough balance in your account to make a deposit of this amount."
+        );
 
       // Check if currency is ETH
       if (currencyCode === "ETH") {
@@ -174,12 +176,12 @@ export default class EthereumPool extends StablePool {
             amount
           );
         } catch (err) {
-          throw "Failed to get swap orders from 0x API: " + err;
+          throw new Error("Failed to get swap orders from 0x API: " + err);
         }
 
         // Make sure input amount is completely filled
         if (inputFilledAmountBN.lt(amount))
-          throw (
+          throw new Error(
             "Unable to find enough liquidity to exchange " +
             currencyCode +
             " to ETH before depositing."
@@ -188,7 +190,9 @@ export default class EthereumPool extends StablePool {
         // Make sure we have enough ETH for the protocol fee
         var ethBalanceBN = Web3.utils.toBN(await web3.eth.getBalance(sender));
         if (Web3.utils.toBN(protocolFee).gt(ethBalanceBN))
-          throw "ETH balance too low to cover 0x exchange protocol fee.";
+          throw new Error(
+            "ETH balance too low to cover 0x exchange protocol fee."
+          );
 
         // Return makerAssetFilledAmountBN and protocolFee
         return [makerAssetFilledAmountBN, Web3.utils.toBN(protocolFee)];
@@ -203,38 +207,45 @@ export default class EthereumPool extends StablePool {
     ) {
       // Input validation
       if (!options || !options.from)
-        throw "Options parameter not set or from address not set.";
+        throw new Error("Options parameter not set or from address not set.");
       var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
-        throw "Invalid currency code!";
+        throw new Error("Invalid currency code!");
       if (!amount || amount.lte(Web3.utils.toBN(0)))
-        throw "Deposit amount must be greater than 0!";
+        throw new Error("Deposit amount must be greater than 0!");
       var accountBalanceBN = Web3.utils.toBN(
         await (currencyCode == "ETH"
           ? self.web3.eth.getBalance(options.from)
-          : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
+          : allTokens[currencyCode].contract.methods
+              .balanceOf(options.from)
+              .call())
       );
       if (amount.gt(accountBalanceBN))
-        throw "Not enough balance in your account to make a deposit of this amount.";
+        throw new Error(
+          "Not enough balance in your account to make a deposit of this amount."
+        );
 
       // Check if currency is ETH
       if (currencyCode === "ETH") {
         // Input validation
         if (options.value && options.value.toString() !== amount.toString())
-          throw "Value set in options paramater but not equal to amount parameter.";
+          throw new Error(
+            "Value set in options paramater but not equal to amount parameter."
+          );
 
         // Check amountUsdBN against minEthAmount
-        if (typeof minEthAmount !== undefined && minEthAmount !== null && amount.lt(minEthAmount)) return [amount];
+        if (
+          typeof minEthAmount !== undefined &&
+          minEthAmount !== null &&
+          amount.lt(minEthAmount)
+        )
+          return [amount];
 
         // Deposit tokens to RariFundManager
-        try {
-          options.value = amount;
-          var receipt = await self.contracts.RariFundManager.methods
-            .deposit()
-            .send(options);
-        } catch (err) {
-          throw err.message ? err.message : err;
-        }
+        options.value = amount;
+        var receipt = await self.contracts.RariFundManager.methods
+          .deposit()
+          .send(options);
 
         return [amount, null, null, receipt];
       } else {
@@ -253,24 +264,32 @@ export default class EthereumPool extends StablePool {
             amount
           );
         } catch (err) {
-          throw "Failed to get swap orders from 0x API: " + err;
+          throw new Error("Failed to get swap orders from 0x API: " + err);
         }
 
         // Make sure input amount is completely filled
         if (inputFilledAmountBN.lt(amount))
-          throw (
+          throw new Error(
             "Unable to find enough liquidity to exchange " +
             currencyCode +
             " before depositing."
           );
 
         // Make sure we have enough ETH for the protocol fee
-        var ethBalanceBN = Web3.utils.toBN(await web3.eth.getBalance(options.from));
+        var ethBalanceBN = Web3.utils.toBN(
+          await web3.eth.getBalance(options.from)
+        );
         if (Web3.utils.toBN(protocolFee).gt(ethBalanceBN))
-          throw "ETH balance too low to cover 0x exchange protocol fee.";
+          throw new Error(
+            "ETH balance too low to cover 0x exchange protocol fee."
+          );
 
         // Check makerAssetFilledAmountUsdBN against minUsdAmount
-        if (typeof minEthAmount !== undefined && minEthAmount !== null && makerAssetFilledAmountBN.lt(minEthAmount))
+        if (
+          typeof minEthAmount !== undefined &&
+          minEthAmount !== null &&
+          makerAssetFilledAmountBN.lt(minEthAmount)
+        )
           return [makerAssetFilledAmountBN];
 
         // Approve tokens to RariFundProxy
@@ -288,7 +307,7 @@ export default class EthereumPool extends StablePool {
               .approve(self.contracts.RariFundProxy.options.address, amount)
               .send(options);
         } catch (err) {
-          throw (
+          throw new Error(
             "Failed to approve tokens to RariFundProxy: " +
             (err.message ? err.message : err)
           );
@@ -332,7 +351,7 @@ export default class EthereumPool extends StablePool {
               Object.assign({ value: protocolFee, gasPrice: gasPrice }, options)
             );
         } catch (err) {
-          throw (
+          throw new Error(
             "RariFundProxy.exchangeAndDeposit failed: " +
             (err.message ? err.message : err)
           );
@@ -348,15 +367,21 @@ export default class EthereumPool extends StablePool {
       }
     };
 
-    this.withdrawals.getMaxWithdrawalAmount = async function (currencyCode, senderEthBalance) {
+    this.withdrawals.getMaxWithdrawalAmount = async function (
+      currencyCode,
+      senderEthBalance
+    ) {
       var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
-        throw "Invalid currency code!";
+        throw new Error("Invalid currency code!");
       if (!senderEthBalance || senderEthBalance.lte(Web3.utils.toBN(0)))
         return [Web3.utils.toBN(0)];
 
       // Get user fund balance
-      if (senderEthBalance === undefined) senderEthBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+      if (senderEthBalance === undefined)
+        senderEthBalance = Web3.utils.toBN(
+          await self.contracts.RariFundManager.methods.balanceOf(sender).call()
+        );
 
       // If currency is ETH, return account balance
       if (currencyCode === "ETH") return [senderEthBalance];
@@ -376,20 +401,23 @@ export default class EthereumPool extends StablePool {
           senderEthBalance
         );
       } catch (err) {
-        throw "Failed to get swap orders from 0x API: " + err;
+        throw new Error("Failed to get swap orders from 0x API: " + err);
       }
 
       // If there are enough 0x orders to fulfill the rest of the withdrawal amount, withdraw and exchange
-      if (inputFilledAmountBN.lt(senderEthBalance)) throw (
+      if (inputFilledAmountBN.lt(senderEthBalance))
+        throw new Error(
           "Unable to find enough liquidity to exchange withdrawn tokens to " +
           currencyCode +
           "."
         );
 
       // Return amountWithdrawnBN and totalProtocolFeeBN
-      var amountWithdrawnBN = makerAssetFilledAmountBN.mul(senderEthBalance).div(inputFilledAmountBN);
+      var amountWithdrawnBN = makerAssetFilledAmountBN
+        .mul(senderEthBalance)
+        .div(inputFilledAmountBN);
       return [amountWithdrawnBN, Web3.utils.toBN(protocolFee)];
-    }
+    };
 
     this.withdrawals.validateWithdrawal = async function (
       currencyCode,
@@ -398,17 +426,22 @@ export default class EthereumPool extends StablePool {
     ) {
       var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
-        throw "Invalid currency code!";
+        throw new Error("Invalid currency code!");
       if (!amount || amount.lte(Web3.utils.toBN(0)))
-        throw "Withdrawal amount must be greater than 0!";
+        throw new Error("Withdrawal amount must be greater than 0!");
 
       // Get user fund balance
-      var accountBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+      var accountBalance = Web3.utils.toBN(
+        await self.contracts.RariFundManager.methods.balanceOf(sender).call()
+      );
 
       // Check if withdrawal currency is ETH
       if (currencyCode === "ETH") {
         // Check account balance
-        if (amount.gt(accountBalance)) throw "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance.";
+        if (amount.gt(accountBalance))
+          throw new Error(
+            "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance."
+          );
 
         // Return amount
         return [amount];
@@ -429,15 +462,18 @@ export default class EthereumPool extends StablePool {
             amount
           );
         } catch (err) {
-          throw "Failed to get swap orders from 0x API: " + err;
+          throw new Error("Failed to get swap orders from 0x API: " + err);
         }
 
         // Check account balance
-        if (takerAssetFilledAmountBN.gt(accountBalance)) throw "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance.";
+        if (takerAssetFilledAmountBN.gt(accountBalance))
+          throw new Error(
+            "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance."
+          );
 
         // Make sure input amount is completely filled
         if (makerAssetFilledAmountBN.lt(amount))
-          throw (
+          throw new Error(
             "Unable to find enough liquidity to exchange withdrawn ETH to " +
             currencyCode +
             "."
@@ -455,17 +491,22 @@ export default class EthereumPool extends StablePool {
       options
     ) {
       if (!options || !options.from)
-        throw "Options parameter not set or from address not set.";
+        throw new Error("Options parameter not set or from address not set.");
       var allTokens = await self.getAllTokens();
       if (currencyCode !== "ETH" && !allTokens[currencyCode])
-        throw "Invalid currency code!";
+        throw new Error("Invalid currency code!");
       if (!amount || amount.lte(Web3.utils.toBN(0)))
-        throw "Withdrawal amount must be greater than 0!";
+        throw new Error("Withdrawal amount must be greater than 0!");
 
       // Check if withdrawal currency is ETH
       if (currencyCode === "ETH") {
         // Check maxEthAmount
-        if (typeof maxEthAmount !== undefined && maxEthAmount !== null && amount.gt(maxEthAmount)) return [amount];
+        if (
+          typeof maxEthAmount !== undefined &&
+          maxEthAmount !== null &&
+          amount.gt(maxEthAmount)
+        )
+          return [amount];
 
         // If we can withdraw everything directly, do so
         try {
@@ -473,7 +514,7 @@ export default class EthereumPool extends StablePool {
             .withdraw(amount)
             .send(options);
         } catch (err) {
-          throw (
+          throw new Error(
             "RariFundManager.withdraw failed: " +
             (err.message ? err.message : err)
           );
@@ -497,7 +538,7 @@ export default class EthereumPool extends StablePool {
             amount
           );
         } catch (err) {
-          throw "Failed to get swap orders from 0x API: " + err;
+          throw new Error("Failed to get swap orders from 0x API: " + err);
         }
 
         // Build array of orders and signatures
@@ -526,14 +567,19 @@ export default class EthereumPool extends StablePool {
 
         // Make sure input amount is completely filled
         if (makerAssetFilledAmountBN.lt(amount))
-          throw (
+          throw new Error(
             "Unable to find enough liquidity to exchange withdrawn tokens to " +
             currencyCode +
             "."
           );
 
         // Check maxEthAmount
-        if (typeof maxEthAmount !== undefined && maxEthAmount !== null && inputFilledAmountBN.gt(maxEthAmount)) return [inputFilledAmountBN];
+        if (
+          typeof maxEthAmount !== undefined &&
+          maxEthAmount !== null &&
+          inputFilledAmountBN.gt(maxEthAmount)
+        )
+          return [inputFilledAmountBN];
 
         // Withdraw and exchange tokens via RariFundProxy
         try {
@@ -552,7 +598,7 @@ export default class EthereumPool extends StablePool {
               nonce: await web3.eth.getTransactionCount(options.from),
             });
         } catch (err) {
-          throw (
+          throw new Error(
             "RariFundProxy.withdrawAndExchange failed: " +
             (err.message ? err.message : err)
           );
