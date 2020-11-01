@@ -207,7 +207,7 @@ const AmountSelect = React.memo(
 
           if (!depositReceipt) {
             throw new Error(
-              "Prices and/or slippage have changed. Please reload and try again. If the problem persists, please contact us."
+              "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
             );
           }
 
@@ -219,12 +219,12 @@ const AmountSelect = React.memo(
         if (e instanceof Error) {
           LogRocket.captureException(e);
         } else {
-          LogRocket.captureException(new Error(e.toString()));
+          LogRocket.captureException(new Error(JSON.stringify(e)));
         }
 
         toast({
           title: "Error!",
-          description: e.toString(),
+          description: JSON.stringify(e),
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -275,7 +275,7 @@ const AmountSelect = React.memo(
 
           if (!receipt) {
             throw new Error(
-              "Prices and/or slippage have changed. Please reload and try again. If the problem persists, please contact us."
+              "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
             );
           }
 
@@ -287,12 +287,12 @@ const AmountSelect = React.memo(
         if (e instanceof Error) {
           LogRocket.captureException(e);
         } else {
-          LogRocket.captureException(new Error(e.toString()));
+          LogRocket.captureException(new Error(JSON.stringify(e)));
         }
 
         toast({
           title: "Error!",
-          description: e.toString(),
+          description: JSON.stringify(e),
           status: "error",
           duration: 9000,
           isClosable: true,
