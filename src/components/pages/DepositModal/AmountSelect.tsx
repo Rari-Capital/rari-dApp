@@ -216,15 +216,19 @@ const AmountSelect = React.memo(
           queryCache.refetchQueries();
         }
       } catch (e) {
+        let message: string;
+
         if (e instanceof Error) {
+          message = e.toString();
           LogRocket.captureException(e);
         } else {
-          LogRocket.captureException(new Error(JSON.stringify(e)));
+          message = JSON.stringify(e);
+          LogRocket.captureException(new Error(message));
         }
 
         toast({
           title: "Error!",
-          description: JSON.stringify(e),
+          description: message,
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -284,15 +288,19 @@ const AmountSelect = React.memo(
           queryCache.refetchQueries();
         }
       } catch (e) {
+        let message: string;
+
         if (e instanceof Error) {
+          message = e.toString();
           LogRocket.captureException(e);
         } else {
-          LogRocket.captureException(new Error(JSON.stringify(e)));
+          message = JSON.stringify(e);
+          LogRocket.captureException(new Error(message));
         }
 
         toast({
           title: "Error!",
-          description: JSON.stringify(e),
+          description: message,
           status: "error",
           duration: 9000,
           isClosable: true,
