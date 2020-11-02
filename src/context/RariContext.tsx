@@ -135,6 +135,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     }
   });
 
+  const toast = useToast();
+
   // Check the user's network:
   useEffect(() => {
     Promise.all([rari.web3.eth.net.getId(), rari.web3.eth.getChainId()]).then(
@@ -155,15 +157,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     );
-  }, [rari]);
+  }, [rari, toast]);
 
   const [address, setAddress] = useState<string>(EmptyAddress);
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
   const queryCache = useQueryCache();
-
-  const toast = useToast();
 
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
@@ -180,7 +180,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         setAddress(addresses[0]);
       });
     },
-    [setRari, setAddress, toast]
+    [setRari, setAddress]
   );
 
   const login = useCallback(async () => {
