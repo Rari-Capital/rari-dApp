@@ -1276,43 +1276,60 @@ export default class StablePool {
               rawFundBalanceBN.iadd(Web3.utils.toBN(allBalances["3"][i][j]));
 
             if (rawFundBalanceBN.gt(Web3.utils.toBN(0))) {
-              // Calculate inputAmountBN as maximum of sender USD balance left and rawFundBalanceBN
-              var usdAmountLeft = senderUsdBalance.sub(amountInputtedUsdBN);
-              var maxInputAmountLeftBN = usdAmountLeft
-                .mul(
-                  Web3.utils
-                    .toBN(10)
-                    .pow(
-                      Web3.utils.toBN(self.internalTokens[inputCurrencyCode].decimals)
-                    )
-                )
-                .div(
-                  Web3.utils.toBN(allBalances["4"][
-                    self.allocations.CURRENCIES.indexOf(inputCurrencyCode)
-                  ])
-                );
-                if ((maxInputAmountLeftBN
-                  .mul(
-                    Web3.utils.toBN(allBalances["4"][
-                      self.allocations.CURRENCIES.indexOf(inputCurrencyCode)
-                    ])
-                  )
-                  .div(
-                    Web3.utils
-                      .toBN(10)
-                      .pow(
-                        Web3.utils.toBN(self.internalTokens[inputCurrencyCode].decimals)
-                      )
-                  )).gt(usdAmountLeft)) maxInputAmountLeftBN.isubn(1);
-              var inputAmountBN = Web3.utils.BN.min(maxInputAmountLeftBN, rawFundBalanceBN);
-              
-              if (inputAmountBN.gt(Web3.utils.toBN(0))) inputCandidates.push({
+              inputCandidates.push({
                 currencyCode: inputCurrencyCode,
-                inputAmountBN
+                rawFundBalanceBN
               });
             }
           }
         }
+
+        // Calculate max inputs
+        function updateMaxInputs() {
+          var inputCandidates2 = [];
+
+          for (const inputCandidate of inputCandidates) {
+            // Calculate inputAmountBN as maximum of sender USD balance left and rawFundBalanceBN
+            var usdAmountLeft = senderUsdBalance.sub(amountInputtedUsdBN);
+            var maxInputAmountLeftBN = usdAmountLeft
+              .mul(
+                Web3.utils
+                  .toBN(10)
+                  .pow(
+                    Web3.utils.toBN(self.internalTokens[inputCandidate.currencyCode].decimals)
+                  )
+              )
+              .div(
+                Web3.utils.toBN(allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(inputCandidate.currencyCode)
+                ])
+              );
+            if ((maxInputAmountLeftBN
+              .mul(
+                Web3.utils.toBN(allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(inputCandidate.currencyCode)
+                ])
+              )
+              .div(
+                Web3.utils
+                  .toBN(10)
+                  .pow(
+                    Web3.utils.toBN(self.internalTokens[inputCandidate.currencyCode].decimals)
+                  )
+              )).gt(usdAmountLeft)) maxInputAmountLeftBN.isubn(1);
+            var inputAmountBN = Web3.utils.BN.min(maxInputAmountLeftBN, inputCandidate.rawFundBalanceBN);
+            
+            if (inputAmountBN.gt(Web3.utils.toBN(0))) inputCandidates2.push({
+              currencyCode: inputCandidate.currencyCode,
+              rawFundBalanceBN: inputCandidate.rawFundBalanceBN,
+              inputAmountBN
+            });
+          }
+
+          inputCandidates = inputCandidates2;
+        }
+
+        updateMaxInputs();
 
         // TODO: Sort candidates from lowest to highest inputAmountUsdBN (or highest to lowest inputAmountUsdBN?)
         /* inputCandidates.sort((a, b) =>
@@ -1397,9 +1414,8 @@ export default class StablePool {
             );
             amountWithdrawnBN.iadd(mStableOutputAmountAfterFeesBN);
 
-            // Update inputCandidates[i]
-            inputCandidates[i].inputAmountBN.isub(mStableInputAmountBN);
-            if (inputCandidates[i].inputAmountBN.isZero()) inputCandidates.splice(i, 1);
+            // Update inputCandidates
+            updateMaxInputs();
 
             // Stop if we have filled the USD amount
             if (amountInputtedUsdBN.gt(senderUsdBalance)) throw new Error("Amount inputted in USD greater than sender USD fund balance");
