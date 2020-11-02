@@ -823,7 +823,8 @@ export default class StablePool {
 
           // Get deposit contract
           var useGsn = /* amountUsdBN.gte(Web3.utils.toBN(250e18)) && myFundBalanceBN.isZero() */ false;
-          var approvalReceipt, receipt;
+          var approvalReceipt = null;
+          var receipt;
 
           var approveAndDeposit = async function () {
             var depositContract = useGsn
@@ -838,7 +839,7 @@ export default class StablePool {
                   .call()
               );
               if (allowanceBN.lt(amount))
-                var approvalReceipt = await allTokens[
+                approvalReceipt = await allTokens[
                   currencyCode
                 ].contract.methods
                   .approve(depositContract.options.address, amount)
@@ -851,7 +852,7 @@ export default class StablePool {
 
             // Deposit tokens to RariFundManager
             try {
-              var receipt = await depositContract.methods
+              receipt = await depositContract.methods
                 .deposit(currencyCode, amount)
                 .send(options);
             } catch (err) {
