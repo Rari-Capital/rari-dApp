@@ -1,6 +1,6 @@
 {
   "name": "rari-dapp",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "private": true,
   "dependencies": {
     "@chakra-ui/core": "^0.8.0",
