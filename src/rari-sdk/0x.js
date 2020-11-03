@@ -20,14 +20,12 @@ export const get0xSwapOrders = function (
             : "&sellAmount=" + maxInputAmountBN.toString())
       )).data;
     } catch (error) {
-      reject("Error requesting quote from 0x swap API: " + error.message);
+      if (error.response && error.response.data.validationErrors && error.response.data.validationErrors[0].reason === "INSUFFICIENT_ASSET_LIQUIDITY") return reject("Insufficient liquidity");
+      return reject("Error requesting quote from 0x swap API: " + error.message);
     }
 
     if (!decoded) return reject("Failed to decode quote from 0x swap API");
-    if (!decoded.orders) {
-      if (decoded.validationErrors && decoded.validationErrors[0].reason === "INSUFFICIENT_ASSET_LIQUIDITY") return reject("Insufficient liquidity");
-      else return reject("No orders found on 0x swap API");
-    }
+    if (!decoded.orders) return reject("No orders found on 0x swap API");
 
     decoded.orders.sort((a, b) =>
       a.makerAssetAmount / (a.takerAssetAmount + a.takerFee) <
