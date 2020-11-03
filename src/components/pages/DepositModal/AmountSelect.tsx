@@ -260,17 +260,24 @@ const AmountSelect = React.memo(
             noSlippageTokens.includes(token.symbol) &&
             amountBN.gt(allocations[token.symbol])
           ) {
-            alert(
-              `There is not enough ${
-                token.symbol
-              } in the pool to withdraw this much directly. There is a max of ${new BigNumber(
-                allocations[token.symbol].toString()
-              )
-                .div(10 ** token.decimals)
-                .toString()} ${
-                token.symbol
-              } in the pool. You can either withdraw a token with slippage or try another non slippage token the pool has more of.`
-            );
+            toast({
+              title: t("Not enough {{token}} in the pool!", {
+                token: token.symbol,
+              }),
+              description: t(
+                "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.",
+                {
+                  token: token.symbol,
+                  max: new BigNumber(allocations[token.symbol].toString())
+                    .div(10 ** token.decimals)
+                    .toFixed(2),
+                }
+              ),
+              status: "error",
+              duration: 15000,
+              isClosable: true,
+              position: "top-right",
+            });
 
             setAreTransactionsRunning(false);
             return;
