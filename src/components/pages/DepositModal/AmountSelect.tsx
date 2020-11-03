@@ -263,7 +263,7 @@ const AmountSelect = React.memo(
             alert(
               `There is not enough ${
                 token.symbol
-              } in the pool to withdraw directly. There is a max of ${new BigNumber(
+              } in the pool to withdraw this much directly. There is a max of ${new BigNumber(
                 allocations[token.symbol].toString()
               )
                 .div(10 ** token.decimals)
