@@ -70,5 +70,6 @@
   "You may experience divergence loss in this pool. Click for more info.": "You may experience divergence loss in this pool. Click for more info.",
   "You cannot withdraw this much {{token}}.": "You cannot withdraw this much {{token}}.",
   "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.": "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.",
-  "Not enough {{token}} in the pool!": "Not enough {{token}} in the pool!"
+  "Not enough {{token}} in the pool!": "Not enough {{token}} in the pool!",
+  "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us.": "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
 }
