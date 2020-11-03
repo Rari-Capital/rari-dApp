@@ -248,6 +248,37 @@ const AmountSelect = React.memo(
 
         setAreTransactionsRunning(true);
 
+        const allocations: { [key: string]: BN } = await getSDKPool({
+          rari,
+          pool: poolType,
+        }).allocations.getRawCurrencyAllocations();
+
+        const noSlippageTokens: string[] = await getSDKPool({
+          rari,
+          pool: poolType,
+        }).deposits.getDirectDepositCurrencies();
+
+        // If not enough to direct withdraw in the pool:
+        if (
+          noSlippageTokens.includes(token.symbol) &&
+          amountBN.gt(allocations[token.symbol])
+        ) {
+          alert(
+            `There is not enough ${
+              token.symbol
+            } in the pool to withdraw directly. There is a max of ${new BigNumber(
+              allocations[token.symbol].toString()
+            )
+              .div(10 ** token.decimals)
+              .toString()} ${
+              token.symbol
+            } in the pool. You can either withdraw a token with slippage or try another non slippage token the pool has more of.`
+          );
+
+          setAreTransactionsRunning(false);
+          return;
+        }
+
         const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
           token.symbol,
           amountBN,
