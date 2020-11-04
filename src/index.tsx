@@ -29,7 +29,7 @@ import ErrorBoundary from "@honeybadger-io/react";
 import { version } from "../package.json";
 export { version };
 
-const honeybadger = Honeybadger.configure({
+Honeybadger.configure({
   apiKey: "d90cb361",
   environment: process.env.NODE_ENV,
   revision: version,
@@ -70,7 +70,7 @@ ReactDOM.render(
     <ThemeProvider theme={customTheme}>
       <CSSReset />
 
-      <ErrorBoundary honeybadger={honeybadger} ErrorComponent={ErrorPage}>
+      <ErrorBoundary honeybadger={Honeybadger} ErrorComponent={ErrorPage}>
         <RariProvider>
           <BrowserRouter>
             <ScrollToTop />
