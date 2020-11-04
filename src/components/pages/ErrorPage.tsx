@@ -17,9 +17,7 @@ import {
 
 import { useTranslation } from "react-i18next";
 
-import { FallbackProps } from "react-error-boundary";
-
-const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
+const ErrorPage = ({ error }: { error: string }) => {
   const { t } = useTranslation();
 
   return (
@@ -45,7 +43,7 @@ const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
             <AccordionIcon />
           </AccordionHeader>
           <AccordionPanel pb={4}>
-            <Code variantColor="red">{error?.toString()}</Code>
+            <Code variantColor="red">{error.toString()}</Code>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

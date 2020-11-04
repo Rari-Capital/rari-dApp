@@ -11,8 +11,10 @@ import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
-import LogRocket from "logrocket";
+
 import { useToast } from "@chakra-ui/core";
+
+import Honeybadger from "honeybadger-js";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -228,8 +230,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (address !== EmptyAddress) {
-      console.log("Setting Logrocket user to new address: " + address);
-      LogRocket.identify(address);
+      console.log("Setting Honeybadger user to new address: " + address);
+      Honeybadger.setContext({
+        user_id: address,
+      });
+    } else {
+      Honeybadger.resetContext();
     }
   }, [address]);
 

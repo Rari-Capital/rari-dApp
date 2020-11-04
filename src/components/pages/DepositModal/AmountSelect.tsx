@@ -31,7 +31,7 @@ import { BN, stringUsdFormatter } from "../../../utils/bigUtils";
 
 import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
-import LogRocket from "logrocket";
+
 import { useQueryCache } from "react-query";
 
 import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
@@ -39,6 +39,7 @@ import {
   fetchMaxWithdraw,
   useMaxWithdraw,
 } from "../../../hooks/useMaxWithdraw";
+import Honeybadger from "honeybadger-js";
 
 interface Props {
   selectedToken: string;
@@ -222,10 +223,10 @@ const AmountSelect = React.memo(
 
         if (e instanceof Error) {
           message = e.toString();
-          LogRocket.captureException(e);
+          Honeybadger.notify(e);
         } else {
           message = JSON.stringify(e);
-          LogRocket.captureException(new Error(message));
+          Honeybadger.notify(new Error(message));
         }
 
         toast({
@@ -332,10 +333,10 @@ const AmountSelect = React.memo(
 
         if (e instanceof Error) {
           message = e.toString();
-          LogRocket.captureException(e);
+          Honeybadger.notify(e);
         } else {
           message = JSON.stringify(e);
-          LogRocket.captureException(new Error(message));
+          Honeybadger.notify(new Error(message));
         }
 
         toast({
