@@ -474,7 +474,24 @@ const TokenNameAndMaxButton = React.memo(
       if (mode === Mode.DEPOSIT) {
         const balance = await fetchTokenBalance(token, rari, address);
 
-        maxBN = balance;
+        if (token.symbol === "ETH") {
+          const ethPriceBN = await rari.getEthUsdPriceBN();
+
+          const gasAnd0xFeesInUSD = 18;
+
+          // Subtract gasAnd0xFeesInUSD worth of ETH.
+          maxBN = balance.sub(
+            rari.web3.utils.toBN(
+              // @ts-ignore
+              new BigNumber(gasAnd0xFeesInUSD * 1e18)
+                .div(ethPriceBN.toString())
+                .multipliedBy(1e18)
+                .decimalPlaces(0)
+            )
+          );
+        } else {
+          maxBN = balance;
+        }
       } else {
         const max = await fetchMaxWithdraw({
           rari,
