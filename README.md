@@ -12,7 +12,8 @@ Rari's new React dApp for easy interactions with the Rari fund.
 
 <details>
   <summary>What are the "compiled" folders in src/static?</summary>
+  
 - The `src/static/compiled` folder has misc. files that are auto generated like: [rari-tokens-generator](https://github.com/Rari-Capital/rari-tokens-generator)
 - You can generate these files using `npm install`.
 - These files are gitignored so do not worry about trying to commit them!
-</details>
+ </details>
