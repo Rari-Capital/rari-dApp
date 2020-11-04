@@ -503,6 +503,10 @@ const TokenNameAndMaxButton = React.memo(
         maxBN = max;
       }
 
+      if (maxBN.isNeg() || maxBN.isZero()) {
+        updateAmount("0.0");
+      }
+
       updateAmount(
         new BigNumber(maxBN.toString()).div(10 ** token.decimals).toString()
       );
