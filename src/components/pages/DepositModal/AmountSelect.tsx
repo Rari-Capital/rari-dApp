@@ -251,41 +251,41 @@ const AmountSelect = React.memo(
 
         setAreTransactionsRunning(true);
 
-        if (poolType !== Pool.ETH) {
-          const allocations: {
-            [key: string]: BN;
-          } = await pool.allocations.getRawCurrencyAllocations();
+        // if (poolType !== Pool.ETH) {
+        //   const allocations: {
+        //     [key: string]: BN;
+        //   } = await pool.allocations.getRawCurrencyAllocations();
 
-          const noSlippageTokens: string[] = await pool.deposits.getDirectDepositCurrencies();
+        //   const noSlippageTokens: string[] = await pool.deposits.getDirectDepositCurrencies();
 
-          // If not enough to direct withdraw in the pool:
-          if (
-            noSlippageTokens.includes(token.symbol) &&
-            amountBN.gt(allocations[token.symbol])
-          ) {
-            toast({
-              title: t("Not enough {{token}} in the pool!", {
-                token: token.symbol,
-              }),
-              description: t(
-                "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.",
-                {
-                  token: token.symbol,
-                  max: new BigNumber(allocations[token.symbol].toString())
-                    .div(10 ** token.decimals)
-                    .toFixed(2),
-                }
-              ),
-              status: "error",
-              duration: 15000,
-              isClosable: true,
-              position: "top-right",
-            });
+        //   // If not enough to direct withdraw in the pool:
+        //   if (
+        //     noSlippageTokens.includes(token.symbol) &&
+        //     amountBN.gt(allocations[token.symbol])
+        //   ) {
+        //     toast({
+        //       title: t("Not enough {{token}} in the pool!", {
+        //         token: token.symbol,
+        //       }),
+        //       description: t(
+        //         "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.",
+        //         {
+        //           token: token.symbol,
+        //           max: new BigNumber(allocations[token.symbol].toString())
+        //             .div(10 ** token.decimals)
+        //             .toFixed(2),
+        //         }
+        //       ),
+        //       status: "error",
+        //       duration: 15000,
+        //       isClosable: true,
+        //       position: "top-right",
+        //     });
 
-            setAreTransactionsRunning(false);
-            return;
-          }
-        }
+        //     setAreTransactionsRunning(false);
+        //     return;
+        //   }
+        // }
 
         const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
           token.symbol,
