@@ -52,6 +52,8 @@ const DepositModal = React.memo((props: Props) => {
 
   const poolType = usePoolType();
 
+  const [mode, setMode] = useState(Mode.DEPOSIT);
+
   const [selectedToken, setSelectedToken] = useState(() => {
     if (poolType === Pool.ETH) {
       return "ETH";
@@ -60,7 +62,12 @@ const DepositModal = React.memo((props: Props) => {
     }
   });
 
-  const [mode, setMode] = useState(Mode.DEPOSIT);
+  // Set withdraws to mUSD for yield pool.
+  useEffect(() => {
+    if (mode === Mode.WITHDRAW && poolType === Pool.YIELD) {
+      setSelectedToken("mUSD");
+    }
+  }, [setSelectedToken, mode, poolType]);
 
   return (
     <ModalAnimation
