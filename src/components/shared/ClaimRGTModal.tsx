@@ -158,7 +158,7 @@ export const ClaimRGTModal = React.memo(
                   >
                     <SimpleTooltip
                       label={t(
-                        "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%."
+                        "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
                       )}
                     >
                       <span>

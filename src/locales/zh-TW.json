@@ -62,7 +62,6 @@
   "View on Etherscan": "在Etherscan上查看",
   "You will deposit {{amount}}. Do you approve?": "您將存入{{amount}}。 你贊成嗎",
   "You will withdraw {{amount}}. Do you approve?": "您將提取{{amount}}。 你贊成嗎",
-  "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前索取您的RGT，將導致部分RGN被燒毀並發送回協議。 所消耗量的70％將被燃燒，而30％將被重新消耗到協議中。 該數量從33％線性下降到19％時達到0％。",
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "現在聲明RGT將導致{{amount}}％的燒錄/收回",
   "RGT Balance (Claimed)": "RGT餘額（已聲明）",
   "Click to learn about our performance/withdrawal fees.": "單擊以了解您的性能/取款費用。",
@@ -71,5 +70,6 @@
   "You cannot withdraw this much {{token}}.": "{{token}}不能抽出這麼多錢。",
   "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.": "池中沒有足夠的{{token}}可以直接撤出。 池中最大為{{max}} {{token}}。 您可以提取帶有滑點的令牌，也可以嘗試池中更多的其他非滑點令牌。",
   "Not enough {{token}} in the pool!": "池中的{{token}}不夠！",
-  "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us.": "價格和/或滑點已更改。 請刷新頁面，然後再試一次。 如果問題仍然存在，請與我們聯繫。"
+  "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us.": "價格和/或滑點已更改。 請刷新頁面，然後再試一次。 如果問題仍然存在，請與我們聯繫。",
+  "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "在2020年12月19日之前索取您的RGT，將導致一小部分被燒毀。 該數量從33％線性下降到19％時達到0％。"
 }

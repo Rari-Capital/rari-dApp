@@ -62,7 +62,6 @@
   "View on Etherscan": "View on Etherscan",
   "You will deposit {{amount}}. Do you approve?": "You will deposit {{amount}}. Do you approve?",
   "You will withdraw {{amount}}. Do you approve?": "You will withdraw {{amount}}. Do you approve?",
-  "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%.",
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "Claiming RGT now will result in a {{amount}}% burn/takeback",
   "RGT Balance (Claimed)": "RGT Balance (Claimed)",
   "Click to learn about our performance/withdrawal fees.": "Click to learn about our performance/withdrawal fees.",
@@ -71,5 +70,6 @@
   "You cannot withdraw this much {{token}}.": "You cannot withdraw this much {{token}}.",
   "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.": "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.",
   "Not enough {{token}} in the pool!": "Not enough {{token}} in the pool!",
-  "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us.": "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
+  "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us.": "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us.",
+  "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%.": "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
 }
