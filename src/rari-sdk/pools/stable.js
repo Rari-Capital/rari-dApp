@@ -1271,7 +1271,7 @@ export default class StablePool {
         for (var i = 0; i < allBalances["0"].length; i++) {
           var inputCurrencyCode = allBalances["0"][i];
           if (inputCurrencyCode !== currencyCode) {
-            var rawFundBalanceBN = Web3.utils.toBN(0);
+            var rawFundBalanceBN = Web3.utils.toBN(allBalances["1"][i]);
             for (var j = 0; j < allBalances["3"][i].length; j++)
               rawFundBalanceBN.iadd(Web3.utils.toBN(allBalances["3"][i][j]));
 
