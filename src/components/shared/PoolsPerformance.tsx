@@ -1,4 +1,4 @@
-import { Box, Spinner, Text } from "@chakra-ui/core";
+import { Box, Icon, Spinner, Text } from "@chakra-ui/core";
 import {
   useSpacedLayout,
   PixelSize,
@@ -7,16 +7,16 @@ import {
   Row,
   Center,
 } from "buttered-chakra";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import Chart from "react-apexcharts";
-import { useRari } from "../../context/RariContext";
-import { useQuery } from "react-query";
 
-const millisecondsPerYear = 3.154e10;
+import { usePoolAPY } from "../../hooks/usePoolAPY";
+import { Pool } from "../../context/PoolContext";
+import { SimpleTooltip } from "./SimpleTooltip";
 
 const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {
@@ -38,65 +38,60 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
   const { t } = useTranslation();
 
-  const { rari } = useRari();
+  const { apy: ethAPY } = usePoolAPY(Pool.ETH);
+  const { apy: stableAPY } = usePoolAPY(Pool.STABLE);
+  const { apy: yieldAPY } = usePoolAPY(Pool.YIELD);
 
-  const { data: chartData, isLoading: isChartDataLoading } = useQuery(
-    "fundPerformance",
-    async () => {
-      const startingPoint = Date.now() - millisecondsPerYear;
+  const points = useMemo(() => {
+    if (ethAPY && stableAPY && yieldAPY) {
+      const ethAPYPercentPerDay = parseFloat(ethAPY.poolAPY) / 100 / 360;
+      const stableAPYPercentPerDay = parseFloat(stableAPY.poolAPY) / 100 / 360;
+      const yieldAPYPercentPerDay = parseFloat(yieldAPY.poolAPY) / 100 / 360;
 
-      const rawStablePoints = await rari.pools.stable.history.getPoolTokenExchangeRateHistory(
-        startingPoint
-      );
+      let now = new Date();
 
-      const firstRawStablePointRate =
-        parseFloat(rawStablePoints[0].rate) / 1e18;
+      let ethBalance = 10000;
+      let stableBalance = 10000;
+      let yieldBalance = 10000;
 
-      const stablePoints = rawStablePoints.map((point: any) => {
-        return {
-          x: new Date(point.timestamp).toLocaleDateString("en-US"),
-          y: (
-            (10000 * (parseFloat(point.balance) / 1e18)) /
-            firstRawStablePointRate
-          ).toFixed(2),
-        };
-      });
+      let stablePoints = [];
+      let yieldPoints = [];
+      let ethPoints = [];
 
-      const rawYieldPoints = await rari.pools.yield.history.getPoolTokenExchangeRateHistory(
-        startingPoint
-      );
+      for (let i = 1; i < 365; i++) {
+        ethBalance = ethBalance + ethBalance * ethAPYPercentPerDay;
+        stableBalance = stableBalance + stableBalance * stableAPYPercentPerDay;
+        yieldBalance = yieldBalance + yieldBalance * yieldAPYPercentPerDay;
 
-      const firstRawYieldPointRate = parseFloat(rawYieldPoints[0].rate) / 1e18;
+        now.setDate(now.getDate() + 1);
 
-      const yieldPoints = rawYieldPoints.map((point: any) => {
-        return {
-          x: new Date(point.timestamp).toLocaleDateString("en-US"),
-          y: (
-            (10000 * (parseFloat(point.balance) / 1e18)) /
-            firstRawYieldPointRate
-          ).toFixed(2),
-        };
-      });
+        const formattedDate =
+          now.getMonth() + 1 + "/" + now.getDate() + "/" + now.getFullYear();
 
-      const rawETHPoints = await rari.pools.ethereum.history.getPoolTokenExchangeRateHistory(
-        startingPoint
-      );
+        stablePoints.push({
+          x: formattedDate,
 
-      const firstRawETHPointRate = parseFloat(rawETHPoints[0].rate) / 1e18;
+          y: stableBalance,
+        });
 
-      const ethPoints = rawETHPoints.map((point: any) => {
-        return {
-          x: new Date(point.timestamp).toLocaleDateString("en-US"),
-          y: (
-            (10000 * (parseFloat(point.balance) / 1e18)) /
-            firstRawETHPointRate
-          ).toFixed(2),
-        };
-      });
+        yieldPoints.push({
+          x: formattedDate,
 
-      return { ethPoints, yieldPoints, stablePoints };
+          y: yieldBalance,
+        });
+
+        ethPoints.push({
+          x: formattedDate,
+
+          y: ethBalance,
+        });
+      }
+
+      return { ethPoints, stablePoints, yieldPoints };
+    } else {
+      return null;
     }
-  );
+  }, [yieldAPY, stableAPY, ethAPY]);
 
   return (
     <>
@@ -109,19 +104,26 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
         height={statsSize.asPxString()}
         width="100%"
       >
-        <Text
-          fontSize="xs"
-          textAlign="center"
-          textTransform="uppercase"
-          letterSpacing="wide"
-          color="#858585"
+        <SimpleTooltip
+          label={t(
+            "This chart is generated using the APYs of each pool (shown at the bottom of this page). It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation)."
+          )}
         >
-          {t("Performance beginning with $10,000 deposited 1 year ago")}
-        </Text>
+          <Text
+            fontSize="xs"
+            textAlign="center"
+            textTransform="uppercase"
+            letterSpacing="wide"
+            color="#858585"
+          >
+            {t("1 Year of Returns Simulated Using Current Yields")}
+            <Icon name="info" ml="5px" size="10px" mb="3px" />
+          </Text>
+        </SimpleTooltip>
       </Row>
 
       <Box height={chartSize.asPxString()} overflow="hidden">
-        {isChartDataLoading ? (
+        {!points ? (
           <Center expand>
             <Spinner color="#FFF" />
           </Center>
@@ -134,15 +136,15 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
             series={[
               {
                 name: "Yield Pool",
-                data: chartData!.yieldPoints,
+                data: points!.yieldPoints,
               },
               {
                 name: "Stable Pool",
-                data: chartData!.stablePoints,
+                data: points!.stablePoints,
               },
               {
                 name: "ETH Pool",
-                data: chartData!.ethPoints,
+                data: points!.ethPoints,
               },
             ]}
           />

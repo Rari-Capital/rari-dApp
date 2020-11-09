@@ -55,7 +55,6 @@
   "Current APY": "当前APY",
   "Compare Returns (WIP)": "比较退货（WIP）",
   "Token Allocation (WIP)": "令牌分配（WIP）",
-  "Performance beginning with $10,000 deposited 1 year ago": "性能始于1年之前的$ 10,000",
   "Recent Trades (WIP)": "最近交易（WIP）",
   "View on Etherscan": "在Etherscan上查看",
   "Claiming RGT now will result in a {{amount}}% burn/takeback": "现在声明RGT将导致{{amount}}％的烧录/收回",
@@ -77,5 +76,7 @@
   "You will withdraw {{amount}} after fees. Click confirm to approve.": "您将在收费后提取{{amount}}。 点击确认以批准。",
   "Click review + confirm to withdraw!": "点击评论+确认退出！",
   "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.": "此池收取{{withdrawFee}}％的提款费+表演费。",
-  "You will withdraw {{amount}}. Click confirm to approve.": "您将提取{{amount}}。 点击确认以批准。"
+  "You will withdraw {{amount}}. Click confirm to approve.": "您将提取{{amount}}。 点击确认以批准。",
+  "This chart is generated using the APYs of each pool (shown at the bottom of this page). It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation).": "该图表是使用每个池的APY生成的（显示在此页面的底部）。 它不考虑APY的变动，收益池中的背离损失或不考虑ETH价格。 ETH池模拟不是以ETH计价，而是使用ETH池的当前APY模拟美元的收益。 在ETH池中，您会面临ETH的价格变动（在此模拟中未显示或未说明）。",
+  "1 Year of Returns Simulated Using Current Yields": "使用当前收益率模拟1年的收益"
 }
