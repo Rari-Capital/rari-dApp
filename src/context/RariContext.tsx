@@ -15,6 +15,7 @@ import Rari from "../rari-sdk/index";
 import { useToast } from "@chakra-ui/core";
 
 import Honeybadger from "honeybadger-js";
+import { notify } from "../utils/notify";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -179,7 +180,17 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
           console.log("Address array was empty. Reloading!");
           window.location.reload();
         }
-        setAddress(addresses[0]);
+
+        const address = addresses[0];
+
+        setAddress(address);
+
+        const { emitter } = notify.account(address);
+
+        emitter.on("all", (txn) => ({
+          link: `https://etherscan.io/tx/${txn.hash}`,
+          autoDismiss: 400000,
+        }));
       });
     },
     [setRari, setAddress]

@@ -6,6 +6,16 @@ const formatter = Intl.NumberFormat("en-US", {
   minimumFractionDigits: 5,
 });
 
+const smallFormatter = Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+});
+
+export function smallStringUsdFormatter(num: string) {
+  return smallFormatter.format(parseFloat(num));
+}
+
 export function stringUsdFormatter(num: string) {
   return formatter.format(parseFloat(num));
 }

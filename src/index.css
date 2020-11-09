@@ -93,3 +93,28 @@ More info here: https://stackoverflow.com/questions/13151340/how-to-remove-borde
 img:not([src]) {
   display: none;
 }
+
+.blinking {
+  animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+  80% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.bn-notify-custom .bn-notify-dark-mode {
+  background-color: #121212 !important;
+  border: 1px solid #272727;
+}
+
+.bn-notify-custom .bn-notify-notification-info {
+  background-color: #121212 !important;
+}
