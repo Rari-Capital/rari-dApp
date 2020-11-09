@@ -85,6 +85,7 @@ const DepositModal = React.memo((props: Props) => {
           >
             {currentScreen === CurrentScreen.MAIN ? (
               <AmountSelect
+                onClose={props.onClose}
                 openCoinSelect={openCoinSelect}
                 openOptions={openOptions}
                 selectedToken={selectedToken}

@@ -595,7 +595,7 @@ const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
   const { isAuthed } = useRari();
 
   return isAuthed ? (
-    <Marquee delay={1200} childMargin={0} speed={0.015}>
+    <Marquee delay={1200} childMargin={0} speed={0.015} direction="left">
       {children}
     </Marquee>
   ) : (
