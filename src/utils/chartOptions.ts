@@ -66,6 +66,10 @@ export const PoolReturnChartOptions = {
     },
   },
 
+  stroke: {
+    lineCap: "round",
+  },
+
   xaxis: {
     tickAmount: 12,
     labels: {
