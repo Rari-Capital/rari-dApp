@@ -185,12 +185,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
         setAddress(address);
 
-        const { emitter } = notify.account(address);
+        // const { emitter } = notify.account(address);
 
-        emitter.on("all", (txn) => ({
-          link: `https://etherscan.io/tx/${txn.hash}`,
-          autoDismiss: 400000,
-        }));
+        // emitter.on("all", (txn) => ({
+        //   link: `https://etherscan.io/tx/${txn.hash}`,
+        //   autoDismiss: 400000,
+        // }));
       });
     },
     [setRari, setAddress]
