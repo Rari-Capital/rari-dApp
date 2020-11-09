@@ -126,7 +126,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       <Box height={chartSize.asPxString()} overflow="hidden">
         {!points ? (
           <Center expand>
-            <PropagateLoader size={20} color="#FFFFFF" loading />
+            <PropagateLoader size={20} color="#858585" loading />
           </Center>
         ) : (
           <Chart
