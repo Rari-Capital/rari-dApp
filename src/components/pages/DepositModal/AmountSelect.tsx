@@ -105,6 +105,8 @@ const AmountSelect = React.memo(
           // If the number was invalid, set the amount to null to disable confirming:
           _setAmount(null);
         }
+
+        setUserAction(UserAction.NO_ACTION);
       },
       [_setUserEnteredAmount, _setAmount, token.decimals]
     );
