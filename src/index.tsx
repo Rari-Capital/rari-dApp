@@ -23,21 +23,18 @@ import { ReactQueryDevtools } from "react-query-devtools";
 import "./utils/i18n.ts";
 import { BrowserRouter, useLocation } from "react-router-dom";
 
-import LogRocket from "logrocket";
-
-import { ErrorBoundary } from "react-error-boundary";
+import Honeybadger from "honeybadger-js";
+import ErrorBoundary from "@honeybadger-io/react";
 
 import { version } from "../package.json";
 export { version };
 
-if (process.env.NODE_ENV === "production") {
-  LogRocket.init("eczu2e/rari-capital", {
-    console: {
-      shouldAggregateConsoleErrors: true,
-    },
-    release: version,
-  });
-}
+Honeybadger.configure({
+  apiKey: "d90cb361",
+  environment: process.env.NODE_ENV,
+  revision: version,
+  ignorePatterns: [/transaction signature/i, /Unexpected token/i],
+});
 
 console.log("Version " + version);
 
@@ -74,7 +71,7 @@ ReactDOM.render(
     <ThemeProvider theme={customTheme}>
       <CSSReset />
 
-      <ErrorBoundary FallbackComponent={ErrorPage}>
+      <ErrorBoundary honeybadger={Honeybadger} ErrorComponent={ErrorPage}>
         <RariProvider>
           <BrowserRouter>
             <ScrollToTop />

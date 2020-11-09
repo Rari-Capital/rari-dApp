@@ -18,7 +18,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
-import { notify } from "../../utils/notify";
 
 import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { GlowingButton } from "./GlowingButton";
@@ -73,16 +72,15 @@ export const ClaimRGTModal = React.memo(
       }
     }, [unclaimed]);
 
-    const claimRGT = useCallback(async () => {
-      const receipt = await rari.governance.rgt.distributions.claim(
+    const claimRGT = useCallback(() => {
+      // Could do something with the receipt but notify.js is watching the account and will send a notification for us.
+      rari.governance.rgt.distributions.claim(
         rari.web3.utils.toBN(
           //@ts-ignore
           new BigNumber(amount).multipliedBy(1e18).decimalPlaces(0)
         ),
         { from: address }
       );
-
-      notify.hash(receipt.transactionHash);
     }, [rari.governance.rgt.distributions, amount, rari.web3.utils, address]);
 
     return (
@@ -158,7 +156,7 @@ export const ClaimRGTModal = React.memo(
                   >
                     <SimpleTooltip
                       label={t(
-                        "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned and sent back to the protocol. 70% of the amount taken will be burned and 30% taken back into the protocol. This amount decreases from 33% linearly until the 19th when it will reach 0%."
+                        "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
                       )}
                     >
                       <span>

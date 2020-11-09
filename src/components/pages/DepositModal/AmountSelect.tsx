@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from "react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column, Center } from "buttered-chakra";
 
 import {
   Heading,
@@ -27,28 +27,43 @@ import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
 import { useRari } from "../../../context/RariContext";
 import { Pool, usePoolType } from "../../../context/PoolContext";
-import { BN, stringUsdFormatter } from "../../../utils/bigUtils";
+import { BN, smallStringUsdFormatter } from "../../../utils/bigUtils";
 
-import { notify } from "../../../utils/notify";
 import BigNumber from "bignumber.js";
-import LogRocket from "logrocket";
+
 import { useQueryCache } from "react-query";
 
-import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import {
+  depositPercentAfterWithdrawFee,
+  getSDKPool,
+  poolHasDivergenceRisk,
+} from "../../../utils/poolUtils";
 import {
   fetchMaxWithdraw,
   useMaxWithdraw,
 } from "../../../hooks/useMaxWithdraw";
+import { AttentionSeeker } from "react-awesome-reveal";
+
+import Honeybadger from "honeybadger-js";
+import { HashLoader } from "react-spinners";
 
 interface Props {
   selectedToken: string;
   openCoinSelect: () => any;
   openOptions: () => any;
+  onClose: () => any;
   mode: Mode;
 }
 
+enum UserAction {
+  NO_ACTION,
+  REQUESTED_QUOTE,
+  VIEWING_QUOTE,
+  WAITING_FOR_TRANSACTIONS,
+}
+
 const AmountSelect = React.memo(
-  ({ selectedToken, openCoinSelect, mode, openOptions }: Props) => {
+  ({ selectedToken, openCoinSelect, mode, openOptions, onClose }: Props) => {
     const token = tokens[selectedToken];
 
     const poolType = usePoolType();
@@ -60,7 +75,9 @@ const AmountSelect = React.memo(
       isLoading: isSelectedTokenBalanceLoading,
     } = useTokenBalance(token);
 
-    const [areTransactionsRunning, setAreTransactionsRunning] = useState(false);
+    const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
+
+    const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
 
     const [userEnteredAmount, _setUserEnteredAmount] = useState("");
 
@@ -88,6 +105,8 @@ const AmountSelect = React.memo(
           // If the number was invalid, set the amount to null to disable confirming:
           _setAmount(null);
         }
+
+        setUserAction(UserAction.NO_ACTION);
       },
       [_setUserEnteredAmount, _setAmount, token.decimals]
     );
@@ -133,8 +152,8 @@ const AmountSelect = React.memo(
     } else if (amount.isZero()) {
       depositOrWithdrawAlert =
         mode === Mode.DEPOSIT
-          ? t("Choose which crypto you want to deposit.")
-          : t("Choose which crypto you want to withdraw.");
+          ? t("Choose which token you want to deposit.")
+          : t("Choose which token you want to withdraw.");
     } else if (isSelectedTokenBalanceLoading) {
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
         token: selectedToken,
@@ -149,61 +168,87 @@ const AmountSelect = React.memo(
               token: selectedToken,
             });
     } else {
-      depositOrWithdrawAlert = t(
-        "Click to learn about our performance/withdrawal fees."
-      );
+      // If pool has a withdrawal fee:
+      if (depositPercentAfterWithdrawFee(poolType) !== 1) {
+        depositOrWithdrawAlert = t(
+          "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
+          {
+            withdrawFee: (
+              (1 - depositPercentAfterWithdrawFee(poolType)) *
+              100
+            ).toFixed(1),
+          }
+        );
+      } else {
+        if (mode === Mode.DEPOSIT) {
+          depositOrWithdrawAlert = t(
+            "This pool has a 9.5% performance fee. Click to learn more."
+          );
+        } else {
+          depositOrWithdrawAlert = t("Click review + confirm to withdraw!");
+        }
+      }
     }
 
     const toast = useToast();
 
     const queryCache = useQueryCache();
 
-    const onDeposit = useCallback(async () => {
+    const onConfirm = useCallback(async () => {
       try {
         const pool = getSDKPool({ rari, pool: poolType });
 
         //@ts-ignore
         const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
 
-        setAreTransactionsRunning(true);
+        // If clicking for the first time:
+        if (userAction === UserAction.NO_ACTION) {
+          setUserAction(UserAction.REQUESTED_QUOTE);
 
-        const [amountToBeAdded] = await pool.deposits.validateDeposit(
-          token.symbol,
-          amountBN,
-          address
-        );
+          let quote: BN;
 
-        const amountToBeAddedInFormat =
-          poolType === Pool.ETH
-            ? rari.web3.utils.fromWei(amountToBeAdded).toString() + " ETH"
-            : stringUsdFormatter(
-                rari.web3.utils.fromWei(amountToBeAdded).toString()
-              );
+          if (mode === Mode.DEPOSIT) {
+            const [amountToBeAdded] = (await pool.deposits.validateDeposit(
+              token.symbol,
+              amountBN,
+              address
+            )) as BN[];
 
-        if (
-          window.confirm(
-            t("You will deposit {{amount}}. Do you approve?", {
-              amount: amountToBeAddedInFormat,
-            })
-          )
-        ) {
-          const [
-            ,
-            ,
-            approvalReceipt,
-            depositReceipt,
-          ] = await pool.deposits.deposit(
+            quote = amountToBeAdded;
+          } else {
+            const [
+              amountToBeRemoved,
+            ] = (await pool.withdrawals.validateWithdrawal(
+              token.symbol,
+              amountBN,
+              address
+            )) as BN[];
+
+            quote = amountToBeRemoved;
+          }
+
+          setQuoteAmount(quote);
+
+          setUserAction(UserAction.VIEWING_QUOTE);
+
+          return;
+        }
+
+        // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
+        // This means they are now ready to start sending transactions:
+
+        setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
+
+        if (mode === Mode.DEPOSIT) {
+          // (Third item in array is approvalReceipt)
+          const [, , , depositReceipt] = await pool.deposits.deposit(
             token.symbol,
             amountBN,
-            amountToBeAdded,
+            quoteAmount!,
             {
               from: address,
             }
           );
-
-          if (approvalReceipt?.transactionHash) {
-            notify.hash(approvalReceipt.transactionHash);
-          }
 
           if (!depositReceipt) {
             throw new Error(
@@ -212,130 +257,30 @@ const AmountSelect = React.memo(
               )
             );
           }
-
-          notify.hash(depositReceipt.transactionHash);
-
-          queryCache.refetchQueries();
-        }
-      } catch (e) {
-        let message: string;
-
-        if (e instanceof Error) {
-          message = e.toString();
-          LogRocket.captureException(e);
         } else {
-          message = JSON.stringify(e);
-          LogRocket.captureException(new Error(message));
-        }
-
-        toast({
-          title: "Error!",
-          description: message,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
-      }
-
-      setAreTransactionsRunning(false);
-    }, [address, poolType, rari, token, amount, t, toast, queryCache]);
-
-    const onWithdraw = useCallback(async () => {
-      try {
-        const pool = getSDKPool({ rari, pool: poolType });
-
-        //@ts-ignore
-        const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
-
-        setAreTransactionsRunning(true);
-
-        if (poolType !== Pool.ETH) {
-          const allocations: {
-            [key: string]: BN;
-          } = await pool.allocations.getRawCurrencyAllocations();
-
-          const noSlippageTokens: string[] = await pool.deposits.getDirectDepositCurrencies();
-
-          // If not enough to direct withdraw in the pool:
-          if (
-            noSlippageTokens.includes(token.symbol) &&
-            amountBN.gt(allocations[token.symbol])
-          ) {
-            toast({
-              title: t("Not enough {{token}} in the pool!", {
-                token: token.symbol,
-              }),
-              description: t(
-                "There is not enough {{token}} in the pool to withdraw this much directly. There is a max of {{max}} {{token}} in the pool. You can either withdraw a token with slippage or try another non-slippage token the pool has more of.",
-                {
-                  token: token.symbol,
-                  max: new BigNumber(allocations[token.symbol].toString())
-                    .div(10 ** token.decimals)
-                    .toFixed(2),
-                }
-              ),
-              status: "error",
-              duration: 15000,
-              isClosable: true,
-              position: "top-right",
-            });
-
-            setAreTransactionsRunning(false);
-            return;
-          }
-        }
-
-        const [amountToBeRemoved] = await pool.withdrawals.validateWithdrawal(
-          token.symbol,
-          amountBN,
-          address
-        );
-
-        const amountToBeRemovedInFormat =
-          poolType === Pool.ETH
-            ? rari.web3.utils.fromWei(amountToBeRemoved).toString() + " ETH"
-            : stringUsdFormatter(
-                rari.web3.utils.fromWei(amountToBeRemoved).toString()
-              );
-
-        if (
-          window.confirm(
-            t("You will withdraw {{amount}}. Do you approve?", {
-              amount: amountToBeRemovedInFormat,
-            })
-          )
-        ) {
-          const [, , receipt] = await pool.withdrawals.withdraw(
+          // (Third item in array is withdrawReceipt)
+          await pool.withdrawals.withdraw(
             token.symbol,
             amountBN,
-            amountToBeRemoved,
+            quoteAmount!,
             {
               from: address,
             }
           );
-
-          if (!receipt) {
-            throw new Error(
-              t(
-                "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
-              )
-            );
-          }
-
-          notify.hash(receipt.transactionHash);
-
-          queryCache.refetchQueries();
         }
+
+        await queryCache.refetchQueries();
+
+        onClose();
       } catch (e) {
         let message: string;
 
         if (e instanceof Error) {
           message = e.toString();
-          LogRocket.captureException(e);
+          Honeybadger.notify(e);
         } else {
           message = JSON.stringify(e);
-          LogRocket.captureException(new Error(message));
+          Honeybadger.notify(new Error(message));
         }
 
         toast({
@@ -346,12 +291,44 @@ const AmountSelect = React.memo(
           isClosable: true,
           position: "top-right",
         });
+
+        setUserAction(UserAction.NO_ACTION);
       }
+    }, [
+      address,
+      poolType,
+      userAction,
+      quoteAmount,
+      mode,
+      onClose,
+      rari,
+      token,
+      amount,
+      t,
+      toast,
+      queryCache,
+    ]);
 
-      setAreTransactionsRunning(false);
-    }, [address, poolType, rari, token, amount, t, toast, queryCache]);
-
-    return (
+    return userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
+      <Column
+        expand
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        p={4}
+      >
+        <HashLoader size={70} color={token.color} loading />
+        <Heading mt="40px" textAlign="center" size="md">
+          {mode === Mode.DEPOSIT
+            ? t("Check your wallet to submit the transactions")
+            : t("Check your wallet to submit the transaction")}
+        </Heading>
+        <Text fontSize="sm" mt="25px" textAlign="center">
+          {mode === Mode.DEPOSIT
+            ? t("Do not close this tab until you submit both transactions!")
+            : t("You may close this tab after submitting the transaction.")}
+        </Text>
+      </Column>
+    ) : (
       <>
         <Row
           width="100%"
@@ -420,11 +397,16 @@ const AmountSelect = React.memo(
             _hover={{ transform: "scale(1.02)" }}
             _active={{ transform: "scale(0.95)" }}
             color={token.overlayTextColor}
-            isLoading={isSelectedTokenBalanceLoading || areTransactionsRunning}
-            onClick={mode === Mode.DEPOSIT ? onDeposit : onWithdraw}
+            isLoading={
+              isSelectedTokenBalanceLoading ||
+              userAction === UserAction.REQUESTED_QUOTE
+            }
+            onClick={onConfirm}
             isDisabled={!amountIsValid}
           >
-            {t("Confirm")}
+            {userAction === UserAction.VIEWING_QUOTE
+              ? t("Confirm")
+              : t("Review")}
           </Button>
 
           {poolHasDivergenceRisk(poolType) ? (
@@ -440,6 +422,13 @@ const AmountSelect = React.memo(
             </Link>
           ) : null}
         </Column>
+        {userAction === UserAction.VIEWING_QUOTE ? (
+          <ApprovalNotch
+            color={token.color}
+            mode={mode}
+            amount={quoteAmount!}
+          />
+        ) : null}
       </>
     );
   }
@@ -474,7 +463,24 @@ const TokenNameAndMaxButton = React.memo(
       if (mode === Mode.DEPOSIT) {
         const balance = await fetchTokenBalance(token, rari, address);
 
-        maxBN = balance;
+        if (token.symbol === "ETH") {
+          const ethPriceBN = await rari.getEthUsdPriceBN();
+
+          const gasAnd0xFeesInUSD = 18;
+
+          // Subtract gasAnd0xFeesInUSD worth of ETH.
+          maxBN = balance.sub(
+            rari.web3.utils.toBN(
+              // @ts-ignore
+              new BigNumber(gasAnd0xFeesInUSD * 1e18)
+                .div(ethPriceBN.toString())
+                .multipliedBy(1e18)
+                .decimalPlaces(0)
+            )
+          );
+        } else {
+          maxBN = balance;
+        }
       } else {
         const max = await fetchMaxWithdraw({
           rari,
@@ -484,6 +490,10 @@ const TokenNameAndMaxButton = React.memo(
         });
 
         maxBN = max;
+      }
+
+      if (maxBN.isNeg() || maxBN.isZero()) {
+        updateAmount("0.0");
       }
 
       updateAmount(
@@ -571,6 +581,76 @@ const AmountInput = React.memo(
         onChange={onChange}
         mr={DASHBOARD_BOX_SPACING.asPxString()}
       />
+    );
+  }
+);
+
+const ApprovalNotch = React.memo(
+  ({ color, mode, amount }: { amount: BN; mode: Mode; color: string }) => {
+    const { t } = useTranslation();
+
+    const poolType = usePoolType();
+
+    const formattedAmount = useMemo(() => {
+      const usdFormatted = smallStringUsdFormatter(
+        new BigNumber(amount.toString())
+          // Subtract withdrawal fee for withdrawals
+          .multipliedBy(
+            mode === Mode.WITHDRAW
+              ? depositPercentAfterWithdrawFee(poolType)
+              : 1
+          )
+          .div(1e18)
+          .toString()
+      );
+
+      return poolType === Pool.ETH
+        ? usdFormatted.replace("$", "") + " ETH"
+        : usdFormatted;
+    }, [amount, mode, poolType]);
+
+    return (
+      <AttentionSeeker effect="headShake" triggerOnce>
+        <Box
+          borderRadius="0 0 10px 10px"
+          borderWidth="0 1px 1px 1px"
+          borderColor="#272727"
+          bg="#121212"
+          width={{ md: "auto", xs: "90%" }}
+          height={{ md: "30px", xs: "60px" }}
+          color={color}
+          position="absolute"
+          mx="auto"
+          px={4}
+          left="50%"
+          transform="translateX(-50%)"
+          bottom={{ md: "-30px", xs: "-60px" }}
+          whiteSpace={{ md: "nowrap", xs: "inherit" }}
+        >
+          <Center expand>
+            <Text
+              fontSize="xs"
+              pb="5px"
+              textAlign="center"
+              className="blinking"
+            >
+              {mode === Mode.DEPOSIT
+                ? t("You will deposit {{amount}}. Click confirm to approve.", {
+                    amount: formattedAmount,
+                  })
+                : // If pool has withdrawal fee:
+                depositPercentAfterWithdrawFee(poolType) !== 1
+                ? t(
+                    "You will withdraw {{amount}} after fees. Click confirm to approve.",
+                    { amount: formattedAmount }
+                  )
+                : t("You will withdraw {{amount}}. Click confirm to approve.", {
+                    amount: formattedAmount,
+                  })}
+            </Text>
+          </Center>
+        </Box>
+      </AttentionSeeker>
     );
   }
 );

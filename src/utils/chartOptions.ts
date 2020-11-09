@@ -59,6 +59,26 @@ export const LineChartOptions = {
 export const PoolReturnChartOptions = {
   ...LineChartOptions,
 
+  grid: {
+    ...LineChartOptions.grid,
+    padding: {
+      bottom: -15,
+    },
+  },
+
+  stroke: {
+    lineCap: "round",
+  },
+
+  xaxis: {
+    tickAmount: 12,
+    labels: {
+      style: {
+        fontSize: "8px",
+      },
+    },
+  },
+
   yaxis: {
     labels: {
       ...LineChartOptions.yaxis.labels,

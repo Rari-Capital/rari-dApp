@@ -11,8 +11,11 @@ import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
-import LogRocket from "logrocket";
+
 import { useToast } from "@chakra-ui/core";
+
+import Honeybadger from "honeybadger-js";
+import { notify } from "../utils/notify";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -177,7 +180,17 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
           console.log("Address array was empty. Reloading!");
           window.location.reload();
         }
-        setAddress(addresses[0]);
+
+        const address = addresses[0];
+
+        setAddress(address);
+
+        const { emitter } = notify.account(address);
+
+        emitter.on("all", (txn) => ({
+          link: `https://etherscan.io/tx/${txn.hash}`,
+          autoDismiss: 400000,
+        }));
       });
     },
     [setRari, setAddress]
@@ -228,8 +241,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (address !== EmptyAddress) {
-      console.log("Setting Logrocket user to new address: " + address);
-      LogRocket.identify(address);
+      console.log("Setting Honeybadger user to new address: " + address);
+      Honeybadger.setContext({
+        user_id: address,
+      });
+    } else {
+      Honeybadger.resetContext();
     }
   }, [address]);
 

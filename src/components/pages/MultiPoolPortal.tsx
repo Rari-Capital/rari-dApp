@@ -48,30 +48,9 @@ import {
 } from "../shared/MovingStat";
 import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
 import { usePoolBalance } from "../../hooks/usePoolBalance";
-import { getSDKPool } from "../../utils/poolUtils";
-
-const useTVL = () => {
-  const { rari } = useRari();
-
-  const getTVL = useCallback(async () => {
-    const [stableTVL, yieldTVL, ethTVLInETH, ethPriceBN] = await Promise.all([
-      rari.pools.stable.balances.getTotalSupply(),
-      rari.pools.yield.balances.getTotalSupply(),
-      rari.pools.ethereum.balances.getTotalSupply(),
-      rari.getEthUsdPriceBN(),
-    ]);
-
-    const ethTVL = ethTVLInETH.mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
-
-    return stableTVL.add(yieldTVL).add(ethTVL);
-  }, [rari]);
-
-  const getNumberTVL = useCallback(async () => {
-    return parseFloat(rari.web3.utils.fromWei(await getTVL()));
-  }, [rari, getTVL]);
-
-  return { getNumberTVL, getTVL };
-};
+import PoolsPerformanceChart from "../shared/PoolsPerformance";
+import { useTVL } from "../../hooks/useTVL";
+import { usePoolAPY } from "../../hooks/usePoolAPY";
 
 export const RGTPrice = React.memo(() => {
   const { t } = useTranslation();
@@ -130,7 +109,7 @@ const MultiPoolPortal = React.memo(() => {
           <NewsAndTwitterLink />
         </DashboardBox>
 
-        {/* <DashboardBox
+        <DashboardBox
           mt={DASHBOARD_BOX_SPACING.asPxString()}
           height="300px"
           width="100%"
@@ -139,7 +118,7 @@ const MultiPoolPortal = React.memo(() => {
           px={1}
         >
           <PoolsPerformanceChart size={300} />
-        </DashboardBox> */}
+        </DashboardBox>
 
         <DashboardBox
           width="100%"
@@ -411,42 +390,9 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const { rari } = useRari();
-
   const { balanceData, isPoolBalanceLoading } = usePoolBalance(pool);
 
-  const { getTVL } = useTVL();
-
-  const { data: apy, isLoading: isAPYLoading } = useQuery(
-    pool + " apy",
-    async () => {
-      const poolRawAPYPromise = getSDKPool({
-        rari,
-        pool,
-      }).apy.getCurrentRawApy();
-
-      const [poolRawAPY, blockNumber, tvl] = await Promise.all([
-        poolRawAPYPromise,
-        rari.web3.eth.getBlockNumber(),
-        getTVL(),
-      ]);
-
-      const poolAPY = parseFloat(
-        rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(2);
-
-      const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
-        blockNumber,
-        tvl
-      );
-
-      const rgtAPR = parseFloat(
-        rari.web3.utils.fromWei(rgtRawAPR.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(0);
-
-      return { rgtAPR, poolAPY };
-    }
-  );
+  const { apy, isAPYLoading } = usePoolAPY(pool);
 
   return (
     <>
@@ -595,7 +541,7 @@ const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
   const { isAuthed } = useRari();
 
   return isAuthed ? (
-    <Marquee delay={1200} childMargin={0} speed={0.015}>
+    <Marquee delay={1200} childMargin={0} speed={0.015} direction="left">
       {children}
     </Marquee>
   ) : (

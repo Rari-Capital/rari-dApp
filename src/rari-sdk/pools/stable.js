@@ -861,7 +861,7 @@ export default class StablePool {
                 return await approveAndDeposit();
               }
 
-              throw new Error(err);
+              throw err;
             }
           };
 
