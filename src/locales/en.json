@@ -76,5 +76,6 @@
   "You will deposit {{amount}}. Click confirm to approve.": "You will deposit {{amount}}. Click confirm to approve.",
   "You will withdraw {{amount}} after fees. Click confirm to approve.": "You will withdraw {{amount}} after fees. Click confirm to approve.",
   "Click review + confirm to withdraw!": "Click review + confirm to withdraw!",
-  "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.": "This pool has a {{withdrawFee}}% withdrawal fee + performance fees."
+  "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.": "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
+  "You will withdraw {{amount}}. Click confirm to approve.": "You will withdraw {{amount}}. Click confirm to approve."
 }

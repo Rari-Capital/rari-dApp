@@ -166,7 +166,8 @@ const AmountSelect = React.memo(
               token: selectedToken,
             });
     } else {
-      if (poolType !== Pool.ETH) {
+      // If pool has a withdrawal fee:
+      if (depositPercentAfterWithdrawFee(poolType) !== 1) {
         depositOrWithdrawAlert = t(
           "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
           {
@@ -629,16 +630,21 @@ const ApprovalNotch = React.memo(
               fontSize="xs"
               pb="5px"
               textAlign="center"
-              className="blink-me"
+              className="blinking"
             >
               {mode === Mode.DEPOSIT
                 ? t("You will deposit {{amount}}. Click confirm to approve.", {
                     amount: formattedAmount,
                   })
-                : t(
+                : // If pool has withdrawal fee:
+                depositPercentAfterWithdrawFee(poolType) !== 1
+                ? t(
                     "You will withdraw {{amount}} after fees. Click confirm to approve.",
                     { amount: formattedAmount }
-                  )}
+                  )
+                : t("You will withdraw {{amount}}. Click confirm to approve.", {
+                    amount: formattedAmount,
+                  })}
             </Text>
           </Center>
         </Box>

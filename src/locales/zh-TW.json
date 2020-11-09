@@ -76,5 +76,6 @@
   "You will deposit {{amount}}. Click confirm to approve.": "您將存入{{amount}}。 點擊確認以批准。",
   "You will withdraw {{amount}} after fees. Click confirm to approve.": "您將在收費後提取{{amount}}。 點擊確認以批准。",
   "Click review + confirm to withdraw!": "點擊評論+確認退出！",
-  "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.": "此池收取{{withdrawFee}}％的提款費+表演費。"
+  "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.": "此池收取{{withdrawFee}}％的提款費+表演費。",
+  "You will withdraw {{amount}}. Click confirm to approve.": "您將提取{{amount}}。 點擊確認以批准。"
 }
