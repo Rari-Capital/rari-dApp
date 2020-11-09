@@ -67,6 +67,7 @@ export const PoolReturnChartOptions = {
   },
 
   xaxis: {
+    tickAmount: 12,
     labels: {
       style: {
         fontSize: "8px",
