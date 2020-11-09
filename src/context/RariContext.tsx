@@ -15,7 +15,7 @@ import Rari from "../rari-sdk/index";
 import { useToast } from "@chakra-ui/core";
 
 import Honeybadger from "honeybadger-js";
-import { notify } from "../utils/notify";
+// import { notify } from "../utils/notify";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
