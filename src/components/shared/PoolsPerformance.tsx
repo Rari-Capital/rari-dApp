@@ -1,4 +1,4 @@
-import { Box, Icon, Spinner, Text } from "@chakra-ui/core";
+import { Box, Icon, Text } from "@chakra-ui/core";
 import {
   useSpacedLayout,
   PixelSize,
@@ -17,6 +17,7 @@ import Chart from "react-apexcharts";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { Pool } from "../../context/PoolContext";
 import { SimpleTooltip } from "./SimpleTooltip";
+import { PropagateLoader } from "react-spinners";
 
 const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {
@@ -125,7 +126,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       <Box height={chartSize.asPxString()} overflow="hidden">
         {!points ? (
           <Center expand>
-            <Spinner color="#FFF" />
+            <PropagateLoader size={20} color="#FFFFFF" loading />
           </Center>
         ) : (
           <Chart
