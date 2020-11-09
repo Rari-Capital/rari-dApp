@@ -33,6 +33,7 @@ Honeybadger.configure({
   apiKey: "d90cb361",
   environment: process.env.NODE_ENV,
   revision: version,
+  ignorePatterns: [/transaction signature/i, /Unexpected token/i],
 });
 
 console.log("Version " + version);
