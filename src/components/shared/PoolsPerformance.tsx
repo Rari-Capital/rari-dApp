@@ -60,9 +60,14 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       let ethPoints = [];
 
       for (let i = 1; i < 365; i++) {
-        ethBalance = ethBalance + ethBalance * ethAPYPercentPerDay;
-        stableBalance = stableBalance + stableBalance * stableAPYPercentPerDay;
-        yieldBalance = yieldBalance + yieldBalance * yieldAPYPercentPerDay;
+        ethBalance =
+          ethBalance + ethBalance * ethAPYPercentPerDay * (Math.random() * 2);
+        stableBalance =
+          stableBalance +
+          stableBalance * stableAPYPercentPerDay * (Math.random() * 2);
+        yieldBalance =
+          yieldBalance +
+          yieldBalance * yieldAPYPercentPerDay * (Math.random() * 2);
 
         now.setDate(now.getDate() + 1);
 
@@ -107,7 +112,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       >
         <SimpleTooltip
           label={t(
-            "This chart is generated using the APYs of each pool (shown at the bottom of this page). It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation)."
+            "This chart is generated using the APYs of each pool (shown at the bottom of this page). It introduces a random variance in the APY each day, with a max of 2x the current pool APY, and a minimum of 0% APY. It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation)."
           )}
         >
           <Text

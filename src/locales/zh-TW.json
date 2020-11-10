@@ -77,6 +77,6 @@
   "Click review + confirm to withdraw!": "點擊評論+確認退出！",
   "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.": "此池收取{{withdrawFee}}％的提款費+表演費。",
   "You will withdraw {{amount}}. Click confirm to approve.": "您將提取{{amount}}。 點擊確認以批准。",
-  "This chart is generated using the APYs of each pool (shown at the bottom of this page). It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation).": "該圖表是使用每個池的APY生成的（顯示在此頁面的底部）。 它不考慮APY的變動，收益池中的背離損失或不考慮ETH價格。 ETH池模擬不是以ETH計價，而是使用ETH池的當前APY模擬美元的收益。 在ETH池中，您會面臨ETH的價格變動（在此模擬中未顯示或未說明）。",
-  "1 Year of Returns Simulated Using Current Yields": "使用當前收益率模擬1年的收益率"
+  "1 Year of Returns Simulated Using Current Yields": "使用當前收益率模擬1年的收益率",
+  "This chart is generated using the APYs of each pool (shown at the bottom of this page). It introduces a random variance in the APY each day, with a max of 2x the current pool APY, and a minimum of 0% APY. It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation).": "該圖表是使用每個池的APY生成的（顯示在此頁面的底部）。 它每天在APY中引入隨機方差，最大為當前池APY的2倍，最小為0％APY。 它不考慮APY的變動，收益池中的背離損失或不考慮ETH價格。 ETH池模擬不是以ETH計價，而是使用ETH池的當前APY模擬美元的收益。 在ETH池中，您會面臨ETH的價格變動（在此模擬中未顯示或未說明）。"
 }
