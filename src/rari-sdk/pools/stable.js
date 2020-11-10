@@ -1479,7 +1479,7 @@ export default class StablePool {
 
           // Loop through input currency candidates until we fill the withdrawal
           for (var i = 0; i < inputCandidates.length; i++) {
-            // If there is enough input in the fund and enough 0x orders to fulfill the rest of the withdrawal amount, withdraw and exchange
+            // Is this order enough to cover the rest of the withdrawal?
             var usdAmountLeft = senderUsdBalance.sub(amountInputtedUsdBN);
             var inputFillAmountUsdBN = inputCandidates[i].inputFillAmountBN
               .mul(
@@ -1497,6 +1497,7 @@ export default class StablePool {
             if (
               inputFillAmountUsdBN.gte(usdAmountLeft.sub(Web3.utils.toBN(1e16)))
             ) {
+              // If order is enough to cover the rest of the withdrawal, cover it and stop looping through input candidates
               var thisInputAmountBN = inputCandidates[i].inputFillAmountBN
                 .mul(usdAmountLeft)
                 .div(inputFillAmountUsdBN);
@@ -1520,15 +1521,11 @@ export default class StablePool {
                   )
               );
               amountWithdrawnBN.iadd(thisOutputAmountBN);
-              totalProtocolFeeBN.iadd(
-                Web3.utils.toBN(inputCandidates[i].protocolFee)
-              );
+              totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
 
               break;
-            }
-
-            // Add all that we can of the last one, then go through them again
-            if (i == inputCandidates.length - 1) {
+            } else {
+              // Otherwise, add the whole order and keep looping through input candidates
               amountInputtedUsdBN.iadd(
                 inputCandidates[i].inputFillAmountBN
                   .mul(
@@ -1544,15 +1541,8 @@ export default class StablePool {
                       )
                   )
               );
-              amountWithdrawnBN.iadd(
-                inputCandidates[i].makerAssetFillAmountBN
-              );
-              totalProtocolFeeBN.iadd(
-                Web3.utils.toBN(inputCandidates[i].protocolFee)
-              );
-
-              i = -1;
-              inputCandidates.pop();
+              amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
+              totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
             }
 
             // Stop if we have filled the USD amount
@@ -1864,12 +1854,13 @@ export default class StablePool {
 
             // Loop through input currency candidates until we fill the withdrawal
             for (var i = 0; i < inputCandidates.length; i++) {
-              // If there is enough input in the fund and enough 0x orders to fulfill the rest of the withdrawal amount, withdraw and exchange
+              // Is this order enough to cover the rest of the withdrawal?
               if (
                 inputCandidates[i].makerAssetFillAmountBN.gte(
                   amount.sub(amountWithdrawnBN)
                 )
               ) {
+                // If order is enough to cover the rest of the withdrawal, cover it and stop looping through input candidates
                 var thisOutputAmountBN = amount.sub(amountWithdrawnBN);
                 var thisInputAmountBN = inputCandidates[i].inputFillAmountBN
                   .mul(thisOutputAmountBN)
@@ -1904,15 +1895,11 @@ export default class StablePool {
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
 
                 break;
-              }
-
-              // Add all that we can of the last one, then go through them again
-              if (i == inputCandidates.length - 1) {
+              } else {
+                // Otherwise, add the whole order and keep looping through input candidates
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
                     .mul(
@@ -1928,15 +1915,8 @@ export default class StablePool {
                         )
                     )
                 );
-                amountWithdrawnBN.iadd(
-                  inputCandidates[i].makerAssetFillAmountBN
-                );
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
-
-                i = -1;
-                inputCandidates.pop();
+                amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
+                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
               }
 
               // Stop if we have filled the withdrawal
@@ -2311,12 +2291,13 @@ export default class StablePool {
 
             // Loop through input currency candidates until we fill the withdrawal
             for (var i = 0; i < inputCandidates.length; i++) {
-              // If there is enough input in the fund and enough 0x orders to fulfill the rest of the withdrawal amount, withdraw and exchange
+              // Is this order enough to cover the rest of the withdrawal?
               if (
                 inputCandidates[i].makerAssetFillAmountBN.gte(
                   amount.sub(amountWithdrawnBN)
                 )
               ) {
+                // If order is enough to cover the rest of the withdrawal, cover it and stop looping through input candidates
                 var thisOutputAmountBN = amount.sub(amountWithdrawnBN);
                 var thisInputAmountBN = inputCandidates[i].inputFillAmountBN
                   .mul(thisOutputAmountBN)
@@ -2360,15 +2341,11 @@ export default class StablePool {
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
 
                 break;
-              }
-
-              // Add all that we can of the last one, then go through them again
-              if (i == inputCandidates.length - 1) {
+              } else {
+                // Otherwise, add the whole order and keep looping through input candidates
                 inputCurrencyCodes.push(inputCandidates[i].currencyCode);
                 inputAmountBNs.push(inputCandidates[i].inputFillAmountBN);
                 allOrders.push(inputCandidates[i].orders);
@@ -2395,15 +2372,8 @@ export default class StablePool {
                         )
                     )
                 );
-                amountWithdrawnBN.iadd(
-                  inputCandidates[i].makerAssetFillAmountBN
-                );
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
-
-                i = -1;
-                inputCandidates.pop();
+                amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
+                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
               }
 
               // Stop if we have filled the withdrawal
