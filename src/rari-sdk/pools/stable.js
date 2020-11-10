@@ -1791,7 +1791,10 @@ export default class StablePool {
               amountWithdrawnBN.iadd(outputAmountBN);
 
               inputCandidates[i].rawFundBalanceBN.isub(inputAmountBN);
-              if (inputCandidates[i].rawFundBalanceBN.isZero()) inputCandidates.splice(i, 1);
+              if (inputCandidates[i].rawFundBalanceBN.isZero()) {
+                inputCandidates.splice(i, 1);
+                i--;
+              }
 
               // Stop if we have filled the withdrawal
               if (amountWithdrawnBN.gte(amount)) break;
@@ -2198,7 +2201,10 @@ export default class StablePool {
               amountWithdrawnBN.iadd(outputAmountBN);
 
               inputCandidates[i].rawFundBalanceBN.isub(inputAmountBN);
-              if (inputCandidates[i].rawFundBalanceBN.isZero()) inputCandidates.splice(i, 1);
+              if (inputCandidates[i].rawFundBalanceBN.isZero()) {
+                inputCandidates.splice(i, 1);
+                i--;
+              }
 
               // Stop if we have filled the withdrawal
               if (amountWithdrawnBN.gte(amount)) break;
