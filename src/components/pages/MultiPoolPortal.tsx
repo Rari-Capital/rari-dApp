@@ -497,7 +497,7 @@ const InterestEarned = React.memo(() => {
           >
             {t("Interest Earned")}
 
-            <Icon name="info" size="10px" mb="3px" ml={1} />
+            <Icon name="info" ml="5px" size="10px" mb="3px" />
           </Text>
         </SimpleTooltip>
       ) : (
