@@ -461,7 +461,6 @@ const InterestEarned = React.memo(() => {
     };
   });
 
-  const { apy: yieldPoolAPY } = usePoolAPY(Pool.YIELD);
   const { balanceData: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
   const isSufferingDivergenceLoss = useMemo(() => {
     if (interestEarned && yieldPoolBalance) {
@@ -483,14 +482,10 @@ const InterestEarned = React.memo(() => {
       <Heading fontSize="3xl">
         {interestEarned?.formattedEarnings ?? "$?"}
       </Heading>
-      {isSufferingDivergenceLoss && yieldPoolAPY ? (
+      {isSufferingDivergenceLoss ? (
         <SimpleTooltip
           label={t(
-            `You may experience divergence loss when depositing stablecoins into the Yield Pool that are above their peg at the time of deposit. You may see around a ~1% loss (only once) which at the current APY of {{apy}}% you can recover from in around ~{{months}} months. Be aware that APYs are estimates (meaning your recovery time may vary) and your balance will fluctuate due to stablecoin price movements.`,
-            {
-              apy: yieldPoolAPY!.poolAPY,
-              months: ((1 / parseFloat(yieldPoolAPY!.poolAPY)) * 12).toFixed(1),
-            }
+            "You may experience divergence loss when depositing stablecoins into the Yield Pool that are above their peg at the time of deposit. The Yield Pool is composed of various stablecoins which shift in value, causing your balance to fluctuate."
           )}
         >
           <Text
@@ -502,7 +497,7 @@ const InterestEarned = React.memo(() => {
           >
             {t("Interest Earned")}
 
-            <Icon name="info" size="10px" mb={"3px"} ml={1} />
+            <Icon name="info" size="10px" mb="3px" ml={1} />
           </Text>
         </SimpleTooltip>
       ) : (
