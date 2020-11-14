@@ -1,4 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   Center,
@@ -24,6 +30,7 @@ import {
   Image,
   Spinner,
   useDisclosure,
+  Icon,
 } from "@chakra-ui/core";
 import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
@@ -51,6 +58,8 @@ import { usePoolBalance } from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { useTVL } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
+
+import BigNumber from "bignumber.js";
 
 export const RGTPrice = React.memo(() => {
   const { t } = useTranslation();
@@ -203,30 +212,6 @@ const FundStats = React.memo(() => {
     );
   }, [rari, address]);
 
-  const getAccountInterest = useCallback(async () => {
-    const [
-      stableInterest,
-      yieldInterest,
-      ethInterestInETH,
-      ethPriceBN,
-    ] = await Promise.all([
-      rari.pools.stable.balances.interestAccruedBy(address),
-      rari.pools.yield.balances.interestAccruedBy(address),
-      rari.pools.ethereum.balances.interestAccruedBy(address),
-      rari.getEthUsdPriceBN(),
-    ]);
-
-    const ethInterest = ethInterestInETH.mul(
-      ethPriceBN.div(rari.web3.utils.toBN(1e18))
-    );
-
-    return stringUsdFormatter(
-      rari.web3.utils.fromWei(
-        stableInterest.add(yieldInterest).add(ethInterest)
-      )
-    );
-  }, [rari, address]);
-
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
     getAccountBalance
@@ -326,21 +311,7 @@ const FundStats = React.memo(() => {
           height={{ md: "100%", xs: "100px" }}
         >
           <Center expand>
-            {hasNotDeposited ? (
-              <RGTPrice />
-            ) : (
-              <RefetchMovingStat
-                queryKey="interestEarned"
-                interval={60000}
-                fetch={getAccountInterest}
-                loadingPlaceholder="$?"
-                statSize="3xl"
-                captionSize="xs"
-                caption={t("Interest Earned")}
-                crossAxisAlignment="center"
-                captionFirst={false}
-              />
-            )}
+            {hasNotDeposited ? <RGTPrice /> : <InterestEarned />}
           </Center>
         </DashboardBox>
       </RowOnDesktopColumnOnMobile>
@@ -457,6 +428,90 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         </Row>
       </Column>
     </>
+  );
+});
+
+const InterestEarned = React.memo(() => {
+  const { rari, address } = useRari();
+
+  const { data: interestEarned } = useQuery("interestEarned", async () => {
+    const [
+      stableInterest,
+      yieldInterest,
+      ethInterestInETH,
+      ethPriceBN,
+    ] = await Promise.all([
+      rari.pools.stable.balances.interestAccruedBy(address),
+      rari.pools.yield.balances.interestAccruedBy(address),
+      rari.pools.ethereum.balances.interestAccruedBy(address),
+      rari.getEthUsdPriceBN(),
+    ]);
+
+    const ethInterest = ethInterestInETH.mul(
+      ethPriceBN.div(rari.web3.utils.toBN(1e18))
+    );
+
+    return {
+      formattedEarnings: stringUsdFormatter(
+        rari.web3.utils.fromWei(
+          stableInterest.add(yieldInterest).add(ethInterest)
+        )
+      ),
+      yieldPoolInterestEarned: yieldInterest,
+    };
+  });
+
+  const { balanceData: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
+  const isSufferingDivergenceLoss = useMemo(() => {
+    if (interestEarned && yieldPoolBalance) {
+      if (
+        interestEarned.yieldPoolInterestEarned.isZero() &&
+        new BigNumber(yieldPoolBalance.bigBalance.toString()).div(1e18).gt(20)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }, [interestEarned, yieldPoolBalance]);
+
+  const { t } = useTranslation();
+
+  return (
+    <Column mainAxisAlignment="center" crossAxisAlignment="center">
+      <Heading fontSize="3xl">
+        {interestEarned?.formattedEarnings ?? "$?"}
+      </Heading>
+      {isSufferingDivergenceLoss ? (
+        <SimpleTooltip
+          label={t(
+            "You may experience divergence loss when depositing stablecoins into the Yield Pool that are above their peg at the time of deposit. The Yield Pool is composed of various stablecoins which shift in value, causing your balance to fluctuate."
+          )}
+        >
+          <Text
+            textTransform="uppercase"
+            letterSpacing="wide"
+            color="#858585"
+            fontSize="xs"
+            textAlign="center"
+          >
+            {t("Interest Earned")}
+
+            <Icon name="info" ml="5px" size="10px" mb="3px" />
+          </Text>
+        </SimpleTooltip>
+      ) : (
+        <Text
+          textTransform="uppercase"
+          letterSpacing="wide"
+          color="#858585"
+          fontSize="xs"
+          textAlign="center"
+        >
+          {t("Interest Earned")}
+        </Text>
+      )}
+    </Column>
   );
 });
 
