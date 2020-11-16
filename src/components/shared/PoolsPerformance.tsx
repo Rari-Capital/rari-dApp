@@ -94,7 +94,20 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
         });
       }
 
-      return { ethPoints, stablePoints, yieldPoints };
+      return [
+        {
+          name: "Yield Pool",
+          data: yieldPoints,
+        },
+        {
+          name: "Stable Pool",
+          data: stablePoints,
+        },
+        {
+          name: "ETH Pool",
+          data: ethPoints,
+        },
+      ];
     } else {
       return null;
     }
@@ -140,20 +153,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
             type="line"
             width="100%"
             height="100%"
-            series={[
-              {
-                name: "Yield Pool",
-                data: points!.yieldPoints,
-              },
-              {
-                name: "Stable Pool",
-                data: points!.stablePoints,
-              },
-              {
-                name: "ETH Pool",
-                data: points!.ethPoints,
-              },
-            ]}
+            series={points}
           />
         )}
       </Box>

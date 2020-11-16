@@ -386,12 +386,12 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           <Image src={poolLogo} />
         </Box>
 
-        <Heading fontSize="xl" mt={3}>
+        <Heading fontSize="xl" mt={2}>
           {poolName}
         </Heading>
 
         <SimpleTooltip label={t("Your balance in this pool")}>
-          <Text my={5} fontSize="md" textAlign="center">
+          <Text mt={4} mb={5} fontSize="md" textAlign="center">
             {isPoolBalanceLoading ? "$?" : balanceData!.formattedBalance}
           </Text>
         </SimpleTooltip>
