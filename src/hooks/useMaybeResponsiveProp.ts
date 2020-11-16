@@ -1,13 +1,17 @@
-import { useBreakpointValue } from "@chakra-ui/react";
+import { useIsMobile } from "buttered-chakra";
 
 export function useMaybeResponsiveProp<T, A>(
   data: { md: T; base: A } | string
 ) {
-  const isResponsive = typeof data === "object";
+  const mobile = useIsMobile();
 
-  const staticBreakpoint = useBreakpointValue(
-    isResponsive ? (data as any) : { md: "10px", xs: "10px" }
-  );
-
-  return isResponsive ? staticBreakpoint : data;
+  if (typeof data === "object") {
+    if (mobile) {
+      return data.base;
+    } else {
+      return data.md;
+    }
+  } else {
+    return data;
+  }
 }
