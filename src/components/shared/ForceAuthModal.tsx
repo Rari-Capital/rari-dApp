@@ -6,8 +6,8 @@ import {
   Box,
   Spinner,
   Link,
-  PseudoBox,
-} from "@chakra-ui/core";
+  Icon,
+} from "@chakra-ui/react";
 import { Center, Column } from "buttered-chakra";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 
@@ -57,12 +57,11 @@ const GetOrConnectModal = React.memo(() => {
 
   return (
     <Modal isOpen isCentered onClose={noop}>
-      <ModalOverlay zIndex={1} />
+      <ModalOverlay />
       <ModalContent
-        zIndex={1}
         {...MODAL_PROPS}
         height="300px"
-        flexShrink={0}
+        width="500px"
         overflow="hidden"
       >
         <Column
@@ -75,7 +74,7 @@ const GetOrConnectModal = React.memo(() => {
               <Spinner size="lg" />
             </Center>
           ) : (
-            <PseudoBox
+            <Box
               as="button"
               display="flex"
               _focus={{ bg: "#1a1a1a", outline: "none" }}
@@ -86,11 +85,11 @@ const GetOrConnectModal = React.memo(() => {
               alignItems="center"
               onClick={connectWallet}
             >
-              <Box as={VscDebugDisconnect} size="40px" mb={4} />
+              <Icon as={VscDebugDisconnect} boxSize="40px" mb={4} />
               <Heading fontSize="25px" textAlign="center">
                 {t("Connect Wallet")}
               </Heading>
-            </PseudoBox>
+            </Box>
           )}
 
           <Box h="1px" width="100%" bg="#272727" />
@@ -108,7 +107,7 @@ const GetOrConnectModal = React.memo(() => {
               crossAxisAlignment="center"
               mainAxisAlignment="center"
             >
-              <Box as={FaWallet} size="40px" mb={4} />
+              <Icon as={FaWallet} boxSize="40px" mb={4} />
               <Heading fontSize="25px" textAlign="center">
                 {t("Get Wallet")}
               </Heading>

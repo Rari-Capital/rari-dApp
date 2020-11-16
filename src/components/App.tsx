@@ -6,7 +6,7 @@ import FullPageSpinner from "./shared/FullPageSpinner";
 
 import { Route, Routes } from "react-router-dom";
 
-import { Heading } from "@chakra-ui/core";
+import { Heading } from "@chakra-ui/react";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),

@@ -1,10 +1,10 @@
 import React from "react";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
-import { Box, Heading, CloseButton } from "@chakra-ui/core";
+import { Box, Heading, CloseButton } from "@chakra-ui/react";
 import { Row } from "buttered-chakra";
 
 export const MODAL_PROPS = {
-  width: { md: "450px", xs: "92%" },
+  width: { md: "450px", base: "92%" },
   color: "#FFFFFF",
   ...DASHBOARD_BOX_PROPS,
 };
@@ -32,7 +32,9 @@ export const ModalTitleWithCloseButton = React.memo(
         p={DASHBOARD_BOX_SPACING.asPxString()}
       >
         <Box width="32px" />
-        <Heading fontSize="27px">{text}</Heading>
+        <Heading fontSize="27px" lineHeight="1.25em">
+          {text}
+        </Heading>
         <CloseButton onClick={onClose} />
       </Row>
     );

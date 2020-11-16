@@ -7,8 +7,7 @@ import {
   Heading,
   Text,
   Box,
-  Icon,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
 import { Row, Column } from "buttered-chakra";
@@ -30,6 +29,7 @@ import { useRari } from "../../../context/RariContext";
 import { useQuery } from "react-query";
 import { Mode } from ".";
 import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import { SearchIcon } from "@chakra-ui/icons";
 
 const TokenSelect = React.memo(
   ({
@@ -125,20 +125,23 @@ const TokenSelect = React.memo(
           onClose={onClose}
         />
         <ModalDivider />
-        <InputGroup mb={2} mx={DASHBOARD_BOX_SPACING.asPxString()}>
-          <InputLeftElement
-            ml={-1}
-            children={<Icon name="search" color="gray.300" />}
-          />
-          <Input
-            variant="flushed"
-            roundedLeft="0"
-            placeholder={t("Try searching for 'USDC'")}
-            focusBorderColor="#FFFFFF"
-            value={searchNeedle}
-            onChange={onSearch}
-          />
-        </InputGroup>
+        <Box px={DASHBOARD_BOX_SPACING.asPxString()}>
+          <InputGroup mb={2}>
+            <InputLeftElement
+              ml={-1}
+              children={<SearchIcon color="gray.300" />}
+            />
+            <Input
+              variant="flushed"
+              roundedLeft="0"
+              placeholder={t("Try searching for 'USDC'")}
+              focusBorderColor="#FFFFFF"
+              value={searchNeedle}
+              onChange={onSearch}
+            />
+          </InputGroup>
+        </Box>
+
         <Box px={DASHBOARD_BOX_SPACING.asPxString()}>
           No Slippage:{" "}
           <b>
@@ -161,7 +164,7 @@ const TokenSelect = React.memo(
           width="100%"
           height={{
             md: poolHasDivergenceRisk(poolType) ? "182px" : "157px",
-            xs: poolHasDivergenceRisk(poolType) ? "210px" : "185px",
+            base: poolHasDivergenceRisk(poolType) ? "210px" : "185px",
           }}
         >
           <TokenList mode={mode} tokenKeys={tokenKeys} onClick={onTokenClick} />
@@ -222,7 +225,7 @@ const TokenRow = React.memo(
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
           >
-            <Heading fontSize="20px" color={token.color}>
+            <Heading fontSize="20px" lineHeight="1.25rem" color={token.color}>
               {token.symbol}
             </Heading>
             <Text fontWeight="thin" fontSize="15px">

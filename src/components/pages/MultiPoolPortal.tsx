@@ -31,7 +31,7 @@ import {
   Spinner,
   useDisclosure,
   Icon,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { ModalDivider } from "../shared/Modal";
 //@ts-ignore
 import Marquee from "react-double-marquee";
@@ -60,6 +60,7 @@ import { useTVL } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
 
 import BigNumber from "bignumber.js";
+import { InfoIcon } from "@chakra-ui/icons";
 
 export const RGTPrice = React.memo(() => {
   const { t } = useTranslation();
@@ -131,7 +132,7 @@ const MultiPoolPortal = React.memo(() => {
 
         <DashboardBox
           width="100%"
-          height={{ md: "100px", xs: "250px" }}
+          height={{ md: "100px", base: "250px" }}
           mt={DASHBOARD_BOX_SPACING.asPxString()}
         >
           <GovernanceStats />
@@ -224,7 +225,7 @@ const FundStats = React.memo(() => {
       <Center
         height={{
           md: isAuthed ? "235px" : "120px",
-          xs: isAuthed ? "330px" : "215px",
+          base: isAuthed ? "330px" : "215px",
         }}
       >
         <Spinner />
@@ -266,13 +267,13 @@ const FundStats = React.memo(() => {
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         width="100%"
-        height={{ md: "120px", xs: "auto" }}
+        height={{ md: "120px", base: "auto" }}
       >
         <DashboardBox
-          width={{ md: "50%", xs: "100%" }}
-          height={{ md: "100%", xs: "100px" }}
-          mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
-          mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+          width={{ md: "50%", base: "100%" }}
+          height={{ md: "100%", base: "100px" }}
+          mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), base: 0 }}
+          mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
         >
           <Center expand>
             {hasNotDeposited ? (
@@ -307,8 +308,8 @@ const FundStats = React.memo(() => {
         </DashboardBox>
 
         <DashboardBox
-          width={{ md: "50%", xs: "100%" }}
-          height={{ md: "100%", xs: "100px" }}
+          width={{ md: "50%", base: "100%" }}
+          height={{ md: "100%", base: "100px" }}
         >
           <Center expand>
             {hasNotDeposited ? <RGTPrice /> : <InterestEarned />}
@@ -330,7 +331,7 @@ const PoolCards = React.memo(() => {
         return (
           <DashboardBox
             key={pool}
-            width={{ md: "33%", xs: "100%" }}
+            width={{ md: "33%", base: "100%" }}
             height="280px"
             mr={{
               md:
@@ -338,7 +339,7 @@ const PoolCards = React.memo(() => {
                 index === array.length - 1
                   ? 0
                   : DASHBOARD_BOX_SPACING.asPxString(),
-              xs: 0,
+              base: 0,
             }}
             mt={DASHBOARD_BOX_SPACING.asPxString()}
           >
@@ -400,7 +401,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>
               ({isAPYLoading ? "?" : apy!.rgtAPR}%{" "}
-              <Image display="inline" src={SmallLogo} size="20px" />)
+              <Image display="inline" src={SmallLogo} boxSize="20px" />)
             </span>
           </SimpleTooltip>
         </Text>
@@ -422,7 +423,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
             fontWeight="bold"
           >
             <Center expand>
-              <Box as={MdSwapHoriz} size="30px" />
+              <Icon as={MdSwapHoriz} boxSize="30px" />
             </Center>
           </DashboardBox>
         </Row>
@@ -497,7 +498,7 @@ const InterestEarned = React.memo(() => {
           >
             {t("Interest Earned")}
 
-            <Icon name="info" ml="5px" size="10px" mb="3px" />
+            <InfoIcon ml="5px" boxSize="10px" mb="3px" />
           </Text>
         </SimpleTooltip>
       ) : (
@@ -531,7 +532,7 @@ const NewsAndTwitterLink = React.memo(() => {
           px={DASHBOARD_BOX_SPACING.asPxString()}
           py={3}
         >
-          <Box as={FaTwitter} size="20px" />
+          <Icon as={FaTwitter} boxSize="20px" />
 
           <Heading ml={2} size="sm">
             {t("Latest Rari News")}

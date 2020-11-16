@@ -1,89 +1,7 @@
 import React, { useCallback } from "react";
-import {
-  IconButton,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  Select,
-  SelectProps,
-} from "@chakra-ui/core";
-import { MdTranslate } from "react-icons/md";
+import { Select, SelectProps } from "@chakra-ui/react";
+
 import { useTranslation } from "react-i18next";
-import ModalAnimation from "./ModalAnimation";
-import { MODAL_PROPS, ModalTitleWithCloseButton, ModalDivider } from "./Modal";
-import { Column } from "buttered-chakra";
-import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
-
-export const TranslateButton = React.memo(() => {
-  const {
-    isOpen: isModalOpen,
-    onOpen: openModal,
-    onClose: closeModal,
-  } = useDisclosure();
-
-  return (
-    <>
-      <TranslateModal isOpen={isModalOpen} onClose={closeModal} />
-      <LanguageIconButton openModal={openModal} />
-    </>
-  );
-});
-
-const LanguageIconButton = React.memo(
-  ({ openModal }: { openModal: () => any }) => {
-    return (
-      <IconButton
-        onClick={openModal}
-        color="#FFFFFF"
-        variant="ghost"
-        aria-label="Set Language"
-        icon={MdTranslate}
-        fontSize="25px"
-        _hover={{
-          transform: "scale(1.2)",
-          transition: "all 0.3s linear",
-        }}
-        _active={{
-          transform: "scale(0.9)",
-          transition: "all 0.2s linear",
-        }}
-      />
-    );
-  }
-);
-
-export const TranslateModal = React.memo(
-  ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
-    const { t } = useTranslation();
-
-    return (
-      <ModalAnimation
-        isActivted={isOpen}
-        render={(styles) => (
-          <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent {...styles} {...MODAL_PROPS}>
-              <ModalTitleWithCloseButton
-                text={t("Language")}
-                onClose={onClose}
-              />
-              <ModalDivider />
-              <Column
-                width="100%"
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-                p={DASHBOARD_BOX_SPACING.asPxString()}
-              >
-                <LanguageSelect />
-              </Column>
-            </ModalContent>
-          </Modal>
-        )}
-      />
-    );
-  }
-);
 
 export const LanguageSelect = React.memo((extraProps: SelectProps) => {
   const { i18n } = useTranslation();
@@ -100,7 +18,6 @@ export const LanguageSelect = React.memo((extraProps: SelectProps) => {
     <Select
       value={i18n.language}
       onChange={onSelect}
-      color="#000000"
       fontWeight="bold"
       width="100%"
       {...extraProps}

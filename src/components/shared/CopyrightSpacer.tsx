@@ -1,12 +1,12 @@
 import React from "react";
-import { Text } from "@chakra-ui/core";
+import { Text } from "@chakra-ui/react";
 
 const CopyrightSpacer = React.memo(
   ({ forceShow = false }: { forceShow?: boolean }) => {
     return (
       <Text
         fontSize="xs"
-        display={forceShow ? "block" : { md: "none", xs: "block" }}
+        display={forceShow ? "block" : { md: "none", base: "block" }}
         textAlign="center"
         width="100%"
         py={8}

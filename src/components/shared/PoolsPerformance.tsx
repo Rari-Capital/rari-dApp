@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "@chakra-ui/core";
+import { Box, Text } from "@chakra-ui/react";
 import {
   useSpacedLayout,
   PixelSize,
@@ -18,6 +18,7 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { Pool } from "../../context/PoolContext";
 import { SimpleTooltip } from "./SimpleTooltip";
 import { PropagateLoader } from "react-spinners";
+import { InfoIcon } from "@chakra-ui/icons";
 
 const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {
@@ -103,7 +104,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
     <>
       <Row
         color="#FFFFFF"
-        mainAxisAlignment={{ md: "flex-start", xs: "center" }}
+        mainAxisAlignment={{ md: "flex-start", base: "center" }}
         crossAxisAlignment="center"
         px={DASHBOARD_BOX_SPACING.asPxString()}
         mt={topPadding.asPxString()}
@@ -123,7 +124,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
             color="#858585"
           >
             {t("1 Year of Returns Simulated Using Current Yields")}
-            <Icon name="info" ml="5px" size="10px" mb="3px" />
+            <InfoIcon name="info" ml="5px" boxSize="9px" mb="3px" />
           </Text>
         </SimpleTooltip>
       </Row>

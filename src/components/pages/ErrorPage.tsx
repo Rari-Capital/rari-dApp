@@ -1,21 +1,10 @@
 /* istanbul ignore file */
 import React from "react";
 
-import {
-  Code,
-  Accordion,
-  AccordionHeader,
-  Box,
-  Heading,
-  Text,
-  Link,
-  Icon,
-  AccordionIcon,
-  AccordionPanel,
-  AccordionItem,
-} from "@chakra-ui/core";
+import { Code, Box, Heading, Text, Link } from "@chakra-ui/react";
 
 import { useTranslation } from "react-i18next";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 const ErrorPage = ({ error }: { error: string }) => {
   const { t } = useTranslation();
@@ -30,23 +19,12 @@ const ErrorPage = ({ error }: { error: string }) => {
           )}{" "}
           <Link isExternal href="https://github.com/Rari-Capital/rari-dApp">
             <u>GitHub</u>
-            <Icon name="external-link" mx="2px" />
+            <ExternalLinkIcon mx="2px" />
           </Link>
         </Text>
       </Box>
-      <Accordion allowMultiple>
-        <AccordionItem>
-          <AccordionHeader>
-            <Box flex="1" textAlign="left">
-              {t("Error")}:
-            </Box>
-            <AccordionIcon />
-          </AccordionHeader>
-          <AccordionPanel pb={4}>
-            <Code variantColor="red">{error.toString()}</Code>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
+
+      <Code colorScheme="red">{error.toString()}</Code>
     </Box>
   );
 };
