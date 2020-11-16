@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Verified = React.memo(() => {
+export const VerifiedBadge = React.memo(() => {
   return (
     <svg width="22" height="22" viewBox="0 0 12 12" fill="none">
       <path

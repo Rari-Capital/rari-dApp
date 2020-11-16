@@ -24,7 +24,7 @@ import { LanguageSelect } from "./TranslateButton";
 import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
-import { Verified } from "./Verified";
+import { VerifiedBadge } from "./VerifiedBadge";
 import { useQuery } from "react-query";
 
 export const AccountButton = React.memo(() => {
@@ -101,7 +101,7 @@ const AddressButton = React.memo(
             px={3}
           >
             {isVerified ? (
-              <Verified />
+              <VerifiedBadge />
             ) : (
               <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
             )}
