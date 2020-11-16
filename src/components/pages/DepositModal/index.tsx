@@ -81,7 +81,7 @@ const DepositModal = React.memo((props: Props) => {
         {...MODAL_PROPS}
         height={{
           md: poolHasDivergenceRisk(poolType) ? "320px" : "295px",
-          base: poolHasDivergenceRisk(poolType) ? "350px" : "325px",
+          base: poolHasDivergenceRisk(poolType) ? "350px" : "310px",
         }}
       >
         {currentScreen === CurrentScreen.MAIN ? (

@@ -164,7 +164,7 @@ const TokenSelect = React.memo(
           width="100%"
           height={{
             md: poolHasDivergenceRisk(poolType) ? "182px" : "157px",
-            base: poolHasDivergenceRisk(poolType) ? "210px" : "185px",
+            base: poolHasDivergenceRisk(poolType) ? "210px" : "170px",
           }}
         >
           <TokenList mode={mode} tokenKeys={tokenKeys} onClick={onTokenClick} />
