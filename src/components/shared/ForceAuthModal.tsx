@@ -65,7 +65,7 @@ const GetOrConnectModal = React.memo(() => {
           expand
         >
           {isLoading ? (
-            <Center expand>
+            <Center height="150px" width="100%">
               <Spinner size="lg" />
             </Center>
           ) : (
