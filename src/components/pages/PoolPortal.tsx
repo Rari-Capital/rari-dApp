@@ -67,6 +67,7 @@ import { usePoolBalance } from "../../hooks/usePoolBalance";
 import { BN, stringUsdFormatter } from "../../utils/bigUtils";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
+import { usePoolAPY } from "../../hooks/usePoolAPY";
 
 const millisecondsPerDay = 86400000;
 
@@ -431,21 +432,7 @@ const UserStatsAndChart = React.memo(
       }
     );
 
-    const { data: apy, isLoading: isAPYLoading } = useQuery(
-      poolType + " apy",
-      async () => {
-        const poolRawAPY = await getSDKPool({
-          rari,
-          pool: poolType,
-        }).apy.getCurrentRawApy();
-
-        const poolAPY = parseFloat(
-          rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-        ).toFixed(1);
-
-        return poolAPY;
-      }
-    );
+    const { apy } = usePoolAPY(poolType);
 
     const { t } = useTranslation();
 
@@ -464,7 +451,7 @@ const UserStatsAndChart = React.memo(
               crossAxisAlignment={{ md: "flex-start", base: "center" }}
               caption={t("Pool Performance")}
               captionSize="xs"
-              stat={isAPYLoading ? "$?" : apy! + "% APY"}
+              stat={!apy ? "$?" : apy.poolAPY + "% APY"}
               statSize="4xl"
             />
           ) : (
@@ -549,23 +536,7 @@ const CurrentAPY = React.memo(() => {
 
   const poolType = usePoolType();
 
-  const { rari } = useRari();
-
-  const { data: apy, isLoading: isAPYLoading } = useQuery(
-    poolType + " apy",
-    async () => {
-      const poolRawAPY = await getSDKPool({
-        rari,
-        pool: poolType,
-      }).apy.getCurrentRawApy();
-
-      const poolAPY = parseFloat(
-        rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(1);
-
-      return poolAPY;
-    }
-  );
+  const { apy } = usePoolAPY(poolType);
 
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -575,7 +546,7 @@ const CurrentAPY = React.memo(() => {
         fontSize="54px"
         fontWeight="extrabold"
       >
-        {isAPYLoading ? <Spinner size="lg" mr={4} /> : <>{apy}%</>}
+        {!apy ? <Spinner size="lg" mr={4} /> : <>{apy.poolAPY}%</>}
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
         {t("Current APY")}
