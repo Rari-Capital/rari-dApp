@@ -33,6 +33,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { ModalDivider } from "../shared/Modal";
+
 //@ts-ignore
 import Marquee from "react-double-marquee";
 import { useRari } from "../../context/RariContext";
@@ -483,6 +484,7 @@ const InterestEarned = React.memo(() => {
       <Heading fontSize="3xl">
         {interestEarned?.formattedEarnings ?? "$?"}
       </Heading>
+
       {isSufferingDivergenceLoss ? (
         <SimpleTooltip
           label={t(

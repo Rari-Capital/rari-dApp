@@ -159,7 +159,7 @@ export const SettingsModal = React.memo(
         isCentered
       >
         <ModalOverlay />
-        <ModalContent {...MODAL_PROPS} width={{ md: "430px", base: "430px" }}>
+        <ModalContent {...MODAL_PROPS}>
           <ModalTitleWithCloseButton text={t("Account")} onClose={onClose} />
 
           <ModalDivider />

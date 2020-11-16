@@ -58,12 +58,7 @@ const GetOrConnectModal = React.memo(() => {
   return (
     <Modal isOpen isCentered onClose={noop}>
       <ModalOverlay />
-      <ModalContent
-        {...MODAL_PROPS}
-        height="300px"
-        width="500px"
-        overflow="hidden"
-      >
+      <ModalContent {...MODAL_PROPS} overflow="hidden">
         <Column
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
