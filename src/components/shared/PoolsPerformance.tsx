@@ -46,9 +46,9 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
   const points = useMemo(() => {
     if (ethAPY && stableAPY && yieldAPY) {
-      const ethAPYPercentPerDay = parseFloat(ethAPY.poolAPY) / 100 / 360;
-      const stableAPYPercentPerDay = parseFloat(stableAPY.poolAPY) / 100 / 360;
-      const yieldAPYPercentPerDay = parseFloat(yieldAPY.poolAPY) / 100 / 360;
+      const ethAPYPercentPerDay = parseFloat(ethAPY.poolAPY) / 100 / 365;
+      const stableAPYPercentPerDay = parseFloat(stableAPY.poolAPY) / 100 / 365;
+      const yieldAPYPercentPerDay = parseFloat(yieldAPY.poolAPY) / 100 / 365;
 
       let now = new Date();
 
@@ -60,17 +60,28 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       let yieldPoints = [];
       let ethPoints = [];
 
-      for (let i = 1; i < 365; i++) {
+      let i = 1;
+
+      const dayInterval = 5;
+
+      while (i < 365) {
         ethBalance =
-          ethBalance + ethBalance * ethAPYPercentPerDay * (Math.random() * 2);
+          ethBalance +
+          ethBalance *
+            (ethAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
         stableBalance =
           stableBalance +
-          stableBalance * stableAPYPercentPerDay * (Math.random() * 2);
+          stableBalance *
+            (stableAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
         yieldBalance =
           yieldBalance +
-          yieldBalance * yieldAPYPercentPerDay * (Math.random() * 2);
+          yieldBalance *
+            (yieldAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
 
-        now.setDate(now.getDate() + 1);
+        now.setDate(now.getDate() + dayInterval);
 
         const formattedDate =
           now.getMonth() + 1 + "/" + now.getDate() + "/" + now.getFullYear();
@@ -92,6 +103,8 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
           y: ethBalance,
         });
+
+        i += dayInterval;
       }
 
       return [
