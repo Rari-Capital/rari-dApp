@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/core";
-import ModalAnimation from "../../shared/ModalAnimation";
+import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
+
 import TokenSelect from "./TokenSelect";
 import AmountSelect from "./AmountSelect";
 import OptionsMenu from "./OptionsMenu";
@@ -70,44 +70,43 @@ const DepositModal = React.memo((props: Props) => {
   }, [setSelectedToken, mode, poolType]);
 
   return (
-    <ModalAnimation
-      isActivted={props.isOpen}
-      render={(styles) => (
-        <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent
-            {...styles}
-            {...MODAL_PROPS}
-            height={{
-              md: poolHasDivergenceRisk(poolType) ? "320px" : "295px",
-              xs: poolHasDivergenceRisk(poolType) ? "350px" : "325px",
-            }}
-          >
-            {currentScreen === CurrentScreen.MAIN ? (
-              <AmountSelect
-                onClose={props.onClose}
-                openCoinSelect={openCoinSelect}
-                openOptions={openOptions}
-                selectedToken={selectedToken}
-                mode={mode}
-              />
-            ) : currentScreen === CurrentScreen.COIN_SELECT ? (
-              <TokenSelect
-                onClose={openAmountSelect}
-                onSelectToken={setSelectedToken}
-                mode={mode}
-              />
-            ) : (
-              <OptionsMenu
-                onClose={openAmountSelect}
-                onSetMode={setMode}
-                mode={mode}
-              />
-            )}
-          </ModalContent>
-        </Modal>
-      )}
-    />
+    <Modal
+      motionPreset="slideInBottom"
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      isCentered
+    >
+      <ModalOverlay />
+      <ModalContent
+        {...MODAL_PROPS}
+        height={{
+          md: poolHasDivergenceRisk(poolType) ? "320px" : "295px",
+          base: poolHasDivergenceRisk(poolType) ? "350px" : "310px",
+        }}
+      >
+        {currentScreen === CurrentScreen.MAIN ? (
+          <AmountSelect
+            onClose={props.onClose}
+            openCoinSelect={openCoinSelect}
+            openOptions={openOptions}
+            selectedToken={selectedToken}
+            mode={mode}
+          />
+        ) : currentScreen === CurrentScreen.COIN_SELECT ? (
+          <TokenSelect
+            onClose={openAmountSelect}
+            onSelectToken={setSelectedToken}
+            mode={mode}
+          />
+        ) : (
+          <OptionsMenu
+            onClose={openAmountSelect}
+            onSetMode={setMode}
+            mode={mode}
+          />
+        )}
+      </ModalContent>
+    </Modal>
   );
 });
 

@@ -1,4 +1,4 @@
-import { Tooltip } from "@chakra-ui/core";
+import { Tooltip } from "@chakra-ui/react";
 import React, { ReactNode } from "react";
 
 export const SimpleTooltip = React.memo(

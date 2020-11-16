@@ -12,7 +12,7 @@ import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
 
-import { useToast } from "@chakra-ui/core";
+import { useToast } from "@chakra-ui/react";
 
 import Honeybadger from "honeybadger-js";
 // import { notify } from "../utils/notify";

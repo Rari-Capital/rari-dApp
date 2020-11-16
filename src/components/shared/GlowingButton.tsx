@@ -1,7 +1,6 @@
-import { Box, BoxProps, Button } from "@chakra-ui/core";
-import { Icons } from "@chakra-ui/core/dist/theme/icons";
+import { Box, BoxProps, Button } from "@chakra-ui/react";
 
-import React from "react";
+import React, { ReactElement } from "react";
 
 export const GlowingButton = React.memo(
   ({
@@ -11,7 +10,7 @@ export const GlowingButton = React.memo(
     disabled,
     ...boxProps
   }: BoxProps & {
-    leftIcon?: Icons | React.ComponentType;
+    leftIcon?: ReactElement;
     onClick: () => any;
     label: string;
     disabled?: boolean;

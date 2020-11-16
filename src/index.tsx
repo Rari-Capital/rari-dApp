@@ -10,7 +10,7 @@ import "./index.css";
 // @ts-ignore
 import PWAPrompt from "react-ios-pwa-prompt";
 
-import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
+import { ChakraProvider, theme } from "@chakra-ui/react";
 
 import ErrorPage from "./components/pages/ErrorPage";
 
@@ -72,9 +72,7 @@ ReactDOM.render(
       copyBody="The Rari Portal works best when added to your homescreen. Without doing this, you may have a degraded experience."
       copyClosePrompt="Close"
     />
-    <ThemeProvider theme={customTheme}>
-      <CSSReset />
-
+    <ChakraProvider theme={customTheme}>
       <ErrorBoundary honeybadger={Honeybadger} ErrorComponent={ErrorPage}>
         <RariProvider>
           <BrowserRouter>
@@ -83,7 +81,7 @@ ReactDOM.render(
           </BrowserRouter>
         </RariProvider>
       </ErrorBoundary>
-    </ThemeProvider>
+    </ChakraProvider>
   </>,
   document.getElementById("root")
 );

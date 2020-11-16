@@ -12,7 +12,7 @@ import {
   Image,
   Button,
   Link,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import { useRari } from "../../context/RariContext";
 
 import SmallRGTLogo from "../../static/small-logo.png";
@@ -172,18 +172,21 @@ const PoolPortalContent = React.memo(() => {
           crossAxisAlignment="center"
           width="100%"
           px={DASHBOARD_BOX_SPACING.asPxString()}
-          height={{ md: bodySize.asPxString(), xs: "auto" }}
+          height={{ md: bodySize.asPxString(), base: "auto" }}
         >
           <Column
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            height={{ md: "100%", xs: "auto" }}
-            width={{ md: "100%", xs: "100%" }}
+            height={{ md: "100%", base: "auto" }}
+            width={{ md: "100%", base: "100%" }}
           >
             <DashboardBox
               width="100%"
               mb={mainSectionSpacing.asPxString()}
-              height={{ md: mainSectionChildSizes[0].asPxString(), xs: "auto" }}
+              height={{
+                md: mainSectionChildSizes[0].asPxString(),
+                base: "auto",
+              }}
               overflowX="auto"
               whiteSpace="nowrap"
             >
@@ -195,13 +198,13 @@ const PoolPortalContent = React.memo(() => {
               >
                 <Column
                   mainAxisAlignment="center"
-                  crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+                  crossAxisAlignment={{ md: "flex-start", base: "center" }}
                   height="100%"
-                  mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+                  mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
                 >
                   <Heading
                     fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
-                    fontSize={{ md: 27, xs: "xl" }}
+                    fontSize={{ md: 27, base: "xl" }}
                   >
                     {poolName}
                   </Heading>
@@ -247,17 +250,20 @@ const PoolPortalContent = React.memo(() => {
             <RowOnDesktopColumnOnMobile
               mainAxisAlignment="flex-start"
               crossAxisAlignment="center"
-              height={{ md: mainSectionChildSizes[2].asPxString(), xs: "auto" }}
+              height={{
+                md: mainSectionChildSizes[2].asPxString(),
+                base: "auto",
+              }}
               width="100%"
             >
               <DashboardBox
                 mr={{
                   md: DASHBOARD_BOX_SPACING.asPxString(),
-                  xs: 0,
+                  base: 0,
                 }}
-                mb={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
+                mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
                 height={mainSectionChildSizes[2].asPxString()}
-                width={{ md: "50%", xs: "100%" }}
+                width={{ md: "50%", base: "100%" }}
                 pt={DASHBOARD_BOX_SPACING.asPxString()}
                 px={DASHBOARD_BOX_SPACING.asPxString()}
               >
@@ -267,7 +273,7 @@ const PoolPortalContent = React.memo(() => {
               </DashboardBox>
               <DashboardBox
                 height={mainSectionChildSizes[2].asPxString()}
-                width={{ md: "50%", xs: "100%" }}
+                width={{ md: "50%", base: "100%" }}
                 pt={DASHBOARD_BOX_SPACING.asPxString()}
                 px={DASHBOARD_BOX_SPACING.asPxString()}
               >
@@ -280,10 +286,10 @@ const PoolPortalContent = React.memo(() => {
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
             flexShrink={0}
-            height={{ md: "100%", xs: "auto" }}
-            width={{ md: "260px", xs: "100%" }}
-            pt={{ md: 0, xs: DASHBOARD_BOX_SPACING.asPxString() }}
-            pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), xs: 0 }}
+            height={{ md: "100%", base: "auto" }}
+            width={{ md: "260px", base: "100%" }}
+            pt={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
+            pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), base: 0 }}
           >
             <DashboardBox
               width="100%"
@@ -446,16 +452,16 @@ const UserStatsAndChart = React.memo(
     return (
       <>
         <RowOnDesktopColumnOnMobile
-          mainAxisAlignment={{ md: "space-between", xs: "space-around" }}
+          mainAxisAlignment={{ md: "space-between", base: "space-around" }}
           crossAxisAlignment="center"
           px={DASHBOARD_BOX_SPACING.asPxString()}
-          mt={{ md: topPadding.asPxString(), xs: 0 }}
+          mt={{ md: topPadding.asPxString(), base: 0 }}
           height={statsSize.asPxString()}
           width="100%"
         >
           {hasNotDeposited ? (
             <CaptionedStat
-              crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+              crossAxisAlignment={{ md: "flex-start", base: "center" }}
               caption={t("Pool Performance")}
               captionSize="xs"
               stat={isAPYLoading ? "$?" : apy! + "% APY"}
@@ -464,7 +470,7 @@ const UserStatsAndChart = React.memo(
           ) : (
             <>
               <CaptionedStat
-                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+                crossAxisAlignment={{ md: "flex-start", base: "center" }}
                 caption={t("Account Balance")}
                 captionSize="xs"
                 stat={balance}
@@ -472,7 +478,7 @@ const UserStatsAndChart = React.memo(
               />
 
               <CaptionedStat
-                crossAxisAlignment={{ md: "flex-start", xs: "center" }}
+                crossAxisAlignment={{ md: "flex-start", base: "center" }}
                 caption={t("Interest Earned")}
                 captionSize="xs"
                 stat={isInterestEarnedLoading ? "$?" : interestEarned!}
@@ -485,7 +491,7 @@ const UserStatsAndChart = React.memo(
             {...DASHBOARD_BOX_PROPS}
             borderRadius="7px"
             fontWeight="bold"
-            width={{ md: "130px", xs: "100%" }}
+            width={{ md: "130px", base: "100%" }}
             isDisabled={hasNotDeposited}
             value={timeRange}
             onChange={onTimeRangeChange}
@@ -644,7 +650,7 @@ const APYStats = React.memo(() => {
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
                 + ({areAPYsLoading ? "?" : apys!.rgtAPY}%{" "}
-                <Image display="inline" src={SmallRGTLogo} size="20px" />)
+                <Image display="inline" src={SmallRGTLogo} boxSize="20px" />)
               </span>
             </SimpleTooltip>
           </Text>
@@ -662,7 +668,7 @@ const APYStats = React.memo(() => {
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
                 + ({areAPYsLoading ? "?" : apys!.rgtAPY}%{" "}
-                <Image display="inline" src={SmallRGTLogo} size="20px" />)
+                <Image display="inline" src={SmallRGTLogo} boxSize="20px" />)
               </span>
             </SimpleTooltip>
           </Text>
@@ -716,7 +722,7 @@ const StrategyAllocation = React.memo(() => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment={{
         md: "flex-start",
-        xs: "center",
+        base: "center",
       }}
       expand
     >
@@ -860,7 +866,7 @@ const TransactionHistory = React.memo(() => {
         href={`https://etherscan.io/token/${poolAddress}?a=${address}`}
         isExternal
       >
-        <Button variantColor="teal">{t("View on Etherscan")}</Button>
+        <Button colorScheme="teal">{t("View on Etherscan")}</Button>
       </Link>
 
       {/* {events!.map((event, index) => (
@@ -976,7 +982,7 @@ const NeedHelp = React.memo(({ height }: { height: number }) => {
       crossAxisAlignment="center"
       expand
     >
-      <SmallLogo size="44px" />
+      <SmallLogo boxSize="44px" />
 
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}

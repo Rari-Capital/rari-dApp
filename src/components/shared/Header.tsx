@@ -1,4 +1,4 @@
-import { Link, Text } from "@chakra-ui/core";
+import { Link, Text } from "@chakra-ui/react";
 import { PixelSize, Row } from "buttered-chakra";
 import React from "react";
 import { AccountButton } from "./AccountButton";
@@ -54,7 +54,7 @@ export const Header = React.memo(
         <Row
           mx={4}
           expand
-          mainAxisAlignment={{ md: "space-around", xs: "space-between" }}
+          mainAxisAlignment={{ md: "space-around", base: "space-between" }}
           crossAxisAlignment="flex-start"
           overflowX="auto"
           overflowY="hidden"

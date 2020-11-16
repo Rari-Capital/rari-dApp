@@ -1,4 +1,4 @@
-import { Box, Icon, Text } from "@chakra-ui/core";
+import { Box, Text } from "@chakra-ui/react";
 import {
   useSpacedLayout,
   PixelSize,
@@ -18,6 +18,7 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { Pool } from "../../context/PoolContext";
 import { SimpleTooltip } from "./SimpleTooltip";
 import { PropagateLoader } from "react-spinners";
+import { InfoIcon } from "@chakra-ui/icons";
 
 const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
   const {
@@ -45,9 +46,9 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
   const points = useMemo(() => {
     if (ethAPY && stableAPY && yieldAPY) {
-      const ethAPYPercentPerDay = parseFloat(ethAPY.poolAPY) / 100 / 360;
-      const stableAPYPercentPerDay = parseFloat(stableAPY.poolAPY) / 100 / 360;
-      const yieldAPYPercentPerDay = parseFloat(yieldAPY.poolAPY) / 100 / 360;
+      const ethAPYPercentPerDay = parseFloat(ethAPY.poolAPY) / 100 / 365;
+      const stableAPYPercentPerDay = parseFloat(stableAPY.poolAPY) / 100 / 365;
+      const yieldAPYPercentPerDay = parseFloat(yieldAPY.poolAPY) / 100 / 365;
 
       let now = new Date();
 
@@ -59,17 +60,28 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       let yieldPoints = [];
       let ethPoints = [];
 
-      for (let i = 1; i < 365; i++) {
+      let i = 1;
+
+      const dayInterval = 5;
+
+      while (i < 365) {
         ethBalance =
-          ethBalance + ethBalance * ethAPYPercentPerDay * (Math.random() * 2);
+          ethBalance +
+          ethBalance *
+            (ethAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
         stableBalance =
           stableBalance +
-          stableBalance * stableAPYPercentPerDay * (Math.random() * 2);
+          stableBalance *
+            (stableAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
         yieldBalance =
           yieldBalance +
-          yieldBalance * yieldAPYPercentPerDay * (Math.random() * 2);
+          yieldBalance *
+            (yieldAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
 
-        now.setDate(now.getDate() + 1);
+        now.setDate(now.getDate() + dayInterval);
 
         const formattedDate =
           now.getMonth() + 1 + "/" + now.getDate() + "/" + now.getFullYear();
@@ -91,9 +103,24 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
           y: ethBalance,
         });
+
+        i += dayInterval;
       }
 
-      return { ethPoints, stablePoints, yieldPoints };
+      return [
+        {
+          name: "Yield Pool",
+          data: yieldPoints,
+        },
+        {
+          name: "Stable Pool",
+          data: stablePoints,
+        },
+        {
+          name: "ETH Pool",
+          data: ethPoints,
+        },
+      ];
     } else {
       return null;
     }
@@ -103,7 +130,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
     <>
       <Row
         color="#FFFFFF"
-        mainAxisAlignment={{ md: "flex-start", xs: "center" }}
+        mainAxisAlignment={{ md: "flex-start", base: "center" }}
         crossAxisAlignment="center"
         px={DASHBOARD_BOX_SPACING.asPxString()}
         mt={topPadding.asPxString()}
@@ -123,7 +150,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
             color="#858585"
           >
             {t("1 Year of Returns Simulated Using Current Yields")}
-            <Icon name="info" ml="5px" size="10px" mb="3px" />
+            <InfoIcon name="info" ml="5px" boxSize="9px" mb="3px" />
           </Text>
         </SimpleTooltip>
       </Row>
@@ -139,20 +166,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
             type="line"
             width="100%"
             height="100%"
-            series={[
-              {
-                name: "Yield Pool",
-                data: points!.yieldPoints,
-              },
-              {
-                name: "Stable Pool",
-                data: points!.stablePoints,
-              },
-              {
-                name: "ETH Pool",
-                data: points!.ethPoints,
-              },
-            ]}
+            series={points}
           />
         )}
       </Box>
