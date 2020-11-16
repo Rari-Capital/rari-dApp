@@ -466,7 +466,7 @@ const TokenNameAndMaxButton = React.memo(
         if (token.symbol === "ETH") {
           const ethPriceBN = await rari.getEthUsdPriceBN();
 
-          const gasAnd0xFeesInUSD = 18;
+          const gasAnd0xFeesInUSD = 23;
 
           // Subtract gasAnd0xFeesInUSD worth of ETH.
           maxBN = balance.sub(
