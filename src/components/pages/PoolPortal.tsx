@@ -568,12 +568,16 @@ const APYStats = React.memo(() => {
       const monthRaw: BN = await getSDKPool({
         rari,
         pool,
-      }).apy.getApyOverTime(Date.now() - millisecondsPerDay * 30);
+      }).apy.getApyOverTime(
+        Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
+      );
 
       let weekRaw: BN = await getSDKPool({
         rari,
         pool,
-      }).apy.getApyOverTime(Date.now() - millisecondsPerDay * 7);
+      }).apy.getApyOverTime(
+        Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
+      );
 
       const month = parseFloat(
         rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
