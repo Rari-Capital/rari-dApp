@@ -362,7 +362,7 @@ const UserStatsAndChart = React.memo(
 
     const { poolType, poolName } = usePoolInfoFromContext();
 
-    const [timeRange, setTimeRange] = useState("max");
+    const [timeRange, setTimeRange] = useState("week");
 
     const onTimeRangeChange = useCallback(
       (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -426,7 +426,10 @@ const UserStatsAndChart = React.memo(
         const rawData = await getSDKPool({
           rari,
           pool: poolType,
-        }).history.getBalanceHistoryOf(address, millisecondStart);
+        }).history.getBalanceHistoryOf(
+          address,
+          Math.floor(millisecondStart / 1000)
+        );
 
         return rawData;
       }
