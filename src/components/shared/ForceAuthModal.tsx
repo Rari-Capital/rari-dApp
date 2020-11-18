@@ -56,7 +56,7 @@ const GetOrConnectModal = React.memo(() => {
   }, [setLoading, login]);
 
   return (
-    <Modal isOpen isCentered onClose={noop}>
+    <Modal isOpen isCentered onClose={noop} blockScrollOnMount={false}>
       <ModalOverlay />
       <ModalContent {...MODAL_PROPS} overflow="hidden">
         <Column
