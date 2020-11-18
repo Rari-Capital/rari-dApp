@@ -170,15 +170,26 @@ const AmountSelect = React.memo(
     } else {
       // If pool has a withdrawal fee:
       if (depositPercentAfterWithdrawFee(poolType) !== 1) {
-        depositOrWithdrawAlert = t(
-          "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
-          {
-            withdrawFee: (
-              (1 - depositPercentAfterWithdrawFee(poolType)) *
-              100
-            ).toFixed(1),
-          }
-        );
+        const withdrawFee = (
+          (1 - depositPercentAfterWithdrawFee(poolType)) *
+          100
+        ).toFixed(1);
+
+        if (mode === Mode.DEPOSIT) {
+          depositOrWithdrawAlert = t(
+            "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
+            {
+              withdrawFee,
+            }
+          );
+        } else {
+          depositOrWithdrawAlert = t(
+            "This pool has a {{withdrawFee}}% withdrawal fee.",
+            {
+              withdrawFee,
+            }
+          );
+        }
       } else {
         if (mode === Mode.DEPOSIT) {
           depositOrWithdrawAlert = t(

@@ -14,7 +14,6 @@
   "Try searching for 'USDC'": "尝试搜索“ USDC”",
   "Whoops! Looks like something went wrong!": "哎呀！ 好像出了点问题！",
   "You can either reload the page, or report this error to us on our": "您可以重新加载页面，也可以在我们的页面上向我们报告此错误",
-  "Error": "错误",
   "Safe returns on stablecoins": "稳定币的安全回报",
   "Pool Performance": "泳池表现",
   "Account Balance": "账户余额",
@@ -29,7 +28,6 @@
   "to": "至",
   "Account": "帐户",
   "Switch Wallet": "开关钱包",
-  "Language": "语言",
   "Connect with a browser extension": "连接浏览器扩展",
   "Scan with a wallet to connect": "用钱包扫描以进行连接",
   "Connect with your {{provider}} account": "与您的{{provider}}帐户关联",
@@ -79,5 +77,6 @@
   "You will withdraw {{amount}}. Click confirm to approve.": "您将提取{{amount}}。 点击确认以批准。",
   "1 Year of Returns Simulated Using Current Yields": "使用当前收益率模拟1年的收益",
   "This chart is generated using the APYs of each pool (shown at the bottom of this page). It introduces a random variance in the APY each day, with a max of 2x the current pool APY, and a minimum of 0% APY. It does not account for movements in APY, divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation).": "该图表是使用每个池的APY生成的（显示在此页面的底部）。 它每天在APY中引入随机方差，最大为当前池APY的2倍，最小为0％APY。 它不考虑APY的变动，收益池中的背离损失或不考虑ETH价格。 ETH池模拟不是以ETH计价，而是使用ETH池的当前APY模拟美元的收益。 在ETH池中，您会面临ETH的价格变动（在此模拟中未显示或未说明）。",
-  "You may experience divergence loss when depositing stablecoins into the Yield Pool that are above their peg at the time of deposit. The Yield Pool is composed of various stablecoins which shift in value, causing your balance to fluctuate.": "当将稳定币存入收益池中高于固定时的收益池时，您可能会遇到发散损失。收益池由各种稳定币组成，这些稳定币的价值会发生变化，从而导致您的余额波动。"
+  "You may experience divergence loss when depositing stablecoins into the Yield Pool that are above their peg at the time of deposit. The Yield Pool is composed of various stablecoins which shift in value, causing your balance to fluctuate.": "当将稳定币存入收益池中高于固定时的收益池时，您可能会遇到发散损失。收益池由各种稳定币组成，这些稳定币的价值会发生变化，从而导致您的余额波动。",
+  "This pool has a {{withdrawFee}}% withdrawal fee.": "此池收取{{withdrawFee}}％的提款费。"
 }
