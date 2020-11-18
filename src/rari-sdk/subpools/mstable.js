@@ -49,7 +49,7 @@ export default class MStableSubpool {
           operationName: "ExchangeRates",
           variables: { day0: epoch24HrsAgo, day1: epochNow },
           query:
-            "query ExchangeRates($day0: Int!, $day1: Int!) {\n  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {\n    ...ER\n    __typename\n  }\n  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {\n    ...ER\n    __typename\n  }\n}\n\nfragment ER on ExchangeRate {\n  exchangeRate\n  timestamp\n  __typename\n}\n",
+            "query ExchangeRates($day0: Int!, $day1: Int!) {\n  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {\n    ...ER\n    __typename\n  }\n  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {\n    ...ER\n    __typename\n  }\n}\n\nfragment ER on ExchangeRate {\n  rate\n  timestamp\n  __typename\n}\n",
         }
       )
     ).data;
@@ -60,9 +60,9 @@ export default class MStableSubpool {
       );
     return this.calculateMUsdSavingsApy(
       epoch24HrsAgo,
-      data.data.day0[0].exchangeRate,
+      data.data.day0[0].rate,
       epochNow,
-      data.data.day1[0].exchangeRate
+      data.data.day1[0].rate
     );
   }
 
