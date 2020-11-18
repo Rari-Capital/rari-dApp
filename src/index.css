@@ -7,9 +7,9 @@ html {
   */
 
   width: 100%;
-  height: 100%;
+  height: 100% !important;
 
-  background-color: #000000;
+  background-color: #000000 !important;
 }
 
 * {
@@ -26,6 +26,10 @@ html {
 .js-focus-visible :focus:not([data-focus-visible-added]) {
   outline: none;
   box-shadow: none;
+}
+
+.web3modal-modal-lightbox {
+  z-index: 9999 !important;
 }
 
 /* 

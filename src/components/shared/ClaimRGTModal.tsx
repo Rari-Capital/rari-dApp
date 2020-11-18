@@ -1,16 +1,16 @@
+import { InfoIcon } from "@chakra-ui/icons";
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   Text,
   Heading,
-  Icon,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
 import { Column, Row } from "buttered-chakra";
 
@@ -23,7 +23,7 @@ import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { GlowingButton } from "./GlowingButton";
 import { AnimatedSmallLogo } from "./Logos";
 import { ModalDivider, ModalTitleWithCloseButton, MODAL_PROPS } from "./Modal";
-import ModalAnimation from "./ModalAnimation";
+
 import { SimpleTooltip } from "./SimpleTooltip";
 
 export const LiquidityMiningStartTimestamp = 1603177200000;
@@ -84,112 +84,102 @@ export const ClaimRGTModal = React.memo(
     }, [rari.governance.rgt.distributions, amount, rari.web3.utils, address]);
 
     return (
-      <ModalAnimation
-        isActivted={isOpen}
-        render={(styles) => (
-          <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent {...styles} {...MODAL_PROPS}>
-              <ModalTitleWithCloseButton
-                text={t("Claim RGT")}
-                onClose={onClose}
-              />
+      <Modal
+        motionPreset="slideInBottom"
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent {...MODAL_PROPS}>
+          <ModalTitleWithCloseButton text={t("Claim RGT")} onClose={onClose} />
 
-              <ModalDivider />
+          <ModalDivider />
 
-              <Column
-                width="100%"
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-                p={DASHBOARD_BOX_SPACING.asPxString()}
+          <Column
+            width="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            p={DASHBOARD_BOX_SPACING.asPxString()}
+          >
+            <AnimatedSmallLogo boxSize="50px" />
+            <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
+              {isUnclaimedLoading
+                ? "?"
+                : Math.floor(unclaimed! * 10000) / 10000}
+            </Heading>
+
+            <Row
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              width="100%"
+              mb={6}
+            >
+              <Text
+                textTransform="uppercase"
+                letterSpacing="wide"
+                color="#858585"
+                fontSize="lg"
               >
-                <AnimatedSmallLogo size="50px" />
-                <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
-                  {isUnclaimedLoading
-                    ? "?"
-                    : Math.floor(unclaimed! * 10000) / 10000}
-                </Heading>
+                {t("Claimable RGT")}
+              </Text>
+            </Row>
 
-                <Row
-                  mainAxisAlignment="center"
-                  crossAxisAlignment="center"
-                  width="100%"
-                  mb={6}
+            <NumberInput
+              mb={DASHBOARD_BOX_SPACING.asPxString()}
+              min={0}
+              max={unclaimed ?? 0}
+              onChange={handleAmountChange}
+              value={amount}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+
+            <Row
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              width="100%"
+              mb={DASHBOARD_BOX_SPACING.asPxString()}
+            >
+              <Text
+                textTransform="uppercase"
+                letterSpacing="wide"
+                color="#858585"
+                fontSize="xs"
+                textAlign="center"
+              >
+                <SimpleTooltip
+                  label={t(
+                    "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
+                  )}
                 >
-                  <Text
-                    textTransform="uppercase"
-                    letterSpacing="wide"
-                    color="#858585"
-                    fontSize="lg"
-                  >
-                    {t("Claimable RGT")}
-                  </Text>
-                </Row>
+                  <span>
+                    {t(
+                      "Claiming RGT now will result in a {{amount}}% burn/takeback",
+                      { amount: calculateRGTBurn() }
+                    )}
 
-                <NumberInput
-                  color="#000"
-                  mb={DASHBOARD_BOX_SPACING.asPxString()}
-                  min={0}
-                  max={unclaimed ?? 0}
-                  onChange={handleAmountChange}
-                  value={amount}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                    <InfoIcon mb="3px" color="#858585" ml={1} boxSize="9px" />
+                  </span>
+                </SimpleTooltip>
+              </Text>
+            </Row>
 
-                <Row
-                  mainAxisAlignment="center"
-                  crossAxisAlignment="center"
-                  width="100%"
-                  mb={DASHBOARD_BOX_SPACING.asPxString()}
-                >
-                  <Text
-                    textTransform="uppercase"
-                    letterSpacing="wide"
-                    color="#858585"
-                    fontSize="xs"
-                    textAlign="center"
-                  >
-                    <SimpleTooltip
-                      label={t(
-                        "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
-                      )}
-                    >
-                      <span>
-                        {t(
-                          "Claiming RGT now will result in a {{amount}}% burn/takeback",
-                          { amount: calculateRGTBurn() }
-                        )}
-
-                        <Icon
-                          mb="2px"
-                          color="#858585"
-                          ml={1}
-                          name="info"
-                          size="10px"
-                        />
-                      </span>
-                    </SimpleTooltip>
-                  </Text>
-                </Row>
-
-                <GlowingButton
-                  label={t("Claim RGT")}
-                  fontSize="2xl"
-                  disabled={amount > (unclaimed ?? 0)}
-                  onClick={claimRGT}
-                  width="100%"
-                  height="60px"
-                />
-              </Column>
-            </ModalContent>
-          </Modal>
-        )}
-      />
+            <GlowingButton
+              label={t("Claim RGT")}
+              fontSize="2xl"
+              disabled={amount > (unclaimed ?? 0)}
+              onClick={claimRGT}
+              width="100%"
+              height="60px"
+            />
+          </Column>
+        </ModalContent>
+      </Modal>
     );
   }
 );

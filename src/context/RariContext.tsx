@@ -12,10 +12,9 @@ import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "../rari-sdk/index";
 
-import { useToast } from "@chakra-ui/core";
+import { useToast } from "@chakra-ui/react";
 
 import Honeybadger from "honeybadger-js";
-// import { notify } from "../utils/notify";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -184,13 +183,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         const address = addresses[0];
 
         setAddress(address);
-
-        // const { emitter } = notify.account(address);
-
-        // emitter.on("all", (txn) => ({
-        //   link: `https://etherscan.io/tx/${txn.hash}`,
-        //   autoDismiss: 400000,
-        // }));
       });
     },
     [setRari, setAddress]

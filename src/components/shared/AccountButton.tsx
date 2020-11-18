@@ -7,7 +7,8 @@ import {
   ModalContent,
   Button,
   Text,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
+import { RepeatIcon } from "@chakra-ui/icons";
 import { useIsMobile, Row, Column, Center } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 
@@ -16,7 +17,6 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 import { shortAddress, mediumAddress } from "../../utils/shortAddress";
 
-import ModalAnimation from "./ModalAnimation";
 import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
@@ -24,6 +24,8 @@ import { LanguageSelect } from "./TranslateButton";
 import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
+import { VerifiedBadge } from "./VerifiedBadge";
+import { useQuery } from "react-query";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -69,6 +71,20 @@ const AddressButton = React.memo(
 
     const isMobile = useIsMobile();
 
+    const { data: isVerified } = useQuery(address + " isVerified", async () => {
+      const fetched = await fetch(
+        `https://api-mainnet.rarible.com/profiles/${address}`
+      );
+
+      const json: { badges: string[] } = await fetched.json();
+
+      if (json.badges.includes("VERIFIED")) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
     return (
       <>
         <DashboardBox
@@ -84,7 +100,11 @@ const AddressButton = React.memo(
             crossAxisAlignment="center"
             px={3}
           >
-            <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+            {isVerified ? (
+              <VerifiedBadge />
+            ) : (
+              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+            )}
 
             <Text mx={2} fontWeight="semibold">
               {isMobile ? shortAddress(address) : mediumAddress(address)}
@@ -132,59 +152,56 @@ export const SettingsModal = React.memo(
     }, [onClose, openClaimRGTModal]);
 
     return (
-      <ModalAnimation
-        isActivted={isOpen}
-        render={(styles) => (
-          <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent {...styles} {...MODAL_PROPS}>
-              <ModalTitleWithCloseButton
-                text={t("Account")}
-                onClose={onClose}
-              />
+      <Modal
+        motionPreset="slideInBottom"
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent {...MODAL_PROPS}>
+          <ModalTitleWithCloseButton text={t("Account")} onClose={onClose} />
 
-              <ModalDivider />
+          <ModalDivider />
 
-              <Column
-                width="100%"
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-                p={DASHBOARD_BOX_SPACING.asPxString()}
-              >
-                <GlowingButton
-                  label={t("Claim RGT")}
-                  onClick={onClaimRGT}
-                  width="100%"
-                  height="51px"
-                  mb={DASHBOARD_BOX_SPACING.asPxString()}
-                />
+          <Column
+            width="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            p={DASHBOARD_BOX_SPACING.asPxString()}
+          >
+            <GlowingButton
+              label={t("Claim RGT")}
+              onClick={onClaimRGT}
+              width="100%"
+              height="51px"
+              mb={DASHBOARD_BOX_SPACING.asPxString()}
+            />
 
-                <Button
-                  leftIcon="repeat"
-                  bg="whatsapp.500"
-                  width="100%"
-                  height="45px"
-                  fontSize="xl"
-                  borderRadius="7px"
-                  fontWeight="bold"
-                  onClick={onSwitchWallet}
-                  _hover={{}}
-                  _active={{}}
-                  mb={DASHBOARD_BOX_SPACING.asPxString()}
-                >
-                  {t("Switch Wallet")}
-                </Button>
+            <Button
+              leftIcon={<RepeatIcon />}
+              bg="whatsapp.500"
+              width="100%"
+              height="45px"
+              fontSize="xl"
+              borderRadius="7px"
+              fontWeight="bold"
+              onClick={onSwitchWallet}
+              _hover={{}}
+              _active={{}}
+              mb={DASHBOARD_BOX_SPACING.asPxString()}
+            >
+              {t("Switch Wallet")}
+            </Button>
 
-                <LanguageSelect />
+            <LanguageSelect />
 
-                <Text mt={DASHBOARD_BOX_SPACING.asPxString()} fontSize="10px">
-                  Version {version}
-                </Text>
-              </Column>
-            </ModalContent>
-          </Modal>
-        )}
-      />
+            <Text mt={DASHBOARD_BOX_SPACING.asPxString()} fontSize="10px">
+              Version {version}
+            </Text>
+          </Column>
+        </ModalContent>
+      </Modal>
     );
   }
 );

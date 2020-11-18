@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { Button } from "@chakra-ui/core";
+import { Button } from "@chakra-ui/react";
 
 import { Fade } from "react-awesome-reveal";
 import { Column } from "buttered-chakra";
@@ -22,6 +22,7 @@ const OptionsMenu = React.memo(
   }) => {
     const toggleMode = useCallback(() => {
       onSetMode(mode === Mode.DEPOSIT ? Mode.WITHDRAW : Mode.DEPOSIT);
+
       onClose();
     }, [onSetMode, onClose, mode]);
 
@@ -36,11 +37,7 @@ const OptionsMenu = React.memo(
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
         >
-          <Button
-            variantColor="whiteAlpha"
-            variant="solid"
-            onClick={toggleMode}
-          >
+          <Button colorScheme="red" variant="solid" onClick={toggleMode}>
             {mode === Mode.DEPOSIT
               ? t("Want to withdraw?")
               : t("Want to deposit?")}

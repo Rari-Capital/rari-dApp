@@ -1,7 +1,7 @@
 import React from "react";
-import { Heading, Text } from "@chakra-ui/core";
+import { Heading, Text } from "@chakra-ui/react";
 import { CrossAxisAlignment, Column } from "buttered-chakra";
-import { useResponsiveProp } from "../../hooks/useResponsiveProp";
+import { useMaybeResponsiveProp } from "../../hooks/useMaybeResponsiveProp";
 
 export interface CaptionedStatProps {
   crossAxisAlignment: CrossAxisAlignment;
@@ -22,7 +22,7 @@ const CaptionedStat = ({
   crossAxisAlignment,
   captionFirst,
 }: CaptionedStatProps) => {
-  const crossAxisAlignmentStatic = useResponsiveProp(crossAxisAlignment);
+  const crossAxisAlignmentStatic = useMaybeResponsiveProp(crossAxisAlignment);
   const textAlign = crossAxisAlignmentStatic.replace("flex-", "") as any;
 
   return (

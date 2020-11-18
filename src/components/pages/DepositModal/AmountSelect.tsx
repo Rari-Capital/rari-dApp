@@ -1,10 +1,10 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Row, Column, Center } from "buttered-chakra";
 
+import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
 import {
   Heading,
   Box,
-  Icon,
   Button,
   Text,
   Image,
@@ -12,7 +12,7 @@ import {
   Input,
   Link,
   useToast,
-} from "@chakra-ui/core";
+} from "@chakra-ui/react";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { tokens } from "../../../utils/tokenUtils";
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
@@ -344,7 +344,7 @@ const AmountSelect = React.memo(
             color="#FFFFFF"
             variant="ghost"
             aria-label="Options"
-            icon="settings"
+            icon={<SettingsIcon />}
             _hover={{
               transform: "rotate(360deg)",
               transition: "all 0.7s ease-in-out",
@@ -466,7 +466,7 @@ const TokenNameAndMaxButton = React.memo(
         if (token.symbol === "ETH") {
           const ethPriceBN = await rari.getEthUsdPriceBN();
 
-          const gasAnd0xFeesInUSD = 18;
+          const gasAnd0xFeesInUSD = 23;
 
           // Subtract gasAnd0xFeesInUSD worth of ETH.
           maxBN = balance.sub(
@@ -524,7 +524,7 @@ const TokenNameAndMaxButton = React.memo(
             />
           </Box>
           <Heading fontSize="24px">{selectedToken}</Heading>
-          <Icon name="chevron-down" size="32px" />
+          <ChevronDownIcon boxSize="32px" />
         </Row>
 
         <Button
@@ -616,16 +616,16 @@ const ApprovalNotch = React.memo(
           borderWidth="0 1px 1px 1px"
           borderColor="#272727"
           bg="#121212"
-          width={{ md: "auto", xs: "90%" }}
-          height={{ md: "30px", xs: "60px" }}
+          width={{ md: "auto", base: "90%" }}
+          height={{ md: "30px", base: "60px" }}
           color={color}
           position="absolute"
           mx="auto"
           px={4}
           left="50%"
           transform="translateX(-50%)"
-          bottom={{ md: "-30px", xs: "-60px" }}
-          whiteSpace={{ md: "nowrap", xs: "inherit" }}
+          bottom={{ md: "-30px", base: "-60px" }}
+          whiteSpace={{ md: "nowrap", base: "inherit" }}
         >
           <Center expand>
             <Text

@@ -1,11 +1,13 @@
 import { useIsMobile } from "buttered-chakra";
 
-export function useResponsiveProp<T, A>(data: { md: T; xs: A } | string) {
+export function useMaybeResponsiveProp<T, A>(
+  data: { md: T; base: A } | string
+) {
   const mobile = useIsMobile();
 
   if (typeof data === "object") {
     if (mobile) {
-      return data.xs;
+      return data.base;
     } else {
       return data.md;
     }
