@@ -57,8 +57,8 @@ import {
 import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
 import { usePoolBalance } from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
-import { useTVL } from "../../hooks/useTVL";
-import { usePoolAPY } from "../../hooks/usePoolAPY";
+import { useTVLFetchers } from "../../hooks/useTVL";
+import { usePoolAPY, useRGTAPR } from "../../hooks/usePoolAPY";
 
 import BigNumber from "bignumber.js";
 import { InfoIcon } from "@chakra-ui/icons";
@@ -219,7 +219,7 @@ const FundStats = React.memo(() => {
     getAccountBalance
   );
 
-  const { getNumberTVL } = useTVL();
+  const { getNumberTVL } = useTVLFetchers();
 
   if (isBalanceLoading) {
     return (
@@ -365,7 +365,9 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
   const { balanceData, isPoolBalanceLoading } = usePoolBalance(pool);
 
-  const { apy, isAPYLoading } = usePoolAPY(pool);
+  const poolAPY = usePoolAPY(pool);
+
+  const rgtAPR = useRGTAPR();
 
   return (
     <>
@@ -398,10 +400,10 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         </SimpleTooltip>
 
         <Text fontWeight="bold" textAlign="center">
-          {isAPYLoading ? "?" : apy!.poolAPY}% APY +{" "}
+          {poolAPY ?? "$?"}% APY +{" "}
           <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>
-              ({isAPYLoading ? "?" : apy!.rgtAPR}%{" "}
+              ({rgtAPR ?? "$?"}%{" "}
               <Image display="inline" src={SmallLogo} boxSize="20px" />)
             </span>
           </SimpleTooltip>

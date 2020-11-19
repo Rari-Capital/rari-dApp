@@ -40,15 +40,15 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
 
   const { t } = useTranslation();
 
-  const { apy: ethAPY } = usePoolAPY(Pool.ETH);
-  const { apy: stableAPY } = usePoolAPY(Pool.STABLE);
-  const { apy: yieldAPY } = usePoolAPY(Pool.YIELD);
+  const ethAPY = usePoolAPY(Pool.ETH);
+  const stableAPY = usePoolAPY(Pool.STABLE);
+  const yieldAPY = usePoolAPY(Pool.YIELD);
 
   const points = useMemo(() => {
     if (ethAPY && stableAPY && yieldAPY) {
-      const ethAPYPercentPerDay = parseFloat(ethAPY.poolAPY) / 100 / 365;
-      const stableAPYPercentPerDay = parseFloat(stableAPY.poolAPY) / 100 / 365;
-      const yieldAPYPercentPerDay = parseFloat(yieldAPY.poolAPY) / 100 / 365;
+      const ethAPYPercentPerDay = parseFloat(ethAPY) / 100 / 365;
+      const stableAPYPercentPerDay = parseFloat(stableAPY) / 100 / 365;
+      const yieldAPYPercentPerDay = parseFloat(yieldAPY) / 100 / 365;
 
       let now = new Date();
 

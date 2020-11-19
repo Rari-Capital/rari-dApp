@@ -67,7 +67,7 @@ import { usePoolBalance } from "../../hooks/usePoolBalance";
 import { BN, stringUsdFormatter } from "../../utils/bigUtils";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
-import { usePoolAPY } from "../../hooks/usePoolAPY";
+import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
 
 const millisecondsPerDay = 86400000;
 
@@ -435,7 +435,7 @@ const UserStatsAndChart = React.memo(
       }
     );
 
-    const { apy } = usePoolAPY(poolType);
+    const poolAPY = usePoolAPY(poolType);
 
     const { t } = useTranslation();
 
@@ -454,7 +454,7 @@ const UserStatsAndChart = React.memo(
               crossAxisAlignment={{ md: "flex-start", base: "center" }}
               caption={t("Pool Performance")}
               captionSize="xs"
-              stat={!apy ? "$?" : apy.poolAPY + "% APY"}
+              stat={(poolAPY ?? "$?") + "% APY"}
               statSize="4xl"
             />
           ) : (
@@ -539,7 +539,7 @@ const CurrentAPY = React.memo(() => {
 
   const poolType = usePoolType();
 
-  const { apy } = usePoolAPY(poolType);
+  const poolAPY = usePoolAPY(poolType);
 
   return (
     <Row expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -549,7 +549,7 @@ const CurrentAPY = React.memo(() => {
         fontSize="54px"
         fontWeight="extrabold"
       >
-        {!apy ? <Spinner size="lg" mr={4} /> : <>{apy.poolAPY}%</>}
+        {poolAPY ? poolAPY + "%" : <Spinner size="lg" mr={4} />}
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
         {t("Current APY")}
@@ -568,19 +568,21 @@ const APYStats = React.memo(() => {
   const { data: apys, isLoading: areAPYsLoading } = useQuery(
     pool + " monthly and weekly apys",
     async () => {
-      const monthRaw: BN = await getSDKPool({
-        rari,
-        pool,
-      }).apy.getApyOverTime(
-        Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
-      );
-
-      let weekRaw: BN = await getSDKPool({
-        rari,
-        pool,
-      }).apy.getApyOverTime(
-        Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
-      );
+      const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
+        getSDKPool({
+          rari,
+          pool,
+        }).apy.getApyOverTime(
+          Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
+        ),
+        getSDKPool({
+          rari,
+          pool,
+        }).apy.getApyOverTime(
+          Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
+        ),
+        fetchRGTAPR(rari),
+      ]);
 
       const month = parseFloat(
         rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
@@ -590,13 +592,7 @@ const APYStats = React.memo(() => {
         rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
       ).toFixed(1);
 
-      const rgtRawAPY = await rari.governance.rgt.distributions.getCurrentApy();
-
-      const rgtAPY = parseFloat(
-        rari.web3.utils.fromWei(rgtRawAPY.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(2);
-
-      return { month, week, rgtAPY };
+      return { month, week, rgtAPR };
     }
   );
 
@@ -607,7 +603,7 @@ const APYStats = React.memo(() => {
       crossAxisAlignment="flex-start"
     >
       <Heading lineHeight={1} size="sm">
-        {t("APY Stats")}
+        {t("APY Averages")}
       </Heading>
 
       <Column
@@ -627,7 +623,7 @@ const APYStats = React.memo(() => {
           <Text fontWeight="bold" textAlign="center">
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
-                + ({areAPYsLoading ? "?" : apys!.rgtAPY}%{" "}
+                + ({areAPYsLoading ? "?" : apys!.rgtAPR}%{" "}
                 <Image display="inline" src={SmallRGTLogo} boxSize="20px" />)
               </span>
             </SimpleTooltip>
@@ -645,7 +641,7 @@ const APYStats = React.memo(() => {
           <Text fontWeight="bold" textAlign="center">
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
-                + ({areAPYsLoading ? "?" : apys!.rgtAPY}%{" "}
+                + ({areAPYsLoading ? "?" : apys!.rgtAPR}%{" "}
                 <Image display="inline" src={SmallRGTLogo} boxSize="20px" />)
               </span>
             </SimpleTooltip>
