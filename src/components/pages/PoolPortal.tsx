@@ -10,7 +10,6 @@ import {
   theme,
   BoxProps,
   Image,
-  Button,
   Link,
 } from "@chakra-ui/react";
 import { useRari } from "../../context/RariContext";
@@ -59,15 +58,15 @@ import { Pool, PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
-import { SmallLogo } from "../shared/Logos";
+
 import { GlowingButton } from "../shared/GlowingButton";
-import { ClaimRGTModal } from "../shared/ClaimRGTModal";
 
 import { usePoolBalance } from "../../hooks/usePoolBalance";
 import { BN, stringUsdFormatter } from "../../utils/bigUtils";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
 import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 const millisecondsPerDay = 86400000;
 
@@ -268,9 +267,7 @@ const PoolPortalContent = React.memo(() => {
                 pt={DASHBOARD_BOX_SPACING.asPxString()}
                 px={DASHBOARD_BOX_SPACING.asPxString()}
               >
-                <TransactionHistoryOrTokenAllocation
-                  hasNotDeposited={hasNotDeposited}
-                />
+                <TokenAllocation />
               </DashboardBox>
               <DashboardBox
                 height={mainSectionChildSizes[2].asPxString()}
@@ -334,9 +331,8 @@ const PoolPortalContent = React.memo(() => {
             <DashboardBox
               width="100%"
               height={statsSidebarChildSizes[4].asPxString()}
-              px={DASHBOARD_BOX_SPACING.asPxString()}
             >
-              <NeedHelp height={statsSidebarChildSizes[4].asNumber()} />
+              <TransactionHistory />
             </DashboardBox>
           </Column>
         </RowOnDesktopColumnOnMobile>
@@ -812,12 +808,6 @@ const MonthlyReturns = React.memo(() => {
   );
 });
 
-const TransactionHistoryOrTokenAllocation = React.memo(
-  ({ hasNotDeposited }: { hasNotDeposited: boolean }) => {
-    return hasNotDeposited ? <TokenAllocation /> : <TransactionHistory />;
-  }
-);
-
 const TokenAllocation = React.memo(() => {
   const allocations = { DAI: 0.4, USDC: 0.3, USDT: 0.2, TUSD: 0.1 };
 
@@ -850,57 +840,6 @@ const TokenAllocation = React.memo(() => {
           </Column>
         );
       })}
-    </Column>
-  );
-});
-
-const TransactionHistory = React.memo(() => {
-  const { t } = useTranslation();
-
-  const { address, rari } = useRari();
-
-  const poolType = usePoolType();
-
-  const poolAddress: string = getSDKPool({ rari, pool: poolType }).contracts //@ts-ignore
-    .RariFundToken.options.address;
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      expand
-      overflowY="auto"
-    >
-      <Heading size="sm" mb={2}>
-        {t("Your Transaction History")}
-      </Heading>
-
-      <Link
-        href={`https://etherscan.io/token/${poolAddress}?a=${address}`}
-        isExternal
-      >
-        <Button colorScheme="teal">{t("View on Etherscan")}</Button>
-      </Link>
-
-      {/* {events!.map((event, index) => (
-        <Box key={event.transactionHash} width="100%">
-          <Text fontSize="sm" color="#aba6a6">
-            {`${event.event}: ${format1e18Big(
-              toBig(event.returnValues.amount)
-            )} ${
-              getCurrencyCodeFromKeccak256(event.returnValues.currencyCode) ??
-              "UNKNOWN_CURRENCY"
-            }
-            `}
-            <b>({event.timeSent})</b>
-          </Text>
-          {index !== events!.length - 1 ? (
-            <Divider borderColor="#616161" my={1} />
-          ) : (
-            <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
-          )}
-        </Box>
-      ))} */}
     </Column>
   );
 });
@@ -976,45 +915,33 @@ const RecentTrades = React.memo(() => {
   );
 });
 
-const NeedHelp = React.memo(({ height }: { height: number }) => {
-  const isTall = height > 175;
-
+const TransactionHistory = React.memo(() => {
   const { t } = useTranslation();
 
-  const {
-    isOpen: isClaimRGTModalOpen,
-    onOpen: openClaimRGTModal,
-    onClose: closeClaimRGTModal,
-  } = useDisclosure();
+  const poolType = usePoolType();
+
+  const { rari, address } = useRari();
+
+  const poolAddress: string = getSDKPool({ rari, pool: poolType }).contracts //@ts-ignore
+    .RariFundToken.options.address;
 
   return (
-    <Row
-      flexDirection={isTall ? "column" : "row"}
-      mainAxisAlignment="center"
-      crossAxisAlignment="center"
-      expand
+    <Link
+      href={`https://etherscan.io/token/${poolAddress}?a=${address}`}
+      isExternal
     >
-      <SmallLogo boxSize="44px" />
-
-      <ClaimRGTModal
-        isOpen={isClaimRGTModalOpen}
-        onClose={closeClaimRGTModal}
-      />
-
-      <DashboardBox
-        as="button"
-        onClick={openClaimRGTModal}
-        ml={isTall ? 0 : 3}
-        mt={isTall ? 6 : 0}
-        height="45px"
-        width="100%"
-        borderRadius="7px"
-        fontSize="xl"
+      <Column
+        expand
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        textAlign="center"
         fontWeight="bold"
+        fontSize="md"
       >
-        {t("Claim RGT")}
-      </DashboardBox>
-    </Row>
+        <ExternalLinkIcon boxSize="18px" mb="6px" />
+        {t("View Transaction History")}
+      </Column>
+    </Link>
   );
 });
 
