@@ -408,7 +408,13 @@ const UserStatsAndChart = React.memo(
         pool: poolType,
       }).balances.interestAccruedBy(address, startingBlock);
 
-      return stringUsdFormatter(rari.web3.utils.fromWei(interestRaw));
+      const formattedInterest = stringUsdFormatter(
+        rari.web3.utils.fromWei(interestRaw)
+      );
+
+      return poolType === Pool.ETH
+        ? formattedInterest.replace("$", "") + " ETH"
+        : formattedInterest;
     });
 
     const { data: chartData, isLoading: isChartDataLoading } = useQuery(
@@ -423,15 +429,20 @@ const UserStatsAndChart = React.memo(
             ? Date.now() - millisecondsPerDay * 7
             : 0;
 
-        const rawData = await getSDKPool({
-          rari,
-          pool: poolType,
-        }).history.getBalanceHistoryOf(
-          address,
-          Math.floor(millisecondStart / 1000)
-        );
+        try {
+          const rawData = await getSDKPool({
+            rari,
+            pool: poolType,
+          }).history.getBalanceHistoryOf(
+            address,
+            Math.floor(millisecondStart / 1000)
+          );
 
-        return rawData;
+          // TODO: REMOVE THIS ONCE DAVID FIXES INTERVAL SECONDS HANDLING!!!
+          return rawData.slice(0, 200);
+        } catch (e) {
+          console.log(e);
+        }
       }
     );
 
@@ -549,7 +560,7 @@ const CurrentAPY = React.memo(() => {
         fontSize="54px"
         fontWeight="extrabold"
       >
-        {poolAPY ? poolAPY + "%" : <Spinner size="lg" mr={4} />}
+        {poolAPY ? poolAPY.slice(0, -1) + "%" : <Spinner size="lg" mr={4} />}
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
         {t("Current APY")}
@@ -602,8 +613,8 @@ const APYStats = React.memo(() => {
       mainAxisAlignment="space-between"
       crossAxisAlignment="flex-start"
     >
-      <Heading lineHeight={1} size="sm">
-        {t("APY Averages")}
+      <Heading lineHeight={1} size="xs">
+        {t("APY Based On Returns From")}:
       </Heading>
 
       <Column
@@ -617,7 +628,7 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
+            {t("This Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
           <Text fontWeight="bold" textAlign="center">
@@ -635,7 +646,7 @@ const APYStats = React.memo(() => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
+            {t("This Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
           <Text fontWeight="bold" textAlign="center">
@@ -725,7 +736,25 @@ const StrategyAllocation = React.memo(() => {
 });
 
 const MonthlyReturns = React.memo(() => {
-  const returns = { Rari: 9, Compound: 5.4, dYdX: 4.3 };
+  const ethPoolAPY = usePoolAPY(Pool.ETH);
+  const stablePoolAPY = usePoolAPY(Pool.STABLE);
+  const yieldPoolAPY = usePoolAPY(Pool.YIELD);
+
+  const allLoaded = ethPoolAPY && stablePoolAPY && yieldPoolAPY;
+
+  const returns: { [key: string]: number } | null = allLoaded
+    ? {
+        "ETH Pool": parseFloat(ethPoolAPY!),
+        "Stable Pool": parseFloat(stablePoolAPY!),
+        "Yield Pool": parseFloat(yieldPoolAPY!),
+      }
+    : null;
+
+  const sortedEntires = allLoaded
+    ? Object.entries(returns!)
+        // Sort descendingly by highest APY
+        .sort((a, b) => b[1] - a[1])
+    : null;
 
   const { t } = useTranslation();
 
@@ -735,39 +764,50 @@ const MonthlyReturns = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="hidden"
-      opacity={0.1}
     >
       <Heading size="sm" lineHeight={1} mb={3}>
-        {t("Compare Returns (WIP)")}
+        {t("Compare Returns")}
       </Heading>
 
-      {Object.entries(returns).map(([key, value]) => {
-        return (
-          <Column
-            key={key}
-            width="100%"
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            mb={3}
-          >
-            <Row
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
+      {allLoaded ? (
+        sortedEntires!.map(([key, value]) => {
+          const highestAPY = sortedEntires![0][1];
+          return (
+            <Column
+              key={key}
               width="100%"
-              mb={1}
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-end"
+              mb={3}
             >
-              <Text color="#CACACA" fontSize={12}>
-                {key}
-              </Text>
-              <Text color="#CACACA" fontSize={12}>
-                {value}%
-              </Text>
-            </Row>
+              <Row
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                width="100%"
+                mb={1}
+              >
+                <Text color="#CACACA" fontSize={12}>
+                  {key}
+                </Text>
+                <Text color="#CACACA" fontSize={12}>
+                  {value ?? "?"}%
+                </Text>
+              </Row>
 
-            <ProgressBar percentageFilled={value / 100} />
-          </Column>
-        );
-      })}
+              <ProgressBar
+                percentageFilled={
+                  // Fill it relative to the highest APY
+                  value / highestAPY
+                }
+              />
+            </Column>
+          );
+        })
+      ) : (
+        <Center expand>
+          <Spinner />
+        </Center>
+      )}
     </Column>
   );
 });
@@ -789,7 +829,6 @@ const TokenAllocation = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="hidden"
-      opacity={0.1}
     >
       <Heading size="md" lineHeight={1}>
         {t("Token Allocation (WIP)")}
@@ -913,7 +952,6 @@ const RecentTrades = React.memo(() => {
       crossAxisAlignment="flex-start"
       expand
       overflowY="auto"
-      opacity={0.1}
     >
       <Heading size="sm" mb={2}>
         {t("Recent Trades (WIP)")}

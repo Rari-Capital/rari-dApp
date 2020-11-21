@@ -1,3 +1,5 @@
+import { smallStringUsdFormatter } from "./bigUtils";
+
 export const LineChartOptions = {
   chart: {
     foreColor: "#a19f9f",
@@ -118,6 +120,15 @@ export const StrategyAllocationChartOptions = {
       expandOnClick: false,
       dataLabels: {
         offset: -15,
+      },
+    },
+  },
+
+  yaxis: {
+    labels: {
+      ...LineChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return smallStringUsdFormatter(value);
       },
     },
   },
