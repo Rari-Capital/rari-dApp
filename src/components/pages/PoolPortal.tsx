@@ -391,36 +391,39 @@ const UserStatsAndChart = React.memo(
     const {
       data: interestEarned,
       isLoading: isInterestEarnedLoading,
-    } = useQuery(address + " interestAccrued " + timeRange, async () => {
-      const latestBlock = await rari.web3.eth.getBlockNumber();
+    } = useQuery(
+      address + " " + poolType + " interestAccrued " + timeRange,
+      async () => {
+        const latestBlock = await rari.web3.eth.getBlockNumber();
 
-      const blocksPerDay = 6594;
+        const blocksPerDay = 6594;
 
-      const startingBlock =
-        timeRange === "month"
-          ? latestBlock - blocksPerDay * 30
-          : timeRange === "year"
-          ? latestBlock - blocksPerDay * 365
-          : timeRange === "week"
-          ? latestBlock - blocksPerDay * 7
-          : 0;
+        const startingBlock =
+          timeRange === "month"
+            ? latestBlock - blocksPerDay * 30
+            : timeRange === "year"
+            ? latestBlock - blocksPerDay * 365
+            : timeRange === "week"
+            ? latestBlock - blocksPerDay * 7
+            : 0;
 
-      const interestRaw = await getSDKPool({
-        rari,
-        pool: poolType,
-      }).balances.interestAccruedBy(address, startingBlock);
+        const interestRaw = await getSDKPool({
+          rari,
+          pool: poolType,
+        }).balances.interestAccruedBy(address, startingBlock);
 
-      const formattedInterest = stringUsdFormatter(
-        rari.web3.utils.fromWei(interestRaw)
-      );
+        const formattedInterest = stringUsdFormatter(
+          rari.web3.utils.fromWei(interestRaw)
+        );
 
-      return poolType === Pool.ETH
-        ? formattedInterest.replace("$", "") + " ETH"
-        : formattedInterest;
-    });
+        return poolType === Pool.ETH
+          ? formattedInterest.replace("$", "") + " ETH"
+          : formattedInterest;
+      }
+    );
 
     const { data: chartData, isLoading: isChartDataLoading } = useQuery(
-      address + " balanceHistory",
+      address + " " + poolType + " balanceHistory",
       async () => {
         const millisecondStart =
           timeRange === "month"
@@ -465,9 +468,9 @@ const UserStatsAndChart = React.memo(
           {hasNotDeposited ? (
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", base: "center" }}
-              caption={t("Pool Performance")}
+              caption={t("Current earning")}
               captionSize="xs"
-              stat={(poolAPY ?? "$?") + "% APY"}
+              stat={(poolAPY ?? "?") + "% APY"}
               statSize="4xl"
             />
           ) : (
@@ -530,6 +533,13 @@ const UserStatsAndChart = React.memo(
                         { x: "October 3, 2020", y: 1001 },
                         { x: "October 4, 2020", y: 1003 },
                         { x: "October 5, 2020", y: 1005 },
+                        { x: "October 6, 2020", y: 1006 },
+                        { x: "October 7, 2020", y: 1007 },
+                        { x: "October 8, 2020", y: 1010 },
+                        { x: "October 9, 2020", y: 1012 },
+                        { x: "October 10, 2020", y: 1014 },
+                        { x: "October 11, 2020", y: 1016 },
+                        { x: "October 12, 2020", y: 1018 },
                       ]
                     : (chartData ?? []).map((point: any) => ({
                         x: new Date(point.timestamp).toLocaleDateString(
@@ -673,7 +683,7 @@ const StrategyAllocation = React.memo(() => {
   const poolType = usePoolType();
 
   const { data: allocations, isLoading: isAllocationsLoading } = useQuery(
-    "allocations",
+    poolType + "allocations",
     async () => {
       const rawAllocations: { [key: string]: BN } = await getSDKPool({
         rari,
@@ -817,24 +827,27 @@ const TokenAllocation = React.memo(() => {
   const { rari } = useRari();
   const poolType = usePoolType();
 
-  const { data: allocations } = useQuery("currencyAllocations", async () => {
-    const currencyAllocations: {
-      [key: string]: BN;
-    } = await getSDKPool({
-      rari,
-      pool: poolType,
-    }).allocations.getRawCurrencyAllocations();
+  const { data: allocations } = useQuery(
+    poolType + " currencyAllocations",
+    async () => {
+      const currencyAllocations: {
+        [key: string]: BN;
+      } = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).allocations.getRawCurrencyAllocations();
 
-    let dollarAmountAllocations: { [key: string]: number } = {};
+      let dollarAmountAllocations: { [key: string]: number } = {};
 
-    Object.keys(currencyAllocations).forEach((symbol) => {
-      dollarAmountAllocations[symbol] =
-        parseFloat(currencyAllocations[symbol].toString()) /
-        10 ** tokens[symbol].decimals;
-    });
+      Object.keys(currencyAllocations).forEach((symbol) => {
+        dollarAmountAllocations[symbol] =
+          parseFloat(currencyAllocations[symbol].toString()) /
+          10 ** tokens[symbol].decimals;
+      });
 
-    return dollarAmountAllocations;
-  });
+      return dollarAmountAllocations;
+    }
+  );
 
   const sortedEntries = allocations
     ? Object.entries(allocations)
