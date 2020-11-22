@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Box,
   Text,
@@ -67,6 +67,7 @@ import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
 import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { tokens } from "../../utils/tokenUtils";
 
 const millisecondsPerDay = 86400000;
 
@@ -736,18 +737,17 @@ const MonthlyReturns = React.memo(() => {
   const stablePoolAPY = usePoolAPY(Pool.STABLE);
   const yieldPoolAPY = usePoolAPY(Pool.YIELD);
 
-  const allLoaded = ethPoolAPY && stablePoolAPY && yieldPoolAPY;
+  const returns: { [key: string]: number } | null =
+    ethPoolAPY && stablePoolAPY && yieldPoolAPY
+      ? {
+          "ETH Pool": parseFloat(ethPoolAPY!),
+          "Stable Pool": parseFloat(stablePoolAPY!),
+          "Yield Pool": parseFloat(yieldPoolAPY!),
+        }
+      : null;
 
-  const returns: { [key: string]: number } | null = allLoaded
-    ? {
-        "ETH Pool": parseFloat(ethPoolAPY!),
-        "Stable Pool": parseFloat(stablePoolAPY!),
-        "Yield Pool": parseFloat(yieldPoolAPY!),
-      }
-    : null;
-
-  const sortedEntires = allLoaded
-    ? Object.entries(returns!)
+  const sortedEntries = returns
+    ? Object.entries(returns)
         // Sort descendingly by highest APY
         .sort((a, b) => b[1] - a[1])
     : null;
@@ -765,9 +765,9 @@ const MonthlyReturns = React.memo(() => {
         {t("Compare Returns")}
       </Heading>
 
-      {allLoaded ? (
-        sortedEntires!.map(([key, value]) => {
-          const highestAPY = sortedEntires![0][1];
+      {sortedEntries ? (
+        sortedEntries.map(([key, value]) => {
+          const highestAPY = sortedEntries[0][1];
           return (
             <Column
               key={key}
@@ -809,7 +809,43 @@ const MonthlyReturns = React.memo(() => {
 });
 
 const TokenAllocation = React.memo(() => {
-  const allocations = { DAI: 0.4, USDC: 0.3, USDT: 0.2, TUSD: 0.1 };
+  const { rari } = useRari();
+  const poolType = usePoolType();
+
+  const { data: allocations } = useQuery("currencyAllocations", async () => {
+    const currencyAllocations: {
+      [key: string]: BN;
+    } = await getSDKPool({
+      rari,
+      pool: poolType,
+    }).allocations.getRawCurrencyAllocations();
+
+    let dollarAmountAllocations: { [key: string]: number } = {};
+
+    Object.keys(currencyAllocations).forEach((symbol) => {
+      dollarAmountAllocations[symbol] =
+        parseFloat(currencyAllocations[symbol].toString()) /
+        10 ** tokens[symbol].decimals;
+    });
+
+    return dollarAmountAllocations;
+  });
+
+  const sortedEntries = allocations
+    ? Object.entries(allocations)
+        // Sort descendingly by the largest
+        .sort((a, b) => b[1] - a[1])
+    : null;
+
+  const maxAmount = useMemo(() => {
+    if (sortedEntries) {
+      return sortedEntries.reduce((a, b) => {
+        return a + b[1];
+      }, 0);
+    } else {
+      return null;
+    }
+  }, [sortedEntries]);
 
   const { t } = useTranslation();
 
@@ -818,28 +854,36 @@ const TokenAllocation = React.memo(() => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       expand
-      overflowY="hidden"
+      overflowY="scroll"
     >
       <Heading size="md" lineHeight={1}>
-        {t("Token Allocation (WIP)")}
+        {t("Token Allocation")}
       </Heading>
 
-      {Object.entries(allocations).map(([key, value]) => {
-        return (
-          <Column
-            key={key}
-            width="100%"
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            mb={2}
-          >
-            <Text color="#CACACA" fontSize={10}>
-              {key}
-            </Text>
-            <ProgressBar percentageFilled={value} />
-          </Column>
-        );
-      })}
+      {sortedEntries && maxAmount ? (
+        sortedEntries.slice(0, 4).map(([symbol, amount]) => {
+          const percentageOfMax = amount / maxAmount;
+
+          return (
+            <Column
+              key={symbol}
+              width="100%"
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-end"
+              mb="10px"
+            >
+              <Text color="#CACACA" fontSize={10}>
+                {symbol}
+              </Text>
+              <ProgressBar percentageFilled={percentageOfMax} />
+            </Column>
+          );
+        })
+      ) : (
+        <Center expand>
+          <Spinner />
+        </Center>
+      )}
     </Column>
   );
 });
@@ -892,8 +936,8 @@ const RecentTrades = React.memo(() => {
       expand
       overflowY="auto"
     >
-      <Heading size="sm" mb={2}>
-        {t("Recent Trades (WIP)")}
+      <Heading size="md" lineHeight={1} mb={2}>
+        {t("Recent Trades")}
       </Heading>
 
       {recentTrades!.map((event, index) => (
