@@ -257,13 +257,24 @@ const PoolPortalContent = React.memo(() => {
               }}
               width="100%"
             >
+              <DashboardBox
+                height={mainSectionChildSizes[2].asPxString()}
+                width={
+                  poolType === Pool.ETH ? "100%" : { md: "50%", base: "100%" }
+                }
+                mr={{
+                  md: DASHBOARD_BOX_SPACING.asPxString(),
+                  base: 0,
+                }}
+                mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
+                pt={DASHBOARD_BOX_SPACING.asPxString()}
+                px={DASHBOARD_BOX_SPACING.asPxString()}
+              >
+                <RecentTrades />
+              </DashboardBox>
+
               {poolType !== Pool.ETH ? (
                 <DashboardBox
-                  mr={{
-                    md: DASHBOARD_BOX_SPACING.asPxString(),
-                    base: 0,
-                  }}
-                  mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
                   height={mainSectionChildSizes[2].asPxString()}
                   width={{ md: "50%", base: "100%" }}
                   pt={DASHBOARD_BOX_SPACING.asPxString()}
@@ -272,17 +283,6 @@ const PoolPortalContent = React.memo(() => {
                   <TokenAllocation />
                 </DashboardBox>
               ) : null}
-
-              <DashboardBox
-                height={mainSectionChildSizes[2].asPxString()}
-                width={
-                  poolType === Pool.ETH ? "100%" : { md: "50%", base: "100%" }
-                }
-                pt={DASHBOARD_BOX_SPACING.asPxString()}
-                px={DASHBOARD_BOX_SPACING.asPxString()}
-              >
-                <RecentTrades />
-              </DashboardBox>
             </RowOnDesktopColumnOnMobile>
           </Column>
 
@@ -468,7 +468,7 @@ const UserStatsAndChart = React.memo(
           {hasNotDeposited ? (
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", base: "center" }}
-              caption={t("Current earning")}
+              caption={t("Currently earning")}
               captionSize="xs"
               stat={(poolAPY ?? "?") + "% APY"}
               statSize="4xl"
@@ -911,6 +911,24 @@ const TokenAllocation = React.memo(() => {
 });
 
 const RecentTrades = React.memo(() => {
+  const { rari } = useRari();
+
+  const poolType = usePoolType();
+
+  const { data: allocationHistory } = useQuery(
+    poolType + " allocationHistory",
+    async () => {
+      const history = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).history.getPoolAllocationHistory(0, 11305888);
+
+      console.log(history);
+
+      return history;
+    }
+  );
+
   const recentTrades = [
     {
       transactionHash: "XXXXX",
