@@ -55,7 +55,7 @@ import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 
 import { Pool, PoolTypeProvider, usePoolType } from "../../context/PoolContext";
-import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
+import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
 
@@ -752,12 +752,16 @@ const MonthlyReturns = React.memo(() => {
   const stablePoolAPY = usePoolAPY(Pool.STABLE);
   const yieldPoolAPY = usePoolAPY(Pool.YIELD);
 
-  const returns: { [key: string]: number } | null =
+  const { poolName: ethPoolName } = usePoolInfo(Pool.ETH);
+  const { poolName: stablePoolName } = usePoolInfo(Pool.STABLE);
+  const { poolName: yieldPoolName } = usePoolInfo(Pool.YIELD);
+
+  const returns =
     ethPoolAPY && stablePoolAPY && yieldPoolAPY
       ? {
-          "ETH Pool": parseFloat(ethPoolAPY!),
-          "Stable Pool": parseFloat(stablePoolAPY!),
-          "Yield Pool": parseFloat(yieldPoolAPY!),
+          [ethPoolName]: parseFloat(ethPoolAPY!),
+          [stablePoolName]: parseFloat(stablePoolAPY!),
+          [yieldPoolName]: parseFloat(yieldPoolAPY!),
         }
       : null;
 
