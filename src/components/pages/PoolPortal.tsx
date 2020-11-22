@@ -257,22 +257,27 @@ const PoolPortalContent = React.memo(() => {
               }}
               width="100%"
             >
+              {poolType !== Pool.ETH ? (
+                <DashboardBox
+                  mr={{
+                    md: DASHBOARD_BOX_SPACING.asPxString(),
+                    base: 0,
+                  }}
+                  mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
+                  height={mainSectionChildSizes[2].asPxString()}
+                  width={{ md: "50%", base: "100%" }}
+                  pt={DASHBOARD_BOX_SPACING.asPxString()}
+                  px={DASHBOARD_BOX_SPACING.asPxString()}
+                >
+                  <TokenAllocation />
+                </DashboardBox>
+              ) : null}
+
               <DashboardBox
-                mr={{
-                  md: DASHBOARD_BOX_SPACING.asPxString(),
-                  base: 0,
-                }}
-                mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
                 height={mainSectionChildSizes[2].asPxString()}
-                width={{ md: "50%", base: "100%" }}
-                pt={DASHBOARD_BOX_SPACING.asPxString()}
-                px={DASHBOARD_BOX_SPACING.asPxString()}
-              >
-                <TokenAllocation />
-              </DashboardBox>
-              <DashboardBox
-                height={mainSectionChildSizes[2].asPxString()}
-                width={{ md: "50%", base: "100%" }}
+                width={
+                  poolType === Pool.ETH ? "100%" : { md: "50%", base: "100%" }
+                }
                 pt={DASHBOARD_BOX_SPACING.asPxString()}
                 px={DASHBOARD_BOX_SPACING.asPxString()}
               >
@@ -951,7 +956,7 @@ const RecentTrades = React.memo(() => {
           {index !== recentTrades!.length - 1 ? (
             <Divider borderColor="#616161" my={1} />
           ) : (
-            <Box height={DASHBOARD_BOX_SPACING.asPxString()} />
+            <Box height="10px" />
           )}
         </Box>
       ))}
