@@ -53,20 +53,26 @@ export default async (request: NowRequest, response: NowResponse) => {
   );
 
   const [
-    rawtvl,
-    stablePoolAPY,
-    ethPoolAPY,
-    yieldPoolAPY,
-    rgtAPR,
+    rawTVL,
+    rawStablePoolAPY,
+    rawYieldPoolAPY,
+    rawEthPoolAPY,
+    rawRgtAPR,
   ] = await Promise.all([
     fetchTVL(rari),
     fetchPoolAPY(rari, Pool.STABLE),
-    fetchPoolAPY(rari, Pool.ETH),
     fetchPoolAPY(rari, Pool.YIELD),
+    fetchPoolAPY(rari, Pool.ETH),
     fetchRGTAPR(rari),
   ]);
 
-  const tvl = parseFloat(rari.web3.utils.fromWei(rawtvl));
+  const tvl = parseFloat(rari.web3.utils.fromWei(rawTVL));
+
+  const stablePoolAPY = parseFloat(rawStablePoolAPY);
+  const yieldPoolAPY = parseFloat(rawYieldPoolAPY);
+  const ethPoolAPY = parseFloat(rawEthPoolAPY);
+
+  const rgtAPR = parseFloat(rawRgtAPR);
 
   response.setHeader("Cache-Control", "s-maxage=360, stale-while-revalidate");
   response.json({ tvl, rgtAPR, stablePoolAPY, ethPoolAPY, yieldPoolAPY });
