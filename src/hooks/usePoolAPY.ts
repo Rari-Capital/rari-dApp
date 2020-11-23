@@ -31,20 +31,24 @@ export const useRGTAPR = () => {
   return rgtAPR;
 };
 
+export const fetchPoolAPY = async (rari: Rari, pool: Pool) => {
+  const poolRawAPY = await getSDKPool({
+    rari,
+    pool,
+  }).apy.getCurrentRawApy();
+
+  const poolAPY = parseFloat(
+    rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+  ).toFixed(2);
+
+  return poolAPY;
+};
+
 export const usePoolAPY = (pool: Pool) => {
   const { rari } = useRari();
 
-  const { data: poolAPY } = useQuery(pool + " apy", async () => {
-    const poolRawAPY = await getSDKPool({
-      rari,
-      pool,
-    }).apy.getCurrentRawApy();
-
-    const poolAPY = parseFloat(
-      rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-    ).toFixed(2);
-
-    return poolAPY;
+  const { data: poolAPY } = useQuery(pool + " apy", () => {
+    return fetchPoolAPY(rari, pool);
   });
 
   return poolAPY;
