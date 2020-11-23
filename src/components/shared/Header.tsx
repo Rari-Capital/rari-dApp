@@ -63,7 +63,7 @@ export const Header = React.memo(
           overflowY="hidden"
           transform="translate(0px, 7px)"
         >
-          <HeaderLink mr={4} name={t("Pools")} route="/" />
+          {/* <HeaderLink mr={4} name={t("Pools")} route="/" />
 
           {Object.values(Pool).map(
             (pool: Pool, index: number, array: Pool[]) => {
@@ -75,7 +75,7 @@ export const Header = React.memo(
                 />
               );
             }
-          )}
+          )} */}
         </Row>
 
         <AccountButton />
