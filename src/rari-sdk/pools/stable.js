@@ -12,7 +12,7 @@ const contractAddresses = {
   RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
   RariFundToken: "0x016bf078ABcaCB987f0589a6d3BEAdD4316922B0",
   RariFundPriceConsumer: "0xFE98A52bCAcC86432E7aa76376751DcFAB202244",
-  RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e"
+  RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e",
 };
 
 var abis = {};
@@ -26,19 +26,19 @@ const legacyContractAddresses = {
   "v1.0.0": {
     RariFundManager: "0x686ac9d046418416d3ed9ea9206f3dace4943027",
     RariFundToken: "0x9366B7C00894c3555c7590b0384e5F6a9D55659f",
-    RariFundProxy: "0x27C4E34163b5FD2122cE43a40e3eaa4d58eEbeaF"
+    RariFundProxy: "0x27C4E34163b5FD2122cE43a40e3eaa4d58eEbeaF",
   },
   "v1.1.0": {
     RariFundManager: "0x6bdaf490c5b6bb58564b3e79c8d18e8dfd270464",
-    RariFundProxy: "0x318cfd99b60a63d265d2291a4ab982073fbf245d"
+    RariFundProxy: "0x318cfd99b60a63d265d2291a4ab982073fbf245d",
   },
   "v1.2.0": {
-    RariFundProxy: "0xb6b79D857858004BF475e4A57D4A446DA4884866"
+    RariFundProxy: "0xb6b79D857858004BF475e4A57D4A446DA4884866",
   },
   "v2.0.0": {
     RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
-    RariFundProxy: "0xD4be7E211680e12c08bbE9054F0dA0D646c45228"
-  }
+    RariFundProxy: "0xD4be7E211680e12c08bbE9054F0dA0D646c45228",
+  },
 };
 
 var legacyAbis = {};
@@ -137,7 +137,7 @@ export default class StablePool {
           legacyContractAddresses[version][contractName]
         );
     }
-    
+
     for (const currencyCode of Object.keys(this.internalTokens))
       this.internalTokens[currencyCode].contract = new this.web3.eth.Contract(
         erc20Abi,
@@ -494,7 +494,13 @@ export default class StablePool {
       ) {
         const SECONDS_PER_YEAR = 365 * 86400;
         var timeDiff = endTimestamp - startTimestamp;
-        return Web3.utils.toBN((((endRsptExchangeRate.toString() / startRsptExchangeRate.toString()) ** (SECONDS_PER_YEAR / timeDiff)) - 1) * 1e18);
+        return Web3.utils.toBN(
+          ((endRsptExchangeRate.toString() /
+            startRsptExchangeRate.toString()) **
+            (SECONDS_PER_YEAR / timeDiff) -
+            1) *
+            1e18
+        );
       },
       getApyOverBlocks: async function (fromBlock = 0, toBlock = "latest") {
         var blockNumber = await self.web3.eth.getBlockNumber();
@@ -529,11 +535,13 @@ export default class StablePool {
             : Math.trunc(new Date().getTime() / 1000);
 
         try {
-          return (
-            await axios.get(self.API_BASE_URL + "apy", {
-              params: { fromTimestamp, toTimestamp },
-            })
-          ).data;
+          return Web3.utils.toBN(
+            (
+              await axios.get(self.API_BASE_URL + "apy", {
+                params: { fromTimestamp, toTimestamp },
+              })
+            ).data
+          );
         } catch (error) {
           throw new Error("Error in Rari API: " + error);
         }
@@ -579,13 +587,18 @@ export default class StablePool {
             : allTokens[currencyCode].contract.methods.balanceOf(sender).call())
         );
         if (amount.gt(accountBalanceBN))
-          throw new Error("Not enough balance in your account to make a deposit of this amount.");
+          throw new Error(
+            "Not enough balance in your account to make a deposit of this amount."
+          );
 
         // Check if currency is directly depositable
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
-        if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
+        if (
+          !directlyDepositableCurrencyCodes ||
+          directlyDepositableCurrencyCodes.length == 0
+        )
           throw new Error("No directly depositable currencies found.");
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
@@ -597,9 +610,11 @@ export default class StablePool {
           );
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -627,7 +642,9 @@ export default class StablePool {
               ) {
                 if (currencyCode === "mUSD") {
                   try {
-                    var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    var redeemValidity = await self.pools[
+                      "mStable"
+                    ].externalContracts.MassetValidationHelper.methods
                       .getRedeemValidity(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         amount,
@@ -645,7 +662,9 @@ export default class StablePool {
                   );
                 } else {
                   try {
-                    var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    var maxSwap = await self.pools[
+                      "mStable"
+                    ].externalContracts.MassetValidationHelper.methods
                       .getMaxSwap(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         self.internalTokens[currencyCode].address,
@@ -657,13 +676,35 @@ export default class StablePool {
                     continue;
                   }
 
-                  if (!maxSwap || !maxSwap["0"] || amount.gt(Web3.utils.toBN(maxSwap["2"]))) continue;
-                  var outputAmountBeforeFeesBN = amount.mul(Web3.utils.toBN(10 ** self.internalTokens[acceptedCurrency].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals));
-    
-                  if (acceptedCurrency === "mUSD") mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
+                  if (
+                    !maxSwap ||
+                    !maxSwap["0"] ||
+                    amount.gt(Web3.utils.toBN(maxSwap["2"]))
+                  )
+                    continue;
+                  var outputAmountBeforeFeesBN = amount
+                    .mul(
+                      Web3.utils.toBN(
+                        10 ** self.internalTokens[acceptedCurrency].decimals
+                      )
+                    )
+                    .div(
+                      Web3.utils.toBN(
+                        10 ** self.internalTokens[currencyCode].decimals
+                      )
+                    );
+
+                  if (acceptedCurrency === "mUSD")
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
                   else {
-                    var swapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
-                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(swapFeeBN).div(Web3.utils.toBN(1e18)));
+                    var swapFeeBN = await self.pools[
+                      "mStable"
+                    ].getMUsdSwapFeeBN();
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(
+                      outputAmountBeforeFeesBN
+                        .mul(swapFeeBN)
+                        .div(Web3.utils.toBN(1e18))
+                    );
                   }
                 }
 
@@ -682,9 +723,11 @@ export default class StablePool {
             );
             var outputAmountUsdBN = mStableOutputAmountAfterFeeBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -730,9 +773,11 @@ export default class StablePool {
             );
             var makerAssetFilledAmountUsdBN = makerAssetFilledAmountBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(acceptedCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(acceptedCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -748,8 +793,8 @@ export default class StablePool {
             if (inputFilledAmountBN.lt(amount))
               throw new Error(
                 "Unable to find enough liquidity to exchange " +
-                currencyCode +
-                " before depositing."
+                  currencyCode +
+                  " before depositing."
               );
 
             // Make sure we have enough ETH for the protocol fee
@@ -766,7 +811,9 @@ export default class StablePool {
                     : ethBalanceBN
                 )
             )
-              throw new Error("ETH balance too low to cover 0x exchange protocol fee.");
+              throw new Error(
+                "ETH balance too low to cover 0x exchange protocol fee."
+              );
 
             // Return makerAssetFilledAmountUsdBN and protocolFee
             return [makerAssetFilledAmountUsdBN, Web3.utils.toBN(protocolFee)];
@@ -785,16 +832,23 @@ export default class StablePool {
         var accountBalanceBN = Web3.utils.toBN(
           await (currencyCode == "ETH"
             ? self.web3.eth.getBalance(options.from)
-            : allTokens[currencyCode].contract.methods.balanceOf(options.from).call())
+            : allTokens[currencyCode].contract.methods
+                .balanceOf(options.from)
+                .call())
         );
         if (amount.gt(accountBalanceBN))
-          throw new Error("Not enough balance in your account to make a deposit of this amount.");
+          throw new Error(
+            "Not enough balance in your account to make a deposit of this amount."
+          );
 
         // Check if currency is directly depositable
         var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
           .getAcceptedCurrencies()
           .call();
-        if (!directlyDepositableCurrencyCodes || directlyDepositableCurrencyCodes.length == 0)
+        if (
+          !directlyDepositableCurrencyCodes ||
+          directlyDepositableCurrencyCodes.length == 0
+        )
           throw new Error("No directly depositable currencies found.");
 
         if (directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
@@ -806,9 +860,11 @@ export default class StablePool {
           );
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -819,7 +875,12 @@ export default class StablePool {
             );
 
           // Check amountUsdBN against minUsdAmount
-          if (typeof minUsdAmount !== undefined && minUsdAmount !== null && amountUsdBN.lt(minUsdAmount)) return [amountUsdBN];
+          if (
+            typeof minUsdAmount !== undefined &&
+            minUsdAmount !== null &&
+            amountUsdBN.lt(minUsdAmount)
+          )
+            return [amountUsdBN];
 
           // Get deposit contract
           var useGsn = /* amountUsdBN.gte(Web3.utils.toBN(250e18)) && myFundBalanceBN.isZero() */ false;
@@ -839,9 +900,7 @@ export default class StablePool {
                   .call()
               );
               if (allowanceBN.lt(amount))
-                approvalReceipt = await allTokens[
-                  currencyCode
-                ].contract.methods
+                approvalReceipt = await allTokens[currencyCode].contract.methods
                   .approve(depositContract.options.address, amount)
                   .send(options);
             } catch (err) {
@@ -884,7 +943,9 @@ export default class StablePool {
               ) {
                 if (currencyCode === "mUSD") {
                   try {
-                    var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    var redeemValidity = await self.pools[
+                      "mStable"
+                    ].externalContracts.MassetValidationHelper.methods
                       .getRedeemValidity(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         amount,
@@ -902,7 +963,9 @@ export default class StablePool {
                   );
                 } else {
                   try {
-                    var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                    var maxSwap = await self.pools[
+                      "mStable"
+                    ].externalContracts.MassetValidationHelper.methods
                       .getMaxSwap(
                         "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                         self.internalTokens[currencyCode].address,
@@ -914,13 +977,35 @@ export default class StablePool {
                     continue;
                   }
 
-                  if (!maxSwap || !maxSwap["0"] || amount.gt(Web3.utils.toBN(maxSwap["2"]))) continue;
-                  var outputAmountBeforeFeesBN = amount.mul(Web3.utils.toBN(10 ** self.internalTokens[acceptedCurrency].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals));
-    
-                  if (acceptedCurrency === "mUSD") mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
+                  if (
+                    !maxSwap ||
+                    !maxSwap["0"] ||
+                    amount.gt(Web3.utils.toBN(maxSwap["2"]))
+                  )
+                    continue;
+                  var outputAmountBeforeFeesBN = amount
+                    .mul(
+                      Web3.utils.toBN(
+                        10 ** self.internalTokens[acceptedCurrency].decimals
+                      )
+                    )
+                    .div(
+                      Web3.utils.toBN(
+                        10 ** self.internalTokens[currencyCode].decimals
+                      )
+                    );
+
+                  if (acceptedCurrency === "mUSD")
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN;
                   else {
-                    var swapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
-                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(swapFeeBN).div(Web3.utils.toBN(1e18)));
+                    var swapFeeBN = await self.pools[
+                      "mStable"
+                    ].getMUsdSwapFeeBN();
+                    mStableOutputAmountAfterFeeBN = outputAmountBeforeFeesBN.sub(
+                      outputAmountBeforeFeesBN
+                        .mul(swapFeeBN)
+                        .div(Web3.utils.toBN(1e18))
+                    );
                   }
                 }
 
@@ -939,9 +1024,11 @@ export default class StablePool {
             );
             var outputAmountUsdBN = mStableOutputAmountAfterFeeBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(mStableOutputCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -954,7 +1041,12 @@ export default class StablePool {
               );
 
             // Check outputAmountUsdBN against minUsdAmount
-            if (typeof minUsdAmount !== undefined && minUsdAmount !== null && outputAmountUsdBN.lt(minUsdAmount)) return [outputAmountUsdBN];
+            if (
+              typeof minUsdAmount !== undefined &&
+              minUsdAmount !== null &&
+              outputAmountUsdBN.lt(minUsdAmount)
+            )
+              return [outputAmountUsdBN];
 
             // Approve tokens to RariFundProxy
             try {
@@ -975,7 +1067,7 @@ export default class StablePool {
             } catch (err) {
               throw new Error(
                 "Failed to approve tokens to RariFundProxy: " +
-                (err.message ? err.message : err)
+                  (err.message ? err.message : err)
               );
             }
 
@@ -987,7 +1079,7 @@ export default class StablePool {
             } catch (err) {
               throw new Error(
                 "RariFundProxy.exchangeAndDeposit failed: " +
-                (err.message ? err.message : err)
+                  (err.message ? err.message : err)
               );
             }
 
@@ -1030,9 +1122,11 @@ export default class StablePool {
             );
             var makerAssetFilledAmountUsdBN = makerAssetFilledAmountBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(acceptedCurrency)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(acceptedCurrency)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -1048,8 +1142,8 @@ export default class StablePool {
             if (inputFilledAmountBN.lt(amount))
               throw new Error(
                 "Unable to find enough liquidity to exchange " +
-                currencyCode +
-                " before depositing."
+                  currencyCode +
+                  " before depositing."
               );
 
             // Make sure we have enough ETH for the protocol fee
@@ -1066,10 +1160,16 @@ export default class StablePool {
                     : ethBalanceBN
                 )
             )
-              throw new Error("ETH balance too low to cover 0x exchange protocol fee.");
+              throw new Error(
+                "ETH balance too low to cover 0x exchange protocol fee."
+              );
 
             // Check makerAssetFilledAmountUsdBN against minUsdAmount
-            if (typeof minUsdAmount !== undefined && minUsdAmount !== null && makerAssetFilledAmountUsdBN.lt(minUsdAmount))
+            if (
+              typeof minUsdAmount !== undefined &&
+              minUsdAmount !== null &&
+              makerAssetFilledAmountUsdBN.lt(minUsdAmount)
+            )
               return [makerAssetFilledAmountUsdBN];
 
             // Approve tokens to RariFundProxy if token is not ETH
@@ -1095,7 +1195,7 @@ export default class StablePool {
               } catch (err) {
                 throw new Error(
                   "Failed to approve tokens to RariFundProxy: " +
-                  (err.message ? err.message : err)
+                    (err.message ? err.message : err)
                 );
               }
 
@@ -1151,7 +1251,7 @@ export default class StablePool {
             } catch (err) {
               throw new Error(
                 "RariFundProxy.exchangeAndDeposit failed: " +
-                (err.message ? err.message : err)
+                  (err.message ? err.message : err)
               );
             }
 
@@ -1188,7 +1288,12 @@ export default class StablePool {
           return [Web3.utils.toBN(0)];
 
         // Get user fund balance
-        if (senderUsdBalance === undefined) senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+        if (senderUsdBalance === undefined)
+          senderUsdBalance = Web3.utils.toBN(
+            await self.contracts.RariFundManager.methods
+              .balanceOf(sender)
+              .call()
+          );
 
         // Check balances to find withdrawal source
         var allBalances = await self.cache.getOrUpdate(
@@ -1217,27 +1322,36 @@ export default class StablePool {
                 )
             )
             .div(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             );
 
-          if ((maxWithdrawalAmountBN
-            .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
-            )
-            .div(
-              Web3.utils
-                .toBN(10)
-                .pow(
-                  Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+          if (
+            maxWithdrawalAmountBN
+              .mul(
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(currencyCode)
+                  ]
                 )
-            )).gt(senderUsdBalance)) maxWithdrawalAmountBN.isubn(1);
+              )
+              .div(
+                Web3.utils
+                  .toBN(10)
+                  .pow(
+                    Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                  )
+              )
+              .gt(senderUsdBalance)
+          )
+            maxWithdrawalAmountBN.isubn(1);
 
           // If tokenRawFundBalanceBN >= maxWithdrawalAmountBN, return maxWithdrawalAmountBN
-          if (tokenRawFundBalanceBN.gte(maxWithdrawalAmountBN)) return [maxWithdrawalAmountBN];
+          if (tokenRawFundBalanceBN.gte(maxWithdrawalAmountBN))
+            return [maxWithdrawalAmountBN];
         }
 
         // Otherwise, exchange as few currencies as possible (ideally those with the lowest balances)
@@ -1250,9 +1364,11 @@ export default class StablePool {
           amountInputtedUsdBN.iadd(
             tokenRawFundBalanceBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(currencyCode)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(currencyCode)
+                  ]
+                )
               )
               .div(
                 Web3.utils
@@ -1278,7 +1394,7 @@ export default class StablePool {
             if (rawFundBalanceBN.gt(Web3.utils.toBN(0))) {
               inputCandidates.push({
                 currencyCode: inputCurrencyCode,
-                rawFundBalanceBN
+                rawFundBalanceBN,
               });
             }
           }
@@ -1296,34 +1412,55 @@ export default class StablePool {
                 Web3.utils
                   .toBN(10)
                   .pow(
-                    Web3.utils.toBN(self.internalTokens[inputCandidate.currencyCode].decimals)
+                    Web3.utils.toBN(
+                      self.internalTokens[inputCandidate.currencyCode].decimals
+                    )
                   )
               )
               .div(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(inputCandidate.currencyCode)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(
+                      inputCandidate.currencyCode
+                    )
+                  ]
+                )
               );
-            if ((maxInputAmountLeftBN
-              .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(inputCandidate.currencyCode)
-                ])
-              )
-              .div(
-                Web3.utils
-                  .toBN(10)
-                  .pow(
-                    Web3.utils.toBN(self.internalTokens[inputCandidate.currencyCode].decimals)
+            if (
+              maxInputAmountLeftBN
+                .mul(
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(
+                        inputCandidate.currencyCode
+                      )
+                    ]
                   )
-              )).gt(usdAmountLeft)) maxInputAmountLeftBN.isubn(1);
-            var inputAmountBN = Web3.utils.BN.min(maxInputAmountLeftBN, inputCandidate.rawFundBalanceBN);
-            
-            if (inputAmountBN.gt(Web3.utils.toBN(0))) inputCandidates2.push({
-              currencyCode: inputCandidate.currencyCode,
-              rawFundBalanceBN: inputCandidate.rawFundBalanceBN,
-              inputAmountBN
-            });
+                )
+                .div(
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(
+                        self.internalTokens[inputCandidate.currencyCode]
+                          .decimals
+                      )
+                    )
+                )
+                .gt(usdAmountLeft)
+            )
+              maxInputAmountLeftBN.isubn(1);
+            var inputAmountBN = Web3.utils.BN.min(
+              maxInputAmountLeftBN,
+              inputCandidate.rawFundBalanceBN
+            );
+
+            if (inputAmountBN.gt(Web3.utils.toBN(0)))
+              inputCandidates2.push({
+                currencyCode: inputCandidate.currencyCode,
+                rawFundBalanceBN: inputCandidate.rawFundBalanceBN,
+                inputAmountBN,
+              });
           }
 
           inputCandidates = inputCandidates2;
@@ -1356,7 +1493,9 @@ export default class StablePool {
             // Check max swap/redeem validity
             if (inputCandidates[i].currencyCode === "mUSD") {
               try {
-                var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                var redeemValidity = await self.pools[
+                  "mStable"
+                ].externalContracts.MassetValidationHelper.methods
                   .getRedeemValidity(
                     "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                     mStableInputAmountBN,
@@ -1374,10 +1513,13 @@ export default class StablePool {
               );
             } else {
               try {
-                var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                var maxSwap = await self.pools[
+                  "mStable"
+                ].externalContracts.MassetValidationHelper.methods
                   .getMaxSwap(
                     "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
-                    self.internalTokens[inputCandidates[i].currencyCode].address,
+                    self.internalTokens[inputCandidates[i].currencyCode]
+                      .address,
                     self.internalTokens[currencyCode].address
                   )
                   .call();
@@ -1386,29 +1528,64 @@ export default class StablePool {
                 continue;
               }
 
-              if (!maxSwap || !maxSwap["0"] || Web3.utils.toBN(maxSwap["2"]).lte(Web3.utils.toBN(0))) continue;
-              mStableInputAmountBN = Web3.utils.BN.min(mStableInputAmountBN, Web3.utils.toBN(maxSwap["2"]));
-              var outputAmountBeforeFeesBN = mStableInputAmountBN.mul(Web3.utils.toBN(10 ** self.internalTokens[currencyCode].decimals)).div(Web3.utils.toBN(10 ** self.internalTokens[inputCandidates[i].currencyCode].decimals));
+              if (
+                !maxSwap ||
+                !maxSwap["0"] ||
+                Web3.utils.toBN(maxSwap["2"]).lte(Web3.utils.toBN(0))
+              )
+                continue;
+              mStableInputAmountBN = Web3.utils.BN.min(
+                mStableInputAmountBN,
+                Web3.utils.toBN(maxSwap["2"])
+              );
+              var outputAmountBeforeFeesBN = mStableInputAmountBN
+                .mul(
+                  Web3.utils.toBN(
+                    10 ** self.internalTokens[currencyCode].decimals
+                  )
+                )
+                .div(
+                  Web3.utils.toBN(
+                    10 **
+                      self.internalTokens[inputCandidates[i].currencyCode]
+                        .decimals
+                  )
+                );
 
-              if (currencyCode === "mUSD") mStableOutputAmountAfterFeesBN = outputAmountBeforeFeesBN;
+              if (currencyCode === "mUSD")
+                mStableOutputAmountAfterFeesBN = outputAmountBeforeFeesBN;
               else {
-                if (mStableSwapFeeBN === null) mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
-                mStableOutputAmountAfterFeesBN = outputAmountBeforeFeesBN.sub(outputAmountBeforeFeesBN.mul(mStableSwapFeeBN).div(Web3.utils.toBN(1e18)));
+                if (mStableSwapFeeBN === null)
+                  mStableSwapFeeBN = await self.pools[
+                    "mStable"
+                  ].getMUsdSwapFeeBN();
+                mStableOutputAmountAfterFeesBN = outputAmountBeforeFeesBN.sub(
+                  outputAmountBeforeFeesBN
+                    .mul(mStableSwapFeeBN)
+                    .div(Web3.utils.toBN(1e18))
+                );
               }
             }
 
             amountInputtedUsdBN.iadd(
               mStableInputAmountBN
                 .mul(
-                  Web3.utils.toBN(allBalances["4"][
-                    self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                  ])
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(
+                        inputCandidates[i].currencyCode
+                      )
+                    ]
+                  )
                 )
                 .div(
                   Web3.utils
                     .toBN(10)
                     .pow(
-                      Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      Web3.utils.toBN(
+                        self.internalTokens[inputCandidates[i].currencyCode]
+                          .decimals
+                      )
                     )
                 )
             );
@@ -1418,14 +1595,25 @@ export default class StablePool {
             updateMaxInputs();
 
             // Stop if we have filled the USD amount
-            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw new Error("Amount inputted in USD greater than sender USD fund balance");
-            if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
+            if (amountInputtedUsdBN.gt(senderUsdBalance))
+              throw new Error(
+                "Amount inputted in USD greater than sender USD fund balance"
+              );
+            if (
+              amountInputtedUsdBN.gte(
+                senderUsdBalance.sub(Web3.utils.toBN(1e16))
+              )
+            )
+              break;
           }
         }
 
         // Use 0x if necessary
         // Deal with amountInputtedUsdBN.lt(senderUsdBalance) not being accurate better than 1 cent margin of error
-        if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))) && inputCandidates.length > 0) {
+        if (
+          amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))) &&
+          inputCandidates.length > 0
+        ) {
           // Get orders from 0x swap API for each input currency candidate
           for (var i = 0; i < inputCandidates.length; i++) {
             try {
@@ -1455,26 +1643,48 @@ export default class StablePool {
 
             inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
             inputCandidates[i].protocolFee = protocolFee;
-            inputCandidates[i].takerAssetFillAmountBN = takerAssetFilledAmountBN;
-            inputCandidates[i].makerAssetFillAmountBN = makerAssetFilledAmountBN;
-            inputCandidates[i].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
+            inputCandidates[
+              i
+            ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
+            inputCandidates[
+              i
+            ].makerAssetFillAmountBN = makerAssetFilledAmountBN;
+            inputCandidates[
+              i
+            ].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(
+                      inputCandidates[i].currencyCode
+                    )
+                  ]
+                )
               )
               .div(
                 Web3.utils
                   .toBN(10)
                   .pow(
-                    Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                    Web3.utils.toBN(
+                      self.internalTokens[inputCandidates[i].currencyCode]
+                        .decimals
+                    )
                   )
               );
           }
 
           // Sort candidates from highest to lowest output per USD burned
           inputCandidates.sort((a, b) =>
-            b.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(b.takerAssetFillAmountUsdBN).gt(a.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(a.takerAssetFillAmountUsdBN)) ? 1 : -1
+            b.makerAssetFillAmountBN
+              .mul(Web3.utils.toBN(1e18))
+              .div(b.takerAssetFillAmountUsdBN)
+              .gt(
+                a.makerAssetFillAmountBN
+                  .mul(Web3.utils.toBN(1e18))
+                  .div(a.takerAssetFillAmountUsdBN)
+              )
+              ? 1
+              : -1
           );
 
           // Loop through input currency candidates until we fill the withdrawal
@@ -1483,15 +1693,22 @@ export default class StablePool {
             var usdAmountLeft = senderUsdBalance.sub(amountInputtedUsdBN);
             var inputFillAmountUsdBN = inputCandidates[i].inputFillAmountBN
               .mul(
-                Web3.utils.toBN(allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                ])
+                Web3.utils.toBN(
+                  allBalances["4"][
+                    self.allocations.CURRENCIES.indexOf(
+                      inputCandidates[i].currencyCode
+                    )
+                  ]
+                )
               )
               .div(
                 Web3.utils
                   .toBN(10)
                   .pow(
-                    Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                    Web3.utils.toBN(
+                      self.internalTokens[inputCandidates[i].currencyCode]
+                        .decimals
+                    )
                   )
               );
             if (
@@ -1508,20 +1725,29 @@ export default class StablePool {
               amountInputtedUsdBN.iadd(
                 thisInputAmountBN
                   .mul(
-                    Web3.utils.toBN(allBalances["4"][
-                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                    ])
+                    Web3.utils.toBN(
+                      allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(
+                          inputCandidates[i].currencyCode
+                        )
+                      ]
+                    )
                   )
                   .div(
                     Web3.utils
                       .toBN(10)
                       .pow(
-                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        Web3.utils.toBN(
+                          self.internalTokens[inputCandidates[i].currencyCode]
+                            .decimals
+                        )
                       )
                   )
               );
               amountWithdrawnBN.iadd(thisOutputAmountBN);
-              totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
+              totalProtocolFeeBN.iadd(
+                Web3.utils.toBN(inputCandidates[i].protocolFee)
+              );
 
               break;
             } else {
@@ -1529,30 +1755,53 @@ export default class StablePool {
               amountInputtedUsdBN.iadd(
                 inputCandidates[i].inputFillAmountBN
                   .mul(
-                    Web3.utils.toBN(allBalances["4"][
-                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                    ])
+                    Web3.utils.toBN(
+                      allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(
+                          inputCandidates[i].currencyCode
+                        )
+                      ]
+                    )
                   )
                   .div(
                     Web3.utils
                       .toBN(10)
                       .pow(
-                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        Web3.utils.toBN(
+                          self.internalTokens[inputCandidates[i].currencyCode]
+                            .decimals
+                        )
                       )
                   )
               );
               amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
-              totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
+              totalProtocolFeeBN.iadd(
+                Web3.utils.toBN(inputCandidates[i].protocolFee)
+              );
             }
 
             // Stop if we have filled the USD amount
-            if (amountInputtedUsdBN.gt(senderUsdBalance)) throw new Error("Amount inputted in USD greater than sender USD fund balance");
-            if (amountInputtedUsdBN.gte(senderUsdBalance.sub(Web3.utils.toBN(1e16)))) break;
+            if (amountInputtedUsdBN.gt(senderUsdBalance))
+              throw new Error(
+                "Amount inputted in USD greater than sender USD fund balance"
+              );
+            if (
+              amountInputtedUsdBN.gte(
+                senderUsdBalance.sub(Web3.utils.toBN(1e16))
+              )
+            )
+              break;
           }
 
           // Make sure input amount is completely filled
-          if (amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16))))
-            throw new Error("Unable to find enough liquidity to exchange withdrawn tokens to " + currencyCode + ".");   
+          if (
+            amountInputtedUsdBN.lt(senderUsdBalance.sub(Web3.utils.toBN(1e16)))
+          )
+            throw new Error(
+              "Unable to find enough liquidity to exchange withdrawn tokens to " +
+                currencyCode +
+                "."
+            );
         }
 
         // Return amountWithdrawnBN and totalProtocolFeeBN
@@ -1585,9 +1834,11 @@ export default class StablePool {
         if (tokenRawFundBalanceBN.gte(amount)) {
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -1610,15 +1861,19 @@ export default class StablePool {
             amountInputtedUsdBN.iadd(
               tokenRawFundBalanceBN
                 .mul(
-                  Web3.utils.toBN(allBalances["4"][
-                    self.allocations.CURRENCIES.indexOf(currencyCode)
-                  ])
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(currencyCode)
+                    ]
+                  )
                 )
                 .div(
                   Web3.utils
                     .toBN(10)
                     .pow(
-                      Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                      Web3.utils.toBN(
+                        self.internalTokens[currencyCode].decimals
+                      )
                     )
                 )
             );
@@ -1662,7 +1917,9 @@ export default class StablePool {
 
               // Get swap fee and calculate input amount needed to fill output amount
               if (currencyCode !== "mUSD" && mStableSwapFeeBN === null)
-                mStableSwapFeeBN = await self.pools["mStable"].getMUsdSwapFeeBN();
+                mStableSwapFeeBN = await self.pools[
+                  "mStable"
+                ].getMUsdSwapFeeBN();
               var inputAmountBN = amount
                 .sub(amountWithdrawnBN)
                 .mul(Web3.utils.toBN(1e18))
@@ -1696,7 +1953,9 @@ export default class StablePool {
               var tries = 0;
               while (outputAmountBN.lt(amount.sub(amountWithdrawnBN))) {
                 if (tries >= 1000)
-                  throw new Error("Failed to get increment order input amount to achieve desired output amount.");
+                  throw new Error(
+                    "Failed to get increment order input amount to achieve desired output amount."
+                  );
                 inputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input amount to receive amount.sub(amountWithdrawnBN)
                 outputAmountBeforeFeesBN = inputAmountBN
                   .mul(Web3.utils.toBN(10 ** allTokens[currencyCode].decimals))
@@ -1742,7 +2001,9 @@ export default class StablePool {
               // Check max swap/redeem validity
               if (inputCandidates[i].currencyCode === "mUSD") {
                 try {
-                  var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                  var redeemValidity = await self.pools[
+                    "mStable"
+                  ].externalContracts.MassetValidationHelper.methods
                     .getRedeemValidity(
                       "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                       inputAmountBN,
@@ -1753,15 +2014,21 @@ export default class StablePool {
                   console.error("Failed to check mUSD redeem validity:", err);
                   continue;
                 }
-  
+
                 if (!redeemValidity || !redeemValidity["0"]) continue;
-                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw new Error("Predicted mStable output amount and output amount returned by getRedeemValidity not equal.");
+                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"])))
+                  throw new Error(
+                    "Predicted mStable output amount and output amount returned by getRedeemValidity not equal."
+                  );
               } else {
                 try {
-                  var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                  var maxSwap = await self.pools[
+                    "mStable"
+                  ].externalContracts.MassetValidationHelper.methods
                     .getMaxSwap(
                       "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
-                      self.internalTokens[inputCandidates[i].currencyCode].address,
+                      self.internalTokens[inputCandidates[i].currencyCode]
+                        .address,
                       self.internalTokens[currencyCode].address
                     )
                     .call();
@@ -1769,22 +2036,34 @@ export default class StablePool {
                   console.error("Failed to check mUSD max swap:", err);
                   continue;
                 }
-  
-                if (!maxSwap || !maxSwap["0"] || Web3.utils.toBN(maxSwap["2"]).lt(inputAmountBN)) continue;
+
+                if (
+                  !maxSwap ||
+                  !maxSwap["0"] ||
+                  Web3.utils.toBN(maxSwap["2"]).lt(inputAmountBN)
+                )
+                  continue;
               }
 
               amountInputtedUsdBN.iadd(
                 inputAmountBN
                   .mul(
-                    Web3.utils.toBN(allBalances["4"][
-                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                    ])
+                    Web3.utils.toBN(
+                      allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(
+                          inputCandidates[i].currencyCode
+                        )
+                      ]
+                    )
                   )
                   .div(
                     Web3.utils
                       .toBN(10)
                       .pow(
-                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        Web3.utils.toBN(
+                          self.internalTokens[inputCandidates[i].currencyCode]
+                            .decimals
+                        )
                       )
                   )
               );
@@ -1828,31 +2107,55 @@ export default class StablePool {
                   continue;
                 }
 
-                throw new Error("Failed to get swap orders from 0x API: " + err);
+                throw new Error(
+                  "Failed to get swap orders from 0x API: " + err
+                );
               }
 
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
               inputCandidates[i].protocolFee = protocolFee;
-              inputCandidates[i].takerAssetFillAmountBN = takerAssetFilledAmountBN;
-              inputCandidates[i].makerAssetFillAmountBN = makerAssetFilledAmountBN;
-              inputCandidates[i].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
+              inputCandidates[
+                i
+              ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
+              inputCandidates[
+                i
+              ].makerAssetFillAmountBN = makerAssetFilledAmountBN;
+              inputCandidates[
+                i
+              ].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
                 .mul(
-                  Web3.utils.toBN(allBalances["4"][
-                    self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                  ])
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(
+                        inputCandidates[i].currencyCode
+                      )
+                    ]
+                  )
                 )
                 .div(
                   Web3.utils
                     .toBN(10)
                     .pow(
-                      Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      Web3.utils.toBN(
+                        self.internalTokens[inputCandidates[i].currencyCode]
+                          .decimals
+                      )
                     )
                 );
             }
 
             // Sort candidates from highest to lowest output per USD burned
             inputCandidates.sort((a, b) =>
-              b.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(b.takerAssetFillAmountUsdBN).gt(a.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(a.takerAssetFillAmountUsdBN)) ? 1 : -1
+              b.makerAssetFillAmountBN
+                .mul(Web3.utils.toBN(1e18))
+                .div(b.takerAssetFillAmountUsdBN)
+                .gt(
+                  a.makerAssetFillAmountBN
+                    .mul(Web3.utils.toBN(1e18))
+                    .div(a.takerAssetFillAmountUsdBN)
+                )
+                ? 1
+                : -1
             );
 
             // Loop through input currency candidates until we fill the withdrawal
@@ -1877,7 +2180,9 @@ export default class StablePool {
                     .lt(thisOutputAmountBN)
                 ) {
                   if (tries >= 1000)
-                    throw new Error("Failed to get increment order input amount to achieve desired output amount.");
+                    throw new Error(
+                      "Failed to get increment order input amount to achieve desired output amount."
+                    );
                   thisInputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input fill amount to achieve this maker asset fill amount
                   tries++;
                 }
@@ -1885,20 +2190,29 @@ export default class StablePool {
                 amountInputtedUsdBN.iadd(
                   thisInputAmountBN
                     .mul(
-                      Web3.utils.toBN(allBalances["4"][
-                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                      ])
+                      Web3.utils.toBN(
+                        allBalances["4"][
+                          self.allocations.CURRENCIES.indexOf(
+                            inputCandidates[i].currencyCode
+                          )
+                        ]
+                      )
                     )
                     .div(
                       Web3.utils
                         .toBN(10)
                         .pow(
-                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                          Web3.utils.toBN(
+                            self.internalTokens[inputCandidates[i].currencyCode]
+                              .decimals
+                          )
                         )
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
-                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
+                totalProtocolFeeBN.iadd(
+                  Web3.utils.toBN(inputCandidates[i].protocolFee)
+                );
 
                 break;
               } else {
@@ -1906,20 +2220,31 @@ export default class StablePool {
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
                     .mul(
-                      Web3.utils.toBN(allBalances["4"][
-                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                      ])
+                      Web3.utils.toBN(
+                        allBalances["4"][
+                          self.allocations.CURRENCIES.indexOf(
+                            inputCandidates[i].currencyCode
+                          )
+                        ]
+                      )
                     )
                     .div(
                       Web3.utils
                         .toBN(10)
                         .pow(
-                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                          Web3.utils.toBN(
+                            self.internalTokens[inputCandidates[i].currencyCode]
+                              .decimals
+                          )
                         )
                     )
                 );
-                amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
-                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
+                amountWithdrawnBN.iadd(
+                  inputCandidates[i].makerAssetFillAmountBN
+                );
+                totalProtocolFeeBN.iadd(
+                  Web3.utils.toBN(inputCandidates[i].protocolFee)
+                );
               }
 
               // Stop if we have filled the withdrawal
@@ -1930,8 +2255,8 @@ export default class StablePool {
             if (amountWithdrawnBN.lt(amount))
               throw new Error(
                 "Unable to find enough liquidity to exchange withdrawn tokens to " +
-                currencyCode +
-                "."
+                  currencyCode +
+                  "."
               );
           }
 
@@ -1969,9 +2294,11 @@ export default class StablePool {
           // Check maxUsdAmount
           var amountUsdBN = amount
             .mul(
-              Web3.utils.toBN(allBalances["4"][
-                self.allocations.CURRENCIES.indexOf(currencyCode)
-              ])
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
             )
             .div(
               Web3.utils
@@ -1980,7 +2307,12 @@ export default class StablePool {
                   Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
                 )
             );
-          if (typeof maxUsdAmount !== undefined && maxUsdAmount !== null && amountUsdBN.gt(maxUsdAmount)) return [amountUsdBN];
+          if (
+            typeof maxUsdAmount !== undefined &&
+            maxUsdAmount !== null &&
+            amountUsdBN.gt(maxUsdAmount)
+          )
+            return [amountUsdBN];
 
           // If we can withdraw everything directly, do so
           try {
@@ -1990,7 +2322,7 @@ export default class StablePool {
           } catch (err) {
             throw new Error(
               "RariFundManager.withdraw failed: " +
-              (err.message ? err.message : err)
+                (err.message ? err.message : err)
             );
           }
 
@@ -2021,15 +2353,19 @@ export default class StablePool {
             amountInputtedUsdBN.iadd(
               tokenRawFundBalanceBN
                 .mul(
-                  Web3.utils.toBN(allBalances["4"][
-                    self.allocations.CURRENCIES.indexOf(currencyCode)
-                  ])
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(currencyCode)
+                    ]
+                  )
                 )
                 .div(
                   Web3.utils
                     .toBN(10)
                     .pow(
-                      Web3.utils.toBN(self.internalTokens[currencyCode].decimals)
+                      Web3.utils.toBN(
+                        self.internalTokens[currencyCode].decimals
+                      )
                     )
                 )
             );
@@ -2105,7 +2441,9 @@ export default class StablePool {
               var tries = 0;
               while (outputAmountBN.lt(amount.sub(amountWithdrawnBN))) {
                 if (tries >= 1000)
-                  throw new Error("Failed to get increment order input amount to achieve desired output amount.");
+                  throw new Error(
+                    "Failed to get increment order input amount to achieve desired output amount."
+                  );
                 inputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input amount to receive amount.sub(amountWithdrawnBN)
                 outputAmountBeforeFeesBN = inputAmountBN
                   .mul(Web3.utils.toBN(10 ** allTokens[currencyCode].decimals))
@@ -2145,7 +2483,9 @@ export default class StablePool {
               // Check max swap/redeem validity
               if (inputCandidates[i].currencyCode === "mUSD") {
                 try {
-                  var redeemValidity = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                  var redeemValidity = await self.pools[
+                    "mStable"
+                  ].externalContracts.MassetValidationHelper.methods
                     .getRedeemValidity(
                       "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
                       inputAmountBN,
@@ -2156,15 +2496,21 @@ export default class StablePool {
                   console.error("Failed to check mUSD redeem validity:", err);
                   continue;
                 }
-  
+
                 if (!redeemValidity || !redeemValidity["0"]) continue;
-                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"]))) throw new Error("Predicted mStable output amount and output amount returned by getRedeemValidity not equal.");
+                if (!outputAmountBN.eq(Web3.utils.toBN(redeemValidity["2"])))
+                  throw new Error(
+                    "Predicted mStable output amount and output amount returned by getRedeemValidity not equal."
+                  );
               } else {
                 try {
-                  var maxSwap = await self.pools["mStable"].externalContracts.MassetValidationHelper.methods
+                  var maxSwap = await self.pools[
+                    "mStable"
+                  ].externalContracts.MassetValidationHelper.methods
                     .getMaxSwap(
                       "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
-                      self.internalTokens[inputCandidates[i].currencyCode].address,
+                      self.internalTokens[inputCandidates[i].currencyCode]
+                        .address,
                       self.internalTokens[currencyCode].address
                     )
                     .call();
@@ -2172,8 +2518,13 @@ export default class StablePool {
                   console.error("Failed to check mUSD max swap:", err);
                   continue;
                 }
-  
-                if (!maxSwap || !maxSwap["0"] || Web3.utils.toBN(maxSwap["2"]).lt(inputAmountBN)) continue;
+
+                if (
+                  !maxSwap ||
+                  !maxSwap["0"] ||
+                  Web3.utils.toBN(maxSwap["2"]).lt(inputAmountBN)
+                )
+                  continue;
               }
 
               inputCurrencyCodes.push(inputCandidates[i].currencyCode);
@@ -2186,15 +2537,22 @@ export default class StablePool {
               amountInputtedUsdBN.iadd(
                 inputAmountBN
                   .mul(
-                    Web3.utils.toBN(allBalances["4"][
-                      self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                    ])
+                    Web3.utils.toBN(
+                      allBalances["4"][
+                        self.allocations.CURRENCIES.indexOf(
+                          inputCandidates[i].currencyCode
+                        )
+                      ]
+                    )
                   )
                   .div(
                     Web3.utils
                       .toBN(10)
                       .pow(
-                        Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                        Web3.utils.toBN(
+                          self.internalTokens[inputCandidates[i].currencyCode]
+                            .decimals
+                        )
                       )
                   )
               );
@@ -2238,7 +2596,9 @@ export default class StablePool {
                   continue;
                 }
 
-                throw new Error("Failed to get swap orders from 0x API: " + err);
+                throw new Error(
+                  "Failed to get swap orders from 0x API: " + err
+                );
               }
 
               // Build array of orders and signatures
@@ -2275,24 +2635,42 @@ export default class StablePool {
               inputCandidates[
                 i
               ].makerAssetFillAmountBN = makerAssetFilledAmountBN;
-              inputCandidates[i].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
+              inputCandidates[
+                i
+              ].takerAssetFillAmountUsdBN = takerAssetFilledAmountBN
                 .mul(
-                  Web3.utils.toBN(allBalances["4"][
-                    self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                  ])
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(
+                        inputCandidates[i].currencyCode
+                      )
+                    ]
+                  )
                 )
                 .div(
                   Web3.utils
                     .toBN(10)
                     .pow(
-                      Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                      Web3.utils.toBN(
+                        self.internalTokens[inputCandidates[i].currencyCode]
+                          .decimals
+                      )
                     )
                 );
             }
 
             // Sort candidates from highest to lowest output per USD burned
             inputCandidates.sort((a, b) =>
-              b.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(b.takerAssetFillAmountUsdBN).gt(a.makerAssetFillAmountBN.mul(Web3.utils.toBN(1e18)).div(a.takerAssetFillAmountUsdBN)) ? 1 : -1
+              b.makerAssetFillAmountBN
+                .mul(Web3.utils.toBN(1e18))
+                .div(b.takerAssetFillAmountUsdBN)
+                .gt(
+                  a.makerAssetFillAmountBN
+                    .mul(Web3.utils.toBN(1e18))
+                    .div(a.takerAssetFillAmountUsdBN)
+                )
+                ? 1
+                : -1
             );
 
             // Loop through input currency candidates until we fill the withdrawal
@@ -2317,7 +2695,9 @@ export default class StablePool {
                     .lt(thisOutputAmountBN)
                 ) {
                   if (tries >= 1000)
-                    throw new Error("Failed to get increment order input amount to achieve desired output amount.");
+                    throw new Error(
+                      "Failed to get increment order input amount to achieve desired output amount."
+                    );
                   thisInputAmountBN.iadd(Web3.utils.toBN(1)); // Make sure we have enough input fill amount to achieve this maker asset fill amount
                   tries++;
                 }
@@ -2334,20 +2714,29 @@ export default class StablePool {
                 amountInputtedUsdBN.iadd(
                   thisInputAmountBN
                     .mul(
-                      Web3.utils.toBN(allBalances["4"][
-                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                      ])
+                      Web3.utils.toBN(
+                        allBalances["4"][
+                          self.allocations.CURRENCIES.indexOf(
+                            inputCandidates[i].currencyCode
+                          )
+                        ]
+                      )
                     )
                     .div(
                       Web3.utils
                         .toBN(10)
                         .pow(
-                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                          Web3.utils.toBN(
+                            self.internalTokens[inputCandidates[i].currencyCode]
+                              .decimals
+                          )
                         )
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
-                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
+                totalProtocolFeeBN.iadd(
+                  Web3.utils.toBN(inputCandidates[i].protocolFee)
+                );
 
                 break;
               } else {
@@ -2366,20 +2755,31 @@ export default class StablePool {
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
                     .mul(
-                      Web3.utils.toBN(allBalances["4"][
-                        self.allocations.CURRENCIES.indexOf(inputCandidates[i].currencyCode)
-                      ])
+                      Web3.utils.toBN(
+                        allBalances["4"][
+                          self.allocations.CURRENCIES.indexOf(
+                            inputCandidates[i].currencyCode
+                          )
+                        ]
+                      )
                     )
                     .div(
                       Web3.utils
                         .toBN(10)
                         .pow(
-                          Web3.utils.toBN(self.internalTokens[inputCandidates[i].currencyCode].decimals)
+                          Web3.utils.toBN(
+                            self.internalTokens[inputCandidates[i].currencyCode]
+                              .decimals
+                          )
                         )
                     )
                 );
-                amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
-                totalProtocolFeeBN.iadd(Web3.utils.toBN(inputCandidates[i].protocolFee));
+                amountWithdrawnBN.iadd(
+                  inputCandidates[i].makerAssetFillAmountBN
+                );
+                totalProtocolFeeBN.iadd(
+                  Web3.utils.toBN(inputCandidates[i].protocolFee)
+                );
               }
 
               // Stop if we have filled the withdrawal
@@ -2390,13 +2790,17 @@ export default class StablePool {
             if (amountWithdrawnBN.lt(amount))
               throw new Error(
                 "Unable to find enough liquidity to exchange withdrawn tokens to " +
-                currencyCode +
-                "."
+                  currencyCode +
+                  "."
               );
           }
 
           // Check maxUsdAmount
-          if (typeof maxUsdAmount !== undefined && maxUsdAmount !== null && amountInputtedUsdBN.gt(maxUsdAmount))
+          if (
+            typeof maxUsdAmount !== undefined &&
+            maxUsdAmount !== null &&
+            amountInputtedUsdBN.gt(maxUsdAmount)
+          )
             return [amountInputtedUsdBN];
 
           // Withdraw and exchange tokens via RariFundProxy
@@ -2433,7 +2837,7 @@ export default class StablePool {
           } catch (err) {
             throw new Error(
               "RariFundProxy.withdrawAndExchange failed: " +
-              (err.message ? err.message : err)
+                (err.message ? err.message : err)
             );
           }
 

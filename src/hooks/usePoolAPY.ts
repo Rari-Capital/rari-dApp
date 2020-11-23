@@ -1,44 +1,55 @@
 import { useQuery } from "react-query";
 import { Pool } from "../context/PoolContext";
 import { useRari } from "../context/RariContext";
+import Rari from "../rari-sdk/index";
+
 import { getSDKPool } from "../utils/poolUtils";
-import { useTVL } from "./useTVL";
+import { fetchTVL } from "./useTVL";
+
+export const fetchRGTAPR = async (rari: Rari) => {
+  const blockNumber = await rari.web3.eth.getBlockNumber();
+
+  const tvl = await fetchTVL(rari);
+
+  const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
+    blockNumber,
+    tvl
+  );
+
+  const rgtAPR = parseFloat(
+    rari.web3.utils.fromWei(rgtRawAPR.mul(rari.web3.utils.toBN(100)))
+  ).toFixed(0);
+
+  return rgtAPR;
+};
+
+export const useRGTAPR = () => {
+  const { rari } = useRari();
+
+  const { data: rgtAPR } = useQuery("rgtAPR", async () => fetchRGTAPR(rari));
+
+  return rgtAPR;
+};
+
+export const fetchPoolAPY = async (rari: Rari, pool: Pool) => {
+  const poolRawAPY = await getSDKPool({
+    rari,
+    pool,
+  }).apy.getCurrentRawApy();
+
+  const poolAPY = parseFloat(
+    rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+  ).toFixed(2);
+
+  return poolAPY;
+};
 
 export const usePoolAPY = (pool: Pool) => {
   const { rari } = useRari();
 
-  const { getTVL } = useTVL();
+  const { data: poolAPY } = useQuery(pool + " apy", () => {
+    return fetchPoolAPY(rari, pool);
+  });
 
-  const { data: apy, isLoading: isAPYLoading } = useQuery(
-    pool + " apy",
-    async () => {
-      const poolRawAPYPromise = getSDKPool({
-        rari,
-        pool,
-      }).apy.getCurrentRawApy();
-
-      const [poolRawAPY, blockNumber, tvl] = await Promise.all([
-        poolRawAPYPromise,
-        rari.web3.eth.getBlockNumber(),
-        getTVL(),
-      ]);
-
-      const poolAPY = parseFloat(
-        rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(2);
-
-      const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
-        blockNumber,
-        tvl
-      );
-
-      const rgtAPR = parseFloat(
-        rari.web3.utils.fromWei(rgtRawAPR.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(0);
-
-      return { rgtAPR, poolAPY };
-    }
-  );
-
-  return { apy, isAPYLoading };
+  return poolAPY;
 };
