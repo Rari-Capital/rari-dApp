@@ -6,7 +6,7 @@ const contractAddresses = {
   RariFundManager: "0x59FA438cD0731EBF5F4cDCaf72D4960EFd13FCe6",
   RariFundToken: "0x3baa6B7Af0D72006d3ea770ca29100Eb848559ae",
   RariFundPriceConsumer: "0x00815e0e9d118769542ce24be95f8e21c60e5561",
-  RariFundProxy: "0x626d6979F3607d13051594d8B27a0A64E413bC11",
+  RariFundProxy: "0x35DDEFa2a30474E64314aAA7370abE14c042C6e8"
 };
 
 export default class YieldPool extends StablePool {
