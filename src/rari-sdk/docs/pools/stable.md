@@ -88,15 +88,15 @@ Returns the total balance supplied to the Rari Stable Pool by `account` in USD (
     * `account`: A string indicating the Ethereum account address in question.
 * Return value: A `BN` (scaled by 1e18) indicating the balance supplied by `account` in USD.
 
-### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, fromBlock[, toBlock]])`)`
+### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, fromTimestamp[, toTimestamp]])`)`
 
 Returns the total amount of interest accrued by `account` in USD (scaled by 1e18).
 
 * Please note that this method makes use of the [Rari API](https://github.com/Rari-Capital/rari-api).
 * Parameters:
     * `account`: A string indicating the Ethereum account address in question.
-    * `fromBlock`: An optional `Number` (or the string `"latest"`) indicating the minimum block number to track. Defaults to 0.
-    * `toBlock`: An optional `Number` (or the string `"latest"`) indicating the maximum block number to track. Defaults to `"latest"`.
+    * `startTimestamp`: A Unix epoch timestamp (in seconds) indicating the beginning of the time range. Defaults to 0.
+    * `endTimestamp`: A Unix epoch timestamp (in seconds) or the string `"latest"` indicating the end of the time range. Defaults to `"latest"`.
 * Return value: A `BN` (scaled by 1e18) indicating the amount of interest accrued by `account` in USD.
 
 ### **Transfer my USD holdings:** `pools.stable.balances.transfer(recipient, amount, options)`

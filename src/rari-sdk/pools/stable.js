@@ -186,18 +186,18 @@ export default class StablePool {
       },
       interestAccruedBy: async function (
         account,
-        fromBlock = 0,
-        toBlock = "latest"
+        fromTimestamp = 0,
+        toTimestamp = "latest"
       ) {
         if (!account) throw new Error("No account specified");
-        if (!fromBlock) fromBlock = 0;
-        if (toBlock === undefined) toBlock = "latest";
+        if (!fromTimestamp) fromTimestamp = 0;
+        if (toTimestamp === undefined) toTimestamp = "latest";
 
         try {
           return Web3.utils.toBN(
             (
               await axios.get(self.API_BASE_URL + "interest/" + account, {
-                params: { fromBlock, toBlock },
+                params: { fromTimestamp, toTimestamp },
               })
             ).data
           );
