@@ -13,7 +13,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { Pool } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
-// import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -29,7 +29,7 @@ export const Header = React.memo(
     isPool?: boolean;
     padding?: boolean;
   }) => {
-    // const { t } = useTranslation();
+    const { t } = useTranslation();
 
     return (
       <Row
@@ -63,7 +63,7 @@ export const Header = React.memo(
           overflowY="hidden"
           transform="translate(0px, 7px)"
         >
-          {/* <HeaderLink mr={4} name={t("Pools")} route="/" />
+          <HeaderLink mr={4} name={t("Pools")} route="/" />
 
           {Object.values(Pool).map(
             (pool: Pool, index: number, array: Pool[]) => {
@@ -75,7 +75,7 @@ export const Header = React.memo(
                 />
               );
             }
-          )} */}
+          )}
         </Row>
 
         <AccountButton />
