@@ -324,12 +324,9 @@ export default class StablePool {
       },
       getRawPoolAllocations: async function () {
         var allocationsByPool = {
-          _cash: Web3.utils.toBN(0),
-          dYdX: Web3.utils.toBN(0),
-          Compound: Web3.utils.toBN(0),
-          Aave: Web3.utils.toBN(0),
-          mStable: Web3.utils.toBN(0),
+          _cash: Web3.utils.toBN(0)
         };
+        for (const poolName of self.allocations.POOLS) allocationsByPool[poolName] = Web3.utils.toBN(0);
         var allBalances = await self.cache.getOrUpdate(
           "allBalances",
           self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
@@ -495,11 +492,11 @@ export default class StablePool {
         const SECONDS_PER_YEAR = 365 * 86400;
         var timeDiff = endTimestamp - startTimestamp;
         return Web3.utils.toBN(
-          ((endRsptExchangeRate.toString() /
+          Math.trunc(((endRsptExchangeRate.toString() /
             startRsptExchangeRate.toString()) **
             (SECONDS_PER_YEAR / timeDiff) -
             1) *
-            1e18
+            1e18)
         );
       },
       getApyOverBlocks: async function (fromBlock = 0, toBlock = "latest") {

@@ -53,13 +53,15 @@ export default class YieldPool extends StablePool {
     delete this.history.getRsptExchangeRateHistory;
     this.history.getRyptExchangeRateHistory = this.history.getPoolTokenExchangeRateHistory;
 
+    var self = this;
+
     this.history.getPoolAllocationHistory = async function (
       fromBlock,
       toBlock,
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundController.getPastEvents(
+        ? await self.contracts.RariFundController.getPastEvents(
             "PoolAllocation",
             { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
           )
@@ -72,7 +74,7 @@ export default class YieldPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundController.getPastEvents(
+        ? await self.contracts.RariFundController.getPastEvents(
             "CurrencyTrade",
             { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
           )
@@ -85,7 +87,7 @@ export default class YieldPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundManager.getPastEvents("Deposit", {
+        ? await self.contracts.RariFundManager.getPastEvents("Deposit", {
             fromBlock: Math.max(fromBlock, 11085000),
             toBlock,
             filter,
@@ -99,7 +101,7 @@ export default class YieldPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundManager.getPastEvents("Withdrawal", {
+        ? await self.contracts.RariFundManager.getPastEvents("Withdrawal", {
             fromBlock: Math.max(fromBlock, 11085000),
             toBlock,
             filter,
@@ -113,7 +115,7 @@ export default class YieldPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundProxy.getPastEvents(
+        ? await self.contracts.RariFundProxy.getPastEvents(
             "PreDepositExchange",
             { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
           )
@@ -126,7 +128,7 @@ export default class YieldPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundProxy.getPastEvents(
+        ? await self.contracts.RariFundProxy.getPastEvents(
             "PostWithdrawalExchange",
             { fromBlock: Math.max(fromBlock, 20000001), toBlock, filter }
           )
@@ -139,7 +141,7 @@ export default class YieldPool extends StablePool {
       filter
     ) {
       return toBlock >= 11085000
-        ? await this.contracts.RariFundToken.getPastEvents("Transfer", {
+        ? await self.contracts.RariFundToken.getPastEvents("Transfer", {
             fromBlock: Math.max(fromBlock, 10909582),
             toBlock,
             filter,

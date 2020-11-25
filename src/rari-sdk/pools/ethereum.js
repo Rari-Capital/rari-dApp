@@ -61,12 +61,9 @@ export default class EthereumPool extends StablePool {
 
     this.allocations.getRawPoolAllocations = async function () {
       var allocationsByPool = {
-        _cash: Web3.utils.toBN(0),
-        dYdX: Web3.utils.toBN(0),
-        Compound: Web3.utils.toBN(0),
-        KeeperDAO: Web3.utils.toBN(0),
-        Aave: Web3.utils.toBN(0),
+        _cash: Web3.utils.toBN(0)
       };
+      for (const poolName of self.allocations.POOLS) allocationsByPool[poolName] = Web3.utils.toBN(0);
       var allBalances = await self.cache.getOrUpdate(
         "allBalances",
         self.contracts.RariFundController.methods.getRawFundBalances().call
