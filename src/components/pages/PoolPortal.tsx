@@ -262,10 +262,6 @@ const PoolPortalContent = React.memo(() => {
                 width={
                   poolType === Pool.ETH ? "100%" : { md: "50%", base: "100%" }
                 }
-                mr={{
-                  md: DASHBOARD_BOX_SPACING.asPxString(),
-                  base: 0,
-                }}
                 mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
                 pt={DASHBOARD_BOX_SPACING.asPxString()}
                 px={DASHBOARD_BOX_SPACING.asPxString()}
@@ -277,6 +273,10 @@ const PoolPortalContent = React.memo(() => {
                 <DashboardBox
                   height={mainSectionChildSizes[2].asPxString()}
                   width={{ md: "50%", base: "100%" }}
+                  ml={{
+                    md: DASHBOARD_BOX_SPACING.asPxString(),
+                    base: 0,
+                  }}
                   pt={DASHBOARD_BOX_SPACING.asPxString()}
                   px={DASHBOARD_BOX_SPACING.asPxString()}
                 >
