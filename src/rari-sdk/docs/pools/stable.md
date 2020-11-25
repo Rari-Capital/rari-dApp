@@ -88,7 +88,7 @@ Returns the total balance supplied to the Rari Stable Pool by `account` in USD (
     * `account`: A string indicating the Ethereum account address in question.
 * Return value: A `BN` (scaled by 1e18) indicating the balance supplied by `account` in USD.
 
-### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, fromTimestamp[, toTimestamp]])`)`
+### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, startTimestamp[, endTimestamp]])`)`
 
 Returns the total amount of interest accrued by `account` in USD (scaled by 1e18).
 
