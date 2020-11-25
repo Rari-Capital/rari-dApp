@@ -12,7 +12,7 @@ const contractAddresses = {
   RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
   RariFundToken: "0x016bf078ABcaCB987f0589a6d3BEAdD4316922B0",
   RariFundPriceConsumer: "0xFE98A52bCAcC86432E7aa76376751DcFAB202244",
-  RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e",
+  RariFundProxy: "0xe4deE94233dd4d7c2504744eE6d34f3875b3B439"
 };
 
 var abis = {};
