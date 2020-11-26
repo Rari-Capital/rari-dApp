@@ -9,13 +9,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { RepeatIcon } from "@chakra-ui/icons";
-import { useIsMobile, Row, Column, Center } from "buttered-chakra";
+import { Row, Column, Center } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
-import { shortAddress, mediumAddress } from "../../utils/shortAddress";
+import { shortAddress } from "../../utils/shortAddress";
 
 import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
@@ -69,8 +69,6 @@ const AddressButton = React.memo(
   }) => {
     const { address } = useRari();
 
-    const isMobile = useIsMobile();
-
     const { data: isVerified } = useQuery(address + " isVerified", async () => {
       const fetched = await fetch(
         `https://api-mainnet.rarible.com/profiles/${address}`
@@ -107,7 +105,7 @@ const AddressButton = React.memo(
             )}
 
             <Text mx={2} fontWeight="semibold">
-              {isMobile ? shortAddress(address) : mediumAddress(address)}
+              {shortAddress(address)}
             </Text>
           </Row>
         </DashboardBox>
