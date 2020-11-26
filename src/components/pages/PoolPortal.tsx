@@ -62,7 +62,11 @@ import ForceAuthModal from "../shared/ForceAuthModal";
 import { GlowingButton } from "../shared/GlowingButton";
 
 import { usePoolBalance } from "../../hooks/usePoolBalance";
-import { BN, stringUsdFormatter } from "../../utils/bigUtils";
+import {
+  BN,
+  smallStringUsdFormatter,
+  stringUsdFormatter,
+} from "../../utils/bigUtils";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
 import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
@@ -70,6 +74,16 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 
 const millisecondsPerDay = 86400000;
+
+const currencyCodesByHashes: { [key: string]: string } = {
+  "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568": "DAI",
+  "0xd6aca1be9729c13d677335161321649cccae6a591554772516700f986f942eaa": "USDC",
+  "0x8b1a1d9c2b109e527c9134b25b1a1833b16b6594f92daa9f6d9b7a6024bce9d0": "USDT",
+  "0xa1b8d8f7e538bb573797c963eeeed40d0bcb9f28c56104417d0da1b372ae3051": "TUSD",
+  "0x54c512ac779647672b8d02e2fe2dc10f79bbf19f719d887221696215fd24e9f1": "BUSD",
+  "0x87ef9bf44f9ed3d4aeadafb38d9bc9470e7aac44fdcb9f7ffb957b862954cf2c": "sUSD",
+  "0x33d80a03b5585b94e68b56bdea4f57fd2e459401902cb2f61772e1b630afb4b2": "mUSD",
+};
 
 const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
   return (
@@ -364,7 +378,7 @@ const UserStatsAndChart = React.memo(
 
     const { poolType, poolName } = usePoolInfoFromContext();
 
-    const [timeRange, setTimeRange] = useState("week");
+    const [timeRange, setTimeRange] = useState("max");
 
     const onTimeRangeChange = useCallback(
       (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -394,23 +408,22 @@ const UserStatsAndChart = React.memo(
     } = useQuery(
       address + " " + poolType + " interestAccrued " + timeRange,
       async () => {
-        const latestBlock = await rari.web3.eth.getBlockNumber();
-
-        const blocksPerDay = 6594;
-
         const startingBlock =
           timeRange === "month"
-            ? latestBlock - blocksPerDay * 30
+            ? Date.now() - millisecondsPerDay * 30
             : timeRange === "year"
-            ? latestBlock - blocksPerDay * 365
+            ? Date.now() - millisecondsPerDay * 365
             : timeRange === "week"
-            ? latestBlock - blocksPerDay * 7
+            ? Date.now() - millisecondsPerDay * 7
             : 0;
 
         const interestRaw = await getSDKPool({
           rari,
           pool: poolType,
-        }).balances.interestAccruedBy(address, startingBlock);
+        }).balances.interestAccruedBy(
+          address,
+          Math.floor(startingBlock / 1000)
+        );
 
         const formattedInterest = stringUsdFormatter(
           rari.web3.utils.fromWei(interestRaw)
@@ -693,22 +706,22 @@ const StrategyAllocation = React.memo(() => {
       let allocations: { [key: string]: number } = {};
 
       for (const [token, amount] of Object.entries(rawAllocations)) {
-        if (token === "_cash") {
+        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount));
+
+        if (parsedAmount < 5) {
           continue;
         }
 
-        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount));
-
-        if (parsedAmount > 5) {
+        if (token === "_cash") {
+          allocations["Not Deposited"] = parsedAmount;
+        } else {
           allocations[token] = parsedAmount;
         }
       }
 
       const keys = Object.keys(allocations);
 
-      const values: number[] = [];
-
-      keys.forEach((key) => values.push(allocations[key]));
+      const values = Object.values(allocations);
 
       return [keys, values];
     }
@@ -918,58 +931,58 @@ const RecentTrades = React.memo(() => {
   const { data: allocationHistory } = useQuery(
     poolType + " allocationHistory",
     async () => {
-      const history = await getSDKPool({
+      const currentBlock = await rari.web3.eth.getBlockNumber();
+
+      const history: any[] = await getSDKPool({
         rari,
         pool: poolType,
-      }).history.getPoolAllocationHistory(0, 11305888);
+      }).history.getPoolAllocationHistory(0, currentBlock);
 
-      console.log(history);
+      return history
+        .slice(-40)
+        .reverse()
+        .map((event) => {
+          const token =
+            poolType === Pool.ETH
+              ? "ETH"
+              : currencyCodesByHashes[
+                  event.returnValues.currencyCode as string
+                ];
 
-      return history;
+          const eventType =
+            event.returnValues.action === "0"
+              ? "Deposited"
+              : event.returnValues.action === "1"
+              ? "Withdrew"
+              : "Withdrew all";
+
+          const pool = getSDKPool({ rari, pool: poolType }).allocations.POOLS[
+            event.returnValues.pool
+          ];
+
+          const amount = smallStringUsdFormatter(
+            (
+              parseFloat(event.returnValues.amount) /
+              10 ** tokens[token].decimals
+            ).toString()
+          );
+
+          return {
+            eventType,
+            token,
+            amount: poolType === Pool.ETH ? amount.replace("$", "") : amount,
+            pool,
+            blockNumber: event.blockNumber,
+            hash: event.transactionHash,
+            logIndex: event.logIndex,
+          };
+        });
     }
   );
 
-  const recentTrades = [
-    {
-      transactionHash: "XXXXX",
-      timeSent: "01/6/2020",
-      returnValues: { percent: 0.4, from: "dYdX DAI", to: "Compound DAI" },
-    },
-    {
-      transactionHash: "YYYYYY",
-      timeSent: "01/6/2020",
-      returnValues: { percent: 0.6, from: "Compound BAT", to: "dYdX DAI" },
-    },
-    {
-      transactionHash: "ZZZZZZ",
-      timeSent: "01/5/2020",
-      returnValues: { percent: 0.3, from: "Compound USDT", to: "dYdX ZRX" },
-    },
-    {
-      transactionHash: "AAAAAAA",
-      timeSent: "01/5/2020",
-      returnValues: { percent: 0.1, from: "dYdX REP", to: "Compound USDC" },
-    },
-    {
-      transactionHash: "BBBBBB",
-      timeSent: "01/4/2020",
-      returnValues: {
-        percent: 0.25,
-        from: "Compound ETH",
-        to: "Compound USDC",
-      },
-    },
-  ];
-
   const { t } = useTranslation();
 
-  const tradesLoading = false;
-
-  return tradesLoading ? (
-    <Center expand>
-      <Spinner />
-    </Center>
-  ) : (
+  return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
@@ -980,21 +993,30 @@ const RecentTrades = React.memo(() => {
         {t("Recent Trades")}
       </Heading>
 
-      {recentTrades!.map((event, index) => (
-        <Box key={event.transactionHash} width="100%">
-          <Text fontSize="sm" color="#aba6a6">
-            {`${t("Move")} ${event.returnValues.percent * 100}% ${t("from")} ${
-              event.returnValues.from
-            } ${t("to")} ${event.returnValues.to}`}
-            <b> ({event.timeSent})</b>
-          </Text>
-          {index !== recentTrades!.length - 1 ? (
-            <Divider borderColor="#616161" my={1} />
-          ) : (
-            <Box height="10px" />
-          )}
-        </Box>
-      ))}
+      {allocationHistory ? (
+        allocationHistory!.map((event, index) => (
+          <Box key={event!.hash + event!.logIndex} width="100%">
+            <Text fontSize="sm" color="#aba6a6">
+              <b>{event!.eventType}</b>
+              {event!.eventType === "Withdrew all"
+                ? ""
+                : " " + event!.amount}{" "}
+              <b>{event!.token}</b>{" "}
+              {event!.eventType === "Deposited" ? "to" : "from"}{" "}
+              <b>{event!.pool}</b>
+            </Text>
+            {index !== allocationHistory!.length - 1 ? (
+              <Divider borderColor="#616161" my={1} />
+            ) : (
+              <Box height="10px" />
+            )}
+          </Box>
+        ))
+      ) : (
+        <Center expand>
+          <Spinner />
+        </Center>
+      )}
     </Column>
   );
 });
