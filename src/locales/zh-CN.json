@@ -79,5 +79,9 @@
   "Token Allocation": "代币分配",
   "Recent Trades": "最近的交易",
   "View Transaction History": "查看交易记录",
-  "This chart is generated using the APYs of each pool (shown at the bottom of this page). It introduces a random variance in the APY each day, with a max of 2x the current pool APY, and a minimum of 0% APY. It does not account for large changes in APY (greater than 2x), divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation).": "该图表是使用每个池的APY生成的（显示在此页面的底部）。 它每天在APY中引入随机方差，最大2倍于当前池APY，最小0％APY。 它不考虑APY的较大变化（大于2倍），收益池中的背离损失或不考虑ETH价格。 ETH池模拟不是以ETH计价，而是使用ETH池的当前APY模拟美元的收益。 在ETH池中，您会面临ETH的价格变动（在此模拟中未显示或未说明）。"
+  "This chart is generated using the APYs of each pool (shown at the bottom of this page). It introduces a random variance in the APY each day, with a max of 2x the current pool APY, and a minimum of 0% APY. It does not account for large changes in APY (greater than 2x), divergence loss in the Yield Pool, or take into account ETH price. The ETH Pool simulation is not denominated in ETH, instead it simulates returns on USD using the current APY of the ETH Pool. In the ETH pool you are exposed to the price movements of ETH (which is not shown or accounted for in this simulation).": "该图表是使用每个池的APY生成的（显示在此页面的底部）。 它每天在APY中引入随机方差，最大2倍于当前池APY，最小0％APY。 它不考虑APY的较大变化（大于2倍），收益池中的背离损失或不考虑ETH价格。 ETH池模拟不是以ETH计价，而是使用ETH池的当前APY模拟美元的收益。 在ETH池中，您会面临ETH的价格变动（在此模拟中未显示或未说明）。",
+  "Claim Private RGT": "领取私人RGT",
+  "Claimable Private RGT": "可索赔的私人RGT",
+  "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.": "在2022年10月20日之前申请私人RGT，将导致一部分被烧毁。该数量从100％线性降低到20％达到0％。",
+  "Claiming private RGT now will result in a {{amount}}% burn/takeback": "现在宣称拥有私人RGT将导致{{amount}}％的烧录/收回"
 }
