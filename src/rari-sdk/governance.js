@@ -216,18 +216,18 @@ export default class Governance {
         getUnclaimed: async function (account) {
           return Web3.utils.toBN(
             await self.contracts.RariGovernanceTokenVesting.methods
-              .getUnclaimedRgt(account)
+              .getUnclaimedPrivateRgt(account)
               .call()
           );
         },
         claim: async function (amount, options) {
           return await self.contracts.RariGovernanceTokenVesting.methods
-            .claimRgt(amount)
+            .claimPrivateRgt(amount)
             .send(options);
         },
         claimAll: async function (options) {
           return await self.contracts.RariGovernanceTokenVesting.methods
-            .claimAllRgt()
+            .claimAllPrivateRgt()
             .send(options);
         },
         getClaimFee: function (timestamp) {
