@@ -17,6 +17,7 @@ All smart contracts are available under `governance.contracts` as [`web3.eth.Con
 
 * `governance.contracts.RariGovernanceToken`: The contract behind the Rari Governance Token (RGT), an ERC20 token accounting for the ownership of Rari Stable Pool, Yield Pool, and Ethereum Pool.
 * `governance.contracts.RariGovernanceTokenDistributor`: Distributes RGT (Rari Governance Token) to Rari Stable Pool, Yield Pool, and Ethereum Pool holders.
+* `governance.contracts.RariGovernanceTokenVesting`: Distributes private RGT (Rari Governance Token) allocations to team/advisors/etc. with a vesting schedule.
 
 See [`API.md` of the `rari-contracts` repository](https://github.com/Rari-Capital/rari-contracts/blob/master/API.md) for a full reference on the contracts' raw functions. As for the standard ERC20 token functions available in `contracts.RariGovernanceToken.methods` (like `totalSupply`, `transfer`, `transferFrom`, `approve`, `allowance`, etc.), see [EIP-20: ERC-20 Token Standard](https://eips.ethereum.org/EIPS/eip-20) for reference on common functions of ERC20 tokens like RSPT.
 
@@ -81,6 +82,16 @@ Returns the quantity of unclaimed RGT earned by `holder` via liquidity mining ac
 * Parameters:
     * `holder`: A string indicating the Ethereum address to check.
 * Return value: The quantity of unclaimed RGT (as a `BN` scaled by 1e18).
+
+## **RGT Claim Fee**
+
+### **Get RGT claim fee:** `governance.rgt.distributions.getClaimFee(blockNumber)`
+
+Returns the fee rate (proportion of RGT claimed to be burned scaled by 1e18) when claiming RGT at `blockNumber`.
+
+* Parameters:
+    * `blockNumber`: The block number at which to check the claim fee.
+* Return value: The RGT claim fee rate (as a `BN` scaled by 1e18).
 
 ## **RGT Distribution APY**
 
