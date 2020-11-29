@@ -2929,21 +2929,19 @@ export default class StablePool {
       },
       getBalanceHistoryOf: async function (
         account,
-        fromTimestamp,
-        toTimestamp,
-        intervalSeconds = 86400
+        fromBlock,
+        toBlock,
+        intervalBlocks = 6500
       ) {
         if (!account) throw new Error("No account specified");
-        if (fromTimestamp === undefined || fromTimestamp === "latest")
-          fromTimestamp = Math.trunc(new Date().getTime() / 1000);
-        if (toTimestamp === undefined || toTimestamp === "latest")
-          toTimestamp = Math.trunc(new Date().getTime() / 1000);
-        if (!intervalSeconds) intervalSeconds = 86400;
+        if (fromBlock === undefined) fromBlock = 'latest';
+        if (toBlock === undefined) toBlock = 'latest';
+        if (!intervalBlocks) intervalBlocks = 6500;
 
         try {
           return (
             await axios.get(self.API_BASE_URL + "balances/" + account, {
-              params: { fromTimestamp, toTimestamp, intervalSeconds },
+              params: { fromBlock, toBlock, intervalBlocks },
             })
           ).data;
         } catch (error) {
