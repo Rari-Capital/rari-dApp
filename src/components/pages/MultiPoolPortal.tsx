@@ -54,7 +54,11 @@ import {
   APYWithRefreshMovingStat,
   RefetchMovingStat,
 } from "../shared/MovingStat";
-import { stringUsdFormatter, usdFormatter } from "../../utils/bigUtils";
+import {
+  smallStringUsdFormatter,
+  stringUsdFormatter,
+  usdFormatter,
+} from "../../utils/bigUtils";
 import { usePoolBalance } from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { useTVLFetchers } from "../../hooks/useTVL";
@@ -154,10 +158,27 @@ const GovernanceStats = React.memo(() => {
 
   const { rari, address } = useRari();
 
-  const { data, isLoading } = useQuery(address + " balanceOf RGT", () => {
-    return rari.governance.rgt.balanceOf(address).then((data) => {
-      return stringUsdFormatter(rari.web3.utils.fromWei(data)).replace("$", "");
-    });
+  const { data: rgtBalance } = useQuery(
+    address + " balanceOf RGT",
+    async () => {
+      const rawBalance = await rari.governance.rgt.balanceOf(address);
+
+      return stringUsdFormatter(rari.web3.utils.fromWei(rawBalance)).replace(
+        "$",
+        ""
+      );
+    }
+  );
+
+  const { data: rgtSupply } = useQuery("rgtSupply", async () => {
+    //@ts-ignore
+    const rawSupply = await rari.governance.contracts.RariGovernanceToken.methods
+      .totalSupply()
+      .call();
+
+    return smallStringUsdFormatter((parseFloat(rawSupply) / 1e18).toFixed(0))
+      .replace("$", "")
+      .replace(".00", "");
   });
 
   return (
@@ -168,7 +189,7 @@ const GovernanceStats = React.memo(() => {
     >
       <Center expand>
         <CaptionedStat
-          stat={"10,000,000"}
+          stat={rgtSupply ?? "?"}
           statSize="3xl"
           captionSize="xs"
           caption={t("RGT Supply")}
@@ -182,7 +203,7 @@ const GovernanceStats = React.memo(() => {
       </Center>
       <Center expand>
         <CaptionedStat
-          stat={isLoading ? "$?" : data!}
+          stat={rgtBalance ?? "$?"}
           statSize="3xl"
           captionSize="xs"
           caption={t("RGT Balance (Claimed)")}
