@@ -42,7 +42,8 @@ import {
 
 import {
   SelfReturnChartOptions,
-  StrategyAllocationChartOptions,
+  USDStrategyAllocationChartOptions,
+  ETHStrategyAllocationChartOptions,
   DisableChartInteractions,
 } from "../../utils/chartOptions";
 import CaptionedStat from "../shared/CaptionedStat";
@@ -74,6 +75,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 
 const millisecondsPerDay = 86400000;
+const blocksPerDay = 6500;
 
 const currencyCodesByHashes: { [key: string]: string } = {
   "0xa5e92f3efb6826155f1f728e162af9d7cda33a574a1153b58f03ea01cc37e568": "DAI",
@@ -438,29 +440,23 @@ const UserStatsAndChart = React.memo(
     const { data: chartData, isLoading: isChartDataLoading } = useQuery(
       address + " " + poolType + " balanceHistory",
       async () => {
-        const millisecondStart =
+        const latestBlock = await rari.web3.eth.getBlockNumber();
+
+        const blockStart =
           timeRange === "month"
-            ? Date.now() - millisecondsPerDay * 30
+            ? latestBlock - blocksPerDay * 30
             : timeRange === "year"
-            ? Date.now() - millisecondsPerDay * 365
+            ? latestBlock - blocksPerDay * 365
             : timeRange === "week"
-            ? Date.now() - millisecondsPerDay * 7
+            ? latestBlock - blocksPerDay * 7
             : 0;
 
-        try {
-          const rawData = await getSDKPool({
-            rari,
-            pool: poolType,
-          }).history.getBalanceHistoryOf(
-            address,
-            Math.floor(millisecondStart / 1000)
-          );
+        const rawData = await getSDKPool({
+          rari,
+          pool: poolType,
+        }).history.getBalanceHistoryOf(address, blockStart, latestBlock);
 
-          // TODO: REMOVE THIS ONCE DAVID FIXES INTERVAL SECONDS HANDLING!!!
-          return rawData.slice(0, 200);
-        } catch (e) {
-          console.log(e);
-        }
+        return rawData;
       }
     );
 
@@ -727,6 +723,11 @@ const StrategyAllocation = React.memo(() => {
     }
   );
 
+  const chartOptions =
+    poolType === Pool.ETH
+      ? ETHStrategyAllocationChartOptions
+      : USDStrategyAllocationChartOptions;
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -747,7 +748,7 @@ const StrategyAllocation = React.memo(() => {
       ) : (
         <Chart
           options={{
-            ...StrategyAllocationChartOptions,
+            ...chartOptions,
             labels: allocations![0],
           }}
           type="pie"

@@ -103,7 +103,7 @@ export const SelfReturnChartOptions = {
   },
 };
 
-export const StrategyAllocationChartOptions = {
+export const USDStrategyAllocationChartOptions = {
   chart: {
     foreColor: "#a19f9f",
     animations: {
@@ -159,6 +159,17 @@ export const StrategyAllocationChartOptions = {
   colors: ["#282828", "#929292", "#5E5E5E", "#4C4C4C", "#343434"],
 };
 
+export const ETHStrategyAllocationChartOptions = {
+  ...USDStrategyAllocationChartOptions,
+  yaxis: {
+    labels: {
+      ...LineChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return smallStringUsdFormatter(value).replace("$", "") + " ETH";
+      },
+    },
+  },
+};
 export const DisableChartInteractions = {
   tooltip: {
     enabled: false,
