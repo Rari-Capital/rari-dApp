@@ -310,7 +310,7 @@ Returns an array of objects containing `blockNumber`, `timestamp`, and `balance`
     * `account`: A string indicating the Ethereum account address in question.
     * `fromBlock`: A `Number` (or the string `"latest"`) indicating the minimum block number from which to retrieve data points. Defaults to `"latest"`.
     * `toBlock`: A `Number` (or the string `"latest"`) indicating the maximum block number from which to retrieve data points. Defaults to `"latest"`.
-    * `intervalBlocks`: A `Number` indicating the interval in blocks at which to retrieve data points. Defaults to `86400`.
+    * `intervalBlocks`: A `Number` indicating the interval in blocks at which to retrieve data points. Defaults to `6500`.
 * Return value: An array of objects containing `blockNumber`, `timestamp`, and `balance` (in USD, scaled by 1e18, in string format).
 
 ### **Get RSPT exchange rate history:** `pools.stable.history.getRsptExchangeRateHistory([fromTimestamp[, toTimestamp[, intervalSeconds]]])`
