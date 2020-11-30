@@ -440,6 +440,10 @@ const UserStatsAndChart = React.memo(
     const { data: chartData, isLoading: isChartDataLoading } = useQuery(
       address + " " + poolType + " balanceHistory",
       async () => {
+        if (hasNotDeposited) {
+          return [];
+        }
+
         const latestBlock = await rari.web3.eth.getBlockNumber();
 
         const blockStart =
