@@ -26,20 +26,6 @@ import { ModalDivider, ModalTitleWithCloseButton, MODAL_PROPS } from "./Modal";
 
 import { SimpleTooltip } from "./SimpleTooltip";
 
-export const LiquidityMiningStartTimestamp = 1603177200000;
-
-function datediff(first: number, second: number) {
-  // Take the difference between the dates and divide by milliseconds per day.
-  // Round to nearest whole number to deal with DST.
-  return Math.round((second - first) / (1000 * 60 * 60 * 24));
-}
-
-function calculateRGTBurn() {
-  const daysPast = datediff(LiquidityMiningStartTimestamp, Date.now());
-
-  return (33 - (33 / 60) * daysPast).toFixed(2);
-}
-
 export const ClaimRGTModal = React.memo(
   ({ isOpen, onClose }: { isOpen: boolean; onClose: () => any }) => {
     const { t } = useTranslation();
@@ -65,23 +51,77 @@ export const ClaimRGTModal = React.memo(
       }
     );
 
-    // When we get a number for uncalimed, set the amount to it.
+    const {
+      data: privateUnclaimed,
+      isLoading: isPrivateUnclaimedLoading,
+    } = useQuery(address + " privateUnclaimed RGT", async () => {
+      return parseFloat(
+        rari.web3.utils.fromWei(
+          await rari.governance.rgt.vesting.getUnclaimed(address)
+        )
+      );
+    });
+
+    const [isPrivateMode, setIsPrivateMode] = useState(false);
+
+    // When we get a number for unclaimed/privateUnclaimed, set the amount to it.
     useEffect(() => {
-      if (unclaimed) {
-        setAmount(Math.floor(unclaimed * 1000000) / 1000000);
+      if (isPrivateMode && !isPrivateUnclaimedLoading) {
+        setAmount(Math.floor(privateUnclaimed! * 1000000) / 1000000);
+      } else if (!isPrivateMode && !isUnclaimedLoading) {
+        setAmount(Math.floor(unclaimed! * 1000000) / 1000000);
       }
-    }, [unclaimed]);
+    }, [
+      unclaimed,
+      privateUnclaimed,
+      isPrivateMode,
+      isPrivateUnclaimedLoading,
+      isUnclaimedLoading,
+    ]);
 
     const claimRGT = useCallback(() => {
+      const claimMethod = isPrivateMode
+        ? rari.governance.rgt.vesting.claim
+        : rari.governance.rgt.distributions.claim;
+
       // Could do something with the receipt but notify.js is watching the account and will send a notification for us.
-      rari.governance.rgt.distributions.claim(
+      claimMethod(
         rari.web3.utils.toBN(
           //@ts-ignore
           new BigNumber(amount).multipliedBy(1e18).decimalPlaces(0)
         ),
         { from: address }
       );
-    }, [rari.governance.rgt.distributions, amount, rari.web3.utils, address]);
+    }, [rari.governance.rgt, amount, rari.web3.utils, address, isPrivateMode]);
+
+    const { data: privateClaimFee } = useQuery("privateClaimFee", async () => {
+      const raw = rari.governance.rgt.vesting.getClaimFee(
+        Math.floor(Date.now() / 1000)
+      );
+
+      return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
+    });
+
+    const { data: claimFee } = useQuery("claimFee", async () => {
+      const blockNumber = await rari.web3.eth.getBlockNumber();
+      const raw = rari.governance.rgt.distributions.getClaimFee(blockNumber);
+
+      return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
+    });
+
+    // If user presses meta key or control key + slash they will toggle the private allocation claim mode.
+    useEffect(() => {
+      const handler = (e: KeyboardEvent) => {
+        if ((e.metaKey || e.ctrlKey) && e.code === "Slash") {
+          e.preventDefault();
+          setIsPrivateMode((past) => !past);
+        }
+      };
+
+      document.addEventListener("keydown", handler);
+
+      return () => document.removeEventListener("keydown", handler);
+    }, []);
 
     return (
       <Modal
@@ -92,7 +132,10 @@ export const ClaimRGTModal = React.memo(
       >
         <ModalOverlay />
         <ModalContent {...MODAL_PROPS}>
-          <ModalTitleWithCloseButton text={t("Claim RGT")} onClose={onClose} />
+          <ModalTitleWithCloseButton
+            text={isPrivateMode ? t("Claim Private RGT") : t("Claim RGT")}
+            onClose={onClose}
+          />
 
           <ModalDivider />
 
@@ -104,9 +147,13 @@ export const ClaimRGTModal = React.memo(
           >
             <AnimatedSmallLogo boxSize="50px" />
             <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
-              {isUnclaimedLoading
-                ? "?"
-                : Math.floor(unclaimed! * 10000) / 10000}
+              {(
+                isPrivateMode ? !isPrivateUnclaimedLoading : !isUnclaimedLoading
+              )
+                ? Math.floor(
+                    (isPrivateMode ? privateUnclaimed! : unclaimed!) * 10000
+                  ) / 10000
+                : "?"}
             </Heading>
 
             <Row
@@ -121,14 +168,16 @@ export const ClaimRGTModal = React.memo(
                 color="#858585"
                 fontSize="lg"
               >
-                {t("Claimable RGT")}
+                {isPrivateMode
+                  ? t("Claimable Private RGT")
+                  : t("Claimable RGT")}
               </Text>
             </Row>
 
             <NumberInput
               mb={DASHBOARD_BOX_SPACING.asPxString()}
               min={0}
-              max={unclaimed ?? 0}
+              max={(isPrivateMode ? privateUnclaimed : unclaimed) ?? 0}
               onChange={handleAmountChange}
               value={amount}
             >
@@ -153,15 +202,26 @@ export const ClaimRGTModal = React.memo(
                 textAlign="center"
               >
                 <SimpleTooltip
-                  label={t(
-                    "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
-                  )}
+                  label={
+                    isPrivateMode
+                      ? t(
+                          "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%."
+                        )
+                      : t(
+                          "Claiming your RGT before December 19th, 2020 will result in a fraction of it being burned. This amount decreases from 33% linearly until the 19th when it will reach 0%."
+                        )
+                  }
                 >
                   <span>
-                    {t(
-                      "Claiming RGT now will result in a {{amount}}% burn/takeback",
-                      { amount: calculateRGTBurn() }
-                    )}
+                    {isPrivateMode
+                      ? t(
+                          "Claiming private RGT now will result in a {{amount}}% burn/takeback",
+                          { amount: privateClaimFee ?? "?" }
+                        )
+                      : t(
+                          "Claiming RGT now will result in a {{amount}}% burn/takeback",
+                          { amount: claimFee ?? "?" }
+                        )}
 
                     <InfoIcon mb="3px" color="#858585" ml={1} boxSize="9px" />
                   </span>
@@ -170,7 +230,7 @@ export const ClaimRGTModal = React.memo(
             </Row>
 
             <GlowingButton
-              label={t("Claim RGT")}
+              label={isPrivateMode ? t("Claim Private RGT") : t("Claim RGT")}
               fontSize="2xl"
               disabled={amount > (unclaimed ?? 0)}
               onClick={claimRGT}

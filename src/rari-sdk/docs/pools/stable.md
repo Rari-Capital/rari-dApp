@@ -88,7 +88,7 @@ Returns the total balance supplied to the Rari Stable Pool by `account` in USD (
     * `account`: A string indicating the Ethereum account address in question.
 * Return value: A `BN` (scaled by 1e18) indicating the balance supplied by `account` in USD.
 
-### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, fromTimestamp[, toTimestamp]])`)`
+### **Get my interest accrued:** `pools.stable.balances.interestAccruedBy(account[, startTimestamp[, endTimestamp]])`)`
 
 Returns the total amount of interest accrued by `account` in USD (scaled by 1e18).
 
@@ -289,7 +289,7 @@ Returns an array of objects containing `blockNumber`, `timestamp`, and `apy` (sc
 * Parameters:
     * `fromTimestamp`: A `Number` (or the string `"latest"`) indicating the minimum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `toTimestamp`: A `Number` (or the string `"latest"`) indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
-    * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
+    * `intervalSeconds`: A `Number` indicating the interval in seconds at which to retrieve data points. Defaults to `86400`.
 * Return value: An array of objects containing `blockNumber`, `timestamp`, and `apy` (scaled by 1e18, in string format).
 
 ### **Get total supply history:** `pools.stable.history.getTotalSupplyHistory([fromTimestamp[, toTimestamp[, intervalSeconds]]])`
@@ -299,18 +299,18 @@ Returns an array of objects containing `blockNumber`, `timestamp`, and `totalSup
 * Parameters:
     * `fromTimestamp`: A `Number` (or the string `"latest"`) indicating the minimum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `toTimestamp`: A `Number` (or the string `"latest"`) indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
-    * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
+    * `intervalSeconds`: A `Number` indicating the interval in seconds at which to retrieve data points. Defaults to `86400`.
 * Return value: An array of objects containing `blockNumber`, `timestamp`, and `totalSupply` (by all users, in USD, scaled by 1e18, in string format).
 
-### **Get account USD supply balance history:** `pools.stable.history.getBalanceHistoryOf(account[, fromTimestamp[, toTimestamp[, intervalSeconds]]])`
+### **Get account USD supply balance history:** `pools.stable.history.getBalanceHistoryOf(account[, fromBlock[, toBlock[, intervalBlocks]]])`
 
 Returns an array of objects containing `blockNumber`, `timestamp`, and `balance` (of `account`, in USD, scaled by 1e18, in string format) from `fromTimestamp` to `toTimestamp`.
 
 * Parameters:
     * `account`: A string indicating the Ethereum account address in question.
-    * `fromTimestamp`: A `Number` (or the string `"latest"`) indicating the minimum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
-    * `toTimestamp`: A `Number` (or the string `"latest"`) indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
-    * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
+    * `fromBlock`: A `Number` (or the string `"latest"`) indicating the minimum block number from which to retrieve data points. Defaults to `"latest"`.
+    * `toBlock`: A `Number` (or the string `"latest"`) indicating the maximum block number from which to retrieve data points. Defaults to `"latest"`.
+    * `intervalBlocks`: A `Number` indicating the interval in blocks at which to retrieve data points. Defaults to `86400`.
 * Return value: An array of objects containing `blockNumber`, `timestamp`, and `balance` (in USD, scaled by 1e18, in string format).
 
 ### **Get RSPT exchange rate history:** `pools.stable.history.getRsptExchangeRateHistory([fromTimestamp[, toTimestamp[, intervalSeconds]]])`
@@ -320,7 +320,7 @@ Returns an array of objects containing `blockNumber`, `timestamp`, and `rate` (i
 * Parameters:
     * `fromTimestamp`: A `Number` (or the string `"latest"`) indicating the minimum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
     * `toTimestamp`: A `Number` (or the string `"latest"`) indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `"latest"`.
-    * `intervalSeconds`: A `Number` indicating the maximum Unix epoch timestamp from which to retrieve data points. Defaults to `86400`.
+    * `intervalSeconds`: A `Number` indicating the interval in seconds at which to retrieve data points. Defaults to `86400`.
 * Return value: An array of objects containing `blockNumber`, `timestamp`, and `rate` (in USD, scaled by 1e18, in string format).
 
 ### **Get pool allocation history:** `pools.stable.history.getPoolAllocationHistory([fromBlock[, toBlock[, filter]]])`
