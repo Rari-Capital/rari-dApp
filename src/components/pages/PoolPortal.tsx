@@ -964,6 +964,9 @@ const RecentTrades = React.memo(() => {
       }).history.getPoolAllocationHistory(0, currentBlock);
 
       return history
+        .filter((event) => {
+          return event.returnValues.action === "0";
+        })
         .slice(-40)
         .reverse()
         .map((event) => {
@@ -973,13 +976,6 @@ const RecentTrades = React.memo(() => {
               : currencyCodesByHashes[
                   event.returnValues.currencyCode as string
                 ];
-
-          const eventType =
-            event.returnValues.action === "0"
-              ? "Deposited"
-              : event.returnValues.action === "1"
-              ? "Withdrew"
-              : "Withdrew all";
 
           const pool = getSDKPool({ rari, pool: poolType }).allocations.POOLS[
             event.returnValues.pool
@@ -993,7 +989,6 @@ const RecentTrades = React.memo(() => {
           );
 
           return {
-            eventType,
             token,
             amount: poolType === Pool.ETH ? amount.replace("$", "") : amount,
             pool,
@@ -1022,13 +1017,15 @@ const RecentTrades = React.memo(() => {
         allocationHistory!.map((event, index) => (
           <Box key={event!.hash + event!.logIndex} width="100%">
             <Text fontSize="sm" color="#aba6a6">
-              <b>{event!.eventType}</b>
-              {event!.eventType === "Withdrew all"
-                ? ""
-                : " " + event!.amount}{" "}
-              <b>{event!.token}</b>{" "}
-              {event!.eventType === "Deposited" ? "to" : "from"}{" "}
-              <b>{event!.pool}</b>
+              <Link
+                isExternal
+                href={`https://www.etherscan.io/tx/${event!.hash}`}
+              >
+                Block #{event!.blockNumber}:
+              </Link>
+              <b> Deposited </b>
+              {event!.amount} <b>{event!.token}</b> to
+              <b> {event!.pool}</b>
             </Text>
             {index !== allocationHistory!.length - 1 ? (
               <Divider borderColor="#616161" my={1} />
