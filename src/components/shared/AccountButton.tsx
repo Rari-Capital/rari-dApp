@@ -104,7 +104,7 @@ const AddressButton = React.memo(
               <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
             )}
 
-            <Text mx={2} fontWeight="semibold">
+            <Text ml={2} fontWeight="semibold">
               {shortAddress(address)}
             </Text>
           </Row>
