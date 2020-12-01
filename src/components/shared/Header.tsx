@@ -13,7 +13,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { Pool } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
-// import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -29,7 +29,7 @@ export const Header = React.memo(
     isPool?: boolean;
     padding?: boolean;
   }) => {
-    // const { t } = useTranslation();
+    const { t } = useTranslation();
 
     return (
       <Row
@@ -63,7 +63,7 @@ export const Header = React.memo(
           overflowY="hidden"
           transform="translate(0px, 7px)"
         >
-          {/* <HeaderLink mr={4} name={t("Pools")} route="/" />
+          <HeaderLink mr={4} name={t("Overview")} route="/" />
 
           {Object.values(Pool).map(
             (pool: Pool, index: number, array: Pool[]) => {
@@ -75,7 +75,7 @@ export const Header = React.memo(
                 />
               );
             }
-          )} */}
+          )}
         </Row>
 
         <AccountButton />
@@ -110,6 +110,10 @@ export const HeaderLink = React.memo(
   }) => {
     const location = useLocation();
 
+    const isOnThisRoute =
+      location.pathname === route ||
+      location.pathname.replace(/\/+$/, "") === route;
+
     return (
       <Link
         /* @ts-ignore */
@@ -118,17 +122,7 @@ export const HeaderLink = React.memo(
         mr={mr ?? 0}
         whiteSpace="nowrap"
       >
-        <Text
-          as={
-            location.pathname === route ||
-            location.pathname.replace(/\/+$/, "") === route
-              ? "u"
-              : "p"
-          }
-          fontWeight="bold"
-        >
-          {name}
-        </Text>
+        <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
       </Link>
     );
   }

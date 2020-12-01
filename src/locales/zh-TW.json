@@ -20,9 +20,6 @@
   "Month": "月",
   "Week": "週",
   "Strategy Allocation": "策略分配",
-  "Move": "移動",
-  "from": "從",
-  "to": "至",
   "Account": "帳戶",
   "Switch Wallet": "開關錢包",
   "Connect with a browser extension": "連接瀏覽器擴展",
@@ -37,7 +34,6 @@
   "High risk, high reward": "高風險，高回報",
   "Total Value Locked": "總價值鎖定",
   "Your balance in this pool": "您在此池中的餘額",
-  "Pools": "泳池",
   "Connect Wallet": "連接錢包",
   "Get Wallet": "獲取錢包",
   "RGT Supply": "RGT供應",
@@ -83,5 +79,6 @@
   "Claim Private RGT": "領取私人RGT",
   "Claimable Private RGT": "可索賠的私人RGT",
   "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.": "在2022年10月20日之前申請私人RGT，將導致一部分被燒毀。該數量從100％線性降低到20％達到0％。",
-  "Claiming private RGT now will result in a {{amount}}% burn/takeback": "現在宣稱擁有私人RGT將導致{{amount}}％的燒錄/收回"
+  "Claiming private RGT now will result in a {{amount}}% burn/takeback": "現在宣稱擁有私人RGT將導致{{amount}}％的燒錄/收回",
+  "Overview": "總覽"
 }

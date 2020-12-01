@@ -85,13 +85,13 @@ export const PoolReturnChartOptions = {
     labels: {
       ...LineChartOptions.yaxis.labels,
       formatter: function (value: string) {
-        return "$" + value;
+        return "$" + parseFloat(value).toFixed(2);
       },
     },
   },
 };
 
-export const SelfReturnChartOptions = {
+export const USDSelfReturnChartOptions = {
   ...PoolReturnChartOptions,
   grid: {
     ...PoolReturnChartOptions.grid,
@@ -103,7 +103,19 @@ export const SelfReturnChartOptions = {
   },
 };
 
-export const StrategyAllocationChartOptions = {
+export const ETHSelfReturnChartOptions = {
+  ...USDSelfReturnChartOptions,
+  yaxis: {
+    labels: {
+      ...USDSelfReturnChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return smallStringUsdFormatter(value).replace("$", "") + " ETH";
+      },
+    },
+  },
+};
+
+export const USDStrategyAllocationChartOptions = {
   chart: {
     foreColor: "#a19f9f",
     animations: {
@@ -159,6 +171,17 @@ export const StrategyAllocationChartOptions = {
   colors: ["#282828", "#929292", "#5E5E5E", "#4C4C4C", "#343434"],
 };
 
+export const ETHStrategyAllocationChartOptions = {
+  ...USDStrategyAllocationChartOptions,
+  yaxis: {
+    labels: {
+      ...USDStrategyAllocationChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return smallStringUsdFormatter(value).replace("$", "") + " ETH";
+      },
+    },
+  },
+};
 export const DisableChartInteractions = {
   tooltip: {
     enabled: false,

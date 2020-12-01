@@ -20,9 +20,6 @@
   "Month": "Month",
   "Week": "Week",
   "Strategy Allocation": "Strategy Allocation",
-  "Move": "Move",
-  "from": "from",
-  "to": "to",
   "Account": "Account",
   "Switch Wallet": "Switch Wallet",
   "Connect with a browser extension": "Connect with a browser extension",
@@ -37,7 +34,6 @@
   "High risk, high reward": "High risk, high reward",
   "Total Value Locked": "Total Value Locked",
   "Your balance in this pool": "Your balance in this pool",
-  "Pools": "Pools",
   "Connect Wallet": "Connect Wallet",
   "Get Wallet": "Get Wallet",
   "RGT Supply": "RGT Supply",
@@ -83,5 +79,6 @@
   "Claim Private RGT": "Claim Private RGT",
   "Claimable Private RGT": "Claimable Private RGT",
   "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.": "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.",
-  "Claiming private RGT now will result in a {{amount}}% burn/takeback": "Claiming private RGT now will result in a {{amount}}% burn/takeback"
+  "Claiming private RGT now will result in a {{amount}}% burn/takeback": "Claiming private RGT now will result in a {{amount}}% burn/takeback",
+  "Overview": "Overview"
 }
