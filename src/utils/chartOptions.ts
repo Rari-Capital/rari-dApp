@@ -85,7 +85,7 @@ export const PoolReturnChartOptions = {
     labels: {
       ...LineChartOptions.yaxis.labels,
       formatter: function (value: string) {
-        return "$" + value;
+        return "$" + parseFloat(value).toFixed(2);
       },
     },
   },
