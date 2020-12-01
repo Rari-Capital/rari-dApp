@@ -511,6 +511,7 @@ const UserStatsAndChart = React.memo(
             borderRadius="7px"
             fontWeight="bold"
             width={{ md: "130px", base: "100%" }}
+            bg="#121212"
             isDisabled={hasNotDeposited}
             value={timeRange}
             onChange={onTimeRangeChange}
