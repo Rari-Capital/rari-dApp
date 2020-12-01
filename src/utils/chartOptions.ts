@@ -91,7 +91,7 @@ export const PoolReturnChartOptions = {
   },
 };
 
-export const SelfReturnChartOptions = {
+export const USDSelfReturnChartOptions = {
   ...PoolReturnChartOptions,
   grid: {
     ...PoolReturnChartOptions.grid,
@@ -99,6 +99,18 @@ export const SelfReturnChartOptions = {
       // No legend so we need to remove the top padding.
       // This will not shift anything up, just increases the size of the chart to expand vertically.
       top: -15,
+    },
+  },
+};
+
+export const ETHSelfReturnChartOptions = {
+  ...USDSelfReturnChartOptions,
+  yaxis: {
+    labels: {
+      ...USDSelfReturnChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return smallStringUsdFormatter(value).replace("$", "") + " ETH";
+      },
     },
   },
 };
@@ -163,7 +175,7 @@ export const ETHStrategyAllocationChartOptions = {
   ...USDStrategyAllocationChartOptions,
   yaxis: {
     labels: {
-      ...LineChartOptions.yaxis.labels,
+      ...USDStrategyAllocationChartOptions.yaxis.labels,
       formatter: function (value: string) {
         return smallStringUsdFormatter(value).replace("$", "") + " ETH";
       },

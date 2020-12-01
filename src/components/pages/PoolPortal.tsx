@@ -41,7 +41,8 @@ import {
 } from "buttered-chakra";
 
 import {
-  SelfReturnChartOptions,
+  USDSelfReturnChartOptions,
+  ETHSelfReturnChartOptions,
   USDStrategyAllocationChartOptions,
   ETHStrategyAllocationChartOptions,
   DisableChartInteractions,
@@ -169,8 +170,8 @@ const PoolPortalContent = React.memo(() => {
     return <FullPageSpinner />;
   }
 
-  const { formattedBalance: myBalance } = balanceData!;
-  const hasNotDeposited = myBalance === "$0.00000";
+  const { formattedBalance: myBalance, bigBalance } = balanceData!;
+  const hasNotDeposited = bigBalance.isZero();
 
   return (
     <>
@@ -472,6 +473,11 @@ const UserStatsAndChart = React.memo(
 
     const { t } = useTranslation();
 
+    const chartOptions =
+      poolType === Pool.ETH
+        ? ETHSelfReturnChartOptions
+        : USDSelfReturnChartOptions;
+
     return (
       <>
         <RowOnDesktopColumnOnMobile
@@ -536,8 +542,8 @@ const UserStatsAndChart = React.memo(
             <Chart
               options={
                 hasNotDeposited
-                  ? { ...SelfReturnChartOptions, ...DisableChartInteractions }
-                  : SelfReturnChartOptions
+                  ? { ...chartOptions, ...DisableChartInteractions }
+                  : chartOptions
               }
               type="line"
               width="100%"
@@ -560,15 +566,11 @@ const UserStatsAndChart = React.memo(
                         { x: "October 12, 2020", y: 1018 },
                       ]
                     : (chartData ?? []).map((point: any) => {
-                        console.log(
-                          (parseFloat(point.balance) / 1e18).toFixed(2)
-                        );
-
                         return {
                           x: new Date(
                             point.timestamp * 1000
                           ).toLocaleDateString("en-US"),
-                          y: (parseFloat(point.balance) / 1e18).toFixed(2),
+                          y: parseFloat(point.balance) / 1e18,
                         };
                       }),
                 },
