@@ -292,9 +292,12 @@ const FundStats = React.memo(() => {
         height={{ md: "120px", base: "auto" }}
       >
         <DashboardBox
-          width={{ md: "50%", base: "100%" }}
+          width={{ md: hasNotDeposited ? "100%" : "50%", base: "100%" }}
           height={{ md: "100%", base: "100px" }}
-          mr={{ md: DASHBOARD_BOX_SPACING.asPxString(), base: 0 }}
+          mr={{
+            md: hasNotDeposited ? "0px" : DASHBOARD_BOX_SPACING.asPxString(),
+            base: 0,
+          }}
           mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
         >
           <Center expand>
@@ -329,14 +332,16 @@ const FundStats = React.memo(() => {
           </Center>
         </DashboardBox>
 
-        <DashboardBox
-          width={{ md: "50%", base: "100%" }}
-          height={{ md: "100%", base: "100px" }}
-        >
-          <Center expand>
-            {hasNotDeposited ? <RGTPrice /> : <InterestEarned />}
-          </Center>
-        </DashboardBox>
+        {hasNotDeposited ? null : (
+          <DashboardBox
+            width={{ md: "50%", base: "100%" }}
+            height={{ md: "100%", base: "100px" }}
+          >
+            <Center expand>
+              <InterestEarned />
+            </Center>
+          </DashboardBox>
+        )}
       </RowOnDesktopColumnOnMobile>
     </>
   );
