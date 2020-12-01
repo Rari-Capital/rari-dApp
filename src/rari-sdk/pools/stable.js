@@ -56,6 +56,7 @@ for (const version of Object.keys(legacyContractAddresses))
 
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
+  POOL_NAME = "Rari Stable Pool";
   POOL_TOKEN_SYMBOL = "RSPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;
@@ -1845,6 +1846,14 @@ export default class StablePool {
                 )
             );
 
+          // Check amountUsdBN against user fund balance
+          var senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+
+          if (amountUsdBN.gt(senderUsdBalance))
+            throw new Error(
+              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance"
+            );
+
           // Return amountUsdBN
           return [amountUsdBN];
         } else {
@@ -2256,6 +2265,14 @@ export default class StablePool {
                   "."
               );
           }
+
+          // Check amountInputtedUsdBN against user fund balance
+          var senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+
+          if (amountInputtedUsdBN.gt(senderUsdBalance))
+            throw new Error(
+              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance"
+            );
 
           // Return amountInputtedUsdBN
           return [amountInputtedUsdBN, totalProtocolFeeBN];

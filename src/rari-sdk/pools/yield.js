@@ -11,6 +11,7 @@ const contractAddresses = {
 
 export default class YieldPool extends StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/yield/";
+  POOL_NAME = "Rari Yield Pool";
   POOL_TOKEN_SYMBOL = "RYPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;
