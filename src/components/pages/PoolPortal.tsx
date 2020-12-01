@@ -410,6 +410,10 @@ const UserStatsAndChart = React.memo(
     } = useQuery(
       address + " " + poolType + " interestAccrued " + timeRange,
       async () => {
+        if (hasNotDeposited) {
+          return "0";
+        }
+
         const startingBlock =
           timeRange === "month"
             ? Date.now() - millisecondsPerDay * 30
