@@ -122,3 +122,7 @@ img:not([src]) {
 .bn-notify-custom .bn-notify-notification-info {
   background-color: #121212 !important;
 }
+
+.black-bg-option {
+  background-color: #121212 !important;
+}

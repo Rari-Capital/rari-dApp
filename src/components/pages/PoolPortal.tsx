@@ -525,16 +525,16 @@ const UserStatsAndChart = React.memo(
             value={timeRange}
             onChange={onTimeRangeChange}
           >
-            <option bg="#121212" value="week">
+            <option className="black-bg-option" value="week">
               {t("Week")}
             </option>
-            <option bg="#121212" value="month">
+            <option className="black-bg-option" value="month">
               {t("Month")}
             </option>
-            <option bg="#121212" value="year">
+            <option className="black-bg-option" value="year">
               {t("Year")}
             </option>
-            <option bg="#121212" value="max">
+            <option className="black-bg-option" value="max">
               {t("Max")}
             </option>
           </Select>
