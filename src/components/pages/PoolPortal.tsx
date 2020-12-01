@@ -438,7 +438,7 @@ const UserStatsAndChart = React.memo(
     );
 
     const { data: chartData, isLoading: isChartDataLoading } = useQuery(
-      address + " " + poolType + " balanceHistory",
+      address + " " + poolType + " " + timeRange + " balanceHistory",
       async () => {
         if (hasNotDeposited) {
           return [];
@@ -458,7 +458,7 @@ const UserStatsAndChart = React.memo(
         const rawData = await getSDKPool({
           rari,
           pool: poolType,
-        }).history.getBalanceHistoryOf(address, blockStart, latestBlock);
+        }).history.getBalanceHistoryOf(address, blockStart);
 
         return rawData;
       }
@@ -555,7 +555,7 @@ const UserStatsAndChart = React.memo(
                         { x: "October 12, 2020", y: 1018 },
                       ]
                     : (chartData ?? []).map((point: any) => ({
-                        x: new Date(point.timestamp).toLocaleDateString(
+                        x: new Date(point.timestamp * 1000).toLocaleDateString(
                           "en-US"
                         ),
                         y: (parseFloat(point.balance) / 1e18).toFixed(2),
