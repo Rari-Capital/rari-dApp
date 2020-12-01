@@ -20,6 +20,7 @@ import SmallLogo from "../../static/small-logo.png";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
 import CaptionedStat from "../shared/CaptionedStat";
+import { Link as RouterLink } from "react-router-dom";
 
 import { FaTwitter } from "react-icons/fa";
 import {
@@ -441,12 +442,33 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           width="100%"
           mt="auto"
         >
+          <Link
+            /* @ts-ignore */
+            as={RouterLink}
+            width="100%"
+            className="no-underline"
+            to={"/pools/" + pool.toString()}
+          >
+            <DashboardBox
+              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              width="100%"
+              height="45px"
+              borderRadius="7px"
+              fontSize="xl"
+              fontWeight="bold"
+            >
+              <Center expand>{t("Access")}</Center>
+            </DashboardBox>
+          </Link>
+
           <DashboardBox
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
             flexShrink={0}
             as="button"
             onClick={openDepositModal}
             height="45px"
-            width="100%"
+            ml={2}
+            width="45px"
             borderRadius="7px"
             fontSize="xl"
             fontWeight="bold"

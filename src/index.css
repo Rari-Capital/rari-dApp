@@ -126,3 +126,11 @@ img:not([src]) {
 .black-bg-option {
   background-color: #121212 !important;
 }
+
+.no-underline:focus,
+.no-underline:hover,
+.no-underline:visited,
+.no-underline:link,
+.no-underline:active {
+  text-decoration: none !important;
+}
