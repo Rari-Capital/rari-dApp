@@ -1023,7 +1023,7 @@ const RecentTrades = React.memo(() => {
               >
                 Block #{event!.blockNumber}:
               </Link>
-              <b> Moved </b>
+              <b> {t("Moved")} </b>
               {event!.amount} <b>{event!.token}</b> to
               <b> {event!.pool}</b>
             </Text>

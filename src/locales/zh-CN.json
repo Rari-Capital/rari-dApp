@@ -68,7 +68,7 @@
   "You may experience divergence loss when depositing stablecoins into the Yield Pool that are above their peg at the time of deposit. The Yield Pool is composed of various stablecoins which shift in value, causing your balance to fluctuate.": "当将稳定币存入收益池中高于固定时的收益池时，您可能会遇到发散损失。收益池由各种稳定币组成，这些稳定币的价值会发生变化，从而导致您的余额波动。",
   "This pool has a {{withdrawFee}}% withdrawal fee.": "此池收取{{withdrawFee}}％的提款费。",
   "Currently earning": "目前收入",
-  "APY Based On Returns From": "APY Based On Returns From",
+  "APY Based On Returns From": "基于来自退货的APY",
   "This Month": "这个月",
   "This Week": "这个月",
   "Compare Returns": "比较退货",
@@ -80,5 +80,6 @@
   "Claimable Private RGT": "可索赔的私人RGT",
   "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.": "在2022年10月20日之前申请私人RGT，将导致一部分被烧毁。该数量从100％线性降低到20％达到0％。",
   "Claiming private RGT now will result in a {{amount}}% burn/takeback": "现在宣称拥有私人RGT将导致{{amount}}％的烧录/收回",
-  "Overview": "总览"
+  "Overview": "总览",
+  "Moved": "感动"
 }

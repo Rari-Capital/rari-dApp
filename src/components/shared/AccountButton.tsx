@@ -69,6 +69,8 @@ const AddressButton = React.memo(
   }) => {
     const { address } = useRari();
 
+    const { t } = useTranslation();
+
     const { data: isVerified } = useQuery(address + " isVerified", async () => {
       const fetched = await fetch(
         `https://api-mainnet.rarible.com/profiles/${address}`
@@ -118,7 +120,7 @@ const AddressButton = React.memo(
           onClick={openClaimRGTModal}
           fontWeight="bold"
         >
-          <Center expand>Claim RGT</Center>
+          <Center expand>{t("Claim RGT")}</Center>
         </DashboardBox>
       </>
     );
