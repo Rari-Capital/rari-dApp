@@ -554,12 +554,18 @@ const UserStatsAndChart = React.memo(
                         { x: "October 11, 2020", y: 1016 },
                         { x: "October 12, 2020", y: 1018 },
                       ]
-                    : (chartData ?? []).map((point: any) => ({
-                        x: new Date(point.timestamp * 1000).toLocaleDateString(
-                          "en-US"
-                        ),
-                        y: (parseFloat(point.balance) / 1e18).toFixed(2),
-                      })),
+                    : (chartData ?? []).map((point: any) => {
+                        console.log(
+                          (parseFloat(point.balance) / 1e18).toFixed(2)
+                        );
+
+                        return {
+                          x: new Date(
+                            point.timestamp * 1000
+                          ).toLocaleDateString("en-US"),
+                          y: (parseFloat(point.balance) / 1e18).toFixed(2),
+                        };
+                      }),
                 },
               ]}
             />
