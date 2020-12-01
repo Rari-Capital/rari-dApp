@@ -110,6 +110,10 @@ export const HeaderLink = React.memo(
   }) => {
     const location = useLocation();
 
+    const isOnThisRoute =
+      location.pathname === route ||
+      location.pathname.replace(/\/+$/, "") === route;
+
     return (
       <Link
         /* @ts-ignore */
@@ -118,17 +122,7 @@ export const HeaderLink = React.memo(
         mr={mr ?? 0}
         whiteSpace="nowrap"
       >
-        <Text
-          as={
-            location.pathname === route ||
-            location.pathname.replace(/\/+$/, "") === route
-              ? "u"
-              : "p"
-          }
-          fontWeight="bold"
-        >
-          {name}
-        </Text>
+        <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
       </Link>
     );
   }
