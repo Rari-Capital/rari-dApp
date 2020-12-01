@@ -521,15 +521,22 @@ const UserStatsAndChart = React.memo(
             borderRadius="7px"
             fontWeight="bold"
             width={{ md: "130px", base: "100%" }}
-            bg="#121212"
             isDisabled={hasNotDeposited}
             value={timeRange}
             onChange={onTimeRangeChange}
           >
-            <option value="week">{t("Week")}</option>
-            <option value="month">{t("Month")}</option>
-            <option value="year">{t("Year")}</option>
-            <option value="max">{t("Max")}</option>
+            <option bg="#121212" value="week">
+              {t("Week")}
+            </option>
+            <option bg="#121212" value="month">
+              {t("Month")}
+            </option>
+            <option bg="#121212" value="year">
+              {t("Year")}
+            </option>
+            <option bg="#121212" value="max">
+              {t("Max")}
+            </option>
           </Select>
         </RowOnDesktopColumnOnMobile>
 
