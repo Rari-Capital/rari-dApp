@@ -81,5 +81,6 @@
   "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.": "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.",
   "Claiming private RGT now will result in a {{amount}}% burn/takeback": "Claiming private RGT now will result in a {{amount}}% burn/takeback",
   "Overview": "Overview",
-  "Moved": "Moved"
+  "Moved": "Moved",
+  "Access": "Access"
 }

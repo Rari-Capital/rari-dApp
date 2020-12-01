@@ -81,5 +81,6 @@
   "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%.": "在2022年10月20日之前申请私人RGT，将导致一部分被烧毁。该数量从100％线性降低到20％达到0％。",
   "Claiming private RGT now will result in a {{amount}}% burn/takeback": "现在宣称拥有私人RGT将导致{{amount}}％的烧录/收回",
   "Overview": "总览",
-  "Moved": "感动"
+  "Moved": "感动",
+  "Access": "访问"
 }
