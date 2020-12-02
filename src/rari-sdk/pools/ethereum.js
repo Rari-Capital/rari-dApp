@@ -437,7 +437,7 @@ export default class EthereumPool extends StablePool {
         // Check account balance
         if (amount.gt(accountBalance))
           throw new Error(
-            "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance."
+            "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance. Please click the max button and try again (or reload and try again later if the issue persists)."
           );
 
         // Return amount
@@ -465,7 +465,7 @@ export default class EthereumPool extends StablePool {
         // Check account balance
         if (takerAssetFilledAmountBN.gt(accountBalance))
           throw new Error(
-            "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance."
+            "Requested withdrawal amount is greater than the sender's Rari Ethereum Pool balance. Please click the max button and try again (or reload and try again later if the issue persists)."
           );
 
         // Make sure input amount is completely filled

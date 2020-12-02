@@ -1851,7 +1851,7 @@ export default class StablePool {
 
           if (amountUsdBN.gt(senderUsdBalance))
             throw new Error(
-              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance"
+              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance. Please click the max button and try again (or reload and try again later if the issue persists)."
             );
 
           // Return amountUsdBN
@@ -2271,7 +2271,7 @@ export default class StablePool {
 
           if (amountInputtedUsdBN.gt(senderUsdBalance))
             throw new Error(
-              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance"
+              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance. Please click the max button and try again (or reload and try again later if the issue persists)."
             );
 
           // Return amountInputtedUsdBN
