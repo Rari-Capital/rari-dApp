@@ -9,14 +9,36 @@ const contractAddresses = {
   RariFundProxy: "0x35DDEFa2a30474E64314aAA7370abE14c042C6e8"
 };
 
+const legacyContractAddresses = {
+  "v1.0.0": {
+    RariFundProxy: "0x6dd8e1Df9F366e6494c2601e515813e0f9219A88"
+  },
+  "v1.1.0": {
+    RariFundProxy: "0x626d6979F3607d13051594d8B27a0A64E413bC11"
+  }
+};
+
+var legacyAbis = {};
+
+for (const version of Object.keys(legacyContractAddresses))
+  for (const contractName of Object.keys(legacyContractAddresses[version])) {
+    if (!legacyAbis[version]) legacyAbis[version] = {};
+    legacyAbis[version][contractName] = require(__dirname +
+      "/yield/abi/legacy/" +
+      version +
+      "/" +
+      contractName +
+      ".json");
+  }
+
 export default class YieldPool extends StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/yield/";
   POOL_NAME = "Rari Yield Pool";
   POOL_TOKEN_SYMBOL = "RYPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;
-  static LEGACY_CONTRACT_ADDRESSES = undefined;
-  static LEGACY_CONTRACT_ABIS = undefined;
+  static LEGACY_CONTRACT_ADDRESSES = legacyContractAddresses;
+  static LEGACY_CONTRACT_ABIS = legacyAbis;
 
   constructor(web3, subpools, getAllTokens) {
     super(web3, subpools, getAllTokens);
@@ -28,7 +50,18 @@ export default class YieldPool extends StablePool {
         contractAddresses[contractName]
       );
     // this.gsnContracts = { RariFundProxy: new web3Gsn.eth.Contract(abis.RariFundProxy, contractAddresses.RariFundProxy) };
-    delete this.legacyContracts;
+    this.legacyContracts = {};
+
+    for (const version of Object.keys(legacyContractAddresses)) {
+      if (!this.legacyContracts[version]) this.legacyContracts[version] = {};
+      for (const contractName of Object.keys(legacyContractAddresses[version]))
+        this.legacyContracts[version][
+          contractName
+        ] = new this.web3.eth.Contract(
+          legacyAbis[version][contractName],
+          legacyContractAddresses[version][contractName]
+        );
+    }
 
     this.rypt = this.rspt;
     delete this.rspt;

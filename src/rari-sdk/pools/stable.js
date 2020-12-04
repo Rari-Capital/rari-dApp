@@ -29,6 +29,7 @@ const legacyContractAddresses = {
     RariFundProxy: "0x27C4E34163b5FD2122cE43a40e3eaa4d58eEbeaF",
   },
   "v1.1.0": {
+    RariFundController: "0x15c4ae284fbb3a6ceb41fa8eb5f3408ac485fabb",
     RariFundManager: "0x6bdaf490c5b6bb58564b3e79c8d18e8dfd270464",
     RariFundProxy: "0x318cfd99b60a63d265d2291a4ab982073fbf245d",
   },
@@ -39,6 +40,9 @@ const legacyContractAddresses = {
     RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
     RariFundProxy: "0xD4be7E211680e12c08bbE9054F0dA0D646c45228",
   },
+  "v2.2.0": {
+    RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e"
+  }
 };
 
 var legacyAbis = {};
