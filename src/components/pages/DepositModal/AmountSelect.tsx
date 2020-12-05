@@ -505,11 +505,17 @@ const TokenNameAndMaxButton = React.memo(
 
       if (maxBN.isNeg() || maxBN.isZero()) {
         updateAmount("0.0");
-      }
+      } else {
+        const str = new BigNumber(maxBN.toString())
+          .div(10 ** token.decimals)
+          .toFixed(10);
 
-      updateAmount(
-        new BigNumber(maxBN.toString()).div(10 ** token.decimals).toString()
-      );
+        if (str.startsWith("0.000000")) {
+          updateAmount("0.0");
+        } else {
+          updateAmount(str);
+        }
+      }
 
       setIsMaxLoading(false);
     }, [updateAmount, token, rari, address, mode, poolType]);
