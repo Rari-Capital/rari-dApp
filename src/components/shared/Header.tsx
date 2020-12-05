@@ -24,10 +24,12 @@ export const Header = React.memo(
     isAuthed,
     isPool,
     padding,
+    lessLinks,
   }: {
     isAuthed: boolean;
     isPool?: boolean;
     padding?: boolean;
+    lessLinks?: boolean;
   }) => {
     const { t } = useTranslation();
 
@@ -63,18 +65,18 @@ export const Header = React.memo(
           overflowY="hidden"
           transform="translate(0px, 7px)"
         >
-          <HeaderLink mr={4} name={t("Overview")} route="/" />
+          <HeaderLink name={t("Overview")} route="/" />
 
-          {Object.values(Pool).map(
-            (pool: Pool, index: number, array: Pool[]) => {
-              return (
-                <PoolLink
-                  key={pool}
-                  pool={pool}
-                  isLast={index === array.length - 1}
-                />
-              );
-            }
+          {Object.values(Pool).map((pool: Pool) => {
+            return <PoolLink key={pool} pool={pool} />;
+          })}
+
+          {lessLinks ? null : (
+            <HeaderLink
+              ml={4}
+              name={t("Forums")}
+              route="https://forums.rari.capital"
+            />
           )}
         </Row>
 
@@ -84,42 +86,40 @@ export const Header = React.memo(
   }
 );
 
-export const PoolLink = React.memo(
-  ({ pool, isLast }: { pool: Pool; isLast: boolean }) => {
-    const { poolName } = usePoolInfo(pool);
+export const PoolLink = React.memo(({ pool }: { pool: Pool }) => {
+  const { poolName } = usePoolInfo(pool);
 
-    return (
-      <HeaderLink
-        mr={isLast ? 0 : 4}
-        name={poolName}
-        route={"/pools/" + pool}
-      />
-    );
-  }
-);
+  return <HeaderLink ml={4} name={poolName} route={"/pools/" + pool} />;
+});
 
 export const HeaderLink = React.memo(
   ({
     name,
     route,
-    mr,
+    ml,
   }: {
     name: string;
     route: string;
-    mr?: number | string;
+    ml?: number | string;
   }) => {
     const location = useLocation();
+
+    const isExternal = route.startsWith("http");
 
     const isOnThisRoute =
       location.pathname === route ||
       location.pathname.replace(/\/+$/, "") === route;
 
-    return (
+    return isExternal ? (
+      <Link href={route} isExternal ml={ml ?? 0} whiteSpace="nowrap">
+        <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
+      </Link>
+    ) : (
       <Link
         /* @ts-ignore */
         as={RouterLink}
         to={route}
-        mr={mr ?? 0}
+        ml={ml ?? 0}
         whiteSpace="nowrap"
       >
         <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
