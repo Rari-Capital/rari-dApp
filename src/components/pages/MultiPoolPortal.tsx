@@ -427,10 +427,10 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         </SimpleTooltip>
 
         <Text fontWeight="bold" textAlign="center">
-          {poolAPY ?? "$?"}% APY +{" "}
+          {poolAPY ?? "?"}% APY +{" "}
           <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>
-              ({rgtAPR ?? "$?"}%{" "}
+              ({rgtAPR ?? "?"}%{" "}
               <Image display="inline" src={SmallLogo} boxSize="20px" />)
             </span>
           </SimpleTooltip>
