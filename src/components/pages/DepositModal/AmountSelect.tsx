@@ -150,10 +150,17 @@ const AmountSelect = React.memo(
           ? t("Enter a valid amount to deposit.")
           : t("Enter a valid amount to withdraw.");
     } else if (amount.isZero()) {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("Choose which token you want to deposit.")
-          : t("Choose which token you want to withdraw.");
+      if (poolType === Pool.ETH) {
+        depositOrWithdrawAlert =
+          mode === Mode.DEPOSIT
+            ? t("Enter a valid amount to deposit.")
+            : t("Enter a valid amount to withdraw.");
+      } else {
+        depositOrWithdrawAlert =
+          mode === Mode.DEPOSIT
+            ? t("Choose which token you want to deposit.")
+            : t("Choose which token you want to withdraw.");
+      }
     } else if (isSelectedTokenBalanceLoading) {
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
         token: selectedToken,
@@ -372,7 +379,10 @@ const AmountSelect = React.memo(
           height="100%"
         >
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
-            <Link href="https://www.notion.so/Fees-e4689d7b800f485098548dd9e9d0a69f">
+            <Link
+              href="https://www.notion.so/Fees-e4689d7b800f485098548dd9e9d0a69f"
+              isExternal
+            >
               {depositOrWithdrawAlert}
             </Link>
           </Text>
