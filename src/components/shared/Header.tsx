@@ -1,8 +1,17 @@
-import { Link, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Link,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Portal,
+} from "@chakra-ui/react";
 import { PixelSize, Row } from "buttered-chakra";
 import React from "react";
 import { AccountButton } from "./AccountButton";
-import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
+import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import {
   AnimatedPoolLogo,
   AnimatedSmallLogo,
@@ -11,8 +20,6 @@ import {
 } from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { Pool } from "../../context/PoolContext";
-import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useTranslation } from "react-i18next";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
@@ -67,17 +74,13 @@ export const Header = React.memo(
         >
           <HeaderLink name={t("Overview")} route="/" />
 
-          {Object.values(Pool).map((pool: Pool) => {
-            return <PoolLink key={pool} pool={pool} />;
-          })}
+          <PoolsLink ml={4} />
 
-          {lessLinks ? null : (
-            <HeaderLink
-              ml={4}
-              name={t("Forums")}
-              route="https://forums.rari.capital"
-            />
-          )}
+          <HeaderLink
+            ml={4}
+            name={t("Forums")}
+            route="https://forums.rari.capital"
+          />
         </Row>
 
         <AccountButton />
@@ -86,20 +89,56 @@ export const Header = React.memo(
   }
 );
 
-export const PoolLink = React.memo(({ pool }: { pool: Pool }) => {
-  const { poolName } = usePoolInfo(pool);
+export const PoolsLink = React.memo(({ ml }: { ml?: number | string }) => {
+  return (
+    <Box ml={ml ?? 0}>
+      <Menu isLazy placement="bottom">
+        <MenuButton>
+          <PoolText />
+        </MenuButton>
 
-  return <HeaderLink ml={4} name={poolName} route={"/pools/" + pool} />;
+        <Portal>
+          <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
+            <PoolMenuItem name="Stable Pool" linkSuffix="stable" />
+            <PoolMenuItem name="Yield Pool" linkSuffix="yield" />
+            <PoolMenuItem name="ETH Pool" linkSuffix="eth" />
+          </MenuList>
+        </Portal>
+      </Menu>
+    </Box>
+  );
 });
+
+export const PoolText = React.memo(() => {
+  const location = useLocation();
+
+  const isOnThisRoute = location.pathname.includes("pools");
+
+  return <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>Pools</Text>;
+});
+
+export const PoolMenuItem = React.memo(
+  ({ name, linkSuffix }: { name: string; linkSuffix: string }) => {
+    return (
+      <MenuItem _focus={{ bg: "#2b2a2a" }} _hover={{ bg: "#2b2a2a" }}>
+        <Box mx="auto">
+          <HeaderLink noUnderline name={name} route={"/pools/" + linkSuffix} />
+        </Box>
+      </MenuItem>
+    );
+  }
+);
 
 export const HeaderLink = React.memo(
   ({
     name,
     route,
     ml,
+    noUnderline,
   }: {
     name: string;
     route: string;
+    noUnderline?: boolean;
     ml?: number | string;
   }) => {
     const location = useLocation();
@@ -111,7 +150,13 @@ export const HeaderLink = React.memo(
       location.pathname.replace(/\/+$/, "") === route;
 
     return isExternal ? (
-      <Link href={route} isExternal ml={ml ?? 0} whiteSpace="nowrap">
+      <Link
+        href={route}
+        isExternal
+        ml={ml ?? 0}
+        whiteSpace="nowrap"
+        className={noUnderline ? "no-underline" : ""}
+      >
         <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
       </Link>
     ) : (
@@ -121,6 +166,7 @@ export const HeaderLink = React.memo(
         to={route}
         ml={ml ?? 0}
         whiteSpace="nowrap"
+        className={noUnderline ? "no-underline" : ""}
       >
         <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
       </Link>
