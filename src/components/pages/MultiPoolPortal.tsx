@@ -113,7 +113,7 @@ const MultiPoolPortal = React.memo(() => {
         width={columnWidth}
         px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
-        <Header isAuthed={isAuthed} lessLinks={columnWidth === "700px"} />
+        <Header isAuthed={isAuthed} />
 
         <FundStats />
 
