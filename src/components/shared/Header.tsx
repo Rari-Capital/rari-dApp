@@ -31,12 +31,10 @@ export const Header = React.memo(
     isAuthed,
     isPool,
     padding,
-    lessLinks,
   }: {
     isAuthed: boolean;
     isPool?: boolean;
     padding?: boolean;
-    lessLinks?: boolean;
   }) => {
     const { t } = useTranslation();
 
@@ -92,7 +90,7 @@ export const Header = React.memo(
 export const PoolsLink = React.memo(({ ml }: { ml?: number | string }) => {
   return (
     <Box ml={ml ?? 0}>
-      <Menu isLazy placement="bottom">
+      <Menu autoSelect={false} placement="bottom">
         <MenuButton>
           <PoolText />
         </MenuButton>
