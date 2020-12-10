@@ -132,6 +132,7 @@ export const USDStrategyAllocationChartOptions = {
       expandOnClick: false,
       dataLabels: {
         offset: -15,
+        minAngleToShowLabel: 20,
       },
     },
   },

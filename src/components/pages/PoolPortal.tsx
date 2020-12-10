@@ -560,17 +560,17 @@ const UserStatsAndChart = React.memo(
                   name: poolName,
                   data: hasNotDeposited
                     ? [
-                        { x: "October 1, 2020", y: 1000 },
-                        { x: "October 3, 2020", y: 1001 },
-                        { x: "October 4, 2020", y: 1003 },
-                        { x: "October 5, 2020", y: 1005 },
-                        { x: "October 6, 2020", y: 1006 },
-                        { x: "October 7, 2020", y: 1007 },
-                        { x: "October 8, 2020", y: 1010 },
-                        { x: "October 9, 2020", y: 1012 },
-                        { x: "October 10, 2020", y: 1014 },
-                        { x: "October 11, 2020", y: 1016 },
-                        { x: "October 12, 2020", y: 1018 },
+                        { x: "10/1/20", y: 1000 },
+                        { x: "10/2/20", y: 1001 },
+                        { x: "10/3/20", y: 1003 },
+                        { x: "10/4/20", y: 1005 },
+                        { x: "10/5/20", y: 1006 },
+                        { x: "10/6/20", y: 1007 },
+                        { x: "10/7/20", y: 1010 },
+                        { x: "10/8/20", y: 1012 },
+                        { x: "10/9/20", y: 1014 },
+                        { x: "10/10/20", y: 1016 },
+                        { x: "10/11/20", y: 1018 },
                       ]
                     : (chartData ?? []).map((point: any) => {
                         return {
