@@ -232,7 +232,10 @@ export const ClaimRGTModal = React.memo(
             <GlowingButton
               label={isPrivateMode ? t("Claim Private RGT") : t("Claim RGT")}
               fontSize="2xl"
-              disabled={amount > (unclaimed ?? 0)}
+              disabled={
+                amount <= 0 ||
+                amount > ((isPrivateMode ? privateUnclaimed : unclaimed) ?? 0)
+              }
               onClick={claimRGT}
               width="100%"
               height="60px"
