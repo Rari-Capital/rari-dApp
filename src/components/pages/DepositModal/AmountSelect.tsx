@@ -523,7 +523,9 @@ const TokenNameAndMaxButton = React.memo(
       } else {
         const str = new BigNumber(maxBN.toString())
           .div(10 ** token.decimals)
-          .toFixed(10);
+          .toFixed(18)
+          // Remove trailing zeroes
+          .replace(/\.?0+$/, "");
 
         if (str.startsWith("0.000000")) {
           updateAmount("0.0");
