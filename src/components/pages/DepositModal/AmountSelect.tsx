@@ -335,15 +335,20 @@ const AmountSelect = React.memo(
         p={4}
       >
         <HashLoader size={70} color={token.color} loading />
-        <Heading mt="40px" textAlign="center" size="md">
+        <Heading mt="30px" textAlign="center" size="md">
           {mode === Mode.DEPOSIT
             ? t("Check your wallet to submit the transactions")
             : t("Check your wallet to submit the transaction")}
         </Heading>
-        <Text fontSize="sm" mt="25px" textAlign="center">
+        <Text fontSize="sm" mt="15px" textAlign="center">
           {mode === Mode.DEPOSIT
             ? t("Do not close this tab until you submit both transactions!")
             : t("You may close this tab after submitting the transaction.")}
+        </Text>
+        <Text fontSize="xs" mt="5px" textAlign="center">
+          {t(
+            "Do not increase the price of gas more than 1.5x the prefilled amount!"
+          )}
         </Text>
       </Column>
     ) : (
