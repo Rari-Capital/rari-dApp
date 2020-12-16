@@ -903,10 +903,15 @@ export default class StablePool {
                   .allowance(options.from, depositContract.options.address)
                   .call()
               );
-              if (allowanceBN.lt(amount))
+              if (allowanceBN.lt(amount)) {
+                if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
+                  approvalReceipt = await allTokens[currencyCode].contract.methods
+                    .approve(depositContract.options.address, "0")
+                    .send(options);
                 approvalReceipt = await allTokens[currencyCode].contract.methods
                   .approve(depositContract.options.address, amount)
                   .send(options);
+              }
             } catch (err) {
               throw new Error(
                 "Failed to approve tokens: " + (err.message ? err.message : err)
@@ -1062,12 +1067,25 @@ export default class StablePool {
                   )
                   .call()
               );
-              if (allowanceBN.lt(amount))
+              if (allowanceBN.lt(amount)) {
+                if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
+                  var approvalReceipt = await allTokens[
+                    currencyCode
+                  ].contract.methods
+                    .approve(
+                      self.contracts.RariFundProxy.options.address,
+                      "0"
+                    )
+                    .send(options);
                 var approvalReceipt = await self.internalTokens[
                   currencyCode
                 ].contract.methods
-                  .approve(self.contracts.RariFundProxy.options.address, amount)
+                  .approve(
+                    self.contracts.RariFundProxy.options.address,
+                    amount
+                  )
                   .send(options);
+              }
             } catch (err) {
               throw new Error(
                 "Failed to approve tokens to RariFundProxy: " +
@@ -1189,7 +1207,16 @@ export default class StablePool {
                     )
                     .call()
                 );
-                if (allowanceBN.lt(amount))
+                if (allowanceBN.lt(amount)) {
+                  if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
+                    var approvalReceipt = await allTokens[
+                      currencyCode
+                    ].contract.methods
+                      .approve(
+                        self.contracts.RariFundProxy.options.address,
+                        "0"
+                      )
+                      .send(options);
                   var approvalReceipt = await allTokens[
                     currencyCode
                   ].contract.methods
@@ -1198,6 +1225,7 @@ export default class StablePool {
                       amount
                     )
                     .send(options);
+                }
               } catch (err) {
                 throw new Error(
                   "Failed to approve tokens to RariFundProxy: " +
