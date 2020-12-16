@@ -634,13 +634,11 @@ export default class StablePool {
           var mStableOutputAmountAfterFeeBN = null;
 
           if (
-            ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
           ) {
             for (var acceptedCurrency of directlyDepositableCurrencyCodes)
               if (
-                ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
-                  acceptedCurrency
-                ) >= 0
+                acceptedCurrency === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(acceptedCurrency) >= 0
               ) {
                 if (currencyCode === "mUSD") {
                   try {
@@ -942,13 +940,11 @@ export default class StablePool {
           var mStableOutputAmountAfterFeeBN = null;
 
           if (
-            ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
           ) {
             for (var acceptedCurrency of directlyDepositableCurrencyCodes)
               if (
-                ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
-                  acceptedCurrency
-                ) >= 0
+                acceptedCurrency === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(acceptedCurrency) >= 0
               ) {
                 if (currencyCode === "mUSD") {
                   try {
@@ -1509,15 +1505,13 @@ export default class StablePool {
 
         // mStable
         if (
-          ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
+          currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
         ) {
           var mStableSwapFeeBN = null;
 
           for (var i = 0; i < inputCandidates.length; i++) {
             if (
-              ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
-                inputCandidates[i].currencyCode
-              ) < 0
+              inputCandidates[i].currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) >= 0
             )
               continue;
 
@@ -1941,15 +1935,13 @@ export default class StablePool {
           // mStable
 
           if (
-            ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
           ) {
             var mStableSwapFeeBN = null;
 
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
-                ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
-                  inputCandidates[i].currencyCode
-                ) < 0
+                inputCandidates[i].currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) >= 0
               )
                 continue;
 
@@ -2436,15 +2428,13 @@ export default class StablePool {
 
           // mStable
           if (
-            ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
           ) {
             var mStableSwapFeeBN = null;
 
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
-                ["DAI", "USDC", "USDT", "TUSD", "mUSD"].indexOf(
-                  inputCandidates[i].currencyCode
-                ) < 0
+                inputCandidates[i].currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) >= 0
               )
                 continue;
 
