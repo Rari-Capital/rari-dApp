@@ -903,7 +903,7 @@ export default class StablePool {
               );
               if (allowanceBN.lt(amount)) {
                 if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
-                  approvalReceipt = await allTokens[currencyCode].contract.methods
+                  await allTokens[currencyCode].contract.methods
                     .approve(depositContract.options.address, "0")
                     .send(options);
                 approvalReceipt = await allTokens[currencyCode].contract.methods
@@ -1065,7 +1065,7 @@ export default class StablePool {
               );
               if (allowanceBN.lt(amount)) {
                 if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
-                  var approvalReceipt = await allTokens[
+                  await self.internalTokens[
                     currencyCode
                   ].contract.methods
                     .approve(
@@ -1205,7 +1205,7 @@ export default class StablePool {
                 );
                 if (allowanceBN.lt(amount)) {
                   if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
-                    var approvalReceipt = await allTokens[
+                    await allTokens[
                       currencyCode
                     ].contract.methods
                       .approve(
