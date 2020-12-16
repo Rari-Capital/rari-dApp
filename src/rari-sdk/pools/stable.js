@@ -2,6 +2,8 @@
 import Web3 from "web3";
 import axios from "axios";
 
+import MStableSubpool from "../subpools/mstable.js";
+
 import Cache from "../cache.js";
 import { get0xSwapOrders } from "../0x.js";
 
