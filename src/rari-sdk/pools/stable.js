@@ -798,6 +798,9 @@ export default class StablePool {
                   currencyCode +
                   " before depositing."
               );
+            
+            // Multiply protocol fee by 1.5 to account for user upping the gas price
+            var protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10);
 
             // Make sure we have enough ETH for the protocol fee
             var ethBalanceBN =
@@ -805,8 +808,7 @@ export default class StablePool {
                 ? accountBalanceBN
                 : Web3.utils.toBN(await self.web3.eth.getBalance(sender));
             if (
-              Web3.utils
-                .toBN(protocolFee)
+              protocolFeeBN
                 .gt(
                   currencyCode === "ETH"
                     ? ethBalanceBN.sub(amount)
@@ -817,8 +819,8 @@ export default class StablePool {
                 "ETH balance too low to cover 0x exchange protocol fee."
               );
 
-            // Return makerAssetFilledAmountUsdBN and protocolFee
-            return [makerAssetFilledAmountUsdBN, Web3.utils.toBN(protocolFee)];
+            // Return makerAssetFilledAmountUsdBN and protocolFeeBN
+            return [makerAssetFilledAmountUsdBN, protocolFeeBN];
           }
         }
       },
@@ -1147,6 +1149,9 @@ export default class StablePool {
                   currencyCode +
                   " before depositing."
               );
+          
+            // Multiply protocol fee by 1.5 to account for user upping the gas price
+            var protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10);
 
             // Make sure we have enough ETH for the protocol fee
             var ethBalanceBN =
@@ -1154,8 +1159,7 @@ export default class StablePool {
                 ? accountBalanceBN
                 : Web3.utils.toBN(await self.web3.eth.getBalance(options.from));
             if (
-              Web3.utils
-                .toBN(protocolFee)
+              protocolFeeBN
                 .gt(
                   currencyCode === "ETH"
                     ? ethBalanceBN.sub(amount)
@@ -1243,8 +1247,8 @@ export default class StablePool {
                     {
                       value:
                         currencyCode === "ETH"
-                          ? Web3.utils.toBN(protocolFee).add(amount).toString()
-                          : protocolFee,
+                          ? protocolFeeBN.add(amount).toString()
+                          : protocolFeeBN.toString(),
                       gasPrice: gasPrice,
                     },
                     options
@@ -1260,7 +1264,7 @@ export default class StablePool {
             self.cache.clear("allBalances");
             return [
               makerAssetFilledAmountUsdBN,
-              Web3.utils.toBN(protocolFee),
+              protocolFeeBN,
               approvalReceipt,
               receipt,
             ];
@@ -1644,7 +1648,7 @@ export default class StablePool {
             }
 
             inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
-            inputCandidates[i].protocolFee = protocolFee;
+            inputCandidates[i].protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
             inputCandidates[
               i
             ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
@@ -1747,9 +1751,7 @@ export default class StablePool {
                   )
               );
               amountWithdrawnBN.iadd(thisOutputAmountBN);
-              totalProtocolFeeBN.iadd(
-                Web3.utils.toBN(inputCandidates[i].protocolFee)
-              );
+              totalProtocolFeeBN.iadd(inputCandidates[i].protocolFeeBN);
 
               break;
             } else {
@@ -1777,9 +1779,7 @@ export default class StablePool {
                   )
               );
               amountWithdrawnBN.iadd(inputCandidates[i].makerAssetFillAmountBN);
-              totalProtocolFeeBN.iadd(
-                Web3.utils.toBN(inputCandidates[i].protocolFee)
-              );
+              totalProtocolFeeBN.iadd(inputCandidates[i].protocolFeeBN);
             }
 
             // Stop if we have filled the USD amount
@@ -2123,7 +2123,7 @@ export default class StablePool {
               }
 
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
-              inputCandidates[i].protocolFee = protocolFee;
+              inputCandidates[i].protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
               inputCandidates[
                 i
               ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
@@ -2220,9 +2220,7 @@ export default class StablePool {
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                totalProtocolFeeBN.iadd(inputCandidates[i].protocolFeeBN);
 
                 break;
               } else {
@@ -2252,9 +2250,7 @@ export default class StablePool {
                 amountWithdrawnBN.iadd(
                   inputCandidates[i].makerAssetFillAmountBN
                 );
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                totalProtocolFeeBN.iadd(inputCandidates[i].protocolFeeBN);
               }
 
               // Stop if we have filled the withdrawal
@@ -2646,7 +2642,7 @@ export default class StablePool {
               inputCandidates[i].orders = orders;
               inputCandidates[i].signatures = signatures;
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
-              inputCandidates[i].protocolFee = protocolFee;
+              inputCandidates[i].protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
               inputCandidates[
                 i
               ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
@@ -2725,9 +2721,7 @@ export default class StablePool {
                 allOrders.push(inputCandidates[i].orders);
                 allSignatures.push(inputCandidates[i].signatures);
                 makerAssetFillAmountBNs.push(thisOutputAmountBN);
-                protocolFeeBNs.push(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                protocolFeeBNs.push(inputCandidates[i].protocolFeeBN);
 
                 amountInputtedUsdBN.iadd(
                   thisInputAmountBN
@@ -2752,9 +2746,7 @@ export default class StablePool {
                     )
                 );
                 amountWithdrawnBN.iadd(thisOutputAmountBN);
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                totalProtocolFeeBN.iadd(inputCandidates[i].protocolFeeBN);
 
                 break;
               } else {
@@ -2766,9 +2758,7 @@ export default class StablePool {
                 makerAssetFillAmountBNs.push(
                   inputCandidates[i].makerAssetFillAmountBN
                 );
-                protocolFeeBNs.push(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                protocolFeeBNs.push(inputCandidates[i].protocolFeeBN);
 
                 amountInputtedUsdBN.iadd(
                   inputCandidates[i].inputFillAmountBN
@@ -2795,9 +2785,7 @@ export default class StablePool {
                 amountWithdrawnBN.iadd(
                   inputCandidates[i].makerAssetFillAmountBN
                 );
-                totalProtocolFeeBN.iadd(
-                  Web3.utils.toBN(inputCandidates[i].protocolFee)
-                );
+                totalProtocolFeeBN.iadd(inputCandidates[i].protocolFeeBN);
               }
 
               // Stop if we have filled the withdrawal
