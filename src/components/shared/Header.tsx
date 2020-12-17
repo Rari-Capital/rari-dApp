@@ -94,6 +94,7 @@ export const Header = React.memo(
 );
 
 export const PoolsLink = React.memo(({ ml }: { ml?: number | string }) => {
+  const { t } = useTranslation();
   return (
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
@@ -103,9 +104,9 @@ export const PoolsLink = React.memo(({ ml }: { ml?: number | string }) => {
 
         <Portal>
           <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
-            <PoolMenuItem name="Stable Pool" linkSuffix="stable" />
-            <PoolMenuItem name="Yield Pool" linkSuffix="yield" />
-            <PoolMenuItem name="ETH Pool" linkSuffix="eth" />
+            <PoolMenuItem name={t("Stable Pool")} linkSuffix="stable" />
+            <PoolMenuItem name={t("Yield Pool")} linkSuffix="yield" />
+            <PoolMenuItem name={t("ETH Pool")} linkSuffix="eth" />
           </MenuList>
         </Portal>
       </Menu>
