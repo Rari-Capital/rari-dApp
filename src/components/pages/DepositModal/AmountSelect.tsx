@@ -44,7 +44,7 @@ import {
 } from "../../../hooks/useMaxWithdraw";
 import { AttentionSeeker } from "react-awesome-reveal";
 
-import Honeybadger from "honeybadger-js";
+import LogRocket from "logrocket";
 import { HashLoader } from "react-spinners";
 
 interface Props {
@@ -295,10 +295,10 @@ const AmountSelect = React.memo(
 
         if (e instanceof Error) {
           message = e.toString();
-          Honeybadger.notify(e);
+          LogRocket.captureException(e);
         } else {
           message = JSON.stringify(e);
-          Honeybadger.notify(new Error(message));
+          LogRocket.captureException(new Error(message));
         }
 
         toast({

@@ -6,7 +6,9 @@ import { Code, Box, Heading, Text, Link } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-const ErrorPage = ({ error }: { error: string }) => {
+import { FallbackProps } from "react-error-boundary";
+
+const ErrorPage: React.FC<FallbackProps> = ({ error }) => {
   const { t } = useTranslation();
 
   return (
