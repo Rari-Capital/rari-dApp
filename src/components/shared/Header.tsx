@@ -115,10 +115,12 @@ export const PoolsLink = React.memo(({ ml }: { ml?: number | string }) => {
 
 export const PoolText = React.memo(() => {
   const location = useLocation();
-
+  const { t } = useTranslation();
   const isOnThisRoute = location.pathname.includes("pools");
 
-  return <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>Pools</Text>;
+  return (
+    <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{t("Pools")}</Text>
+  );
 });
 
 export const PoolMenuItem = React.memo(
