@@ -232,7 +232,7 @@ export default class EthereumPool extends StablePool {
 
         // Check amountUsdBN against minEthAmount
         if (
-          typeof minEthAmount !== undefined &&
+          typeof minEthAmount !== "undefined" &&
           minEthAmount !== null &&
           amount.lt(minEthAmount)
         )
@@ -283,7 +283,7 @@ export default class EthereumPool extends StablePool {
 
         // Check makerAssetFilledAmountUsdBN against minUsdAmount
         if (
-          typeof minEthAmount !== undefined &&
+          typeof minEthAmount !== "undefined" &&
           minEthAmount !== null &&
           makerAssetFilledAmountBN.lt(minEthAmount)
         )
@@ -499,7 +499,7 @@ export default class EthereumPool extends StablePool {
       if (currencyCode === "ETH") {
         // Check maxEthAmount
         if (
-          typeof maxEthAmount !== undefined &&
+          typeof maxEthAmount !== "undefined" &&
           maxEthAmount !== null &&
           amount.gt(maxEthAmount)
         )
@@ -572,7 +572,7 @@ export default class EthereumPool extends StablePool {
 
         // Check maxEthAmount
         if (
-          typeof maxEthAmount !== undefined &&
+          typeof maxEthAmount !== "undefined" &&
           maxEthAmount !== null &&
           inputFilledAmountBN.gt(maxEthAmount)
         )

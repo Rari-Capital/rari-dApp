@@ -880,7 +880,7 @@ export default class StablePool {
 
           // Check amountUsdBN against minUsdAmount
           if (
-            typeof minUsdAmount !== undefined &&
+            typeof minUsdAmount !== "undefined" &&
             minUsdAmount !== null &&
             amountUsdBN.lt(minUsdAmount)
           )
@@ -1049,7 +1049,7 @@ export default class StablePool {
 
             // Check outputAmountUsdBN against minUsdAmount
             if (
-              typeof minUsdAmount !== undefined &&
+              typeof minUsdAmount !== "undefined" &&
               minUsdAmount !== null &&
               outputAmountUsdBN.lt(minUsdAmount)
             )
@@ -1188,7 +1188,7 @@ export default class StablePool {
 
             // Check makerAssetFilledAmountUsdBN against minUsdAmount
             if (
-              typeof minUsdAmount !== undefined &&
+              typeof minUsdAmount !== "undefined" &&
               minUsdAmount !== null &&
               makerAssetFilledAmountUsdBN.lt(minUsdAmount)
             )
@@ -2344,7 +2344,7 @@ export default class StablePool {
                 )
             );
           if (
-            typeof maxUsdAmount !== undefined &&
+            typeof maxUsdAmount !== "undefined" &&
             maxUsdAmount !== null &&
             amountUsdBN.gt(maxUsdAmount)
           )
@@ -2383,8 +2383,8 @@ export default class StablePool {
             inputAmountBNs.push(tokenRawFundBalanceBN);
             allOrders.push([]);
             allSignatures.push([]);
-            makerAssetFillAmountBNs.push(0);
-            protocolFeeBNs.push(0);
+            makerAssetFillAmountBNs.push(Web3.utils.toBN(0));
+            protocolFeeBNs.push(Web3.utils.toBN(0));
 
             amountInputtedUsdBN.iadd(
               tokenRawFundBalanceBN
@@ -2565,8 +2565,8 @@ export default class StablePool {
               inputAmountBNs.push(inputAmountBN);
               allOrders.push([]);
               allSignatures.push([]);
-              makerAssetFillAmountBNs.push(0);
-              protocolFeeBNs.push(0);
+              makerAssetFillAmountBNs.push(Web3.utils.toBN(0));
+              protocolFeeBNs.push(Web3.utils.toBN(0));
 
               amountInputtedUsdBN.iadd(
                 inputAmountBN
@@ -2823,7 +2823,7 @@ export default class StablePool {
 
           // Check maxUsdAmount
           if (
-            typeof maxUsdAmount !== undefined &&
+            typeof maxUsdAmount !== "undefined" &&
             maxUsdAmount !== null &&
             amountInputtedUsdBN.gt(maxUsdAmount)
           )
