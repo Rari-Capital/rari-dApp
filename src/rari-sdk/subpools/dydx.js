@@ -8,7 +8,7 @@ export default class DydxSubpool {
   constructor(web3) {
     this.web3 = web3;
     this.cache = new Cache({
-      dydxCurrencyApys: 60
+      dydxCurrencyApys: 300
     });
   }
 

@@ -8,7 +8,7 @@ export default class CompoundSubpool {
   constructor(web3) {
     this.web3 = web3;
     this.cache = new Cache({
-      compoundCurrencySupplierAndCompApys: 60
+      compoundCurrencySupplierAndCompApys: 300
     });
   }
 

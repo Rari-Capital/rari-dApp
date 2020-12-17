@@ -25,7 +25,7 @@ export default class MStableSubpool {
   constructor(web3) {
     this.web3 = web3;
     this.cache = new Cache({
-      mStableCurrencyApys: 60,
+      mStableCurrencyApys: 300,
       mUsdSwapFee: 3600,
     });
 

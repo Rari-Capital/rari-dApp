@@ -8,7 +8,7 @@ export default class AaveSubpool {
   constructor(web3) {
     this.web3 = web3;
     this.cache = new Cache({
-      aaveCurrencyApys: 60
+      aaveCurrencyApys: 300
     });
   }
 
