@@ -9,12 +9,12 @@ import {
   useDisclosure,
   theme,
   BoxProps,
-  Image,
+  // Image,
   Link,
 } from "@chakra-ui/react";
 import { useRari } from "../../context/RariContext";
 
-import SmallRGTLogo from "../../static/small-logo.png";
+// import SmallRGTLogo from "../../static/small-logo.png";
 
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -69,7 +69,7 @@ import {
   smallStringUsdFormatter,
   stringUsdFormatter,
 } from "../../utils/bigUtils";
-import { SimpleTooltip } from "../shared/SimpleTooltip";
+// import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
 import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
@@ -681,14 +681,14 @@ const APYStats = React.memo(() => {
             {t("This Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
-          <Text fontWeight="bold" textAlign="center">
+          {/* <Text fontWeight="bold" textAlign="center">
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
                 + ({areAPYsLoading ? "?" : apys!.rgtAPR}%{" "}
                 <Image display="inline" src={SmallRGTLogo} boxSize="20px" />)
               </span>
             </SimpleTooltip>
-          </Text>
+          </Text> */}
         </Row>
         <Row
           mainAxisAlignment="space-between"
@@ -699,14 +699,14 @@ const APYStats = React.memo(() => {
             {t("This Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
-          <Text fontWeight="bold" textAlign="center">
+          {/* <Text fontWeight="bold" textAlign="center">
             <SimpleTooltip label={t("Extra yield from $RGT")}>
               <span>
                 + ({areAPYsLoading ? "?" : apys!.rgtAPR}%{" "}
                 <Image display="inline" src={SmallRGTLogo} boxSize="20px" />)
               </span>
             </SimpleTooltip>
-          </Text>
+          </Text> */}
         </Row>
       </Column>
     </Column>

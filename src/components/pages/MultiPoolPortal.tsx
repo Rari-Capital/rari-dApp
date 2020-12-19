@@ -15,7 +15,7 @@ import {
 } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 
-import SmallLogo from "../../static/small-logo.png";
+// import SmallLogo from "../../static/small-logo.png";
 
 import CopyrightSpacer from "../shared/CopyrightSpacer";
 
@@ -63,7 +63,7 @@ import {
 import { usePoolBalance } from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { useTVLFetchers } from "../../hooks/useTVL";
-import { usePoolAPY, useRGTAPR } from "../../hooks/usePoolAPY";
+import { usePoolAPY } from "../../hooks/usePoolAPY";
 
 import BigNumber from "bignumber.js";
 import { InfoIcon } from "@chakra-ui/icons";
@@ -394,7 +394,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
 
   const poolAPY = usePoolAPY(pool);
 
-  const rgtAPR = useRGTAPR();
+  // const rgtAPR = useRGTAPR();
 
   return (
     <>
@@ -427,13 +427,14 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         </SimpleTooltip>
 
         <Text fontWeight="bold" textAlign="center">
-          {poolAPY ?? "?"}% APY +{" "}
+          {poolAPY ?? "?"}% APY
+          {/* +{" "}
           <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>
               ({rgtAPR ?? "?"}%{" "}
               <Image display="inline" src={SmallLogo} boxSize="20px" />)
             </span>
-          </SimpleTooltip>
+          </SimpleTooltip> */}
         </Text>
 
         <Row
