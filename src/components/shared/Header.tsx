@@ -85,6 +85,12 @@ export const Header = React.memo(
             name={t("Governance")}
             route="https://www.notion.so/How-to-Make-a-Governance-Proposal-f11a43bb31de491bbc29a69373a0e687"
           />
+
+          <HeaderLink
+            ml={4}
+            name={t("Audit")}
+            route="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
+          />
         </Row>
 
         <AccountButton />
