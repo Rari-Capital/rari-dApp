@@ -65,8 +65,8 @@ const DepositModal = React.memo((props: Props) => {
   // Set withdraws to mUSD for yield and stable pool.
   useEffect(() => {
     if (
-      (mode === Mode.WITHDRAW && poolType === Pool.YIELD) ||
-      poolType === Pool.STABLE
+      mode === Mode.WITHDRAW &&
+      (poolType === Pool.YIELD || poolType === Pool.STABLE)
     ) {
       setSelectedToken("mUSD");
     }
