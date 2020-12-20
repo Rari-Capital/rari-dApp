@@ -83,7 +83,7 @@ export const Header = React.memo(
           <HeaderLink
             ml={4}
             name={t("Governance")}
-            route="https://www.notion.so/How-to-Make-a-Governance-Proposal-f11a43bb31de491bbc29a69373a0e687"
+            route="https://vote.rari.capital"
           />
 
           <HeaderLink
