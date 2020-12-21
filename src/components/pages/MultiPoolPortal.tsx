@@ -310,7 +310,7 @@ const FundStats = React.memo(() => {
                 apyInterval={100}
                 fetch={getNumberTVL}
                 queryKey={"totalValueLocked"}
-                apy={2}
+                apy={0.15}
                 statSize="3xl"
                 captionSize="xs"
                 caption={t("Total Value Locked")}
