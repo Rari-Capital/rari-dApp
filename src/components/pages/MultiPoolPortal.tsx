@@ -59,6 +59,7 @@ import {
   smallStringUsdFormatter,
   stringUsdFormatter,
   usdFormatter,
+  smallUsdFormatter,
 } from "../../utils/bigUtils";
 import { usePoolBalance } from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
@@ -269,7 +270,7 @@ const FundStats = React.memo(() => {
         >
           <Center expand>
             <APYWithRefreshMovingStat
-              formatStat={usdFormatter}
+              formatStat={smallUsdFormatter}
               fetchInterval={40000}
               loadingPlaceholder="$?"
               apyInterval={100}
@@ -304,7 +305,7 @@ const FundStats = React.memo(() => {
           <Center expand>
             {hasNotDeposited ? (
               <APYWithRefreshMovingStat
-                formatStat={usdFormatter}
+                formatStat={smallUsdFormatter}
                 fetchInterval={40000}
                 loadingPlaceholder="$?"
                 apyInterval={100}
