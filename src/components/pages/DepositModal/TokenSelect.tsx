@@ -70,6 +70,8 @@ const TokenSelect = React.memo(
 
       if (pool === Pool.ETH) {
         noSlippageCurrencies = ["ETH"];
+      } else if (mode === Mode.WITHDRAW) {
+        return ["mUSD"];
       } else {
         noSlippageCurrencies = await getSDKPool({
           rari,
@@ -87,6 +89,10 @@ const TokenSelect = React.memo(
     const tokenKeys = useMemo(() => {
       if (poolType === Pool.ETH) {
         return ["ETH"];
+      }
+
+      if (mode === Mode.WITHDRAW) {
+        return ["mUSD"];
       }
 
       return searchNeedle === ""
@@ -114,7 +120,7 @@ const TokenSelect = React.memo(
         : Object.keys(tokens).filter((symbol) =>
             symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
           );
-    }, [searchNeedle, poolType]);
+    }, [searchNeedle, poolType, mode]);
 
     const { t } = useTranslation();
 
