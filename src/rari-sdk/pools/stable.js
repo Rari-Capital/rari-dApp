@@ -1513,7 +1513,7 @@ export default class StablePool {
 
           for (var i = 0; i < inputCandidates.length; i++) {
             if (
-              inputCandidates[i].currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) >= 0
+              inputCandidates[i].currencyCode !== "mUSD" && MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) < 0
             )
               continue;
 
@@ -1943,7 +1943,7 @@ export default class StablePool {
 
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
-                inputCandidates[i].currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) >= 0
+                inputCandidates[i].currencyCode !== "mUSD" && MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) < 0
               )
                 continue;
 
@@ -2436,7 +2436,7 @@ export default class StablePool {
 
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
-                inputCandidates[i].currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) >= 0
+                inputCandidates[i].currencyCode !== "mUSD" && MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) < 0
               )
                 continue;
 
