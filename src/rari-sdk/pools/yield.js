@@ -1,4 +1,7 @@
 /* eslint-disable */
+import Web3 from "web3";
+import axios from "axios";
+
 import StablePool from "./stable.js";
 
 const contractAddresses = {
@@ -95,7 +98,7 @@ export default class YieldPool extends StablePool {
       if (currencyCode !== "ETH" && !allTokens[currencyCode]) throw new Error("Invalid currency code!");
 
       // Try cache
-      if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 > self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout)
+      if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout)
         return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))));
 
       // Build currency code array
@@ -145,8 +148,8 @@ export default class YieldPool extends StablePool {
       if (currencyCode !== "ETH" && !allTokens[currencyCode]) throw new Error("Invalid currency code!");
 
       // Try cache
-      if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 > self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout)
-        return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(usdAmount));
+      if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout)
+        return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
 
       // Build currency code array
       var currencyCodes = [...self.allocations.CURRENCIES];
@@ -160,7 +163,7 @@ export default class YieldPool extends StablePool {
       for (const currencyCode of currencyCodes) {
         var filtered = decoded.filter(coin => coin.symbol.toLowerCase() === currencyCode.toLowerCase());
         if (!filtered) throw new Error("Failed to get currency IDs from CoinGecko");
-        for (coin of filtered) currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
+        for (const coin of filtered) currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
       }
 
       // Get prices
@@ -185,7 +188,7 @@ export default class YieldPool extends StablePool {
 
       // Return slippage
       if (self.cache._raw.coinGeckoUsdPrices.value[currencyCode])
-        return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(usdAmount));
+        return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
       else throw new Error("Failed to get currency prices from CoinGecko");
     };
 
