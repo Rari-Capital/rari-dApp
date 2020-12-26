@@ -14,6 +14,7 @@ import { Heading, Link, Text, Icon, Box } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
 import CopyrightSpacer from "../shared/CopyrightSpacer";
+import { useQuery } from "react-query";
 
 enum TranchePool {
   DAI = "DAI",
@@ -30,6 +31,22 @@ const useIsSmallScreen = () => {
   const { width } = useWindowSize();
 
   return width < 1030;
+};
+
+const useSaffronData = () => {
+  const { data } = useQuery("saffronData", async () => {
+    return (await fetch("https://api.spice.finance/apy")).json();
+  });
+
+  return {
+    saffronData: data as {
+      SFI: { USD: number };
+      pools: {
+        name: string;
+        tranches: { A: { "total-apy": number }; S: { "total-apy": number } };
+      }[];
+    },
+  };
 };
 
 const TranchePage = React.memo(() => {
@@ -309,6 +326,8 @@ export const TrancheColumn = React.memo(
     const { t } = useTranslation();
     const isMobile = useIsSmallScreen();
 
+    const { saffronData } = useSaffronData();
+
     return (
       <Column
         mainAxisAlignment="space-between"
@@ -325,7 +344,13 @@ export const TrancheColumn = React.memo(
             0 {tranchePool}
           </Text>
           <Text textAlign="center" fontWeight="bold" mt={4}>
-            5.3% APY
+            {trancheRating === "AA"
+              ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
+                "0.5%"
+              : saffronData
+              ? // TODO: REPLACE POOL WITH 9 INDEX FOR RARI DAI POOl AND ONCE THEY ADD USDC POOL DO A CONDITIONAL CHECK
+                saffronData.pools[0].tranches[trancheRating]["total-apy"] + "%"
+              : "?%"}
           </Text>
         </Column>
 
@@ -382,6 +407,9 @@ export const InterestEarned = React.memo(() => {
 
 export const EstimatedReturns = React.memo(() => {
   const { t } = useTranslation();
+
+  const { saffronData } = useSaffronData();
+
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading size="sm">{t("Interest Estimated")}</Heading>
@@ -395,7 +423,7 @@ export const EstimatedReturns = React.memo(() => {
       <Heading size="sm" mt={3}>
         {t("Current SFI Price")}
       </Heading>
-      <Text>$347.12</Text>
+      <Text>{saffronData ? "$" + saffronData.SFI.USD : "$?"}</Text>
     </Column>
   );
 });
