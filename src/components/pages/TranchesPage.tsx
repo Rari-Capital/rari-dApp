@@ -205,7 +205,11 @@ export const TrancheRatingColumn = React.memo(
         ml={isMobile ? 0 : 4}
         mt={isMobile ? 6 : 0}
       >
-        <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          mb={isMobile ? 2 : 0}
+        >
           <Heading size="sm">
             {trancheRating} {t("Tranche")}
           </Heading>
