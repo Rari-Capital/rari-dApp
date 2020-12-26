@@ -154,7 +154,7 @@ const PoolPortalContent = React.memo(() => {
     ],
   });
 
-  const { poolName, poolType } = usePoolInfoFromContext();
+  const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
   const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
 
@@ -163,8 +163,6 @@ const PoolPortalContent = React.memo(() => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
-
-  const { t } = useTranslation();
 
   if (isPoolBalanceLoading) {
     return <FullPageSpinner />;
@@ -220,19 +218,10 @@ const PoolPortalContent = React.memo(() => {
                   height="100%"
                   mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
                 >
-                  <Heading
-                    fontFamily={`'Baloo 2', ${theme.fonts.heading}`}
-                    fontSize={{ md: 27, base: "xl" }}
-                  >
+                  <Heading fontSize={{ md: 27, base: "xl" }} lineHeight={1.25}>
                     {poolName}
                   </Heading>
-                  <Text fontSize="xs">
-                    {poolType === Pool.STABLE
-                      ? t("Safe returns on stablecoins")
-                      : poolType === Pool.ETH
-                      ? t("Safe returns on ETH")
-                      : t("High risk, high reward")}
-                  </Text>
+                  <Text fontSize="xs">{poolCaption}</Text>
                 </Column>
 
                 <DepositButton onClick={openDepositModal} />

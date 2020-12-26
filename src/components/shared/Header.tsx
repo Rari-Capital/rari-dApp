@@ -40,6 +40,7 @@ export const Header = React.memo(
 
     return (
       <Row
+        color="#FFFFFF"
         px={padding ? DASHBOARD_BOX_SPACING.asPxString() : 0}
         height="38px"
         my={DASHBOARD_BOX_SPACING.asPxString()}
@@ -74,11 +75,13 @@ export const Header = React.memo(
 
           <PoolsLink ml={4} />
 
-          <HeaderLink
+          <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
+
+          {/* <HeaderLink
             ml={4}
             name={t("Forums")}
             route="https://forums.rari.capital"
-          />
+          /> */}
 
           <HeaderLink
             ml={4}
