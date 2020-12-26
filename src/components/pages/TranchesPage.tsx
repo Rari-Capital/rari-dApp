@@ -1,5 +1,11 @@
 import React from "react";
-import { Center, Column, Row, useWindowSize } from "buttered-chakra";
+import {
+  Center,
+  Column,
+  Row,
+  RowOrColumn,
+  useWindowSize,
+} from "buttered-chakra";
 import { useRari } from "../../context/RariContext";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
 import ForceAuthModal from "../shared/ForceAuthModal";
@@ -20,15 +26,18 @@ enum TrancheRating {
   S = "S",
 }
 
+const useIsSmallScreen = () => {
+  const { width } = useWindowSize();
+
+  return width < 1030;
+};
+
 const TranchePage = React.memo(() => {
   const { isAuthed } = useRari();
 
-  const { width } = useWindowSize();
-
-  // Determine the column width based on the width of the window.
-  const columnWidth = width > 1030 ? "1000px" : width > 830 ? "800px" : "100%";
-
   const { t } = useTranslation();
+
+  const isMobile = useIsSmallScreen();
 
   return (
     <>
@@ -39,27 +48,29 @@ const TranchePage = React.memo(() => {
         crossAxisAlignment="center"
         color="#FFFFFF"
         mx="auto"
-        width={columnWidth}
-        px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        width={isMobile ? "100%" : "1000px"}
+        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
         <Header isAuthed={isAuthed} />
 
-        <Row
+        <RowOrColumn
           width="100%"
+          isRow={!isMobile}
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
         >
           <Column
-            width="75%"
+            width={isMobile ? "100%" : "75%"}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
             mr={DASHBOARD_BOX_SPACING.asPxString()}
           >
-            <DashboardBox height="95px" width="100%">
+            <DashboardBox height={isMobile ? "110px" : "95px"} width="100%">
               <Column
                 expand
                 mainAxisAlignment="center"
-                crossAxisAlignment="flex-start"
+                crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                textAlign="center"
                 px={4}
               >
                 <Heading size="lg">{t("Tranches")}</Heading>
@@ -69,25 +80,36 @@ const TranchePage = React.memo(() => {
               </Column>
             </DashboardBox>
 
-            <DashboardBox mt={4} height="200px" width="100%">
+            <DashboardBox
+              mt={4}
+              height={isMobile ? "auto" : "200px"}
+              width="100%"
+            >
               <TranchesRatingInfo />
-            </DashboardBox>
-
-            <DashboardBox mt={4} height="200px" width="100%">
-              <TranchePoolInfo tranchePool={TranchePool.DAI} />
             </DashboardBox>
 
             <DashboardBox
               mt={4}
-              height="200px"
+              height={isMobile ? "auto" : "200px"}
               width="100%"
-              style={{ filter: "blur(3px)", opacity: "0.7" }}
             >
-              <TranchePoolInfo tranchePool={TranchePool.USDC} />
+              <TranchePoolInfo tranchePool={TranchePool.DAI} />
             </DashboardBox>
+
+            {isMobile ? null : (
+              <DashboardBox
+                mt={4}
+                height="200px"
+                width="100%"
+                style={{ filter: "blur(3px)", opacity: "0.7" }}
+              >
+                <TranchePoolInfo tranchePool={TranchePool.USDC} />
+              </DashboardBox>
+            )}
           </Column>
           <Column
-            width="25%"
+            mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+            width={isMobile ? "100%" : "25%"}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
           >
@@ -95,19 +117,32 @@ const TranchePage = React.memo(() => {
               <RedemptionDate />
             </DashboardBox>
 
-            <DashboardBox mt={4} height="200px" width="100%">
+            <DashboardBox
+              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              height="200px"
+              width="100%"
+            >
               <InterestEarned />
             </DashboardBox>
 
-            <DashboardBox mt={4} height="200px" width="100%">
+            <DashboardBox
+              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              height="200px"
+              width="100%"
+            >
               <EstimatedReturns />
             </DashboardBox>
 
-            <DashboardBox mt={4} height="200px" width="100%" p={4}>
+            <DashboardBox
+              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              height="200px"
+              width="100%"
+              p={4}
+            >
               <SFIDistributions />
             </DashboardBox>
           </Column>
-        </Row>
+        </RowOrColumn>
       </Column>
       <CopyrightSpacer forceShow />
     </>
@@ -117,8 +152,11 @@ const TranchePage = React.memo(() => {
 export const TranchesRatingInfo = React.memo(() => {
   const { t } = useTranslation();
 
+  const isMobile = useIsSmallScreen();
+
   return (
-    <Row
+    <RowOrColumn
+      isRow={!isMobile}
       p={4}
       expand
       crossAxisAlignment="flex-start"
@@ -126,12 +164,15 @@ export const TranchesRatingInfo = React.memo(() => {
     >
       <Column
         mainAxisAlignment="space-between"
-        crossAxisAlignment="flex-start"
+        crossAxisAlignment={isMobile ? "center" : "flex-start"}
         expand
       >
-        <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment={isMobile ? "center" : "flex-start"}
+        >
           <Heading size="md">{t("Tranche Details")}</Heading>
-          <Text mt={1}>
+          <Text mt={1} textAlign={isMobile ? "center" : "left"}>
             {t(
               "SFI and interest is distributed to LPs proportionally at the end of each epoch."
             )}
@@ -146,7 +187,7 @@ export const TranchesRatingInfo = React.memo(() => {
       <TrancheRatingColumn trancheRating={TrancheRating.S} />
       <TrancheRatingColumn trancheRating={TrancheRating.AA} />
       <TrancheRatingColumn trancheRating={TrancheRating.A} />
-    </Row>
+    </RowOrColumn>
   );
 });
 
@@ -154,12 +195,15 @@ export const TrancheRatingColumn = React.memo(
   ({ trancheRating }: { trancheRating: TrancheRating }) => {
     const { t } = useTranslation();
 
+    const isMobile = useIsSmallScreen();
+
     return (
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         expand
-        ml={4}
+        ml={isMobile ? 0 : 4}
+        mt={isMobile ? 6 : 0}
       >
         <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
           <Heading size="sm">
@@ -196,8 +240,11 @@ export const TranchePoolInfo = React.memo(
   ({ tranchePool }: { tranchePool: TranchePool }) => {
     const { t } = useTranslation();
 
+    const isMobile = useIsSmallScreen();
+
     return (
-      <Row
+      <RowOrColumn
+        isRow={!isMobile}
         p={4}
         expand
         crossAxisAlignment="flex-start"
@@ -205,8 +252,9 @@ export const TranchePoolInfo = React.memo(
       >
         <Column
           mainAxisAlignment="space-between"
-          crossAxisAlignment="flex-start"
+          crossAxisAlignment={isMobile ? "center" : "flex-start"}
           expand
+          textAlign={isMobile ? "center" : "left"}
         >
           <Heading size="md">
             {tranchePool} {t("Pool")}
@@ -224,22 +272,24 @@ export const TranchePoolInfo = React.memo(
           trancheRating={TrancheRating.S}
         />
 
-        <Box
-          width="100%"
-          height="100%"
-          style={{ filter: "blur(3px)", opacity: "0.7" }}
-        >
-          <TrancheColumn
-            tranchePool={tranchePool}
-            trancheRating={TrancheRating.AA}
-          />
-        </Box>
+        {isMobile ? null : (
+          <Box
+            width="100%"
+            height="100%"
+            style={{ filter: "blur(3px)", opacity: "0.7" }}
+          >
+            <TrancheColumn
+              tranchePool={tranchePool}
+              trancheRating={TrancheRating.AA}
+            />
+          </Box>
+        )}
 
         <TrancheColumn
           tranchePool={tranchePool}
           trancheRating={TrancheRating.A}
         />
-      </Row>
+      </RowOrColumn>
     );
   }
 );
@@ -253,12 +303,15 @@ export const TrancheColumn = React.memo(
     trancheRating: TrancheRating;
   }) => {
     const { t } = useTranslation();
+    const isMobile = useIsSmallScreen();
+
     return (
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         expand
-        ml={4}
+        ml={isMobile ? 0 : 4}
+        mt={isMobile ? 8 : 0}
       >
         <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
           <Heading size="sm">
@@ -276,7 +329,7 @@ export const TrancheColumn = React.memo(
           mt={DASHBOARD_BOX_SPACING.asPxString()}
           as="button"
           height="45px"
-          width="85%"
+          width={isMobile ? "100%" : "85%"}
           borderRadius="7px"
           fontSize="xl"
           fontWeight="bold"
@@ -386,7 +439,7 @@ export const SFIDistributions = React.memo(() => {
           <Text>2,750</Text>
         </Column>
       </Row>
-      <Center mt={6}>
+      <Center mt={7}>
         <Link isExternal href="https://app.saffron.finance/#docs">
           <u>{t("Learn More")}</u>
         </Link>
