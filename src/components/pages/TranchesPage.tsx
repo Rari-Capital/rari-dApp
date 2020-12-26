@@ -101,7 +101,7 @@ const TranchePage = React.memo(() => {
                 mt={4}
                 height="200px"
                 width="100%"
-                style={{ filter: "blur(3px)", opacity: "0.7" }}
+                style={{ filter: "blur(3px)", pointerEvents: "none" }}
               >
                 <TranchePoolInfo tranchePool={TranchePool.USDC} />
               </DashboardBox>
@@ -280,7 +280,7 @@ export const TranchePoolInfo = React.memo(
           <Box
             width="100%"
             height="100%"
-            style={{ filter: "blur(3px)", opacity: "0.7" }}
+            style={{ filter: "blur(3px)", pointerEvents: "none" }}
           >
             <TrancheColumn
               tranchePool={tranchePool}
