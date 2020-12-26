@@ -400,14 +400,14 @@ export const SFIDistributions = React.memo(() => {
   const { t } = useTranslation();
 
   return (
-    <>
-      <Center>
-        <Heading size="sm">{t("SFI Pool Distributions")}</Heading>
-      </Center>
+    <Column mainAxisAlignment="center" crossAxisAlignment="center" expand>
+      <Heading size="sm">{t("SFI Pool Distributions")}</Heading>
+
       <Row
-        mt={4}
+        width="100%"
         mainAxisAlignment="space-between"
         crossAxisAlignment="flex-start"
+        mt={4}
       >
         <Column
           expand
@@ -439,12 +439,11 @@ export const SFIDistributions = React.memo(() => {
           <Text>2,750</Text>
         </Column>
       </Row>
-      <Center mt={7}>
-        <Link isExternal href="https://app.saffron.finance/#docs">
-          <u>{t("Learn More")}</u>
-        </Link>
-      </Center>
-    </>
+
+      <Link mt={4} isExternal href="https://app.saffron.finance/#docs">
+        <u>{t("Learn More")}</u>
+      </Link>
+    </Column>
   );
 });
 
