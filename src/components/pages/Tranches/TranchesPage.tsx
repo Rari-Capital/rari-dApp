@@ -10,7 +10,7 @@ import { useRari } from "../../../context/RariContext";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
-import { Heading, Link, Text, Icon, Box } from "@chakra-ui/react";
+import { Heading, Link, Text, Icon, Box, Image } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
@@ -18,6 +18,11 @@ import { useQuery } from "react-query";
 import { Contract } from "web3-eth-contract";
 import SaffronPoolABI from "./SaffronPoolABI.json";
 import SaffronStrategyABI from "./SaffronStrategyABI.json";
+import ERC20ABI from "../../../rari-sdk/abi/ERC20.json";
+import {
+  smallStringUsdFormatter,
+  smallUsdFormatter,
+} from "../../../utils/bigUtils";
 
 enum TranchePool {
   DAI = "DAI",
@@ -25,10 +30,18 @@ enum TranchePool {
 }
 
 enum TrancheRating {
+  S = "S",
   AA = "AA",
   A = "A",
-  S = "S",
 }
+
+const trancheRatingIndex = (trancheRating: TrancheRating) => {
+  return trancheRating === TrancheRating.S
+    ? 0
+    : trancheRating === TrancheRating.AA
+    ? 1
+    : 2;
+};
 
 const useIsSmallScreen = () => {
   const { width } = useWindowSize();
@@ -100,6 +113,14 @@ const useSaffronData = () => {
     throw new Error(`useRari must be used within a RariProvider`);
   }
 
+  const fetchCurrentEpoch = async () => {
+    const currentEpoch = await context.saffronPool.methods
+      .get_current_epoch()
+      .call();
+
+    return currentEpoch;
+  };
+
   return {
     saffronData: data as {
       SFI: { USD: number };
@@ -108,6 +129,7 @@ const useSaffronData = () => {
         tranches: { A: { "total-apy": number }; S: { "total-apy": number } };
       }[];
     },
+    fetchCurrentEpoch,
     ...context,
   };
 };
@@ -279,6 +301,18 @@ export const TrancheRatingColumn = React.memo(
 
     const isMobile = useIsSmallScreen();
 
+    const { saffronPool } = useSaffronData();
+
+    const { data } = useQuery("sfiEarnings", async () => {
+      const {
+        S,
+        AA,
+        A,
+      } = await saffronPool.methods.TRANCHE_SFI_MULTIPLIER().call();
+
+      return { S: S / 1000, AA: AA / 1000, A: A / 1000 };
+    });
+
     return (
       <Column
         mainAxisAlignment="space-between"
@@ -305,14 +339,7 @@ export const TrancheRatingColumn = React.memo(
         </Column>
 
         <i>
-          SFI Earnings:{" "}
-          <b>
-            {trancheRating === TrancheRating.S
-              ? "90%"
-              : trancheRating === TrancheRating.A
-              ? "10%"
-              : "0%"}
-          </b>
+          SFI Earnings: <b>{data ? data[trancheRating] + "%" : "?%"}</b>
         </i>
       </Column>
     );
@@ -388,7 +415,31 @@ export const TrancheColumn = React.memo(
     const { t } = useTranslation();
     const isMobile = useIsSmallScreen();
 
-    const { saffronData } = useSaffronData();
+    const { rari, address } = useRari();
+    const { saffronData, saffronPool, fetchCurrentEpoch } = useSaffronData();
+
+    const { data: principal } = useQuery(
+      tranchePool + trancheRating + " principal " + address,
+      async () => {
+        //TODO: USDC POOL
+
+        const currentEpoch = await fetchCurrentEpoch();
+
+        const tranchePToken = new rari.web3.eth.Contract(
+          ERC20ABI as any,
+          await saffronPool.methods
+            .principal_token_addresses(
+              currentEpoch,
+              trancheRatingIndex(trancheRating)
+            )
+            .call()
+        );
+
+        return smallUsdFormatter(
+          parseInt(await tranchePToken.methods.balanceOf(address).call()) / 1e18
+        ).replace("$", "");
+      }
+    );
 
     return (
       <Column
@@ -403,7 +454,7 @@ export const TrancheColumn = React.memo(
             {trancheRating} {t("Tranche")}
           </Heading>
           <Text textAlign="center" mt={4}>
-            0 {tranchePool}
+            {principal ?? "?"} {tranchePool}
           </Text>
           <Text textAlign="center" fontWeight="bold" mt={4}>
             {trancheRating === "AA"
@@ -437,15 +488,13 @@ export const TrancheColumn = React.memo(
 export const RedemptionDate = React.memo(() => {
   const { t } = useTranslation();
 
-  const { saffronStrategy } = useSaffronData();
+  const { saffronPool, fetchCurrentEpoch } = useSaffronData();
 
   const { data } = useQuery("epochEndDate", async () => {
-    const currentEpoch = await saffronStrategy.methods
-      .get_current_epoch()
-      .call();
+    const currentEpoch = await fetchCurrentEpoch();
 
     const endDate = new Date(
-      (await saffronStrategy.methods.get_epoch_end(currentEpoch).call()) * 1000
+      (await saffronPool.methods.get_epoch_end(currentEpoch).call()) * 1000
     );
 
     return { currentEpoch, endDate };
@@ -466,20 +515,105 @@ export const RedemptionDate = React.memo(() => {
 export const InterestEarned = React.memo(() => {
   const { t } = useTranslation();
 
+  const { rari, address } = useRari();
+  const { saffronPool, saffronStrategy, fetchCurrentEpoch } = useSaffronData();
+
+  const { data: principal } = useQuery(
+    "principalBalance " + address,
+    async () => {
+      const currentEpoch = await fetchCurrentEpoch();
+
+      const sTranchePToken = new rari.web3.eth.Contract(
+        ERC20ABI as any,
+        await saffronPool.methods
+          .principal_token_addresses(currentEpoch, 0)
+          .call()
+      );
+
+      const aTranchePToken = new rari.web3.eth.Contract(
+        ERC20ABI as any,
+        await saffronPool.methods
+          .principal_token_addresses(currentEpoch, 2)
+          .call()
+      );
+
+      return smallStringUsdFormatter(
+        rari.web3.utils.fromWei(
+          rari.web3.utils
+            .toBN(await sTranchePToken.methods.balanceOf(address).call())
+            .add(
+              rari.web3.utils.toBN(
+                await aTranchePToken.methods.balanceOf(address).call()
+              )
+            )
+        )
+      );
+    }
+  );
+
+  const { data: sfiEarned } = useQuery("sfiEarned " + address, async () => {
+    // TODO: ADD USDC
+
+    // TODO: SWITCH TO 9
+    const DAI_SFI_REWARDS = await saffronStrategy.methods
+      .pool_SFI_rewards(0)
+      .call();
+
+    const SFI_multipliers = await saffronPool.methods
+      .TRANCHE_SFI_MULTIPLIER()
+      .call();
+
+    const currentEpoch = await fetchCurrentEpoch();
+
+    const dsecSToken = new rari.web3.eth.Contract(
+      ERC20ABI as any,
+      await saffronPool.methods
+        .principal_token_addresses(
+          currentEpoch,
+          trancheRatingIndex(TrancheRating.S)
+        )
+        .call()
+    );
+
+    const dsecAToken = new rari.web3.eth.Contract(
+      ERC20ABI as any,
+      await saffronPool.methods
+        .principal_token_addresses(
+          currentEpoch,
+          trancheRatingIndex(TrancheRating.A)
+        )
+        .call()
+    );
+
+    // TODO ADD AA POOL
+
+    const sPoolSFIEarned =
+      DAI_SFI_REWARDS *
+      (SFI_multipliers[trancheRatingIndex(TrancheRating.S)] / 100000) *
+      ((await dsecSToken.methods.balanceOf(address).call()) /
+        (await dsecSToken.methods.totalSupply().call()));
+
+    const aPoolSFIEarned =
+      DAI_SFI_REWARDS *
+      (SFI_multipliers[trancheRatingIndex(TrancheRating.A)] / 100000) *
+      ((await dsecAToken.methods.balanceOf(address).call()) /
+        (await dsecAToken.methods.totalSupply().call()));
+
+    return (
+      smallUsdFormatter(sPoolSFIEarned + aPoolSFIEarned).replace("$", "") +
+      " SFI"
+    );
+  });
+
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading size="sm">{t("Account Balance")}</Heading>
-      <Text>$24,000</Text>
+      <Heading size="sm">{t("Principal Amount")}</Heading>
+      <Text>{principal ?? "$?"}</Text>
 
-      <Heading size="sm" mt={3}>
-        {t("Interest Earned")}
+      <Heading size="sm" mt={10}>
+        {t("Estimated SFI Earned")}
       </Heading>
-      <Text>$24.0000</Text>
-
-      <Heading size="sm" mt={3}>
-        {t("SFI Earned")}
-      </Heading>
-      <Text>1.25</Text>
+      <Text>{sfiEarned ?? "? SFI"}</Text>
     </Column>
   );
 });
@@ -491,13 +625,11 @@ export const EstimatedReturns = React.memo(() => {
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading size="sm">{t("Interest Estimated")}</Heading>
-      <Text>$125.21</Text>
-
-      <Heading size="sm" mt={3}>
-        {t("Estimated SFI")}
-      </Heading>
-      <Text>11.47</Text>
+      <Image
+        mt={2}
+        boxSize="90px"
+        src="https://assets.coingecko.com/coins/images/13117/large/sfi_red_250px.png?1606020144"
+      />
 
       <Heading size="sm" mt={3}>
         {t("Current SFI Price")}
@@ -510,6 +642,20 @@ export const EstimatedReturns = React.memo(() => {
 export const SFIDistributions = React.memo(() => {
   const { t } = useTranslation();
 
+  const { address } = useRari();
+  const { saffronStrategy } = useSaffronData();
+
+  const { data: sfiRewards } = useQuery("sfiRewards " + address, async () => {
+    // TODO: SWITCH TO 9
+    const DAI = await saffronStrategy.methods.pool_SFI_rewards(0).call();
+
+    // TODO: SWITCH TO 10 OR WHATEVER USDC POOL IS
+    const USDC = await saffronStrategy.methods.pool_SFI_rewards(1).call();
+
+    return { DAI, USDC };
+  });
+
+  // TODO: ADD USDC
   return (
     <Column mainAxisAlignment="center" crossAxisAlignment="center" expand>
       <Heading size="sm">{t("SFI Pool Distributions")}</Heading>
@@ -527,7 +673,6 @@ export const SFIDistributions = React.memo(() => {
         >
           <Text fontWeight="bold">{t("Pool")}</Text>
           <Text>DAI</Text>
-          <Text>USDC</Text>
         </Column>
 
         <Column
@@ -536,8 +681,7 @@ export const SFIDistributions = React.memo(() => {
           crossAxisAlignment="center"
         >
           <Text fontWeight="bold">{t("Tranche")}</Text>
-          <Text>S, A</Text>
-          <Text>S, A</Text>
+          <Text>S + A</Text>
         </Column>
 
         <Column
@@ -546,8 +690,7 @@ export const SFIDistributions = React.memo(() => {
           crossAxisAlignment="center"
         >
           <Text fontWeight="bold">SFI</Text>
-          <Text>2,750</Text>
-          <Text>2,750</Text>
+          <Text>{sfiRewards ? sfiRewards.DAI : "?"}</Text>
         </Column>
       </Row>
 
