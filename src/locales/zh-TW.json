@@ -98,11 +98,11 @@
   "Deposits are locked until the end of each 2 week epoch.": "存款被鎖定，直到每個2周紀元結束。",
   "SFI staking is required to enter the A tranche!": "必须进行SFI抵押才能进入A档！",
   "Click review + confirm to continue!": "點擊評論+確認以繼續！",
-  "Do not close this tab until you submit all 3 transactions!": "提交所有3筆交易之前，請勿關閉此標籤！",
   "SFI and interest is distributed to LPs proportionally at the end of each epoch.": "SFI和興趣在每個時期結束時按比例分配給LP。",
   "Liquidity added to other tranches as needed.": "流動資金可根據需要添加到其他部分。",
   "Epoch {{epoch}} Redemption Date": "時代{{epoch}}兌換日期",
   "Principal Amount": "本金",
   "Estimated SFI Earned": "估計賺取的SFI",
-  "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "您需要另外{{sfiMissing}}個SFI才能進行存款（1個SFI：{{sfiRatio}} {{tranchePool}}）"
+  "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "您需要另外{{sfiMissing}}個SFI才能進行存款（1個SFI：{{sfiRatio}} {{tranchePool}}）",
+  "Do not close this tab until you submit all transactions!": "提交所有交易之前，請不要關閉此選項卡！"
 }

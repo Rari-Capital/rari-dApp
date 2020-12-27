@@ -287,51 +287,51 @@ const AmountSelect = React.memo(
         const poolAddress = saffronPool.options.address;
 
         if (mode === Mode.DEPOSIT) {
-          if (requiresSFIStaking(trancheRating)) {
-            const SFIContract = new rari.web3.eth.Contract(
-              ERC20ABI as any,
-              SFIToken.address
-            );
-
-            // If has not approved enough:
-            if (
-              rari.web3.utils
-                .toBN(
-                  await SFIContract.methods
-                    .allowance(address, poolAddress)
-                    .call()
-                )
-                .lt(amountBN)
-            ) {
-              // Approve SFI
-              SFIContract.methods
-                .approve(poolAddress, amountBN.toString())
-                .send({ from: address });
-            }
-          }
+          const SFIContract = new rari.web3.eth.Contract(
+            ERC20ABI as any,
+            SFIToken.address
+          );
 
           const trancheToken = new rari.web3.eth.Contract(
             ERC20ABI as any,
             token.address
           );
 
-          // If has not approved enough:
-          if (
-            rari.web3.utils
-              .toBN(
-                await trancheToken.methods
-                  .allowance(address, poolAddress)
-                  .call()
-              )
-              .lt(amountBN)
-          ) {
+          const hasApprovedEnoughSFI = requiresSFIStaking(trancheRating)
+            ? rari.web3.utils
+                .toBN(
+                  await SFIContract.methods
+                    .allowance(address, poolAddress)
+                    .call()
+                )
+                .gte(amountBN)
+            : true;
+
+          const hasApprovedEnoughPoolToken = rari.web3.utils
+            .toBN(
+              await trancheToken.methods.allowance(address, poolAddress).call()
+            )
+            .gte(amountBN);
+
+          if (!hasApprovedEnoughSFI) {
+            // Approve the amount of poolToken because it will always be more than sfiRequired
+            const txn = SFIContract.methods
+              .approve(poolAddress, amountBN.toString())
+              .send({ from: address });
+
+            // If the user has already approved the poolToken we need to wait for this txn to complete before showing the add liquidity txn
+            if (hasApprovedEnoughPoolToken) {
+              await txn;
+            }
+          }
+
+          if (!hasApprovedEnoughPoolToken) {
             // Approve tranche token (DAI or USDC)
             await trancheToken.methods
               .approve(saffronPool.options.address, amountBN.toString())
               .send({ from: address });
           }
 
-          // Call add liquidity
           await saffronPool.methods
             .add_liquidity(
               amountBN.toString(),
@@ -403,9 +403,7 @@ const AmountSelect = React.memo(
         </Heading>
         <Text fontSize="sm" mt="15px" textAlign="center">
           {mode === Mode.DEPOSIT
-            ? requiresSFIStaking(trancheRating)
-              ? t("Do not close this tab until you submit all 3 transactions!")
-              : t("Do not close this tab until you submit both transactions!")
+            ? t("Do not close this tab until you submit all transactions!")
             : t("You may close this tab after submitting the transaction.")}
         </Text>
       </Column>

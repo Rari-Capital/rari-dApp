@@ -98,11 +98,11 @@
   "Deposits are locked until the end of each 2 week epoch.": "Deposits are locked until the end of each 2 week epoch.",
   "SFI staking is required to enter the A tranche!": "SFI staking is required to enter the A tranche!",
   "Click review + confirm to continue!": "Click review + confirm to continue!",
-  "Do not close this tab until you submit all 3 transactions!": "Do not close this tab until you submit all 3 transactions!",
   "SFI and interest is distributed to LPs proportionally at the end of each epoch.": "SFI and interest is distributed to LPs proportionally at the end of each epoch.",
   "Liquidity added to other tranches as needed.": "Liquidity added to other tranches as needed.",
   "Epoch {{epoch}} Redemption Date": "Epoch {{epoch}} Redemption Date",
   "Principal Amount": "Principal Amount",
   "Estimated SFI Earned": "Estimated SFI Earned",
-  "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})"
+  "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})",
+  "Do not close this tab until you submit all transactions!": "Do not close this tab until you submit all transactions!"
 }
