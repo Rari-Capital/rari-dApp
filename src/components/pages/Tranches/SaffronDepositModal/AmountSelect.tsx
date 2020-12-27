@@ -106,6 +106,16 @@ const AmountSelect = React.memo(
 
     const { sfiBalance } = useSFIBalance();
 
+    const { saffronPool } = useSaffronData();
+
+    const { data: sfiRatio } = useQuery(tranchePool + " sfiRatio", () => {
+      return saffronPool.methods.SFI_ratio().call();
+    });
+
+    const toast = useToast();
+
+    const queryCache = useQueryCache();
+
     const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
     const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
@@ -117,12 +127,12 @@ const AmountSelect = React.memo(
     );
 
     const sfiRequired = useMemo(() => {
-      return amount
+      return amount && sfiRatio
         ? amount
             .div(10 ** token.decimals)
-            .multipliedBy((1 / 500) * 10 ** SFIToken.decimals)
-        : new BigNumber(0);
-    }, [amount, token.decimals]);
+            .multipliedBy((1 / sfiRatio) * 10 ** SFIToken.decimals)
+        : new BigNumber(99999999999).multipliedBy(1e18);
+    }, [amount, sfiRatio, token.decimals]);
 
     const updateAmount = useCallback(
       (newAmount: string) => {
@@ -162,13 +172,8 @@ const AmountSelect = React.memo(
 
         return amount.lte(poolTokenBalance.toString());
       } else {
-        // TODO
+        // TODO: WITHDRAW VALIDATION
 
-        // if (!max) {
-        //   return false;
-        // }
-
-        // return amount.lte(max.toString());
         return true;
       }
     }, [poolTokenBalance, amount, mode]);
@@ -217,18 +222,12 @@ const AmountSelect = React.memo(
             });
     } else if (!hasEnoughSFI) {
       depositOrWithdrawAlert = t(
-        "You need 1 SFI for every 500 {{tranchePool}} to enter this tranche.",
-        { tranchePool }
+        "You need 1 SFI for every {{sfiRatio}} {{tranchePool}} to enter this tranche.",
+        { sfiRatio: sfiRatio ?? "?", tranchePool }
       );
     } else {
       depositOrWithdrawAlert = t("Click review + confirm to continue!");
     }
-
-    const toast = useToast();
-
-    const queryCache = useQueryCache();
-
-    const { saffronPool } = useSaffronData();
 
     const onConfirm = useCallback(async () => {
       try {
