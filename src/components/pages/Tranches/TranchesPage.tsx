@@ -536,6 +536,9 @@ export const RedemptionDate = React.memo(() => {
         })}
       </Heading>
       <Text>{data ? data.endDate.toDateString() : "?"}</Text>
+      <Text fontSize="14px">
+        {data ? data.endDate.toLocaleTimeString() : "?"}
+      </Text>
     </Column>
   );
 });
