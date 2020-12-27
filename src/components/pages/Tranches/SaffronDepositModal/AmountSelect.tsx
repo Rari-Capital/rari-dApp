@@ -131,7 +131,7 @@ const AmountSelect = React.memo(
         ? amount
             .div(10 ** token.decimals)
             .multipliedBy((1 / sfiRatio) * 10 ** SFIToken.decimals)
-        : new BigNumber(99999999999).multipliedBy(1e18);
+        : new BigNumber(0);
     }, [amount, sfiRatio, token.decimals]);
 
     const updateAmount = useCallback(
@@ -149,8 +149,6 @@ const AmountSelect = React.memo(
           const bigAmount = new BigNumber(newAmount);
           _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
         } catch (e) {
-          console.log(e);
-
           // If the number was invalid, set the amount to null to disable confirming:
           _setAmount(null);
         }
@@ -207,7 +205,7 @@ const AmountSelect = React.memo(
         mode === Mode.DEPOSIT
           ? t("Enter a valid amount to deposit.")
           : t("Enter a valid amount to withdraw.");
-    } else if (!poolTokenBalance) {
+    } else if (!poolTokenBalance || !sfiBalance) {
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
         token: tranchePool,
       });
@@ -222,8 +220,15 @@ const AmountSelect = React.memo(
             });
     } else if (!hasEnoughSFI) {
       depositOrWithdrawAlert = t(
-        "You need 1 SFI for every {{sfiRatio}} {{tranchePool}} to enter this tranche.",
-        { sfiRatio: sfiRatio ?? "?", tranchePool }
+        "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})",
+        {
+          sfiRatio: sfiRatio ?? "?",
+          tranchePool,
+          sfiMissing: sfiRequired
+            .minus(sfiBalance.toString())
+            .div(10 ** SFIToken.decimals)
+            .decimalPlaces(2),
+        }
       );
     } else {
       depositOrWithdrawAlert = t("Click review + confirm to continue!");
@@ -352,7 +357,13 @@ const AmountSelect = React.memo(
         crossAxisAlignment="center"
         p={4}
       >
-        <HashLoader size={70} color={token.color} loading />
+        <HashLoader
+          size={70}
+          color={
+            requiresSFIStaking(trancheRating) ? SFIToken.color : token.color
+          }
+          loading
+        />
         <Heading mt="30px" textAlign="center" size="md">
           {mode === Mode.DEPOSIT
             ? t("Check your wallet to submit the transactions")
@@ -437,9 +448,11 @@ const AmountSelect = React.memo(
               >
                 <AmountInput
                   selectedToken="SFI"
-                  displayAmount={sfiRequired
-                    .div(10 ** SFIToken.decimals)
-                    .toString()}
+                  displayAmount={
+                    sfiRequired.isZero()
+                      ? "0.0"
+                      : sfiRequired.div(10 ** SFIToken.decimals).toString()
+                  }
                   updateAmount={noop}
                 />
 
@@ -477,7 +490,9 @@ const AmountSelect = React.memo(
         </Column>
         {userAction === UserAction.VIEWING_QUOTE ? (
           <ApprovalNotch
-            color={token.color}
+            color={
+              requiresSFIStaking(trancheRating) ? SFIToken.color : token.color
+            }
             mode={mode}
             amount={quoteAmount!}
           />

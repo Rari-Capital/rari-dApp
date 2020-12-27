@@ -104,5 +104,5 @@
   "Epoch {{epoch}} Redemption Date": "Epoch {{epoch}} Redemption Date",
   "Principal Amount": "Principal Amount",
   "Estimated SFI Earned": "Estimated SFI Earned",
-  "You need 1 SFI for every {{sfiRatio}} {{tranchePool}} to enter this tranche.": "You need 1 SFI for every {{sfiRatio}} {{tranchePool}} to enter this tranche."
+  "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})"
 }

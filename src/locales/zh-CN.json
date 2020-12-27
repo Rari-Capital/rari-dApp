@@ -104,5 +104,5 @@
   "Epoch {{epoch}} Redemption Date": "时代{{epoch}}兑换日期",
   "Principal Amount": "本金",
   "Estimated SFI Earned": "估计赚取的SFI",
-  "You need 1 SFI for every {{sfiRatio}} {{tranchePool}} to enter this tranche.": "您需要为每个{{sfiRatio}} {{tranchePool}}输入1个SFI才能输入此付款。"
+  "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "您需要另外{{sfiMissing}}個SFI才能進行存款（1個SFI：{{sfiRatio}} {{tranchePool}}）"
 }
