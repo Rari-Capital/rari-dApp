@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Center,
   Column,
@@ -6,15 +6,18 @@ import {
   RowOrColumn,
   useWindowSize,
 } from "buttered-chakra";
-import { useRari } from "../../context/RariContext";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
-import ForceAuthModal from "../shared/ForceAuthModal";
-import { Header } from "../shared/Header";
+import { useRari } from "../../../context/RariContext";
+import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import ForceAuthModal from "../../shared/ForceAuthModal";
+import { Header } from "../../shared/Header";
 import { Heading, Link, Text, Icon, Box } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
-import CopyrightSpacer from "../shared/CopyrightSpacer";
+import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import { useQuery } from "react-query";
+import { Contract } from "web3-eth-contract";
+import SaffronPoolABI from "./SaffronPoolABI.json";
+import SaffronStrategyABI from "./SaffronStrategyABI.json";
 
 enum TranchePool {
   DAI = "DAI",
@@ -33,10 +36,69 @@ const useIsSmallScreen = () => {
   return width < 1030;
 };
 
+interface SaffronContextType {
+  saffronStrategy: Contract;
+  saffronPool: Contract;
+}
+
+export const SaffronContext = React.createContext<
+  SaffronContextType | undefined
+>(undefined);
+
+const SaffronStrategyAddress = "0xF4aA3b60eaD8DF9768816F20710a99bBF372393c";
+const SaffronPoolAddress = "0xbbDfc1f8B6e73B6751A098574D0172945beD2953";
+
+const WrappedTranchePage = React.memo(() => {
+  const { rari } = useRari();
+
+  const [saffronStrategy, setSaffronStrategy] = useState(() => {
+    return new rari.web3.eth.Contract(
+      SaffronStrategyABI as any,
+      SaffronStrategyAddress
+    );
+  });
+
+  const [saffronPool, setSaffronPool] = useState(() => {
+    return new rari.web3.eth.Contract(
+      SaffronPoolABI as any,
+      SaffronPoolAddress
+    );
+  });
+
+  useEffect(() => {
+    setSaffronStrategy(
+      new rari.web3.eth.Contract(
+        SaffronStrategyABI as any,
+        SaffronStrategyAddress
+      )
+    );
+
+    setSaffronPool(
+      new rari.web3.eth.Contract(SaffronPoolABI as any, SaffronPoolAddress)
+    );
+  }, [rari]);
+
+  const value = useMemo(() => {
+    return { saffronStrategy, saffronPool };
+  }, [saffronStrategy, saffronPool]);
+
+  return (
+    <SaffronContext.Provider value={value}>
+      <TranchePage />
+    </SaffronContext.Provider>
+  );
+});
+
 const useSaffronData = () => {
+  const context = React.useContext(SaffronContext);
+
   const { data } = useQuery("saffronData", async () => {
     return (await fetch("https://api.spice.finance/apy")).json();
   });
+
+  if (context === undefined) {
+    throw new Error(`useRari must be used within a RariProvider`);
+  }
 
   return {
     saffronData: data as {
@@ -46,8 +108,11 @@ const useSaffronData = () => {
         tranches: { A: { "total-apy": number }; S: { "total-apy": number } };
       }[];
     },
+    ...context,
   };
 };
+
+export default WrappedTranchePage;
 
 const TranchePage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -231,26 +296,23 @@ export const TrancheRatingColumn = React.memo(
             {trancheRating} {t("Tranche")}
           </Heading>
           <Text textAlign="center" mt={1}>
-            {trancheRating === TrancheRating.S ? (
-              <>
-                {t("Liquidity added to other tranches as needed")}{" "}
-                <i>
-                  {t("(currently {{currentAllocatedTranche}} tranche)", {
-                    currentAllocatedTranche: "AA",
-                  })}
-                  .
-                </i>
-              </>
-            ) : trancheRating === TrancheRating.A ? (
-              "Reduced interest earned. Covered in case of failure by AA tranche."
-            ) : (
-              "10x interest earned. Cover provided to A tranche in case of failure."
-            )}
+            {trancheRating === TrancheRating.S
+              ? t("Liquidity added to other tranches as needed.")
+              : trancheRating === TrancheRating.A
+              ? "Reduced interest earned. Covered in case of failure by AA tranche."
+              : "10x interest earned. Cover provided to A tranche in case of failure."}
           </Text>
         </Column>
 
         <i>
-          SFI Earnings: <b>90%</b>
+          SFI Earnings:{" "}
+          <b>
+            {trancheRating === TrancheRating.S
+              ? "90%"
+              : trancheRating === TrancheRating.A
+              ? "10%"
+              : "0%"}
+          </b>
         </i>
       </Column>
     );
@@ -346,7 +408,7 @@ export const TrancheColumn = React.memo(
           <Text textAlign="center" fontWeight="bold" mt={4}>
             {trancheRating === "AA"
               ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
-                "0.5%"
+                "0.45%"
               : saffronData
               ? // TODO: REPLACE POOL WITH 9 INDEX FOR RARI DAI POOl AND ONCE THEY ADD USDC POOL DO A CONDITIONAL CHECK
                 saffronData.pools[0].tranches[trancheRating]["total-apy"] + "%"
@@ -375,11 +437,28 @@ export const TrancheColumn = React.memo(
 export const RedemptionDate = React.memo(() => {
   const { t } = useTranslation();
 
+  const { saffronStrategy } = useSaffronData();
+
+  const { data } = useQuery("epochEndDate", async () => {
+    const currentEpoch = await saffronStrategy.methods
+      .get_current_epoch()
+      .call();
+
+    const endDate = new Date(
+      (await saffronStrategy.methods.get_epoch_end(currentEpoch).call()) * 1000
+    );
+
+    return { currentEpoch, endDate };
+  });
+
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading size="sm">{t("Redemption Date")}</Heading>
-      <Text>12/13/2020</Text>
-      <Text>6:00:00 AM PT</Text>
+      <Heading size="sm">
+        {t("Epoch {{epoch}} Redemption Date", {
+          epoch: data?.currentEpoch ?? "?",
+        })}
+      </Heading>
+      <Text>{data ? data.endDate.toDateString() : "?"}</Text>
     </Column>
   );
 });
@@ -478,5 +557,3 @@ export const SFIDistributions = React.memo(() => {
     </Column>
   );
 });
-
-export default TranchePage;

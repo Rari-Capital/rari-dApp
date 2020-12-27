@@ -8,7 +8,7 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import { Heading } from "@chakra-ui/react";
 import { Pool } from "../context/PoolContext";
-import TranchesPage from "./pages/TranchesPage";
+import TranchesPage from "./pages/Tranches/TranchesPage";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
