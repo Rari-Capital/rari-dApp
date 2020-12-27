@@ -250,24 +250,52 @@ const AmountSelect = React.memo(
         // This means they are now ready to start sending transactions:
         setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
 
+        const poolAddress = saffronPool.options.address;
+
         if (mode === Mode.DEPOSIT) {
           if (requiresSFIStaking(trancheRating)) {
-            // Aprove SFI
-            new rari.web3.eth.Contract(
+            const SFIContract = new rari.web3.eth.Contract(
               ERC20ABI as any,
               SFIToken.address
-            ).methods
+            );
+
+            // If has not approved enough:
+            if (
+              rari.web3.utils
+                .toBN(
+                  await SFIContract.methods
+                    .allowance(address, poolAddress)
+                    .call()
+                )
+                .lt(amountBN)
+            ) {
+              // Approve SFI
+              SFIContract.methods
+                .approve(poolAddress, amountBN.toString())
+                .send({ from: address });
+            }
+          }
+
+          const trancheToken = new rari.web3.eth.Contract(
+            ERC20ABI as any,
+            token.address
+          );
+
+          // If has not approved enough:
+          if (
+            rari.web3.utils
+              .toBN(
+                await trancheToken.methods
+                  .allowance(address, poolAddress)
+                  .call()
+              )
+              .lt(amountBN)
+          ) {
+            // Approve tranche token (DAI or USDC)
+            await trancheToken.methods
               .approve(saffronPool.options.address, amountBN.toString())
               .send({ from: address });
           }
-
-          // Approve tranche token (DAI or USDC)
-          await new rari.web3.eth.Contract(
-            ERC20ABI as any,
-            token.address
-          ).methods
-            .approve(saffronPool.options.address, amountBN.toString())
-            .send({ from: address });
 
           // Call add liquidity
           await saffronPool.methods
@@ -333,7 +361,9 @@ const AmountSelect = React.memo(
         </Heading>
         <Text fontSize="sm" mt="15px" textAlign="center">
           {mode === Mode.DEPOSIT
-            ? t("Do not close this tab until you submit all 3 transactions!")
+            ? requiresSFIStaking(trancheRating)
+              ? t("Do not close this tab until you submit all 3 transactions!")
+              : t("Do not close this tab until you submit both transactions!")
             : t("You may close this tab after submitting the transaction.")}
         </Text>
       </Column>
