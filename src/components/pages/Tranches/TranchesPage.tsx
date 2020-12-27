@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import {
   Center,
   Column,
@@ -23,15 +23,14 @@ import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import { useQuery } from "react-query";
-import { Contract } from "web3-eth-contract";
-import SaffronPoolABI from "./SaffronPoolABI.json";
-import SaffronStrategyABI from "./SaffronStrategyABI.json";
+
 import ERC20ABI from "../../../rari-sdk/abi/ERC20.json";
 import {
   smallStringUsdFormatter,
   smallUsdFormatter,
 } from "../../../utils/bigUtils";
 import DepositModal from "./SaffronDepositModal";
+import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -57,72 +56,15 @@ export const tranchePoolIndex = (tranchePool: TranchePool) => {
   return tranchePool === TranchePool.DAI ? 9 : 0;
 };
 
-interface SaffronContextType {
-  saffronStrategy: Contract;
-  saffronPool: Contract;
-}
-
-export const SaffronContext = React.createContext<
-  SaffronContextType | undefined
->(undefined);
-
-const SaffronStrategyAddress = "0x9e0278646fD72318909338Ad87deC7f3464BC434";
-const SaffronPoolAddress = "0xbafA231AAac12CE8ba0b23b86669f54a05fC23b5";
-
-const WrappedTranchePage = React.memo(() => {
-  const { rari } = useRari();
-
-  const [saffronStrategy, setSaffronStrategy] = useState(() => {
-    return new rari.web3.eth.Contract(
-      SaffronStrategyABI as any,
-      SaffronStrategyAddress
-    );
-  });
-
-  const [saffronPool, setSaffronPool] = useState(() => {
-    return new rari.web3.eth.Contract(
-      SaffronPoolABI as any,
-      SaffronPoolAddress
-    );
-  });
-
-  useEffect(() => {
-    setSaffronStrategy(
-      new rari.web3.eth.Contract(
-        SaffronStrategyABI as any,
-        SaffronStrategyAddress
-      )
-    );
-
-    setSaffronPool(
-      new rari.web3.eth.Contract(SaffronPoolABI as any, SaffronPoolAddress)
-    );
-  }, [rari]);
-
-  const value = useMemo(() => {
-    return { saffronStrategy, saffronPool };
-  }, [saffronStrategy, saffronPool]);
-
-  return (
-    <SaffronContext.Provider value={value}>
-      <TranchePage />
-    </SaffronContext.Provider>
-  );
-});
-
 export const useSaffronData = () => {
-  const context = React.useContext(SaffronContext);
-
   const { data } = useQuery("saffronData", async () => {
     return (await fetch("https://api.spice.finance/apy")).json();
   });
 
-  if (context === undefined) {
-    throw new Error(`useRari must be used within a RariProvider`);
-  }
+  const contracts = useSaffronContracts();
 
   const fetchCurrentEpoch = async () => {
-    const currentEpoch = await context.saffronPool.methods
+    const currentEpoch = await contracts.saffronPool.methods
       .get_current_epoch()
       .call();
 
@@ -138,9 +80,17 @@ export const useSaffronData = () => {
       }[];
     },
     fetchCurrentEpoch,
-    ...context,
+    ...contracts,
   };
 };
+
+const WrappedTranchePage = React.memo(() => {
+  return (
+    <SaffronProvider>
+      <TranchePage />
+    </SaffronProvider>
+  );
+});
 
 export default WrappedTranchePage;
 
@@ -234,7 +184,7 @@ const TranchePage = React.memo(() => {
               height="200px"
               width="100%"
             >
-              <InterestEarned />
+              <PrincipalAmount />
             </DashboardBox>
 
             <DashboardBox
@@ -242,7 +192,7 @@ const TranchePage = React.memo(() => {
               height="200px"
               width="100%"
             >
-              <EstimatedReturns />
+              <SFIPrice />
             </DashboardBox>
 
             <DashboardBox
@@ -543,7 +493,7 @@ export const RedemptionDate = React.memo(() => {
   );
 });
 
-export const InterestEarned = React.memo(() => {
+export const PrincipalAmount = React.memo(() => {
   const { t } = useTranslation();
 
   const { rari, address } = useRari();
@@ -658,7 +608,7 @@ export const InterestEarned = React.memo(() => {
   );
 });
 
-export const EstimatedReturns = React.memo(() => {
+export const SFIPrice = React.memo(() => {
   const { t } = useTranslation();
 
   const { saffronData } = useSaffronData();
