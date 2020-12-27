@@ -394,7 +394,10 @@ export const TranchePoolInfo = React.memo(
           <Box
             width="100%"
             height="100%"
-            style={{ filter: "blur(3px)", pointerEvents: "none" }}
+            style={{
+              opacity: tranchePool !== "USDC" ? "0.3" : "1",
+              pointerEvents: "none",
+            }}
           >
             <TrancheColumn
               tranchePool={tranchePool}
@@ -722,7 +725,7 @@ export const SFIDistributions = React.memo(() => {
         </Column>
       </Row>
 
-      <Link mt={4} isExternal href="https://app.saffron.finance/#docs">
+      <Link mt={4} isExternal href="https://app.saffron.finance/#dashboard">
         <u>{t("Learn More")}</u>
       </Link>
     </Column>
