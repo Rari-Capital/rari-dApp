@@ -53,8 +53,8 @@ export const trancheRatingIndex = (trancheRating: TrancheRating) => {
 };
 
 export const tranchePoolIndex = (tranchePool: TranchePool) => {
-  // TODO: CHANGE DAI TO 9 AND USDC TO WHATEVER IT BECOMES LATER
-  return tranchePool === TranchePool.DAI ? 0 : 0;
+  // TODO: CHANGE USDC TO WHATEVER IT BECOMES LATER
+  return tranchePool === TranchePool.DAI ? 9 : 0;
 };
 
 interface SaffronContextType {
@@ -66,8 +66,8 @@ export const SaffronContext = React.createContext<
   SaffronContextType | undefined
 >(undefined);
 
-const SaffronStrategyAddress = "0xF4aA3b60eaD8DF9768816F20710a99bBF372393c";
-const SaffronPoolAddress = "0xbbDfc1f8B6e73B6751A098574D0172945beD2953";
+const SaffronStrategyAddress = "0x9e0278646fD72318909338Ad87deC7f3464BC434";
+const SaffronPoolAddress = "0xbafA231AAac12CE8ba0b23b86669f54a05fC23b5";
 
 const WrappedTranchePage = React.memo(() => {
   const { rari } = useRari();
