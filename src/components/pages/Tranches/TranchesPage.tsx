@@ -612,10 +612,12 @@ export const InterestEarned = React.memo(() => {
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading size="sm">{t("Principal Amount")}</Heading>
+      <Heading lineHeight={1.4} fontSize="18px">
+        {t("Principal Amount")}
+      </Heading>
       <Text>{principal ?? "$?"}</Text>
 
-      <Heading size="sm" mt={10}>
+      <Heading lineHeight={1.4} fontSize="18px" mt={10}>
         {t("Estimated SFI Earned")}
       </Heading>
       <Text>{sfiEarned ?? "? SFI"}</Text>

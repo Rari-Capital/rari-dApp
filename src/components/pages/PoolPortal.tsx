@@ -51,7 +51,7 @@ import CaptionedStat from "../shared/CaptionedStat";
 
 import ProgressBar from "../shared/ProgressBar";
 
-import DepositModal from "./DepositModal";
+import DepositModal from "./RariDepositModal";
 import { useQuery } from "react-query";
 
 import { useTranslation } from "react-i18next";
