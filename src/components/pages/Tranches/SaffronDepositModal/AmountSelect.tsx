@@ -1,14 +1,13 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Row, Column, Center } from "buttered-chakra";
 
-import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
+import LogRocket from "logrocket";
 import {
   Heading,
   Box,
   Button,
   Text,
   Image,
-  IconButton,
   Input,
   Link,
   useToast,
@@ -28,33 +27,45 @@ import { Mode } from ".";
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../../shared/Modal";
 import { useRari } from "../../../../context/RariContext";
-import { Pool, usePoolType } from "../../../../context/PoolContext";
+
 import { BN, smallStringUsdFormatter } from "../../../../utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
-import { useQueryCache } from "react-query";
+import { useQuery, useQueryCache } from "react-query";
 
-import {
-  depositPercentAfterWithdrawFee,
-  getSDKPool,
-  poolHasDivergenceRisk,
-} from "../../../../utils/poolUtils";
-import {
-  fetchMaxWithdraw,
-  useMaxWithdraw,
-} from "../../../../hooks/useMaxWithdraw";
 import { AttentionSeeker } from "react-awesome-reveal";
 
-import LogRocket from "logrocket";
 import { HashLoader } from "react-spinners";
+import {
+  TrancheRating,
+  TranchePool,
+  useSaffronData,
+  trancheRatingIndex,
+} from "../TranchesPage";
+
+import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
+import { Token } from "rari-tokens-generator";
+
+function noop() {}
+
+const SFIToken = {
+  symbol: "SFI",
+  address: "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
+  name: "Spice",
+  decimals: 18,
+  color: "#B64E3D",
+  overlayTextColor: "#fff",
+  logoURL:
+    "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
+} as Token;
 
 interface Props {
-  selectedToken: string;
-  openCoinSelect: () => any;
   openOptions: () => any;
   onClose: () => any;
   mode: Mode;
+  tranchePool: TranchePool;
+  trancheRating: TrancheRating;
 }
 
 enum UserAction {
@@ -64,18 +75,36 @@ enum UserAction {
   WAITING_FOR_TRANSACTIONS,
 }
 
-const AmountSelect = React.memo(
-  ({ selectedToken, openCoinSelect, mode, openOptions, onClose }: Props) => {
-    const token = tokens[selectedToken];
+export const requiresSFIStaking = (trancheRating: TrancheRating) => {
+  return trancheRating === TrancheRating.A;
+};
 
-    const poolType = usePoolType();
+const useSFIBalance = () => {
+  const { rari, address } = useRari();
+
+  const { data } = useQuery("sfiBalance", async () => {
+    const stringBalance = await new rari.web3.eth.Contract(
+      ERC20ABI as any,
+      SFIToken.address
+    ).methods
+      .balanceOf(address)
+      .call();
+
+    return rari.web3.utils.toBN(stringBalance);
+  });
+
+  return { sfiBalance: data };
+};
+
+const AmountSelect = React.memo(
+  ({ mode, onClose, tranchePool, trancheRating }: Props) => {
+    const token = tokens[tranchePool];
 
     const { rari, address } = useRari();
 
-    const {
-      data: selectedTokenBalance,
-      isLoading: isSelectedTokenBalanceLoading,
-    } = useTokenBalance(token);
+    const { data: poolTokenBalance } = useTokenBalance(token);
+
+    const { sfiBalance } = useSFIBalance();
 
     const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
@@ -86,6 +115,14 @@ const AmountSelect = React.memo(
     const [amount, _setAmount] = useState<BigNumber | null>(
       () => new BigNumber(0)
     );
+
+    const sfiRequired = useMemo(() => {
+      return amount
+        ? amount
+            .div(10 ** token.decimals)
+            .multipliedBy((1 / 500) * 10 ** SFIToken.decimals)
+        : new BigNumber(0);
+    }, [amount, token.decimals]);
 
     const updateAmount = useCallback(
       (newAmount: string) => {
@@ -113,34 +150,43 @@ const AmountSelect = React.memo(
       [_setUserEnteredAmount, _setAmount, token.decimals]
     );
 
-    const { max, isMaxLoading } = useMaxWithdraw(token.symbol);
-
     const amountIsValid = useMemo(() => {
       if (amount === null || amount.isZero()) {
         return false;
       }
 
       if (mode === Mode.DEPOSIT) {
-        if (isSelectedTokenBalanceLoading) {
+        if (!poolTokenBalance) {
           return false;
         }
 
-        return amount.lte(selectedTokenBalance!.toString());
+        return amount.lte(poolTokenBalance.toString());
       } else {
-        if (isMaxLoading) {
-          return false;
-        }
+        // TODO
 
-        return amount.lte(max!.toString());
+        // if (!max) {
+        //   return false;
+        // }
+
+        // return amount.lte(max.toString());
+        return true;
       }
-    }, [
-      isSelectedTokenBalanceLoading,
-      selectedTokenBalance,
-      amount,
-      isMaxLoading,
-      max,
-      mode,
-    ]);
+    }, [poolTokenBalance, amount, mode]);
+
+    const hasEnoughSFI = useMemo(() => {
+      if (mode === Mode.DEPOSIT) {
+      }
+
+      if (!requiresSFIStaking(trancheRating)) {
+        return true;
+      }
+
+      if (!sfiBalance || sfiBalance.isZero()) {
+        return false;
+      }
+
+      return sfiRequired.lte(sfiBalance.toString());
+    }, [sfiRequired, mode, sfiBalance, trancheRating]);
 
     const { t } = useTranslation();
 
@@ -152,72 +198,40 @@ const AmountSelect = React.memo(
           ? t("Enter a valid amount to deposit.")
           : t("Enter a valid amount to withdraw.");
     } else if (amount.isZero()) {
-      if (poolType === Pool.ETH) {
-        depositOrWithdrawAlert =
-          mode === Mode.DEPOSIT
-            ? t("Enter a valid amount to deposit.")
-            : t("Enter a valid amount to withdraw.");
-      } else {
-        depositOrWithdrawAlert =
-          mode === Mode.DEPOSIT
-            ? t("Choose which token you want to deposit.")
-            : t("Choose which token you want to withdraw.");
-      }
-    } else if (isSelectedTokenBalanceLoading) {
+      depositOrWithdrawAlert =
+        mode === Mode.DEPOSIT
+          ? t("Enter a valid amount to deposit.")
+          : t("Enter a valid amount to withdraw.");
+    } else if (!poolTokenBalance) {
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
-        token: selectedToken,
+        token: tranchePool,
       });
     } else if (!amountIsValid) {
       depositOrWithdrawAlert =
         mode === Mode.DEPOSIT
           ? t("You don't have enough {{token}}.", {
-              token: selectedToken,
+              token: tranchePool,
             })
           : t("You cannot withdraw this much {{token}}.", {
-              token: selectedToken,
+              token: tranchePool,
             });
+    } else if (!hasEnoughSFI) {
+      depositOrWithdrawAlert = t(
+        "You need 1 SFI for every 500 {{tranchePool}} to enter this tranche.",
+        { tranchePool }
+      );
     } else {
-      // If pool has a withdrawal fee:
-      if (depositPercentAfterWithdrawFee(poolType) !== 1) {
-        const withdrawFee = (
-          (1 - depositPercentAfterWithdrawFee(poolType)) *
-          100
-        ).toFixed(1);
-
-        if (mode === Mode.DEPOSIT) {
-          depositOrWithdrawAlert = t(
-            "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
-            {
-              withdrawFee,
-            }
-          );
-        } else {
-          depositOrWithdrawAlert = t(
-            "This pool has a {{withdrawFee}}% withdrawal fee.",
-            {
-              withdrawFee,
-            }
-          );
-        }
-      } else {
-        if (mode === Mode.DEPOSIT) {
-          depositOrWithdrawAlert = t(
-            "This pool has a 9.5% performance fee. Click to learn more."
-          );
-        } else {
-          depositOrWithdrawAlert = t("Click review + confirm to withdraw!");
-        }
-      }
+      depositOrWithdrawAlert = t("Click review + confirm to continue!");
     }
 
     const toast = useToast();
 
     const queryCache = useQueryCache();
 
+    const { saffronPool } = useSaffronData();
+
     const onConfirm = useCallback(async () => {
       try {
-        const pool = getSDKPool({ rari, pool: poolType });
-
         //@ts-ignore
         const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
 
@@ -225,72 +239,48 @@ const AmountSelect = React.memo(
         if (userAction === UserAction.NO_ACTION) {
           setUserAction(UserAction.REQUESTED_QUOTE);
 
-          let quote: BN;
+          //TODO: WITHDRAWS
 
-          if (mode === Mode.DEPOSIT) {
-            const [amountToBeAdded] = (await pool.deposits.validateDeposit(
-              token.symbol,
-              amountBN,
-              address
-            )) as BN[];
-
-            quote = amountToBeAdded;
-          } else {
-            const [
-              amountToBeRemoved,
-            ] = (await pool.withdrawals.validateWithdrawal(
-              token.symbol,
-              amountBN,
-              address
-            )) as BN[];
-
-            quote = amountToBeRemoved;
-          }
-
-          setQuoteAmount(quote);
-
+          setQuoteAmount(amountBN);
           setUserAction(UserAction.VIEWING_QUOTE);
-
           return;
         }
 
         // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
         // This means they are now ready to start sending transactions:
-
         setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
 
         if (mode === Mode.DEPOSIT) {
-          // (Third item in array is approvalReceipt)
-          const [, , , depositReceipt] = await pool.deposits.deposit(
-            token.symbol,
-            amountBN,
-            quoteAmount!,
-            {
-              from: address,
-            }
-          );
-
-          if (!depositReceipt) {
-            throw new Error(
-              t(
-                "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
-              )
-            );
+          if (requiresSFIStaking(trancheRating)) {
+            // Aprove SFI
+            new rari.web3.eth.Contract(
+              ERC20ABI as any,
+              SFIToken.address
+            ).methods
+              .approve(saffronPool.options.address, amountBN.toString())
+              .send({ from: address });
           }
+
+          // Approve tranche token (DAI or USDC)
+          await new rari.web3.eth.Contract(
+            ERC20ABI as any,
+            token.address
+          ).methods
+            .approve(saffronPool.options.address, amountBN.toString())
+            .send({ from: address });
+
+          // Call add liquidity
+          await saffronPool.methods
+            .add_liquidity(
+              amountBN.toString(),
+              trancheRatingIndex(trancheRating)
+            )
+            .send({ from: address });
         } else {
-          // (Third item in array is withdrawReceipt)
-          await pool.withdrawals.withdraw(
-            token.symbol,
-            amountBN,
-            quoteAmount!,
-            {
-              from: address,
-            }
-          );
+          //TODO: WITHDRAWS
         }
 
         await queryCache.refetchQueries();
-
         onClose();
       } catch (e) {
         let message: string;
@@ -316,15 +306,14 @@ const AmountSelect = React.memo(
       }
     }, [
       address,
-      poolType,
+      token.address,
+      saffronPool,
+      trancheRating,
       userAction,
-      quoteAmount,
       mode,
       onClose,
       rari,
-      token,
       amount,
-      t,
       toast,
       queryCache,
     ]);
@@ -344,28 +333,23 @@ const AmountSelect = React.memo(
         </Heading>
         <Text fontSize="sm" mt="15px" textAlign="center">
           {mode === Mode.DEPOSIT
-            ? t("Do not close this tab until you submit both transactions!")
+            ? t("Do not close this tab until you submit all 3 transactions!")
             : t("You may close this tab after submitting the transaction.")}
-        </Text>
-        <Text fontSize="xs" mt="5px" textAlign="center">
-          {t(
-            "Do not increase the price of gas more than 1.5x the prefilled amount!"
-          )}
         </Text>
       </Column>
     ) : (
       <>
         <Row
           width="100%"
-          mainAxisAlignment="space-between"
+          mainAxisAlignment="center"
           crossAxisAlignment="center"
           p={DASHBOARD_BOX_SPACING.asPxString()}
         >
-          <Box width="40px" />
+          {/* <Box width="40px" /> */}
           <Heading fontSize="27px">
             {mode === Mode.DEPOSIT ? t("Deposit") : t("Withdraw")}
           </Heading>
-          <IconButton
+          {/* <IconButton
             color="#FFFFFF"
             variant="ghost"
             aria-label="Options"
@@ -376,7 +360,7 @@ const AmountSelect = React.memo(
             }}
             _active={{}}
             onClick={openOptions}
-          />
+          /> */}
         </Row>
         <ModalDivider />
         <Column
@@ -401,19 +385,43 @@ const AmountSelect = React.memo(
               expand
             >
               <AmountInput
-                selectedToken={selectedToken}
+                selectedToken={tranchePool}
                 displayAmount={userEnteredAmount}
                 updateAmount={updateAmount}
               />
 
               <TokenNameAndMaxButton
-                openCoinSelect={openCoinSelect}
-                selectedToken={selectedToken}
+                selectedToken={tranchePool}
                 updateAmount={updateAmount}
                 mode={mode}
               />
             </Row>
           </DashboardBox>
+
+          {requiresSFIStaking(trancheRating) ? (
+            <DashboardBox width="100%" height="70px">
+              <Row
+                p={DASHBOARD_BOX_SPACING.asPxString()}
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                expand
+              >
+                <AmountInput
+                  selectedToken="SFI"
+                  displayAmount={sfiRequired
+                    .div(10 ** SFIToken.decimals)
+                    .toString()}
+                  updateAmount={noop}
+                />
+
+                <TokenNameAndMaxButton
+                  selectedToken="SFI"
+                  updateAmount={noop}
+                  mode={mode}
+                />
+              </Row>
+            </DashboardBox>
+          ) : null}
 
           <Button
             fontWeight="bold"
@@ -421,34 +429,22 @@ const AmountSelect = React.memo(
             borderRadius="10px"
             width="100%"
             height="70px"
-            bg={token.color}
+            bg={
+              requiresSFIStaking(trancheRating) ? SFIToken.color : token.color
+            }
             _hover={{ transform: "scale(1.02)" }}
             _active={{ transform: "scale(0.95)" }}
             color={token.overlayTextColor}
             isLoading={
-              isSelectedTokenBalanceLoading ||
-              userAction === UserAction.REQUESTED_QUOTE
+              !poolTokenBalance || userAction === UserAction.REQUESTED_QUOTE
             }
             onClick={onConfirm}
-            isDisabled={!amountIsValid}
+            isDisabled={!amountIsValid || !hasEnoughSFI}
           >
             {userAction === UserAction.VIEWING_QUOTE
               ? t("Confirm")
               : t("Review")}
           </Button>
-
-          {poolHasDivergenceRisk(poolType) ? (
-            <Link
-              href="https://www.notion.so/Capital-Allocation-Risks-f4bccf324a594f46b849e6358e0a2464#631d223f598b42e28f9758541c1b1525"
-              isExternal
-            >
-              <Text fontSize="xs" textAlign="center">
-                {t(
-                  "You may experience divergence loss in this pool. Click for more info."
-                )}
-              </Text>
-            </Link>
-          ) : null}
         </Column>
         {userAction === UserAction.VIEWING_QUOTE ? (
           <ApprovalNotch
@@ -466,21 +462,20 @@ export default AmountSelect;
 
 const TokenNameAndMaxButton = React.memo(
   ({
-    openCoinSelect,
     selectedToken,
     updateAmount,
     mode,
   }: {
     selectedToken: string;
-    openCoinSelect: () => any;
+
     updateAmount: (newAmount: string) => any;
     mode: Mode;
   }) => {
-    const token = tokens[selectedToken];
+    const isSFI = selectedToken === "SFI";
+
+    const token = isSFI ? SFIToken : tokens[selectedToken];
 
     const { rari, address } = useRari();
-
-    const poolType = usePoolType();
 
     const [isMaxLoading, setIsMaxLoading] = useState(false);
 
@@ -491,33 +486,10 @@ const TokenNameAndMaxButton = React.memo(
       if (mode === Mode.DEPOSIT) {
         const balance = await fetchTokenBalance(token, rari, address);
 
-        if (token.symbol === "ETH") {
-          const ethPriceBN = await rari.getEthUsdPriceBN();
-
-          const gasAnd0xFeesInUSD = 23;
-
-          // Subtract gasAnd0xFeesInUSD worth of ETH.
-          maxBN = balance.sub(
-            rari.web3.utils.toBN(
-              // @ts-ignore
-              new BigNumber(gasAnd0xFeesInUSD * 1e18)
-                .div(ethPriceBN.toString())
-                .multipliedBy(1e18)
-                .decimalPlaces(0)
-            )
-          );
-        } else {
-          maxBN = balance;
-        }
+        maxBN = balance;
       } else {
-        const max = await fetchMaxWithdraw({
-          rari,
-          address,
-          poolType,
-          symbol: token.symbol,
-        });
-
-        maxBN = max;
+        //TODO
+        maxBN = rari.web3.utils.toBN(0);
       }
 
       if (maxBN.isNeg() || maxBN.isZero()) {
@@ -537,18 +509,13 @@ const TokenNameAndMaxButton = React.memo(
       }
 
       setIsMaxLoading(false);
-    }, [updateAmount, token, rari, address, mode, poolType]);
+    }, [updateAmount, token, rari, address, mode]);
 
     const { t } = useTranslation();
 
     return (
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-        <Row
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          as="button"
-          onClick={openCoinSelect}
-        >
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
           <Box height="25px" width="25px" mr={2}>
             <Image
               width="100%"
@@ -559,27 +526,30 @@ const TokenNameAndMaxButton = React.memo(
               alt=""
             />
           </Box>
-          <Heading fontSize="24px">{selectedToken}</Heading>
-          <ChevronDownIcon boxSize="32px" />
+          <Heading fontSize="24px" mr={2}>
+            {selectedToken}
+          </Heading>
         </Row>
 
-        <Button
-          ml={1}
-          height="28px"
-          width="58px"
-          bg="transparent"
-          border="2px"
-          borderRadius="8px"
-          borderColor="#272727"
-          fontSize="sm"
-          fontWeight="extrabold"
-          _hover={{}}
-          _active={{}}
-          onClick={setToMax}
-          isLoading={isMaxLoading}
-        >
-          {t("MAX")}
-        </Button>
+        {isSFI ? null : (
+          <Button
+            ml={1}
+            height="28px"
+            width="58px"
+            bg="transparent"
+            border="2px"
+            borderRadius="8px"
+            borderColor="#272727"
+            fontSize="sm"
+            fontWeight="extrabold"
+            _hover={{}}
+            _active={{}}
+            onClick={setToMax}
+            isLoading={isMaxLoading}
+          >
+            {t("MAX")}
+          </Button>
+        )}
       </Row>
     );
   }
@@ -595,7 +565,9 @@ const AmountInput = React.memo(
     updateAmount: (symbol: string) => any;
     selectedToken: string;
   }) => {
-    const token = tokens[selectedToken];
+    const isSFI = selectedToken === "SFI";
+
+    const token = isSFI ? SFIToken : tokens[selectedToken];
 
     const onChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -605,6 +577,7 @@ const AmountInput = React.memo(
 
     return (
       <Input
+        style={isSFI ? { pointerEvents: "none" } : {}}
         type="number"
         inputMode="decimal"
         fontSize="3xl"
@@ -614,7 +587,7 @@ const AmountInput = React.memo(
         placeholder="0.0"
         value={displayAmount}
         color={token.color}
-        onChange={onChange}
+        onChange={isSFI ? noop : onChange}
         mr={DASHBOARD_BOX_SPACING.asPxString()}
       />
     );
@@ -625,25 +598,13 @@ const ApprovalNotch = React.memo(
   ({ color, mode, amount }: { amount: BN; mode: Mode; color: string }) => {
     const { t } = useTranslation();
 
-    const poolType = usePoolType();
-
     const formattedAmount = useMemo(() => {
       const usdFormatted = smallStringUsdFormatter(
-        new BigNumber(amount.toString())
-          // Subtract withdrawal fee for withdrawals
-          .multipliedBy(
-            mode === Mode.WITHDRAW
-              ? depositPercentAfterWithdrawFee(poolType)
-              : 1
-          )
-          .div(1e18)
-          .toString()
+        new BigNumber(amount.toString()).div(1e18).toString()
       );
 
-      return poolType === Pool.ETH
-        ? usdFormatted.replace("$", "") + " ETH"
-        : usdFormatted;
-    }, [amount, mode, poolType]);
+      return usdFormatted;
+    }, [amount]);
 
     return (
       <AttentionSeeker effect="headShake" triggerOnce>
@@ -674,12 +635,6 @@ const ApprovalNotch = React.memo(
                 ? t("You will deposit {{amount}}. Click confirm to approve.", {
                     amount: formattedAmount,
                   })
-                : // If pool has withdrawal fee:
-                depositPercentAfterWithdrawFee(poolType) !== 1
-                ? t(
-                    "You will withdraw {{amount}} after fees. Click confirm to approve.",
-                    { amount: formattedAmount }
-                  )
                 : t("You will withdraw {{amount}}. Click confirm to approve.", {
                     amount: formattedAmount,
                   })}

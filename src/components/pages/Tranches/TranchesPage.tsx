@@ -10,7 +10,15 @@ import { useRari } from "../../../context/RariContext";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
-import { Heading, Link, Text, Icon, Box, Image } from "@chakra-ui/react";
+import {
+  Heading,
+  Link,
+  Text,
+  Icon,
+  Box,
+  Image,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
@@ -23,19 +31,20 @@ import {
   smallStringUsdFormatter,
   smallUsdFormatter,
 } from "../../../utils/bigUtils";
+import DepositModal from "./SaffronDepositModal";
 
-enum TranchePool {
+export enum TranchePool {
   DAI = "DAI",
   USDC = "USDC",
 }
 
-enum TrancheRating {
+export enum TrancheRating {
   S = "S",
   AA = "AA",
   A = "A",
 }
 
-const trancheRatingIndex = (trancheRating: TrancheRating) => {
+export const trancheRatingIndex = (trancheRating: TrancheRating) => {
   return trancheRating === TrancheRating.S
     ? 0
     : trancheRating === TrancheRating.AA
@@ -43,15 +52,9 @@ const trancheRatingIndex = (trancheRating: TrancheRating) => {
     : 2;
 };
 
-const tranchePoolIndex = (tranchePool: TranchePool) => {
+export const tranchePoolIndex = (tranchePool: TranchePool) => {
   // TODO: CHANGE DAI TO 9 AND USDC TO WHATEVER IT BECOMES LATER
   return tranchePool === TranchePool.DAI ? 0 : 0;
-};
-
-const useIsSmallScreen = () => {
-  const { width } = useWindowSize();
-
-  return width < 1030;
 };
 
 interface SaffronContextType {
@@ -107,7 +110,7 @@ const WrappedTranchePage = React.memo(() => {
   );
 });
 
-const useSaffronData = () => {
+export const useSaffronData = () => {
   const context = React.useContext(SaffronContext);
 
   const { data } = useQuery("saffronData", async () => {
@@ -446,47 +449,63 @@ export const TrancheColumn = React.memo(
       }
     );
 
-    return (
-      <Column
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        expand
-        ml={isMobile ? 0 : 4}
-        mt={isMobile ? 8 : 0}
-      >
-        <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
-          <Heading size="sm">
-            {trancheRating} {t("Tranche")}
-          </Heading>
-          <Text textAlign="center" mt={4}>
-            {principal ?? "?"} {tranchePool}
-          </Text>
-          <Text textAlign="center" fontWeight="bold" mt={4}>
-            {trancheRating === "AA"
-              ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
-                "0.45%"
-              : saffronData
-              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
-                  trancheRating
-                ]["total-apy"] + "%"
-              : "?%"}
-          </Text>
-        </Column>
+    const {
+      isOpen: isDepositModalOpen,
+      onOpen: openDepositModal,
+      onClose: closeDepositModal,
+    } = useDisclosure();
 
-        <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          as="button"
-          height="45px"
-          width={isMobile ? "100%" : "85%"}
-          borderRadius="7px"
-          fontSize="xl"
-          fontWeight="bold"
+    return (
+      <>
+        <DepositModal
+          trancheRating={trancheRating}
+          tranchePool={tranchePool}
+          isOpen={isDepositModalOpen}
+          onClose={closeDepositModal}
+        />
+
+        <Column
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          expand
+          ml={isMobile ? 0 : 4}
+          mt={isMobile ? 8 : 0}
         >
-          <Center expand>
-            <Icon as={MdSwapHoriz} boxSize="30px" />
-          </Center>
-        </DashboardBox>
-      </Column>
+          <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <Heading size="sm">
+              {trancheRating} {t("Tranche")}
+            </Heading>
+            <Text textAlign="center" mt={4}>
+              {principal ?? "?"} {tranchePool}
+            </Text>
+            <Text textAlign="center" fontWeight="bold" mt={4}>
+              {trancheRating === "AA"
+                ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
+                  "0.45%"
+                : saffronData
+                ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
+                    trancheRating
+                  ]["total-apy"] + "%"
+                : "?%"}
+            </Text>
+          </Column>
+
+          <DashboardBox
+            onClick={openDepositModal}
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            as="button"
+            height="45px"
+            width={isMobile ? "100%" : "85%"}
+            borderRadius="7px"
+            fontSize="xl"
+            fontWeight="bold"
+          >
+            <Center expand>
+              <Icon as={MdSwapHoriz} boxSize="30px" />
+            </Center>
+          </DashboardBox>
+        </Column>
+      </>
     );
   }
 );
@@ -709,3 +728,9 @@ export const SFIDistributions = React.memo(() => {
     </Column>
   );
 });
+
+const useIsSmallScreen = () => {
+  const { width } = useWindowSize();
+
+  return width < 1030;
+};
