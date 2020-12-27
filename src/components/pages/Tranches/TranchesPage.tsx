@@ -602,6 +602,18 @@ export const InterestEarned = React.memo(() => {
         .call()
     );
 
+    // TODO ADD AA POOL
+
+    const dsecSSupply = await dsecSToken.methods.totalSupply().call();
+
+    const sPoolSFIEarned =
+      DAI_SFI_REWARDS *
+      (SFI_multipliers[trancheRatingIndex(TrancheRating.S)] / 100000) *
+      // If supply is zero we will get NaN for dividing by zero
+      (dsecSSupply === "0"
+        ? 0
+        : (await dsecSToken.methods.balanceOf(address).call()) / dsecSSupply);
+
     const dsecAToken = new rari.web3.eth.Contract(
       ERC20ABI as any,
       await saffronPool.methods
@@ -612,19 +624,15 @@ export const InterestEarned = React.memo(() => {
         .call()
     );
 
-    // TODO ADD AA POOL
-
-    const sPoolSFIEarned =
-      DAI_SFI_REWARDS *
-      (SFI_multipliers[trancheRatingIndex(TrancheRating.S)] / 100000) *
-      ((await dsecSToken.methods.balanceOf(address).call()) /
-        (await dsecSToken.methods.totalSupply().call()));
+    const dsecASupply = await dsecAToken.methods.totalSupply().call();
 
     const aPoolSFIEarned =
       DAI_SFI_REWARDS *
       (SFI_multipliers[trancheRatingIndex(TrancheRating.A)] / 100000) *
-      ((await dsecAToken.methods.balanceOf(address).call()) /
-        (await dsecAToken.methods.totalSupply().call()));
+      // If supply is zero we will get NaN for dividing by zero
+      (dsecASupply === "0"
+        ? 0
+        : (await dsecAToken.methods.balanceOf(address).call()) / dsecASupply);
 
     return (
       smallUsdFormatter(sPoolSFIEarned + aPoolSFIEarned).replace("$", "") +
