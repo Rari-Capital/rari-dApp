@@ -15,7 +15,6 @@ import {
   Link,
   Text,
   Icon,
-  Box,
   Image,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -341,19 +340,10 @@ export const TranchePoolInfo = React.memo(
         />
 
         {isMobile ? null : (
-          <Box
-            width="100%"
-            height="100%"
-            style={{
-              opacity: tranchePool !== "USDC" ? "0.3" : "1",
-              pointerEvents: "none",
-            }}
-          >
-            <TrancheColumn
-              tranchePool={tranchePool}
-              trancheRating={TrancheRating.AA}
-            />
-          </Box>
+          <TrancheColumn
+            tranchePool={tranchePool}
+            trancheRating={TrancheRating.AA}
+          />
         )}
 
         <TrancheColumn
@@ -423,6 +413,15 @@ export const TrancheColumn = React.memo(
           expand
           ml={isMobile ? 0 : 4}
           mt={isMobile ? 8 : 0}
+          // TODO: REMOVE STYLE ONCE AA TRANCHE IS ADDED
+          style={
+            trancheRating === TrancheRating.AA
+              ? {
+                  opacity: tranchePool !== "USDC" ? "0.3" : "1",
+                  pointerEvents: "none",
+                }
+              : {}
+          }
         >
           <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
             <Heading size="sm">
