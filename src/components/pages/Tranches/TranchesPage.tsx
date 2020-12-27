@@ -43,6 +43,11 @@ const trancheRatingIndex = (trancheRating: TrancheRating) => {
     : 2;
 };
 
+const tranchePoolIndex = (tranchePool: TranchePool) => {
+  // TODO: CHANGE DAI TO 9 AND USDC TO WHATEVER IT BECOMES LATER
+  return tranchePool === TranchePool.DAI ? 0 : 0;
+};
+
 const useIsSmallScreen = () => {
   const { width } = useWindowSize();
 
@@ -421,7 +426,7 @@ export const TrancheColumn = React.memo(
     const { data: principal } = useQuery(
       tranchePool + trancheRating + " principal " + address,
       async () => {
-        //TODO: USDC POOL
+        //TODO: ADD USDC POOL
 
         const currentEpoch = await fetchCurrentEpoch();
 
@@ -461,8 +466,9 @@ export const TrancheColumn = React.memo(
               ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
                 "0.45%"
               : saffronData
-              ? // TODO: REPLACE POOL WITH 9 INDEX FOR RARI DAI POOl AND ONCE THEY ADD USDC POOL DO A CONDITIONAL CHECK
-                saffronData.pools[0].tranches[trancheRating]["total-apy"] + "%"
+              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
+                  trancheRating
+                ]["total-apy"] + "%"
               : "?%"}
           </Text>
         </Column>
@@ -554,9 +560,8 @@ export const InterestEarned = React.memo(() => {
   const { data: sfiEarned } = useQuery("sfiEarned " + address, async () => {
     // TODO: ADD USDC
 
-    // TODO: SWITCH TO 9
     const DAI_SFI_REWARDS = await saffronStrategy.methods
-      .pool_SFI_rewards(0)
+      .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
       .call();
 
     const SFI_multipliers = await saffronPool.methods
@@ -646,11 +651,13 @@ export const SFIDistributions = React.memo(() => {
   const { saffronStrategy } = useSaffronData();
 
   const { data: sfiRewards } = useQuery("sfiRewards " + address, async () => {
-    // TODO: SWITCH TO 9
-    const DAI = await saffronStrategy.methods.pool_SFI_rewards(0).call();
+    const DAI = await saffronStrategy.methods
+      .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
+      .call();
 
-    // TODO: SWITCH TO 10 OR WHATEVER USDC POOL IS
-    const USDC = await saffronStrategy.methods.pool_SFI_rewards(1).call();
+    const USDC = await saffronStrategy.methods
+      .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
+      .call();
 
     return { DAI, USDC };
   });
