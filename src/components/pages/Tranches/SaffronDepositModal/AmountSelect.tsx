@@ -227,7 +227,8 @@ const AmountSelect = React.memo(
           sfiMissing: sfiRequired
             .minus(sfiBalance.toString())
             .div(10 ** SFIToken.decimals)
-            .decimalPlaces(2),
+            .decimalPlaces(2)
+            .toString(),
         }
       );
     } else {
@@ -254,7 +255,8 @@ const AmountSelect = React.memo(
               title: "Error!",
               description: `The A tranche is capped at 1/10 the liquidity of the S tranche. Currently you must deposit less than ${amountLeftBeforeCap
                 .div(10 ** token.decimals)
-                .decimalPlaces(2)} ${
+                .decimalPlaces(2)
+                .toString()} ${
                 token.symbol
               } or deposit into the S tranche (as more is deposited into S tranche, the cap on the A tranche increases).`,
               status: "error",
@@ -367,6 +369,8 @@ const AmountSelect = React.memo(
     }, [
       address,
       token.address,
+      token.symbol,
+      token.decimals,
       saffronPool,
       trancheRating,
       userAction,
