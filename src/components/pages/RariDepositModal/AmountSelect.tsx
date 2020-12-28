@@ -267,7 +267,10 @@ const AmountSelect = React.memo(
             if (slippagePercent > 4) {
               if (
                 !window.confirm(
-                  `High slippage of ${formattedSlippage} for ${token.symbol}, do you still wish to continue with this transaction?`
+                  t(
+                    "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
+                    { formattedSlippage, token: token.symbol }
+                  )
                 )
               ) {
                 setUserAction(UserAction.NO_ACTION);
