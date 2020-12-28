@@ -5,6 +5,7 @@ const CopyrightSpacer = React.memo(
   ({ forceShow = false }: { forceShow?: boolean }) => {
     return (
       <Text
+        color="#FFFFFF"
         fontSize="xs"
         display={forceShow ? "block" : { md: "none", base: "block" }}
         textAlign="center"

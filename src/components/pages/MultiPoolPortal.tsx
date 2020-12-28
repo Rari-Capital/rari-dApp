@@ -46,7 +46,7 @@ import { Pool, PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
 
-import DepositModal from "./DepositModal";
+import DepositModal from "./RariDepositModal";
 import { Header } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
 import { SimpleTooltip } from "../shared/SimpleTooltip";

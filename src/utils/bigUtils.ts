@@ -20,6 +20,10 @@ export function stringUsdFormatter(num: string) {
   return formatter.format(parseFloat(num));
 }
 
+export function smallUsdFormatter(num: number) {
+  return smallFormatter.format(num);
+}
+
 export function usdFormatter(num: number) {
   return formatter.format(num);
 }
