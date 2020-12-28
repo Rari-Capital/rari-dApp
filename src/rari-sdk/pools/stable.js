@@ -124,7 +124,8 @@ export default class StablePool {
       allBalances: 30,
       accountBalanceLimit: 3600,
       coinGeckoList: 3600,
-      coinGeckoUsdPrices: 900
+      coinGeckoUsdPrices: 900,
+      acceptedCurrencies: 30
     });
 
     this.contracts = {};
@@ -598,9 +599,7 @@ export default class StablePool {
           );
 
         // Check if currency is directly depositable
-        var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
-          .getAcceptedCurrencies()
-          .call();
+        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
         if (
           !directlyDepositableCurrencyCodes ||
           directlyDepositableCurrencyCodes.length == 0
@@ -827,8 +826,29 @@ export default class StablePool {
         }
       },
       getDepositSlippage: async function(currencyCode, amount, usdAmount) {
-        // Stable Pool only
-        if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e6)).div(amount)).toString();
+        if (self.POOL_TOKEN_SYMBOL === "RYPT") {
+          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
+          if (directlyDepositableCurrencyCodes && directlyDepositableCurrencyCodes.length > 0 && directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
+            var allBalances = await self.cache.getOrUpdate(
+              "allBalances",
+              self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
+                .call
+            );
+            return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(amount.mul(
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
+            ).div(Web3.utils.toBN(1e18))));
+          }
+        } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
+          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e6)).div(amount)).toString();
+        } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
+          if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e18)).div(amount)).toString();
+        } else {
+          throw "Not implemented for " + self.POOL_TOKEN_SYMBOL;
+        }
 
         // Get tokens
         var allTokens = await self.getAllTokens();
@@ -903,9 +923,7 @@ export default class StablePool {
           );
 
         // Check if currency is directly depositable
-        var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
-          .getAcceptedCurrencies()
-          .call();
+        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
         if (
           !directlyDepositableCurrencyCodes ||
           directlyDepositableCurrencyCodes.length == 0
@@ -2358,9 +2376,30 @@ export default class StablePool {
         }
       },
       getWithdrawalSlippage: async function(currencyCode, amount, usdAmount) {
-        // Stable Pool only
-        if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e6)).div(usdAmount)).toString();
-        if (currencyCode === "mUSD") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+        if (self.POOL_TOKEN_SYMBOL === "RYPT") {
+          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
+          if (directlyDepositableCurrencyCodes && directlyDepositableCurrencyCodes.length > 0 && directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
+            var allBalances = await self.cache.getOrUpdate(
+              "allBalances",
+              self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
+                .call
+            );
+            return Web3.utils.toBN(1e18).sub(amount.mul(
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
+            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(usdAmount));
+          }
+        } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
+          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e6)).div(usdAmount)).toString();
+          if (currencyCode === "mUSD") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+        } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
+          if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+        } else {
+          throw "Not implemented for " + self.POOL_TOKEN_SYMBOL;
+        }
 
         // Get tokens
         var allTokens = await self.getAllTokens();

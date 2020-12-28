@@ -12,6 +12,7 @@ import KeeperDAOSubpool from "./subpools/keeperdao.js";
 import StablePool from "./pools/stable.js";
 import YieldPool from "./pools/yield.js";
 import EthereumPool from "./pools/ethereum.js";
+import DaiPool from "./pools/dai.js";
 
 import Governance from "./governance.js";
 
@@ -135,6 +136,16 @@ export default class Rari {
         },
         this.getAllTokens
       ),
+      dai: new DaiPool(
+        this.web3,
+        {
+          dYdX: subpools["dYdX"],
+          Compound: subpools["Compound"],
+          Aave: subpools["Aave"],
+          mStable: subpools["mStable"],
+        },
+        this.getAllTokens
+      )
     };
 
     this.governance = new Governance(this.web3);
@@ -143,6 +154,7 @@ export default class Rari {
   static StablePool = StablePool;
   static YieldPool = YieldPool;
   static EthereumPool = EthereumPool;
+  static DaiPool = DaiPool;
 
   static Governance = Governance;
 
