@@ -22,8 +22,6 @@ import {
   fetchTokenBalance,
 } from "../../../../hooks/useTokenBalance";
 
-import { Mode } from ".";
-
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../../shared/Modal";
 import { useRari } from "../../../../context/RariContext";
@@ -61,9 +59,8 @@ const SFIToken = {
 } as Token;
 
 interface Props {
-  openOptions: () => any;
   onClose: () => any;
-  mode: Mode;
+
   tranchePool: TranchePool;
   trancheRating: TrancheRating;
 }
@@ -97,7 +94,7 @@ const useSFIBalance = () => {
 };
 
 const AmountSelect = React.memo(
-  ({ mode, onClose, tranchePool, trancheRating }: Props) => {
+  ({ onClose, tranchePool, trancheRating }: Props) => {
     const token = tokens[tranchePool];
 
     const { rari, address } = useRari();
@@ -163,23 +160,14 @@ const AmountSelect = React.memo(
         return false;
       }
 
-      if (mode === Mode.DEPOSIT) {
-        if (!poolTokenBalance) {
-          return false;
-        }
-
-        return amount.lte(poolTokenBalance.toString());
-      } else {
-        // TODO: WITHDRAW VALIDATION
-
-        return true;
+      if (!poolTokenBalance) {
+        return false;
       }
-    }, [poolTokenBalance, amount, mode]);
+
+      return amount.lte(poolTokenBalance.toString());
+    }, [poolTokenBalance, amount]);
 
     const hasEnoughSFI = useMemo(() => {
-      if (mode === Mode.DEPOSIT) {
-      }
-
       if (!requiresSFIStaking(trancheRating)) {
         return true;
       }
@@ -189,35 +177,24 @@ const AmountSelect = React.memo(
       }
 
       return sfiRequired.lte(sfiBalance.toString());
-    }, [sfiRequired, mode, sfiBalance, trancheRating]);
+    }, [sfiRequired, sfiBalance, trancheRating]);
 
     const { t } = useTranslation();
 
     let depositOrWithdrawAlert;
 
     if (amount === null) {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("Enter a valid amount to deposit.")
-          : t("Enter a valid amount to withdraw.");
+      depositOrWithdrawAlert = t("Enter a valid amount to deposit.");
     } else if (amount.isZero()) {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("Enter a valid amount to deposit.")
-          : t("Enter a valid amount to withdraw.");
+      depositOrWithdrawAlert = t("Enter a valid amount to deposit.");
     } else if (!poolTokenBalance || !sfiBalance) {
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
         token: tranchePool,
       });
     } else if (!amountIsValid) {
-      depositOrWithdrawAlert =
-        mode === Mode.DEPOSIT
-          ? t("You don't have enough {{token}}.", {
-              token: tranchePool,
-            })
-          : t("You cannot withdraw this much {{token}}.", {
-              token: tranchePool,
-            });
+      depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
+        token: tranchePool,
+      });
     } else if (!hasEnoughSFI) {
       depositOrWithdrawAlert = t(
         "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})",
@@ -286,61 +263,52 @@ const AmountSelect = React.memo(
 
         const poolAddress = saffronPool.options.address;
 
-        if (mode === Mode.DEPOSIT) {
-          const SFIContract = new rari.web3.eth.Contract(
-            ERC20ABI as any,
-            SFIToken.address
-          );
+        const SFIContract = new rari.web3.eth.Contract(
+          ERC20ABI as any,
+          SFIToken.address
+        );
 
-          const trancheToken = new rari.web3.eth.Contract(
-            ERC20ABI as any,
-            token.address
-          );
+        const trancheToken = new rari.web3.eth.Contract(
+          ERC20ABI as any,
+          token.address
+        );
 
-          const hasApprovedEnoughSFI = requiresSFIStaking(trancheRating)
-            ? rari.web3.utils
-                .toBN(
-                  await SFIContract.methods
-                    .allowance(address, poolAddress)
-                    .call()
-                )
-                .gte(amountBN)
-            : true;
+        const hasApprovedEnoughSFI = requiresSFIStaking(trancheRating)
+          ? rari.web3.utils
+              .toBN(
+                await SFIContract.methods.allowance(address, poolAddress).call()
+              )
+              .gte(amountBN)
+          : true;
 
-          const hasApprovedEnoughPoolToken = rari.web3.utils
-            .toBN(
-              await trancheToken.methods.allowance(address, poolAddress).call()
-            )
-            .gte(amountBN);
+        const hasApprovedEnoughPoolToken = rari.web3.utils
+          .toBN(
+            await trancheToken.methods.allowance(address, poolAddress).call()
+          )
+          .gte(amountBN);
 
-          if (!hasApprovedEnoughSFI) {
-            // Approve the amount of poolToken because it will always be more than sfiRequired
-            const txn = SFIContract.methods
-              .approve(poolAddress, amountBN.toString())
-              .send({ from: address });
-
-            // If the user has already approved the poolToken we need to wait for this txn to complete before showing the add liquidity txn
-            if (hasApprovedEnoughPoolToken) {
-              await txn;
-            }
-          }
-
-          if (!hasApprovedEnoughPoolToken) {
-            // Approve tranche token (DAI or USDC)
-            await trancheToken.methods
-              .approve(saffronPool.options.address, amountBN.toString())
-              .send({ from: address });
-          }
-
-          await saffronPool.methods
-            .add_liquidity(
-              amountBN.toString(),
-              trancheRatingIndex(trancheRating)
-            )
+        if (!hasApprovedEnoughSFI) {
+          // Approve the amount of poolToken because it will always be more than sfiRequired
+          const txn = SFIContract.methods
+            .approve(poolAddress, amountBN.toString())
             .send({ from: address });
-        } else {
-          //TODO: WITHDRAWS
+
+          // If the user has already approved the poolToken we need to wait for this txn to complete before showing the add liquidity txn
+          if (hasApprovedEnoughPoolToken) {
+            await txn;
+          }
         }
+
+        if (!hasApprovedEnoughPoolToken) {
+          // Approve tranche token (DAI or USDC)
+          await trancheToken.methods
+            .approve(saffronPool.options.address, amountBN.toString())
+            .send({ from: address });
+        }
+
+        await saffronPool.methods
+          .add_liquidity(amountBN.toString(), trancheRatingIndex(trancheRating))
+          .send({ from: address });
 
         await queryCache.refetchQueries();
         onClose();
@@ -374,7 +342,7 @@ const AmountSelect = React.memo(
       saffronPool,
       trancheRating,
       userAction,
-      mode,
+
       onClose,
       rari,
       amount,
@@ -397,14 +365,10 @@ const AmountSelect = React.memo(
           loading
         />
         <Heading mt="30px" textAlign="center" size="md">
-          {mode === Mode.DEPOSIT
-            ? t("Check your wallet to submit the transactions")
-            : t("Check your wallet to submit the transaction")}
+          {t("Check your wallet to submit the transactions")}
         </Heading>
         <Text fontSize="sm" mt="15px" textAlign="center">
-          {mode === Mode.DEPOSIT
-            ? t("Do not close this tab until you submit all transactions!")
-            : t("You may close this tab after submitting the transaction.")}
+          {t("Do not close this tab until you submit all transactions!")}
         </Text>
       </Column>
     ) : (
@@ -415,22 +379,9 @@ const AmountSelect = React.memo(
           crossAxisAlignment="center"
           p={DASHBOARD_BOX_SPACING.asPxString()}
         >
-          {/* <Box width="40px" /> */}
           <Heading fontSize="27px">
-            {mode === Mode.DEPOSIT ? t("Deposit") : t("Withdraw")}
+            {t("{{trancheRating}} Tranche Deposit", { trancheRating })}
           </Heading>
-          {/* <IconButton
-            color="#FFFFFF"
-            variant="ghost"
-            aria-label="Options"
-            icon={<SettingsIcon />}
-            _hover={{
-              transform: "rotate(360deg)",
-              transition: "all 0.7s ease-in-out",
-            }}
-            _active={{}}
-            onClick={openOptions}
-          /> */}
         </Row>
         <ModalDivider />
         <Column
@@ -463,7 +414,6 @@ const AmountSelect = React.memo(
               <TokenNameAndMaxButton
                 selectedToken={tranchePool}
                 updateAmount={updateAmount}
-                mode={mode}
               />
             </Row>
           </DashboardBox>
@@ -489,7 +439,6 @@ const AmountSelect = React.memo(
                 <TokenNameAndMaxButton
                   selectedToken="SFI"
                   updateAmount={noop}
-                  mode={mode}
                 />
               </Row>
             </DashboardBox>
@@ -523,7 +472,6 @@ const AmountSelect = React.memo(
             color={
               requiresSFIStaking(trancheRating) ? SFIToken.color : token.color
             }
-            mode={mode}
             amount={quoteAmount!}
           />
         ) : null}
@@ -538,12 +486,10 @@ const TokenNameAndMaxButton = React.memo(
   ({
     selectedToken,
     updateAmount,
-    mode,
   }: {
     selectedToken: string;
 
     updateAmount: (newAmount: string) => any;
-    mode: Mode;
   }) => {
     const isSFI = selectedToken === "SFI";
 
@@ -557,14 +503,9 @@ const TokenNameAndMaxButton = React.memo(
       setIsMaxLoading(true);
       let maxBN: BN;
 
-      if (mode === Mode.DEPOSIT) {
-        const balance = await fetchTokenBalance(token, rari, address);
+      const balance = await fetchTokenBalance(token, rari, address);
 
-        maxBN = balance;
-      } else {
-        //TODO
-        maxBN = rari.web3.utils.toBN(0);
-      }
+      maxBN = balance;
 
       if (maxBN.isNeg() || maxBN.isZero()) {
         updateAmount("0.0");
@@ -583,7 +524,7 @@ const TokenNameAndMaxButton = React.memo(
       }
 
       setIsMaxLoading(false);
-    }, [updateAmount, token, rari, address, mode]);
+    }, [updateAmount, token, rari, address]);
 
     const { t } = useTranslation();
 
@@ -661,7 +602,7 @@ const AmountInput = React.memo(
         placeholder="0.0"
         value={displayAmount}
         color={token.color}
-        onChange={isSFI ? noop : onChange}
+        onChange={onChange}
         mr={DASHBOARD_BOX_SPACING.asPxString()}
       />
     );
@@ -669,7 +610,7 @@ const AmountInput = React.memo(
 );
 
 const ApprovalNotch = React.memo(
-  ({ color, mode, amount }: { amount: BN; mode: Mode; color: string }) => {
+  ({ color, amount }: { amount: BN; color: string }) => {
     const { t } = useTranslation();
 
     const formattedAmount = useMemo(() => {
@@ -705,13 +646,9 @@ const ApprovalNotch = React.memo(
               textAlign="center"
               className="blinking"
             >
-              {mode === Mode.DEPOSIT
-                ? t("You will deposit {{amount}}. Click confirm to approve.", {
-                    amount: formattedAmount,
-                  })
-                : t("You will withdraw {{amount}}. Click confirm to approve.", {
-                    amount: formattedAmount,
-                  })}
+              {t("You will deposit {{amount}}. Click confirm to approve.", {
+                amount: formattedAmount,
+              })}
             </Text>
           </Center>
         </Box>
