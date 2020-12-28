@@ -102,12 +102,12 @@
   "Liquidity added to other tranches as needed.": "流动资金可根据需要添加到其他部分。",
   "Epoch {{epoch}} Redemption Date": "时代{{epoch}}兑换日期",
   "Principal Amount": "本金",
-  "Estimated SFI Earned": "估计赚取的SFI",
   "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "您需要另外{{sfiMissing}}個SFI才能進行存款（1個SFI：{{sfiRatio}} {{tranchePool}}）",
   "Do not close this tab until you submit all transactions!": "提交所有交易之前，请不要关闭此选项卡！",
   "Your balance in this tranche": "您在这笔款项中的余额",
   "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?": "{{token}}的{{formattedSlippage}}的高滑点，您是否仍然希望继续进行此交易？",
   "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing.": "Saffron Finance尚未经过全面审核。 输入这些档时要小心，不要存入过多的现金，以免您感到失落。",
   "Reduced interest earned. Covered in case of failure by A tranche.": "减少的利息。 如果因A档失败而覆盖。",
-  "10x interest earned. Cover provided to AA tranche in case of failure.": "赚取10倍的利息。 如果发生故障，将提供给AA档的封面。"
+  "10x interest earned. Cover provided to AA tranche in case of failure.": "赚取10倍的利息。 如果发生故障，将提供给AA档的封面。",
+  "Estimated SFI Earnings": "SFI预估收益"
 }
