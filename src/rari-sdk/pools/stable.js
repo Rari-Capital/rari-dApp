@@ -856,8 +856,10 @@ export default class StablePool {
 
         // Try cache
         if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
-          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
-          return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))));
+          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+          else usdAmount = parseFloat(usdAmount.toString());
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(usdAmount * (10 ** (currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals) / (parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])))));
         }
 
         // Build currency code array
@@ -897,8 +899,10 @@ export default class StablePool {
 
         // Return slippage
         if (self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode]) {
-          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
-          return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))));
+          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+          else usdAmount = parseFloat(usdAmount.toString());
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(usdAmount * (10 ** (currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals) / (parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])))));
         } else throw new Error("Failed to get currency prices from CoinGecko"); 
       },
       deposit: async function (currencyCode, amount, minUsdAmount, options) {
@@ -2390,10 +2394,10 @@ export default class StablePool {
                   self.allocations.CURRENCIES.indexOf(currencyCode)
                 ]
               )
-            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(usdAmount));
+            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - self.internalTokens[currencyCode].decimals))).div(usdAmount));
           }
         } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
-          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e6)).div(usdAmount)).toString();
+          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - 6))).div(usdAmount)).toString();
           if (currencyCode === "mUSD") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
         } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
           if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
@@ -2407,8 +2411,10 @@ export default class StablePool {
 
         // Try cache
         if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
-          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
+          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+          else usdAmount = parseFloat(usdAmount.toString());
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode] * (10 ** (Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))) / usdAmount)));
         }
 
         // Build currency code array
@@ -2448,8 +2454,10 @@ export default class StablePool {
 
         // Return slippage
         if (self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode]) {
-          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
+          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+          else usdAmount = parseFloat(usdAmount.toString());
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode] * (10 ** (Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))) / usdAmount)));
         } else throw new Error("Failed to get currency prices from CoinGecko");
       },
       withdraw: async function (currencyCode, amount, maxUsdAmount, options) {
