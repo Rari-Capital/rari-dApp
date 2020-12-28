@@ -187,6 +187,7 @@ const TranchePage = React.memo(() => {
               </DashboardBox>
             )}
           </Column>
+
           <Column
             mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
             width={isMobile ? "100%" : "25%"}
