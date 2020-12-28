@@ -8,7 +8,6 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import { Heading } from "@chakra-ui/react";
 import { Pool } from "../context/PoolContext";
-import TranchesPage from "./pages/Tranches/TranchesPage";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -19,6 +18,13 @@ const MultiPoolPortal = loadable(
 
 const PoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/PoolPortal"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
+const TranchesPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Tranches/TranchesPage"),
   {
     fallback: <FullPageSpinner />,
   }
@@ -58,9 +64,9 @@ const App = React.memo(() => {
         <Route path="/" element={<Navigate to="/" replace={true} />} />
       </Route>
 
-      <Route path="/" element={<MultiPoolPortal />} />
-
       <Route path="/tranches" element={<TranchesPage />} />
+
+      <Route path="/" element={<MultiPoolPortal />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
