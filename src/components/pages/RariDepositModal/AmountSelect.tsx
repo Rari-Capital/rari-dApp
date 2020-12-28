@@ -256,28 +256,31 @@ const AmountSelect = React.memo(
             slippage = _slippage;
           }
 
-          const slippagePercent = (parseInt(slippage.toString()) / 1e18) * 100;
-          const formattedSlippage = slippagePercent.toFixed(2) + "%";
+          if (slippage) {
+            const slippagePercent =
+              (parseInt(slippage.toString()) / 1e18) * 100;
+            const formattedSlippage = slippagePercent.toFixed(2) + "%";
 
-          console.log("Slippage of " + formattedSlippage);
+            console.log("Slippage of " + formattedSlippage);
 
-          // If slippage is >4%
-          if (slippagePercent > 4) {
-            if (
-              !window.confirm(
-                `High slippage of ${formattedSlippage} for ${token.symbol} do you still wish to continue with this transaction?`
-              )
-            ) {
-              setUserAction(UserAction.NO_ACTION);
-              return;
+            // If slippage is >4%
+            if (slippagePercent > 4) {
+              if (
+                !window.confirm(
+                  `High slippage of ${formattedSlippage} for ${token.symbol}, do you still wish to continue with this transaction?`
+                )
+              ) {
+                setUserAction(UserAction.NO_ACTION);
+                return;
+              }
             }
+
+            setQuoteAmount(quote);
+
+            setUserAction(UserAction.VIEWING_QUOTE);
+
+            return;
           }
-
-          setQuoteAmount(quote);
-
-          setUserAction(UserAction.VIEWING_QUOTE);
-
-          return;
         }
 
         // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
