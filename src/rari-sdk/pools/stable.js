@@ -2394,10 +2394,10 @@ export default class StablePool {
                   self.allocations.CURRENCIES.indexOf(currencyCode)
                 ]
               )
-            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(usdAmount));
+            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - self.internalTokens[currencyCode].decimals))).div(usdAmount));
           }
         } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
-          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e6)).div(usdAmount)).toString();
+          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - 6))).div(usdAmount)).toString();
           if (currencyCode === "mUSD") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
         } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
           if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
