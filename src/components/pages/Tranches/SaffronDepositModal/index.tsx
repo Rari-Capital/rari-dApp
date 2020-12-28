@@ -47,6 +47,8 @@ const DepositModal = React.memo((props: Props) => {
 
   const [mode, setMode] = useState(Mode.DEPOSIT);
 
+  const [epoch, setEpoch] = useState(-1);
+
   return (
     <Modal
       motionPreset="slideInBottom"
@@ -64,6 +66,7 @@ const DepositModal = React.memo((props: Props) => {
       >
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
+            epoch={epoch}
             onClose={props.onClose}
             openOptions={openOptions}
             mode={mode}
@@ -74,7 +77,8 @@ const DepositModal = React.memo((props: Props) => {
           <OptionsMenu
             onClose={openAmountSelect}
             onSetMode={setMode}
-            mode={mode}
+            onSetEpoch={setEpoch}
+            tranchePool={props.tranchePool}
           />
         )}
       </ModalContent>

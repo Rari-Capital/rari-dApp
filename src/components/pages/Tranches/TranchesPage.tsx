@@ -531,66 +531,69 @@ export const PrincipalAmount = React.memo(() => {
     }
   );
 
-  const { data: sfiEarned } = useQuery("sfiEarned " + address, async () => {
-    // TODO: ADD USDC
+  const { data: estimatedSFI } = useQuery(
+    "estimatedSFI " + address,
+    async () => {
+      // TODO: ADD USDC
 
-    const DAI_SFI_REWARDS = await saffronStrategy.methods
-      .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-      .call();
+      const DAI_SFI_REWARDS = await saffronStrategy.methods
+        .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
+        .call();
 
-    const SFI_multipliers = await saffronPool.methods
-      .TRANCHE_SFI_MULTIPLIER()
-      .call();
+      const SFI_multipliers = await saffronPool.methods
+        .TRANCHE_SFI_MULTIPLIER()
+        .call();
 
-    const currentEpoch = await fetchCurrentEpoch();
+      const currentEpoch = await fetchCurrentEpoch();
 
-    const dsecSToken = new rari.web3.eth.Contract(
-      ERC20ABI as any,
-      await saffronPool.methods
-        .principal_token_addresses(
-          currentEpoch,
-          trancheRatingIndex(TrancheRating.S)
-        )
-        .call()
-    );
+      const dsecSToken = new rari.web3.eth.Contract(
+        ERC20ABI as any,
+        await saffronPool.methods
+          .principal_token_addresses(
+            currentEpoch,
+            trancheRatingIndex(TrancheRating.S)
+          )
+          .call()
+      );
 
-    // TODO ADD AA POOL
+      // TODO ADD AA POOL
 
-    const dsecSSupply = await dsecSToken.methods.totalSupply().call();
+      const dsecSSupply = await dsecSToken.methods.totalSupply().call();
 
-    const sPoolSFIEarned =
-      DAI_SFI_REWARDS *
-      (SFI_multipliers[trancheRatingIndex(TrancheRating.S)] / 100000) *
-      // If supply is zero we will get NaN for dividing by zero
-      (dsecSSupply === "0"
-        ? 0
-        : (await dsecSToken.methods.balanceOf(address).call()) / dsecSSupply);
+      const sPoolSFIEarned =
+        DAI_SFI_REWARDS *
+        (SFI_multipliers[trancheRatingIndex(TrancheRating.S)] / 100000) *
+        // If supply is zero we will get NaN for dividing by zero
+        (dsecSSupply === "0"
+          ? 0
+          : (await dsecSToken.methods.balanceOf(address).call()) / dsecSSupply);
 
-    const dsecAToken = new rari.web3.eth.Contract(
-      ERC20ABI as any,
-      await saffronPool.methods
-        .principal_token_addresses(
-          currentEpoch,
-          trancheRatingIndex(TrancheRating.A)
-        )
-        .call()
-    );
+      const dsecAToken = new rari.web3.eth.Contract(
+        ERC20ABI as any,
+        await saffronPool.methods
+          .principal_token_addresses(
+            currentEpoch,
+            trancheRatingIndex(TrancheRating.A)
+          )
+          .call()
+      );
 
-    const dsecASupply = await dsecAToken.methods.totalSupply().call();
+      const dsecASupply = await dsecAToken.methods.totalSupply().call();
 
-    const aPoolSFIEarned =
-      DAI_SFI_REWARDS *
-      (SFI_multipliers[trancheRatingIndex(TrancheRating.A)] / 100000) *
-      // If supply is zero we will get NaN for dividing by zero
-      (dsecASupply === "0"
-        ? 0
-        : (await dsecAToken.methods.balanceOf(address).call()) / dsecASupply);
+      const aPoolSFIEarned =
+        DAI_SFI_REWARDS *
+        (SFI_multipliers[trancheRatingIndex(TrancheRating.A)] / 100000) *
+        // If supply is zero we will get NaN for dividing by zero
+        (dsecASupply === "0"
+          ? 0
+          : (await dsecAToken.methods.balanceOf(address).call()) / dsecASupply);
 
-    return (
-      smallUsdFormatter(sPoolSFIEarned + aPoolSFIEarned).replace("$", "") +
-      " SFI"
-    );
-  });
+      return (
+        smallUsdFormatter(sPoolSFIEarned + aPoolSFIEarned).replace("$", "") +
+        " SFI"
+      );
+    }
+  );
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -602,7 +605,7 @@ export const PrincipalAmount = React.memo(() => {
       <Heading lineHeight={1.4} fontSize="18px" mt={10}>
         {t("Estimated SFI Earned")}
       </Heading>
-      <Text>{sfiEarned ?? "? SFI"}</Text>
+      <Text>{estimatedSFI ?? "? SFI"}</Text>
     </Column>
   );
 });

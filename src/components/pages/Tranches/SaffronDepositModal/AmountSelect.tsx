@@ -11,6 +11,7 @@ import {
   Input,
   Link,
   useToast,
+  IconButton,
 } from "@chakra-ui/react";
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -46,6 +47,7 @@ import {
 
 import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
 import { Token } from "rari-tokens-generator";
+import { SettingsIcon } from "@chakra-ui/icons";
 
 function noop() {}
 
@@ -66,6 +68,7 @@ interface Props {
   mode: Mode;
   tranchePool: TranchePool;
   trancheRating: TrancheRating;
+  epoch: number;
 }
 
 enum UserAction {
@@ -97,7 +100,14 @@ const useSFIBalance = () => {
 };
 
 const AmountSelect = React.memo(
-  ({ mode, onClose, tranchePool, trancheRating }: Props) => {
+  ({
+    mode,
+    onClose,
+    tranchePool,
+    trancheRating,
+    openOptions,
+    epoch,
+  }: Props) => {
     const token = tokens[tranchePool];
 
     const { rari, address } = useRari();
@@ -127,11 +137,16 @@ const AmountSelect = React.memo(
     );
 
     const sfiRequired = useMemo(() => {
-      return amount && sfiRatio
-        ? amount
-            .div(10 ** token.decimals)
-            .multipliedBy((1 / sfiRatio) * 10 ** SFIToken.decimals)
-        : new BigNumber(0);
+      if (mode === Mode.DEPOSIT) {
+        return amount && sfiRatio
+          ? amount
+              .div(10 ** token.decimals)
+              .multipliedBy((1 / sfiRatio) * 10 ** SFIToken.decimals)
+          : new BigNumber(0);
+      } else {
+        //TODO: WITHDRAW
+        return new BigNumber(0);
+      }
     }, [amount, sfiRatio, token.decimals]);
 
     const updateAmount = useCallback(
@@ -411,15 +426,17 @@ const AmountSelect = React.memo(
       <>
         <Row
           width="100%"
-          mainAxisAlignment="center"
+          mainAxisAlignment="space-between"
           crossAxisAlignment="center"
           p={DASHBOARD_BOX_SPACING.asPxString()}
         >
-          {/* <Box width="40px" /> */}
+          <Box width="40px" />
           <Heading fontSize="27px">
-            {mode === Mode.DEPOSIT ? t("Deposit") : t("Withdraw")}
+            {mode === Mode.DEPOSIT
+              ? t("Deposit")
+              : t("Redeem Epoch {{epoch}}", { epoch })}
           </Heading>
-          {/* <IconButton
+          <IconButton
             color="#FFFFFF"
             variant="ghost"
             aria-label="Options"
@@ -430,7 +447,7 @@ const AmountSelect = React.memo(
             }}
             _active={{}}
             onClick={openOptions}
-          /> */}
+          />
         </Row>
         <ModalDivider />
         <Column
@@ -464,6 +481,8 @@ const AmountSelect = React.memo(
                 selectedToken={tranchePool}
                 updateAmount={updateAmount}
                 mode={mode}
+                epoch={epoch}
+                trancheRating={trancheRating}
               />
             </Row>
           </DashboardBox>
@@ -487,9 +506,11 @@ const AmountSelect = React.memo(
                 />
 
                 <TokenNameAndMaxButton
+                  trancheRating={trancheRating}
                   selectedToken="SFI"
                   updateAmount={noop}
                   mode={mode}
+                  epoch={epoch}
                 />
               </Row>
             </DashboardBox>
@@ -538,18 +559,23 @@ const TokenNameAndMaxButton = React.memo(
   ({
     selectedToken,
     updateAmount,
+    trancheRating,
     mode,
+    epoch,
   }: {
     selectedToken: string;
-
+    trancheRating: TrancheRating;
     updateAmount: (newAmount: string) => any;
     mode: Mode;
+    epoch: number;
   }) => {
     const isSFI = selectedToken === "SFI";
 
     const token = isSFI ? SFIToken : tokens[selectedToken];
 
     const { rari, address } = useRari();
+
+    const { saffronPool } = useSaffronData();
 
     const [isMaxLoading, setIsMaxLoading] = useState(false);
 
@@ -562,8 +588,25 @@ const TokenNameAndMaxButton = React.memo(
 
         maxBN = balance;
       } else {
-        //TODO
-        maxBN = rari.web3.utils.toBN(0);
+        const dsecToken = new rari.web3.eth.Contract(
+          ERC20ABI as any,
+          await saffronPool.methods
+            .principal_token_addresses(4, trancheRatingIndex(trancheRating))
+            .call()
+        );
+
+        const dsecSupply = await dsecToken.methods.totalSupply().call();
+
+        const userDsecPercent =
+          dsecSupply === "0"
+            ? 0
+            : (await dsecToken.methods.balanceOf(address).call()) / dsecSupply;
+
+        const interestEarned = await saffronPool.methods
+          .tranche_interest_earned(epoch, trancheRatingIndex(trancheRating))
+          .call();
+
+        maxBN = rari.web3.utils.toBN(interestEarned * userDsecPercent);
       }
 
       if (maxBN.isNeg() || maxBN.isZero()) {
@@ -583,7 +626,16 @@ const TokenNameAndMaxButton = React.memo(
       }
 
       setIsMaxLoading(false);
-    }, [updateAmount, token, rari, address, mode]);
+    }, [
+      updateAmount,
+      token,
+      rari,
+      address,
+      mode,
+      epoch,
+      saffronPool,
+      trancheRating,
+    ]);
 
     const { t } = useTranslation();
 
