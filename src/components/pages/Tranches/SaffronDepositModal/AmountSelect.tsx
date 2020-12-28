@@ -67,7 +67,6 @@ interface Props {
 
 enum UserAction {
   NO_ACTION,
-  REQUESTED_QUOTE,
   VIEWING_QUOTE,
   WAITING_FOR_TRANSACTIONS,
 }
@@ -97,6 +96,10 @@ const AmountSelect = React.memo(
   ({ onClose, tranchePool, trancheRating }: Props) => {
     const token = tokens[tranchePool];
 
+    const toast = useToast();
+
+    const queryCache = useQueryCache();
+
     const { rari, address } = useRari();
 
     const { data: poolTokenBalance } = useTokenBalance(token);
@@ -109,10 +112,6 @@ const AmountSelect = React.memo(
       return saffronPool.methods.SFI_ratio().call();
     });
 
-    const toast = useToast();
-
-    const queryCache = useQueryCache();
-
     const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
     const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
@@ -122,14 +121,6 @@ const AmountSelect = React.memo(
     const [amount, _setAmount] = useState<BigNumber | null>(
       () => new BigNumber(0)
     );
-
-    const sfiRequired = useMemo(() => {
-      return amount && sfiRatio
-        ? amount
-            .div(10 ** token.decimals)
-            .multipliedBy((1 / sfiRatio) * 10 ** SFIToken.decimals)
-        : new BigNumber(0);
-    }, [amount, sfiRatio, token.decimals]);
 
     const updateAmount = useCallback(
       (newAmount: string) => {
@@ -166,6 +157,14 @@ const AmountSelect = React.memo(
 
       return amount.lte(poolTokenBalance.toString());
     }, [poolTokenBalance, amount]);
+
+    const sfiRequired = useMemo(() => {
+      return amount && sfiRatio
+        ? amount
+            .div(10 ** token.decimals)
+            .multipliedBy((1 / sfiRatio) * 10 ** SFIToken.decimals)
+        : new BigNumber(0);
+    }, [amount, sfiRatio, token.decimals]);
 
     const hasEnoughSFI = useMemo(() => {
       if (!requiresSFIStaking(trancheRating)) {
@@ -217,40 +216,36 @@ const AmountSelect = React.memo(
         //@ts-ignore
         const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
 
-        // Check A tranche cap
-        if (trancheRating === TrancheRating.A) {
-          const limits = await saffronPool.methods
-            .get_available_S_balances()
-            .call();
-
-          const amountLeftBeforeCap = new BigNumber(limits[0] + limits[1]).div(
-            10
-          );
-
-          if (amountLeftBeforeCap.lt(amountBN.toString())) {
-            toast({
-              title: "Error!",
-              description: `The A tranche is capped at 1/10 the liquidity of the S tranche. Currently you must deposit less than ${amountLeftBeforeCap
-                .div(10 ** token.decimals)
-                .decimalPlaces(2)
-                .toString()} ${
-                token.symbol
-              } or deposit into the S tranche (as more is deposited into S tranche, the cap on the A tranche increases).`,
-              status: "error",
-              duration: 18000,
-              isClosable: true,
-              position: "top-right",
-            });
-
-            return;
-          }
-        }
-
         // If clicking for the first time:
         if (userAction === UserAction.NO_ACTION) {
-          setUserAction(UserAction.REQUESTED_QUOTE);
+          // Check A tranche cap
+          if (trancheRating === TrancheRating.A) {
+            const limits = await saffronPool.methods
+              .get_available_S_balances()
+              .call();
 
-          //TODO: WITHDRAWS
+            const amountLeftBeforeCap = new BigNumber(
+              limits[0] + limits[1]
+            ).div(10);
+
+            if (amountLeftBeforeCap.lt(amountBN.toString())) {
+              toast({
+                title: "Error!",
+                description: `The A tranche is capped at 1/10 the liquidity of the S tranche. Currently you must deposit less than ${amountLeftBeforeCap
+                  .div(10 ** token.decimals)
+                  .decimalPlaces(2)
+                  .toString()} ${
+                  token.symbol
+                } or deposit into the S tranche (as more is deposited into S tranche, the cap on the A tranche increases).`,
+                status: "error",
+                duration: 18000,
+                isClosable: true,
+                position: "top-right",
+              });
+
+              return;
+            }
+          }
 
           setQuoteAmount(amountBN);
           setUserAction(UserAction.VIEWING_QUOTE);
@@ -456,10 +451,8 @@ const AmountSelect = React.memo(
             _hover={{ transform: "scale(1.02)" }}
             _active={{ transform: "scale(0.95)" }}
             color={token.overlayTextColor}
-            isLoading={
-              !poolTokenBalance || userAction === UserAction.REQUESTED_QUOTE
-            }
             onClick={onConfirm}
+            isLoading={!poolTokenBalance}
             isDisabled={!amountIsValid || !hasEnoughSFI}
           >
             {userAction === UserAction.VIEWING_QUOTE

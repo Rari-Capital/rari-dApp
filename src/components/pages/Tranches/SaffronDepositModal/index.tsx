@@ -31,13 +31,11 @@ const DepositModal = React.memo((props: Props) => {
           base: requiresSFIStaking(props.trancheRating) ? "390px" : "310px",
         }}
       >
-        {
-          <AmountSelect
-            onClose={props.onClose}
-            tranchePool={props.tranchePool}
-            trancheRating={props.trancheRating}
-          />
-        }
+        <AmountSelect
+          onClose={props.onClose}
+          tranchePool={props.tranchePool}
+          trancheRating={props.trancheRating}
+        />
       </ModalContent>
     </Modal>
   );
