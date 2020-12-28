@@ -31,6 +31,7 @@ import {
 import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
+import { WarningTwoIcon } from "@chakra-ui/icons";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -135,7 +136,24 @@ const TranchePage = React.memo(() => {
                 textAlign="center"
                 px={4}
               >
-                <Heading size="lg">{t("Tranches")}</Heading>
+                <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+                  <Heading size="lg">{t("Tranches")}</Heading>
+
+                  <SimpleTooltip
+                    placement="bottom"
+                    label={t(
+                      "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing."
+                    )}
+                  >
+                    <Link
+                      isExternal
+                      href="https://defisafety.com/2020/12/20/saffron-finance/"
+                    >
+                      <WarningTwoIcon ml={2} boxSize="25px" color="#C34535" />
+                    </Link>
+                  </SimpleTooltip>
+                </Row>
+
                 {t(
                   "Access Saffron Finance tranches through the Rari Capital interface!"
                 )}

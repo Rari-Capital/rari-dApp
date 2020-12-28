@@ -106,5 +106,6 @@
   "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "您需要另外{{sfiMissing}}個SFI才能進行存款（1個SFI：{{sfiRatio}} {{tranchePool}}）",
   "Do not close this tab until you submit all transactions!": "提交所有交易之前，請不要關閉此選項卡！",
   "Your balance in this tranche": "您在這筆款項中的餘額",
-  "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?": "{{token}}的{{formattedSlippage}}的高滑點，您是否仍然希望繼續進行此交易？"
+  "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?": "{{token}}的{{formattedSlippage}}的高滑點，您是否仍然希望繼續進行此交易？",
+  "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing.": "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing."
 }

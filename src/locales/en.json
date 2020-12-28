@@ -106,5 +106,6 @@
   "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})": "You need {{sfiMissing}} more SFI to deposit (1 SFI : {{sfiRatio}} {{tranchePool}})",
   "Do not close this tab until you submit all transactions!": "Do not close this tab until you submit all transactions!",
   "Your balance in this tranche": "Your balance in this tranche",
-  "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?": "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?"
+  "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?": "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
+  "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing.": "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing."
 }

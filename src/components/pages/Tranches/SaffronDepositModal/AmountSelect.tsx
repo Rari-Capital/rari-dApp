@@ -54,7 +54,7 @@ const SFIToken = {
   address: "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
   name: "Spice",
   decimals: 18,
-  color: "#B64E3D",
+  color: "#C34535",
   overlayTextColor: "#fff",
   logoURL:
     "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
