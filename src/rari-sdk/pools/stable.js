@@ -2411,7 +2411,7 @@ export default class StablePool {
         if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
           if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
           else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"]));
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
         }
 
         // Build currency code array
