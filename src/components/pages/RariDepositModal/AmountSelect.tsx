@@ -224,32 +224,66 @@ const AmountSelect = React.memo(
           setUserAction(UserAction.REQUESTED_QUOTE);
 
           let quote: BN;
+          let slippage: BN;
 
           if (mode === Mode.DEPOSIT) {
-            const [amountToBeAdded] = (await pool.deposits.validateDeposit(
+            const [
+              amountToBeAdded,
+              ,
+              _slippage,
+            ] = (await pool.deposits.validateDeposit(
               token.symbol,
               amountBN,
-              address
+              address,
+              true
             )) as BN[];
 
             quote = amountToBeAdded;
+            slippage = _slippage;
           } else {
             const [
               amountToBeRemoved,
+              ,
+              _slippage,
             ] = (await pool.withdrawals.validateWithdrawal(
               token.symbol,
               amountBN,
-              address
+              address,
+              true
             )) as BN[];
 
             quote = amountToBeRemoved;
+            slippage = _slippage;
           }
 
-          setQuoteAmount(quote);
+          if (slippage) {
+            const slippagePercent =
+              (parseInt(slippage.toString()) / 1e18) * 100;
+            const formattedSlippage = slippagePercent.toFixed(2) + "%";
 
-          setUserAction(UserAction.VIEWING_QUOTE);
+            console.log("Slippage of " + formattedSlippage);
 
-          return;
+            // If slippage is >4%
+            if (slippagePercent > 4) {
+              if (
+                !window.confirm(
+                  t(
+                    "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
+                    { formattedSlippage, token: token.symbol }
+                  )
+                )
+              ) {
+                setUserAction(UserAction.NO_ACTION);
+                return;
+              }
+            }
+
+            setQuoteAmount(quote);
+
+            setUserAction(UserAction.VIEWING_QUOTE);
+
+            return;
+          }
         }
 
         // They must have already seen the quote as the button to trigger this function is disabled while it's loading:

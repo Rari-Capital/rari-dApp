@@ -30,6 +30,7 @@ import {
 } from "../../../utils/bigUtils";
 import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
+import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -427,9 +428,11 @@ export const TrancheColumn = React.memo(
             <Heading size="sm">
               {trancheRating} {t("Tranche")}
             </Heading>
-            <Text textAlign="center" mt={4}>
-              {principal ?? "?"} {tranchePool}
-            </Text>
+            <SimpleTooltip label={t("Your balance in this tranche")}>
+              <Text textAlign="center" mt={4}>
+                {principal ?? "?"} {tranchePool}
+              </Text>
+            </SimpleTooltip>
             <Text textAlign="center" fontWeight="bold" mt={4}>
               {trancheRating === "AA"
                 ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
