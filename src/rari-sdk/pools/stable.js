@@ -123,6 +123,9 @@ export default class StablePool {
       usdPrices: 900,
       allBalances: 30,
       accountBalanceLimit: 3600,
+      coinGeckoList: 3600,
+      coinGeckoUsdPrices: 900,
+      acceptedCurrencies: 30
     });
 
     this.contracts = {};
@@ -577,7 +580,7 @@ export default class StablePool {
           .getDefaultAccountBalanceLimit(account)
           .call();
       },
-      validateDeposit: async function (currencyCode, amount, sender) {
+      validateDeposit: async function (currencyCode, amount, sender, getSlippage) {
         // Input validation
         if (!sender) throw new Error("Sender parameter not set.");
         var allTokens = await self.getAllTokens();
@@ -596,9 +599,7 @@ export default class StablePool {
           );
 
         // Check if currency is directly depositable
-        var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
-          .getAcceptedCurrencies()
-          .call();
+        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
         if (
           !directlyDepositableCurrencyCodes ||
           directlyDepositableCurrencyCodes.length == 0
@@ -629,7 +630,7 @@ export default class StablePool {
             );
 
           // Return amountUsdBN
-          return [amountUsdBN];
+          return [amountUsdBN, null, Web3.utils.toBN(0)];
         } else {
           // Get mStable output currency if possible
           var mStableOutputCurrency = null;
@@ -742,7 +743,7 @@ export default class StablePool {
               );
 
             // Return outputAmountUsdBN
-            return [outputAmountUsdBN];
+            return [outputAmountUsdBN, null, getSlippage ? await self.deposits.getDepositSlippage(currencyCode, amount, outputAmountUsdBN) : null];
           } else {
             // Otherwise, use first accepted currency for 0x
             var acceptedCurrency = directlyDepositableCurrencyCodes[0];
@@ -820,9 +821,85 @@ export default class StablePool {
               );
 
             // Return makerAssetFilledAmountUsdBN and protocolFeeBN
-            return [makerAssetFilledAmountUsdBN, protocolFeeBN];
+            return [makerAssetFilledAmountUsdBN, protocolFeeBN, getSlippage ? await self.deposits.getDepositSlippage(currencyCode, amount, makerAssetFilledAmountUsdBN) : null];
           }
         }
+      },
+      getDepositSlippage: async function(currencyCode, amount, usdAmount) {
+        if (self.POOL_TOKEN_SYMBOL === "RYPT") {
+          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
+          if (directlyDepositableCurrencyCodes && directlyDepositableCurrencyCodes.length > 0 && directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
+            var allBalances = await self.cache.getOrUpdate(
+              "allBalances",
+              self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
+                .call
+            );
+            return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(amount.mul(
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
+            ).div(Web3.utils.toBN(1e18))));
+          }
+        } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
+          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e6)).div(amount)).toString();
+        } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
+          if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e18)).div(amount)).toString();
+        } else {
+          throw "Not implemented for " + self.POOL_TOKEN_SYMBOL;
+        }
+
+        // Get tokens
+        var allTokens = await self.getAllTokens();
+        if (currencyCode !== "ETH" && !allTokens[currencyCode]) throw new Error("Invalid currency code!");
+
+        // Try cache
+        if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
+          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
+          return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))));
+        }
+
+        // Build currency code array
+        var currencyCodes = [...self.allocations.CURRENCIES];
+        if (currencyCodes.indexOf(currencyCode) < 0) currencyCodes.push(currencyCode);
+
+        // Get CoinGecko IDs
+        var decoded = await self.cache.getOrUpdate("coinGeckoList", async function() { return (await axios.get('https://api.coingecko.com/api/v3/coins/list')).data });
+        if (!decoded) throw new Error("Failed to decode coins list from CoinGecko");
+        var currencyCodesByCoinGeckoIds = {};
+
+        for (const currencyCode of currencyCodes) {
+          var filtered = decoded.filter(coin => coin.symbol.toLowerCase() === currencyCode.toLowerCase());
+          if (!filtered) throw new Error("Failed to get currency IDs from CoinGecko");
+          for (const coin of filtered) currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
+        }
+
+        // Get prices
+        var decoded = (await axios.get('https://api.coingecko.com/api/v3/simple/price', {
+          params: {
+            vs_currencies: "usd",
+            ids: Object.keys(currencyCodesByCoinGeckoIds).join(','),
+            include_market_cap: true
+          }
+        })).data;
+        if (!decoded) throw new Error("Failed to decode USD exchange rates from CoinGecko");
+        var prices = {};
+        var maxMarketCaps = {};
+        
+        for (const key of Object.keys(decoded)) if (prices[currencyCodesByCoinGeckoIds[key]] === undefined || decoded[key].usd_market_cap > maxMarketCaps[currencyCodesByCoinGeckoIds[key]]) {
+          maxMarketCaps[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd_market_cap;
+          prices[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd;
+        }
+
+        // Update cache
+        self.cache.update("coinGeckoUsdPrices", prices);
+
+        // Return slippage
+        if (self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode]) {
+          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
+          return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals))).div(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))));
+        } else throw new Error("Failed to get currency prices from CoinGecko"); 
       },
       deposit: async function (currencyCode, amount, minUsdAmount, options) {
         // Input validation
@@ -846,9 +923,7 @@ export default class StablePool {
           );
 
         // Check if currency is directly depositable
-        var directlyDepositableCurrencyCodes = await self.contracts.RariFundManager.methods
-          .getAcceptedCurrencies()
-          .call();
+        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
         if (
           !directlyDepositableCurrencyCodes ||
           directlyDepositableCurrencyCodes.length == 0
@@ -1833,7 +1908,7 @@ export default class StablePool {
         // Return amountWithdrawnBN and totalProtocolFeeBN
         return [amountWithdrawnBN, totalProtocolFeeBN];
       },
-      validateWithdrawal: async function (currencyCode, amount, sender) {
+      validateWithdrawal: async function (currencyCode, amount, sender, getSlippage) {
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
           throw new Error("Invalid currency code!");
@@ -1883,7 +1958,7 @@ export default class StablePool {
             );
 
           // Return amountUsdBN
-          return [amountUsdBN];
+          return [amountUsdBN, null, Web3.utils.toBN(0)];
         } else {
           // Otherwise, exchange as few currencies as possible (ideally those with the lowest balances)
           var amountInputtedUsdBN = Web3.utils.toBN(0);
@@ -2297,8 +2372,85 @@ export default class StablePool {
             );
 
           // Return amountInputtedUsdBN
-          return [amountInputtedUsdBN, totalProtocolFeeBN];
+          return [amountInputtedUsdBN, totalProtocolFeeBN, getSlippage ? await self.withdrawals.getWithdrawalSlippage(currencyCode, amount, amountInputtedUsdBN) : null];
         }
+      },
+      getWithdrawalSlippage: async function(currencyCode, amount, usdAmount) {
+        if (self.POOL_TOKEN_SYMBOL === "RYPT") {
+          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
+          if (directlyDepositableCurrencyCodes && directlyDepositableCurrencyCodes.length > 0 && directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
+            var allBalances = await self.cache.getOrUpdate(
+              "allBalances",
+              self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
+                .call
+            );
+            return Web3.utils.toBN(1e18).sub(amount.mul(
+              Web3.utils.toBN(
+                allBalances["4"][
+                  self.allocations.CURRENCIES.indexOf(currencyCode)
+                ]
+              )
+            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(usdAmount));
+          }
+        } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
+          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e6)).div(usdAmount)).toString();
+          if (currencyCode === "mUSD") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+        } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
+          if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+        } else {
+          throw "Not implemented for " + self.POOL_TOKEN_SYMBOL;
+        }
+
+        // Get tokens
+        var allTokens = await self.getAllTokens();
+        if (currencyCode !== "ETH" && !allTokens[currencyCode]) throw new Error("Invalid currency code!");
+
+        // Try cache
+        if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
+          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
+        }
+
+        // Build currency code array
+        var currencyCodes = [...self.allocations.CURRENCIES];
+        currencyCodes.push(currencyCode);
+
+        // Get CoinGecko IDs
+        var decoded = await self.cache.getOrUpdate("coinGeckoList", async function() { return (await axios.get('https://api.coingecko.com/api/v3/coins/list')).data });
+        if (!decoded) throw new Error("Failed to decode coins list from CoinGecko");
+        var currencyCodesByCoinGeckoIds = {};
+
+        for (const currencyCode of currencyCodes) {
+          var filtered = decoded.filter(coin => coin.symbol.toLowerCase() === currencyCode.toLowerCase());
+          if (!filtered) throw new Error("Failed to get currency IDs from CoinGecko");
+          for (const coin of filtered) currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
+        }
+
+        // Get prices
+        var decoded = (await axios.get('https://api.coingecko.com/api/v3/simple/price', {
+          params: {
+            vs_currencies: "usd",
+            ids: Object.keys(currencyCodesByCoinGeckoIds).join(','),
+            include_market_cap: true
+          }
+        })).data;
+        if (!decoded) throw new Error("Failed to decode USD exchange rates from CoinGecko");
+        var prices = {};
+        var maxMarketCaps = {};
+        
+        for (const key of Object.keys(decoded)) if (prices[currencyCodesByCoinGeckoIds[key]] === undefined || decoded[key].usd_market_cap > maxMarketCaps[currencyCodesByCoinGeckoIds[key]]) {
+          maxMarketCaps[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd_market_cap;
+          prices[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd;
+        }
+
+        // Update cache
+        self.cache.update("coinGeckoUsdPrices", prices);
+
+        // Return slippage
+        if (self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode]) {
+          usdAmount = Web3.utils.toBN(Math.trunc(parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"]));
+          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))).div(usdAmount));
+        } else throw new Error("Failed to get currency prices from CoinGecko");
       },
       withdraw: async function (currencyCode, amount, maxUsdAmount, options) {
         if (!options || !options.from)

@@ -224,25 +224,53 @@ const AmountSelect = React.memo(
           setUserAction(UserAction.REQUESTED_QUOTE);
 
           let quote: BN;
+          let slippage: BN;
 
           if (mode === Mode.DEPOSIT) {
-            const [amountToBeAdded] = (await pool.deposits.validateDeposit(
+            const [
+              amountToBeAdded,
+              ,
+              _slippage,
+            ] = (await pool.deposits.validateDeposit(
               token.symbol,
               amountBN,
-              address
+              address,
+              true
             )) as BN[];
 
             quote = amountToBeAdded;
+            slippage = _slippage;
           } else {
             const [
               amountToBeRemoved,
+              ,
+              _slippage,
             ] = (await pool.withdrawals.validateWithdrawal(
               token.symbol,
               amountBN,
-              address
+              address,
+              true
             )) as BN[];
 
             quote = amountToBeRemoved;
+            slippage = _slippage;
+          }
+
+          const slippagePercent = (parseInt(slippage.toString()) / 1e18) * 100;
+          const formattedSlippage = slippagePercent.toFixed(2) + "%";
+
+          console.log("Slippage of " + formattedSlippage);
+
+          // If slippage is >4%
+          if (slippagePercent > 4) {
+            if (
+              !window.confirm(
+                `High slippage of ${formattedSlippage} for ${token.symbol} do you still wish to continue with this transaction?`
+              )
+            ) {
+              setUserAction(UserAction.NO_ACTION);
+              return;
+            }
           }
 
           setQuoteAmount(quote);
