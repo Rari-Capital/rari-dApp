@@ -308,9 +308,13 @@ export const TrancheRatingColumn = React.memo(
           <Text textAlign="center" mt={1}>
             {trancheRating === TrancheRating.S
               ? t("Liquidity added to other tranches as needed.")
-              : trancheRating === TrancheRating.A
-              ? "Reduced interest earned. Covered in case of failure by AA tranche."
-              : "10x interest earned. Cover provided to A tranche in case of failure."}
+              : trancheRating === TrancheRating.AA
+              ? t(
+                  "Reduced interest earned. Covered in case of failure by A tranche."
+                )
+              : t(
+                  "10x interest earned. Cover provided to AA tranche in case of failure."
+                )}
           </Text>
         </Column>
 
