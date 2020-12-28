@@ -109,5 +109,6 @@
   "Saffron Finance has not been fully audited. Take caution when entering these tranches and do not deposit more than you are comfortable losing.": "Saffron Finance尚未经过全面审核。 输入这些档时要小心，不要存入过多的现金，以免您感到失落。",
   "Reduced interest earned. Covered in case of failure by A tranche.": "减少的利息。 如果因A档失败而覆盖。",
   "10x interest earned. Cover provided to AA tranche in case of failure.": "赚取10倍的利息。 如果发生故障，将提供给AA档的封面。",
-  "Estimated SFI Earnings": "SFI预估收益"
+  "Estimated SFI Earnings": "SFI预估收益",
+  "Withdraw From Past Epochs": "从过去的时代退出"
 }

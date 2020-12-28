@@ -510,8 +510,10 @@ export const RedemptionDate = React.memo(() => {
         })}
       </Heading>
       <Text>{data ? data.endDate.toDateString() : "?"}</Text>
-      <Text fontSize="14px">
-        {data ? data.endDate.toLocaleTimeString() : "?"}
+      <Text fontSize="13px" mt="3px">
+        <Link isExternal href="https://app.saffron.finance/#redeem">
+          <u>{t("Withdraw From Past Epochs")}</u>
+        </Link>
       </Text>
     </Column>
   );
