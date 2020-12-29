@@ -463,8 +463,8 @@ export const TrancheColumn = React.memo(
                 : saffronData
                 ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
                     trancheRating
-                  ]["total-apy"] + "%"
-                : "?%"}
+                  ]["total-apy"] + "% APY"
+                : "?% APY"}
             </Text>
           </Column>
 
