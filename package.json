@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "private": true,
   "dependencies": {
-    "@chakra-ui/icons": "^1.0.0",
+    "@chakra-ui/icons": "^1.0.2",
     "@chakra-ui/react": "^1.0.0",
     "@cypress/code-coverage": "^3.8.1",
     "@cypress/instrument-cra": "^1.4.0",
