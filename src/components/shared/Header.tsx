@@ -75,13 +75,9 @@ export const Header = React.memo(
 
           <PoolsLink ml={4} />
 
-          <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
+          <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
 
-          {/* <HeaderLink
-            ml={4}
-            name={t("Forums")}
-            route="https://forums.rari.capital"
-          /> */}
+          <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
           <HeaderLink
             ml={4}

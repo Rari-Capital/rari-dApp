@@ -30,6 +30,13 @@ const TranchesPage = loadable(
   }
 );
 
+const FusePoolsPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Fuse/FusePoolsPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -65,6 +72,8 @@ const App = React.memo(() => {
       </Route>
 
       <Route path="/tranches" element={<TranchesPage />} />
+
+      <Route path="/fuse" element={<FusePoolsPage />} />
 
       <Route path="/" element={<MultiPoolPortal />} />
 
