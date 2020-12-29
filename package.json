@@ -88,7 +88,7 @@
     ]
   },
   "devDependencies": {
-    "@vercel/node": "^1.8.3",
+    "@vercel/node": "^1.8.5",
     "twitter-lite": "^0.14.0"
   }
 }
