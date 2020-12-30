@@ -268,6 +268,7 @@ const PoolList = React.memo(() => {
         width="100%"
         mt={4}
         px={4}
+        overflow="scroll"
       >
         <PoolRow
           tokens={[
