@@ -1,4 +1,4 @@
-import { SmallAddIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { Avatar, AvatarGroup, Heading, Input, Text } from "@chakra-ui/react";
 import {
   Center,
@@ -244,12 +244,15 @@ const PoolList = React.memo(() => {
           {t("Pool Assets")}
         </Text>
 
-        <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Pool Number")}
-        </Text>
+        <Row mainAxisAlignment="center" crossAxisAlignment="center" width="15%">
+          <Text fontWeight="bold" textAlign="center">
+            {t("Total Supplied")}
+          </Text>
+          <ChevronDownIcon ml={1} />
+        </Row>
 
         <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Total Supplied")}
+          {t("Pool Number")}
         </Text>
 
         <Text fontWeight="bold" width="15%" textAlign="center">
@@ -409,12 +412,15 @@ const PoolRow = React.memo(
             })}
           </Text>
         </Row>
-        <Center height="100%" width="15%">
-          <b>{poolNumber}</b>
-        </Center>
+
         <Center height="100%" width="15%">
           <b>{smallUsdFormatter(tvl)}</b>
         </Center>
+
+        <Center height="100%" width="15%">
+          <b>{poolNumber}</b>
+        </Center>
+
         <Center height="100%" width="15%">
           <b>{smallUsdFormatter(borrowed)}</b>
         </Center>
