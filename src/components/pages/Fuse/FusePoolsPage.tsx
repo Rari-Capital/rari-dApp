@@ -237,7 +237,8 @@ const PoolList = React.memo(() => {
         height="45px"
         width="100%"
         flexShrink={0}
-        px={4}
+        pl={4}
+        pr={1}
       >
         <Text fontWeight="bold" width="40%">
           {t("Pool Assets")}
@@ -267,7 +268,8 @@ const PoolList = React.memo(() => {
         crossAxisAlignment="center"
         width="100%"
         mt={4}
-        px={4}
+        pl={4}
+        pr={1}
         overflow="scroll"
       >
         <PoolRow
