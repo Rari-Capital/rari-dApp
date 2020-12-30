@@ -32,6 +32,7 @@ import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
+import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -721,9 +722,3 @@ export const SFIDistributions = React.memo(() => {
     </Column>
   );
 });
-
-const useIsSmallScreen = () => {
-  const { width } = useWindowSize();
-
-  return width < 1030;
-};
