@@ -239,23 +239,23 @@ const PoolList = React.memo(() => {
         flexShrink={0}
         px={4}
       >
-        <Text fontWeight="bold" width="30%">
+        <Text fontWeight="bold" width="40%">
           {t("Pool Assets")}
         </Text>
 
-        <Text fontWeight="bold" width="18%" textAlign="center">
+        <Text fontWeight="bold" width="15%" textAlign="center">
           {t("Pool Number")}
         </Text>
 
-        <Text fontWeight="bold" width="18%" textAlign="center">
+        <Text fontWeight="bold" width="15%" textAlign="center">
           {t("Total Supplied")}
         </Text>
 
-        <Text fontWeight="bold" width="18%" textAlign="center">
+        <Text fontWeight="bold" width="15%" textAlign="center">
           {t("Total Borrowed")}
         </Text>
 
-        <Text fontWeight="bold" width="18%" textAlign="center">
+        <Text fontWeight="bold" width="15%" textAlign="center">
           {t("Collateral Ratio")}
         </Text>
       </Row>
@@ -390,7 +390,7 @@ const PoolRow = React.memo(
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           height="100%"
-          width="30%"
+          width="40%"
         >
           <AvatarGroup size="xs" max={16}>
             {tokens.map(({ symbol, icon }) => {
@@ -406,16 +406,16 @@ const PoolRow = React.memo(
             })}
           </Text>
         </Row>
-        <Center height="100%" width="18%">
+        <Center height="100%" width="15%">
           <b>{poolNumber}</b>
         </Center>
-        <Center height="100%" width="18%">
+        <Center height="100%" width="15%">
           <b>{smallUsdFormatter(tvl)}</b>
         </Center>
-        <Center height="100%" width="18%">
+        <Center height="100%" width="15%">
           <b>{smallUsdFormatter(borrowed)}</b>
         </Center>
-        <Center height="100%" width="18%">
+        <Center height="100%" width="15%">
           <b>{collatRatio.toFixed(1)}%</b>
         </Center>
       </Row>
