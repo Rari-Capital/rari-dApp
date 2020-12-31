@@ -19,7 +19,10 @@ const FuseStatsBar = React.memo(() => {
       crossAxisAlignment="flex-start"
       height={isMobile ? "auto" : "120px"}
     >
-      <DashboardBox width="100%" height={isMobile ? "auto" : "100%"}>
+      <DashboardBox
+        width={isMobile ? "100%" : "100%"}
+        height={isMobile ? "auto" : "100%"}
+      >
         <Column
           expand
           mainAxisAlignment="center"
@@ -35,7 +38,7 @@ const FuseStatsBar = React.memo(() => {
         </Column>
       </DashboardBox>
       <DashboardBox
-        width={isMobile ? "100%" : "245px"}
+        width={isMobile ? "100%" : "240px"}
         height={isMobile ? "auto" : "100%"}
         flexShrink={0}
         mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
@@ -53,7 +56,7 @@ const FuseStatsBar = React.memo(() => {
         </Center>
       </DashboardBox>
       <DashboardBox
-        width={isMobile ? "100%" : "245px"}
+        width={isMobile ? "100%" : "240px"}
         height={isMobile ? "auto" : "100%"}
         flexShrink={0}
         mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}

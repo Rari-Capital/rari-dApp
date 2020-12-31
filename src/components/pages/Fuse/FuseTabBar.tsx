@@ -1,15 +1,23 @@
-import { SmallAddIcon } from "@chakra-ui/icons";
-import { Input, Center } from "@chakra-ui/react";
-import { RowOrColumn, Row } from "buttered-chakra";
+import { InfoIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { ButtonGroup, Input, Link } from "@chakra-ui/react";
+import { RowOrColumn, Row, Center } from "buttered-chakra";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import { Link as RouterLink } from "react-router-dom";
+
+const activeStyle = { bg: "#FFF", color: "#000" };
+
+const noop = {};
 
 const FuseTabBar = React.memo(() => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
+
+  let { poolId } = useParams();
 
   return (
     <DashboardBox
@@ -48,40 +56,38 @@ const FuseTabBar = React.memo(() => {
           </Row>
         </DashboardBox>
 
-        <DashboardBox
-          height="35px"
-          ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
-          mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-          as="button"
-        >
-          <Center expand px={2} fontWeight="bold">
-            My Pools
-          </Center>
-        </DashboardBox>
+        <TabLink route="/fuse/my-pools" text={t("My Pools")} />
 
-        <DashboardBox
-          height="35px"
-          ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
-          mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-          bg="#FFF"
-          color="#000"
-          as="button"
-        >
-          <Center expand px={2} fontWeight="bold">
-            {t("Public Pools")}
-          </Center>
-        </DashboardBox>
+        <TabLink route="/fuse" text={t("All Pools")} />
 
-        <DashboardBox
-          height="35px"
-          ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
-          mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-          as="button"
-        >
-          <Center expand px={2} fontWeight="bold">
-            {t("Private Pools")}
-          </Center>
-        </DashboardBox>
+        {poolId ? (
+          <ButtonGroup
+            size="sm"
+            isAttached
+            variant="outline"
+            height="35px"
+            ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
+            mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+          >
+            <DashboardBox {...activeStyle}>
+              <Center expand px={2} fontWeight="bold">
+                {t("Pool #{{poolId}}", { poolId })}
+              </Center>
+            </DashboardBox>
+
+            <DashboardBox {...activeStyle}>
+              <Link
+                /* @ts-ignore */
+                as={RouterLink}
+                to={"/fuse/pool-info/" + poolId}
+              >
+                <Center expand pl="9px" pr="10px" fontWeight="bold">
+                  <InfoIcon />
+                </Center>
+              </Link>
+            </DashboardBox>
+          </ButtonGroup>
+        ) : null}
 
         <DashboardBox
           mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
@@ -97,5 +103,35 @@ const FuseTabBar = React.memo(() => {
     </DashboardBox>
   );
 });
+
+const TabLink = React.memo(
+  ({ route, text }: { route: string; text: string }) => {
+    const isMobile = useIsSmallScreen();
+
+    const location = useLocation();
+
+    const currentRoute = location.pathname.replace(/\/+$/, "");
+
+    return (
+      <Link
+        /* @ts-ignore */
+        as={RouterLink}
+        className="no-underline"
+        to={route}
+        ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
+        mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+      >
+        <DashboardBox
+          height="35px"
+          {...(route === currentRoute ? activeStyle : noop)}
+        >
+          <Center expand px={2} fontWeight="bold">
+            {text}
+          </Center>
+        </DashboardBox>
+      </Link>
+    );
+  }
+);
 
 export default FuseTabBar;
