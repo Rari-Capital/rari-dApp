@@ -78,6 +78,7 @@ const SupplyList = React.memo(() => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       pb={4}
+      height="500px"
     >
       <Heading size="md" px={4} py={3}>
         Supply Balance: {"$200,000"}
@@ -114,7 +115,7 @@ const SupplyList = React.memo(() => {
         apy={15.2}
         earned={10.42}
         balance={70000}
-        isCollateral
+        isCollateral={false}
       />
 
       <AssetSupplyRow
@@ -209,9 +210,19 @@ const AssetSupplyRow = React.memo(
           mainAxisAlignment="flex-end"
           crossAxisAlignment="center"
         >
+          <style>
+            {`
+            
+            .${symbol + "-switch"} > .chakra-switch__track[data-checked] {
+              background-color: ${color} !important;
+            }
+
+            `}
+          </style>
           <Switch
             isChecked={isCollateral}
             colorScheme="teal"
+            className={symbol + "-switch"}
             size="md"
             mt={1}
             mr={5}
@@ -230,6 +241,7 @@ const BorrowList = React.memo(() => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       pb={4}
+      height="500px"
     >
       <Heading size="md" px={4} py={3}>
         {t("Borrow Balance:")} {"$10,000"}
