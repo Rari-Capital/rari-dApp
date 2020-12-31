@@ -77,7 +77,6 @@ const SupplyList = React.memo(() => {
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      pb={4}
       height="500px"
     >
       <Heading size="md" px={4} py={3}>
@@ -109,33 +108,33 @@ const SupplyList = React.memo(() => {
         </Text>
       </Row>
 
-      <AssetSupplyRow
-        symbol="RGT"
-        icon="https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
-        apy={15.2}
-        earned={10.42}
-        balance={70000}
-        isCollateral={false}
-      />
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        expand
+        overflowY="auto"
+        p={0}
+        m={0}
+      >
+        <AssetSupplyRow
+          symbol="RGT"
+          icon="https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
+          apy={15.2}
+          earned={10.42}
+          balance={70000}
+          isCollateral={false}
+        />
 
-      <AssetSupplyRow
-        symbol="SFI"
-        icon="https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144"
-        color="#C34535"
-        apy={90.2}
-        earned={30.2}
-        balance={1500}
-        isCollateral
-      />
-      {/* 
-      <AssetSupplyRow
-        symbol="MLN"
-        icon="https://assets.coingecko.com/coins/images/605/small/melon.png?1547034295"
-        apy={15.2}
-        earned={5.25}
-        balance={10000}
-        isCollateral
-      /> */}
+        <AssetSupplyRow
+          symbol="SFI"
+          icon="https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144"
+          color="#C34535"
+          apy={90.2}
+          earned={30.2}
+          balance={1500}
+          isCollateral
+        />
+      </Column>
     </Column>
   );
 });
@@ -240,7 +239,6 @@ const BorrowList = React.memo(() => {
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      pb={4}
       height="500px"
     >
       <Heading size="md" px={4} py={3}>
