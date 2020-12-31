@@ -264,8 +264,9 @@ const BorrowList = React.memo(() => {
         symbol="RGT"
         icon="https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
         apy={15.2}
-        earned={10.42}
-        balance={70000}
+        accrued={0}
+        borrowed={0}
+        liquidity={10000000}
       />
 
       <AssetBorrowRow
@@ -273,8 +274,9 @@ const BorrowList = React.memo(() => {
         icon="https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144"
         color="#C34535"
         apy={90.2}
-        earned={30.2}
-        balance={1500}
+        accrued={30.2}
+        borrowed={1500}
+        liquidity={10000000}
       />
       {/* 
       <AssetSupplyRow
@@ -294,17 +296,17 @@ const AssetBorrowRow = React.memo(
     symbol,
     icon,
     apy,
-    earned,
-    balance,
-
+    accrued,
+    borrowed,
+    liquidity,
     color,
   }: {
     symbol: string;
     icon: string;
     apy: number;
-    earned: number;
-    balance: number;
-
+    accrued: number;
+    borrowed: number;
+    liquidity: number;
     color?: string;
   }) => {
     return (
@@ -336,7 +338,7 @@ const AssetBorrowRow = React.memo(
           </Text>
 
           <Text fontSize="sm">
-            {smallUsdFormatter(earned).replace("$", "")} {symbol}
+            {smallUsdFormatter(accrued).replace("$", "")} {symbol}
           </Text>
         </Column>
 
@@ -346,11 +348,11 @@ const AssetBorrowRow = React.memo(
           width="27%"
         >
           <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
-            {smallUsdFormatter(balance * Math.random() * 10)}
+            {smallUsdFormatter(borrowed * Math.random() * 10)}
           </Text>
 
           <Text fontSize="sm">
-            {smallUsdFormatter(balance).replace("$", "")} {symbol}
+            {smallUsdFormatter(borrowed).replace("$", "")} {symbol}
           </Text>
         </Column>
 
