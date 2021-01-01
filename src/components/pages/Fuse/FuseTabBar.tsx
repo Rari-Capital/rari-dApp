@@ -1,9 +1,9 @@
-import { InfoIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { DeleteIcon, InfoIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "buttered-chakra";
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { Link as RouterLink } from "react-router-dom";
@@ -12,12 +12,33 @@ const activeStyle = { bg: "#FFF", color: "#000" };
 
 const noop = {};
 
+export function useFilter() {
+  return new URLSearchParams(useLocation().search).get("filter");
+}
+
 const FuseTabBar = React.memo(() => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
 
   let { poolId } = useParams();
+
+  let navigate = useNavigate();
+
+  const filter = useFilter();
+
+  const setFilter = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+
+      if (value) {
+        navigate("?filter=" + value);
+      } else {
+        navigate("");
+      }
+    },
+    [navigate]
+  );
 
   return (
     <DashboardBox
@@ -32,31 +53,48 @@ const FuseTabBar = React.memo(() => {
         crossAxisAlignment="center"
         p={4}
       >
-        <DashboardBox height="35px">
-          <Row
-            pl={2}
-            expand
-            crossAxisAlignment="center"
-            mainAxisAlignment="flex-start"
-            fontWeight="bold"
-          >
-            {t("Search:")}
-            <Input
-              height="100%"
-              ml={2}
-              placeholder="RGT, USDC, ETH, USDT"
-              variant="filled"
-              size="sm"
-              _placeholder={{ color: "#FFF" }}
-              _focus={{ bg: "#282727" }}
-              _hover={{ bg: "#4d4b4b" }}
-              bg="#282727"
-              borderRadius="0px 9px 9px 0px"
-            />
-          </Row>
-        </DashboardBox>
+        <ButtonGroup size="sm" isAttached variant="outline" height="35px">
+          <DashboardBox height="35px">
+            <Row
+              pl={2}
+              expand
+              crossAxisAlignment="center"
+              mainAxisAlignment="flex-start"
+              fontWeight="bold"
+            >
+              {t("Search:")}
+              <Input
+                value={filter ?? ""}
+                onChange={setFilter}
+                height="100%"
+                ml={2}
+                placeholder="RGT, USDC, ETH, USDT"
+                variant="filled"
+                size="sm"
+                _placeholder={{ color: "#FFF" }}
+                _focus={{ bg: "#282727" }}
+                _hover={{ bg: "#4d4b4b" }}
+                bg="#282727"
+                borderRadius={filter ? "0px" : "0px 9px 9px 0px"}
+              />
+            </Row>
+          </DashboardBox>
+          {filter ? (
+            <DashboardBox bg="#282727" ml={-1}>
+              <Link
+                /* @ts-ignore */
+                as={RouterLink}
+                to=""
+              >
+                <Center expand pr={2} fontWeight="bold">
+                  <DeleteIcon mb="2px" />
+                </Center>
+              </Link>
+            </DashboardBox>
+          ) : null}
+        </ButtonGroup>
 
-        <TabLink route="/fuse/my-pools" text={t("My Pools")} />
+        <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
 
         <TabLink route="/fuse" text={t("All Pools")} />
 
@@ -110,8 +148,6 @@ const TabLink = React.memo(
 
     const location = useLocation();
 
-    const currentRoute = location.pathname.replace(/\/+$/, "");
-
     return (
       <Link
         /* @ts-ignore */
@@ -123,7 +159,10 @@ const TabLink = React.memo(
       >
         <DashboardBox
           height="35px"
-          {...(route === currentRoute ? activeStyle : noop)}
+          {...(route ===
+          location.pathname.replace(/\/+$/, "") + window.location.search
+            ? activeStyle
+            : noop)}
         >
           <Center expand px={2} fontWeight="bold">
             {text}
