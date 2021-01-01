@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-import { smallUsdFormatter } from "../../../utils/bigUtils";
+import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
@@ -282,7 +282,7 @@ const BorrowList = React.memo(() => {
           apy={15.2}
           accrued={0}
           borrowed={0}
-          liquidity={10000000}
+          liquidity={12200000}
         />
         <AssetBorrowRow
           symbol="SFI"
@@ -291,7 +291,7 @@ const BorrowList = React.memo(() => {
           apy={90.2}
           accrued={30.2}
           borrowed={1500}
-          liquidity={10000000}
+          liquidity={15423003}
         />
       </Column>
     </Column>
@@ -369,10 +369,12 @@ const AssetBorrowRow = React.memo(
           width="20%"
         >
           <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
-            $1.25M
+            {shortUsdFormatter(liquidity * Math.random() * 10)}
           </Text>
 
-          <Text fontSize="sm">3.5M {symbol}</Text>
+          <Text fontSize="sm">
+            {shortUsdFormatter(liquidity).replace("$", "")} {symbol}
+          </Text>
         </Column>
       </Row>
     );
