@@ -113,8 +113,7 @@ const SupplyList = React.memo(() => {
         crossAxisAlignment="flex-start"
         expand
         overflowY="auto"
-        p={0}
-        m={0}
+        mt={1}
       >
         <AssetSupplyRow
           symbol="RGT"
@@ -163,7 +162,7 @@ const AssetSupplyRow = React.memo(
         crossAxisAlignment="center"
         width="100%"
         px={4}
-        mt={2}
+        mb={3}
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -270,33 +269,31 @@ const BorrowList = React.memo(() => {
         </Text>
       </Row>
 
-      <AssetBorrowRow
-        symbol="RGT"
-        icon="https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
-        apy={15.2}
-        accrued={0}
-        borrowed={0}
-        liquidity={10000000}
-      />
-
-      <AssetBorrowRow
-        symbol="SFI"
-        icon="https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144"
-        color="#C34535"
-        apy={90.2}
-        accrued={30.2}
-        borrowed={1500}
-        liquidity={10000000}
-      />
-      {/* 
-      <AssetSupplyRow
-        symbol="MLN"
-        icon="https://assets.coingecko.com/coins/images/605/small/melon.png?1547034295"
-        apy={15.2}
-        earned={5.25}
-        balance={10000}
-        isCollateral
-      /> */}
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        expand
+        overflowY="auto"
+        mt={1}
+      >
+        <AssetBorrowRow
+          symbol="RGT"
+          icon="https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
+          apy={15.2}
+          accrued={0}
+          borrowed={0}
+          liquidity={10000000}
+        />
+        <AssetBorrowRow
+          symbol="SFI"
+          icon="https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144"
+          color="#C34535"
+          apy={90.2}
+          accrued={30.2}
+          borrowed={1500}
+          liquidity={10000000}
+        />
+      </Column>
     </Column>
   );
 });
@@ -325,7 +322,7 @@ const AssetBorrowRow = React.memo(
         crossAxisAlignment="center"
         width="100%"
         px={4}
-        mt={2}
+        mb={3}
       >
         <Row
           mainAxisAlignment="flex-start"
