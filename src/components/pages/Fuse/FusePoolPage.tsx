@@ -77,7 +77,7 @@ const SupplyList = React.memo(() => {
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height="500px"
+      height={{ md: "500px", base: "auto" }}
     >
       <Heading size="md" px={4} py={3}>
         Supply Balance: {"$200,000"}
@@ -238,7 +238,7 @@ const BorrowList = React.memo(() => {
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height="500px"
+      height={{ md: "500px", base: "auto" }}
     >
       <Heading size="md" px={4} py={3}>
         {t("Borrow Balance:")} {"$10,000"}
