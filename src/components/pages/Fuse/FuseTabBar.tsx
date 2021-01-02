@@ -73,7 +73,7 @@ const FuseTabBar = React.memo(() => {
                 size="sm"
                 _placeholder={{ color: "#FFF" }}
                 _focus={{ bg: "#282727" }}
-                _hover={{ bg: "#4d4b4b" }}
+                _hover={{ bg: "#282727" }}
                 bg="#282727"
                 borderRadius={filter ? "0px" : "0px 9px 9px 0px"}
               />
