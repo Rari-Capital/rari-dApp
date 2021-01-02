@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Center,
-  Column,
-  Row,
-  RowOrColumn,
-  useWindowSize,
-} from "buttered-chakra";
+import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";

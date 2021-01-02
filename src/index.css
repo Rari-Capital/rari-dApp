@@ -134,3 +134,7 @@ img:not([src]) {
 .no-underline:active {
   text-decoration: none !important;
 }
+
+.hide-bottom-tooltip .apexcharts-xaxistooltip-bottom {
+  display: none !important;
+}

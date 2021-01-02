@@ -183,8 +183,64 @@ export const ETHStrategyAllocationChartOptions = {
     },
   },
 };
+
 export const DisableChartInteractions = {
   tooltip: {
     enabled: false,
+  },
+};
+
+export const InterestRateChartOptions = {
+  ...LineChartOptions,
+
+  stroke: {
+    curve: "straight",
+    lineCap: "round",
+  },
+
+  grid: {
+    ...LineChartOptions.grid,
+    padding: {
+      top: -30,
+    },
+  },
+
+  dataLabels: {
+    enabled: false,
+  },
+
+  legend: {
+    show: false,
+  },
+
+  tooltip: {
+    x: {
+      formatter: function (value: string) {
+        return parseFloat(value).toFixed(2) + "% Utilization";
+      },
+    },
+  },
+
+  yaxis: {
+    show: false,
+    labels: {
+      ...LineChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return parseFloat(value).toFixed(2) + "%";
+      },
+    },
+  },
+
+  xaxis: {
+    axisBorder: {
+      show: false,
+    },
+    labels: {
+      show: false,
+      ...LineChartOptions.yaxis.labels,
+      formatter: function (value: string) {
+        return parseFloat(value).toFixed(2) + "%";
+      },
+    },
   },
 };

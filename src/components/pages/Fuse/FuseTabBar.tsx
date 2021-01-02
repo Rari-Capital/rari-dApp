@@ -29,7 +29,7 @@ const FuseTabBar = React.memo(() => {
 
   const setFilter = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
+      const value = encodeURIComponent(event.target.value);
 
       if (value) {
         navigate("?filter=" + value);
@@ -108,16 +108,23 @@ const FuseTabBar = React.memo(() => {
             mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
           >
             <DashboardBox {...activeStyle}>
-              <Center expand px={2} fontWeight="bold">
-                {t("Pool #{{poolId}}", { poolId })}
-              </Center>
+              <Link
+                /* @ts-ignore */
+                as={RouterLink}
+                to={`/fuse/pool/${poolId}`}
+                className="no-underline"
+              >
+                <Center expand px={2} fontWeight="bold">
+                  {t("Pool #{{poolId}}", { poolId })}
+                </Center>
+              </Link>
             </DashboardBox>
 
             <DashboardBox {...activeStyle}>
               <Link
                 /* @ts-ignore */
                 as={RouterLink}
-                to={"/fuse/pool-info/" + poolId}
+                to={`/fuse/pool/${poolId}/info`}
               >
                 <Center expand pl="9px" pr="10px" fontWeight="bold">
                   <InfoIcon />

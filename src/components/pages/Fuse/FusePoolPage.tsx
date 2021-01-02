@@ -33,11 +33,12 @@ const FusePoolPage = React.memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
-        <Header isAuthed={isAuthed} />
+        <Header isAuthed={isAuthed} isFuse />
 
         <FuseStatsBar />
 
         <FuseTabBar />
+
         <RowOrColumn
           width="100%"
           mainAxisAlignment="flex-start"
@@ -73,11 +74,13 @@ export default FusePoolPage;
 const SupplyList = React.memo(() => {
   const { t } = useTranslation();
 
+  const isMobile = useIsSemiSmallScreen();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={{ md: "500px", base: "auto" }}
+      height={isMobile ? "auto" : "500px"}
     >
       <Heading size="md" px={4} py={3}>
         Supply Balance: {"$200,000"}
@@ -234,11 +237,13 @@ const AssetSupplyRow = React.memo(
 const BorrowList = React.memo(() => {
   const { t } = useTranslation();
 
+  const isMobile = useIsSemiSmallScreen();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={{ md: "500px", base: "auto" }}
+      height={isMobile ? "auto" : "500px"}
     >
       <Heading size="md" px={4} py={3}>
         {t("Borrow Balance:")} {"$10,000"}

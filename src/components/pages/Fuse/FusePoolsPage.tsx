@@ -15,7 +15,7 @@ import { ModalDivider } from "../../shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar, { useFilter } from "./FuseTabBar";
+import FuseTabBar from "./FuseTabBar";
 
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -34,7 +34,7 @@ const FusePoolsPage = React.memo(() => {
         width={isMobile ? "100%" : "1000px"}
         px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
       >
-        <Header isAuthed={isAuthed} />
+        <Header isAuthed={isAuthed} isFuse />
 
         <FuseStatsBar />
 
@@ -57,7 +57,7 @@ const FusePoolsPage = React.memo(() => {
 export default FusePoolsPage;
 
 const PoolList = React.memo(() => {
-  const filter = useFilter();
+  // const filter = useFilter();
 
   const { t } = useTranslation();
 

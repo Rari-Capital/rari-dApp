@@ -13,8 +13,10 @@ import React from "react";
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import {
+  AnimatedFuseSmallLogo,
   AnimatedPoolLogo,
   AnimatedSmallLogo,
+  FuseSmallLogo,
   PoolLogo,
   SmallLogo,
 } from "./Logos";
@@ -30,9 +32,11 @@ export const Header = React.memo(
   ({
     isAuthed,
     isPool,
+    isFuse,
     padding,
   }: {
     isAuthed: boolean;
+    isFuse?: boolean;
     isPool?: boolean;
     padding?: boolean;
   }) => {
@@ -53,11 +57,15 @@ export const Header = React.memo(
         {isAuthed ? (
           isPool ? (
             <AnimatedPoolLogo />
+          ) : isFuse ? (
+            <AnimatedFuseSmallLogo />
           ) : (
             <AnimatedSmallLogo />
           )
         ) : isPool ? (
           <PoolLogo />
+        ) : isFuse ? (
+          <FuseSmallLogo />
         ) : (
           <SmallLogo />
         )}
