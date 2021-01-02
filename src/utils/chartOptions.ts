@@ -235,6 +235,9 @@ export const InterestRateChartOptions = {
     axisBorder: {
       show: false,
     },
+    axisTicks: {
+      show: false,
+    },
     labels: {
       show: false,
       ...LineChartOptions.yaxis.labels,
