@@ -33,11 +33,13 @@ export const Header = React.memo(
     isAuthed,
     isPool,
     isFuse,
+    lessLinks,
     padding,
   }: {
     isAuthed: boolean;
     isFuse?: boolean;
     isPool?: boolean;
+    lessLinks?: boolean;
     padding?: boolean;
   }) => {
     const { t } = useTranslation();
@@ -87,11 +89,13 @@ export const Header = React.memo(
 
           <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-          <HeaderLink
-            ml={4}
-            name={t("Governance")}
-            route="https://vote.rari.capital"
-          />
+          {lessLinks ? null : (
+            <HeaderLink
+              ml={4}
+              name={t("Governance")}
+              route="https://vote.rari.capital"
+            />
+          )}
 
           <HeaderLink
             ml={4}
