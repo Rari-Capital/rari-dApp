@@ -3,6 +3,7 @@ import {
   AvatarGroup,
   Box,
   Heading,
+  Link,
   Select,
   Text,
 } from "@chakra-ui/react";
@@ -29,6 +30,7 @@ import DashboardBox, {
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
+import { Link as RouterLink } from "react-router-dom";
 
 import Chart from "react-apexcharts";
 
@@ -129,9 +131,28 @@ const OracleAndInterestRates = React.memo(() => {
       crossAxisAlignment="flex-start"
       height={isMobile ? "auto" : "450px"}
     >
-      <Heading size="sm" px={4} py={3}>
-        {t("Pool {{num}} Info", { num: poolId })}
-      </Heading>
+      <Row
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
+        width="100%"
+        px={4}
+        height="49px"
+      >
+        <Heading size="sm">{t("Pool {{num}} Info", { num: poolId })}</Heading>
+
+        <Link
+          /* @ts-ignore */
+          as={RouterLink}
+          className="no-underline"
+          to="../edit"
+        >
+          <DashboardBox height="35px">
+            <Center expand px={2} fontWeight="bold">
+              Edit
+            </Center>
+          </DashboardBox>
+        </Link>
+      </Row>
 
       <ModalDivider />
 
