@@ -23,7 +23,7 @@ interface Props {
   onClose: () => any;
 }
 
-const AddAssetWindow = React.memo((props: Props) => {
+const AddAssetModal = React.memo((props: Props) => {
   const { t } = useTranslation();
   const { rari } = useRari();
 
@@ -72,7 +72,7 @@ const AddAssetWindow = React.memo((props: Props) => {
       <ModalOverlay />
       <ModalContent {...MODAL_PROPS}>
         <Heading fontSize="27px" my={4} textAlign="center">
-          Add Asset
+          {t("Add Asset")}
         </Heading>
 
         <ModalDivider />
@@ -140,4 +140,4 @@ const AddAssetWindow = React.memo((props: Props) => {
   );
 });
 
-export default AddAssetWindow;
+export default AddAssetModal;

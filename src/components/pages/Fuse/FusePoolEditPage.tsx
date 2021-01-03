@@ -31,7 +31,8 @@ import Chart from "react-apexcharts";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
-import AddAssetWindow from "./Modals/AddAssetWindow";
+import AddAssetModal from "./Modals/AddAssetModal";
+import AddToWhitelistModal from "./Modals/AddToWhitelistModal";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = {};
@@ -50,15 +51,26 @@ const FusePoolEditPage = React.memo(
       onClose: closeAddAssetModal,
     } = useDisclosure();
 
+    const {
+      isOpen: isAddToWhitelistModalOpen,
+      onOpen: openAddToWhitelistModal,
+      onClose: closeAddToWhitelistModal,
+    } = useDisclosure();
+
     const { t } = useTranslation();
 
     return (
       <>
         <ForceAuthModal />
 
-        <AddAssetWindow
+        <AddAssetModal
           isOpen={isAddAssetModalOpen}
           onClose={closeAddAssetModal}
+        />
+
+        <AddToWhitelistModal
+          isOpen={isAddToWhitelistModalOpen}
+          onClose={closeAddToWhitelistModal}
         />
 
         <Column
@@ -86,7 +98,10 @@ const FusePoolEditPage = React.memo(
               mt={DASHBOARD_BOX_SPACING.asPxString()}
               height="auto"
             >
-              <PoolConfiguration isNewPool={isNewPool} />
+              <PoolConfiguration
+                isNewPool={isNewPool}
+                openAddToWhitelistModal={openAddToWhitelistModal}
+              />
             </DashboardBox>
 
             <Box pl={isMobile ? 0 : 4} width={isMobile ? "100%" : "50%"}>
@@ -125,7 +140,13 @@ const FusePoolEditPage = React.memo(
 export default FusePoolEditPage;
 
 const PoolConfiguration = React.memo(
-  ({ isNewPool }: { isNewPool?: boolean }) => {
+  ({
+    isNewPool,
+    openAddToWhitelistModal,
+  }: {
+    isNewPool?: boolean;
+    openAddToWhitelistModal: () => any;
+  }) => {
     const isMobile = useIsSemiSmallScreen();
 
     const { t } = useTranslation();
@@ -238,13 +259,16 @@ const PoolConfiguration = React.memo(
           >
             <Text fontWeight="bold">{t("Whitelist")}:</Text>
 
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <DashboardBox height="35px" ml={2}>
-                <Center expand px={2} fontWeight="bold">
-                  {t("Add Address")}
-                </Center>
-              </DashboardBox>
-            </Row>
+            <DashboardBox
+              height="35px"
+              ml={2}
+              as="button"
+              onClick={openAddToWhitelistModal}
+            >
+              <Center expand px={2} fontWeight="bold">
+                {t("Add Address")}
+              </Center>
+            </DashboardBox>
           </Row>
 
           <ModalDivider />
