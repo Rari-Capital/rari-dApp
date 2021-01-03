@@ -97,7 +97,7 @@ const PoolList = React.memo(() => {
         </Text>
 
         <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Collateral Ratio")}
+          {t("Collateral Factor")}
         </Text>
       </Row>
 

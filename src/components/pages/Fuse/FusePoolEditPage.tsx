@@ -6,6 +6,7 @@ import {
   Select,
   Text,
   Switch,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
 import React, { useState } from "react";
@@ -30,6 +31,7 @@ import Chart from "react-apexcharts";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
+import AddAssetWindow from "./Modals/AddAssetWindow";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = {};
@@ -41,9 +43,20 @@ const FusePoolEditPage = React.memo(() => {
 
   const isMobile = useIsSemiSmallScreen();
 
+  const {
+    isOpen: isAddAssetModalOpen,
+    onOpen: openAddAssetModal,
+    onClose: closeAddAssetModal,
+  } = useDisclosure();
+
   return (
     <>
       <ForceAuthModal />
+
+      <AddAssetWindow
+        isOpen={isAddAssetModalOpen}
+        onClose={closeAddAssetModal}
+      />
 
       <Column
         mainAxisAlignment="flex-start"
@@ -79,7 +92,7 @@ const FusePoolEditPage = React.memo(() => {
               mt={DASHBOARD_BOX_SPACING.asPxString()}
               height="auto"
             >
-              <AssetConfiguration />
+              <AssetConfiguration openAddAssetModal={openAddAssetModal} />
             </DashboardBox>
           </Box>
         </RowOrColumn>
@@ -262,250 +275,260 @@ const PoolConfiguration = React.memo(() => {
   );
 });
 
-const AssetConfiguration = React.memo(() => {
-  const isMobile = useIsSemiSmallScreen();
+const AssetConfiguration = React.memo(
+  ({ openAddAssetModal }: { openAddAssetModal: () => any }) => {
+    const isMobile = useIsSemiSmallScreen();
 
-  let { poolId } = useParams();
+    let { poolId } = useParams();
 
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  const borrowCurve = Array.from({ length: 100 }, (_, i) => {
-    let y = 0;
+    const borrowCurve = Array.from({ length: 100 }, (_, i) => {
+      let y = 0;
 
-    if (i < 80) {
-      y = i * 0.1;
-    } else {
-      y = 5 + i * 0.25;
-    }
+      if (i < 80) {
+        y = i * 0.1;
+      } else {
+        y = 5 + i * 0.25;
+      }
 
-    return { x: i, y };
-  });
+      return { x: i, y };
+    });
 
-  const depositCurve = Array.from({ length: 100 }, (_, i) => {
-    let y = 0;
+    const depositCurve = Array.from({ length: 100 }, (_, i) => {
+      let y = 0;
 
-    if (i < 82) {
-      y = i * 0.09;
-    } else {
-      y = 5 + i * 0.23;
-    }
+      if (i < 82) {
+        y = i * 0.09;
+      } else {
+        y = 5 + i * 0.23;
+      }
 
-    return { x: i, y };
-  });
+      return { x: i, y };
+    });
 
-  const [selectedAsset, setSelectedAsset] = useState("SUSHI");
+    const [selectedAsset, setSelectedAsset] = useState("SUSHI");
 
-  const assetColors: any = { SUSHI: "#DD2D44" };
+    const assetColors: any = { SUSHI: "#DD2D44" };
 
-  const poolTokens = [
-    {
-      symbol: "SUSHI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
-    },
+    const poolTokens = [
+      {
+        symbol: "SUSHI",
+        icon:
+          "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
+      },
 
-    {
-      symbol: "UNI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
-    },
+      {
+        symbol: "UNI",
+        icon:
+          "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
+      },
 
-    {
-      symbol: "ZRX",
-      icon:
-        "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
-    },
+      {
+        symbol: "ZRX",
+        icon:
+          "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
+      },
 
-    {
-      symbol: "1INCH",
-      icon:
-        "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
-    },
-  ];
+      {
+        symbol: "1INCH",
+        icon:
+          "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
+      },
+    ];
 
-  const [collateralFactor, setCollateralFactor] = useState(75);
-  const [reserveFactor, setReserveFactor] = useState(10);
+    const [collateralFactor, setCollateralFactor] = useState(75);
+    const [reserveFactor, setReserveFactor] = useState(10);
 
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "440px"}
-      width="100%"
-      flexShrink={0}
-    >
-      <Row
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        width="100%"
-        height="55px"
-        flexShrink={0}
-      >
-        <Heading size="sm" ml={4}>
-          {t("Asset Configurations", { num: poolId })}
-        </Heading>
-
-        <DashboardBox mr={4} height="35px" width="110px" flexShrink={0} ml={2}>
-          <Center expand px={2} fontWeight="bold">
-            {t("Add Asset")}
-          </Center>
-        </DashboardBox>
-      </Row>
-
-      <ModalDivider />
-
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        py={3}
-        px={4}
-        overflowX="scroll"
-        flexShrink={0}
-      >
-        <Text fontWeight="bold" mr={2}>
-          {t("Assets:")}
-        </Text>
-
-        {poolTokens.map(({ symbol }) => {
-          return (
-            <Box pr={2}>
-              <DashboardBox
-                as="button"
-                onClick={() => setSelectedAsset(symbol)}
-                {...(symbol === selectedAsset ? activeStyle : noop)}
-              >
-                <Center expand px={4} py={1} fontWeight="bold">
-                  {symbol}
-                </Center>
-              </DashboardBox>
-            </Box>
-          );
-        })}
-      </Row>
-
-      <ModalDivider />
-
+    return (
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        overflowY="auto"
+        height={isMobile ? "auto" : "440px"}
         width="100%"
-        height="100%"
+        flexShrink={0}
       >
         <Row
-          width="100%"
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Collateral Factor")}:</Text>
-
-          <SliderWithLabel
-            value={collateralFactor}
-            setValue={setCollateralFactor}
-            formatValue={formatPercentage}
-          />
-        </Row>
-
-        <ModalDivider />
-
-        <Row
           width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Reserve Factor")}:</Text>
-
-          <SliderWithLabel
-            value={reserveFactor}
-            setValue={setReserveFactor}
-            formatValue={formatPercentage}
-          />
-        </Row>
-
-        <ModalDivider />
-
-        <Row
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Oracle")}:</Text>
-
-          <Select
-            {...DASHBOARD_BOX_PROPS}
-            borderRadius="7px"
-            fontWeight="bold"
-            width="auto"
-            _focus={{ outline: "none" }}
-          >
-            <option className="black-bg-option" value="chainlink">
-              {t("Chainlink")}
-            </option>
-          </Select>
-        </Row>
-
-        <ModalDivider />
-
-        <Row
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Interest Model")}:</Text>
-
-          <Select
-            {...DASHBOARD_BOX_PROPS}
-            borderRadius="7px"
-            fontWeight="bold"
-            width="auto"
-            _focus={{ outline: "none" }}
-          >
-            <option className="black-bg-option" value="dai">
-              {t("Dai Interest Rate Model")}
-            </option>
-          </Select>
-        </Row>
-
-        <Box
-          height="300px"
-          width="100%"
-          color="#000000"
-          overflow="hidden"
-          pl={2}
-          pr={3}
-          className="hide-bottom-tooltip"
+          height="55px"
           flexShrink={0}
         >
-          <Chart
-            options={{
-              ...InterestRateChartOptions,
-              colors: ["#FFFFFF", assetColors[selectedAsset] ?? "#282727"],
-            }}
-            type="line"
+          <Heading size="sm" ml={4}>
+            {t("Asset Configurations", { num: poolId })}
+          </Heading>
+
+          <DashboardBox
+            mr={4}
+            height="35px"
+            width="110px"
+            flexShrink={0}
+            ml={2}
+            as="button"
+            onClick={openAddAssetModal}
+          >
+            <Center expand px={2} fontWeight="bold">
+              {t("Add Asset")}
+            </Center>
+          </DashboardBox>
+        </Row>
+
+        <ModalDivider />
+
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          width="100%"
+          py={3}
+          px={4}
+          overflowX="scroll"
+          flexShrink={0}
+        >
+          <Text fontWeight="bold" mr={2}>
+            {t("Assets:")}
+          </Text>
+
+          {poolTokens.map(({ symbol }) => {
+            return (
+              <Box pr={2} key={symbol}>
+                <DashboardBox
+                  as="button"
+                  onClick={() => setSelectedAsset(symbol)}
+                  {...(symbol === selectedAsset ? activeStyle : noop)}
+                >
+                  <Center expand px={4} py={1} fontWeight="bold">
+                    {symbol}
+                  </Center>
+                </DashboardBox>
+              </Box>
+            );
+          })}
+        </Row>
+
+        <ModalDivider />
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          overflowY="auto"
+          width="100%"
+          height="100%"
+        >
+          <Row
             width="100%"
-            height="100%"
-            series={[
-              {
-                name: "Borrow Rate",
-                data: borrowCurve,
-              },
-              {
-                name: "Deposit Rate",
-                data: depositCurve,
-              },
-            ]}
-          />
-        </Box>
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            my={4}
+            px={4}
+          >
+            <Text fontWeight="bold">{t("Collateral Factor")}:</Text>
+
+            <SliderWithLabel
+              value={collateralFactor}
+              setValue={setCollateralFactor}
+              formatValue={formatPercentage}
+            />
+          </Row>
+
+          <ModalDivider />
+
+          <Row
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            my={4}
+            px={4}
+          >
+            <Text fontWeight="bold">{t("Reserve Factor")}:</Text>
+
+            <SliderWithLabel
+              value={reserveFactor}
+              setValue={setReserveFactor}
+              formatValue={formatPercentage}
+            />
+          </Row>
+
+          <ModalDivider />
+
+          <Row
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            my={4}
+            px={4}
+          >
+            <Text fontWeight="bold">{t("Oracle")}:</Text>
+
+            <Select
+              {...DASHBOARD_BOX_PROPS}
+              borderRadius="7px"
+              fontWeight="bold"
+              width="auto"
+              _focus={{ outline: "none" }}
+            >
+              <option className="black-bg-option" value="chainlink">
+                {t("Chainlink")}
+              </option>
+            </Select>
+          </Row>
+
+          <ModalDivider />
+
+          <Row
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            my={4}
+            px={4}
+          >
+            <Text fontWeight="bold">{t("Interest Model")}:</Text>
+
+            <Select
+              {...DASHBOARD_BOX_PROPS}
+              borderRadius="7px"
+              fontWeight="bold"
+              width="auto"
+              _focus={{ outline: "none" }}
+            >
+              <option className="black-bg-option" value="dai">
+                {t("Dai Interest Rate Model")}
+              </option>
+            </Select>
+          </Row>
+
+          <Box
+            height="300px"
+            width="100%"
+            color="#000000"
+            overflow="hidden"
+            pl={2}
+            pr={3}
+            className="hide-bottom-tooltip"
+            flexShrink={0}
+          >
+            <Chart
+              options={{
+                ...InterestRateChartOptions,
+                colors: ["#FFFFFF", assetColors[selectedAsset] ?? "#282727"],
+              }}
+              type="line"
+              width="100%"
+              height="100%"
+              series={[
+                {
+                  name: "Borrow Rate",
+                  data: borrowCurve,
+                },
+                {
+                  name: "Deposit Rate",
+                  data: depositCurve,
+                },
+              ]}
+            />
+          </Box>
+        </Column>
       </Column>
-    </Column>
-  );
-});
+    );
+  }
+);
