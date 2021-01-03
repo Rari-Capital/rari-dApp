@@ -124,6 +124,7 @@ const FusePoolEditPage = React.memo(
             height="auto"
             fontSize="xl"
             py={3}
+            as="button"
           >
             <Center expand fontWeight="bold">
               {isNewPool ? t("Create") : t("Apply")}
@@ -157,13 +158,11 @@ const PoolConfiguration = React.memo(
         icon:
           "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
       },
-
       {
         symbol: "UNI",
         icon:
           "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
       },
-
       {
         symbol: "ZRX",
         icon:
@@ -203,25 +202,30 @@ const PoolConfiguration = React.memo(
             {t("Assets:")}
           </Text>
 
-          <AvatarGroup color="#000" size="sm" max={5} mr={2}>
-            {poolTokens.map(({ symbol, icon }) => {
-              return (
-                <Avatar
-                  key={symbol}
-                  bg="#FFF"
-                  borderWidth="1px"
-                  name={symbol}
-                  src={icon}
-                />
-              );
-            })}
-          </AvatarGroup>
-
-          <Text pr={2} lineHeight={1} whiteSpace="nowrap">
-            {poolTokens.map(({ symbol }, index, array) => {
-              return symbol + (index !== array.length - 1 ? " / " : "");
-            })}
-          </Text>
+          {poolTokens.length > 0 ? (
+            <>
+              <AvatarGroup color="#000" size="sm" max={5} mr={2}>
+                {poolTokens.map(({ symbol, icon }) => {
+                  return (
+                    <Avatar
+                      key={symbol}
+                      bg="#FFF"
+                      borderWidth="1px"
+                      name={symbol}
+                      src={icon}
+                    />
+                  );
+                })}
+              </AvatarGroup>
+              <Text pr={2} lineHeight={1} whiteSpace="nowrap">
+                {poolTokens.map(({ symbol }, index, array) => {
+                  return symbol + (index !== array.length - 1 ? " / " : "");
+                })}
+              </Text>
+            </>
+          ) : (
+            t("None")
+          )}
         </Row>
 
         <ModalDivider />
@@ -397,27 +401,31 @@ const AssetConfiguration = React.memo(
           px={4}
           overflowX="scroll"
           flexShrink={0}
+          height="58px"
         >
           <Text fontWeight="bold" mr={2}>
             {t("Assets:")}
           </Text>
-
-          {poolTokens.map(({ symbol }) => {
-            return (
-              <Box pr={2} key={symbol}>
-                <DashboardBox
-                  as="button"
-                  onClick={() => setSelectedAsset(symbol)}
-                  {...(symbol === selectedAsset ? activeStyle : noop)}
-                >
-                  <Center expand px={4} py={1} fontWeight="bold">
-                    {symbol}
-                  </Center>
-                </DashboardBox>
-              </Box>
-            );
-          })}
+          {poolTokens.length > 0
+            ? poolTokens.map(({ symbol }) => {
+                return (
+                  <Box pr={2} key={symbol}>
+                    <DashboardBox
+                      as="button"
+                      onClick={() => setSelectedAsset(symbol)}
+                      {...(symbol === selectedAsset ? activeStyle : noop)}
+                    >
+                      <Center expand px={4} py={1} fontWeight="bold">
+                        {symbol}
+                      </Center>
+                    </DashboardBox>
+                  </Box>
+                );
+              })
+            : t("None")}
         </Row>
+
+        <ModalDivider />
 
         <AssetSettings
           collateralFactor={collateralFactor}
