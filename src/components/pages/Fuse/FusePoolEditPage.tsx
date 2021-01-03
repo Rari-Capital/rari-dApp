@@ -38,245 +38,260 @@ const noop = {};
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-const FusePoolEditPage = React.memo(() => {
-  const { isAuthed } = useRari();
+const FusePoolEditPage = React.memo(
+  ({ isNewPool }: { isNewPool?: boolean }) => {
+    const { isAuthed } = useRari();
 
-  const isMobile = useIsSemiSmallScreen();
+    const isMobile = useIsSemiSmallScreen();
 
-  const {
-    isOpen: isAddAssetModalOpen,
-    onOpen: openAddAssetModal,
-    onClose: closeAddAssetModal,
-  } = useDisclosure();
+    const {
+      isOpen: isAddAssetModalOpen,
+      onOpen: openAddAssetModal,
+      onClose: closeAddAssetModal,
+    } = useDisclosure();
 
-  return (
-    <>
-      <ForceAuthModal />
+    const { t } = useTranslation();
 
-      <AddAssetWindow
-        isOpen={isAddAssetModalOpen}
-        onClose={closeAddAssetModal}
-      />
+    return (
+      <>
+        <ForceAuthModal />
 
-      <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        color="#FFFFFF"
-        mx="auto"
-        width={isMobile ? "100%" : "1150px"}
-        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-      >
-        <Header isAuthed={isAuthed} isFuse />
+        <AddAssetWindow
+          isOpen={isAddAssetModalOpen}
+          onClose={closeAddAssetModal}
+        />
 
-        <FuseStatsBar />
-
-        <FuseTabBar />
-
-        <RowOrColumn
-          width="100%"
+        <Column
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
-          isRow={!isMobile}
+          crossAxisAlignment="center"
+          color="#FFFFFF"
+          mx="auto"
+          width={isMobile ? "100%" : "1150px"}
+          px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
         >
-          <DashboardBox
-            width={isMobile ? "100%" : "50%"}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
-            height="auto"
-          >
-            <PoolConfiguration />
-          </DashboardBox>
+          <Header isAuthed={isAuthed} isFuse />
 
-          <Box pl={isMobile ? 0 : 4} width={isMobile ? "100%" : "50%"}>
+          <FuseStatsBar />
+
+          <FuseTabBar />
+
+          <RowOrColumn
+            width="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            isRow={!isMobile}
+          >
             <DashboardBox
-              width="100%"
+              width={isMobile ? "100%" : "50%"}
               mt={DASHBOARD_BOX_SPACING.asPxString()}
               height="auto"
             >
-              <AssetConfiguration openAddAssetModal={openAddAssetModal} />
+              <PoolConfiguration isNewPool={isNewPool} />
             </DashboardBox>
-          </Box>
-        </RowOrColumn>
 
-        <DashboardBox
-          width="100%"
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          height="auto"
-          fontSize="xl"
-          py={3}
-        >
-          <Center expand fontWeight="bold">
-            Save
-          </Center>
-        </DashboardBox>
-      </Column>
+            <Box pl={isMobile ? 0 : 4} width={isMobile ? "100%" : "50%"}>
+              <DashboardBox
+                width="100%"
+                mt={DASHBOARD_BOX_SPACING.asPxString()}
+                height="auto"
+              >
+                <AssetConfiguration
+                  isNewPool={isNewPool}
+                  openAddAssetModal={openAddAssetModal}
+                />
+              </DashboardBox>
+            </Box>
+          </RowOrColumn>
 
-      <CopyrightSpacer forceShow />
-    </>
-  );
-});
+          <DashboardBox
+            width="100%"
+            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            height="auto"
+            fontSize="xl"
+            py={3}
+          >
+            <Center expand fontWeight="bold">
+              {isNewPool ? t("Create") : t("Apply")}
+            </Center>
+          </DashboardBox>
+        </Column>
+
+        <CopyrightSpacer forceShow />
+      </>
+    );
+  }
+);
 
 export default FusePoolEditPage;
 
-const PoolConfiguration = React.memo(() => {
-  const isMobile = useIsSemiSmallScreen();
+const PoolConfiguration = React.memo(
+  ({ isNewPool }: { isNewPool?: boolean }) => {
+    const isMobile = useIsSemiSmallScreen();
 
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  const poolTokens = [
-    {
-      symbol: "SUSHI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
-    },
+    const poolTokens = [
+      {
+        symbol: "SUSHI",
+        icon:
+          "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
+      },
 
-    {
-      symbol: "UNI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
-    },
+      {
+        symbol: "UNI",
+        icon:
+          "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
+      },
 
-    {
-      symbol: "ZRX",
-      icon:
-        "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
-    },
-    {
-      symbol: "1INCH",
-      icon:
-        "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
-    },
-  ];
+      {
+        symbol: "ZRX",
+        icon:
+          "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
+      },
+      {
+        symbol: "1INCH",
+        icon:
+          "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
+      },
+    ];
 
-  const [interestFee, setInterestFee] = useState(10);
+    const [interestFee, setInterestFee] = useState(10);
 
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "440px"}
-    >
-      <Heading size="sm" px={4} py={4}>
-        {t("Pool Configuration")}
-      </Heading>
-
-      <ModalDivider />
-
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        my={4}
-        px={4}
-        height="40px"
-        overflowX="auto"
-      >
-        <Text fontWeight="bold" mr={2}>
-          {t("Assets:")}
-        </Text>
-
-        <AvatarGroup color="#000" size="sm" max={5} mr={2}>
-          {poolTokens.map(({ symbol, icon }) => {
-            return (
-              <Avatar
-                key={symbol}
-                bg="#FFF"
-                borderWidth="1px"
-                name={symbol}
-                src={icon}
-              />
-            );
-          })}
-        </AvatarGroup>
-
-        <Text pr={2} lineHeight={1} whiteSpace="nowrap">
-          {poolTokens.map(({ symbol }, index, array) => {
-            return symbol + (index !== array.length - 1 ? " / " : "");
-          })}
-        </Text>
-      </Row>
-
-      <ModalDivider />
-
+    return (
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        width="100%"
+        height={isMobile ? "auto" : "440px"}
       >
-        <Row
-          my={4}
-          px={4}
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-        >
-          <Text fontWeight="bold">{t("Private")}:</Text>
-
-          <Switch
-            h="20px"
-            className="black-switch"
-            colorScheme="#121212"
-            isChecked
-          />
-        </Row>
+        <Heading size="sm" px={4} py={4}>
+          {t("Pool Configuration")}
+        </Heading>
 
         <ModalDivider />
 
         <Row
-          width="100%"
-          mainAxisAlignment="space-between"
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
+          width="100%"
           my={4}
           px={4}
+          height="40px"
+          overflowX="auto"
         >
-          <Text fontWeight="bold">{t("Whitelist")}:</Text>
+          <Text fontWeight="bold" mr={2}>
+            {t("Assets:")}
+          </Text>
 
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <DashboardBox height="35px" ml={2}>
-              <Center expand px={2} fontWeight="bold">
-                {t("Add Address")}
-              </Center>
-            </DashboardBox>
+          <AvatarGroup color="#000" size="sm" max={5} mr={2}>
+            {poolTokens.map(({ symbol, icon }) => {
+              return (
+                <Avatar
+                  key={symbol}
+                  bg="#FFF"
+                  borderWidth="1px"
+                  name={symbol}
+                  src={icon}
+                />
+              );
+            })}
+          </AvatarGroup>
+
+          <Text pr={2} lineHeight={1} whiteSpace="nowrap">
+            {poolTokens.map(({ symbol }, index, array) => {
+              return symbol + (index !== array.length - 1 ? " / " : "");
+            })}
+          </Text>
+        </Row>
+
+        <ModalDivider />
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          width="100%"
+        >
+          <Row
+            my={4}
+            px={4}
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+          >
+            <Text fontWeight="bold">{t("Private")}:</Text>
+
+            <Switch
+              h="20px"
+              className="black-switch"
+              colorScheme="#121212"
+              isChecked
+            />
           </Row>
-        </Row>
 
-        <ModalDivider />
+          <ModalDivider />
 
-        <Row
-          my={4}
-          px={4}
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-        >
-          <Text fontWeight="bold">{t("Editable")}:</Text>
+          <Row
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            my={4}
+            px={4}
+          >
+            <Text fontWeight="bold">{t("Whitelist")}:</Text>
 
-          <Switch h="20px" className="black-switch" colorScheme="whatsapp" />
-        </Row>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <DashboardBox height="35px" ml={2}>
+                <Center expand px={2} fontWeight="bold">
+                  {t("Add Address")}
+                </Center>
+              </DashboardBox>
+            </Row>
+          </Row>
 
-        <ModalDivider />
+          <ModalDivider />
 
-        <Row
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Interest Fee")}:</Text>
+          <Row
+            my={4}
+            px={4}
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+          >
+            <Text fontWeight="bold">{t("Editable")}:</Text>
 
-          <SliderWithLabel
-            value={interestFee}
-            setValue={setInterestFee}
-            formatValue={formatPercentage}
-          />
-        </Row>
+            <Switch h="20px" className="black-switch" colorScheme="whatsapp" />
+          </Row>
+
+          <ModalDivider />
+
+          <Row
+            width="100%"
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            my={4}
+            px={4}
+          >
+            <Text fontWeight="bold">{t("Interest Fee")}:</Text>
+
+            <SliderWithLabel
+              value={interestFee}
+              setValue={setInterestFee}
+              formatValue={formatPercentage}
+            />
+          </Row>
+        </Column>
       </Column>
-    </Column>
-  );
-});
+    );
+  }
+);
 
 const AssetConfiguration = React.memo(
-  ({ openAddAssetModal }: { openAddAssetModal: () => any }) => {
+  ({
+    openAddAssetModal,
+    isNewPool,
+  }: {
+    openAddAssetModal: () => any;
+    isNewPool?: boolean;
+  }) => {
     const isMobile = useIsSemiSmallScreen();
 
     let { poolId } = useParams();

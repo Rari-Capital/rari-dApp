@@ -95,7 +95,7 @@ const App = React.memo(() => {
       <Route path="/tranches" element={<TranchesPage />} />
 
       <Route path="/fuse" element={<FusePoolsPage />} />
-
+      <Route path="/fuse/new-pool" element={<FusePoolEditPage isNewPool />} />
       <Route path="/fuse/pool/:poolId" element={<FusePoolPage />} />
       <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
       <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />

@@ -138,11 +138,17 @@ const FuseTabBar = React.memo(() => {
           mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
           ml={isMobile ? 0 : "auto"}
           height="35px"
-          as="button"
         >
-          <Center expand pl={2} pr={3} fontWeight="bold">
-            <SmallAddIcon mr={1} /> {t("New Pool")}
-          </Center>
+          <Link
+            /* @ts-ignore */
+            as={RouterLink}
+            to={`/fuse/new-pool`}
+            className="no-underline"
+          >
+            <Center expand pl={2} pr={3} fontWeight="bold">
+              <SmallAddIcon mr={1} /> {t("New Pool")}
+            </Center>
+          </Link>
         </DashboardBox>
       </RowOrColumn>
     </DashboardBox>
