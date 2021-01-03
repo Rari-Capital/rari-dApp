@@ -15,8 +15,8 @@ enum CurrentScreen {
 }
 
 export enum Mode {
-  DEPOSIT,
-  WITHDRAW,
+  DEPOSIT = "Deposit",
+  WITHDRAW = "withdraw",
 }
 
 interface Props {

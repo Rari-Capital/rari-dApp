@@ -182,9 +182,7 @@ const AmountSelect = React.memo(
 
     let depositOrWithdrawAlert;
 
-    if (amount === null) {
-      depositOrWithdrawAlert = t("Enter a valid amount to deposit.");
-    } else if (amount.isZero()) {
+    if (amount === null || amount.isZero()) {
       depositOrWithdrawAlert = t("Enter a valid amount to deposit.");
     } else if (!poolTokenBalance || !sfiBalance) {
       depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {

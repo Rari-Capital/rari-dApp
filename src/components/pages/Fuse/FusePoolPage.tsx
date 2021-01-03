@@ -1,4 +1,4 @@
-import { Avatar, Heading, Switch, Text } from "@chakra-ui/react";
+import { Avatar, Heading, Switch, Text, useDisclosure } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "buttered-chakra";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
+import PoolModal from "./Modals/PoolModal";
 
 const FusePoolPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -159,76 +160,93 @@ const AssetSupplyRow = React.memo(
     isCollateral: boolean;
     color?: string;
   }) => {
+    const {
+      isOpen: isModalOpen,
+      onOpen: openModal,
+      onClose: closeModal,
+    } = useDisclosure();
+
     return (
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        px={4}
-        mb={3}
-      >
+      <>
+        <PoolModal
+          depositSide
+          token={symbol}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          width="27%"
+          width="100%"
+          px={4}
+          mb={3}
+          as="button"
+          onClick={openModal}
         >
-          <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
-          <Text fontWeight="bold" fontSize="lg" ml={2}>
-            {symbol}
-          </Text>
-        </Row>
+          <Row
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            width="27%"
+          >
+            <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
+            <Text fontWeight="bold" fontSize="lg" ml={2}>
+              {symbol}
+            </Text>
+          </Row>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="27%"
-        >
-          <Text color={color ?? "#FF"} fontWeight="bold" fontSize="17px">
-            {apy}%
-          </Text>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="27%"
+          >
+            <Text color={color ?? "#FF"} fontWeight="bold" fontSize="17px">
+              {apy}%
+            </Text>
 
-          <Text fontSize="sm">
-            {smallUsdFormatter(earned).replace("$", "")} {symbol}
-          </Text>
-        </Column>
+            <Text fontSize="sm">
+              {smallUsdFormatter(earned).replace("$", "")} {symbol}
+            </Text>
+          </Column>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="27%"
-        >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {smallUsdFormatter(balance * Math.random() * 10)}
-          </Text>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="27%"
+          >
+            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+              {smallUsdFormatter(balance * Math.random() * 10)}
+            </Text>
 
-          <Text fontSize="sm">
-            {smallUsdFormatter(balance).replace("$", "")} {symbol}
-          </Text>
-        </Column>
+            <Text fontSize="sm">
+              {smallUsdFormatter(balance).replace("$", "")} {symbol}
+            </Text>
+          </Column>
 
-        <Row
-          width="20%"
-          mainAxisAlignment="flex-end"
-          crossAxisAlignment="center"
-        >
-          <style>
-            {`
+          <Row
+            width="20%"
+            mainAxisAlignment="flex-end"
+            crossAxisAlignment="center"
+          >
+            <style>
+              {`
             
             .${symbol + "-switch"} > .chakra-switch__track[data-checked] {
               background-color: ${color ?? "#282727"} !important;
             }
 
             `}
-          </style>
-          <Switch
-            isChecked={isCollateral}
-            className={symbol + "-switch"}
-            size="md"
-            mt={1}
-            mr={5}
-          />
+            </style>
+            <Switch
+              isChecked={isCollateral}
+              className={symbol + "-switch"}
+              size="md"
+              mt={1}
+              mr={5}
+            />
+          </Row>
         </Row>
-      </Row>
+      </>
     );
   }
 );
