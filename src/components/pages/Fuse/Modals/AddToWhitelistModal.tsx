@@ -5,7 +5,6 @@ import {
   ModalOverlay,
   Input,
   Button,
-  Box,
 } from "@chakra-ui/react";
 import { Center, Column } from "buttered-chakra";
 import React, { useCallback, useState } from "react";
@@ -78,19 +77,34 @@ const AddToWhitelistModal = React.memo((props: Props) => {
             _focus={{ bg: "#121212" }}
             _hover={{ bg: "#282727" }}
             bg="#282727"
-            mb={4}
+            mb={5}
           />
 
           <Heading size="sm" textAlign="center">
             {t("Current Members:")}
           </Heading>
-          {whitelist.map((address) => {
-            return (
-              <DashboardBox width="100%" height="40px" mt={2}>
-                <Center expand>{address}</Center>
-              </DashboardBox>
-            );
-          })}
+
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            height="110px"
+            width="100%"
+            overflowY="auto"
+          >
+            {whitelist.map((address) => {
+              return (
+                <DashboardBox
+                  fontSize="15px"
+                  width="100%"
+                  height="40px"
+                  mt={2}
+                  key={address}
+                >
+                  <Center expand>{address}</Center>
+                </DashboardBox>
+              );
+            })}
+          </Column>
 
           <Button
             mt={4}
