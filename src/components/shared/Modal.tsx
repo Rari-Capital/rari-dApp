@@ -42,5 +42,5 @@ export const ModalTitleWithCloseButton = React.memo(
 );
 
 export const ModalDivider = React.memo(() => {
-  return <Box h="1px" width="100%" bg="#272727" />;
+  return <Box h="1px" width="100%" flexShrink={0} bg="#272727" />;
 });

@@ -68,10 +68,10 @@ const FuseTabBar = React.memo(() => {
                 onChange={setFilter}
                 height="100%"
                 ml={2}
-                placeholder="RGT, USDC, ETH, USDT"
+                placeholder="Try searching for RGT..."
                 variant="filled"
                 size="sm"
-                _placeholder={{ color: "#FFF" }}
+                _placeholder={{ color: "#e0e0e0" }}
                 _focus={{ bg: "#282727" }}
                 _hover={{ bg: "#282727" }}
                 bg="#282727"

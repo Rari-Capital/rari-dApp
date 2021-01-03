@@ -66,6 +66,7 @@ const PoolList = React.memo(() => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       expand
+      pb={4}
     >
       <Row
         mainAxisAlignment="flex-start"
@@ -248,7 +249,7 @@ const PoolRow = React.memo(
             height="100%"
             width="40%"
           >
-            <AvatarGroup size="xs" max={16}>
+            <AvatarGroup size="xs" max={5}>
               {tokens.map(({ symbol, icon }) => {
                 return (
                   <Avatar

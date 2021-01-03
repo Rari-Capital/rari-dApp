@@ -51,6 +51,13 @@ const FusePoolInfoPage = loadable(
   }
 );
 
+const FusePoolEditPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Fuse/FusePoolEditPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -91,6 +98,7 @@ const App = React.memo(() => {
 
       <Route path="/fuse/pool/:poolId" element={<FusePoolPage />} />
       <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
+      <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
       <Route path="/" element={<MultiPoolPortal />} />
 

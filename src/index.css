@@ -15,12 +15,12 @@ html {
 * {
   -webkit-overflow-scrolling: touch;
 
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
 *::-webkit-scrollbar {
-  /* WebKit */
-  width: 0px;
+  display: none;
 }
 
 .js-focus-visible :focus:not([data-focus-visible-added]) {
@@ -137,4 +137,8 @@ img:not([src]) {
 
 .hide-bottom-tooltip .apexcharts-xaxistooltip-bottom {
   display: none !important;
+}
+
+.black-switch > .chakra-switch__track[data-checked] {
+  background-color: #282727 !important;
 }

@@ -201,7 +201,7 @@ export const InterestRateChartOptions = {
   grid: {
     ...LineChartOptions.grid,
     padding: {
-      top: -30,
+      top: -50,
     },
   },
 

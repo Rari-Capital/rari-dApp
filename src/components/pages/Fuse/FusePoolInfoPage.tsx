@@ -63,7 +63,7 @@ const FusePoolInfoPage = React.memo(() => {
         <RowOrColumn
           width="100%"
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
+          crossAxisAlignment="flex-start"
           isRow={!isMobile}
         >
           <DashboardBox
@@ -163,7 +163,7 @@ const OracleAndInterestRates = React.memo(() => {
         my={4}
         px={4}
       >
-        <AvatarGroup size="sm" max={7}>
+        <AvatarGroup size="sm" max={5}>
           {poolTokens.map(({ symbol, icon }) => {
             return (
               <Avatar
@@ -208,13 +208,6 @@ const OracleAndInterestRates = React.memo(() => {
         />
 
         <StatRow
-          statATitle={t("Collateral Factor")}
-          statA={66.6 + "%"}
-          statBTitle={t("Reserve Factor")}
-          statB={10 + "%"}
-        />
-
-        <StatRow
           statATitle={t("Editable")}
           statA={t("Yes")}
           statBTitle={t("Edit Timelock")}
@@ -228,7 +221,7 @@ const OracleAndInterestRates = React.memo(() => {
           statB={t("Public")}
         />
 
-        <Center width="100%" mt={4} mb={8}>
+        <Center width="100%" mt={8} mb={12}>
           <Text textAlign="center">
             {t("Oracles Used")}: <b>Chainlink + Uniswap TWAP</b>
           </Text>
@@ -312,27 +305,40 @@ const AssetAndOtherInfo = React.memo(() => {
       width="100%"
     >
       <Heading size="sm" px={4} py={3}>
-        {t("Pool {{num}} Interest Rate Models", { num: poolId })}
+        {t("Pool {{num}}'s {{token}} Interest Rate Model", {
+          num: poolId,
+          token: selectedAsset,
+        })}
       </Heading>
       <ModalDivider />
 
       <Row
         mt={3}
         px={4}
-        width="100%"
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
+        width="100%"
         fontWeight="bold"
       >
-        {t("Utilization vs APY")}
-        {isMobile ? null : (
-          <>
-            &nbsp;&nbsp; | &nbsp;&nbsp;
-            {t("Currently at {{utilization}}% utilization", {
-              utilization: 20,
-            })}
-          </>
-        )}
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          <Text>{t("Utilization vs APY")}</Text>
+
+          {isMobile ? null : (
+            <>
+              <Text fontSize="12px" fontWeight="normal" ml={4}>
+                {t("{{factor}}% Collateral Factor", {
+                  factor: 75,
+                })}
+              </Text>
+
+              <Text fontSize="12px" fontWeight="normal" ml={3}>
+                {t("{{factor}}% Reserve Factor", {
+                  factor: 10,
+                })}
+              </Text>
+            </>
+          )}
+        </Row>
 
         <Select
           {...DASHBOARD_BOX_PROPS}
@@ -368,10 +374,13 @@ const AssetAndOtherInfo = React.memo(() => {
                   marker: {
                     size: 8,
                   },
+
                   label: {
-                    text: "Current Utilization",
+                    borderWidth: 0,
+                    text: t("Current Utilization"),
                     style: {
-                      color: "#777",
+                      background: "#121212",
+                      color: "#FFF",
                     },
                   },
                 },

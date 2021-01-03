@@ -28,7 +28,7 @@
     "authereum": "0.0.4-beta.201",
     "axios": "^0.20.0",
     "bignumber.js": "^9.0.1",
-    "buttered-chakra": "^4.2.0",
+    "buttered-chakra": "^4.3.0",
     "cypress": "^5.3.0",
     "focus-visible": "^5.2.0",
     "fortmatic": "^2.2.1",

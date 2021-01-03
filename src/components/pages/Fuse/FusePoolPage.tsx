@@ -183,7 +183,7 @@ const AssetSupplyRow = React.memo(
           crossAxisAlignment="flex-end"
           width="27%"
         >
-          <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
+          <Text color={color ?? "#FF"} fontWeight="bold" fontSize="17px">
             {apy}%
           </Text>
 
@@ -197,7 +197,7 @@ const AssetSupplyRow = React.memo(
           crossAxisAlignment="flex-end"
           width="27%"
         >
-          <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
             {smallUsdFormatter(balance * Math.random() * 10)}
           </Text>
 
@@ -215,14 +215,13 @@ const AssetSupplyRow = React.memo(
             {`
             
             .${symbol + "-switch"} > .chakra-switch__track[data-checked] {
-              background-color: ${color} !important;
+              background-color: ${color ?? "#282727"} !important;
             }
 
             `}
           </style>
           <Switch
             isChecked={isCollateral}
-            colorScheme="teal"
             className={symbol + "-switch"}
             size="md"
             mt={1}
@@ -345,7 +344,7 @@ const AssetBorrowRow = React.memo(
           crossAxisAlignment="flex-end"
           width="27%"
         >
-          <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
             {apy}%
           </Text>
 
@@ -359,7 +358,7 @@ const AssetBorrowRow = React.memo(
           crossAxisAlignment="flex-end"
           width="27%"
         >
-          <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
             {smallUsdFormatter(borrowed * Math.random() * 10)}
           </Text>
 
@@ -373,7 +372,7 @@ const AssetBorrowRow = React.memo(
           crossAxisAlignment="flex-end"
           width="20%"
         >
-          <Text color={color ?? "#949494"} fontWeight="bold" fontSize="17px">
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
             {shortUsdFormatter(liquidity * Math.random() * 10)}
           </Text>
 
