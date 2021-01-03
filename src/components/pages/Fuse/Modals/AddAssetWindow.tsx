@@ -4,8 +4,8 @@ import {
   ModalContent,
   ModalOverlay,
   Input,
-  Text,
   Button,
+  Box,
 } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
 import React, { useCallback, useState } from "react";
@@ -15,6 +15,7 @@ import { useRari } from "../../../../context/RariContext";
 import { DASHBOARD_BOX_PROPS } from "../../../shared/DashboardBox";
 import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
 import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
+import { AssetSettings } from "../FusePoolEditPage";
 
 interface Props {
   isOpen: boolean;
@@ -38,7 +39,7 @@ const AddAssetWindow = React.memo((props: Props) => {
   );
 
   const { data: tokenData } = useQuery(
-    "tokenName " + tokenAddress,
+    "tokenData " + tokenAddress,
     async () => {
       if (rari.web3.utils.isAddress(tokenAddress)) {
         const token = new rari.web3.eth.Contract(ERC20ABI as any, tokenAddress);
@@ -48,15 +49,18 @@ const AddAssetWindow = React.memo((props: Props) => {
 
           return { name, symbol };
         } catch (e) {
-          return { name: "Invalid token!", symbol: null };
+          return { name: t("Invalid address!"), symbol: null };
         }
       } else {
-        return { name: "Invalid address!", symbol: null };
+        return { name: t("Invalid address!"), symbol: null };
       }
     }
   );
 
   const isEmpty = tokenAddress.trim() === "";
+
+  const [collateralFactor, setCollateralFactor] = useState(75);
+  const [reserveFactor, setReserveFactor] = useState(10);
 
   return (
     <Modal
@@ -76,48 +80,60 @@ const AddAssetWindow = React.memo((props: Props) => {
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          px={4}
           pb={4}
         >
           {!isEmpty ? (
-            <Heading fontSize="25px" mt={4}>
+            <Heading fontSize="22px" mt={2}>
               {tokenData?.name ?? "Loading..."}
             </Heading>
           ) : null}
-          {tokenData?.symbol ? <Text>{tokenData.symbol}</Text> : null}
 
-          <Input
-            mt={4}
-            width="100%"
-            placeholder="Token Address: 0x00000000000000000000000000000000000000"
-            height="40px"
-            variant="filled"
-            size="sm"
-            value={tokenAddress}
-            onChange={updateTokenAddress}
-            {...DASHBOARD_BOX_PROPS}
-            _placeholder={{ color: "#e0e0e0" }}
-            _focus={{ bg: "#121212" }}
-            _hover={{ bg: "#282727" }}
-            bg="#282727"
-          />
+          <Box px={4} mt={isEmpty ? 4 : 2} mb={4} width="100%">
+            <Input
+              width="100%"
+              placeholder="Token Address: 0x00000000000000000000000000000000000000"
+              height="40px"
+              variant="filled"
+              size="sm"
+              value={tokenAddress}
+              onChange={updateTokenAddress}
+              {...DASHBOARD_BOX_PROPS}
+              _placeholder={{ color: "#e0e0e0" }}
+              _focus={{ bg: "#121212" }}
+              _hover={{ bg: "#282727" }}
+              bg="#282727"
+            />
+          </Box>
 
-          <Button
-            mt={4}
-            fontWeight="bold"
-            fontSize="2xl"
-            borderRadius="10px"
-            width="100%"
-            height="70px"
-            color="#000"
-            bg="#FFF"
-            _hover={{ transform: "scale(1.02)" }}
-            _active={{ transform: "scale(0.95)" }}
-            isLoading={!tokenData}
-            isDisabled={isEmpty || tokenData?.symbol == null}
-          >
-            {t("Confirm")}
-          </Button>
+          <ModalDivider />
+
+          {tokenData?.symbol ? (
+            <AssetSettings
+              collateralFactor={collateralFactor}
+              setCollateralFactor={setCollateralFactor}
+              reserveFactor={reserveFactor}
+              setReserveFactor={setReserveFactor}
+              selectedAsset={tokenData.symbol}
+            />
+          ) : null}
+
+          <Box px={4} mt={4} width="100%">
+            <Button
+              fontWeight="bold"
+              fontSize="2xl"
+              borderRadius="10px"
+              width="100%"
+              height="70px"
+              color="#000"
+              bg="#FFF"
+              _hover={{ transform: "scale(1.02)" }}
+              _active={{ transform: "scale(0.95)" }}
+              isLoading={!tokenData}
+              isDisabled={isEmpty || !tokenData?.symbol}
+            >
+              {t("Confirm")}
+            </Button>
+          </Box>
         </Column>
       </ModalContent>
     </Modal>

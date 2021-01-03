@@ -298,33 +298,7 @@ const AssetConfiguration = React.memo(
 
     const { t } = useTranslation();
 
-    const borrowCurve = Array.from({ length: 100 }, (_, i) => {
-      let y = 0;
-
-      if (i < 80) {
-        y = i * 0.1;
-      } else {
-        y = 5 + i * 0.25;
-      }
-
-      return { x: i, y };
-    });
-
-    const depositCurve = Array.from({ length: 100 }, (_, i) => {
-      let y = 0;
-
-      if (i < 82) {
-        y = i * 0.09;
-      } else {
-        y = 5 + i * 0.23;
-      }
-
-      return { x: i, y };
-    });
-
     const [selectedAsset, setSelectedAsset] = useState("SUSHI");
-
-    const assetColors: any = { SUSHI: "#DD2D44" };
 
     const poolTokens = [
       {
@@ -421,128 +395,180 @@ const AssetConfiguration = React.memo(
           })}
         </Row>
 
+        <AssetSettings
+          collateralFactor={collateralFactor}
+          setCollateralFactor={setCollateralFactor}
+          reserveFactor={reserveFactor}
+          setReserveFactor={setReserveFactor}
+          selectedAsset={selectedAsset}
+        />
+      </Column>
+    );
+  }
+);
+
+export const AssetSettings = React.memo(
+  ({
+    collateralFactor,
+    setCollateralFactor,
+    reserveFactor,
+    setReserveFactor,
+    selectedAsset,
+  }: {
+    collateralFactor: number;
+    setCollateralFactor: (value: number) => any;
+    reserveFactor: number;
+    setReserveFactor: (value: number) => any;
+    selectedAsset: string;
+  }) => {
+    const { t } = useTranslation();
+
+    const borrowCurve = Array.from({ length: 100 }, (_, i) => {
+      let y = 0;
+
+      if (i < 80) {
+        y = i * 0.1;
+      } else {
+        y = 5 + i * 0.25;
+      }
+
+      return { x: i, y };
+    });
+
+    const depositCurve = Array.from({ length: 100 }, (_, i) => {
+      let y = 0;
+
+      if (i < 82) {
+        y = i * 0.09;
+      } else {
+        y = 5 + i * 0.23;
+      }
+
+      return { x: i, y };
+    });
+
+    const assetColors: any = { SUSHI: "#DD2D44" };
+
+    return (
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        overflowY="auto"
+        width="100%"
+        height="100%"
+      >
+        <Row
+          width="100%"
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          my={4}
+          px={4}
+        >
+          <Text fontWeight="bold">{t("Collateral Factor")}:</Text>
+
+          <SliderWithLabel
+            value={collateralFactor}
+            setValue={setCollateralFactor}
+            formatValue={formatPercentage}
+          />
+        </Row>
+
         <ModalDivider />
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
-          overflowY="auto"
+        <Row
           width="100%"
-          height="100%"
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          my={4}
+          px={4}
         >
-          <Row
-            width="100%"
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            my={4}
-            px={4}
+          <Text fontWeight="bold">{t("Reserve Factor")}:</Text>
+
+          <SliderWithLabel
+            value={reserveFactor}
+            setValue={setReserveFactor}
+            formatValue={formatPercentage}
+          />
+        </Row>
+
+        <ModalDivider />
+
+        <Row
+          width="100%"
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          my={4}
+          px={4}
+        >
+          <Text fontWeight="bold">{t("Oracle")}:</Text>
+
+          <Select
+            {...DASHBOARD_BOX_PROPS}
+            borderRadius="7px"
+            fontWeight="bold"
+            width="auto"
+            _focus={{ outline: "none" }}
           >
-            <Text fontWeight="bold">{t("Collateral Factor")}:</Text>
+            <option className="black-bg-option" value="chainlink">
+              {t("Chainlink")}
+            </option>
+          </Select>
+        </Row>
 
-            <SliderWithLabel
-              value={collateralFactor}
-              setValue={setCollateralFactor}
-              formatValue={formatPercentage}
-            />
-          </Row>
+        <ModalDivider />
 
-          <ModalDivider />
+        <Row
+          width="100%"
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          my={4}
+          px={4}
+        >
+          <Text fontWeight="bold">{t("Interest Model")}:</Text>
 
-          <Row
-            width="100%"
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            my={4}
-            px={4}
+          <Select
+            {...DASHBOARD_BOX_PROPS}
+            borderRadius="7px"
+            fontWeight="bold"
+            width="auto"
+            _focus={{ outline: "none" }}
           >
-            <Text fontWeight="bold">{t("Reserve Factor")}:</Text>
+            <option className="black-bg-option" value="dai">
+              {t("Dai Interest Rate Model")}
+            </option>
+          </Select>
+        </Row>
 
-            <SliderWithLabel
-              value={reserveFactor}
-              setValue={setReserveFactor}
-              formatValue={formatPercentage}
-            />
-          </Row>
-
-          <ModalDivider />
-
-          <Row
+        <Box
+          height="170px"
+          width="100%"
+          color="#000000"
+          overflow="hidden"
+          pl={2}
+          pr={3}
+          className="hide-bottom-tooltip"
+          flexShrink={0}
+        >
+          <Chart
+            options={{
+              ...InterestRateChartOptions,
+              colors: ["#FFFFFF", assetColors[selectedAsset] ?? "#282727"],
+            }}
+            type="line"
             width="100%"
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            my={4}
-            px={4}
-          >
-            <Text fontWeight="bold">{t("Oracle")}:</Text>
-
-            <Select
-              {...DASHBOARD_BOX_PROPS}
-              borderRadius="7px"
-              fontWeight="bold"
-              width="auto"
-              _focus={{ outline: "none" }}
-            >
-              <option className="black-bg-option" value="chainlink">
-                {t("Chainlink")}
-              </option>
-            </Select>
-          </Row>
-
-          <ModalDivider />
-
-          <Row
-            width="100%"
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            my={4}
-            px={4}
-          >
-            <Text fontWeight="bold">{t("Interest Model")}:</Text>
-
-            <Select
-              {...DASHBOARD_BOX_PROPS}
-              borderRadius="7px"
-              fontWeight="bold"
-              width="auto"
-              _focus={{ outline: "none" }}
-            >
-              <option className="black-bg-option" value="dai">
-                {t("Dai Interest Rate Model")}
-              </option>
-            </Select>
-          </Row>
-
-          <Box
-            height="300px"
-            width="100%"
-            color="#000000"
-            overflow="hidden"
-            pl={2}
-            pr={3}
-            className="hide-bottom-tooltip"
-            flexShrink={0}
-          >
-            <Chart
-              options={{
-                ...InterestRateChartOptions,
-                colors: ["#FFFFFF", assetColors[selectedAsset] ?? "#282727"],
-              }}
-              type="line"
-              width="100%"
-              height="100%"
-              series={[
-                {
-                  name: "Borrow Rate",
-                  data: borrowCurve,
-                },
-                {
-                  name: "Deposit Rate",
-                  data: depositCurve,
-                },
-              ]}
-            />
-          </Box>
-        </Column>
+            height="100%"
+            series={[
+              {
+                name: "Borrow Rate",
+                data: borrowCurve,
+              },
+              {
+                name: "Deposit Rate",
+                data: depositCurve,
+              },
+            ]}
+          />
+        </Box>
       </Column>
     );
   }
