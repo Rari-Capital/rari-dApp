@@ -91,7 +91,9 @@ const AddAssetModal = React.memo((props: Props) => {
           <Box px={4} mt={isEmpty ? 4 : 2} mb={4} width="100%">
             <Input
               width="100%"
-              placeholder="Token Address: 0x00000000000000000000000000000000000000"
+              placeholder={t(
+                "Token Address: 0x00000000000000000000000000000000000000"
+              )}
               height="40px"
               variant="filled"
               size="sm"

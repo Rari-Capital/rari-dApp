@@ -1,5 +1,5 @@
 import { DeleteIcon, InfoIcon, SmallAddIcon } from "@chakra-ui/icons";
-import { ButtonGroup, Input, Link } from "@chakra-ui/react";
+import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "buttered-chakra";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -62,13 +62,14 @@ const FuseTabBar = React.memo(() => {
               mainAxisAlignment="flex-start"
               fontWeight="bold"
             >
-              {t("Search:")}
+              <Text flexShrink={0}>{t("Search:")}</Text>
+
               <Input
                 value={filter ?? ""}
                 onChange={setFilter}
                 height="100%"
                 ml={2}
-                placeholder="Try searching for RGT..."
+                placeholder={t("Try searching for RGT")}
                 variant="filled"
                 size="sm"
                 _placeholder={{ color: "#e0e0e0" }}

@@ -84,7 +84,7 @@ const SupplyList = React.memo(() => {
       height={isMobile ? "auto" : "500px"}
     >
       <Heading size="md" px={4} py={3}>
-        Supply Balance: {"$200,000"}
+        {t("Supply Balance:")} {"$200,000"}
       </Heading>
       <ModalDivider />
 
@@ -338,67 +338,84 @@ const AssetBorrowRow = React.memo(
     liquidity: number;
     color?: string;
   }) => {
+    const {
+      isOpen: isModalOpen,
+      onOpen: openModal,
+      onClose: closeModal,
+    } = useDisclosure();
+
     return (
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        px={4}
-        mb={3}
-      >
+      <>
+        <PoolModal
+          depositSide={false}
+          token={symbol}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          width="27%"
+          width="100%"
+          px={4}
+          mb={3}
+          as="button"
+          onClick={openModal}
         >
-          <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
-          <Text fontWeight="bold" fontSize="lg" ml={2}>
-            {symbol}
-          </Text>
+          <Row
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            width="27%"
+          >
+            <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
+            <Text fontWeight="bold" fontSize="lg" ml={2}>
+              {symbol}
+            </Text>
+          </Row>
+
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="27%"
+          >
+            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+              {apy}%
+            </Text>
+
+            <Text fontSize="sm">
+              {smallUsdFormatter(accrued).replace("$", "")} {symbol}
+            </Text>
+          </Column>
+
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="27%"
+          >
+            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+              {smallUsdFormatter(borrowed * Math.random() * 10)}
+            </Text>
+
+            <Text fontSize="sm">
+              {smallUsdFormatter(borrowed).replace("$", "")} {symbol}
+            </Text>
+          </Column>
+
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="20%"
+          >
+            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+              {shortUsdFormatter(liquidity * Math.random() * 10)}
+            </Text>
+
+            <Text fontSize="sm">
+              {shortUsdFormatter(liquidity).replace("$", "")} {symbol}
+            </Text>
+          </Column>
         </Row>
-
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="27%"
-        >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {apy}%
-          </Text>
-
-          <Text fontSize="sm">
-            {smallUsdFormatter(accrued).replace("$", "")} {symbol}
-          </Text>
-        </Column>
-
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="27%"
-        >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {smallUsdFormatter(borrowed * Math.random() * 10)}
-          </Text>
-
-          <Text fontSize="sm">
-            {smallUsdFormatter(borrowed).replace("$", "")} {symbol}
-          </Text>
-        </Column>
-
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="20%"
-        >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {shortUsdFormatter(liquidity * Math.random() * 10)}
-          </Text>
-
-          <Text fontSize="sm">
-            {shortUsdFormatter(liquidity).replace("$", "")} {symbol}
-          </Text>
-        </Column>
-      </Row>
+      </>
     );
   }
 );

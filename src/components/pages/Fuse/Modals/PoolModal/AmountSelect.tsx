@@ -57,8 +57,6 @@ const AmountSelect = React.memo(
 
     const queryCache = useQueryCache();
 
-    const { rari, address } = useRari();
-
     const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
     const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
@@ -112,9 +110,15 @@ const AmountSelect = React.memo(
     let depositOrWithdrawAlert;
 
     if (amount === null || amount.isZero()) {
-      depositOrWithdrawAlert = t("Enter a valid amount to {{mode}}.", {
-        mode: mode.toLowerCase(),
-      });
+      if (mode === Mode.SUPPLY) {
+        depositOrWithdrawAlert = t("Enter a valid amount to supply.");
+      } else if (mode === Mode.BORROW) {
+        depositOrWithdrawAlert = t("Enter a valid amount to borrow.");
+      } else if (mode === Mode.WITHDRAW) {
+        depositOrWithdrawAlert = t("Enter a valid amount to withdraw.");
+      } else {
+        depositOrWithdrawAlert = t("Enter a valid amount to repay.");
+      }
     }
     // else if (!poolTokenBalance || !sfiBalance) {
     //   depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
@@ -186,7 +190,15 @@ const AmountSelect = React.memo(
           p={DASHBOARD_BOX_SPACING.asPxString()}
         >
           <Box width="40px" />
-          <Heading fontSize="27px">{mode}</Heading>
+          <Heading fontSize="27px">
+            {mode === Mode.SUPPLY
+              ? t("Supply")
+              : mode === Mode.BORROW
+              ? t("Borrow")
+              : mode === Mode.WITHDRAW
+              ? t("Withdraw")
+              : t("Repay")}
+          </Heading>
           <IconButton
             color="#FFFFFF"
             variant="ghost"

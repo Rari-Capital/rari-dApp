@@ -18,10 +18,10 @@ enum CurrentScreen {
 }
 
 export enum Mode {
-  SUPPLY = "Supply",
-  WITHDRAW = "Withdraw",
-  BORROW = "Borrow",
-  REPAY = "Repay",
+  SUPPLY,
+  WITHDRAW,
+  BORROW,
+  REPAY,
 }
 
 const DepositModal = React.memo((props: Props) => {
@@ -37,7 +37,7 @@ const DepositModal = React.memo((props: Props) => {
   );
 
   const [mode, setMode] = useState(
-    props.depositSide ? Mode.SUPPLY : Mode.REPAY
+    props.depositSide ? Mode.SUPPLY : Mode.BORROW
   );
 
   return (
@@ -48,13 +48,7 @@ const DepositModal = React.memo((props: Props) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent
-        {...MODAL_PROPS}
-        height={{
-          md: "500px",
-          base: "500px",
-        }}
-      >
+      <ModalContent {...MODAL_PROPS} height="500px">
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
             onClose={props.onClose}

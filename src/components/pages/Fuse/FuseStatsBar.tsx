@@ -33,7 +33,7 @@ const FuseStatsBar = React.memo(() => {
           <Heading size="lg">{t("Fuse")}</Heading>
 
           {t(
-            "Isolated money markets you can use today that will power the decentralized future of tommorow."
+            "Isolated money markets you can use today that will power the decentralized future of tomorrow."
           )}
         </Column>
       </DashboardBox>

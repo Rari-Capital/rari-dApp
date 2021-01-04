@@ -566,7 +566,7 @@ export const AssetSettings = React.memo(
             _focus={{ outline: "none" }}
           >
             <option className="black-bg-option" value="dai">
-              {t("Dai Interest Rate Model")}
+              {t("DAI Interest Rate Model")}
             </option>
           </Select>
         </Row>
