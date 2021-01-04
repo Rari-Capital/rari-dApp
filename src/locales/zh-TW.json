@@ -174,12 +174,12 @@
   "Want to borrow?": "想藉嗎？",
   "Want to repay?": "要還款嗎？",
   "Supply Balance:": "供應平衡",
-  "Try searching for RGT": "嘗試搜索RGT",
   "Token Address: 0x00000000000000000000000000000000000000": "令牌地址：0x00000000000000000000000000000000000000000000",
   "Enter a valid amount to supply.": "輸入要供應的有效數量。",
   "Enter a valid amount to borrow.": "輸入有效的借入金額。",
   "Enter a valid amount to repay.": "輸入有效的還款額。",
   "Supply": "供應",
   "Borrow": "借",
-  "Repay": "償還"
+  "Repay": "償還",
+  "Try searching for USDC": "嘗試搜索USDC"
 }

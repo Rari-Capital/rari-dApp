@@ -69,7 +69,7 @@ const FuseTabBar = React.memo(() => {
                 onChange={setFilter}
                 height="100%"
                 ml={2}
-                placeholder={t("Try searching for RGT")}
+                placeholder={t("Try searching for USDC")}
                 variant="filled"
                 size="sm"
                 _placeholder={{ color: "#e0e0e0" }}
