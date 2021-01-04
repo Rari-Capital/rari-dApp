@@ -1,6 +1,7 @@
 /* eslint-disable */
 import Web3 from "web3";
 import axios from "axios";
+import Big from 'big.js';
 
 import DydxSubpool from "./subpools/dydx.js";
 import CompoundSubpool from "./subpools/compound.js";
@@ -27,15 +28,7 @@ export default class Rari {
 
     this.getEthUsdPriceBN = async function () {
       try {
-        return Web3.utils.toBN(
-          Math.trunc(
-            (
-              await axios.get(
-                "https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum"
-              )
-            ).data.ethereum.usd * 1e18
-          )
-        );
+        return Web3.utils.toBN((new Big((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum")).data.ethereum.usd)).mul(1e18).toFixed(0));
       } catch (error) {
         throw new Error("Error retrieving data from Coingecko API: " + error);
       }
