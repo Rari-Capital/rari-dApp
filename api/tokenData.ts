@@ -76,7 +76,7 @@ export default async (request: NowRequest, response: NowResponse) => {
   response.json({
     ...basicTokenInfo,
     color: color.Vibrant.getHex(),
-    overlayTextColor: color.Vibrant.getTitleTextColor() as any,
+    overlayTextColor: color.Vibrant.getTitleTextColor(),
     logoURL: small,
   });
 };
