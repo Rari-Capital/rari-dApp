@@ -6,16 +6,17 @@ import {
   Input,
   Button,
   Box,
+  Image,
 } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "react-query";
-import { useRari } from "../../../../context/RariContext";
+
 import { DASHBOARD_BOX_PROPS } from "../../../shared/DashboardBox";
 import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
-import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
+
 import { AssetSettings } from "../FusePoolEditPage";
+import { useTokenData } from "../../../../hooks/useTokenData";
 
 interface Props {
   isOpen: boolean;
@@ -25,7 +26,6 @@ interface Props {
 
 const AddAssetModal = React.memo((props: Props) => {
   const { t } = useTranslation();
-  const { rari } = useRari();
 
   const [tokenAddress, _setTokenAddress] = useState<string>("");
 
@@ -38,24 +38,7 @@ const AddAssetModal = React.memo((props: Props) => {
     [_setTokenAddress]
   );
 
-  const { data: tokenData } = useQuery(
-    "tokenData " + tokenAddress,
-    async () => {
-      if (rari.web3.utils.isAddress(tokenAddress)) {
-        const token = new rari.web3.eth.Contract(ERC20ABI as any, tokenAddress);
-        try {
-          const name = await token.methods.name().call();
-          const symbol = await token.methods.symbol().call();
-
-          return { name, symbol };
-        } catch (e) {
-          return { name: t("Invalid address!"), symbol: null };
-        }
-      } else {
-        return { name: t("Invalid address!"), symbol: null };
-      }
-    }
-  );
+  const tokenData = useTokenData(tokenAddress);
 
   const isEmpty = tokenAddress.trim() === "";
 
@@ -83,9 +66,26 @@ const AddAssetModal = React.memo((props: Props) => {
           pb={4}
         >
           {!isEmpty ? (
-            <Heading fontSize="22px" mt={2}>
-              {tokenData?.name ?? "Loading..."}
-            </Heading>
+            <>
+              {tokenData?.logoURL ? (
+                <Image
+                  bg="white"
+                  mt={4}
+                  src={tokenData.logoURL}
+                  boxSize="50px"
+                  borderRadius="50%"
+                />
+              ) : null}
+              <Heading
+                mt={2}
+                fontSize="22px"
+                color={tokenData?.color ?? "#FFF"}
+              >
+                {tokenData
+                  ? tokenData.name ?? "Invalid Address!"
+                  : "Loading..."}
+              </Heading>
+            </>
           ) : null}
 
           <Box px={4} mt={isEmpty ? 4 : 2} mb={4} width="100%">
@@ -109,13 +109,13 @@ const AddAssetModal = React.memo((props: Props) => {
 
           <ModalDivider />
 
-          {tokenData?.symbol ? (
+          {tokenData?.color ? (
             <AssetSettings
               collateralFactor={collateralFactor}
               setCollateralFactor={setCollateralFactor}
               reserveFactor={reserveFactor}
               setReserveFactor={setReserveFactor}
-              selectedAsset={tokenData.symbol}
+              color={tokenData.color}
             />
           ) : null}
 
@@ -126,8 +126,8 @@ const AddAssetModal = React.memo((props: Props) => {
               borderRadius="10px"
               width="100%"
               height="70px"
-              color="#000"
-              bg="#FFF"
+              color={tokenData?.overlayTextColor ?? "#000"}
+              bg={tokenData?.color ?? "#FFF"}
               _hover={{ transform: "scale(1.02)" }}
               _active={{ transform: "scale(0.95)" }}
               isLoading={!tokenData}

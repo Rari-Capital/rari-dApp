@@ -37,6 +37,8 @@
     "i18next": "^19.7.0",
     "istanbul-lib-coverage": "^3.0.0",
     "logrocket": "^1.0.14",
+    "node-fetch": "^2.6.1",
+    "node-vibrant": "^3.1.6",
     "nyc": "^15.1.0",
     "rari-tokens-generator": "^2.0.0",
     "react": "^16.13.1",

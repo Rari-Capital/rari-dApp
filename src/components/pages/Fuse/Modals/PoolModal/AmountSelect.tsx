@@ -14,8 +14,6 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 
-import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
-
 import BigNumber from "bignumber.js";
 
 import { useQueryCache } from "react-query";
@@ -406,7 +404,7 @@ const TokenNameAndMaxButton = React.memo(
               width="100%"
               height="100%"
               borderRadius="50%"
-              backgroundImage={`url(${SmallWhiteCircle})`}
+              bg="white"
               src={token.logoURL}
               alt=""
             />

@@ -432,7 +432,7 @@ const AssetConfiguration = React.memo(
           setCollateralFactor={setCollateralFactor}
           reserveFactor={reserveFactor}
           setReserveFactor={setReserveFactor}
-          selectedAsset={selectedAsset}
+          color="#DD2D44"
         />
       </Column>
     );
@@ -445,13 +445,13 @@ export const AssetSettings = React.memo(
     setCollateralFactor,
     reserveFactor,
     setReserveFactor,
-    selectedAsset,
+    color,
   }: {
     collateralFactor: number;
     setCollateralFactor: (value: number) => any;
     reserveFactor: number;
     setReserveFactor: (value: number) => any;
-    selectedAsset: string;
+    color?: string;
   }) => {
     const { t } = useTranslation();
 
@@ -478,8 +478,6 @@ export const AssetSettings = React.memo(
 
       return { x: i, y };
     });
-
-    const assetColors: any = { SUSHI: "#DD2D44" };
 
     return (
       <Column
@@ -584,7 +582,7 @@ export const AssetSettings = React.memo(
           <Chart
             options={{
               ...InterestRateChartOptions,
-              colors: ["#FFFFFF", assetColors[selectedAsset] ?? "#282727"],
+              colors: ["#FFFFFF", color ?? "#282727"],
             }}
             type="line"
             width="100%"

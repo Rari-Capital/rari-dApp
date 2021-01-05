@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { tokens } from "../../../utils/tokenUtils";
-import SmallWhiteCircle from "../../../static/small-white-circle.png";
+
 import {
   useTokenBalance,
   fetchTokenBalance,
@@ -586,7 +586,7 @@ const TokenNameAndMaxButton = React.memo(
               width="100%"
               height="100%"
               borderRadius="50%"
-              backgroundImage={`url(${SmallWhiteCircle})`}
+              bg="white"
               src={token.logoURL}
               alt=""
             />
