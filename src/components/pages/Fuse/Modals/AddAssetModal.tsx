@@ -68,13 +68,7 @@ const AddAssetModal = React.memo((props: Props) => {
           {!isEmpty ? (
             <>
               {tokenData?.logoURL ? (
-                <Image
-                  bg="white"
-                  mt={4}
-                  src={tokenData.logoURL}
-                  boxSize="50px"
-                  borderRadius="50%"
-                />
+                <Image mt={4} src={tokenData.logoURL} boxSize="50px" />
               ) : null}
               <Heading
                 mt={2}
