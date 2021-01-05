@@ -17,6 +17,7 @@ import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
 
 import { AssetSettings } from "../FusePoolEditPage";
 import { useTokenData } from "../../../../hooks/useTokenData";
+import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 interface Props {
   isOpen: boolean;
@@ -68,7 +69,14 @@ const AddAssetModal = React.memo((props: Props) => {
           {!isEmpty ? (
             <>
               {tokenData?.logoURL ? (
-                <Image mt={4} src={tokenData.logoURL} boxSize="50px" />
+                <Image
+                  mt={4}
+                  src={tokenData.logoURL}
+                  boxSize="50px"
+                  borderRadius="50%"
+                  backgroundImage={`url(${SmallWhiteCircle})`}
+                  backgroundSize="100% auto"
+                />
               ) : null}
               <Heading
                 mt={2}

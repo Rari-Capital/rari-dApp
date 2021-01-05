@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Row, Column, Center } from "buttered-chakra";
+import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 import LogRocket from "logrocket";
 import {
@@ -527,7 +528,7 @@ const TokenNameAndMaxButton = React.memo(
               width="100%"
               height="100%"
               borderRadius="50%"
-              bg="white"
+              backgroundImage={`url(${SmallWhiteCircle})`}
               src={token.logoURL}
               alt=""
             />
