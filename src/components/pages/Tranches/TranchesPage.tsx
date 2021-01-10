@@ -477,8 +477,6 @@ export const TrancheColumn = React.memo(
             borderRadius="7px"
             fontSize="xl"
             fontWeight="bold"
-            // TODO: REMOVE THIS NEXT EPOCH
-            style={{ filter: "blur(1px)", pointerEvents: "none" }}
           >
             <Center expand>
               <Icon as={MdSwapHoriz} boxSize="30px" />
