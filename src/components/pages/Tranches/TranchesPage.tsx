@@ -666,14 +666,20 @@ export const SFIDistributions = React.memo(() => {
 
   const { saffronStrategy } = useSaffronData();
 
-  const { data: sfiDistributions } = useQuery("sfiDistributions", async () => {
-    const DAI = await saffronStrategy.methods
-      .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-      .call();
+  const { rari } = useRari();
 
-    const USDC = await saffronStrategy.methods
-      .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
-      .call();
+  const { data: sfiDistributions } = useQuery("sfiDistributions", async () => {
+    const DAI = rari.web3.utils.fromWei(
+      await saffronStrategy.methods
+        .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
+        .call()
+    );
+
+    const USDC = rari.web3.utils.fromWei(
+      await saffronStrategy.methods
+        .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
+        .call()
+    );
 
     return { DAI, USDC };
   });
