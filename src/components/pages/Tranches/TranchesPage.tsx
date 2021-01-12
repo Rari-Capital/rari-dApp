@@ -564,9 +564,12 @@ export const PrincipalAmount = React.memo(() => {
     async () => {
       // TODO: ADD USDC
 
-      const DAI_SFI_REWARDS = await saffronStrategy.methods
-        .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-        .call();
+      const DAI_SFI_REWARDS =
+        parseInt(
+          await saffronStrategy.methods
+            .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
+            .call()
+        ) / 1e18;
 
       const SFI_multipliers = await saffronPool.methods
         .TRANCHE_SFI_MULTIPLIER()
