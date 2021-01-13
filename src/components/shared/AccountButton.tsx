@@ -99,6 +99,28 @@ const Buttons = React.memo(
     return (
       <>
         <DashboardBox
+          ml={DASHBOARD_BOX_SPACING.asPxString()}
+          as="button"
+          height="40px"
+          flexShrink={0}
+          width="100px"
+          onClick={openClaimRGTModal}
+          fontWeight="bold"
+        >
+          <Center expand>{t("Claim RGT")}</Center>
+        </DashboardBox>
+        <DashboardBox
+          ml={DASHBOARD_BOX_SPACING.asPxString()}
+          as="button"
+          height="40px"
+          flexShrink={0}
+          width="110px"
+          onClick={openMoonpayModal}
+          fontWeight="bold"
+        >
+          <Center expand>{t("Buy Crypto")}</Center>
+        </DashboardBox>
+        <DashboardBox
           as="button"
           height="40px"
           flexShrink={0}
@@ -121,28 +143,6 @@ const Buttons = React.memo(
               {shortAddress(address)}
             </Text>
           </Row>
-        </DashboardBox>
-        <DashboardBox
-          ml={DASHBOARD_BOX_SPACING.asPxString()}
-          as="button"
-          height="40px"
-          flexShrink={0}
-          width="100px"
-          onClick={openClaimRGTModal}
-          fontWeight="bold"
-        >
-          <Center expand>{t("Claim RGT")}</Center>
-        </DashboardBox>
-        <DashboardBox
-          ml={DASHBOARD_BOX_SPACING.asPxString()}
-          as="button"
-          height="40px"
-          flexShrink={0}
-          width="110px"
-          onClick={openMoonpayModal}
-          fontWeight="bold"
-        >
-          <Center expand>{t("Buy Crypto")}</Center>
         </DashboardBox>
       </>
     );
