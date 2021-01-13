@@ -18,6 +18,7 @@ const MoonpayModal = React.memo((props: Props) => {
         setShowMoonpay(true);
       }, 150);
     } else {
+      clearTimeout(timeout);
       setShowMoonpay(false);
     }
 

@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
-import { DarkGlowingButton, GlowingButton } from "./GlowingButton";
+import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
@@ -88,26 +88,24 @@ const Buttons = React.memo(
       <>
         {isMobile ? null : (
           <>
-            <DarkGlowingButton
+            {/* <DarkGlowingButton
               label={t("Buy Crypto")}
               onClick={openMoonpayModal}
               width="110px"
               height="40px"
               flexShrink={0}
               fontSize="16px"
-            />
-            {/* <DashboardBox
+            /> */}
+            <DashboardBox
               as="button"
-              height="40px"
               flexShrink={0}
               width="110px"
-              onClick={openMoonpayModal}
+              height="40px"
               fontWeight="bold"
-              bg="#FFF"
-              color="#000"
+              onClick={openMoonpayModal}
             >
               <Center expand>{t("Buy Crypto")}</Center>
-            </DashboardBox> */}
+            </DashboardBox>
             <DashboardBox
               ml={DASHBOARD_BOX_SPACING.asPxString()}
               as="button"
