@@ -60,7 +60,11 @@ const Stat = React.memo(
     size: { md: string; xs: string } | string;
     text: string;
   }) => {
-    return <Heading fontSize={size}>{text}</Heading>;
+    return (
+      <Heading fontSize={size} lineHeight="2.5rem">
+        {text}
+      </Heading>
+    );
   }
 );
 

@@ -26,6 +26,7 @@ import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 import { VerifiedBadge } from "./VerifiedBadge";
 import { useQuery } from "react-query";
+import MoonpayModal from "../pages/MoonpayModal";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -40,6 +41,12 @@ export const AccountButton = React.memo(() => {
     onClose: closeClaimRGTModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isMoonpayModalOpen,
+    onOpen: openMoonpayModal,
+    onClose: closeMoonpayModal,
+  } = useDisclosure();
+
   return (
     <>
       <SettingsModal
@@ -51,21 +58,25 @@ export const AccountButton = React.memo(() => {
         isOpen={isClaimRGTModalOpen}
         onClose={closeClaimRGTModal}
       />
-      <AddressButton
+      <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
+      <Buttons
         openModal={openSettingsModal}
         openClaimRGTModal={openClaimRGTModal}
+        openMoonpayModal={openMoonpayModal}
       />
     </>
   );
 });
 
-const AddressButton = React.memo(
+const Buttons = React.memo(
   ({
     openModal,
     openClaimRGTModal,
+    openMoonpayModal,
   }: {
     openModal: () => any;
     openClaimRGTModal: () => any;
+    openMoonpayModal: () => any;
   }) => {
     const { address } = useRari();
 
@@ -121,6 +132,17 @@ const AddressButton = React.memo(
           fontWeight="bold"
         >
           <Center expand>{t("Claim RGT")}</Center>
+        </DashboardBox>
+        <DashboardBox
+          ml={DASHBOARD_BOX_SPACING.asPxString()}
+          as="button"
+          height="40px"
+          flexShrink={0}
+          width="110px"
+          onClick={openMoonpayModal}
+          fontWeight="bold"
+        >
+          <Center expand>{t("Buy Crypto")}</Center>
         </DashboardBox>
       </>
     );

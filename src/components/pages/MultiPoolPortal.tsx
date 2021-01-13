@@ -264,8 +264,8 @@ const FundStats = React.memo(() => {
       {hasNotDeposited ? null : (
         <DashboardBox
           width="100%"
-          height="100px"
           mb={DASHBOARD_BOX_SPACING.asPxString()}
+          height={{ md: "110px", base: "auto" }}
         >
           <Center expand>
             <APYWithRefreshMovingStat
@@ -290,7 +290,7 @@ const FundStats = React.memo(() => {
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         width="100%"
-        height={{ md: "120px", base: "auto" }}
+        height={{ md: "110px", base: "auto" }}
       >
         <DashboardBox
           width={{ md: hasNotDeposited ? "100%" : "50%", base: "100%" }}
@@ -416,7 +416,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           <Image src={poolLogo} />
         </Box>
 
-        <Heading fontSize="xl" mt={2}>
+        <Heading fontSize="xl" mt={2} lineHeight="2.5rem">
           {poolName}
         </Heading>
 
