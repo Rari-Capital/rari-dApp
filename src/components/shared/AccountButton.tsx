@@ -21,11 +21,10 @@ import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
-import { GlowingButton } from "./GlowingButton";
+import { DarkGlowingButton, GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
-import { VerifiedBadge } from "./VerifiedBadge";
-import { useQuery } from "react-query";
+
 import MoonpayModal from "../pages/MoonpayModal";
 
 export const AccountButton = React.memo(() => {
@@ -83,36 +82,32 @@ const Buttons = React.memo(
 
     const { t } = useTranslation();
 
-    const { data: isVerified } = useQuery(address + " isVerified", async () => {
-      const fetched = await fetch(
-        `https://api-mainnet.rarible.com/profiles/${address}`
-      );
-
-      const json: { badges: string[] } = await fetched.json();
-
-      if (json.badges.includes("VERIFIED")) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-
     const isMobile = useIsMobile();
 
     return (
       <>
         {isMobile ? null : (
           <>
-            <DashboardBox
+            <DarkGlowingButton
+              label={t("Buy Crypto")}
+              onClick={openMoonpayModal}
+              width="110px"
+              height="40px"
+              flexShrink={0}
+              fontSize="16px"
+            />
+            {/* <DashboardBox
               as="button"
               height="40px"
               flexShrink={0}
               width="110px"
               onClick={openMoonpayModal}
               fontWeight="bold"
+              bg="#FFF"
+              color="#000"
             >
               <Center expand>{t("Buy Crypto")}</Center>
-            </DashboardBox>
+            </DashboardBox> */}
             <DashboardBox
               ml={DASHBOARD_BOX_SPACING.asPxString()}
               as="button"
@@ -141,11 +136,7 @@ const Buttons = React.memo(
             crossAxisAlignment="center"
             px={3}
           >
-            {isVerified ? (
-              <VerifiedBadge />
-            ) : (
-              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
-            )}
+            <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
 
             <Text ml={2} fontWeight="semibold">
               {shortAddress(address)}

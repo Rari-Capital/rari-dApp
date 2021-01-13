@@ -30,7 +30,7 @@ const MoonpayModal = React.memo((props: Props) => {
     <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
       <ModalOverlay />
       <ModalContent
-        height="600px"
+        height="650px"
         width={{ md: "450px", base: "92%" }}
         backgroundColor="white"
         borderRadius="10px"

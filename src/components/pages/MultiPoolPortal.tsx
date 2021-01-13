@@ -265,7 +265,7 @@ const FundStats = React.memo(() => {
         <DashboardBox
           width="100%"
           mb={DASHBOARD_BOX_SPACING.asPxString()}
-          height={{ md: "110px", base: "auto" }}
+          height="110px"
         >
           <Center expand>
             <APYWithRefreshMovingStat
@@ -294,12 +294,11 @@ const FundStats = React.memo(() => {
       >
         <DashboardBox
           width={{ md: hasNotDeposited ? "100%" : "50%", base: "100%" }}
-          height={{ md: "100%", base: "100px" }}
+          height={{ md: "100%", base: "110px" }}
           mr={{
             md: hasNotDeposited ? "0px" : DASHBOARD_BOX_SPACING.asPxString(),
             base: 0,
           }}
-          mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
         >
           <Center expand>
             {hasNotDeposited ? (
