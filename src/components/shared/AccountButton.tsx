@@ -99,7 +99,6 @@ const Buttons = React.memo(
     return (
       <>
         <DashboardBox
-          ml={DASHBOARD_BOX_SPACING.asPxString()}
           as="button"
           height="40px"
           flexShrink={0}
@@ -121,6 +120,7 @@ const Buttons = React.memo(
           <Center expand>{t("Buy Crypto")}</Center>
         </DashboardBox>
         <DashboardBox
+          ml={DASHBOARD_BOX_SPACING.asPxString()}
           as="button"
           height="40px"
           flexShrink={0}
