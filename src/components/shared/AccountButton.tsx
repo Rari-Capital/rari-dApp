@@ -8,8 +8,8 @@ import {
   Button,
   Text,
 } from "@chakra-ui/react";
-import { RepeatIcon } from "@chakra-ui/icons";
-import { Row, Column, Center } from "buttered-chakra";
+
+import { Row, Column, Center, useIsMobile } from "buttered-chakra";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 
 // @ts-ignore
@@ -53,6 +53,7 @@ export const AccountButton = React.memo(() => {
         isOpen={isSettingsModalOpen}
         onClose={closeSettingsModal}
         openClaimRGTModal={openClaimRGTModal}
+        openMoonpayModal={openMoonpayModal}
       />
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}
@@ -96,31 +97,38 @@ const Buttons = React.memo(
       }
     });
 
+    const isMobile = useIsMobile();
+
     return (
       <>
+        {isMobile ? null : (
+          <>
+            <DashboardBox
+              as="button"
+              height="40px"
+              flexShrink={0}
+              width="110px"
+              onClick={openMoonpayModal}
+              fontWeight="bold"
+            >
+              <Center expand>{t("Buy Crypto")}</Center>
+            </DashboardBox>
+            <DashboardBox
+              ml={DASHBOARD_BOX_SPACING.asPxString()}
+              as="button"
+              height="40px"
+              flexShrink={0}
+              width="100px"
+              onClick={openClaimRGTModal}
+              fontWeight="bold"
+            >
+              <Center expand>{t("Claim RGT")}</Center>
+            </DashboardBox>
+          </>
+        )}
+
         <DashboardBox
-          as="button"
-          height="40px"
-          flexShrink={0}
-          width="100px"
-          onClick={openClaimRGTModal}
-          fontWeight="bold"
-        >
-          <Center expand>{t("Claim RGT")}</Center>
-        </DashboardBox>
-        <DashboardBox
-          ml={DASHBOARD_BOX_SPACING.asPxString()}
-          as="button"
-          height="40px"
-          flexShrink={0}
-          width="110px"
-          onClick={openMoonpayModal}
-          fontWeight="bold"
-        >
-          <Center expand>{t("Buy Crypto")}</Center>
-        </DashboardBox>
-        <DashboardBox
-          ml={DASHBOARD_BOX_SPACING.asPxString()}
+          ml={{ md: DASHBOARD_BOX_SPACING.asPxString(), base: 0 }}
           as="button"
           height="40px"
           flexShrink={0}
@@ -154,10 +162,12 @@ export const SettingsModal = React.memo(
     isOpen,
     onClose,
     openClaimRGTModal,
+    openMoonpayModal,
   }: {
     isOpen: boolean;
     onClose: () => any;
     openClaimRGTModal: () => any;
+    openMoonpayModal: () => any;
   }) => {
     const { t } = useTranslation();
 
@@ -201,7 +211,21 @@ export const SettingsModal = React.memo(
             />
 
             <Button
-              leftIcon={<RepeatIcon />}
+              bg="red.500"
+              width="100%"
+              height="45px"
+              fontSize="xl"
+              borderRadius="7px"
+              fontWeight="bold"
+              onClick={openMoonpayModal}
+              _hover={{}}
+              _active={{}}
+              mb={DASHBOARD_BOX_SPACING.asPxString()}
+            >
+              {t("Buy Crypto")}
+            </Button>
+
+            <Button
               bg="whatsapp.500"
               width="100%"
               height="45px"

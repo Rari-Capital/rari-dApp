@@ -247,7 +247,7 @@ const FundStats = React.memo(() => {
     return (
       <Center
         height={{
-          md: isAuthed ? "235px" : "120px",
+          md: isAuthed ? "235px" : "110px",
           base: isAuthed ? "330px" : "215px",
         }}
       >
