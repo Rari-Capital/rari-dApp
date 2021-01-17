@@ -637,13 +637,17 @@ const ApprovalNotch = React.memo(
 
     const poolType = usePoolType();
 
+    const { rari } = useRari();
+
     const formattedAmount = useMemo(() => {
-      const usdFormatted = smallStringUsdFormatter(amount.toString());
+      const usdFormatted = smallStringUsdFormatter(
+        rari.web3.utils.fromWei(amount)
+      );
 
       return poolType === Pool.ETH
         ? usdFormatted.replace("$", "") + " ETH"
         : usdFormatted;
-    }, [amount, poolType]);
+    }, [amount, poolType, rari.web3.utils]);
 
     return (
       <AttentionSeeker effect="headShake" triggerOnce>
