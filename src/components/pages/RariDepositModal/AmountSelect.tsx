@@ -33,11 +33,7 @@ import BigNumber from "bignumber.js";
 
 import { useQueryCache } from "react-query";
 
-import {
-  depositPercentAfterWithdrawFee,
-  getSDKPool,
-  poolHasDivergenceRisk,
-} from "../../../utils/poolUtils";
+import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
 import {
   fetchMaxWithdraw,
   useMaxWithdraw,
@@ -175,32 +171,14 @@ const AmountSelect = React.memo(
               token: selectedToken,
             });
     } else {
-      // If pool has a withdrawal fee:
-      if (depositPercentAfterWithdrawFee(poolType) !== 1) {
-        const withdrawFee = (
-          (1 - depositPercentAfterWithdrawFee(poolType)) *
-          100
-        ).toFixed(1);
-
-        if (mode === Mode.DEPOSIT) {
-          depositOrWithdrawAlert = t(
-            "This pool has a {{withdrawFee}}% withdrawal fee + performance fees.",
-            {
-              withdrawFee,
-            }
-          );
-        } else {
-          depositOrWithdrawAlert = t(
-            "This pool has a {{withdrawFee}}% withdrawal fee.",
-            {
-              withdrawFee,
-            }
-          );
-        }
+      if (poolType === Pool.YIELD) {
+        depositOrWithdrawAlert = t(
+          "This pool has withdrawal & interest fees. Click to learn more."
+        );
       } else {
         if (mode === Mode.DEPOSIT) {
           depositOrWithdrawAlert = t(
-            "This pool has a 9.5% performance fee. Click to learn more."
+            "This pool has performance fees. Click to learn more."
           );
         } else {
           depositOrWithdrawAlert = t("Click review + confirm to withdraw!");
@@ -417,7 +395,7 @@ const AmountSelect = React.memo(
           p={DASHBOARD_BOX_SPACING.asPxString()}
           height="100%"
         >
-          <Text fontWeight="bold" fontSize="sm" textAlign="center">
+          <Text fontWeight="bold" fontSize="13px" textAlign="center">
             <Link
               href="https://www.notion.so/Fees-e4689d7b800f485098548dd9e9d0a69f"
               isExternal
@@ -660,22 +638,12 @@ const ApprovalNotch = React.memo(
     const poolType = usePoolType();
 
     const formattedAmount = useMemo(() => {
-      const usdFormatted = smallStringUsdFormatter(
-        new BigNumber(amount.toString())
-          // Subtract withdrawal fee for withdrawals
-          .multipliedBy(
-            mode === Mode.WITHDRAW
-              ? depositPercentAfterWithdrawFee(poolType)
-              : 1
-          )
-          .div(1e18)
-          .toString()
-      );
+      const usdFormatted = smallStringUsdFormatter(amount.toString());
 
       return poolType === Pool.ETH
         ? usdFormatted.replace("$", "") + " ETH"
         : usdFormatted;
-    }, [amount, mode, poolType]);
+    }, [amount, poolType]);
 
     return (
       <AttentionSeeker effect="headShake" triggerOnce>
@@ -706,10 +674,9 @@ const ApprovalNotch = React.memo(
                 ? t("You will deposit {{amount}}. Click confirm to approve.", {
                     amount: formattedAmount,
                   })
-                : // If pool has withdrawal fee:
-                depositPercentAfterWithdrawFee(poolType) !== 1
+                : poolType === Pool.YIELD
                 ? t(
-                    "You will withdraw {{amount}} after fees. Click confirm to approve.",
+                    "You will withdraw {{amount}} before fees. Click confirm to approve.",
                     { amount: formattedAmount }
                   )
                 : t("You will withdraw {{amount}}. Click confirm to approve.", {
