@@ -474,7 +474,7 @@ export default class StablePool {
 
         var apyBN = Web3.utils.toBN(0);
         for (var i = 0; i < factors.length; i++) {
-          apyBN.iadd(factors[i][0].mul(factors[i][1]).div(totalBalanceUsdBN));
+          apyBN.iadd(factors[i][0].mul(factors[i][1].gt(Web3.utils.toBN(0)) ? factors[i][1] : Web3.utils.toBN(0)).div(totalBalanceUsdBN));
         }
 
         return apyBN;
