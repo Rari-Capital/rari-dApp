@@ -4,13 +4,15 @@ import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
 import ForceAuthModal from "../shared/ForceAuthModal";
 import { Header } from "../shared/Header";
-import { Text } from "@chakra-ui/react";
+import { Text, Image } from "@chakra-ui/react";
+import { useTokenData } from "../../hooks/useTokenData";
 
 const useRSS = (address: string) => {
   const { data } = useQuery(address + " rss", () => {
     return fetch("/api/rss?address=" + address)
       .then((res) => res.json())
       .catch((e) => {
+        console.log("Could not fetch RSS!");
         console.log(e);
       }) as Promise<{ totalScore: number }>;
   });
@@ -27,7 +29,7 @@ const RSSPage = React.memo(() => {
 
       body: JSON.stringify({
         query: `{
-            tokens(first: 50, orderBy: tradeVolumeUSD, orderDirection: desc) {
+            tokens(first: 40, orderBy: tradeVolumeUSD, orderDirection: desc) {
               id
               symbol
             }
@@ -70,12 +72,20 @@ const RSSPage = React.memo(() => {
 
 const TokenRSS = React.memo(
   ({ address, symbol }: { address: string; symbol: string }) => {
+    const tokenData = useTokenData(address);
+
     const rss = useRSS(address);
 
     return (
-      <Text mt={2}>
-        {symbol} - {rss ? rss.totalScore : "Loading.."}
-      </Text>
+      <>
+        {tokenData?.logoURL ? (
+          <Image mt={2} src={tokenData.logoURL} boxSize="30px" />
+        ) : null}
+
+        <Text mt={2} color={tokenData?.color ?? "#FFF"}>
+          {symbol} - {rss ? JSON.stringify(rss) : "Loading.."}
+        </Text>
+      </>
     );
   }
 );
