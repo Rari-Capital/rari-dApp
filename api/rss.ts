@@ -78,7 +78,7 @@ export default async (request: NowRequest, response: NowResponse) => {
           `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=decentralized_finance_defi&order=market_cap_desc&per_page=10&page=1&sparkline=false`
         )
           .then((res) => res.json())
-          .then((array) => array.slice(0, 20));
+          .then((array) => array.slice(0, 30));
 
         const medianDefiCoinMcap = median(
           defiCoins.map((coin) => coin.market_cap)
