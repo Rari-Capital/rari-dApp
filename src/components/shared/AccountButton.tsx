@@ -88,15 +88,7 @@ const Buttons = React.memo(
       <>
         {isMobile ? null : (
           <>
-            {/* <DarkGlowingButton
-              label={t("Buy Crypto")}
-              onClick={openMoonpayModal}
-              width="110px"
-              height="40px"
-              flexShrink={0}
-              fontSize="16px"
-            /> */}
-            <DashboardBox
+            {/* <DashboardBox
               as="button"
               flexShrink={0}
               width="110px"
@@ -105,9 +97,9 @@ const Buttons = React.memo(
               onClick={openMoonpayModal}
             >
               <Center expand>{t("Buy Crypto")}</Center>
-            </DashboardBox>
+            </DashboardBox> */}
             <DashboardBox
-              ml={DASHBOARD_BOX_SPACING.asPxString()}
+              // ml={DASHBOARD_BOX_SPACING.asPxString()}
               as="button"
               height="40px"
               flexShrink={0}

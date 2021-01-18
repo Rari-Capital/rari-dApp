@@ -30,6 +30,13 @@ const TranchesPage = loadable(
   }
 );
 
+const RSSPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/RSSPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -65,6 +72,8 @@ const App = React.memo(() => {
       </Route>
 
       <Route path="/tranches" element={<TranchesPage />} />
+
+      <Route path="/rss" element={<RSSPage />} />
 
       <Route path="/" element={<MultiPoolPortal />} />
 

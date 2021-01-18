@@ -1,8 +1,6 @@
 import { NowRequest, NowResponse } from "@vercel/node";
 
 import Rari from "../src/rari-sdk/index";
-import { Pool } from "../src/context/PoolContext";
-import { getSDKPool } from "../src/utils/poolUtils";
 import EthereumPool from "../src/rari-sdk/pools/ethereum";
 import StablePool from "../src/rari-sdk/pools/stable";
 import YieldPool from "../src/rari-sdk/pools/yield";
