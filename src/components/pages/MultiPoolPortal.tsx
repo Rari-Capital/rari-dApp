@@ -125,7 +125,7 @@ const MultiPoolPortal = React.memo(() => {
           <NewsAndTwitterLink />
         </DashboardBox>
 
-        {/* <DashboardBox
+        <DashboardBox
           mt={DASHBOARD_BOX_SPACING.asPxString()}
           height="300px"
           width="100%"
@@ -134,7 +134,7 @@ const MultiPoolPortal = React.memo(() => {
           px={1}
         >
           <PoolsPerformanceChart size={300} />
-        </DashboardBox> */}
+        </DashboardBox>
 
         <DashboardBox
           width="100%"
@@ -420,13 +420,13 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         </Heading>
 
         <SimpleTooltip label={t("Your balance in this pool")}>
-          <Text mt={8} mb={5} fontSize="md" textAlign="center">
+          <Text mt={4} mb={5} fontSize="md" textAlign="center">
             {isPoolBalanceLoading ? "$?" : balanceData!.formattedBalance}
           </Text>
         </SimpleTooltip>
 
         <Text fontWeight="bold" textAlign="center">
-          {/* {poolAPY ?? "?"}% APY */}
+          {poolAPY ?? "?"}% APY
           {/* +{" "}
           <SimpleTooltip label={t("Extra returns from $RGT")}>
             <span>

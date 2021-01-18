@@ -595,7 +595,11 @@ const CurrentAPY = React.memo(() => {
         fontSize="54px"
         fontWeight="extrabold"
       >
-        {poolAPY ? "?" : <Spinner size="lg" mr={4} />}
+        {poolAPY ? (
+          (poolAPY.startsWith("0.") ? poolAPY : poolAPY.slice(0, -1)) + "%"
+        ) : (
+          <Spinner size="lg" mr={4} />
+        )}
       </Heading>
       <Text ml={3} width="65px" fontSize="sm" textTransform="uppercase">
         {t("Current APY")}
