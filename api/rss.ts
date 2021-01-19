@@ -14,7 +14,7 @@ const weightedCalculation = async (
   calculation: () => Promise<number>,
   weight: number
 ) => {
-  return clamp(await calculation(), 0, 1) * weight;
+  return clamp((await calculation()) ?? 0, 0, 1) * weight;
 };
 
 const web3 = new Web3(
@@ -23,6 +23,12 @@ const web3 = new Web3(
 
 export default async (request: NowRequest, response: NowResponse) => {
   const { address, poolID } = request.query as { [key: string]: string };
+
+  response.setHeader("Access-Control-Allow-Origin", "*");
+
+  let lastUpdated = new Date().toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles",
+  });
 
   if (address) {
     try {
@@ -110,15 +116,15 @@ export default async (request: NowRequest, response: NowResponse) => {
       }, 32);
 
       const volatility = await weightedCalculation(async () => {
-        const ethVariation = await fetch(
-          `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/?vs_currency=usd&days=30`
+        const assetVariation = await fetch(
+          `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=30`
         )
           .then((res) => res.json())
           .then((data) => data.prices.map(([, price]) => price))
           .then((prices) => variance(prices));
 
-        const assetVariation = await fetch(
-          `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=30`
+        const ethVariation = await fetch(
+          `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/?vs_currency=usd&days=30`
         )
           .then((res) => res.json())
           .then((data) => data.prices.map(([, price]) => price))
@@ -183,7 +189,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         return twitter_followers >= 1000 ? 1 : 0;
       }, 2);
 
-      response.setHeader("Cache-Control", "s-maxage=2592000");
+      response.setHeader("Cache-Control", "s-maxage=604800");
       response.json({
         mcap,
         volatility,
@@ -192,6 +198,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         coingeckoMetadata,
         exchanges,
         transfers,
+
+        lastUpdated,
 
         totalScore:
           mcap +
@@ -205,12 +213,24 @@ export default async (request: NowRequest, response: NowResponse) => {
     } catch (e) {
       console.log(e);
 
-      response.setHeader("Cache-Control", "s-maxage=259200");
-      response.json({ totalScore: 0 });
+      response.setHeader("Cache-Control", "s-maxage=86400");
+      response.json({
+        mcap: 0,
+        volatility: 0,
+        liquidity: 0,
+        swapCount: 0,
+        coingeckoMetadata: 0,
+        exchanges: 0,
+        transfers: 0,
+
+        lastUpdated,
+
+        totalScore: 0,
+      });
     }
   } else if (poolID) {
   } else {
-    response.setHeader("Cache-Control", "s-maxage=259200");
+    response.setHeader("Cache-Control", "s-maxage=86400");
     response.status(404).send("Specify address or poolID!");
   }
 };
