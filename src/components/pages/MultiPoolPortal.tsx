@@ -334,7 +334,7 @@ const FundStats = React.memo(() => {
 
         {hasNotDeposited ? null : (
           <DashboardBox
-            mt={4}
+            mt={{ md: 0, base: 4 }}
             width={{ md: "50%", base: "100%" }}
             height={{ md: "100%", base: "100px" }}
           >
