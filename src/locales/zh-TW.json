@@ -111,5 +111,17 @@
   "Buy Crypto": "購買加密",
   "This pool has performance fees. Click to learn more.": "該池收取性能費。 點擊了解更多。",
   "This pool has withdrawal & interest fees. Click to learn more.": "該池有提款和利息費用。 點擊了解更多。",
-  "You will withdraw {{amount}} before fees. Click confirm to approve.": "您將在收費前提取{{amount}}。 點擊確認以批准。"
+  "You will withdraw {{amount}} before fees. Click confirm to approve.": "您將在收費前提取{{amount}}。 點擊確認以批准。",
+  "This is not a valid Ethereum address!": "這不是有效的以太坊地址！",
+  "Market Cap": "市值",
+  "Liquidity": "流動性",
+  "Volatility": "揮發性",
+  "Swap Volume": "交換量",
+  "Exchanges": "交流交流",
+  "Transfers": "轉賬",
+  "Social Media": "社交媒體",
+  "Last Updated": "最近更新時間",
+  "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000": "在此處搜索有效的ERC20地址，格式為：0x0000000000000000000000000000000000000000000000",
+  "Asset RSS": "資產RSS",
+  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "最高ERC20資產的拉里安全得分。 單擊此處以獲取有關計算的信息。"
 }

@@ -111,5 +111,17 @@
   "Buy Crypto": "Buy Crypto",
   "This pool has performance fees. Click to learn more.": "This pool has performance fees. Click to learn more.",
   "This pool has withdrawal & interest fees. Click to learn more.": "This pool has withdrawal & interest fees. Click to learn more.",
-  "You will withdraw {{amount}} before fees. Click confirm to approve.": "You will withdraw {{amount}} before fees. Click confirm to approve."
+  "You will withdraw {{amount}} before fees. Click confirm to approve.": "You will withdraw {{amount}} before fees. Click confirm to approve.",
+  "This is not a valid Ethereum address!": "This is not a valid Ethereum address!",
+  "Market Cap": "Market Cap",
+  "Liquidity": "Liquidity",
+  "Volatility": "Volatility",
+  "Swap Volume": "Swap Volume",
+  "Exchanges": "Exchanges",
+  "Transfers": "Transfers",
+  "Social Media": "Social Media",
+  "Last Updated": "Last Updated",
+  "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000": "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000",
+  "Asset RSS": "Asset RSS",
+  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations."
 }
