@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { Row, Column, Center, useIsMobile } from "buttered-chakra";
+import { Row, Column, Center } from "buttered-chakra";
 import DashboardBox from "./DashboardBox";
 
 // @ts-ignore
@@ -26,6 +26,7 @@ import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
 import MoonpayModal from "../pages/MoonpayModal";
+import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -81,7 +82,7 @@ const Buttons = ({
 
   const { t } = useTranslation();
 
-  const isMobile = useIsMobile();
+  const isMobile = useIsSmallScreen();
 
   return (
     <>
@@ -97,6 +98,7 @@ const Buttons = ({
           >
             <Center expand>{t("Buy Crypto")}</Center>
           </DashboardBox>
+
           <DashboardBox
             ml={4}
             as="button"
