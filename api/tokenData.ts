@@ -60,7 +60,7 @@ export default async (request: NowRequest, response: NowResponse) => {
   try {
     color = await Vibrant.from(small).getPalette();
   } catch (error) {
-    response.setHeader("Cache-Control", "s-maxage=259200");
+    response.setHeader("Cache-Control", "max-age=2592, s-maxage=25920");
     response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
@@ -72,11 +72,24 @@ export default async (request: NowRequest, response: NowResponse) => {
     return;
   }
 
-  response.setHeader("Cache-Control", "s-maxage=2592000");
+  if (!color.Vibrant) {
+    response.setHeader("Cache-Control", "max-age=2592, s-maxage=25920");
+    response.json({
+      ...basicTokenInfo,
+      color: "#FFFFFF",
+      overlayTextColor: "#000",
+      logoURL:
+        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+    });
+
+    return;
+  }
+
+  response.setHeader("Cache-Control", "max-age=25920, s-maxage=259200");
   response.json({
     ...basicTokenInfo,
     color: color.Vibrant.getHex(),
-    overlayTextColor: color.Vibrant.getTitleTextColor() as any,
+    overlayTextColor: color.Vibrant.getTitleTextColor(),
     logoURL: small,
   });
 };

@@ -7,67 +7,59 @@ import TransparentLogo from "../../static/small-transparent-logo.png";
 
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 
-export const ExtraSmallTransparentLogo = React.memo(() => {
+export const ExtraSmallTransparentLogo = () => {
   return <SmallTransparentLogo boxSize="20px" />;
-});
+};
 
-export const SmallLogo = React.memo(({ boxSize }: { boxSize?: string }) => {
+export const SmallLogo = ({ boxSize }: { boxSize?: string }) => {
   return (
     <Box boxSize={boxSize ?? "37px"} flexShrink={0}>
       <Image boxSize={boxSize ?? "37px"} src={Logo} />
     </Box>
   );
-});
+};
 
-export const AnimatedSmallLogo = React.memo(
-  ({ boxSize }: { boxSize?: string }) => {
-    return (
-      <Flip delay={300}>
-        <SmallLogo boxSize={boxSize} />
-      </Flip>
-    );
-  }
-);
+export const AnimatedSmallLogo = ({ boxSize }: { boxSize?: string }) => {
+  return (
+    <Flip delay={300}>
+      <SmallLogo boxSize={boxSize} />
+    </Flip>
+  );
+};
 
-export const FuseSmallLogo = React.memo(({ boxSize }: { boxSize?: string }) => {
+export const FuseSmallLogo = ({ boxSize }: { boxSize?: string }) => {
   return (
     <Box boxSize={boxSize ?? "37px"} flexShrink={0}>
       <Image boxSize={boxSize ?? "37px"} src={FuseLogo} />
     </Box>
   );
-});
+};
 
-export const AnimatedFuseSmallLogo = React.memo(
-  ({ boxSize }: { boxSize?: string }) => {
-    return (
-      <Flip delay={300}>
-        <FuseSmallLogo boxSize={boxSize} />
-      </Flip>
-    );
-  }
-);
+export const AnimatedFuseSmallLogo = ({ boxSize }: { boxSize?: string }) => {
+  return (
+    <Flip delay={300}>
+      <FuseSmallLogo boxSize={boxSize} />
+    </Flip>
+  );
+};
 
-export const SmallTransparentLogo = React.memo(
-  ({ boxSize }: { boxSize?: string }) => {
-    return (
-      <Box boxSize={boxSize ?? "37px"} flexShrink={0}>
-        <Image boxSize={boxSize ?? "37px"} src={TransparentLogo} />
-      </Box>
-    );
-  }
-);
+export const SmallTransparentLogo = ({ boxSize }: { boxSize?: string }) => {
+  return (
+    <Box boxSize={boxSize ?? "37px"} flexShrink={0}>
+      <Image boxSize={boxSize ?? "37px"} src={TransparentLogo} />
+    </Box>
+  );
+};
 
-export const AnimatedPoolLogo = React.memo(
-  ({ boxSize }: { boxSize?: string }) => {
-    return (
-      <Flip delay={300}>
-        <PoolLogo boxSize={boxSize} />
-      </Flip>
-    );
-  }
-);
+export const AnimatedPoolLogo = ({ boxSize }: { boxSize?: string }) => {
+  return (
+    <Flip delay={300}>
+      <PoolLogo boxSize={boxSize} />
+    </Flip>
+  );
+};
 
-export const PoolLogo = React.memo(({ boxSize }: { boxSize?: string }) => {
+export const PoolLogo = ({ boxSize }: { boxSize?: string }) => {
   const { poolLogo } = usePoolInfoFromContext();
 
   return (
@@ -75,4 +67,4 @@ export const PoolLogo = React.memo(({ boxSize }: { boxSize?: string }) => {
       <Image boxSize={boxSize ?? "37px"} src={poolLogo} />
     </Box>
   );
-});
+};

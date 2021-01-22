@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Spinner, Text } from "@chakra-ui/react";
 
-const FullPageSpinner = React.memo(() => {
+const FullPageSpinner = () => {
   const [isText, setIsText] = useState(true);
 
   useEffect(() => {
@@ -45,6 +45,6 @@ const FullPageSpinner = React.memo(() => {
       size="xl"
     />
   );
-});
+};
 
 export default FullPageSpinner;

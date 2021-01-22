@@ -58,6 +58,13 @@ const FusePoolEditPage = loadable(
   }
 );
 
+const RSSAssetsPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/RSSAssetsPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -90,6 +97,10 @@ const App = React.memo(() => {
         })}
 
         <Route path="/" element={<Navigate to="/" replace={true} />} />
+      </Route>
+
+      <Route path="/rss" element={<Outlet />}>
+        <Route path="/assets" element={<RSSAssetsPage />} />
       </Route>
 
       <Route path="/tranches" element={<TranchesPage />} />

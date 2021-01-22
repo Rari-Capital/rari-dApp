@@ -9,7 +9,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { Center, Column } from "buttered-chakra";
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { MODAL_PROPS } from "./Modal";
 import { VscDebugDisconnect } from "react-icons/vsc";
@@ -25,7 +25,7 @@ const ForceAuthModal = React.memo(() => {
   return !isAuthed ? <GetOrConnectModal /> : null;
 });
 
-const GetOrConnectModal = React.memo(() => {
+const GetOrConnectModal = () => {
   const { login } = useRari();
 
   const { t } = useTranslation();
@@ -39,24 +39,14 @@ const GetOrConnectModal = React.memo(() => {
     };
   }, []);
 
-  const connectWallet = useCallback(() => {
-    const loadAndLogin = async () => {
-      setLoading(true);
-
-      try {
-        await login();
-      } catch (_) {}
-
-      if (componentIsMounted.current) {
-        setLoading(false);
-      }
-    };
-
-    loadAndLogin();
-  }, [setLoading, login]);
-
   return (
-    <Modal isOpen isCentered onClose={noop} blockScrollOnMount={false}>
+    <Modal
+      isOpen
+      isCentered
+      onClose={noop}
+      blockScrollOnMount={false}
+      motionPreset="none"
+    >
       <ModalOverlay />
       <ModalContent {...MODAL_PROPS} overflow="hidden">
         <Column
@@ -78,7 +68,21 @@ const GetOrConnectModal = React.memo(() => {
               width="100%"
               justifyContent="center"
               alignItems="center"
-              onClick={connectWallet}
+              onClick={() => {
+                const loadAndLogin = async () => {
+                  setLoading(true);
+
+                  try {
+                    await login();
+                  } catch (_) {}
+
+                  if (componentIsMounted.current) {
+                    setLoading(false);
+                  }
+                };
+
+                loadAndLogin();
+              }}
             >
               <Icon as={VscDebugDisconnect} boxSize="40px" mb={4} />
               <Heading fontSize="25px" textAlign="center">
@@ -112,6 +116,6 @@ const GetOrConnectModal = React.memo(() => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default ForceAuthModal;

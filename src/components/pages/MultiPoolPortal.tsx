@@ -1,10 +1,4 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 import {
   Center,
@@ -13,7 +7,7 @@ import {
   RowOnDesktopColumnOnMobile,
   useWindowSize,
 } from "buttered-chakra";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
+import DashboardBox from "../shared/DashboardBox";
 
 // import SmallLogo from "../../static/small-logo.png";
 
@@ -68,32 +62,6 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import BigNumber from "bignumber.js";
 import { InfoIcon } from "@chakra-ui/icons";
 
-export const RGTPrice = React.memo(() => {
-  const { t } = useTranslation();
-
-  const { rari } = useRari();
-
-  const fetch = useCallback(() => {
-    return rari.governance.rgt.getExchangeRate().then((data) => {
-      return stringUsdFormatter(rari.web3.utils.fromWei(data));
-    });
-  }, [rari.governance.rgt, rari.web3.utils]);
-
-  return (
-    <RefetchMovingStat
-      queryKey="rgtPrice"
-      interval={5000}
-      fetch={fetch}
-      loadingPlaceholder="$?"
-      statSize="3xl"
-      captionSize="xs"
-      caption={t("Rari Governance Token Price")}
-      crossAxisAlignment="center"
-      captionFirst={false}
-    />
-  );
-});
-
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
 
@@ -111,22 +79,18 @@ const MultiPoolPortal = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={columnWidth}
-        px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={columnWidth === "100%" ? 4 : 0}
       >
         <Header isAuthed={isAuthed} lessLinks={columnWidth === "700px"} />
 
         <FundStats />
 
-        <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          width="100%"
-          height="100px"
-        >
+        <DashboardBox mt={4} width="100%" height="100px">
           <NewsAndTwitterLink />
         </DashboardBox>
 
         <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
+          mt={4}
           height="300px"
           width="100%"
           color="#292828"
@@ -139,7 +103,7 @@ const MultiPoolPortal = React.memo(() => {
         <DashboardBox
           width="100%"
           height={{ md: "100px", base: "250px" }}
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
+          mt={4}
         >
           <GovernanceStats />
         </DashboardBox>
@@ -154,7 +118,31 @@ const MultiPoolPortal = React.memo(() => {
 
 export default MultiPoolPortal;
 
-const GovernanceStats = React.memo(() => {
+export const RGTPrice = () => {
+  const { t } = useTranslation();
+
+  const { rari } = useRari();
+
+  return (
+    <RefetchMovingStat
+      queryKey="rgtPrice"
+      interval={5000}
+      fetch={() => {
+        return rari.governance.rgt.getExchangeRate().then((data) => {
+          return stringUsdFormatter(rari.web3.utils.fromWei(data));
+        });
+      }}
+      loadingPlaceholder="$?"
+      statSize="3xl"
+      captionSize="xs"
+      caption={t("Rari Governance Token Price")}
+      crossAxisAlignment="center"
+      captionFirst={false}
+    />
+  );
+};
+
+const GovernanceStats = () => {
   const { t } = useTranslation();
 
   const { rari, address } = useRari();
@@ -214,31 +202,31 @@ const GovernanceStats = React.memo(() => {
       </Center>
     </RowOnDesktopColumnOnMobile>
   );
-});
+};
 
-const FundStats = React.memo(() => {
+const FundStats = () => {
   const { t } = useTranslation();
 
   const { rari, address, isAuthed } = useRari();
 
-  const getAccountBalance = useCallback(async () => {
-    const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
-      rari.pools.stable.balances.balanceOf(address),
-      rari.pools.yield.balances.balanceOf(address),
-      rari.pools.ethereum.balances.balanceOf(address),
-      rari.getEthUsdPriceBN(),
-    ]);
-
-    const ethBal = ethBalInETH.mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
-
-    return parseFloat(
-      rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
-    );
-  }, [rari, address]);
-
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
-    getAccountBalance
+    async () => {
+      const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
+        rari.pools.stable.balances.balanceOf(address),
+        rari.pools.yield.balances.balanceOf(address),
+        rari.pools.ethereum.balances.balanceOf(address),
+        rari.getEthUsdPriceBN(),
+      ]);
+
+      const ethBal = ethBalInETH.mul(
+        ethPriceBN.div(rari.web3.utils.toBN(1e18))
+      );
+
+      return parseFloat(
+        rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
+      );
+    }
   );
 
   const { getNumberTVL } = useTVLFetchers();
@@ -247,7 +235,7 @@ const FundStats = React.memo(() => {
     return (
       <Center
         height={{
-          md: isAuthed ? "235px" : "120px",
+          md: isAuthed ? "235px" : "110px",
           base: isAuthed ? "330px" : "215px",
         }}
       >
@@ -262,11 +250,7 @@ const FundStats = React.memo(() => {
   return (
     <>
       {hasNotDeposited ? null : (
-        <DashboardBox
-          width="100%"
-          height="100px"
-          mb={DASHBOARD_BOX_SPACING.asPxString()}
-        >
+        <DashboardBox width="100%" mb={4} height="110px">
           <Center expand>
             <APYWithRefreshMovingStat
               formatStat={usdFormatter}
@@ -290,16 +274,15 @@ const FundStats = React.memo(() => {
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         width="100%"
-        height={{ md: "120px", base: "auto" }}
+        height={{ md: "110px", base: "auto" }}
       >
         <DashboardBox
           width={{ md: hasNotDeposited ? "100%" : "50%", base: "100%" }}
-          height={{ md: "100%", base: "100px" }}
+          height={{ md: "100%", base: "110px" }}
           mr={{
-            md: hasNotDeposited ? "0px" : DASHBOARD_BOX_SPACING.asPxString(),
+            md: hasNotDeposited ? "0px" : 4,
             base: 0,
           }}
-          mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
         >
           <Center expand>
             {hasNotDeposited ? (
@@ -335,6 +318,7 @@ const FundStats = React.memo(() => {
 
         {hasNotDeposited ? null : (
           <DashboardBox
+            mt={{ md: 0, base: 4 }}
             width={{ md: "50%", base: "100%" }}
             height={{ md: "100%", base: "100px" }}
           >
@@ -346,9 +330,9 @@ const FundStats = React.memo(() => {
       </RowOnDesktopColumnOnMobile>
     </>
   );
-});
+};
 
-const PoolCards = React.memo(() => {
+const PoolCards = () => {
   return (
     <RowOnDesktopColumnOnMobile
       mainAxisAlignment="space-between"
@@ -364,12 +348,10 @@ const PoolCards = React.memo(() => {
             mr={{
               md:
                 // Don't add right margin on the last child
-                index === array.length - 1
-                  ? 0
-                  : DASHBOARD_BOX_SPACING.asPxString(),
+                index === array.length - 1 ? 0 : 4,
               base: 0,
             }}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
           >
             <PoolDetailCard pool={pool} />
           </DashboardBox>
@@ -377,9 +359,9 @@ const PoolCards = React.memo(() => {
       })}
     </RowOnDesktopColumnOnMobile>
   );
-});
+};
 
-const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
+const PoolDetailCard = ({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
   const { poolName, poolLogo } = usePoolInfo(pool);
@@ -410,13 +392,13 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         expand
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
       >
         <Box width="50px" height="50px" flexShrink={0}>
           <Image src={poolLogo} />
         </Box>
 
-        <Heading fontSize="xl" mt={2}>
+        <Heading fontSize="xl" mt={2} lineHeight="2.5rem">
           {poolName}
         </Heading>
 
@@ -451,7 +433,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
             to={"/pools/" + pool.toString()}
           >
             <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              mt={4}
               width="100%"
               height="45px"
               borderRadius="7px"
@@ -463,7 +445,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           </Link>
 
           <DashboardBox
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
             flexShrink={0}
             as="button"
             onClick={openDepositModal}
@@ -482,9 +464,9 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
       </Column>
     </>
   );
-});
+};
 
-const InterestEarned = React.memo(() => {
+const InterestEarned = () => {
   const { rari, address } = useRari();
 
   const { data: interestEarned } = useQuery("interestEarned", async () => {
@@ -515,7 +497,8 @@ const InterestEarned = React.memo(() => {
   });
 
   const { balanceData: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
-  const isSufferingDivergenceLoss = useMemo(() => {
+
+  const isSufferingDivergenceLoss = (() => {
     if (interestEarned && yieldPoolBalance) {
       if (
         interestEarned.yieldPoolInterestEarned.isZero() &&
@@ -526,7 +509,7 @@ const InterestEarned = React.memo(() => {
         return false;
       }
     }
-  }, [interestEarned, yieldPoolBalance]);
+  })();
 
   const { t } = useTranslation();
 
@@ -567,9 +550,9 @@ const InterestEarned = React.memo(() => {
       )}
     </Column>
   );
-});
+};
 
-const NewsAndTwitterLink = React.memo(() => {
+const NewsAndTwitterLink = () => {
   const { t } = useTranslation();
 
   return (
@@ -582,7 +565,7 @@ const NewsAndTwitterLink = React.memo(() => {
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          px={DASHBOARD_BOX_SPACING.asPxString()}
+          px={4}
           py={3}
         >
           <Icon as={FaTwitter} boxSize="20px" />
@@ -597,7 +580,7 @@ const NewsAndTwitterLink = React.memo(() => {
 
       <Column
         expand
-        px={DASHBOARD_BOX_SPACING.asPxString()}
+        px={4}
         mainAxisAlignment="center"
         crossAxisAlignment="flex-start"
       >
@@ -605,7 +588,7 @@ const NewsAndTwitterLink = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
 const NewsMarquee = React.memo(() => {
   const [news, setNews] = useState<string[]>([]);
@@ -642,9 +625,9 @@ const NewsMarquee = React.memo(() => {
   );
 });
 
-const NewsMarqueeSpacer = React.memo(() => {
+const NewsMarqueeSpacer = () => {
   return <b> &nbsp;&nbsp;&nbsp;&nbsp;📣 &nbsp;&nbsp;&nbsp;&nbsp; </b>;
-});
+};
 
 const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
   const { isAuthed } = useRari();

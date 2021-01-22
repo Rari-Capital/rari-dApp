@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useRari } from "../../../context/RariContext";
 import { Contract } from "web3-eth-contract";
 import SaffronPoolABI from "./SaffronPoolABI.json";
@@ -13,8 +13,8 @@ export const SaffronContext = React.createContext<
   SaffronContextType | undefined
 >(undefined);
 
-const SaffronStrategyAddress = "0x9e0278646fD72318909338Ad87deC7f3464BC434";
-const SaffronPoolAddress = "0xbafA231AAac12CE8ba0b23b86669f54a05fC23b5";
+const SaffronStrategyAddress = "0x304375B943d33AC58327752ec7Ac277aB41Fb0AF";
+const SaffronPoolAddress = "0xFa1117EB3dB5055A22CA19CC6654031E485dAD90";
 
 export const SaffronProvider = React.memo(({ children }) => {
   const { rari } = useRari();
@@ -46,12 +46,10 @@ export const SaffronProvider = React.memo(({ children }) => {
     );
   }, [rari]);
 
-  const value = useMemo(() => {
-    return { saffronStrategy, saffronPool };
-  }, [saffronStrategy, saffronPool]);
-
   return (
-    <SaffronContext.Provider value={value}>{children}</SaffronContext.Provider>
+    <SaffronContext.Provider value={{ saffronStrategy, saffronPool }}>
+      {children}
+    </SaffronContext.Provider>
   );
 });
 

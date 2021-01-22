@@ -1,7 +1,7 @@
 import React from "react";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import {
@@ -90,7 +90,7 @@ const WrappedTranchePage = React.memo(() => {
 
 export default WrappedTranchePage;
 
-const TranchePage = React.memo(() => {
+const TranchePage = () => {
   const { isAuthed } = useRari();
 
   const { t } = useTranslation();
@@ -107,7 +107,7 @@ const TranchePage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
-        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
 
@@ -121,7 +121,7 @@ const TranchePage = React.memo(() => {
             width={isMobile ? "100%" : "75%"}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            mr={DASHBOARD_BOX_SPACING.asPxString()}
+            mr={4}
           >
             <DashboardBox height={isMobile ? "110px" : "95px"} width="100%">
               <Column
@@ -184,7 +184,7 @@ const TranchePage = React.memo(() => {
           </Column>
 
           <Column
-            mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+            mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "25%"}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
@@ -193,28 +193,15 @@ const TranchePage = React.memo(() => {
               <RedemptionDate />
             </DashboardBox>
 
-            <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="200px"
-              width="100%"
-            >
+            <DashboardBox mt={4} height="200px" width="100%">
               <PrincipalAmount />
             </DashboardBox>
 
-            <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="200px"
-              width="100%"
-            >
+            <DashboardBox mt={4} height="200px" width="100%">
               <SFIPrice />
             </DashboardBox>
 
-            <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="200px"
-              width="100%"
-              p={4}
-            >
+            <DashboardBox mt={4} height="200px" width="100%" p={4}>
               <SFIDistributions />
             </DashboardBox>
           </Column>
@@ -223,9 +210,9 @@ const TranchePage = React.memo(() => {
       <CopyrightSpacer forceShow />
     </>
   );
-});
+};
 
-export const TranchesRatingInfo = React.memo(() => {
+export const TranchesRatingInfo = () => {
   const { t } = useTranslation();
 
   const isMobile = useIsSmallScreen();
@@ -265,225 +252,227 @@ export const TranchesRatingInfo = React.memo(() => {
       <TrancheRatingColumn trancheRating={TrancheRating.A} />
     </RowOrColumn>
   );
-});
+};
 
-export const TrancheRatingColumn = React.memo(
-  ({ trancheRating }: { trancheRating: TrancheRating }) => {
-    const { t } = useTranslation();
+export const TrancheRatingColumn = ({
+  trancheRating,
+}: {
+  trancheRating: TrancheRating;
+}) => {
+  const { t } = useTranslation();
 
-    const isMobile = useIsSmallScreen();
+  const isMobile = useIsSmallScreen();
 
-    const { saffronPool } = useSaffronData();
+  const { saffronPool } = useSaffronData();
 
-    const { data } = useQuery("sfiEarnings", async () => {
-      const {
-        S,
-        AA,
-        A,
-      } = await saffronPool.methods.TRANCHE_SFI_MULTIPLIER().call();
+  const { data } = useQuery("sfiEarnings", async () => {
+    const {
+      S,
+      AA,
+      A,
+    } = await saffronPool.methods.TRANCHE_SFI_MULTIPLIER().call();
 
-      return { S: S / 1000, AA: AA / 1000, A: A / 1000 };
-    });
+    return { S: S / 1000, AA: AA / 1000, A: A / 1000 };
+  });
 
-    return (
+  return (
+    <Column
+      mainAxisAlignment="space-between"
+      crossAxisAlignment="center"
+      expand
+      ml={isMobile ? 0 : 4}
+      mt={isMobile ? 6 : 0}
+    >
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        mb={isMobile ? 2 : 0}
+      >
+        <Heading size="sm">
+          {trancheRating} {t("Tranche")}
+        </Heading>
+        <Text textAlign="center" mt={1}>
+          {trancheRating === TrancheRating.S
+            ? t("Liquidity added to other tranches as needed.")
+            : trancheRating === TrancheRating.AA
+            ? t(
+                "Reduced interest earned. Covered in case of failure by A tranche."
+              )
+            : t(
+                "10x interest earned. Cover provided to AA tranche in case of failure."
+              )}
+        </Text>
+      </Column>
+
+      <i>
+        SFI Earnings: <b>{data ? data[trancheRating] + "%" : "?%"}</b>
+      </i>
+    </Column>
+  );
+};
+
+export const TranchePoolInfo = ({
+  tranchePool,
+}: {
+  tranchePool: TranchePool;
+}) => {
+  const { t } = useTranslation();
+
+  const isMobile = useIsSmallScreen();
+
+  return (
+    <RowOrColumn
+      isRow={!isMobile}
+      p={4}
+      expand
+      crossAxisAlignment="flex-start"
+      mainAxisAlignment="space-between"
+    >
+      <Column
+        mainAxisAlignment="space-between"
+        crossAxisAlignment={isMobile ? "center" : "flex-start"}
+        expand
+        textAlign={isMobile ? "center" : "left"}
+      >
+        <Heading size="md">
+          {tranchePool} {t("Pool")}
+        </Heading>
+        <Text mt={2}>
+          {t("Deposits are locked until the end of each 2 week epoch.")}
+        </Text>
+        <Text mt={3}>
+          <i>{t("SFI staking is required to enter the A tranche!")}</i>
+        </Text>
+      </Column>
+
+      <TrancheColumn
+        tranchePool={tranchePool}
+        trancheRating={TrancheRating.S}
+      />
+
+      {isMobile ? null : (
+        <TrancheColumn
+          tranchePool={tranchePool}
+          trancheRating={TrancheRating.AA}
+        />
+      )}
+
+      <TrancheColumn
+        tranchePool={tranchePool}
+        trancheRating={TrancheRating.A}
+      />
+    </RowOrColumn>
+  );
+};
+
+export const TrancheColumn = ({
+  tranchePool,
+  trancheRating,
+}: {
+  tranchePool: TranchePool;
+  trancheRating: TrancheRating;
+}) => {
+  const { t } = useTranslation();
+  const isMobile = useIsSmallScreen();
+
+  const { rari, address } = useRari();
+  const { saffronData, saffronPool, fetchCurrentEpoch } = useSaffronData();
+
+  const { data: principal } = useQuery(
+    tranchePool + trancheRating + " principal " + address,
+    async () => {
+      //TODO: ADD USDC POOL
+
+      const currentEpoch = await fetchCurrentEpoch();
+
+      const tranchePToken = new rari.web3.eth.Contract(
+        ERC20ABI as any,
+        await saffronPool.methods
+          .principal_token_addresses(
+            currentEpoch,
+            trancheRatingIndex(trancheRating)
+          )
+          .call()
+      );
+
+      return smallUsdFormatter(
+        parseInt(await tranchePToken.methods.balanceOf(address).call()) / 1e18
+      ).replace("$", "");
+    }
+  );
+
+  const {
+    isOpen: isDepositModalOpen,
+    onOpen: openDepositModal,
+    onClose: closeDepositModal,
+  } = useDisclosure();
+
+  return (
+    <>
+      <DepositModal
+        trancheRating={trancheRating}
+        tranchePool={tranchePool}
+        isOpen={isDepositModalOpen}
+        onClose={closeDepositModal}
+      />
+
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         expand
         ml={isMobile ? 0 : 4}
-        mt={isMobile ? 6 : 0}
+        mt={isMobile ? 8 : 0}
+        // TODO: REMOVE STYLE ONCE AA TRANCHE IS ADDED
+        style={
+          trancheRating === TrancheRating.AA
+            ? {
+                opacity: tranchePool !== "USDC" ? "0.3" : "1",
+                pointerEvents: "none",
+              }
+            : {}
+        }
       >
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          mb={isMobile ? 2 : 0}
-        >
+        <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
           <Heading size="sm">
             {trancheRating} {t("Tranche")}
           </Heading>
-          <Text textAlign="center" mt={1}>
-            {trancheRating === TrancheRating.S
-              ? t("Liquidity added to other tranches as needed.")
-              : trancheRating === TrancheRating.AA
-              ? t(
-                  "Reduced interest earned. Covered in case of failure by A tranche."
-                )
-              : t(
-                  "10x interest earned. Cover provided to AA tranche in case of failure."
-                )}
-          </Text>
-        </Column>
-
-        <i>
-          SFI Earnings: <b>{data ? data[trancheRating] + "%" : "?%"}</b>
-        </i>
-      </Column>
-    );
-  }
-);
-
-export const TranchePoolInfo = React.memo(
-  ({ tranchePool }: { tranchePool: TranchePool }) => {
-    const { t } = useTranslation();
-
-    const isMobile = useIsSmallScreen();
-
-    return (
-      <RowOrColumn
-        isRow={!isMobile}
-        p={4}
-        expand
-        crossAxisAlignment="flex-start"
-        mainAxisAlignment="space-between"
-      >
-        <Column
-          mainAxisAlignment="space-between"
-          crossAxisAlignment={isMobile ? "center" : "flex-start"}
-          expand
-          textAlign={isMobile ? "center" : "left"}
-        >
-          <Heading size="md">
-            {tranchePool} {t("Pool")}
-          </Heading>
-          <Text mt={2}>
-            {t("Deposits are locked until the end of each 2 week epoch.")}
-          </Text>
-          <Text mt={3}>
-            <i>{t("SFI staking is required to enter the A tranche!")}</i>
-          </Text>
-        </Column>
-
-        <TrancheColumn
-          tranchePool={tranchePool}
-          trancheRating={TrancheRating.S}
-        />
-
-        {isMobile ? null : (
-          <TrancheColumn
-            tranchePool={tranchePool}
-            trancheRating={TrancheRating.AA}
-          />
-        )}
-
-        <TrancheColumn
-          tranchePool={tranchePool}
-          trancheRating={TrancheRating.A}
-        />
-      </RowOrColumn>
-    );
-  }
-);
-
-export const TrancheColumn = React.memo(
-  ({
-    tranchePool,
-    trancheRating,
-  }: {
-    tranchePool: TranchePool;
-    trancheRating: TrancheRating;
-  }) => {
-    const { t } = useTranslation();
-    const isMobile = useIsSmallScreen();
-
-    const { rari, address } = useRari();
-    const { saffronData, saffronPool, fetchCurrentEpoch } = useSaffronData();
-
-    const { data: principal } = useQuery(
-      tranchePool + trancheRating + " principal " + address,
-      async () => {
-        //TODO: ADD USDC POOL
-
-        const currentEpoch = await fetchCurrentEpoch();
-
-        const tranchePToken = new rari.web3.eth.Contract(
-          ERC20ABI as any,
-          await saffronPool.methods
-            .principal_token_addresses(
-              currentEpoch,
-              trancheRatingIndex(trancheRating)
-            )
-            .call()
-        );
-
-        return smallUsdFormatter(
-          parseInt(await tranchePToken.methods.balanceOf(address).call()) / 1e18
-        ).replace("$", "");
-      }
-    );
-
-    const {
-      isOpen: isDepositModalOpen,
-      onOpen: openDepositModal,
-      onClose: closeDepositModal,
-    } = useDisclosure();
-
-    return (
-      <>
-        <DepositModal
-          trancheRating={trancheRating}
-          tranchePool={tranchePool}
-          isOpen={isDepositModalOpen}
-          onClose={closeDepositModal}
-        />
-
-        <Column
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          expand
-          ml={isMobile ? 0 : 4}
-          mt={isMobile ? 8 : 0}
-          // TODO: REMOVE STYLE ONCE AA TRANCHE IS ADDED
-          style={
-            trancheRating === TrancheRating.AA
-              ? {
-                  opacity: tranchePool !== "USDC" ? "0.3" : "1",
-                  pointerEvents: "none",
-                }
-              : {}
-          }
-        >
-          <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Heading size="sm">
-              {trancheRating} {t("Tranche")}
-            </Heading>
-            <SimpleTooltip label={t("Your balance in this tranche")}>
-              <Text textAlign="center" mt={4}>
-                {principal ?? "?"} {tranchePool}
-              </Text>
-            </SimpleTooltip>
-            <Text textAlign="center" fontWeight="bold" mt={4}>
-              {trancheRating === "AA"
-                ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
-                  "0.45%"
-                : saffronData
-                ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
-                    trancheRating
-                  ]["total-apy"] + "% APY"
-                : "?% APY"}
+          <SimpleTooltip label={t("Your balance in this tranche")}>
+            <Text textAlign="center" mt={4}>
+              {principal ?? "?"} {tranchePool}
             </Text>
-          </Column>
-
-          <DashboardBox
-            onClick={openDepositModal}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
-            as="button"
-            height="45px"
-            width={isMobile ? "100%" : "85%"}
-            borderRadius="7px"
-            fontSize="xl"
-            fontWeight="bold"
-          >
-            <Center expand>
-              <Icon as={MdSwapHoriz} boxSize="30px" />
-            </Center>
-          </DashboardBox>
+          </SimpleTooltip>
+          <Text textAlign="center" fontWeight="bold" mt={4}>
+            {trancheRating === "AA"
+              ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
+                "0.45%"
+              : saffronData
+              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
+                  trancheRating
+                ]["total-apy"] + "% APY"
+              : "?% APY"}
+          </Text>
         </Column>
-      </>
-    );
-  }
-);
 
-export const RedemptionDate = React.memo(() => {
+        <DashboardBox
+          onClick={openDepositModal}
+          mt={4}
+          as="button"
+          height="45px"
+          width={isMobile ? "100%" : "85%"}
+          borderRadius="7px"
+          fontSize="xl"
+          fontWeight="bold"
+        >
+          <Center expand>
+            <Icon as={MdSwapHoriz} boxSize="30px" />
+          </Center>
+        </DashboardBox>
+      </Column>
+    </>
+  );
+};
+
+export const RedemptionDate = () => {
   const { t } = useTranslation();
 
   const { saffronPool, fetchCurrentEpoch } = useSaffronData();
@@ -513,9 +502,9 @@ export const RedemptionDate = React.memo(() => {
       </Text>
     </Column>
   );
-});
+};
 
-export const PrincipalAmount = React.memo(() => {
+export const PrincipalAmount = () => {
   const { t } = useTranslation();
 
   const { rari, address } = useRari();
@@ -559,9 +548,12 @@ export const PrincipalAmount = React.memo(() => {
     async () => {
       // TODO: ADD USDC
 
-      const DAI_SFI_REWARDS = await saffronStrategy.methods
-        .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-        .call();
+      const DAI_SFI_REWARDS =
+        parseInt(
+          await saffronStrategy.methods
+            .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
+            .call()
+        ) / 1e18;
 
       const SFI_multipliers = await saffronPool.methods
         .TRANCHE_SFI_MULTIPLIER()
@@ -631,9 +623,9 @@ export const PrincipalAmount = React.memo(() => {
       <Text>{estimatedSFI ?? "? SFI"}</Text>
     </Column>
   );
-});
+};
 
-export const SFIPrice = React.memo(() => {
+export const SFIPrice = () => {
   const { t } = useTranslation();
 
   const { saffronData } = useSaffronData();
@@ -652,21 +644,27 @@ export const SFIPrice = React.memo(() => {
       <Text>{saffronData ? "$" + saffronData.SFI.USD : "$?"}</Text>
     </Column>
   );
-});
+};
 
-export const SFIDistributions = React.memo(() => {
+export const SFIDistributions = () => {
   const { t } = useTranslation();
 
   const { saffronStrategy } = useSaffronData();
 
-  const { data: sfiDistributions } = useQuery("sfiDistributions", async () => {
-    const DAI = await saffronStrategy.methods
-      .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-      .call();
+  const { rari } = useRari();
 
-    const USDC = await saffronStrategy.methods
-      .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
-      .call();
+  const { data: sfiDistributions } = useQuery("sfiDistributions", async () => {
+    const DAI = rari.web3.utils.fromWei(
+      await saffronStrategy.methods
+        .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
+        .call()
+    );
+
+    const USDC = rari.web3.utils.fromWei(
+      await saffronStrategy.methods
+        .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
+        .call()
+    );
 
     return { DAI, USDC };
   });
@@ -715,4 +713,4 @@ export const SFIDistributions = React.memo(() => {
       </Link>
     </Column>
   );
-});
+};
