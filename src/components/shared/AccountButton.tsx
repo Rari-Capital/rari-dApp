@@ -87,18 +87,18 @@ const Buttons = ({
     <>
       {isMobile ? null : (
         <>
-          {/* <DashboardBox
-              as="button"
-              flexShrink={0}
-              width="110px"
-              height="40px"
-              fontWeight="bold"
-              onClick={openMoonpayModal}
-            >
-              <Center expand>{t("Buy Crypto")}</Center>
-            </DashboardBox> */}
           <DashboardBox
-            // ml={4}
+            as="button"
+            flexShrink={0}
+            width="110px"
+            height="40px"
+            fontWeight="bold"
+            onClick={openMoonpayModal}
+          >
+            <Center expand>{t("Buy Crypto")}</Center>
+          </DashboardBox>
+          <DashboardBox
+            ml={4}
             as="button"
             height="40px"
             flexShrink={0}
