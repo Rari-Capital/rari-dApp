@@ -6,7 +6,7 @@ import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import CaptionedStat from "../../shared/CaptionedStat";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 
-const FuseStatsBar = React.memo(() => {
+const FuseStatsBar = () => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
@@ -75,6 +75,6 @@ const FuseStatsBar = React.memo(() => {
       </DashboardBox>
     </RowOrColumn>
   );
-});
+};
 
 export default FuseStatsBar;

@@ -9,7 +9,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DASHBOARD_BOX_PROPS } from "../../../shared/DashboardBox";
@@ -25,19 +25,10 @@ interface Props {
   onClose: () => any;
 }
 
-const AddAssetModal = React.memo((props: Props) => {
+const AddAssetModal = (props: Props) => {
   const { t } = useTranslation();
 
   const [tokenAddress, _setTokenAddress] = useState<string>("");
-
-  const updateTokenAddress = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const address = event.target.value;
-      _setTokenAddress(address);
-    },
-
-    [_setTokenAddress]
-  );
 
   const tokenData = useTokenData(tokenAddress);
 
@@ -100,7 +91,10 @@ const AddAssetModal = React.memo((props: Props) => {
               variant="filled"
               size="sm"
               value={tokenAddress}
-              onChange={updateTokenAddress}
+              onChange={(event) => {
+                const address = event.target.value;
+                _setTokenAddress(address);
+              }}
               {...DASHBOARD_BOX_PROPS}
               _placeholder={{ color: "#e0e0e0" }}
               _focus={{ bg: "#121212" }}
@@ -142,6 +136,6 @@ const AddAssetModal = React.memo((props: Props) => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default AddAssetModal;

@@ -72,7 +72,7 @@ const FusePoolPage = React.memo(() => {
 
 export default FusePoolPage;
 
-const SupplyList = React.memo(() => {
+const SupplyList = () => {
   const { t } = useTranslation();
 
   const isMobile = useIsSemiSmallScreen();
@@ -140,118 +140,116 @@ const SupplyList = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
-const AssetSupplyRow = React.memo(
-  ({
-    symbol,
-    icon,
-    apy,
-    earned,
-    balance,
-    isCollateral,
-    color,
-  }: {
-    symbol: string;
-    icon: string;
-    apy: number;
-    earned: number;
-    balance: number;
-    isCollateral: boolean;
-    color?: string;
-  }) => {
-    const {
-      isOpen: isModalOpen,
-      onOpen: openModal,
-      onClose: closeModal,
-    } = useDisclosure();
+const AssetSupplyRow = ({
+  symbol,
+  icon,
+  apy,
+  earned,
+  balance,
+  isCollateral,
+  color,
+}: {
+  symbol: string;
+  icon: string;
+  apy: number;
+  earned: number;
+  balance: number;
+  isCollateral: boolean;
+  color?: string;
+}) => {
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure();
 
-    return (
-      <>
-        <PoolModal
-          depositSide
-          token={symbol}
-          isOpen={isModalOpen}
-          onClose={closeModal}
-        />
+  return (
+    <>
+      <PoolModal
+        depositSide
+        token={symbol}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
 
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        width="100%"
+        px={4}
+        mb={3}
+        as="button"
+        onClick={openModal}
+      >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          width="100%"
-          px={4}
-          mb={3}
-          as="button"
-          onClick={openModal}
+          width="27%"
         >
-          <Row
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"
-            width="27%"
-          >
-            <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
-            <Text fontWeight="bold" fontSize="lg" ml={2}>
-              {symbol}
-            </Text>
-          </Row>
+          <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
+          <Text fontWeight="bold" fontSize="lg" ml={2}>
+            {symbol}
+          </Text>
+        </Row>
 
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            width="27%"
-          >
-            <Text color={color ?? "#FF"} fontWeight="bold" fontSize="17px">
-              {apy}%
-            </Text>
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-end"
+          width="27%"
+        >
+          <Text color={color ?? "#FF"} fontWeight="bold" fontSize="17px">
+            {apy}%
+          </Text>
 
-            <Text fontSize="sm">
-              {smallUsdFormatter(earned).replace("$", "")} {symbol}
-            </Text>
-          </Column>
+          <Text fontSize="sm">
+            {smallUsdFormatter(earned).replace("$", "")} {symbol}
+          </Text>
+        </Column>
 
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            width="27%"
-          >
-            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-              {smallUsdFormatter(balance * Math.random() * 10)}
-            </Text>
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-end"
+          width="27%"
+        >
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+            {smallUsdFormatter(balance * Math.random() * 10)}
+          </Text>
 
-            <Text fontSize="sm">
-              {smallUsdFormatter(balance).replace("$", "")} {symbol}
-            </Text>
-          </Column>
+          <Text fontSize="sm">
+            {smallUsdFormatter(balance).replace("$", "")} {symbol}
+          </Text>
+        </Column>
 
-          <Row
-            width="20%"
-            mainAxisAlignment="flex-end"
-            crossAxisAlignment="center"
-          >
-            <style>
-              {`
+        <Row
+          width="20%"
+          mainAxisAlignment="flex-end"
+          crossAxisAlignment="center"
+        >
+          <style>
+            {`
             
             .${symbol + "-switch"} > .chakra-switch__track[data-checked] {
               background-color: ${color ?? "#282727"} !important;
             }
 
             `}
-            </style>
-            <Switch
-              isChecked={isCollateral}
-              className={symbol + "-switch"}
-              size="md"
-              mt={1}
-              mr={5}
-            />
-          </Row>
+          </style>
+          <Switch
+            isChecked={isCollateral}
+            className={symbol + "-switch"}
+            size="md"
+            mt={1}
+            mr={5}
+          />
         </Row>
-      </>
-    );
-  }
-);
+      </Row>
+    </>
+  );
+};
 
-const BorrowList = React.memo(() => {
+const BorrowList = () => {
   const { t } = useTranslation();
 
   const isMobile = useIsSemiSmallScreen();
@@ -318,104 +316,102 @@ const BorrowList = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
-const AssetBorrowRow = React.memo(
-  ({
-    symbol,
-    icon,
-    apy,
-    accrued,
-    borrowed,
-    liquidity,
-    color,
-  }: {
-    symbol: string;
-    icon: string;
-    apy: number;
-    accrued: number;
-    borrowed: number;
-    liquidity: number;
-    color?: string;
-  }) => {
-    const {
-      isOpen: isModalOpen,
-      onOpen: openModal,
-      onClose: closeModal,
-    } = useDisclosure();
+const AssetBorrowRow = ({
+  symbol,
+  icon,
+  apy,
+  accrued,
+  borrowed,
+  liquidity,
+  color,
+}: {
+  symbol: string;
+  icon: string;
+  apy: number;
+  accrued: number;
+  borrowed: number;
+  liquidity: number;
+  color?: string;
+}) => {
+  const {
+    isOpen: isModalOpen,
+    onOpen: openModal,
+    onClose: closeModal,
+  } = useDisclosure();
 
-    return (
-      <>
-        <PoolModal
-          depositSide={false}
-          token={symbol}
-          isOpen={isModalOpen}
-          onClose={closeModal}
-        />
+  return (
+    <>
+      <PoolModal
+        depositSide={false}
+        token={symbol}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
 
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        width="100%"
+        px={4}
+        mb={3}
+        as="button"
+        onClick={openModal}
+      >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          width="100%"
-          px={4}
-          mb={3}
-          as="button"
-          onClick={openModal}
+          width="27%"
         >
-          <Row
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"
-            width="27%"
-          >
-            <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
-            <Text fontWeight="bold" fontSize="lg" ml={2}>
-              {symbol}
-            </Text>
-          </Row>
-
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            width="27%"
-          >
-            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-              {apy}%
-            </Text>
-
-            <Text fontSize="sm">
-              {smallUsdFormatter(accrued).replace("$", "")} {symbol}
-            </Text>
-          </Column>
-
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            width="27%"
-          >
-            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-              {smallUsdFormatter(borrowed * Math.random() * 10)}
-            </Text>
-
-            <Text fontSize="sm">
-              {smallUsdFormatter(borrowed).replace("$", "")} {symbol}
-            </Text>
-          </Column>
-
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-end"
-            width="20%"
-          >
-            <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-              {shortUsdFormatter(liquidity * Math.random() * 10)}
-            </Text>
-
-            <Text fontSize="sm">
-              {shortUsdFormatter(liquidity).replace("$", "")} {symbol}
-            </Text>
-          </Column>
+          <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
+          <Text fontWeight="bold" fontSize="lg" ml={2}>
+            {symbol}
+          </Text>
         </Row>
-      </>
-    );
-  }
-);
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-end"
+          width="27%"
+        >
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+            {apy}%
+          </Text>
+
+          <Text fontSize="sm">
+            {smallUsdFormatter(accrued).replace("$", "")} {symbol}
+          </Text>
+        </Column>
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-end"
+          width="27%"
+        >
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+            {smallUsdFormatter(borrowed * Math.random() * 10)}
+          </Text>
+
+          <Text fontSize="sm">
+            {smallUsdFormatter(borrowed).replace("$", "")} {symbol}
+          </Text>
+        </Column>
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-end"
+          width="20%"
+        >
+          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
+            {shortUsdFormatter(liquidity * Math.random() * 10)}
+          </Text>
+
+          <Text fontSize="sm">
+            {shortUsdFormatter(liquidity).replace("$", "")} {symbol}
+          </Text>
+        </Column>
+      </Row>
+    </>
+  );
+};

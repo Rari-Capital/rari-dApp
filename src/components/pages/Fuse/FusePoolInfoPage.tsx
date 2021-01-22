@@ -92,7 +92,7 @@ const FusePoolInfoPage = React.memo(() => {
 
 export default FusePoolInfoPage;
 
-const OracleAndInterestRates = React.memo(() => {
+const OracleAndInterestRates = () => {
   const isMobile = useIsSemiSmallScreen();
 
   let { poolId } = useParams();
@@ -229,40 +229,38 @@ const OracleAndInterestRates = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
-const StatRow = React.memo(
-  ({
-    statATitle,
-    statA,
-    statBTitle,
-    statB,
-  }: {
-    statATitle: string;
-    statA: string;
-    statBTitle: string;
-    statB: string;
-  }) => {
-    return (
-      <RowOnDesktopColumnOnMobile
-        mainAxisAlignment="center"
-        crossAxisAlignment="center"
-        width="100%"
-        mb={4}
-      >
-        <Text width="50%" textAlign="center">
-          {statATitle}: <b>{statA}</b>
-        </Text>
+const StatRow = ({
+  statATitle,
+  statA,
+  statBTitle,
+  statB,
+}: {
+  statATitle: string;
+  statA: string;
+  statBTitle: string;
+  statB: string;
+}) => {
+  return (
+    <RowOnDesktopColumnOnMobile
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      width="100%"
+      mb={4}
+    >
+      <Text width="50%" textAlign="center">
+        {statATitle}: <b>{statA}</b>
+      </Text>
 
-        <Text width="50%" textAlign="center">
-          {statBTitle}: <b>{statB}</b>
-        </Text>
-      </RowOnDesktopColumnOnMobile>
-    );
-  }
-);
+      <Text width="50%" textAlign="center">
+        {statBTitle}: <b>{statB}</b>
+      </Text>
+    </RowOnDesktopColumnOnMobile>
+  );
+};
 
-const AssetAndOtherInfo = React.memo(() => {
+const AssetAndOtherInfo = () => {
   const isMobile = useIsSemiSmallScreen();
 
   let { poolId } = useParams();
@@ -406,4 +404,4 @@ const AssetAndOtherInfo = React.memo(() => {
       </Box>
     </Column>
   );
-});
+};

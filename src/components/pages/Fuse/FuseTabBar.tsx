@@ -1,7 +1,7 @@
 import { DeleteIcon, InfoIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "buttered-chakra";
-import React, { useCallback } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
@@ -16,7 +16,7 @@ export function useFilter() {
   return new URLSearchParams(useLocation().search).get("filter");
 }
 
-const FuseTabBar = React.memo(() => {
+const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
@@ -26,19 +26,6 @@ const FuseTabBar = React.memo(() => {
   let navigate = useNavigate();
 
   const filter = useFilter();
-
-  const setFilter = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = encodeURIComponent(event.target.value);
-
-      if (value) {
-        navigate("?filter=" + value);
-      } else {
-        navigate("");
-      }
-    },
-    [navigate]
-  );
 
   return (
     <DashboardBox
@@ -66,7 +53,15 @@ const FuseTabBar = React.memo(() => {
 
               <Input
                 value={filter ?? ""}
-                onChange={setFilter}
+                onChange={(event) => {
+                  const value = encodeURIComponent(event.target.value);
+
+                  if (value) {
+                    navigate("?filter=" + value);
+                  } else {
+                    navigate("");
+                  }
+                }}
                 height="100%"
                 ml={2}
                 placeholder={t("Try searching for USDC")}
@@ -154,37 +149,35 @@ const FuseTabBar = React.memo(() => {
       </RowOrColumn>
     </DashboardBox>
   );
-});
+};
 
-const TabLink = React.memo(
-  ({ route, text }: { route: string; text: string }) => {
-    const isMobile = useIsSmallScreen();
+const TabLink = ({ route, text }: { route: string; text: string }) => {
+  const isMobile = useIsSmallScreen();
 
-    const location = useLocation();
+  const location = useLocation();
 
-    return (
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
-        className="no-underline"
-        to={route}
-        ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
-        mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+  return (
+    <Link
+      /* @ts-ignore */
+      as={RouterLink}
+      className="no-underline"
+      to={route}
+      ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
+      mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+    >
+      <DashboardBox
+        height="35px"
+        {...(route ===
+        location.pathname.replace(/\/+$/, "") + window.location.search
+          ? activeStyle
+          : noop)}
       >
-        <DashboardBox
-          height="35px"
-          {...(route ===
-          location.pathname.replace(/\/+$/, "") + window.location.search
-            ? activeStyle
-            : noop)}
-        >
-          <Center expand px={2} fontWeight="bold">
-            {text}
-          </Center>
-        </DashboardBox>
-      </Link>
-    );
-  }
-);
+        <Center expand px={2} fontWeight="bold">
+          {text}
+        </Center>
+      </DashboardBox>
+    </Link>
+  );
+};
 
 export default FuseTabBar;

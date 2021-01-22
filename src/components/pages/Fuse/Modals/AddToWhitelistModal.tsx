@@ -7,7 +7,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { Center, Column } from "buttered-chakra";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../../context/RariContext";
 import DashboardBox, {
@@ -22,21 +22,12 @@ interface Props {
   onClose: () => any;
 }
 
-const AddToWhitelistModal = React.memo((props: Props) => {
+const AddToWhitelistModal = (props: Props) => {
   const { t } = useTranslation();
 
   const { rari } = useRari();
 
   const [address, _setAddress] = useState<string>("");
-
-  const updateAddress = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const address = event.target.value;
-      _setAddress(address);
-    },
-
-    [_setAddress]
-  );
 
   const whitelist = [
     "0x7eD52863829AB99354F3a0503A622e82AcD5F7d3",
@@ -71,7 +62,9 @@ const AddToWhitelistModal = React.memo((props: Props) => {
             variant="filled"
             size="sm"
             value={address}
-            onChange={updateAddress}
+            onChange={(event) => {
+              _setAddress(event.target.value);
+            }}
             {...DASHBOARD_BOX_PROPS}
             _placeholder={{ color: "#e0e0e0" }}
             _focus={{ bg: "#121212" }}
@@ -125,6 +118,6 @@ const AddToWhitelistModal = React.memo((props: Props) => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default AddToWhitelistModal;

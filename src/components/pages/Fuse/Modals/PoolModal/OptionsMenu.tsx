@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { Button } from "@chakra-ui/react";
 
@@ -13,36 +13,33 @@ import {
   ModalDivider,
 } from "../../../../shared/Modal";
 
-const OptionsMenu = React.memo(
-  ({
-    mode,
-    onSetMode,
-    onClose,
-  }: {
-    mode: Mode;
-    onClose: () => any;
-    onSetMode: (mode: Mode) => any;
-  }) => {
-    const setMode = useCallback(
-      (newMode: Mode) => {
-        onSetMode(newMode);
+const OptionsMenu = ({
+  mode,
+  onSetMode,
+  onClose,
+}: {
+  mode: Mode;
+  onClose: () => any;
+  onSetMode: (mode: Mode) => any;
+}) => {
+  const setMode = (newMode: Mode) => {
+    onSetMode(newMode);
 
-        onClose();
-      },
-      [onSetMode, onClose]
-    );
+    onClose();
+  };
 
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
-    return (
-      <Fade>
-        <ModalTitleWithCloseButton text={t("Options")} onClose={onClose} />
-        <ModalDivider />
-        <Column
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-        >
+  return (
+    <Fade>
+      <ModalTitleWithCloseButton text={t("Options")} onClose={onClose} />
+      <ModalDivider />
+      <Column
+        mt={DASHBOARD_BOX_SPACING.asPxString()}
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
+      >
+        {mode !== Mode.SUPPLY ? (
           <Button
             colorScheme="whatsapp"
             variant="solid"
@@ -50,7 +47,9 @@ const OptionsMenu = React.memo(
           >
             {t("Want to supply?")}
           </Button>
+        ) : null}
 
+        {mode !== Mode.BORROW ? (
           <Button
             mt={4}
             colorScheme="whatsapp"
@@ -59,7 +58,9 @@ const OptionsMenu = React.memo(
           >
             {t("Want to borrow?")}
           </Button>
+        ) : null}
 
+        {mode !== Mode.REPAY ? (
           <Button
             mt={4}
             colorScheme="whatsapp"
@@ -68,7 +69,9 @@ const OptionsMenu = React.memo(
           >
             {t("Want to repay?")}
           </Button>
+        ) : null}
 
+        {mode !== Mode.WITHDRAW ? (
           <Button
             mt={4}
             colorScheme="red"
@@ -77,10 +80,10 @@ const OptionsMenu = React.memo(
           >
             {t("Want to withdraw?")}
           </Button>
-        </Column>
-      </Fade>
-    );
-  }
-);
+        ) : null}
+      </Column>
+    </Fade>
+  );
+};
 
 export default OptionsMenu;

@@ -56,7 +56,7 @@ const FusePoolsPage = React.memo(() => {
 
 export default FusePoolsPage;
 
-const PoolList = React.memo(() => {
+const PoolList = () => {
   // const filter = useFilter();
 
   const { t } = useTranslation();
@@ -210,82 +210,80 @@ const PoolList = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
-const PoolRow = React.memo(
-  ({
-    tokens,
-    poolNumber,
-    tvl,
-    borrowed,
-    collatRatio,
-    mt,
-  }: {
-    tokens: { symbol: string; icon: string }[];
-    poolNumber: number;
-    tvl: number;
-    borrowed: number;
-    collatRatio: number;
-    mt?: number | string;
-  }) => {
-    return (
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
+const PoolRow = ({
+  tokens,
+  poolNumber,
+  tvl,
+  borrowed,
+  collatRatio,
+  mt,
+}: {
+  tokens: { symbol: string; icon: string }[];
+  poolNumber: number;
+  tvl: number;
+  borrowed: number;
+  collatRatio: number;
+  mt?: number | string;
+}) => {
+  return (
+    <Link
+      /* @ts-ignore */
+      as={RouterLink}
+      width="100%"
+      className="no-underline"
+      to={"/fuse/pool/" + poolNumber}
+    >
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
         width="100%"
-        className="no-underline"
-        to={"/fuse/pool/" + poolNumber}
+        height="30px"
+        mt={mt ?? 0}
       >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          width="100%"
-          height="30px"
-          mt={mt ?? 0}
+          height="100%"
+          width="40%"
         >
-          <Row
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"
-            height="100%"
-            width="40%"
-          >
-            <AvatarGroup size="xs" max={5}>
-              {tokens.map(({ symbol, icon }) => {
-                return (
-                  <Avatar
-                    key={symbol}
-                    bg="#FFF"
-                    borderWidth="1px"
-                    name={symbol}
-                    src={icon}
-                  />
-                );
-              })}
-            </AvatarGroup>
+          <AvatarGroup size="xs" max={5}>
+            {tokens.map(({ symbol, icon }) => {
+              return (
+                <Avatar
+                  key={symbol}
+                  bg="#FFF"
+                  borderWidth="1px"
+                  name={symbol}
+                  src={icon}
+                />
+              );
+            })}
+          </AvatarGroup>
 
-            <Text ml={2}>
-              {tokens.map(({ symbol }, index, array) => {
-                return symbol + (index !== array.length - 1 ? " / " : "");
-              })}
-            </Text>
-          </Row>
-
-          <Center height="100%" width="15%">
-            <b>{smallUsdFormatter(tvl)}</b>
-          </Center>
-
-          <Center height="100%" width="15%">
-            <b>{poolNumber}</b>
-          </Center>
-
-          <Center height="100%" width="15%">
-            <b>{smallUsdFormatter(borrowed)}</b>
-          </Center>
-          <Center height="100%" width="15%">
-            <b>{collatRatio.toFixed(1)}%</b>
-          </Center>
+          <Text ml={2}>
+            {tokens.map(({ symbol }, index, array) => {
+              return symbol + (index !== array.length - 1 ? " / " : "");
+            })}
+          </Text>
         </Row>
-      </Link>
-    );
-  }
-);
+
+        <Center height="100%" width="15%">
+          <b>{smallUsdFormatter(tvl)}</b>
+        </Center>
+
+        <Center height="100%" width="15%">
+          <b>{poolNumber}</b>
+        </Center>
+
+        <Center height="100%" width="15%">
+          <b>{smallUsdFormatter(borrowed)}</b>
+        </Center>
+        <Center height="100%" width="15%">
+          <b>{collatRatio.toFixed(1)}%</b>
+        </Center>
+      </Row>
+    </Link>
+  );
+};

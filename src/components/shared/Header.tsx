@@ -18,7 +18,6 @@ import {
   AnimatedSmallLogo,
   FuseSmallLogo,
   PoolLogo,
-  SmallLogo,
 } from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 

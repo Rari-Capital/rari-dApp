@@ -24,17 +24,8 @@ export enum Mode {
   REPAY,
 }
 
-const DepositModal = React.memo((props: Props) => {
+const DepositModal = (props: Props) => {
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
-
-  const openAmountSelect = useCallback(
-    () => setCurrentScreen(CurrentScreen.MAIN),
-    [setCurrentScreen]
-  );
-  const openOptions = useCallback(
-    () => setCurrentScreen(CurrentScreen.OPTIONS),
-    [setCurrentScreen]
-  );
 
   const [mode, setMode] = useState(
     props.depositSide ? Mode.SUPPLY : Mode.BORROW
@@ -52,13 +43,13 @@ const DepositModal = React.memo((props: Props) => {
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
             onClose={props.onClose}
-            mode={mode}
-            openOptions={openOptions}
+            openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
             token={props.token}
+            mode={mode}
           />
         ) : (
           <OptionsMenu
-            onClose={openAmountSelect}
+            onClose={() => setCurrentScreen(CurrentScreen.MAIN)}
             onSetMode={setMode}
             mode={mode}
           />
@@ -66,6 +57,6 @@ const DepositModal = React.memo((props: Props) => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default DepositModal;
