@@ -79,7 +79,7 @@ const AddAssetModal = React.memo((props: Props) => {
                 />
               ) : null}
               <Heading
-                mt={2}
+                my={tokenData?.symbol ? 3 : 6}
                 fontSize="22px"
                 color={tokenData?.color ?? "#FFF"}
               >
@@ -90,7 +90,7 @@ const AddAssetModal = React.memo((props: Props) => {
             </>
           ) : null}
 
-          <Box px={4} mt={isEmpty ? 4 : 2} mb={4} width="100%">
+          <Box px={4} mt={isEmpty ? 4 : 0} mb={4} width="100%">
             <Input
               width="100%"
               placeholder={t(
