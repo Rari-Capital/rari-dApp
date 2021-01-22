@@ -42,7 +42,7 @@ const MoonpayModal = (props: Props) => {
             title="Moonpay"
             allow="accelerometer; autoplay; camera; gyroscope; payment"
             height="100%"
-            src={`https://buy-staging.moonpay.io?colorCode=%2327A17A&apiKey=pk_live_4yhdRyK2JeY6lBhVRQUZ2O8SRjwQ0F88`}
+            src={`https://buy.moonpay.io?defaultCurrencyCode=USDC&colorCode=%232775C9&apiKey=pk_live_4yhdRyK2JeY6lBhVRQUZ2O8SRjwQ0F88`}
             width="100%"
           >
             <p>Your browser does not support iframes.</p>
