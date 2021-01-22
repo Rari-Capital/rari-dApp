@@ -7,7 +7,7 @@ import {
   useWindowSize,
 } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import {
@@ -112,7 +112,7 @@ const TranchePage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
-        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
 
@@ -126,7 +126,7 @@ const TranchePage = React.memo(() => {
             width={isMobile ? "100%" : "75%"}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            mr={DASHBOARD_BOX_SPACING.asPxString()}
+            mr={4}
           >
             <DashboardBox height={isMobile ? "110px" : "95px"} width="100%">
               <Column
@@ -189,7 +189,7 @@ const TranchePage = React.memo(() => {
           </Column>
 
           <Column
-            mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+            mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "25%"}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
@@ -198,28 +198,15 @@ const TranchePage = React.memo(() => {
               <RedemptionDate />
             </DashboardBox>
 
-            <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="200px"
-              width="100%"
-            >
+            <DashboardBox mt={4} height="200px" width="100%">
               <PrincipalAmount />
             </DashboardBox>
 
-            <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="200px"
-              width="100%"
-            >
+            <DashboardBox mt={4} height="200px" width="100%">
               <SFIPrice />
             </DashboardBox>
 
-            <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="200px"
-              width="100%"
-              p={4}
-            >
+            <DashboardBox mt={4} height="200px" width="100%" p={4}>
               <SFIDistributions />
             </DashboardBox>
           </Column>
@@ -470,7 +457,7 @@ export const TrancheColumn = React.memo(
 
           <DashboardBox
             onClick={openDepositModal}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
             as="button"
             height="45px"
             width={isMobile ? "100%" : "85%"}

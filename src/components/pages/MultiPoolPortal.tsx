@@ -13,7 +13,7 @@ import {
   RowOnDesktopColumnOnMobile,
   useWindowSize,
 } from "buttered-chakra";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
+import DashboardBox from "../shared/DashboardBox";
 
 // import SmallLogo from "../../static/small-logo.png";
 
@@ -111,22 +111,18 @@ const MultiPoolPortal = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={columnWidth}
-        px={columnWidth === "100%" ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={columnWidth === "100%" ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
 
         <FundStats />
 
-        <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          width="100%"
-          height="100px"
-        >
+        <DashboardBox mt={4} width="100%" height="100px">
           <NewsAndTwitterLink />
         </DashboardBox>
 
         <DashboardBox
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
+          mt={4}
           height="300px"
           width="100%"
           color="#292828"
@@ -139,7 +135,7 @@ const MultiPoolPortal = React.memo(() => {
         <DashboardBox
           width="100%"
           height={{ md: "100px", base: "250px" }}
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
+          mt={4}
         >
           <GovernanceStats />
         </DashboardBox>
@@ -262,11 +258,7 @@ const FundStats = React.memo(() => {
   return (
     <>
       {hasNotDeposited ? null : (
-        <DashboardBox
-          width="100%"
-          mb={DASHBOARD_BOX_SPACING.asPxString()}
-          height="110px"
-        >
+        <DashboardBox width="100%" mb={4} height="110px">
           <Center expand>
             <APYWithRefreshMovingStat
               formatStat={usdFormatter}
@@ -296,7 +288,7 @@ const FundStats = React.memo(() => {
           width={{ md: hasNotDeposited ? "100%" : "50%", base: "100%" }}
           height={{ md: "100%", base: "110px" }}
           mr={{
-            md: hasNotDeposited ? "0px" : DASHBOARD_BOX_SPACING.asPxString(),
+            md: hasNotDeposited ? "0px" : 4,
             base: 0,
           }}
         >
@@ -364,12 +356,10 @@ const PoolCards = React.memo(() => {
             mr={{
               md:
                 // Don't add right margin on the last child
-                index === array.length - 1
-                  ? 0
-                  : DASHBOARD_BOX_SPACING.asPxString(),
+                index === array.length - 1 ? 0 : 4,
               base: 0,
             }}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
           >
             <PoolDetailCard pool={pool} />
           </DashboardBox>
@@ -410,7 +400,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         expand
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
       >
         <Box width="50px" height="50px" flexShrink={0}>
           <Image src={poolLogo} />
@@ -451,7 +441,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
             to={"/pools/" + pool.toString()}
           >
             <DashboardBox
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
+              mt={4}
               width="100%"
               height="45px"
               borderRadius="7px"
@@ -463,7 +453,7 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
           </Link>
 
           <DashboardBox
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
             flexShrink={0}
             as="button"
             onClick={openDepositModal}
@@ -582,7 +572,7 @@ const NewsAndTwitterLink = React.memo(() => {
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          px={DASHBOARD_BOX_SPACING.asPxString()}
+          px={4}
           py={3}
         >
           <Icon as={FaTwitter} boxSize="20px" />
@@ -597,7 +587,7 @@ const NewsAndTwitterLink = React.memo(() => {
 
       <Column
         expand
-        px={DASHBOARD_BOX_SPACING.asPxString()}
+        px={4}
         mainAxisAlignment="center"
         crossAxisAlignment="flex-start"
       >

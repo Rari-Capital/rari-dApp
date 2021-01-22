@@ -1,5 +1,5 @@
 import React from "react";
-import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
+import { DASHBOARD_BOX_PROPS } from "./DashboardBox";
 import { Box, Heading, CloseButton } from "@chakra-ui/react";
 import { Row } from "buttered-chakra";
 
@@ -15,7 +15,7 @@ export const ModalTitle = React.memo(({ text }: { text: string }) => {
       width="100%"
       mainAxisAlignment="center"
       crossAxisAlignment="center"
-      p={DASHBOARD_BOX_SPACING.asPxString()}
+      p={4}
     >
       <Heading fontSize="27px">{text}</Heading>
     </Row>
@@ -29,7 +29,7 @@ export const ModalTitleWithCloseButton = React.memo(
         width="100%"
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
       >
         <Box width="32px" />
         <Heading fontSize="27px" lineHeight="1.25em">

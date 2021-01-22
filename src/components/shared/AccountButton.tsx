@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 
 import { Row, Column, Center, useIsMobile } from "buttered-chakra";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "./DashboardBox";
+import DashboardBox from "./DashboardBox";
 
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
@@ -99,7 +99,7 @@ const Buttons = React.memo(
               <Center expand>{t("Buy Crypto")}</Center>
             </DashboardBox> */}
             <DashboardBox
-              // ml={DASHBOARD_BOX_SPACING.asPxString()}
+              // ml={4}
               as="button"
               height="40px"
               flexShrink={0}
@@ -113,7 +113,7 @@ const Buttons = React.memo(
         )}
 
         <DashboardBox
-          ml={{ md: DASHBOARD_BOX_SPACING.asPxString(), base: 0 }}
+          ml={{ md: 4, base: 0 }}
           as="button"
           height="40px"
           flexShrink={0}
@@ -181,14 +181,14 @@ export const SettingsModal = React.memo(
             width="100%"
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            p={DASHBOARD_BOX_SPACING.asPxString()}
+            p={4}
           >
             <GlowingButton
               label={t("Claim RGT")}
               onClick={onClaimRGT}
               width="100%"
               height="51px"
-              mb={DASHBOARD_BOX_SPACING.asPxString()}
+              mb={4}
             />
 
             <Button
@@ -201,7 +201,7 @@ export const SettingsModal = React.memo(
               onClick={openMoonpayModal}
               _hover={{}}
               _active={{}}
-              mb={DASHBOARD_BOX_SPACING.asPxString()}
+              mb={4}
             >
               {t("Buy Crypto")}
             </Button>
@@ -216,14 +216,14 @@ export const SettingsModal = React.memo(
               onClick={onSwitchWallet}
               _hover={{}}
               _active={{}}
-              mb={DASHBOARD_BOX_SPACING.asPxString()}
+              mb={4}
             >
               {t("Switch Wallet")}
             </Button>
 
             <LanguageSelect />
 
-            <Text mt={DASHBOARD_BOX_SPACING.asPxString()} fontSize="10px">
+            <Text mt={4} fontSize="10px">
               Version {version}
             </Text>
           </Column>

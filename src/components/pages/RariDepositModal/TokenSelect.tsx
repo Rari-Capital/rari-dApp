@@ -22,7 +22,6 @@ import {
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
-import { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 import { usdFormatter } from "../../../utils/bigUtils";
 import { Pool, usePoolType } from "../../../context/PoolContext";
 import { useRari } from "../../../context/RariContext";
@@ -125,7 +124,7 @@ const TokenSelect = React.memo(
           onClose={onClose}
         />
         <ModalDivider />
-        <Box px={DASHBOARD_BOX_SPACING.asPxString()}>
+        <Box px={4}>
           <InputGroup mb={2}>
             <InputLeftElement
               ml={-1}
@@ -142,7 +141,7 @@ const TokenSelect = React.memo(
           </InputGroup>
         </Box>
 
-        <Box px={DASHBOARD_BOX_SPACING.asPxString()}>
+        <Box px={4}>
           No Slippage:{" "}
           <b>
             {isNoSlippageCurrenciesLoading
@@ -160,7 +159,7 @@ const TokenSelect = React.memo(
 
         <Box
           pt={2}
-          px={DASHBOARD_BOX_SPACING.asPxString()}
+          px={4}
           width="100%"
           height={{
             md: poolHasDivergenceRisk(poolType) ? "182px" : "157px",

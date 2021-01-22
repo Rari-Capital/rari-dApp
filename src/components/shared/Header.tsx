@@ -41,9 +41,9 @@ export const Header = React.memo(
     return (
       <Row
         color="#FFFFFF"
-        px={padding ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={padding ? 4 : 0}
         height="38px"
-        my={DASHBOARD_BOX_SPACING.asPxString()}
+        my={4}
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         overflowX="visible"

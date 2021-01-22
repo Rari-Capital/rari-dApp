@@ -12,9 +12,7 @@ import {
   Link,
   useToast,
 } from "@chakra-ui/react";
-import DashboardBox, {
-  DASHBOARD_BOX_SPACING,
-} from "../../../shared/DashboardBox";
+import DashboardBox from "../../../shared/DashboardBox";
 import { tokens } from "../../../../utils/tokenUtils";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 import {
@@ -372,7 +370,7 @@ const AmountSelect = React.memo(
           width="100%"
           mainAxisAlignment="center"
           crossAxisAlignment="center"
-          p={DASHBOARD_BOX_SPACING.asPxString()}
+          p={4}
         >
           <Heading fontSize="27px">
             {t("{{trancheRating}} Tranche Deposit", { trancheRating })}
@@ -382,7 +380,7 @@ const AmountSelect = React.memo(
         <Column
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
-          p={DASHBOARD_BOX_SPACING.asPxString()}
+          p={4}
           height="100%"
         >
           <Text fontWeight="bold" fontSize="sm" textAlign="center">
@@ -395,7 +393,7 @@ const AmountSelect = React.memo(
           </Text>
           <DashboardBox width="100%" height="70px">
             <Row
-              p={DASHBOARD_BOX_SPACING.asPxString()}
+              p={4}
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
               expand
@@ -416,7 +414,7 @@ const AmountSelect = React.memo(
           {requiresSFIStaking(trancheRating) ? (
             <DashboardBox width="100%" height="70px">
               <Row
-                p={DASHBOARD_BOX_SPACING.asPxString()}
+                p={4}
                 mainAxisAlignment="space-between"
                 crossAxisAlignment="center"
                 expand
@@ -596,7 +594,7 @@ const AmountInput = React.memo(
         value={displayAmount}
         color={token.color}
         onChange={onChange}
-        mr={DASHBOARD_BOX_SPACING.asPxString()}
+        mr={4}
       />
     );
   }

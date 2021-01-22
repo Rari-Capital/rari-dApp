@@ -187,7 +187,7 @@ const PoolPortalContent = React.memo(() => {
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          px={DASHBOARD_BOX_SPACING.asPxString()}
+          px={4}
           height={{ md: bodySize.asPxString(), base: "auto" }}
         >
           <Column
@@ -210,13 +210,13 @@ const PoolPortalContent = React.memo(() => {
                 expand
                 mainAxisAlignment="space-between"
                 crossAxisAlignment="center"
-                p={DASHBOARD_BOX_SPACING.asPxString()}
+                p={4}
               >
                 <Column
                   mainAxisAlignment="center"
                   crossAxisAlignment={{ md: "flex-start", base: "center" }}
                   height="100%"
-                  mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
+                  mb={{ md: 0, base: 4 }}
                 >
                   <Heading fontSize={{ md: 27, base: "xl" }} lineHeight={1.25}>
                     {poolName}
@@ -268,9 +268,9 @@ const PoolPortalContent = React.memo(() => {
                 width={
                   poolType === Pool.ETH ? "100%" : { md: "50%", base: "100%" }
                 }
-                mb={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
-                pt={DASHBOARD_BOX_SPACING.asPxString()}
-                px={DASHBOARD_BOX_SPACING.asPxString()}
+                mb={{ md: 0, base: 4 }}
+                pt={4}
+                px={4}
               >
                 <RecentTrades />
               </DashboardBox>
@@ -280,11 +280,11 @@ const PoolPortalContent = React.memo(() => {
                   height={mainSectionChildSizes[2].asPxString()}
                   width={{ md: "50%", base: "100%" }}
                   ml={{
-                    md: DASHBOARD_BOX_SPACING.asPxString(),
+                    md: 4,
                     base: 0,
                   }}
-                  pt={DASHBOARD_BOX_SPACING.asPxString()}
-                  px={DASHBOARD_BOX_SPACING.asPxString()}
+                  pt={4}
+                  px={4}
                 >
                   <TokenAllocation />
                 </DashboardBox>
@@ -298,8 +298,8 @@ const PoolPortalContent = React.memo(() => {
             flexShrink={0}
             height={{ md: "100%", base: "auto" }}
             width={{ md: "260px", base: "100%" }}
-            pt={{ md: 0, base: DASHBOARD_BOX_SPACING.asPxString() }}
-            pl={{ md: DASHBOARD_BOX_SPACING.asPxString(), base: 0 }}
+            pt={{ md: 0, base: 4 }}
+            pl={{ md: 4, base: 0 }}
           >
             <DashboardBox
               width="100%"
@@ -315,7 +315,7 @@ const PoolPortalContent = React.memo(() => {
               width="100%"
               mb={statsSidebarSpacing.asPxString()}
               height={statsSidebarChildSizes[1].asPxString()}
-              p={DASHBOARD_BOX_SPACING.asPxString()}
+              p={4}
             >
               <APYStats />
             </DashboardBox>
@@ -324,8 +324,8 @@ const PoolPortalContent = React.memo(() => {
               width="100%"
               mb={statsSidebarSpacing.asPxString()}
               height={statsSidebarChildSizes[2].asPxString()}
-              pt={DASHBOARD_BOX_SPACING.asPxString()}
-              px={DASHBOARD_BOX_SPACING.asPxString()}
+              pt={4}
+              px={4}
             >
               <StrategyAllocation />
             </DashboardBox>
@@ -334,8 +334,8 @@ const PoolPortalContent = React.memo(() => {
               width="100%"
               height={statsSidebarChildSizes[3].asPxString()}
               mb={statsSidebarSpacing.asPxString()}
-              pt={DASHBOARD_BOX_SPACING.asPxString()}
-              px={DASHBOARD_BOX_SPACING.asPxString()}
+              pt={4}
+              px={4}
             >
               <MonthlyReturns />
             </DashboardBox>
@@ -472,7 +472,7 @@ const UserStatsAndChart = React.memo(
         <RowOnDesktopColumnOnMobile
           mainAxisAlignment={{ md: "space-between", base: "space-around" }}
           crossAxisAlignment="center"
-          px={DASHBOARD_BOX_SPACING.asPxString()}
+          px={4}
           mt={{ md: topPadding.asPxString(), base: 0 }}
           height={statsSize.asPxString()}
           width="100%"

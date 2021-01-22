@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
 
-import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import { GlowingButton } from "./GlowingButton";
 import { AnimatedSmallLogo } from "./Logos";
 import { ModalDivider, ModalTitleWithCloseButton, MODAL_PROPS } from "./Modal";
@@ -143,10 +142,10 @@ export const ClaimRGTModal = React.memo(
             width="100%"
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            p={DASHBOARD_BOX_SPACING.asPxString()}
+            p={4}
           >
             <AnimatedSmallLogo boxSize="50px" />
-            <Heading mt={DASHBOARD_BOX_SPACING.asPxString()}>
+            <Heading mt={4}>
               {(
                 isPrivateMode ? !isPrivateUnclaimedLoading : !isUnclaimedLoading
               )
@@ -175,7 +174,7 @@ export const ClaimRGTModal = React.memo(
             </Row>
 
             <NumberInput
-              mb={DASHBOARD_BOX_SPACING.asPxString()}
+              mb={4}
               min={0}
               max={(isPrivateMode ? privateUnclaimed : unclaimed) ?? 0}
               onChange={handleAmountChange}
@@ -192,7 +191,7 @@ export const ClaimRGTModal = React.memo(
               mainAxisAlignment="center"
               crossAxisAlignment="center"
               width="100%"
-              mb={DASHBOARD_BOX_SPACING.asPxString()}
+              mb={4}
             >
               <Text
                 textTransform="uppercase"

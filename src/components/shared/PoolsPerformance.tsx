@@ -11,7 +11,6 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
-import { DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import Chart from "react-apexcharts";
 
 import { usePoolAPY } from "../../hooks/usePoolAPY";
@@ -132,7 +131,7 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
         color="#FFFFFF"
         mainAxisAlignment={{ md: "flex-start", base: "center" }}
         crossAxisAlignment="center"
-        px={DASHBOARD_BOX_SPACING.asPxString()}
+        px={4}
         mt={topPadding.asPxString()}
         height={statsSize.asPxString()}
         width="100%"
