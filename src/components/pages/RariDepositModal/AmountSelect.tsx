@@ -600,7 +600,7 @@ const ApprovalNotch = ({
 
   const { rari } = useRari();
 
-  const formattedAmount = () => {
+  const formattedAmount = (() => {
     const usdFormatted = smallStringUsdFormatter(
       rari.web3.utils.fromWei(amount)
     );
@@ -608,7 +608,7 @@ const ApprovalNotch = ({
     return poolType === Pool.ETH
       ? usdFormatted.replace("$", "") + " ETH"
       : usdFormatted;
-  };
+  })();
 
   return (
     <AttentionSeeker effect="headShake" triggerOnce>
