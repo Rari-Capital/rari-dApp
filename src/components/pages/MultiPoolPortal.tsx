@@ -1,10 +1,4 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 
 import {
   Center,
@@ -68,32 +62,6 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import BigNumber from "bignumber.js";
 import { InfoIcon } from "@chakra-ui/icons";
 
-export const RGTPrice = React.memo(() => {
-  const { t } = useTranslation();
-
-  const { rari } = useRari();
-
-  const fetch = useCallback(() => {
-    return rari.governance.rgt.getExchangeRate().then((data) => {
-      return stringUsdFormatter(rari.web3.utils.fromWei(data));
-    });
-  }, [rari.governance.rgt, rari.web3.utils]);
-
-  return (
-    <RefetchMovingStat
-      queryKey="rgtPrice"
-      interval={5000}
-      fetch={fetch}
-      loadingPlaceholder="$?"
-      statSize="3xl"
-      captionSize="xs"
-      caption={t("Rari Governance Token Price")}
-      crossAxisAlignment="center"
-      captionFirst={false}
-    />
-  );
-});
-
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
 
@@ -150,7 +118,31 @@ const MultiPoolPortal = React.memo(() => {
 
 export default MultiPoolPortal;
 
-const GovernanceStats = React.memo(() => {
+export const RGTPrice = () => {
+  const { t } = useTranslation();
+
+  const { rari } = useRari();
+
+  return (
+    <RefetchMovingStat
+      queryKey="rgtPrice"
+      interval={5000}
+      fetch={() => {
+        return rari.governance.rgt.getExchangeRate().then((data) => {
+          return stringUsdFormatter(rari.web3.utils.fromWei(data));
+        });
+      }}
+      loadingPlaceholder="$?"
+      statSize="3xl"
+      captionSize="xs"
+      caption={t("Rari Governance Token Price")}
+      crossAxisAlignment="center"
+      captionFirst={false}
+    />
+  );
+};
+
+const GovernanceStats = () => {
   const { t } = useTranslation();
 
   const { rari, address } = useRari();
@@ -210,31 +202,31 @@ const GovernanceStats = React.memo(() => {
       </Center>
     </RowOnDesktopColumnOnMobile>
   );
-});
+};
 
-const FundStats = React.memo(() => {
+const FundStats = () => {
   const { t } = useTranslation();
 
   const { rari, address, isAuthed } = useRari();
 
-  const getAccountBalance = useCallback(async () => {
-    const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
-      rari.pools.stable.balances.balanceOf(address),
-      rari.pools.yield.balances.balanceOf(address),
-      rari.pools.ethereum.balances.balanceOf(address),
-      rari.getEthUsdPriceBN(),
-    ]);
-
-    const ethBal = ethBalInETH.mul(ethPriceBN.div(rari.web3.utils.toBN(1e18)));
-
-    return parseFloat(
-      rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
-    );
-  }, [rari, address]);
-
   const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
     address + " allPoolBalance",
-    getAccountBalance
+    async () => {
+      const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
+        rari.pools.stable.balances.balanceOf(address),
+        rari.pools.yield.balances.balanceOf(address),
+        rari.pools.ethereum.balances.balanceOf(address),
+        rari.getEthUsdPriceBN(),
+      ]);
+
+      const ethBal = ethBalInETH.mul(
+        ethPriceBN.div(rari.web3.utils.toBN(1e18))
+      );
+
+      return parseFloat(
+        rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
+      );
+    }
   );
 
   const { getNumberTVL } = useTVLFetchers();
@@ -338,9 +330,9 @@ const FundStats = React.memo(() => {
       </RowOnDesktopColumnOnMobile>
     </>
   );
-});
+};
 
-const PoolCards = React.memo(() => {
+const PoolCards = () => {
   return (
     <RowOnDesktopColumnOnMobile
       mainAxisAlignment="space-between"
@@ -367,9 +359,9 @@ const PoolCards = React.memo(() => {
       })}
     </RowOnDesktopColumnOnMobile>
   );
-});
+};
 
-const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
+const PoolDetailCard = ({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
   const { poolName, poolLogo } = usePoolInfo(pool);
@@ -472,9 +464,9 @@ const PoolDetailCard = React.memo(({ pool }: { pool: Pool }) => {
       </Column>
     </>
   );
-});
+};
 
-const InterestEarned = React.memo(() => {
+const InterestEarned = () => {
   const { rari, address } = useRari();
 
   const { data: interestEarned } = useQuery("interestEarned", async () => {
@@ -505,7 +497,8 @@ const InterestEarned = React.memo(() => {
   });
 
   const { balanceData: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
-  const isSufferingDivergenceLoss = useMemo(() => {
+
+  const isSufferingDivergenceLoss = (() => {
     if (interestEarned && yieldPoolBalance) {
       if (
         interestEarned.yieldPoolInterestEarned.isZero() &&
@@ -516,7 +509,7 @@ const InterestEarned = React.memo(() => {
         return false;
       }
     }
-  }, [interestEarned, yieldPoolBalance]);
+  })();
 
   const { t } = useTranslation();
 
@@ -557,9 +550,9 @@ const InterestEarned = React.memo(() => {
       )}
     </Column>
   );
-});
+};
 
-const NewsAndTwitterLink = React.memo(() => {
+const NewsAndTwitterLink = () => {
   const { t } = useTranslation();
 
   return (
@@ -595,7 +588,7 @@ const NewsAndTwitterLink = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
 const NewsMarquee = React.memo(() => {
   const [news, setNews] = useState<string[]>([]);
@@ -632,9 +625,9 @@ const NewsMarquee = React.memo(() => {
   );
 });
 
-const NewsMarqueeSpacer = React.memo(() => {
+const NewsMarqueeSpacer = () => {
   return <b> &nbsp;&nbsp;&nbsp;&nbsp;📣 &nbsp;&nbsp;&nbsp;&nbsp; </b>;
-});
+};
 
 const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
   const { isAuthed } = useRari();

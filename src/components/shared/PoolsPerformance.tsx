@@ -19,7 +19,7 @@ import { SimpleTooltip } from "./SimpleTooltip";
 import { PropagateLoader } from "react-spinners";
 import { InfoIcon } from "@chakra-ui/icons";
 
-const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
+const PoolsPerformanceChart = ({ size }: { size: number }) => {
   const {
     childSizes: [topPadding, statsSize, chartSize],
   } = useSpacedLayout({
@@ -171,6 +171,6 @@ const PoolsPerformanceChart = React.memo(({ size }: { size: number }) => {
       </Box>
     </>
   );
-});
+};
 
 export default PoolsPerformanceChart;

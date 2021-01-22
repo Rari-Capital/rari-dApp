@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Text,
@@ -98,7 +98,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 
 export default PoolPortal;
 
-const PoolPortalContent = React.memo(() => {
+const PoolPortalContent = () => {
   const { isAuthed } = useRari();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
@@ -353,234 +353,221 @@ const PoolPortalContent = React.memo(() => {
       </Column>
     </>
   );
-});
+};
 
-const UserStatsAndChart = React.memo(
-  ({
-    size,
-    balance,
+const UserStatsAndChart = ({
+  size,
+  balance,
 
-    hasNotDeposited,
-  }: {
-    size: number;
-    balance: string;
-    hasNotDeposited: boolean;
-  }) => {
-    const { address, rari } = useRari();
+  hasNotDeposited,
+}: {
+  size: number;
+  balance: string;
+  hasNotDeposited: boolean;
+}) => {
+  const { address, rari } = useRari();
 
-    const { poolType, poolName } = usePoolInfoFromContext();
+  const { poolType, poolName } = usePoolInfoFromContext();
 
-    const [timeRange, setTimeRange] = useState("max");
+  const [timeRange, setTimeRange] = useState("max");
 
-    const onTimeRangeChange = useCallback(
-      (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setTimeRange(event.target.value);
-      },
-      [setTimeRange]
-    );
+  const {
+    childSizes: [topPadding, statsSize, chartSize],
+  } = useSpacedLayout({
+    parentHeight: size,
+    spacing: 0,
+    childSizes: [
+      // Add this to account for 5px top padding
+      new PixelSize(5),
+      new ResponsivePixelSize({ desktop: 75, mobile: 230 }),
+      new PercentageSize(1),
+      // Add this to account for 5px bottom padding
+      new PixelSize(5),
+    ],
+  });
 
-    const {
-      childSizes: [topPadding, statsSize, chartSize],
-    } = useSpacedLayout({
-      parentHeight: size,
-      spacing: 0,
-      childSizes: [
-        // Add this to account for 5px top padding
-        new PixelSize(5),
-        new ResponsivePixelSize({ desktop: 75, mobile: 230 }),
-        new PercentageSize(1),
-        // Add this to account for 5px bottom padding
-        new PixelSize(5),
-      ],
-    });
-
-    const {
-      data: interestEarned,
-      isLoading: isInterestEarnedLoading,
-    } = useQuery(
-      address + " " + poolType + " interestAccrued " + timeRange,
-      async () => {
-        if (hasNotDeposited) {
-          return "0";
-        }
-
-        const startingBlock =
-          timeRange === "month"
-            ? Date.now() - millisecondsPerDay * 30
-            : timeRange === "year"
-            ? Date.now() - millisecondsPerDay * 365
-            : timeRange === "week"
-            ? Date.now() - millisecondsPerDay * 7
-            : 0;
-
-        const interestRaw = await getSDKPool({
-          rari,
-          pool: poolType,
-        }).balances.interestAccruedBy(
-          address,
-          Math.floor(startingBlock / 1000)
-        );
-
-        const formattedInterest = stringUsdFormatter(
-          rari.web3.utils.fromWei(interestRaw)
-        );
-
-        return poolType === Pool.ETH
-          ? formattedInterest.replace("$", "") + " ETH"
-          : formattedInterest;
+  const { data: interestEarned, isLoading: isInterestEarnedLoading } = useQuery(
+    address + " " + poolType + " interestAccrued " + timeRange,
+    async () => {
+      if (hasNotDeposited) {
+        return "0";
       }
-    );
 
-    const { data: chartData, isLoading: isChartDataLoading } = useQuery(
-      address + " " + poolType + " " + timeRange + " balanceHistory",
-      async () => {
-        if (hasNotDeposited) {
-          return [];
-        }
+      const startingBlock =
+        timeRange === "month"
+          ? Date.now() - millisecondsPerDay * 30
+          : timeRange === "year"
+          ? Date.now() - millisecondsPerDay * 365
+          : timeRange === "week"
+          ? Date.now() - millisecondsPerDay * 7
+          : 0;
 
-        const latestBlock = await rari.web3.eth.getBlockNumber();
+      const interestRaw = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).balances.interestAccruedBy(address, Math.floor(startingBlock / 1000));
 
-        const blockStart =
-          timeRange === "month"
-            ? latestBlock - blocksPerDay * 30
-            : timeRange === "year"
-            ? latestBlock - blocksPerDay * 365
-            : timeRange === "week"
-            ? latestBlock - blocksPerDay * 7
-            : 0;
+      const formattedInterest = stringUsdFormatter(
+        rari.web3.utils.fromWei(interestRaw)
+      );
 
-        const rawData = await getSDKPool({
-          rari,
-          pool: poolType,
-        }).history.getBalanceHistoryOf(address, blockStart);
+      return poolType === Pool.ETH
+        ? formattedInterest.replace("$", "") + " ETH"
+        : formattedInterest;
+    }
+  );
 
-        return rawData;
+  const { data: chartData, isLoading: isChartDataLoading } = useQuery(
+    address + " " + poolType + " " + timeRange + " balanceHistory",
+    async () => {
+      if (hasNotDeposited) {
+        return [];
       }
-    );
 
-    const poolAPY = usePoolAPY(poolType);
+      const latestBlock = await rari.web3.eth.getBlockNumber();
 
-    const { t } = useTranslation();
+      const blockStart =
+        timeRange === "month"
+          ? latestBlock - blocksPerDay * 30
+          : timeRange === "year"
+          ? latestBlock - blocksPerDay * 365
+          : timeRange === "week"
+          ? latestBlock - blocksPerDay * 7
+          : 0;
 
-    const chartOptions =
-      poolType === Pool.ETH
-        ? ETHSelfReturnChartOptions
-        : USDSelfReturnChartOptions;
+      const rawData = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).history.getBalanceHistoryOf(address, blockStart);
 
-    return (
-      <>
-        <RowOnDesktopColumnOnMobile
-          mainAxisAlignment={{ md: "space-between", base: "space-around" }}
-          crossAxisAlignment="center"
-          px={4}
-          mt={{ md: topPadding.asPxString(), base: 0 }}
-          height={statsSize.asPxString()}
-          width="100%"
-        >
-          {hasNotDeposited ? (
+      return rawData;
+    }
+  );
+
+  const poolAPY = usePoolAPY(poolType);
+
+  const { t } = useTranslation();
+
+  const chartOptions =
+    poolType === Pool.ETH
+      ? ETHSelfReturnChartOptions
+      : USDSelfReturnChartOptions;
+
+  return (
+    <>
+      <RowOnDesktopColumnOnMobile
+        mainAxisAlignment={{ md: "space-between", base: "space-around" }}
+        crossAxisAlignment="center"
+        px={4}
+        mt={{ md: topPadding.asPxString(), base: 0 }}
+        height={statsSize.asPxString()}
+        width="100%"
+      >
+        {hasNotDeposited ? (
+          <CaptionedStat
+            crossAxisAlignment={{ md: "flex-start", base: "center" }}
+            caption={t("Currently earning")}
+            captionSize="xs"
+            stat={(poolAPY ?? "?") + "% APY"}
+            statSize="4xl"
+          />
+        ) : (
+          <>
             <CaptionedStat
               crossAxisAlignment={{ md: "flex-start", base: "center" }}
-              caption={t("Currently earning")}
+              caption={t("Account Balance")}
               captionSize="xs"
-              stat={(poolAPY ?? "?") + "% APY"}
-              statSize="4xl"
+              stat={balance}
+              statSize="3xl"
             />
-          ) : (
-            <>
-              <CaptionedStat
-                crossAxisAlignment={{ md: "flex-start", base: "center" }}
-                caption={t("Account Balance")}
-                captionSize="xs"
-                stat={balance}
-                statSize="3xl"
-              />
 
-              <CaptionedStat
-                crossAxisAlignment={{ md: "flex-start", base: "center" }}
-                caption={t("Interest Earned")}
-                captionSize="xs"
-                stat={isInterestEarnedLoading ? "$?" : interestEarned!}
-                statSize="3xl"
-              />
-            </>
-          )}
-
-          <Select
-            {...DASHBOARD_BOX_PROPS}
-            borderRadius="7px"
-            fontWeight="bold"
-            width={{ md: "130px", base: "100%" }}
-            _focus={{ outline: "none" }}
-            isDisabled={hasNotDeposited}
-            value={timeRange}
-            onChange={onTimeRangeChange}
-          >
-            <option className="black-bg-option" value="week">
-              {t("Week")}
-            </option>
-            <option className="black-bg-option" value="month">
-              {t("Month")}
-            </option>
-            <option className="black-bg-option" value="year">
-              {t("Year")}
-            </option>
-            <option className="black-bg-option" value="max">
-              {t("Max")}
-            </option>
-          </Select>
-        </RowOnDesktopColumnOnMobile>
-
-        <Box height={chartSize.asPxString()} color="#000000" overflow="hidden">
-          {isChartDataLoading && !hasNotDeposited ? (
-            <Center expand>
-              <Spinner color="#FFF" />
-            </Center>
-          ) : (
-            <Chart
-              options={
-                hasNotDeposited
-                  ? { ...chartOptions, ...DisableChartInteractions }
-                  : chartOptions
-              }
-              type="line"
-              width="100%"
-              height="100%"
-              series={[
-                {
-                  name: poolName,
-                  data: hasNotDeposited
-                    ? [
-                        { x: "10/1/20", y: 1000 },
-                        { x: "10/2/20", y: 1001 },
-                        { x: "10/3/20", y: 1003 },
-                        { x: "10/4/20", y: 1005 },
-                        { x: "10/5/20", y: 1006 },
-                        { x: "10/6/20", y: 1007 },
-                        { x: "10/7/20", y: 1010 },
-                        { x: "10/8/20", y: 1012 },
-                        { x: "10/9/20", y: 1014 },
-                        { x: "10/10/20", y: 1016 },
-                        { x: "10/11/20", y: 1018 },
-                      ]
-                    : (chartData ?? []).map((point: any) => {
-                        return {
-                          x: new Date(
-                            point.timestamp * 1000
-                          ).toLocaleDateString("en-US"),
-                          y: parseFloat(point.balance) / 1e18,
-                        };
-                      }),
-                },
-              ]}
+            <CaptionedStat
+              crossAxisAlignment={{ md: "flex-start", base: "center" }}
+              caption={t("Interest Earned")}
+              captionSize="xs"
+              stat={isInterestEarnedLoading ? "$?" : interestEarned!}
+              statSize="3xl"
             />
-          )}
-        </Box>
-      </>
-    );
-  }
-);
+          </>
+        )}
 
-const CurrentAPY = React.memo(() => {
+        <Select
+          {...DASHBOARD_BOX_PROPS}
+          borderRadius="7px"
+          fontWeight="bold"
+          width={{ md: "130px", base: "100%" }}
+          _focus={{ outline: "none" }}
+          isDisabled={hasNotDeposited}
+          value={timeRange}
+          onChange={(event) => {
+            setTimeRange(event.target.value);
+          }}
+        >
+          <option className="black-bg-option" value="week">
+            {t("Week")}
+          </option>
+          <option className="black-bg-option" value="month">
+            {t("Month")}
+          </option>
+          <option className="black-bg-option" value="year">
+            {t("Year")}
+          </option>
+          <option className="black-bg-option" value="max">
+            {t("Max")}
+          </option>
+        </Select>
+      </RowOnDesktopColumnOnMobile>
+
+      <Box height={chartSize.asPxString()} color="#000000" overflow="hidden">
+        {isChartDataLoading && !hasNotDeposited ? (
+          <Center expand>
+            <Spinner color="#FFF" />
+          </Center>
+        ) : (
+          <Chart
+            options={
+              hasNotDeposited
+                ? { ...chartOptions, ...DisableChartInteractions }
+                : chartOptions
+            }
+            type="line"
+            width="100%"
+            height="100%"
+            series={[
+              {
+                name: poolName,
+                data: hasNotDeposited
+                  ? [
+                      { x: "10/1/20", y: 1000 },
+                      { x: "10/2/20", y: 1001 },
+                      { x: "10/3/20", y: 1003 },
+                      { x: "10/4/20", y: 1005 },
+                      { x: "10/5/20", y: 1006 },
+                      { x: "10/6/20", y: 1007 },
+                      { x: "10/7/20", y: 1010 },
+                      { x: "10/8/20", y: 1012 },
+                      { x: "10/9/20", y: 1014 },
+                      { x: "10/10/20", y: 1016 },
+                      { x: "10/11/20", y: 1018 },
+                    ]
+                  : (chartData ?? []).map((point: any) => {
+                      return {
+                        x: new Date(point.timestamp * 1000).toLocaleDateString(
+                          "en-US"
+                        ),
+                        y: parseFloat(point.balance) / 1e18,
+                      };
+                    }),
+              },
+            ]}
+          />
+        )}
+      </Box>
+    </>
+  );
+};
+
+const CurrentAPY = () => {
   const { t } = useTranslation();
 
   const poolType = usePoolType();
@@ -606,9 +593,9 @@ const CurrentAPY = React.memo(() => {
       </Text>
     </Row>
   );
-});
+};
 
-const APYStats = React.memo(() => {
+const APYStats = () => {
   const { t } = useTranslation();
 
   const pool = usePoolType();
@@ -700,9 +687,9 @@ const APYStats = React.memo(() => {
       </Column>
     </Column>
   );
-});
+};
 
-const StrategyAllocation = React.memo(() => {
+const StrategyAllocation = () => {
   const { t } = useTranslation();
 
   const { rari } = useRari();
@@ -777,9 +764,9 @@ const StrategyAllocation = React.memo(() => {
       )}
     </Column>
   );
-});
+};
 
-const MonthlyReturns = React.memo(() => {
+const MonthlyReturns = () => {
   const ethPoolAPY = usePoolAPY(Pool.ETH);
   const stablePoolAPY = usePoolAPY(Pool.STABLE);
   const yieldPoolAPY = usePoolAPY(Pool.YIELD);
@@ -857,9 +844,9 @@ const MonthlyReturns = React.memo(() => {
       )}
     </Column>
   );
-});
+};
 
-const TokenAllocation = React.memo(() => {
+const TokenAllocation = () => {
   const { rari } = useRari();
   const poolType = usePoolType();
 
@@ -891,7 +878,7 @@ const TokenAllocation = React.memo(() => {
         .sort((a, b) => b[1] - a[1])
     : null;
 
-  const maxAmount = useMemo(() => {
+  const maxAmount = (() => {
     if (sortedEntries) {
       return sortedEntries.reduce((a, b) => {
         return a + b[1];
@@ -899,7 +886,7 @@ const TokenAllocation = React.memo(() => {
     } else {
       return null;
     }
-  }, [sortedEntries]);
+  })();
 
   const { t } = useTranslation();
 
@@ -940,9 +927,9 @@ const TokenAllocation = React.memo(() => {
       )}
     </Column>
   );
-});
+};
 
-const RecentTrades = React.memo(() => {
+const RecentTrades = () => {
   const { rari } = useRari();
 
   const poolType = usePoolType();
@@ -1035,9 +1022,9 @@ const RecentTrades = React.memo(() => {
       )}
     </Column>
   );
-});
+};
 
-const TransactionHistory = React.memo(() => {
+const TransactionHistory = () => {
   const { t } = useTranslation();
 
   const poolType = usePoolType();
@@ -1065,23 +1052,21 @@ const TransactionHistory = React.memo(() => {
       </Column>
     </Link>
   );
-});
+};
 
-const DepositButton = React.memo(
-  (
-    props: BoxProps & {
-      onClick: () => any;
-    }
-  ) => {
-    const { t } = useTranslation();
-
-    return (
-      <GlowingButton
-        label={t("Deposit")}
-        width="170px"
-        height="50px"
-        {...props}
-      />
-    );
+const DepositButton = (
+  props: BoxProps & {
+    onClick: () => any;
   }
-);
+) => {
+  const { t } = useTranslation();
+
+  return (
+    <GlowingButton
+      label={t("Deposit")}
+      width="170px"
+      height="50px"
+      {...props}
+    />
+  );
+};

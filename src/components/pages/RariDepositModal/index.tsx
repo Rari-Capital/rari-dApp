@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 
 import TokenSelect from "./TokenSelect";
@@ -25,23 +25,10 @@ interface Props {
   onClose: () => any;
 }
 
-const DepositModal = React.memo((props: Props) => {
+const DepositModal = (props: Props) => {
+  const [mode, setMode] = useState(Mode.DEPOSIT);
+
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
-
-  const openCoinSelect = useCallback(
-    () => setCurrentScreen(CurrentScreen.COIN_SELECT),
-    [setCurrentScreen]
-  );
-
-  const openOptions = useCallback(
-    () => setCurrentScreen(CurrentScreen.OPTIONS),
-    [setCurrentScreen]
-  );
-
-  const openAmountSelect = useCallback(
-    () => setCurrentScreen(CurrentScreen.MAIN),
-    [setCurrentScreen]
-  );
 
   useEffect(() => {
     // When the modal closes return to the main screen.
@@ -51,8 +38,6 @@ const DepositModal = React.memo((props: Props) => {
   }, [props.isOpen]);
 
   const poolType = usePoolType();
-
-  const [mode, setMode] = useState(Mode.DEPOSIT);
 
   const [selectedToken, setSelectedToken] = useState(() => {
     if (poolType === Pool.ETH) {
@@ -80,20 +65,20 @@ const DepositModal = React.memo((props: Props) => {
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
             onClose={props.onClose}
-            openCoinSelect={openCoinSelect}
-            openOptions={openOptions}
+            openCoinSelect={() => setCurrentScreen(CurrentScreen.COIN_SELECT)}
+            openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
             selectedToken={selectedToken}
             mode={mode}
           />
         ) : currentScreen === CurrentScreen.COIN_SELECT ? (
           <TokenSelect
-            onClose={openAmountSelect}
+            onClose={() => setCurrentScreen(CurrentScreen.MAIN)}
             onSelectToken={setSelectedToken}
             mode={mode}
           />
         ) : (
           <OptionsMenu
-            onClose={openAmountSelect}
+            onClose={() => setCurrentScreen(CurrentScreen.MAIN)}
             onSetMode={setMode}
             mode={mode}
           />
@@ -101,6 +86,6 @@ const DepositModal = React.memo((props: Props) => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default DepositModal;

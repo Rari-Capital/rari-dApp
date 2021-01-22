@@ -7,7 +7,7 @@ interface Props {
   onClose: () => any;
 }
 
-const MoonpayModal = React.memo((props: Props) => {
+const MoonpayModal = (props: Props) => {
   const [showMoonpay, setShowMoonpay] = useState(false);
 
   useEffect(() => {
@@ -51,6 +51,6 @@ const MoonpayModal = React.memo((props: Props) => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default MoonpayModal;

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
@@ -68,27 +68,26 @@ export const AccountButton = React.memo(() => {
   );
 });
 
-const Buttons = React.memo(
-  ({
-    openModal,
-    openClaimRGTModal,
-    openMoonpayModal,
-  }: {
-    openModal: () => any;
-    openClaimRGTModal: () => any;
-    openMoonpayModal: () => any;
-  }) => {
-    const { address } = useRari();
+const Buttons = ({
+  openModal,
+  openClaimRGTModal,
+  openMoonpayModal,
+}: {
+  openModal: () => any;
+  openClaimRGTModal: () => any;
+  openMoonpayModal: () => any;
+}) => {
+  const { address } = useRari();
 
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
-    const isMobile = useIsMobile();
+  const isMobile = useIsMobile();
 
-    return (
-      <>
-        {isMobile ? null : (
-          <>
-            {/* <DashboardBox
+  return (
+    <>
+      {isMobile ? null : (
+        <>
+          {/* <DashboardBox
               as="button"
               flexShrink={0}
               width="110px"
@@ -98,137 +97,134 @@ const Buttons = React.memo(
             >
               <Center expand>{t("Buy Crypto")}</Center>
             </DashboardBox> */}
-            <DashboardBox
-              // ml={4}
-              as="button"
-              height="40px"
-              flexShrink={0}
-              width="100px"
-              onClick={openClaimRGTModal}
-              fontWeight="bold"
-            >
-              <Center expand>{t("Claim RGT")}</Center>
-            </DashboardBox>
-          </>
-        )}
-
-        <DashboardBox
-          ml={{ md: 4, base: 0 }}
-          as="button"
-          height="40px"
-          flexShrink={0}
-          width="auto"
-          onClick={openModal}
-        >
-          <Row
-            expand
-            mainAxisAlignment="space-around"
-            crossAxisAlignment="center"
-            px={3}
+          <DashboardBox
+            // ml={4}
+            as="button"
+            height="40px"
+            flexShrink={0}
+            width="100px"
+            onClick={openClaimRGTModal}
+            fontWeight="bold"
           >
-            <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+            <Center expand>{t("Claim RGT")}</Center>
+          </DashboardBox>
+        </>
+      )}
 
-            <Text ml={2} fontWeight="semibold">
-              {shortAddress(address)}
-            </Text>
-          </Row>
-        </DashboardBox>
-      </>
-    );
-  }
-);
-
-export const SettingsModal = React.memo(
-  ({
-    isOpen,
-    onClose,
-    openClaimRGTModal,
-    openMoonpayModal,
-  }: {
-    isOpen: boolean;
-    onClose: () => any;
-    openClaimRGTModal: () => any;
-    openMoonpayModal: () => any;
-  }) => {
-    const { t } = useTranslation();
-
-    const { login } = useRari();
-
-    const onSwitchWallet = useCallback(() => {
-      onClose();
-      setTimeout(() => login(), 100);
-    }, [login, onClose]);
-
-    const onClaimRGT = useCallback(() => {
-      onClose();
-      setTimeout(() => openClaimRGTModal(), 100);
-    }, [onClose, openClaimRGTModal]);
-
-    return (
-      <Modal
-        motionPreset="slideInBottom"
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
+      <DashboardBox
+        ml={{ md: 4, base: 0 }}
+        as="button"
+        height="40px"
+        flexShrink={0}
+        width="auto"
+        onClick={openModal}
       >
-        <ModalOverlay />
-        <ModalContent {...MODAL_PROPS}>
-          <ModalTitleWithCloseButton text={t("Account")} onClose={onClose} />
+        <Row
+          expand
+          mainAxisAlignment="space-around"
+          crossAxisAlignment="center"
+          px={3}
+        >
+          <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
 
-          <ModalDivider />
+          <Text ml={2} fontWeight="semibold">
+            {shortAddress(address)}
+          </Text>
+        </Row>
+      </DashboardBox>
+    </>
+  );
+};
 
-          <Column
+export const SettingsModal = ({
+  isOpen,
+  onClose,
+  openClaimRGTModal,
+  openMoonpayModal,
+}: {
+  isOpen: boolean;
+  onClose: () => any;
+  openClaimRGTModal: () => any;
+  openMoonpayModal: () => any;
+}) => {
+  const { t } = useTranslation();
+
+  const { login } = useRari();
+
+  const onSwitchWallet = () => {
+    onClose();
+    setTimeout(() => login(), 100);
+  };
+
+  const onClaimRGT = () => {
+    onClose();
+    setTimeout(() => openClaimRGTModal(), 100);
+  };
+
+  return (
+    <Modal
+      motionPreset="slideInBottom"
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+    >
+      <ModalOverlay />
+      <ModalContent {...MODAL_PROPS}>
+        <ModalTitleWithCloseButton text={t("Account")} onClose={onClose} />
+
+        <ModalDivider />
+
+        <Column
+          width="100%"
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          p={4}
+        >
+          <GlowingButton
+            label={t("Claim RGT")}
+            onClick={onClaimRGT}
             width="100%"
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"
-            p={4}
+            height="51px"
+            mb={4}
+          />
+
+          <Button
+            bg="red.500"
+            width="100%"
+            height="45px"
+            fontSize="xl"
+            borderRadius="7px"
+            fontWeight="bold"
+            onClick={openMoonpayModal}
+            _hover={{}}
+            _active={{}}
+            mb={4}
           >
-            <GlowingButton
-              label={t("Claim RGT")}
-              onClick={onClaimRGT}
-              width="100%"
-              height="51px"
-              mb={4}
-            />
+            {t("Buy Crypto")}
+          </Button>
 
-            <Button
-              bg="red.500"
-              width="100%"
-              height="45px"
-              fontSize="xl"
-              borderRadius="7px"
-              fontWeight="bold"
-              onClick={openMoonpayModal}
-              _hover={{}}
-              _active={{}}
-              mb={4}
-            >
-              {t("Buy Crypto")}
-            </Button>
+          <Button
+            bg="whatsapp.500"
+            width="100%"
+            height="45px"
+            fontSize="xl"
+            borderRadius="7px"
+            fontWeight="bold"
+            onClick={onSwitchWallet}
+            _hover={{}}
+            _active={{}}
+            mb={4}
+          >
+            {t("Switch Wallet")}
+          </Button>
 
-            <Button
-              bg="whatsapp.500"
-              width="100%"
-              height="45px"
-              fontSize="xl"
-              borderRadius="7px"
-              fontWeight="bold"
-              onClick={onSwitchWallet}
-              _hover={{}}
-              _active={{}}
-              mb={4}
-            >
-              {t("Switch Wallet")}
-            </Button>
+          <LanguageSelect />
 
-            <LanguageSelect />
-
-            <Text mt={4} fontSize="10px">
-              Version {version}
-            </Text>
-          </Column>
-        </ModalContent>
-      </Modal>
-    );
-  }
-);
+          <Text mt={4} fontSize="10px">
+            Version {version}
+          </Text>
+        </Column>
+      </ModalContent>
+    </Modal>
+  );
+};

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, CSSProperties } from "react";
+import React, { useState, CSSProperties, useCallback, useMemo } from "react";
 import {
   Input,
   Image,
@@ -30,148 +30,135 @@ import { Mode } from ".";
 import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
 import { SearchIcon } from "@chakra-ui/icons";
 
-const TokenSelect = React.memo(
-  ({
-    onSelectToken: _onSelectToken,
-    onClose,
-    mode,
-  }: {
-    mode: Mode;
-    onClose: () => any;
-    onSelectToken: (symbol: string) => any;
-  }) => {
-    const [searchNeedle, setSearchNeedle] = useState("");
+const TokenSelect = ({
+  onSelectToken: _onSelectToken,
+  onClose,
+  mode,
+}: {
+  mode: Mode;
+  onClose: () => any;
+  onSelectToken: (symbol: string) => any;
+}) => {
+  const [searchNeedle, setSearchNeedle] = useState("");
 
-    const poolType = usePoolType();
+  const poolType = usePoolType();
 
-    const onSearch = useCallback(
-      (event: any) => setSearchNeedle(event.target.value),
-      [setSearchNeedle]
-    );
+  const { rari } = useRari();
 
-    const onTokenClick = useCallback(
-      (symbol: string) => {
-        _onSelectToken(symbol);
-        onClose();
-      },
-      [onClose, _onSelectToken]
-    );
+  const {
+    data: noSlippageCurrencies,
+    isLoading: isNoSlippageCurrenciesLoading,
+  } = useQuery(poolType + " noSlippageCurrencies", async () => {
+    let noSlippageCurrencies: string[];
 
-    const pool = usePoolType();
+    if (poolType === Pool.ETH) {
+      noSlippageCurrencies = ["ETH"];
+    } else {
+      noSlippageCurrencies = await getSDKPool({
+        rari,
+        pool: poolType,
+      }).deposits.getDirectDepositCurrencies();
+    }
 
-    const { rari } = useRari();
+    if (noSlippageCurrencies.length === 0) {
+      return ["None"];
+    }
 
-    const {
-      data: noSlippageCurrencies,
-      isLoading: isNoSlippageCurrenciesLoading,
-    } = useQuery(pool + " noSlippageCurrencies", async () => {
-      let noSlippageCurrencies: string[];
+    return noSlippageCurrencies;
+  });
 
-      if (pool === Pool.ETH) {
-        noSlippageCurrencies = ["ETH"];
-      } else {
-        noSlippageCurrencies = await getSDKPool({
-          rari,
-          pool,
-        }).deposits.getDirectDepositCurrencies();
-      }
+  const tokenKeys = (() => {
+    if (poolType === Pool.ETH) {
+      return ["ETH"];
+    }
 
-      if (noSlippageCurrencies.length === 0) {
-        return ["None"];
-      }
+    return searchNeedle === ""
+      ? Object.keys(tokens).sort((a, b) => {
+          // First items shown last, last items shown at the top!
+          const priorityCurrencies = [
+            "sUSD",
+            "WETH",
+            "ETH",
+            "DAI",
+            "mUSD",
+            "USDT",
+            "USDC",
+          ];
 
-      return noSlippageCurrencies;
-    });
+          if (priorityCurrencies.indexOf(a) < priorityCurrencies.indexOf(b)) {
+            return 1;
+          }
+          if (priorityCurrencies.indexOf(a) > priorityCurrencies.indexOf(b)) {
+            return -1;
+          }
 
-    const tokenKeys = useMemo(() => {
-      if (poolType === Pool.ETH) {
-        return ["ETH"];
-      }
+          return 0;
+        })
+      : Object.keys(tokens).filter((symbol) =>
+          symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
+        );
+  })();
 
-      return searchNeedle === ""
-        ? Object.keys(tokens).sort((a, b) => {
-            // First items shown last, last items shown at the top!
-            const priorityCurrencies = [
-              "sUSD",
-              "WETH",
-              "ETH",
-              "DAI",
-              "mUSD",
-              "USDT",
-              "USDC",
-            ];
+  const { t } = useTranslation();
 
-            if (priorityCurrencies.indexOf(a) < priorityCurrencies.indexOf(b)) {
-              return 1;
-            }
-            if (priorityCurrencies.indexOf(a) > priorityCurrencies.indexOf(b)) {
-              return -1;
-            }
+  return (
+    <Fade>
+      <ModalTitleWithCloseButton text={t("Select A Token")} onClose={onClose} />
+      <ModalDivider />
+      <Box px={4}>
+        <InputGroup mb={2}>
+          <InputLeftElement
+            ml={-1}
+            children={<SearchIcon color="gray.300" />}
+          />
+          <Input
+            variant="flushed"
+            roundedLeft="0"
+            placeholder={t("Try searching for 'USDC'")}
+            focusBorderColor="#FFFFFF"
+            value={searchNeedle}
+            onChange={(event) => setSearchNeedle(event.target.value)}
+          />
+        </InputGroup>
+      </Box>
 
-            return 0;
-          })
-        : Object.keys(tokens).filter((symbol) =>
-            symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
-          );
-    }, [searchNeedle, poolType]);
+      <Box px={4}>
+        No Slippage:{" "}
+        <b>
+          {isNoSlippageCurrenciesLoading
+            ? " Loading..."
+            : noSlippageCurrencies!.map((token: string, index: number) => {
+                return (
+                  token +
+                  (index === (noSlippageCurrencies as string[]).length - 1
+                    ? ""
+                    : ", ")
+                );
+              })}
+        </b>
+      </Box>
 
-    const { t } = useTranslation();
-
-    return (
-      <Fade>
-        <ModalTitleWithCloseButton
-          text={t("Select A Token")}
-          onClose={onClose}
-        />
-        <ModalDivider />
-        <Box px={4}>
-          <InputGroup mb={2}>
-            <InputLeftElement
-              ml={-1}
-              children={<SearchIcon color="gray.300" />}
-            />
-            <Input
-              variant="flushed"
-              roundedLeft="0"
-              placeholder={t("Try searching for 'USDC'")}
-              focusBorderColor="#FFFFFF"
-              value={searchNeedle}
-              onChange={onSearch}
-            />
-          </InputGroup>
-        </Box>
-
-        <Box px={4}>
-          No Slippage:{" "}
-          <b>
-            {isNoSlippageCurrenciesLoading
-              ? " Loading..."
-              : noSlippageCurrencies!.map((token: string, index: number) => {
-                  return (
-                    token +
-                    (index === (noSlippageCurrencies as string[]).length - 1
-                      ? ""
-                      : ", ")
-                  );
-                })}
-          </b>
-        </Box>
-
-        <Box
-          pt={2}
-          px={4}
-          width="100%"
-          height={{
-            md: poolHasDivergenceRisk(poolType) ? "182px" : "157px",
-            base: poolHasDivergenceRisk(poolType) ? "210px" : "170px",
+      <Box
+        pt={2}
+        px={4}
+        width="100%"
+        height={{
+          md: poolHasDivergenceRisk(poolType) ? "182px" : "157px",
+          base: poolHasDivergenceRisk(poolType) ? "210px" : "170px",
+        }}
+      >
+        <TokenList
+          mode={mode}
+          tokenKeys={tokenKeys}
+          onClick={(symbol) => {
+            _onSelectToken(symbol);
+            onClose();
           }}
-        >
-          <TokenList mode={mode} tokenKeys={tokenKeys} onClick={onTokenClick} />
-        </Box>
-      </Fade>
-    );
-  }
-);
+        />
+      </Box>
+    </Fade>
+  );
+};
 
 export default TokenSelect;
 
@@ -195,17 +182,12 @@ const TokenRow = React.memo(
       token
     );
 
-    const selectToken = useCallback(() => onClick(token.symbol), [
-      token.symbol,
-      onClick,
-    ]);
-
     return (
       <div style={style}>
         <Row
           flexShrink={0}
           as="button"
-          onClick={selectToken}
+          onClick={() => onClick(token.symbol)}
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"

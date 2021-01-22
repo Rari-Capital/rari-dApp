@@ -5,29 +5,21 @@ interface Props {
   percentageFilled: number;
 }
 
-const ProgressBar = React.memo(
-  ({
-    percentageFilled,
+const ProgressBar = ({
+  percentageFilled,
 
-    ...others
-  }: Props & BoxProps) => {
-    return (
+  ...others
+}: Props & BoxProps) => {
+  return (
+    <Box bg="#4D4D4D" width="100%" height="10px" borderRadius="6px" {...others}>
       <Box
-        bg="#4D4D4D"
-        width="100%"
+        bg="#FFFFFF"
+        width={percentageFilled * 100 + "%"}
         height="10px"
         borderRadius="6px"
-        {...others}
-      >
-        <Box
-          bg="#FFFFFF"
-          width={percentageFilled * 100 + "%"}
-          height="10px"
-          borderRadius="6px"
-        />
-      </Box>
-    );
-  }
-);
+      />
+    </Box>
+  );
+};
 
 export default ProgressBar;

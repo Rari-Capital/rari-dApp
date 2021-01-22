@@ -222,7 +222,7 @@ const SearchBar = ({ onSearch }: { onSearch: (address: string) => any }) => {
   );
 };
 
-const TokenRSS = React.memo(({ address }: { address: string }) => {
+const TokenRSS = ({ address }: { address: string }) => {
   const tokenData = useTokenData(address);
 
   const rss = useRSS(address);
@@ -308,6 +308,6 @@ const TokenRSS = React.memo(({ address }: { address: string }) => {
       )}
     </DashboardBox>
   );
-});
+};
 
 export default RSSAssetsPage;

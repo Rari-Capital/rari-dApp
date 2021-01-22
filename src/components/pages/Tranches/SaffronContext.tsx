@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useRari } from "../../../context/RariContext";
 import { Contract } from "web3-eth-contract";
 import SaffronPoolABI from "./SaffronPoolABI.json";
@@ -46,12 +46,10 @@ export const SaffronProvider = React.memo(({ children }) => {
     );
   }, [rari]);
 
-  const value = useMemo(() => {
-    return { saffronStrategy, saffronPool };
-  }, [saffronStrategy, saffronPool]);
-
   return (
-    <SaffronContext.Provider value={value}>{children}</SaffronContext.Provider>
+    <SaffronContext.Provider value={{ saffronStrategy, saffronPool }}>
+      {children}
+    </SaffronContext.Provider>
   );
 });
 

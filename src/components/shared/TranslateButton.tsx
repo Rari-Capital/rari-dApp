@@ -1,23 +1,18 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Select, SelectProps } from "@chakra-ui/react";
 
 import { useTranslation } from "react-i18next";
 
-export const LanguageSelect = React.memo((extraProps: SelectProps) => {
+export const LanguageSelect = (extraProps: SelectProps) => {
   const { i18n } = useTranslation();
-
-  const onSelect = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      i18n.changeLanguage(event.target.value);
-      localStorage.setItem("rariLang", event.target.value);
-    },
-    [i18n]
-  );
 
   return (
     <Select
       value={i18n.language}
-      onChange={onSelect}
+      onChange={(event) => {
+        i18n.changeLanguage(event.target.value);
+        localStorage.setItem("rariLang", event.target.value);
+      }}
       fontWeight="bold"
       width="100%"
       {...extraProps}
@@ -27,4 +22,4 @@ export const LanguageSelect = React.memo((extraProps: SelectProps) => {
       <option value="zh-TW">中國傳統的</option>
     </Select>
   );
-});
+};

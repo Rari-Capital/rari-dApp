@@ -52,50 +52,46 @@ const CaptionedStat = ({
   );
 };
 
-const Stat = React.memo(
-  ({
-    size,
-    text,
-  }: {
-    size: { md: string; xs: string } | string;
-    text: string;
-  }) => {
-    return (
-      <Heading fontSize={size} lineHeight="2.5rem">
-        {text}
-      </Heading>
-    );
-  }
-);
+const Stat = ({
+  size,
+  text,
+}: {
+  size: { md: string; xs: string } | string;
+  text: string;
+}) => {
+  return (
+    <Heading fontSize={size} lineHeight="2.5rem">
+      {text}
+    </Heading>
+  );
+};
 
-const Caption = React.memo(
-  ({
-    size,
-    textAlign,
-    spacing,
-    text,
-  }: {
-    size: { md: string; xs: string } | string;
+const Caption = ({
+  size,
+  textAlign,
+  spacing,
+  text,
+}: {
+  size: { md: string; xs: string } | string;
 
-    textAlign: any;
+  textAlign: any;
 
-    spacing: string | number;
+  spacing: string | number;
 
-    text: string;
-  }) => {
-    return (
-      <Text
-        textTransform="uppercase"
-        letterSpacing="wide"
-        color="#858585"
-        fontSize={size}
-        textAlign={textAlign}
-        mt={spacing ?? 0}
-      >
-        {text}
-      </Text>
-    );
-  }
-);
+  text: string;
+}) => {
+  return (
+    <Text
+      textTransform="uppercase"
+      letterSpacing="wide"
+      color="#858585"
+      fontSize={size}
+      textAlign={textAlign}
+      mt={spacing ?? 0}
+    >
+      {text}
+    </Text>
+  );
+};
 
 export default CaptionedStat;
