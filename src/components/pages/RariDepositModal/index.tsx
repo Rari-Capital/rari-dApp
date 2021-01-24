@@ -7,6 +7,7 @@ import OptionsMenu from "./OptionsMenu";
 import { MODAL_PROPS } from "../../shared/Modal";
 import { Pool, usePoolType } from "../../../context/PoolContext";
 import { poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import { ETH_TOKEN_DATA } from "../../../hooks/useTokenData";
 
 enum CurrentScreen {
   MAIN,
@@ -41,9 +42,10 @@ const DepositModal = (props: Props) => {
 
   const [selectedToken, setSelectedToken] = useState(() => {
     if (poolType === Pool.ETH) {
-      return "ETH";
+      return ETH_TOKEN_DATA.address;
     } else {
-      return "USDC";
+      // USDC
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
     }
   });
 

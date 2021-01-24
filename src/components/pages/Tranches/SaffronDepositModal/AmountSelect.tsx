@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import DashboardBox from "../../../shared/DashboardBox";
-import { tokens } from "../../../../utils/tokenUtils";
+
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 import {
   useTokenBalance,
@@ -41,7 +41,6 @@ import {
 } from "../TranchesPage";
 
 import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
-import { Token } from "rari-tokens-generator";
 
 function noop() {}
 
@@ -54,7 +53,41 @@ const SFIToken = {
   overlayTextColor: "#fff",
   logoURL:
     "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
-} as Token;
+};
+
+const poolsTokenData: {
+  [key: string]: {
+    symbol: string;
+    address: string;
+    name: string;
+    decimals: number;
+    color: string;
+    overlayTextColor: string;
+    logoURL: string;
+  };
+} = {
+  USDC: {
+    symbol: "USDC",
+    address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    name: "USD Coin",
+    decimals: 6,
+    color: "#2876cc",
+    overlayTextColor: "#fff",
+    logoURL:
+      "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
+  },
+
+  DAI: {
+    symbol: "DAI",
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    name: "Dai",
+    decimals: 18,
+    color: "#f4bc34",
+    overlayTextColor: "#fff",
+    logoURL:
+      "https://assets.coingecko.com/coins/images/9956/small/dai-multi-collateral-mcd.png?1574218774",
+  },
+};
 
 interface Props {
   onClose: () => any;
@@ -91,7 +124,7 @@ const useSFIBalance = () => {
 };
 
 const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
-  const token = tokens[tranchePool];
+  const token = poolsTokenData[tranchePool];
 
   const toast = useToast();
 
@@ -99,7 +132,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
   const { rari, address } = useRari();
 
-  const { data: poolTokenBalance } = useTokenBalance(token);
+  const { data: poolTokenBalance } = useTokenBalance(token.address);
 
   const { sfiBalance } = useSFIBalance();
 
@@ -448,7 +481,7 @@ const TokenNameAndMaxButton = ({
 }) => {
   const isSFI = selectedToken === "SFI";
 
-  const token = isSFI ? SFIToken : tokens[selectedToken];
+  const token = isSFI ? SFIToken : poolsTokenData[selectedToken];
 
   const { rari, address } = useRari();
 
@@ -458,7 +491,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(token, rari, address);
+    const balance = await fetchTokenBalance(token.address, rari, address);
 
     maxBN = balance;
 
@@ -535,7 +568,7 @@ const AmountInput = ({
 }) => {
   const isSFI = selectedToken === "SFI";
 
-  const token = isSFI ? SFIToken : tokens[selectedToken];
+  const token = isSFI ? SFIToken : poolsTokenData[selectedToken];
 
   return (
     <Input

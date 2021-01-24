@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties, useCallback, useMemo } from "react";
+import React, { useState, CSSProperties } from "react";
 import {
   Input,
   Image,
@@ -7,18 +7,15 @@ import {
   Heading,
   Text,
   Box,
+  Spinner,
 } from "@chakra-ui/react";
-import { tokens } from "../../../utils/tokenUtils";
+
 import { Fade } from "react-awesome-reveal";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column, Center } from "buttered-chakra";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 
 import BigWhiteCircle from "../../../static/big-white-circle.png";
-import {
-  FixedSizeList as List,
-  areEqual,
-  ListItemKeySelector,
-} from "react-window";
+import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
@@ -29,6 +26,21 @@ import { useQuery } from "react-query";
 import { Mode } from ".";
 import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
 import { SearchIcon } from "@chakra-ui/icons";
+import Rari from "../../../rari-sdk/index";
+import { ETH_TOKEN_DATA, TokenData } from "../../../hooks/useTokenData";
+
+interface LiteTokenData {
+  address: string;
+  contract: any;
+  decimals: number;
+  symbol: string;
+  name: string;
+}
+
+const fetchTokens = (rari: Rari) => {
+  //TODO: Support pool specific assets, etc
+  return rari.getAllTokens() as Promise<LiteTokenData[]>;
+};
 
 const TokenSelect = ({
   onSelectToken: _onSelectToken,
@@ -67,13 +79,15 @@ const TokenSelect = ({
     return noSlippageCurrencies;
   });
 
-  const tokenKeys = (() => {
+  const { data: tokenList } = useQuery(poolType + " tokenList", async () => {
+    const allTokens = await fetchTokens(rari);
+
     if (poolType === Pool.ETH) {
-      return ["ETH"];
+      return [ETH_TOKEN_DATA];
     }
 
     return searchNeedle === ""
-      ? Object.keys(tokens).sort((a, b) => {
+      ? Object.values(allTokens).sort((a, b) => {
           // First items shown last, last items shown at the top!
           const priorityCurrencies = [
             "sUSD",
@@ -85,19 +99,25 @@ const TokenSelect = ({
             "USDC",
           ];
 
-          if (priorityCurrencies.indexOf(a) < priorityCurrencies.indexOf(b)) {
+          if (
+            priorityCurrencies.indexOf(a.symbol!) <
+            priorityCurrencies.indexOf(b.symbol!)
+          ) {
             return 1;
           }
-          if (priorityCurrencies.indexOf(a) > priorityCurrencies.indexOf(b)) {
+          if (
+            priorityCurrencies.indexOf(a.symbol!) >
+            priorityCurrencies.indexOf(b.symbol!)
+          ) {
             return -1;
           }
 
           return 0;
         })
-      : Object.keys(tokens).filter((symbol) =>
-          symbol.toLowerCase().startsWith(searchNeedle.toLowerCase())
+      : Object.values(allTokens).filter((token) =>
+          token.symbol!.toLowerCase().startsWith(searchNeedle.toLowerCase())
         );
-  })();
+  });
 
   const { t } = useTranslation();
 
@@ -147,14 +167,20 @@ const TokenSelect = ({
           base: poolHasDivergenceRisk(poolType) ? "210px" : "170px",
         }}
       >
-        <TokenList
-          mode={mode}
-          tokenKeys={tokenKeys}
-          onClick={(symbol) => {
-            _onSelectToken(symbol);
-            onClose();
-          }}
-        />
+        {tokenList ? (
+          <TokenList
+            mode={mode}
+            tokens={tokenList}
+            onClick={(address) => {
+              _onSelectToken(address);
+              onClose();
+            }}
+          />
+        ) : (
+          <Center expand>
+            <Spinner />
+          </Center>
+        )}
       </Box>
     </Fade>
   );
@@ -162,112 +188,96 @@ const TokenSelect = ({
 
 export default TokenSelect;
 
-const TokenRow = React.memo(
-  ({
-    data: { tokenKeys, onClick, mode },
-    index,
-    style,
-  }: {
-    data: {
-      tokenKeys: string[];
-      onClick: (symbol: string) => any;
-      mode: Mode;
-    };
-    index: number;
-    style: CSSProperties;
-  }) => {
-    const token = tokens[tokenKeys[index]];
-
-    const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
-      token
-    );
-
-    return (
-      <div style={style}>
-        <Row
-          flexShrink={0}
-          as="button"
-          onClick={() => onClick(token.symbol)}
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Box height="45px" width="45px" borderRadius="50%" mr={2}>
-            <Image
-              width="100%"
-              height="100%"
-              borderRadius="50%"
-              backgroundImage={`url(${BigWhiteCircle})`}
-              src={token.logoURL}
-              alt=""
-            />
-          </Box>
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-          >
-            <Heading fontSize="20px" lineHeight="1.25rem" color={token.color}>
-              {token.symbol}
-            </Heading>
-            <Text fontWeight="thin" fontSize="15px">
-              {mode === Mode.DEPOSIT
-                ? isBalanceLoading
-                  ? "?"
-                  : usdFormatter(
-                      parseFloat(balance!.toString()) / 10 ** token.decimals
-                    ).replace("$", "")
-                : null}
-            </Text>
-          </Column>
-        </Row>
-      </div>
-    );
-  },
-  areEqual
-);
-
-const TokenList = React.memo(
-  ({
-    tokenKeys,
-    onClick,
-    mode,
-  }: {
-    tokenKeys: string[];
+const TokenRow = ({
+  data: { tokens, onClick, mode },
+  index,
+  style,
+}: {
+  data: {
+    tokens: LiteTokenData[];
     onClick: (symbol: string) => any;
     mode: Mode;
-  }) => {
-    const itemData = useMemo(
-      () => ({
-        tokenKeys,
-        onClick,
-        mode,
-      }),
-      [tokenKeys, onClick, mode]
-    );
+  };
+  index: number;
+  style: CSSProperties;
+}) => {
+  const token = tokens[index];
 
-    const getItemKey = useCallback<ListItemKeySelector>(
-      (index, data) => data.tokenKeys[index],
-      []
-    );
+  const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
+    token.address!
+  );
 
-    return (
-      <AutoSizer>
-        {({ height, width }) => {
-          return (
-            <List
-              height={height}
-              width={width}
-              itemCount={tokenKeys.length}
-              itemKey={getItemKey}
-              itemSize={55}
-              itemData={itemData}
-              overscanCount={3}
-            >
-              {TokenRow}
-            </List>
-          );
-        }}
-      </AutoSizer>
-    );
-  }
-);
+  const tokenData = useTokenBalance(address);
+
+  return (
+    <div style={style}>
+      <Row
+        flexShrink={0}
+        as="button"
+        onClick={() => onClick(token.address!)}
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        width="100%"
+      >
+        <Box height="45px" width="45px" borderRadius="50%" mr={2}>
+          <Image
+            width="100%"
+            height="100%"
+            borderRadius="50%"
+            backgroundImage={`url(${BigWhiteCircle})`}
+            src={token.logoURL!}
+            alt=""
+          />
+        </Box>
+        <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+          <Heading fontSize="20px" lineHeight="1.25rem" color={token.color!}>
+            {token.symbol}
+          </Heading>
+          <Text fontWeight="thin" fontSize="15px">
+            {mode === Mode.DEPOSIT
+              ? isBalanceLoading
+                ? "?"
+                : usdFormatter(
+                    parseFloat(balance!.toString()) / 10 ** token.decimals!
+                  ).replace("$", "")
+              : null}
+          </Text>
+        </Column>
+      </Row>
+    </div>
+  );
+};
+
+const TokenList = ({
+  tokens,
+  onClick,
+  mode,
+}: {
+  tokens: LiteTokenData[];
+  onClick: (symbol: string) => any;
+  mode: Mode;
+}) => {
+  return (
+    <AutoSizer>
+      {({ height, width }) => {
+        return (
+          <List
+            height={height}
+            width={width}
+            itemCount={tokens.length}
+            itemKey={(index, data) => data.tokens[index]}
+            itemSize={55}
+            itemData={{
+              tokens,
+              onClick,
+              mode,
+            }}
+            overscanCount={3}
+          >
+            {TokenRow}
+          </List>
+        );
+      }}
+    </AutoSizer>
+  );
+};

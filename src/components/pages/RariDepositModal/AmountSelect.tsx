@@ -12,9 +12,10 @@ import {
   Input,
   Link,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import DashboardBox from "../../shared/DashboardBox";
-import { tokens } from "../../../utils/tokenUtils";
+
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
 import {
   useTokenBalance,
@@ -42,6 +43,11 @@ import { AttentionSeeker } from "react-awesome-reveal";
 
 import LogRocket from "logrocket";
 import { HashLoader } from "react-spinners";
+import {
+  ETH_TOKEN_DATA,
+  TokenData,
+  useTokenData,
+} from "../../../hooks/useTokenData";
 
 interface Props {
   selectedToken: string;
@@ -65,7 +71,9 @@ const AmountSelect = ({
   openOptions,
   onClose,
 }: Props) => {
-  const token = tokens[selectedToken];
+  const tokenData = useTokenData(selectedToken);
+
+  console.log(tokenData);
 
   const poolType = usePoolType();
 
@@ -74,7 +82,7 @@ const AmountSelect = ({
   const {
     data: selectedTokenBalance,
     isLoading: isSelectedTokenBalanceLoading,
-  } = useTokenBalance(token);
+  } = useTokenBalance(selectedToken);
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
@@ -98,7 +106,7 @@ const AmountSelect = ({
 
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
+      _setAmount(bigAmount.multipliedBy(10 ** tokenData!.decimals!));
     } catch (e) {
       console.log(e);
 
@@ -109,7 +117,7 @@ const AmountSelect = ({
     setUserAction(UserAction.NO_ACTION);
   };
 
-  const { max, isMaxLoading } = useMaxWithdraw(token.symbol);
+  const { max, isMaxLoading } = useMaxWithdraw(tokenData?.symbol ?? "ETH");
 
   const amountIsValid = (() => {
     if (amount === null || amount.isZero()) {
@@ -205,7 +213,7 @@ const AmountSelect = ({
             ,
             _slippage,
           ] = (await pool.deposits.validateDeposit(
-            token.symbol,
+            tokenData!.symbol!,
             amountBN,
             address,
             true
@@ -219,7 +227,7 @@ const AmountSelect = ({
             ,
             _slippage,
           ] = (await pool.withdrawals.validateWithdrawal(
-            token.symbol,
+            tokenData!.symbol!,
             amountBN,
             address,
             true
@@ -236,61 +244,63 @@ const AmountSelect = ({
           console.log("Slippage of " + formattedSlippage);
 
           // If slippage is >4%
-          if (slippagePercent > 4) {
-            if (
-              !window.confirm(
-                t(
-                  "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
-                  { formattedSlippage, token: token.symbol }
-                )
+          if (
+            slippagePercent > 4 &&
+            !window.confirm(
+              t(
+                "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
+                { formattedSlippage, token: tokenData!.symbol! }
               )
-            ) {
-              setUserAction(UserAction.NO_ACTION);
-              return;
-            }
-          }
-
-          setQuoteAmount(quote);
-
-          setUserAction(UserAction.VIEWING_QUOTE);
-
-          return;
-        }
-      }
-
-      // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
-      // This means they are now ready to start sending transactions:
-
-      setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
-
-      if (mode === Mode.DEPOSIT) {
-        // (Third item in array is approvalReceipt)
-        const [, , , depositReceipt] = await pool.deposits.deposit(
-          token.symbol,
-          amountBN,
-          quoteAmount!,
-          {
-            from: address,
-          }
-        );
-
-        if (!depositReceipt) {
-          throw new Error(
-            t(
-              "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
             )
+          ) {
+            setUserAction(UserAction.NO_ACTION);
+            return;
+          }
+        }
+
+        setQuoteAmount(quote);
+
+        setUserAction(UserAction.VIEWING_QUOTE);
+      } else {
+        // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
+        // This means they are now ready to start sending transactions:
+
+        setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
+
+        if (mode === Mode.DEPOSIT) {
+          // (Third item in array is approvalReceipt)
+          const [, , , depositReceipt] = await pool.deposits.deposit(
+            tokenData!.symbol!,
+            amountBN,
+            quoteAmount!,
+            {
+              from: address,
+            }
+          );
+
+          if (!depositReceipt) {
+            throw new Error(
+              t(
+                "Prices and/or slippage have changed. Please reload the page and try again. If the problem persists, please contact us."
+              )
+            );
+          }
+        } else {
+          // (Third item in array is withdrawReceipt)
+          await pool.withdrawals.withdraw(
+            tokenData!.symbol!,
+            amountBN,
+            quoteAmount!,
+            {
+              from: address,
+            }
           );
         }
-      } else {
-        // (Third item in array is withdrawReceipt)
-        await pool.withdrawals.withdraw(token.symbol, amountBN, quoteAmount!, {
-          from: address,
-        });
+
+        await queryCache.refetchQueries();
+
+        onClose();
       }
-
-      await queryCache.refetchQueries();
-
-      onClose();
     } catch (e) {
       let message: string;
 
@@ -317,7 +327,7 @@ const AmountSelect = ({
 
   return userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center" p={4}>
-      <HashLoader size={70} color={token.color} loading />
+      <HashLoader size={70} color={tokenData!.color!} loading />
       <Heading mt="30px" textAlign="center" size="md">
         {mode === Mode.DEPOSIT
           ? t("Check your wallet to submit the transactions")
@@ -374,47 +384,57 @@ const AmountSelect = ({
             {depositOrWithdrawAlert}
           </Link>
         </Text>
-        <DashboardBox width="100%" height="70px">
-          <Row
-            p={4}
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            expand
-          >
-            <AmountInput
-              selectedToken={selectedToken}
-              displayAmount={userEnteredAmount}
-              updateAmount={updateAmount}
-            />
+        {tokenData ? (
+          <>
+            <DashboardBox width="100%" height="70px">
+              <Row
+                p={4}
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                expand
+              >
+                <AmountInput
+                  color={tokenData!.color!}
+                  displayAmount={userEnteredAmount}
+                  updateAmount={updateAmount}
+                />
 
-            <TokenNameAndMaxButton
-              openCoinSelect={openCoinSelect}
-              selectedToken={selectedToken}
-              updateAmount={updateAmount}
-              mode={mode}
-            />
-          </Row>
-        </DashboardBox>
+                <TokenNameAndMaxButton
+                  openCoinSelect={openCoinSelect}
+                  tokenData={tokenData!}
+                  updateAmount={updateAmount}
+                  mode={mode}
+                />
+              </Row>
+            </DashboardBox>
 
-        <Button
-          fontWeight="bold"
-          fontSize="2xl"
-          borderRadius="10px"
-          width="100%"
-          height="70px"
-          bg={token.color}
-          _hover={{ transform: "scale(1.02)" }}
-          _active={{ transform: "scale(0.95)" }}
-          color={token.overlayTextColor}
-          isLoading={
-            isSelectedTokenBalanceLoading ||
-            userAction === UserAction.REQUESTED_QUOTE
-          }
-          onClick={onConfirm}
-          isDisabled={!amountIsValid}
-        >
-          {userAction === UserAction.VIEWING_QUOTE ? t("Confirm") : t("Review")}
-        </Button>
+            <Button
+              fontWeight="bold"
+              fontSize="2xl"
+              borderRadius="10px"
+              width="100%"
+              height="70px"
+              bg={tokenData!.color!}
+              _hover={{ transform: "scale(1.02)" }}
+              _active={{ transform: "scale(0.95)" }}
+              color={tokenData!.overlayTextColor!}
+              isLoading={
+                isSelectedTokenBalanceLoading ||
+                userAction === UserAction.REQUESTED_QUOTE
+              }
+              onClick={onConfirm}
+              isDisabled={!amountIsValid}
+            >
+              {userAction === UserAction.VIEWING_QUOTE
+                ? t("Confirm")
+                : t("Review")}
+            </Button>
+          </>
+        ) : (
+          <Center expand>
+            <Spinner />
+          </Center>
+        )}
 
         {poolHasDivergenceRisk(poolType) ? (
           <Link
@@ -429,8 +449,13 @@ const AmountSelect = ({
           </Link>
         ) : null}
       </Column>
+
       {userAction === UserAction.VIEWING_QUOTE ? (
-        <ApprovalNotch color={token.color} mode={mode} amount={quoteAmount!} />
+        <ApprovalNotch
+          color={tokenData!.color!}
+          mode={mode}
+          amount={quoteAmount!}
+        />
       ) : null}
     </>
   );
@@ -440,17 +465,15 @@ export default AmountSelect;
 
 const TokenNameAndMaxButton = ({
   openCoinSelect,
-  selectedToken,
+  tokenData,
   updateAmount,
   mode,
 }: {
-  selectedToken: string;
+  tokenData: TokenData;
   openCoinSelect: () => any;
   updateAmount: (newAmount: string) => any;
   mode: Mode;
 }) => {
-  const token = tokens[selectedToken];
-
   const { rari, address } = useRari();
 
   const poolType = usePoolType();
@@ -462,9 +485,13 @@ const TokenNameAndMaxButton = ({
     let maxBN: BN;
 
     if (mode === Mode.DEPOSIT) {
-      const balance = await fetchTokenBalance(token, rari, address);
+      const balance = await fetchTokenBalance(
+        tokenData.address!,
+        rari,
+        address
+      );
 
-      if (token.symbol === "ETH") {
+      if (tokenData!.symbol! === "ETH") {
         const ethPriceBN = await rari.getEthUsdPriceBN();
 
         const gasAnd0xFeesInUSD = 23;
@@ -487,7 +514,7 @@ const TokenNameAndMaxButton = ({
         rari,
         address,
         poolType,
-        symbol: token.symbol,
+        symbol: tokenData!.symbol!,
       });
 
       maxBN = max;
@@ -497,7 +524,7 @@ const TokenNameAndMaxButton = ({
       updateAmount("0.0");
     } else {
       const str = new BigNumber(maxBN.toString())
-        .div(10 ** token.decimals)
+        .div(10 ** tokenData!.decimals!)
         .toFixed(18)
         // Remove trailing zeroes
         .replace(/\.?0+$/, "");
@@ -528,11 +555,11 @@ const TokenNameAndMaxButton = ({
             height="100%"
             borderRadius="50%"
             backgroundImage={`url(${SmallWhiteCircle})`}
-            src={token.logoURL}
+            src={tokenData?.logoURL ?? ""}
             alt=""
           />
         </Box>
-        <Heading fontSize="24px">{selectedToken}</Heading>
+        <Heading fontSize="24px">{tokenData.symbol!}</Heading>
         <ChevronDownIcon boxSize="32px" />
       </Row>
 
@@ -549,7 +576,7 @@ const TokenNameAndMaxButton = ({
         _hover={{}}
         _active={{}}
         onClick={setToMax}
-        isLoading={isMaxLoading}
+        isLoading={isMaxLoading || !tokenData}
       >
         {t("MAX")}
       </Button>
@@ -560,14 +587,12 @@ const TokenNameAndMaxButton = ({
 const AmountInput = ({
   displayAmount,
   updateAmount,
-  selectedToken,
+  color,
 }: {
   displayAmount: string;
   updateAmount: (symbol: string) => any;
-  selectedToken: string;
+  color: string;
 }) => {
-  const token = tokens[selectedToken];
-
   return (
     <Input
       type="number"
@@ -575,10 +600,10 @@ const AmountInput = ({
       fontSize="3xl"
       fontWeight="bold"
       variant="unstyled"
-      _placeholder={{ color: token.color }}
+      _placeholder={{ color }}
       placeholder="0.0"
       value={displayAmount}
-      color={token.color}
+      color={color}
       onChange={(event) => updateAmount(event.target.value)}
       mr={4}
     />

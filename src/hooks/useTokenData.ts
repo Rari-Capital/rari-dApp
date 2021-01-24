@@ -4,6 +4,27 @@ import { useQuery } from "react-query";
 import ERC20ABI from "../../src/rari-sdk/abi/ERC20.json";
 import { useRari } from "../context/RariContext";
 
+export const ETH_TOKEN_DATA = {
+  symbol: "ETH",
+  address: "NO_ADDRESS_HERE_USE_WETH_FOR_ADDRESS",
+  name: "Ethereum Network Token",
+  decimals: 18,
+  color: "#7b7b83",
+  overlayTextColor: "#fff",
+  logoURL:
+    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+};
+
+export interface TokenData {
+  name: string | null;
+  symbol: string | null;
+  address: string | null;
+  decimals: number | null;
+  color: string | null;
+  overlayTextColor: string | null;
+  logoURL: string | null;
+}
+
 export const useTokenDataWithContract = (address: string) => {
   const { rari } = useRari();
 
@@ -22,29 +43,31 @@ export const useTokenData = (address: string) => {
     address + " tokenData",
     async () => {
       let data;
-      try {
-        data = await fetch("/api/tokenData?address=" + address).then((res) =>
-          res.json()
-        );
-      } catch (e) {
-        data = {
-          name: null,
-          symbol: null,
-          decimals: null,
-          color: null,
-          overlayTextColor: null,
-          logoURL: null,
-        };
+
+      if (address !== ETH_TOKEN_DATA.address) {
+        try {
+          data = {
+            ...(await fetch("/api/tokenData?address=" + address).then((res) =>
+              res.json()
+            )),
+            address: address,
+          };
+        } catch (e) {
+          data = {
+            name: null,
+            address: null,
+            symbol: null,
+            decimals: null,
+            color: null,
+            overlayTextColor: null,
+            logoURL: null,
+          };
+        }
+      } else {
+        data = ETH_TOKEN_DATA;
       }
 
-      return data as {
-        name: string | null;
-        symbol: string | null;
-        decimals: number | null;
-        color: string | null;
-        overlayTextColor: string | null;
-        logoURL: string | null;
-      };
+      return data as TokenData;
     },
     {
       refetchOnMount: false,

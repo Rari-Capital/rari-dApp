@@ -73,7 +73,6 @@ import {
 import { getSDKPool } from "../../utils/poolUtils";
 import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { tokens } from "../../utils/tokenUtils";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -860,6 +859,8 @@ const TokenAllocation = () => {
         pool: poolType,
       }).allocations.getRawCurrencyAllocations();
 
+      const tokens = await rari.getAllTokens();
+
       let dollarAmountAllocations: { [key: string]: number } = {};
 
       Object.keys(currencyAllocations).forEach((symbol) => {
@@ -943,6 +944,8 @@ const RecentTrades = () => {
         rari,
         pool: poolType,
       }).history.getPoolAllocationHistory(0, currentBlock);
+
+      const tokens = await rari.getAllTokens();
 
       return history
         .filter((event) => {
