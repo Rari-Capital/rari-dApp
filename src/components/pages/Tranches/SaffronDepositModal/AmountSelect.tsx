@@ -105,8 +105,10 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
   const { saffronPool } = useSaffronData();
 
-  const { data: sfiRatio } = useQuery(tranchePool + " sfiRatio", () => {
-    return saffronPool.methods.SFI_ratio().call();
+  const { data: sfiRatio } = useQuery(tranchePool + " sfiRatio", async () => {
+    return parseFloat(
+      rari.web3.utils.fromWei(await saffronPool.methods.SFI_ratio().call())
+    );
   });
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
