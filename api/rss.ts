@@ -186,6 +186,11 @@ export default async (request: NowRequest, response: NowResponse) => {
       }, 3);
 
       const coingeckoMetadata = await weightedCalculation(async () => {
+        // USDC needs an exception because Circle twitter is not listed on Coingecko.
+        if (address === "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48") {
+          return 1;
+        }
+
         return twitter_followers >= 1000 ? 1 : 0;
       }, 2);
 

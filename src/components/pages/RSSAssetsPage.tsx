@@ -133,7 +133,7 @@ const RSSAssetsPage = React.memo(() => {
         <Heading color="#FFF" size="sm" mb={6} textAlign="center">
           <Link
             isExternal
-            href="https://docs.google.com/spreadsheets/d/1YyONj9N22cCWXnHMAMkcWSx3qag5yQBl0bO8VDqEr3I/edit?usp=sharing"
+            href="https://medium.com/rari-capital/rari-safety-scores-17893c4d998"
           >
             {t(
               "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations."
