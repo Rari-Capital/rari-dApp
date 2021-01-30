@@ -404,8 +404,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
           <Image src={poolLogo} />
         </Box>
 
-        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-          <Heading fontSize="xl" lineHeight="2.5rem">
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" mt={2}>
+          <Heading fontSize="xl" lineHeight="2.5rem" ml="12px">
             {poolName}
           </Heading>
 
@@ -419,7 +419,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
               getSDKPool({ rari, pool: poolType }).allocations.POOLS.join(", ")
             }
           >
-            <QuestionIcon ml={2} mb="4px" boxSize="15px" />
+            <QuestionIcon ml={2} mb="3px" boxSize="12px" />
           </SimpleTooltip>
         </Row>
 
