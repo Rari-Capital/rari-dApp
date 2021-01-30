@@ -24,11 +24,11 @@ import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 import { usdFormatter } from "../../../utils/bigUtils";
 import { Pool, usePoolType } from "../../../context/PoolContext";
-import { useRari } from "../../../context/RariContext";
-import { useQuery } from "react-query";
+
 import { Mode } from ".";
-import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import { poolHasDivergenceRisk } from "../../../utils/poolUtils";
 import { SearchIcon } from "@chakra-ui/icons";
+import { useNoSlippageCurrencies } from "../../../hooks/useNoSlippageCurrencies";
 
 const TokenSelect = ({
   onSelectToken: _onSelectToken,
@@ -43,29 +43,7 @@ const TokenSelect = ({
 
   const poolType = usePoolType();
 
-  const { rari } = useRari();
-
-  const {
-    data: noSlippageCurrencies,
-    isLoading: isNoSlippageCurrenciesLoading,
-  } = useQuery(poolType + " noSlippageCurrencies", async () => {
-    let noSlippageCurrencies: string[];
-
-    if (poolType === Pool.ETH) {
-      noSlippageCurrencies = ["ETH"];
-    } else {
-      noSlippageCurrencies = await getSDKPool({
-        rari,
-        pool: poolType,
-      }).deposits.getDirectDepositCurrencies();
-    }
-
-    if (noSlippageCurrencies.length === 0) {
-      return ["None"];
-    }
-
-    return noSlippageCurrencies;
-  });
+  const noSlippageCurrencies = useNoSlippageCurrencies(poolType);
 
   const tokenKeys = (() => {
     if (poolType === Pool.ETH) {
@@ -125,9 +103,9 @@ const TokenSelect = ({
       <Box px={4}>
         No Slippage:{" "}
         <b>
-          {isNoSlippageCurrenciesLoading
+          {!noSlippageCurrencies
             ? " Loading..."
-            : noSlippageCurrencies!.map((token: string, index: number) => {
+            : noSlippageCurrencies.map((token: string, index: number) => {
                 return (
                   token +
                   (index === (noSlippageCurrencies as string[]).length - 1

@@ -62,6 +62,7 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import BigNumber from "bignumber.js";
 import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
 import { getSDKPool } from "../../utils/poolUtils";
+import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -379,6 +380,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
   const poolAPY = usePoolAPY(pool);
 
+  const noSlippageCurrencies = useNoSlippageCurrencies(pool);
+
   // const rgtAPR = useRGTAPR();
 
   return (
@@ -407,9 +410,14 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
           </Heading>
 
           <SimpleTooltip
-            label={getSDKPool({ rari, pool: poolType }).allocations.POOLS.join(
-              ", "
-            )}
+            label={
+              "Rebalances " +
+              (noSlippageCurrencies
+                ? noSlippageCurrencies.join(" + ")
+                : " ? ") +
+              " between " +
+              getSDKPool({ rari, pool: poolType }).allocations.POOLS.join(", ")
+            }
           >
             <QuestionIcon ml={2} mb="4px" boxSize="15px" />
           </SimpleTooltip>
