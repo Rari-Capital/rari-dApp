@@ -60,7 +60,8 @@ import { useTVLFetchers } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
 
 import BigNumber from "bignumber.js";
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
+import { getSDKPool } from "../../utils/poolUtils";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -364,7 +365,9 @@ const PoolCards = () => {
 const PoolDetailCard = ({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
-  const { poolName, poolLogo } = usePoolInfo(pool);
+  const { rari } = useRari();
+
+  const { poolType, poolName, poolLogo } = usePoolInfo(pool);
 
   const {
     isOpen: isDepositModalOpen,
@@ -398,9 +401,19 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
           <Image src={poolLogo} />
         </Box>
 
-        <Heading fontSize="xl" mt={2} lineHeight="2.5rem">
-          {poolName}
-        </Heading>
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          <Heading fontSize="xl" lineHeight="2.5rem">
+            {poolName}
+          </Heading>
+
+          <SimpleTooltip
+            label={getSDKPool({ rari, pool: poolType }).allocations.POOLS.join(
+              ", "
+            )}
+          >
+            <QuestionIcon ml={2} mb="4px" boxSize="15px" />
+          </SimpleTooltip>
+        </Row>
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text mt={4} mb={5} fontSize="md" textAlign="center">
