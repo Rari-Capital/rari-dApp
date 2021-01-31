@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Row, Column, Center } from "buttered-chakra";
+import SmallWhiteCircle from "../../../static/small-white-circle.png";
 
 import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
 import {
@@ -15,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import DashboardBox from "../../shared/DashboardBox";
 import { tokens } from "../../../utils/tokenUtils";
-import SmallWhiteCircle from "../../../static/small-white-circle.png";
+
 import {
   useTokenBalance,
   fetchTokenBalance,
@@ -235,27 +236,26 @@ const AmountSelect = ({
 
           console.log("Slippage of " + formattedSlippage);
 
-          // If slippage is >4%
-          if (slippagePercent > 4) {
-            if (
-              !window.confirm(
-                t(
-                  "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
-                  { formattedSlippage, token: token.symbol }
-                )
+          // If slippage is >4% and user does not want to continue:
+          if (
+            slippagePercent > 4 &&
+            !window.confirm(
+              t(
+                "High slippage of {{formattedSlippage}} for {{token}}, do you still wish to continue with this transaction?",
+                { formattedSlippage, token: token.symbol }
               )
-            ) {
-              setUserAction(UserAction.NO_ACTION);
-              return;
-            }
+            )
+          ) {
+            setUserAction(UserAction.NO_ACTION);
+            return;
           }
-
-          setQuoteAmount(quote);
-
-          setUserAction(UserAction.VIEWING_QUOTE);
-
-          return;
         }
+
+        setQuoteAmount(quote);
+
+        setUserAction(UserAction.VIEWING_QUOTE);
+
+        return;
       }
 
       // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
