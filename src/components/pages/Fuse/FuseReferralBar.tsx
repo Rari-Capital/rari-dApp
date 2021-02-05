@@ -16,6 +16,8 @@ const FuseReferralBar = () => {
     const full_referral_code = `https://app.rari.capital/fuse/pool/${poolId}/${address}`;
 
     let width = !isMobile ? "50%" : "100%";
+    let left_padding = !isMobile ? "0.5rem" : "";
+    
     return (
         <RowOrColumn
             isRow={!isMobile}
@@ -24,7 +26,7 @@ const FuseReferralBar = () => {
             crossAxisAlignment="center"
             py={4}
             >
-            <div style={{ width: width, paddingLeft: "0.5rem"}}>
+            <div style={{ width: width, paddingLeft: left_padding}}>
                 <DashboardBox>
                     <RowOrColumn
                         isRow={true}
