@@ -18,6 +18,7 @@ import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
 import { AssetSettings } from "../FusePoolEditPage";
 import { useTokenData } from "../../../../hooks/useTokenData";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
+import { useParams } from "react-router-dom";
 
 interface Props {
   isOpen: boolean;

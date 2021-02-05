@@ -1,8 +1,8 @@
 import { Avatar, Heading, Switch, Text, useDisclosure } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "buttered-chakra";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-// import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
@@ -13,14 +13,14 @@ import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
+import FuseReferralBar from './FuseReferralBar';
 import PoolModal from "./Modals/PoolModal";
+
 
 const FusePoolPage = React.memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
-
-  // let { poolId } = useParams();
 
   return (
     <>
@@ -63,6 +63,9 @@ const FusePoolPage = React.memo(() => {
             <BorrowList />
           </DashboardBox>
         </RowOrColumn>
+
+        <FuseReferralBar />
+
       </Column>
 
       <CopyrightSpacer forceShow />
@@ -71,6 +74,7 @@ const FusePoolPage = React.memo(() => {
 });
 
 export default FusePoolPage;
+
 
 const SupplyList = () => {
   const { t } = useTranslation();
@@ -229,7 +233,6 @@ const AssetSupplyRow = ({
         >
           <style>
             {`
-            
             .${symbol + "-switch"} > .chakra-switch__track[data-checked] {
               background-color: ${color ?? "#282727"} !important;
             }

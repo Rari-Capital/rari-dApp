@@ -4,6 +4,7 @@ import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 import AmountSelect from "./AmountSelect";
 import { MODAL_PROPS } from "../../../../shared/Modal";
 import OptionsMenu from "./OptionsMenu";
+import { useParams } from "react-router-dom";
 
 interface Props {
   isOpen: boolean;
@@ -31,6 +32,9 @@ const DepositModal = (props: Props) => {
     props.depositSide ? Mode.SUPPLY : Mode.BORROW
   );
 
+  let { referral } = useParams();
+  console.log("referral: ", referral)
+  
   return (
     <Modal
       motionPreset="slideInBottom"
