@@ -1,23 +1,25 @@
 import { Button } from "@chakra-ui/react";
-import { RowOrColumn, Center } from "buttered-chakra";
+import { RowOrColumn, Center, Row, Column } from "buttered-chakra";
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { mediumAddress } from "../../../utils/shortAddress";
 import { useRari } from "../../../context/RariContext";
+import { useTranslation } from "react-i18next";
 
 const FuseReferralBar = () => {
     const isMobile = useIsSmallScreen();
-    let { poolId } = useParams();
+    const { poolId } = useParams();
     const { address } = useRari();
+    const { t } = useTranslation();
 
-    const short_referral_code = `https://app.rari.capital/fuse/pool/${poolId}/${mediumAddress(address)}`;
-    const full_referral_code = `https://app.rari.capital/fuse/pool/${poolId}/${address}`;
+    const short_referral_code = `${window.location.origin}/fuse/pool/${poolId}/${mediumAddress(address)}`;
+    const full_referral_code = `${window.location.origin}/fuse/pool/${poolId}/${address}`;
 
-    let width = !isMobile ? "50%" : "100%";
-    let left_padding = !isMobile ? "0.5rem" : "";
-    
+    const width = !isMobile ? "50%" : "100%";
+    const left_padding = !isMobile ? "0.5rem" : "";
+
     return (
         <RowOrColumn
             isRow={!isMobile}
@@ -26,32 +28,31 @@ const FuseReferralBar = () => {
             crossAxisAlignment="center"
             py={4}
             >
+
             <div style={{ width: width, paddingLeft: left_padding}}>
                 <DashboardBox>
-                    <RowOrColumn
-                        isRow={true}
+                    <Row
                         expand
                         mainAxisAlignment="space-between"
                         crossAxisAlignment="center"
                         width="100%"
-                        p={2}
+                        p={4}
                         >
-                        <RowOrColumn
-                            isRow={false}
+                        <Column
                             mainAxisAlignment="flex-start"
                             crossAxisAlignment="center"
                             >
-                            <Center margin={"0 auto 0 0"} pl="9px" pr="10px">
-                                Earn crypto with your referral link:
+                            <Center mt="0" mr="auto" mb="0" ml="0">
+                                {t("Earn crypto with your referral link:")}
                             </Center>
-                            <Center margin={"0 auto 0 0"} pl="9px" pr="10px">
-                                {short_referral_code}
+                            <Center fontWeight="bold" mt="0" mr="auto" mb="0" ml="0">
+                                <a href={full_referral_code} >{short_referral_code}</a>
                             </Center>
-                        </RowOrColumn>
-                        <Button background={"none"} color={"aliceblue"} _hover={{ bg: "none", color: "aliceblue" }} onClick={() =>  navigator.clipboard.writeText(full_referral_code)}>
-                            Copy
+                        </Column>
+                        <Button background={"none"} p="unset" _hover={{ bg: "none" }} onClick={() =>  navigator.clipboard.writeText(full_referral_code)}>
+                            {t("Copy")}
                         </Button>
-                    </RowOrColumn>
+                    </Row>
                 </DashboardBox>
             </div>
         </RowOrColumn>

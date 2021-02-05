@@ -34,7 +34,7 @@ const DepositModal = (props: Props) => {
 
   let { referral } = useParams();
   console.log("referral: ", referral)
-  
+
   return (
     <Modal
       motionPreset="slideInBottom"
