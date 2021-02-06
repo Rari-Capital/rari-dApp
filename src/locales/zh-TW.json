@@ -160,7 +160,6 @@
   "Create": "創造",
   "Apply": "應用",
   "None": "沒有",
-  "Invalid address!": "無效地址！",
   "Current Members:": "現有成員：",
   "Wallet Balance": "錢包餘額",
   "Supply Rate": "供應率",
@@ -184,7 +183,6 @@
   "You will withdraw {{amount}} before fees. Click confirm to approve.": "您將在收費前提取{{amount}}。 點擊確認以批准。",
   "This is not a valid Ethereum address!": "這不是有效的以太坊地址！",
   "Market Cap": "市值",
-  "Liquidity": "流動性",
   "Volatility": "揮發性",
   "Swap Volume": "交換量",
   "Exchanges": "交流交流",
@@ -193,5 +191,7 @@
   "Last Updated": "最近更新時間",
   "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000": "在此處搜索有效的ERC20地址，格式為：0x0000000000000000000000000000000000000000000000",
   "Asset RSS": "資產RSS",
-  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "最高ERC20資產的拉里安全得分。 單擊此處以獲取有關計算的信息。"
+  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "最高ERC20資產的拉里安全得分。 單擊此處以獲取有關計算的信息。",
+  "Earn crypto with your referral link:": "使用您的推薦鏈接賺取加密貨幣：",
+  "Copy": "複製"
 }
