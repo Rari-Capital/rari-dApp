@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode } from "react";
 
 import {
   Center,
@@ -612,36 +612,22 @@ const NewsAndTwitterLink = () => {
 };
 
 const NewsMarquee = React.memo(() => {
-  const [news, setNews] = useState<string[]>([]);
-  useEffect(() => {
-    let isCanceled = false;
-    fetch("/api/news")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!isCanceled) {
-          setNews(data);
-        }
-      });
-
-    return () => {
-      isCanceled = true;
-    };
-  }, [setNews]);
+  const news = [
+    "Saffron x Rari tranches are now open for deposits under the Tranches tab.",
+    "We're migrating from Telegram to Discord! Join us there to talk all things Rari Capital.",
+    "Individual Pool Dashboards are now live! View detailed analytics about your account and other useful metrics!",
+  ];
 
   return (
     <Box whiteSpace="nowrap" overflow="hidden" width="100%" fontSize="sm">
-      {news.length === 0 ? (
-        "Loading..."
-      ) : (
-        <MarqueeIfAuthed>
-          {news.map((text: string) => (
-            <span key={text}>
-              {text}
-              <NewsMarqueeSpacer />
-            </span>
-          ))}
-        </MarqueeIfAuthed>
-      )}
+      <MarqueeIfAuthed>
+        {news.map((text: string) => (
+          <span key={text}>
+            {text}
+            <NewsMarqueeSpacer />
+          </span>
+        ))}
+      </MarqueeIfAuthed>
     </Box>
   );
 });
