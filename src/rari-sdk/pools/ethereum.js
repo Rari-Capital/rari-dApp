@@ -18,14 +18,33 @@ for (const contractName of Object.keys(contractAddresses))
     contractName +
     ".json");
 
+const legacyContractAddresses = {
+  "v1.0.0": {
+    RariFundController: "0xD9F223A36C2e398B0886F945a7e556B41EF91A3C"
+  }
+};
+
+var legacyAbis = {};
+
+for (const version of Object.keys(legacyContractAddresses))
+  for (const contractName of Object.keys(legacyContractAddresses[version])) {
+    if (!legacyAbis[version]) legacyAbis[version] = {};
+    legacyAbis[version][contractName] = require(__dirname +
+      "/ethereum/abi/legacy/" +
+      version +
+      "/" +
+      contractName +
+      ".json");
+  }
+
 export default class EthereumPool extends StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/ethereum/";
   POOL_TOKEN_SYMBOL = "REPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static CONTRACT_ABIS = abis;
-  static LEGACY_CONTRACT_ADDRESSES = undefined;
-  static LEGACY_CONTRACT_ABIS = undefined;
+  static LEGACY_CONTRACT_ADDRESSES = legacyContractAddresses;
+  static LEGACY_CONTRACT_ABIS = legacyAbis;
 
   constructor(web3, subpools, getAllTokens) {
     super(web3, subpools, getAllTokens);
@@ -37,7 +56,18 @@ export default class EthereumPool extends StablePool {
         contractAddresses[contractName]
       );
     // this.gsnContracts = { RariFundProxy: new web3Gsn.eth.Contract(abis.RariFundProxy, contractAddresses.RariFundProxy) };
-    delete this.legacyContracts;
+    this.legacyContracts = {};
+
+    for (const version of Object.keys(legacyContractAddresses)) {
+      if (!this.legacyContracts[version]) this.legacyContracts[version] = {};
+      for (const contractName of Object.keys(legacyContractAddresses[version]))
+        this.legacyContracts[version][
+          contractName
+        ] = new this.web3.eth.Contract(
+          legacyAbis[version][contractName],
+          legacyContractAddresses[version][contractName]
+        );
+    }
 
     delete this.internalTokens;
 
@@ -615,12 +645,24 @@ export default class EthereumPool extends StablePool {
       toBlock,
       filter
     ) {
-      return toBlock >= 11085000
-        ? await self.contracts.RariFundController.getPastEvents(
-            "PoolAllocation",
-            { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
-          )
-        : [];
+      var events = [];
+      if (toBlock >= 11085000 && fromBlock <= 11819251)
+        events = await self.legacyContracts[
+          "v1.0.0"
+        ].RariFundController.getPastEvents("PoolAllocation", {
+          fromBlock: Math.max(fromBlock, 11085000),
+          toBlock: Math.min(toBlock, 11819251),
+          filter,
+        });
+      if (toBlock >= 11819251)
+        events = events.concat(
+          await self.contracts.RariFundController.getPastEvents("PoolAllocation", {
+            fromBlock: Math.max(fromBlock, 11819251),
+            toBlock,
+            filter,
+          })
+        );
+      return events;
     };
 
     this.history.getCurrencyExchangeHistory = async function (
@@ -628,12 +670,24 @@ export default class EthereumPool extends StablePool {
       toBlock,
       filter
     ) {
-      return toBlock >= 11085000
-        ? await self.contracts.RariFundController.getPastEvents(
-            "CompToEthTrade",
-            { fromBlock: Math.max(fromBlock, 11085000), toBlock, filter }
-          )
-        : [];
+      var events = [];
+      if (toBlock >= 11085000 && fromBlock <= 11819251)
+        events = await self.legacyContracts[
+          "v1.0.0"
+        ].RariFundController.getPastEvents("CompToEthTrade", {
+          fromBlock: Math.max(fromBlock, 11085000),
+          toBlock: Math.min(toBlock, 11819251),
+          filter,
+        });
+      if (toBlock >= 11819251)
+        events = events.concat(
+          await self.contracts.RariFundController.getPastEvents("CurrencyTrade", {
+            fromBlock: Math.max(fromBlock, 11819251),
+            toBlock,
+            filter,
+          })
+        );
+      return events;
     };
 
     this.history.getDepositHistory = async function (
