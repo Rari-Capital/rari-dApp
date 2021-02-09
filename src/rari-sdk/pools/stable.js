@@ -10,7 +10,7 @@ import { get0xSwapOrders } from "../0x.js";
 var erc20Abi = require(__dirname + "/../abi/ERC20.json");
 
 const contractAddresses = {
-  RariFundController: "0xEe7162bB5191E8EC803F7635dE9A920159F1F40C",
+  RariFundController: "0x369855b051D1b2dBee88a792DCFc08614ff4e262",
   RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
   RariFundToken: "0x016bf078ABcaCB987f0589a6d3BEAdD4316922B0",
   RariFundPriceConsumer: "0xFE98A52bCAcC86432E7aa76376751DcFAB202244",
@@ -39,6 +39,7 @@ const legacyContractAddresses = {
     RariFundProxy: "0xb6b79D857858004BF475e4A57D4A446DA4884866",
   },
   "v2.0.0": {
+    RariFundController: "0xEe7162bB5191E8EC803F7635dE9A920159F1F40C",
     RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
     RariFundProxy: "0xD4be7E211680e12c08bbE9054F0dA0D646c45228",
   },
@@ -3198,20 +3199,44 @@ export default class StablePool {
         return returns;
       },
       getPoolAllocationHistory: async function (fromBlock, toBlock, filter) {
-        return toBlock >= 10909705
-          ? await self.contracts.RariFundController.getPastEvents(
-              "PoolAllocation",
-              { fromBlock: Math.max(fromBlock, 10909705), toBlock, filter }
-            )
-          : [];
+        var events = [];
+        if (toBlock >= 10909705 && fromBlock <= 11821040)
+          events = await self.legacyContracts[
+            "v2.0.0"
+          ].RariFundController.getPastEvents("PoolAllocation", {
+            fromBlock: Math.max(fromBlock, 10909705),
+            toBlock: Math.min(toBlock, 11821040),
+            filter,
+          });
+        if (toBlock >= 11821040)
+          events = events.concat(
+            await self.contracts.RariFundController.getPastEvents("PoolAllocation", {
+              fromBlock: Math.max(fromBlock, 11821040),
+              toBlock,
+              filter,
+            })
+          );
+        return events;
       },
       getCurrencyExchangeHistory: async function (fromBlock, toBlock, filter) {
-        return toBlock >= 10926182
-          ? await self.contracts.RariFundController.getPastEvents(
-              "CurrencyTrade",
-              { fromBlock: Math.max(fromBlock, 10926182), toBlock, filter }
-            )
-          : [];
+        var events = [];
+        if (toBlock >= 10926182 && fromBlock <= 11821040)
+          events = await self.legacyContracts[
+            "v2.0.0"
+          ].RariFundController.getPastEvents("PoolAllocation", {
+            fromBlock: Math.max(fromBlock, 10926182),
+            toBlock: Math.min(toBlock, 11821040),
+            filter,
+          });
+        if (toBlock >= 11821040)
+          events = events.concat(
+            await self.contracts.RariFundController.getPastEvents("CurrencyTrade", {
+              fromBlock: Math.max(fromBlock, 11821040),
+              toBlock,
+              filter,
+            })
+          );
+        return events;
       },
       getDepositHistory: async function (fromBlock, toBlock, filter) {
         var events = [];
