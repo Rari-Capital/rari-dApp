@@ -9,6 +9,7 @@ import AaveSubpool from "./subpools/aave.js";
 import MStableSubpool from "./subpools/mstable.js";
 import YVaultSubpool from "./subpools/yvault.js";
 import KeeperDAOSubpool from "./subpools/keeperdao.js";
+import AlphaSubpool from "./subpools/alpha.js";
 
 import StablePool from "./pools/stable.js";
 import YieldPool from "./pools/yield.js";
@@ -95,6 +96,7 @@ export default class Rari {
       mStable: new MStableSubpool(this.web3),
       yVault: new YVaultSubpool(this.web3),
       KeeperDAO: new KeeperDAOSubpool(this.web3),
+      Alpha: new AlphaSubpool(this.web3),
     };
 
     this.pools = {
@@ -126,6 +128,8 @@ export default class Rari {
           Compound: subpools["Compound"],
           KeeperDAO: subpools["KeeperDAO"],
           Aave: subpools["Aave"],
+          Alpha: subpools["Alpha"],
+          Enzyme: subpools["Alpha"],
         },
         this.getAllTokens
       ),
