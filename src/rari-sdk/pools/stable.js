@@ -3223,7 +3223,7 @@ export default class StablePool {
         if (toBlock >= 10926182 && fromBlock <= 11821040)
           events = await self.legacyContracts[
             "v2.0.0"
-          ].RariFundController.getPastEvents("PoolAllocation", {
+          ].RariFundController.getPastEvents("CurrencyTrade", {
             fromBlock: Math.max(fromBlock, 10926182),
             toBlock: Math.min(toBlock, 11821040),
             filter,
