@@ -5,7 +5,7 @@ import StablePool from "./stable.js";
 import { get0xSwapOrders } from "../0x.js";
 
 const contractAddresses = {
-  RariFundController: "0xD9F223A36C2e398B0886F945a7e556B41EF91A3C",
+  RariFundController: "0xa422890cbBE5EAa8f1c88590fBab7F319D7e24B6",
   RariFundManager: "0xD6e194aF3d9674b62D1b30Ec676030C23961275e",
   RariFundToken: "0xCda4770d65B4211364Cb870aD6bE19E7Ef1D65f4",
   RariFundProxy: "0xa3cc9e4B9784c80a05B3Af215C32ff223C3ebE5c",
@@ -45,13 +45,15 @@ export default class EthereumPool extends StablePool {
     delete this.rspt;
 
     delete this.allocations.CURRENCIES;
-    this.allocations.POOLS = ["dYdX", "Compound", "KeeperDAO", "Aave"];
+    this.allocations.POOLS = ["dYdX", "Compound", "KeeperDAO", "Aave", "Alpha", "Enzyme"];
     delete this.allocations.POOLS_BY_CURRENCY;
     this.allocations.CURRENCIES_BY_POOL = {
       dYdX: ["ETH"],
       Compound: ["ETH"],
       KeeperDAO: ["ETH"],
       Aave: ["ETH"],
+      Alpha: ["ETH"],
+      Enzyme: ["ETH"],
     };
     delete this.allocations.getAllocationsByCurrency;
     delete this.allocations.getRawAllocations;
