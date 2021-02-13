@@ -42,7 +42,7 @@ export default class MStableSubpool {
     // TODO: Use instantaneous APY instead of 24-hour APY?
     // Calculate APY with calculateApy using exchange rates from The Graph
     var epochNow = Math.floor(new Date().getTime() / 1000);
-    var epoch24HrsAgo = epochNow - 86400;
+    var epoch24HrsAgo = epochNow - (86400 * 7);
 
     const data = (
       await axios.post(
