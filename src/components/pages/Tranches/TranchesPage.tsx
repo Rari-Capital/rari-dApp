@@ -147,7 +147,7 @@ const TranchePage = () => {
                   >
                     <Link
                       isExternal
-                      href="https://defisafety.com/2020/12/20/saffron-finance/"
+                      href="https://defisafety.com/2020/12/28/saffron-finance/"
                     >
                       <WarningTwoIcon ml={2} boxSize="25px" color="#C34535" />
                     </Link>
