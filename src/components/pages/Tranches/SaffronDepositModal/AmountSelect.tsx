@@ -10,7 +10,6 @@ import {
   Text,
   Image,
   Input,
-  Link,
   useToast,
 } from "@chakra-ui/react";
 import DashboardBox from "../../../shared/DashboardBox";
@@ -360,12 +359,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
         height="100%"
       >
         <Text fontWeight="bold" fontSize="sm" textAlign="center">
-          <Link
-            href="https://www.notion.so/Fees-e4689d7b800f485098548dd9e9d0a69f"
-            isExternal
-          >
-            {depositOrWithdrawAlert}
-          </Link>
+          {depositOrWithdrawAlert}
         </Text>
         <DashboardBox width="100%" height="70px">
           <Row

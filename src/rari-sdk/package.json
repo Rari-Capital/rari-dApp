@@ -1,0 +1,15 @@
+{
+  "name": "rari-sdk",
+  "version": "1.0.1",
+  "description": "Rari Capital SDK",
+  "main": "index.js",
+  "author": "David Lucid",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "big.js": "^6.0.3"
+  },
+  "peerDependencies": {
+    "web3": "^1.2.11"
+  }
+}
