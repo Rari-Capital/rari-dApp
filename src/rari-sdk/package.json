@@ -1,5 +1,5 @@
 {
-  "name": "rari-sdk",
+  "name": "@rari-capital/rari-sdk",
   "version": "1.0.1",
   "description": "Rari Capital SDK",
   "main": "index.js",
