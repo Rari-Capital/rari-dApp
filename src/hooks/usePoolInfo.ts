@@ -21,7 +21,7 @@ export const usePoolInfo = (poolType: Pool) => {
       poolType === Pool.ETH
         ? t("Safe returns on ETH")
         : poolType === Pool.STABLE
-        ? t("Safe on stablecoins")
+        ? t("Safe returns on stablecoins")
         : t("High risk, high reward");
 
     const poolLogo =
