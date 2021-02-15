@@ -37,6 +37,13 @@ const RSSAssetsPage = loadable(
   }
 );
 
+const FarmPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/FarmPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -76,6 +83,8 @@ const App = React.memo(() => {
       </Route>
 
       <Route path="/tranches" element={<TranchesPage />} />
+
+      <Route path="/farm" element={<FarmPage />} />
 
       <Route path="/" element={<MultiPoolPortal />} />
 
