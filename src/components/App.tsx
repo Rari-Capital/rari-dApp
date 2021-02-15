@@ -37,8 +37,8 @@ const RSSAssetsPage = loadable(
   }
 );
 
-const FarmPage = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/FarmPage"),
+const Pool2Page = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Pool2Page"),
   {
     fallback: <FullPageSpinner />,
   }
@@ -84,7 +84,7 @@ const App = React.memo(() => {
 
       <Route path="/tranches" element={<TranchesPage />} />
 
-      <Route path="/farm" element={<FarmPage />} />
+      <Route path="/pool2" element={<Pool2Page />} />
 
       <Route path="/" element={<MultiPoolPortal />} />
 

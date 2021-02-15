@@ -17,7 +17,7 @@ import { Header } from "../shared/Header";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { useQuery } from "react-query";
 
-const FarmPage = () => {
+const Pool2Page = () => {
   const { isAuthed } = useRari();
 
   const { t } = useTranslation();
@@ -58,10 +58,10 @@ const FarmPage = () => {
                 textAlign="center"
                 px={4}
               >
-                <Heading size="lg">{t("Farm Sushiswap Rewards")}</Heading>
+                <Heading size="lg">{t("Sushiswap LP Rewards")}</Heading>
 
                 {t(
-                  "Access Saffron Finance tranches through the Rari Capital interface!"
+                  "Earn additional rewards for providing RGT liquidity on Sushiswap!"
                 )}
               </Column>
             </DashboardBox>
@@ -90,28 +90,18 @@ export const GeneralStats = () => {
   const { rari } = useRari();
 
   const { data: totalStaked } = useQuery("totalStaked", async () => {
-    return await rari.governance.sushiSwapDistributions.totalStaked();
+    return await rari.governance.rgt.sushiSwapDistributions.totalStaked();
   });
-  const { data: rewardsEnd } = useQuery("rewardsEnd", async () => {});
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading size="sm">
-        {t("Epoch {{epoch}} Redemption Date", {
-          epoch: data?.currentEpoch ?? "?",
-        })}
-      </Heading>
-      <Text>{data ? data.endDate.toDateString() : "?"}</Text>
-      <Text fontSize="13px" mt="3px">
-        <Link isExternal href="https://app.saffron.finance/#redeem">
-          <u>{t("Withdraw From Past Epochs")}</u>
-        </Link>
-      </Text>
+      <Heading size="sm">{t("Total LP Tokens Staked")}</Heading>
+      <Text>{totalStaked ? totalStaked : "?"}</Text>
     </Column>
   );
 };
 
-export default FarmPage;
+export default Pool2Page;
 
 const useIsSmallScreen = () => {
   const { width } = useWindowSize();
