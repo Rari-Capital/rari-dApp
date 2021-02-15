@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column } from "buttered-chakra";
 
 import LogRocket from "logrocket";
 import {
@@ -23,13 +23,11 @@ import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../../shared/Modal";
 import { useRari } from "../../../../context/RariContext";
 
-import { BN, smallStringUsdFormatter } from "../../../../utils/bigUtils";
+import { BN } from "../../../../utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
 import { useQuery, useQueryCache } from "react-query";
-
-import { AttentionSeeker } from "react-awesome-reveal";
 
 import { HashLoader } from "react-spinners";
 import {
@@ -64,7 +62,6 @@ interface Props {
 
 enum UserAction {
   NO_ACTION,
-  VIEWING_QUOTE,
   WAITING_FOR_TRANSACTIONS,
 }
 
@@ -111,8 +108,6 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
   });
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
-
-  const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
 
   const [userEnteredAmount, _setUserEnteredAmount] = useState("");
 
@@ -211,40 +206,33 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
       //@ts-ignore
       const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
 
-      // If clicking for the first time:
-      if (userAction === UserAction.NO_ACTION) {
-        // Check A tranche cap
-        if (trancheRating === TrancheRating.A) {
-          const limits = await saffronPool.methods
-            .get_available_S_balances()
-            .call();
+      // Check A tranche cap
+      if (trancheRating === TrancheRating.A) {
+        const limits = await saffronPool.methods
+          .get_available_S_balances()
+          .call();
 
-          const amountLeftBeforeCap = new BigNumber(limits[0] + limits[1]).div(
-            10
-          );
+        const amountLeftBeforeCap = new BigNumber(limits[0] + limits[1]).div(
+          10
+        );
 
-          if (amountLeftBeforeCap.lt(amountBN.toString())) {
-            toast({
-              title: "Error!",
-              description: `The A tranche is capped at 1/10 the liquidity of the S tranche. Currently you must deposit less than ${amountLeftBeforeCap
-                .div(10 ** token.decimals)
-                .decimalPlaces(2)
-                .toString()} ${
-                token.symbol
-              } or deposit into the S tranche (as more is deposited into S tranche, the cap on the A tranche increases).`,
-              status: "error",
-              duration: 18000,
-              isClosable: true,
-              position: "top-right",
-            });
+        if (amountLeftBeforeCap.lt(amountBN.toString())) {
+          toast({
+            title: "Error!",
+            description: `The A tranche is capped at 1/10 the liquidity of the S tranche. Currently you must deposit less than ${amountLeftBeforeCap
+              .div(10 ** token.decimals)
+              .decimalPlaces(2)
+              .toString()} ${
+              token.symbol
+            } or deposit into the S tranche (as more is deposited into S tranche, the cap on the A tranche increases).`,
+            status: "error",
+            duration: 18000,
+            isClosable: true,
+            position: "top-right",
+          });
 
-            return;
-          }
+          return;
         }
-
-        setQuoteAmount(amountBN);
-        setUserAction(UserAction.VIEWING_QUOTE);
-        return;
       }
 
       // They must have already seen the quote as the button to trigger this function is disabled while it's loading:
@@ -417,17 +405,9 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
           isLoading={!poolTokenBalance}
           isDisabled={!amountIsValid || !hasEnoughSFI}
         >
-          {userAction === UserAction.VIEWING_QUOTE ? t("Confirm") : t("Review")}
+          {t("Confirm")}
         </Button>
       </Column>
-      {userAction === UserAction.VIEWING_QUOTE ? (
-        <ApprovalNotch
-          color={
-            requiresSFIStaking(trancheRating) ? SFIToken.color : token.color
-          }
-          amount={quoteAmount!}
-        />
-      ) : null}
     </>
   );
 };
@@ -548,46 +528,5 @@ const AmountInput = ({
       onChange={(event) => updateAmount(event.target.value)}
       mr={4}
     />
-  );
-};
-
-const ApprovalNotch = ({ color, amount }: { amount: BN; color: string }) => {
-  const { t } = useTranslation();
-
-  const formattedAmount = (() => {
-    const usdFormatted = smallStringUsdFormatter(
-      new BigNumber(amount.toString()).div(1e18).toString()
-    );
-
-    return usdFormatted;
-  })();
-
-  return (
-    <AttentionSeeker effect="headShake" triggerOnce>
-      <Box
-        borderRadius="0 0 10px 10px"
-        borderWidth="0 1px 1px 1px"
-        borderColor="#272727"
-        bg="#121212"
-        width={{ md: "auto", base: "90%" }}
-        height={{ md: "30px", base: "60px" }}
-        color={color}
-        position="absolute"
-        mx="auto"
-        px={4}
-        left="50%"
-        transform="translateX(-50%)"
-        bottom={{ md: "-30px", base: "-60px" }}
-        whiteSpace={{ md: "nowrap", base: "inherit" }}
-      >
-        <Center expand>
-          <Text fontSize="xs" pb="5px" textAlign="center" className="blinking">
-            {t("You will deposit {{amount}}. Click confirm to approve.", {
-              amount: formattedAmount,
-            })}
-          </Text>
-        </Center>
-      </Box>
-    </AttentionSeeker>
   );
 };
