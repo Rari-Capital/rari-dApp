@@ -79,7 +79,6 @@
   "Moved": "感动",
   "Access": "访问",
   "Forums": "论坛",
-  "Governance": "管治",
   "Do not increase the price of gas more than 1.5x the prefilled amount!": "汽油价格不要超过预充量的1.5倍！",
   "Pools": "泳池",
   "Audit": "审计",
@@ -123,5 +122,10 @@
   "Last Updated": "最近更新时间",
   "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000": "在此处搜索有效的ERC20地址，格式为：0x0000000000000000000000000000000000000000000000",
   "Asset RSS": "资产RSS",
-  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "最高ERC20资产的拉里安全得分。 单击此处以获取有关计算的信息。"
+  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "最高ERC20资产的拉里安全得分。 单击此处以获取有关计算的信息。",
+  "Sushiswap LP Rewards": "__NOT_TRANSLATED__",
+  "Earn additional rewards for providing RGT liquidity on Sushiswap!": "__NOT_TRANSLATED__",
+  "Total LP Tokens Staked": "__NOT_TRANSLATED__",
+  "Pool2": "__NOT_TRANSLATED__",
+  "Vote": "__NOT_TRANSLATED__"
 }

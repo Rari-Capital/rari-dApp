@@ -79,7 +79,6 @@
   "Moved": "Moved",
   "Access": "Access",
   "Forums": "Forums",
-  "Governance": "Governance",
   "Do not increase the price of gas more than 1.5x the prefilled amount!": "Do not increase the price of gas more than 1.5x the prefilled amount!",
   "Pools": "Pools",
   "Audit": "Audit",
@@ -123,5 +122,10 @@
   "Last Updated": "Last Updated",
   "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000": "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000",
   "Asset RSS": "Asset RSS",
-  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations."
+  "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.",
+  "Sushiswap LP Rewards": "Sushiswap LP Rewards",
+  "Earn additional rewards for providing RGT liquidity on Sushiswap!": "Earn additional rewards for providing RGT liquidity on Sushiswap!",
+  "Total LP Tokens Staked": "Total LP Tokens Staked",
+  "Pool2": "Pool2",
+  "Vote": "Vote"
 }

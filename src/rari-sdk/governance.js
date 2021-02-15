@@ -29,6 +29,11 @@ abis["RariGovernanceTokenVesting"] = require(__dirname +
   "RariGovernanceTokenVesting" +
   ".json");
 
+abis["RariGovernanceTokenUniswapDistributor"] = require(__dirname +
+  "/governance/abi/" +
+  "RariGovernanceTokenUniswapDistributor" +
+  ".json");
+
 export default class Governance {
   API_BASE_URL = "https://api.rari.capital/governance/";
 
