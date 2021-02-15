@@ -1,6 +1,6 @@
 {
   "name": "@rari-capital/rari-sdk",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Rari Capital SDK",
   "main": "index.js",
   "author": "David Lucid",
