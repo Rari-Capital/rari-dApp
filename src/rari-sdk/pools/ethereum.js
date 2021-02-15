@@ -41,6 +41,7 @@ const legacyContractAddresses = {
 
 var legacyAbis = {};
 
+legacyAbis["v1.0.0"] = {};
 legacyAbis["v1.0.0"]["RariFundController"] = require(__dirname +
   "/ethereum/abi/legacy/" +
   "v1.0.0" +

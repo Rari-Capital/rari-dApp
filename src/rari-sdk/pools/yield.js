@@ -25,6 +25,7 @@ const legacyContractAddresses = {
 var legacyAbis = {};
 
 // 1.0.0
+legacyAbis["v1.0.0"] = {};
 legacyAbis["v1.0.0"]["RariFundController"] = require(__dirname +
   "/yield/abi/legacy/" +
   "v1.0.0" +
@@ -40,7 +41,7 @@ legacyAbis["v1.0.0"]["RariFundProxy"] = require(__dirname +
   ".json");
 
 // 1.1.0
-
+legacyAbis["v1.1.0"] = {};
 legacyAbis["v1.1.0"]["RariFundProxy"] = require(__dirname +
   "/yield/abi/legacy/" +
   "v1.1.0" +
