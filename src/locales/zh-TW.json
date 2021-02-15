@@ -123,9 +123,9 @@
   "Search for a valid ERC20 address here in a format like: 0x0000000000000000000000000000000000000000": "在此處搜索有效的ERC20地址，格式為：0x0000000000000000000000000000000000000000000000",
   "Asset RSS": "資產RSS",
   "Rari Safety Scores for top ERC20 assets. Click here for information on the calculations.": "最高ERC20資產的拉里安全得分。 單擊此處以獲取有關計算的信息。",
-  "Sushiswap LP Rewards": "__NOT_TRANSLATED__",
-  "Earn additional rewards for providing RGT liquidity on Sushiswap!": "__NOT_TRANSLATED__",
-  "Total LP Tokens Staked": "__NOT_TRANSLATED__",
-  "Pool2": "__NOT_TRANSLATED__",
-  "Vote": "__NOT_TRANSLATED__"
+  "Sushiswap LP Rewards": "Sushiswap流動性提供者獎勵",
+  "Earn additional rewards for providing RGT liquidity on Sushiswap!": "在Sushiswap上提供RGT流動性可獲得更多獎勵！",
+  "Total LP Tokens Staked": "流動性提供者代幣總數",
+  "Pool2": "池2",
+  "Vote": "投票"
 }
