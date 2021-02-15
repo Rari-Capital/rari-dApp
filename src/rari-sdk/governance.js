@@ -7,16 +7,27 @@ import Cache from "./cache.js";
 const contractAddresses = {
   RariGovernanceToken: "0xD291E7a03283640FDc51b121aC401383A46cC623",
   RariGovernanceTokenDistributor: "0x9C0CaEb986c003417D21A7Daaf30221d61FC1043",
-  RariGovernanceTokenUniswapDistributor: "0x0000000000000000000000000000000000000000",
-  RariGovernanceTokenVesting: "0xA54B473028f4ba881F1eD6B670af4103e8F9B98a"
+  RariGovernanceTokenUniswapDistributor:
+    "0x0000000000000000000000000000000000000000",
+  RariGovernanceTokenVesting: "0xA54B473028f4ba881F1eD6B670af4103e8F9B98a",
 };
 
 var abis = {};
-for (const contractName of Object.keys(contractAddresses))
-  abis[contractName] = require(__dirname +
-    "/governance/abi/" +
-    contractName +
-    ".json");
+
+abis["RariGovernanceToken"] = require(__dirname +
+  "/governance/abi/" +
+  "RariGovernanceToken" +
+  ".json");
+
+abis["RariGovernanceTokenDistributor"] = require(__dirname +
+  "/governance/abi/" +
+  "RariGovernanceTokenDistributor" +
+  ".json");
+
+abis["RariGovernanceTokenVesting"] = require(__dirname +
+  "/governance/abi/" +
+  "RariGovernanceTokenVesting" +
+  ".json");
 
 export default class Governance {
   API_BASE_URL = "https://api.rari.capital/governance/";
@@ -193,12 +204,17 @@ export default class Governance {
             .claimAllRgt()
             .send(options);
         },
-        getClaimFee: function(blockNumber) {
+        getClaimFee: function (blockNumber) {
           var initialClaimFee = Web3.utils.toBN(0.33e18);
-          if (blockNumber <= self.rgt.distributions.DISTRIBUTION_START_BLOCK) return initialClaimFee;
-          var distributionEndBlock = self.rgt.distributions.DISTRIBUTION_START_BLOCK + self.rgt.distributions.DISTRIBUTION_PERIOD;
+          if (blockNumber <= self.rgt.distributions.DISTRIBUTION_START_BLOCK)
+            return initialClaimFee;
+          var distributionEndBlock =
+            self.rgt.distributions.DISTRIBUTION_START_BLOCK +
+            self.rgt.distributions.DISTRIBUTION_PERIOD;
           if (blockNumber >= distributionEndBlock) return Web3.utils.toBN(0);
-          return initialClaimFee.muln(distributionEndBlock - blockNumber).divn(self.rgt.distributions.DISTRIBUTION_PERIOD);
+          return initialClaimFee
+            .muln(distributionEndBlock - blockNumber)
+            .divn(self.rgt.distributions.DISTRIBUTION_PERIOD);
         },
         refreshDistributionSpeeds: async function (options) {
           return await self.contracts.RariGovernanceTokenDistributor.methods
@@ -216,13 +232,23 @@ export default class Governance {
         DISTRIBUTION_PERIOD: 6500 * 365 * 3,
         DISTRIBUTION_END_BLOCK:
           this.DISTRIBUTION_START_BLOCK + this.DISTRIBUTION_PERIOD,
-        FINAL_RGT_DISTRIBUTION: Web3.utils.toBN("568717819057309757517546").muln(80).divn(100),
+        FINAL_RGT_DISTRIBUTION: Web3.utils
+          .toBN("568717819057309757517546")
+          .muln(80)
+          .divn(100),
         getDistributedAtBlock: function (blockNumber) {
-          var startBlock = self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK;
+          var startBlock =
+            self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK;
           if (blockNumber <= startBlock) return web3.utils.toBN(0);
-          if (blockNumber >= startBlock + self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD) return self.rgt.sushiSwapDistributions.FINAL_RGT_DISTRIBUTION;
+          if (
+            blockNumber >=
+            startBlock + self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD
+          )
+            return self.rgt.sushiSwapDistributions.FINAL_RGT_DISTRIBUTION;
           var blocks = blockNumber - startBlock;
-          return self.rgt.sushiSwapDistributions.FINAL_RGT_DISTRIBUTION.muln(blocks).divn(self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD);
+          return self.rgt.sushiSwapDistributions.FINAL_RGT_DISTRIBUTION.muln(
+            blocks
+          ).divn(self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD);
         },
         getCurrentApy: async function (blockNumber, tvl) {
           if (blockNumber === undefined && tvl === undefined) {
@@ -238,7 +264,9 @@ export default class Governance {
             var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
               .getDistributedAtBlock(blockNumber)
               .sub(
-                self.rgt.sushiSwapDistributions.getDistributedAtBlock(blockNumber - 270)
+                self.rgt.sushiSwapDistributions.getDistributedAtBlock(
+                  blockNumber - 270
+                )
               );
             var rgtDistributedPastHourPerUsd = rgtDistributedPastHour
               .mul(Web3.utils.toBN(1e18))
@@ -260,7 +288,9 @@ export default class Governance {
           var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
             .getDistributedAtBlock(blockNumber)
             .sub(
-              self.rgt.sushiSwapDistributions.getDistributedAtBlock(blockNumber - 270)
+              self.rgt.sushiSwapDistributions.getDistributedAtBlock(
+                blockNumber - 270
+              )
             );
           var rgtDistributedPastHourPerUsd = rgtDistributedPastHour
             .mul(Web3.utils.toBN(1e18))
@@ -273,22 +303,22 @@ export default class Governance {
         totalStaked: async function () {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
             .totalStaked()
-            .call()
+            .call();
         },
         stakingBalanceOf: async function (account) {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
             .stakingBalances(account)
-            .call()
+            .call();
         },
         deposit: async function (amount, options) {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
             .deposit(account)
-            .send(options)
+            .send(options);
         },
         withdraw: async function (amount, options) {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
             .withdraw(account)
-            .send(options)
+            .send(options);
         },
         getUnclaimed: async function (account) {
           return Web3.utils.toBN(
@@ -330,11 +360,17 @@ export default class Governance {
         },
         getClaimFee: function (timestamp) {
           var initialClaimFee = Web3.utils.toBN(1e18);
-          if (timestamp <= self.rgt.vesting.PRIVATE_VESTING_START_TIMESTAMP) return initialClaimFee;
-          var privateVestingEndTimestamp = self.rgt.vesting.PRIVATE_VESTING_START_TIMESTAMP + self.rgt.vesting.PRIVATE_VESTING_PERIOD;
-          if (timestamp >= privateVestingEndTimestamp) return Web3.utils.toBN(0);
-          return initialClaimFee.muln(privateVestingEndTimestamp - timestamp).divn(self.rgt.vesting.PRIVATE_VESTING_PERIOD);
-        }
+          if (timestamp <= self.rgt.vesting.PRIVATE_VESTING_START_TIMESTAMP)
+            return initialClaimFee;
+          var privateVestingEndTimestamp =
+            self.rgt.vesting.PRIVATE_VESTING_START_TIMESTAMP +
+            self.rgt.vesting.PRIVATE_VESTING_PERIOD;
+          if (timestamp >= privateVestingEndTimestamp)
+            return Web3.utils.toBN(0);
+          return initialClaimFee
+            .muln(privateVestingEndTimestamp - timestamp)
+            .divn(self.rgt.vesting.PRIVATE_VESTING_PERIOD);
+        },
       },
       balanceOf: async function (account) {
         return Web3.utils.toBN(
