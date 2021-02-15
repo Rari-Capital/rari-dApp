@@ -50,17 +50,94 @@ const legacyContractAddresses = {
 
 var legacyAbis = {};
 
-for (const version of Object.keys(legacyContractAddresses))
-  for (const contractName of Object.keys(legacyContractAddresses[version])) {
-    if (!legacyAbis[version]) legacyAbis[version] = {};
-    legacyAbis[version][contractName] = require(__dirname +
-      "/stable/abi/legacy/" +
-      version +
-      "/" +
-      contractName +
-      ".json");
-  }
+  
+  // 1.0.0
 
+legacyAbis["v1.0.0"]["RariFundManager"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundManager" +
+  ".json");
+
+legacyAbis["v1.0.0"]["RariFundToken"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundToken" +
+  ".json");
+
+legacyAbis["v1.0.0"]["RariFundProxy"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 1.1.0
+
+legacyAbis["v1.1.0"]["RariFundManager"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundManager" +
+  ".json");
+
+legacyAbis["v1.1.0"]["RariFundController"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundController" +
+  ".json");
+
+legacyAbis["v1.1.0"]["RariFundProxy"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 1.2.0
+
+legacyAbis["v1.2.0"]["RariFundProxy"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.2.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 2.0.0
+
+legacyAbis["v2.0.0"]["RariFundManager"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v2.0.0" +
+  "/" +
+  "RariFundManager" +
+  ".json");
+
+legacyAbis["v2.0.0"]["RariFundController"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v2.0.0" +
+  "/" +
+  "RariFundController" +
+  ".json");
+
+legacyAbis["v2.0.0"]["RariFundProxy"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v2.0.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 2.2.0
+
+legacyAbis["v2.2.0"]["RariFundProxy"] = require(__dirname +
+  "/stable/abi/legacy/" +
+  "v1.2.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+        
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
   POOL_NAME = "Rari Stable Pool";

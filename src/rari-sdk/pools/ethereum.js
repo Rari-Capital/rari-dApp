@@ -12,30 +12,41 @@ const contractAddresses = {
 };
 
 var abis = {};
-for (const contractName of Object.keys(contractAddresses))
-  abis[contractName] = require(__dirname +
-    "/ethereum/abi/" +
-    contractName +
-    ".json");
+
+abis["RariFundController"] = require(__dirname +
+  "/ethereum/abi/" +
+  "RariFundController" +
+  ".json");
+
+abis["RariFundManager"] = require(__dirname +
+  "/ethereum/abi/" +
+  "RariFundManager" +
+  ".json");
+
+abis["RariFundToken"] = require(__dirname +
+  "/ethereum/abi/" +
+  "RariFundToken" +
+  ".json");
+
+abis["RariFundProxy"] = require(__dirname +
+  "/ethereum/abi/" +
+  "RariFundProxy" +
+  ".json");
 
 const legacyContractAddresses = {
   "v1.0.0": {
-    RariFundController: "0xD9F223A36C2e398B0886F945a7e556B41EF91A3C"
-  }
+    RariFundController: "0xD9F223A36C2e398B0886F945a7e556B41EF91A3C",
+  },
 };
 
 var legacyAbis = {};
 
-for (const version of Object.keys(legacyContractAddresses))
-  for (const contractName of Object.keys(legacyContractAddresses[version])) {
-    if (!legacyAbis[version]) legacyAbis[version] = {};
-    legacyAbis[version][contractName] = require(__dirname +
-      "/ethereum/abi/legacy/" +
-      version +
-      "/" +
-      contractName +
-      ".json");
-  }
+legacyAbis["v1.0.0"]["RariFundController"] = require(__dirname +
+  "/ethereum/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundController" +
+  ".json");
 
 export default class EthereumPool extends StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/ethereum/";
@@ -75,7 +86,14 @@ export default class EthereumPool extends StablePool {
     delete this.rspt;
 
     delete this.allocations.CURRENCIES;
-    this.allocations.POOLS = ["dYdX", "Compound", "KeeperDAO", "Aave", "Alpha", "Enzyme"];
+    this.allocations.POOLS = [
+      "dYdX",
+      "Compound",
+      "KeeperDAO",
+      "Aave",
+      "Alpha",
+      "Enzyme",
+    ];
     delete this.allocations.POOLS_BY_CURRENCY;
     this.allocations.CURRENCIES_BY_POOL = {
       dYdX: ["ETH"],
@@ -93,9 +111,10 @@ export default class EthereumPool extends StablePool {
 
     this.allocations.getRawPoolAllocations = async function () {
       var allocationsByPool = {
-        _cash: Web3.utils.toBN(0)
+        _cash: Web3.utils.toBN(0),
       };
-      for (const poolName of self.allocations.POOLS) allocationsByPool[poolName] = Web3.utils.toBN(0);
+      for (const poolName of self.allocations.POOLS)
+        allocationsByPool[poolName] = Web3.utils.toBN(0);
       var allBalances = await self.cache.getOrUpdate(
         "allBalances",
         self.contracts.RariFundController.methods.getRawFundBalances().call
@@ -212,8 +231,8 @@ export default class EthereumPool extends StablePool {
         if (inputFilledAmountBN.lt(amount))
           throw new Error(
             "Unable to find enough liquidity to exchange " +
-            currencyCode +
-            " to ETH before depositing."
+              currencyCode +
+              " to ETH before depositing."
           );
 
         // Make sure we have enough ETH for the protocol fee
@@ -300,8 +319,8 @@ export default class EthereumPool extends StablePool {
         if (inputFilledAmountBN.lt(amount))
           throw new Error(
             "Unable to find enough liquidity to exchange " +
-            currencyCode +
-            " before depositing."
+              currencyCode +
+              " before depositing."
           );
 
         // Make sure we have enough ETH for the protocol fee
@@ -338,7 +357,7 @@ export default class EthereumPool extends StablePool {
         } catch (err) {
           throw new Error(
             "Failed to approve tokens to RariFundProxy: " +
-            (err.message ? err.message : err)
+              (err.message ? err.message : err)
           );
         }
 
@@ -382,7 +401,7 @@ export default class EthereumPool extends StablePool {
         } catch (err) {
           throw new Error(
             "RariFundProxy.exchangeAndDeposit failed: " +
-            (err.message ? err.message : err)
+              (err.message ? err.message : err)
           );
         }
 
@@ -437,8 +456,8 @@ export default class EthereumPool extends StablePool {
       if (inputFilledAmountBN.lt(senderEthBalance))
         throw new Error(
           "Unable to find enough liquidity to exchange withdrawn tokens to " +
-          currencyCode +
-          "."
+            currencyCode +
+            "."
         );
 
       // Return amountWithdrawnBN and totalProtocolFeeBN
@@ -504,8 +523,8 @@ export default class EthereumPool extends StablePool {
         if (makerAssetFilledAmountBN.lt(amount))
           throw new Error(
             "Unable to find enough liquidity to exchange withdrawn ETH to " +
-            currencyCode +
-            "."
+              currencyCode +
+              "."
           );
 
         // Return inputFilledAmountBN
@@ -545,7 +564,7 @@ export default class EthereumPool extends StablePool {
         } catch (err) {
           throw new Error(
             "RariFundManager.withdraw failed: " +
-            (err.message ? err.message : err)
+              (err.message ? err.message : err)
           );
         }
 
@@ -598,8 +617,8 @@ export default class EthereumPool extends StablePool {
         if (makerAssetFilledAmountBN.lt(amount))
           throw new Error(
             "Unable to find enough liquidity to exchange withdrawn tokens to " +
-            currencyCode +
-            "."
+              currencyCode +
+              "."
           );
 
         // Check maxEthAmount
@@ -629,7 +648,7 @@ export default class EthereumPool extends StablePool {
         } catch (err) {
           throw new Error(
             "RariFundProxy.withdrawAndExchange failed: " +
-            (err.message ? err.message : err)
+              (err.message ? err.message : err)
           );
         }
 
@@ -656,11 +675,14 @@ export default class EthereumPool extends StablePool {
         });
       if (toBlock >= 11819251)
         events = events.concat(
-          await self.contracts.RariFundController.getPastEvents("PoolAllocation", {
-            fromBlock: Math.max(fromBlock, 11819251),
-            toBlock,
-            filter,
-          })
+          await self.contracts.RariFundController.getPastEvents(
+            "PoolAllocation",
+            {
+              fromBlock: Math.max(fromBlock, 11819251),
+              toBlock,
+              filter,
+            }
+          )
         );
       return events;
     };
@@ -681,11 +703,14 @@ export default class EthereumPool extends StablePool {
         });
       if (toBlock >= 11819251)
         events = events.concat(
-          await self.contracts.RariFundController.getPastEvents("CurrencyTrade", {
-            fromBlock: Math.max(fromBlock, 11819251),
-            toBlock,
-            filter,
-          })
+          await self.contracts.RariFundController.getPastEvents(
+            "CurrencyTrade",
+            {
+              fromBlock: Math.max(fromBlock, 11819251),
+              toBlock,
+              filter,
+            }
+          )
         );
       return events;
     };
