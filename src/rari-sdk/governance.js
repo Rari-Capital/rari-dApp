@@ -254,8 +254,8 @@ export default class Governance {
             blocks
           ).divn(self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD);
         },
-        getCurrentApy: async function (blockNumber, tvl) {
-          if (blockNumber === undefined && tvl === undefined) {
+        getCurrentApy: async function (blockNumber, totalStakedUsd) {
+          if (blockNumber === undefined && totalStaked === undefined) {
             try {
               return Web3.utils.toBN(
                 (await axios.get(self.API_BASE_URL + "rgt/sushiswap/apy")).data
@@ -277,7 +277,7 @@ export default class Governance {
               );
             var rgtDistributedPastHourPerUsd = rgtDistributedPastHour
               .mul(Web3.utils.toBN(1e18))
-              .div(tvl);
+              .div(totalStakedUsd);
             var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd
               .mul(await self.rgt.getExchangeRate())
               .div(Web3.utils.toBN(1e18));
@@ -304,16 +304,18 @@ export default class Governance {
             );
           var rgtDistributedPastHourPerUsd = rgtDistributedPastHour
             .mul(Web3.utils.toBN(1e18))
-            .div(tvl);
+            .div(totalStakedUsd);
           var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd
             .mul(await self.rgt.getExchangeRate())
             .div(Web3.utils.toBN(1e18));
           return rgtDistributedPastHourPerUsdInUsd.muln(24 * 365);
         },
         totalStaked: async function () {
-          await self.contracts.RariGovernanceTokenUniswapDistributor.methods
-            .totalStaked()
-            .call();
+          return Web3.utils.toBN(
+            await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+              .totalStaked()
+              .call()
+          );
         },
         stakingBalanceOf: async function (account) {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
