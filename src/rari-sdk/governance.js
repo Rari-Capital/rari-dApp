@@ -264,6 +264,9 @@ export default class Governance {
               throw new Error("Error retrieving data from Rari API: " + error);
             }
           } else {
+            // Predicted APY if we have't started the distribution period or we don't have enough data
+            if (blockNumber - 270 < self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK) blockNumber = self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK + 270;
+
             // Get APY from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
             var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
               .getDistributedAtBlock(blockNumber)
@@ -287,7 +290,10 @@ export default class Governance {
             );
           }
         },
-        getCurrentApr: async function (blockNumber, tvl) {
+        getCurrentApr: async function (blockNumber, totalStakedUsd) {
+          // Predicted APY if we have't started the distribution period or we don't have enough data
+          if (blockNumber - 270 < self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK) blockNumber = self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK + 270;
+
           // Get APR from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
           var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
             .getDistributedAtBlock(blockNumber)
