@@ -8,7 +8,7 @@ const contractAddresses = {
   RariGovernanceToken: "0xD291E7a03283640FDc51b121aC401383A46cC623",
   RariGovernanceTokenDistributor: "0x9C0CaEb986c003417D21A7Daaf30221d61FC1043",
   RariGovernanceTokenUniswapDistributor:
-    "0x0000000000000000000000000000000000000000",
+    "0x1fa69a416bcf8572577d3949b742fbb0a9cd98c7",
   RariGovernanceTokenVesting: "0xA54B473028f4ba881F1eD6B670af4103e8F9B98a",
 };
 
