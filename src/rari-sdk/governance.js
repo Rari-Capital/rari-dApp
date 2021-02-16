@@ -41,7 +41,7 @@ export default class Governance {
 
   constructor(web3) {
     this.web3 = web3;
-    this.cache = new Cache({ rgtUsdPrice: 900 });
+    this.cache = new Cache({ rgtUsdPrice: 900, lpTokenUsdPrice: 900 });
 
     this.contracts = {};
     for (const contractName of Object.keys(contractAddresses))
