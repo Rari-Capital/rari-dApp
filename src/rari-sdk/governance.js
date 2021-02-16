@@ -317,10 +317,48 @@ export default class Governance {
               .call()
           );
         },
+        getLpTokenUsdPrice: async function () {
+          // TODO: RGT price getter function from Coingecko
+          return self.cache.getOrUpdate("lpTokenUsdPrice", async function () {
+            try {
+              var data = (
+                await axios.post(
+                  "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
+                  {
+                    query: `{
+                      ethRgtPair: pair(id: "0x18a797c7c70c1bf22fdee1c09062aba709cacf04") {
+                        reserveUSD
+                        totalSupply
+                        token0Price
+                      }
+                    }`,
+                  }
+                )
+              ).data;
+  
+              return Web3.utils.toBN(
+                Math.trunc(
+                  data.data.ethRgtPair.reserveUSD /
+                    data.data.ethUsdtPair.totalSupply *
+                    1e18
+                )
+              );
+            } catch (error) {
+              throw new Error(
+                "Error retrieving data from The Graph API: " + error
+              );
+            }
+          });
+        },
+        totalStakedUsd: async function () {
+          return (await self.rgt.sushiSwapDistributions.totalStaked()).mul(await self.rgt.sushiSwapDistributions.getLpTokenUsdPrice()).div(Web3.utils.toBN(1e18));
+        },
         stakingBalanceOf: async function (account) {
-          await self.contracts.RariGovernanceTokenUniswapDistributor.methods
-            .stakingBalances(account)
-            .call();
+          return Web3.utils.toBN(
+            await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+              .stakingBalances(account)
+              .call()
+          );
         },
         deposit: async function (amount, options) {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
