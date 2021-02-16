@@ -4,7 +4,7 @@ import axios from "axios";
 
 import Cache from "../cache.js";
 
-var erc20Abi = require(__dirname + "/../abi/ERC20.json");
+var erc20Abi = require("." + "/../abi/ERC20.json");
 
 const externalContractAddresses = {
   Masset: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
@@ -12,12 +12,12 @@ const externalContractAddresses = {
 };
 
 var externalAbis = {};
-externalAbis["Masset"] = require(__dirname +
+externalAbis["Masset"] = require("." +
   "/mstable/abi/" +
   "Masset" +
   ".json");
 
-externalAbis["MassetValidationHelper"] = require(__dirname +
+externalAbis["MassetValidationHelper"] = require("." +
   "/mstable/abi/" +
   "MassetValidationHelper" +
   ".json");

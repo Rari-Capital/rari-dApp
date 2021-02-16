@@ -10,9 +10,9 @@ const externalContractAddresses = {
 
 var externalAbis = {};
 
-externalAbis["Bank"] = require(__dirname + "/alpha/abi/" + "Bank" + ".json");
+externalAbis["Bank"] = require("." + "/alpha/abi/" + "Bank" + ".json");
 
-externalAbis["ConfigurableInterestBankConfig"] = require(__dirname +
+externalAbis["ConfigurableInterestBankConfig"] = require("." +
   "/alpha/abi/" +
   "ConfigurableInterestBankConfig" +
   ".json");

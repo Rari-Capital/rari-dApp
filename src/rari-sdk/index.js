@@ -20,7 +20,7 @@ import Governance from "./governance.js";
 
 import Cache from "./cache.js";
 
-var erc20Abi = require(__dirname + "/abi/ERC20.json");
+var erc20Abi = require("." + "/abi/ERC20.json");
 
 export default class Rari {
   constructor(web3Provider) {

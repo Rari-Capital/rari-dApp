@@ -7,24 +7,31 @@ import Cache from "./cache.js";
 const contractAddresses = {
   RariGovernanceToken: "0xD291E7a03283640FDc51b121aC401383A46cC623",
   RariGovernanceTokenDistributor: "0x9C0CaEb986c003417D21A7Daaf30221d61FC1043",
+  RariGovernanceTokenUniswapDistributor:
+    "0x0000000000000000000000000000000000000000",
   RariGovernanceTokenVesting: "0xA54B473028f4ba881F1eD6B670af4103e8F9B98a",
 };
 
 var abis = {};
 
-abis["RariGovernanceToken"] = require(__dirname +
+abis["RariGovernanceToken"] = require("." +
   "/governance/abi/" +
   "RariGovernanceToken" +
   ".json");
 
-abis["RariGovernanceTokenDistributor"] = require(__dirname +
+abis["RariGovernanceTokenDistributor"] = require("." +
   "/governance/abi/" +
   "RariGovernanceTokenDistributor" +
   ".json");
 
-abis["RariGovernanceTokenVesting"] = require(__dirname +
+abis["RariGovernanceTokenVesting"] = require("." +
   "/governance/abi/" +
   "RariGovernanceTokenVesting" +
+  ".json");
+
+abis["RariGovernanceTokenUniswapDistributor"] = require("." +
+  "/governance/abi/" +
+  "RariGovernanceTokenUniswapDistributor" +
   ".json");
 
 export default class Governance {
@@ -222,6 +229,117 @@ export default class Governance {
         refreshDistributionSpeedsByPool: async function (pool, options) {
           return await self.contracts.RariGovernanceTokenDistributor.methods
             .refreshDistributionSpeeds(pool)
+            .send(options);
+        },
+      },
+      sushiSwapDistributions: {
+        DISTRIBUTION_START_BLOCK: 11880000,
+        DISTRIBUTION_PERIOD: 6500 * 365 * 3,
+        DISTRIBUTION_END_BLOCK:
+          this.DISTRIBUTION_START_BLOCK + this.DISTRIBUTION_PERIOD,
+        FINAL_RGT_DISTRIBUTION: Web3.utils
+          .toBN("568717819057309757517546")
+          .muln(80)
+          .divn(100),
+        getDistributedAtBlock: function (blockNumber) {
+          var startBlock =
+            self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK;
+          if (blockNumber <= startBlock) return web3.utils.toBN(0);
+          if (
+            blockNumber >=
+            startBlock + self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD
+          )
+            return self.rgt.sushiSwapDistributions.FINAL_RGT_DISTRIBUTION;
+          var blocks = blockNumber - startBlock;
+          return self.rgt.sushiSwapDistributions.FINAL_RGT_DISTRIBUTION.muln(
+            blocks
+          ).divn(self.rgt.sushiSwapDistributions.DISTRIBUTION_PERIOD);
+        },
+        getCurrentApy: async function (blockNumber, tvl) {
+          if (blockNumber === undefined && tvl === undefined) {
+            try {
+              return Web3.utils.toBN(
+                (await axios.get(self.API_BASE_URL + "rgt/sushiswap/apy")).data
+              );
+            } catch (error) {
+              throw new Error("Error retrieving data from Rari API: " + error);
+            }
+          } else {
+            // Get APY from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
+            var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
+              .getDistributedAtBlock(blockNumber)
+              .sub(
+                self.rgt.sushiSwapDistributions.getDistributedAtBlock(
+                  blockNumber - 270
+                )
+              );
+            var rgtDistributedPastHourPerUsd = rgtDistributedPastHour
+              .mul(Web3.utils.toBN(1e18))
+              .div(tvl);
+            var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd
+              .mul(await self.rgt.getExchangeRate())
+              .div(Web3.utils.toBN(1e18));
+            return Web3.utils.toBN(
+              Math.trunc(
+                ((1 + rgtDistributedPastHourPerUsdInUsd / 1e18) ** (24 * 365) -
+                  1) *
+                  1e18
+              )
+            );
+          }
+        },
+        getCurrentApr: async function (blockNumber, tvl) {
+          // Get APR from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
+          var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
+            .getDistributedAtBlock(blockNumber)
+            .sub(
+              self.rgt.sushiSwapDistributions.getDistributedAtBlock(
+                blockNumber - 270
+              )
+            );
+          var rgtDistributedPastHourPerUsd = rgtDistributedPastHour
+            .mul(Web3.utils.toBN(1e18))
+            .div(tvl);
+          var rgtDistributedPastHourPerUsdInUsd = rgtDistributedPastHourPerUsd
+            .mul(await self.rgt.getExchangeRate())
+            .div(Web3.utils.toBN(1e18));
+          return rgtDistributedPastHourPerUsdInUsd.muln(24 * 365);
+        },
+        totalStaked: async function () {
+          await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+            .totalStaked()
+            .call();
+        },
+        stakingBalanceOf: async function (account) {
+          await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+            .stakingBalances(account)
+            .call();
+        },
+        deposit: async function (amount, options) {
+          await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+            .deposit(account)
+            .send(options);
+        },
+        withdraw: async function (amount, options) {
+          await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+            .withdraw(account)
+            .send(options);
+        },
+        getUnclaimed: async function (account) {
+          return Web3.utils.toBN(
+            await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+              .getUnclaimedRgt(account)
+              .call()
+          );
+        },
+        claim: async function (amount, options) {
+          return await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+            .claimRgt(amount)
+            .send(options);
+        },
+        claimAll: async function (options) {
+          return await self.contracts.RariGovernanceTokenUniswapDistributor.methods
+            .claimAllRgt()
             .send(options);
         },
       },

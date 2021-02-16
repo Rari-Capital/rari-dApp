@@ -26,14 +26,14 @@ var legacyAbis = {};
 
 // 1.0.0
 legacyAbis["v1.0.0"] = {};
-legacyAbis["v1.0.0"]["RariFundController"] = require(__dirname +
+legacyAbis["v1.0.0"]["RariFundController"] = require("." +
   "/yield/abi/legacy/" +
   "v1.0.0" +
   "/" +
   "RariFundController" +
   ".json");
 
-legacyAbis["v1.0.0"]["RariFundProxy"] = require(__dirname +
+legacyAbis["v1.0.0"]["RariFundProxy"] = require("." +
   "/yield/abi/legacy/" +
   "v1.0.0" +
   "/" +
@@ -42,7 +42,7 @@ legacyAbis["v1.0.0"]["RariFundProxy"] = require(__dirname +
 
 // 1.1.0
 legacyAbis["v1.1.0"] = {};
-legacyAbis["v1.1.0"]["RariFundProxy"] = require(__dirname +
+legacyAbis["v1.1.0"]["RariFundProxy"] = require("." +
   "/yield/abi/legacy/" +
   "v1.1.0" +
   "/" +
