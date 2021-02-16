@@ -329,7 +329,6 @@ export default class Governance {
                       ethRgtPair: pair(id: "0x18a797c7c70c1bf22fdee1c09062aba709cacf04") {
                         reserveUSD
                         totalSupply
-                        token0Price
                       }
                     }`,
                   }
@@ -339,7 +338,7 @@ export default class Governance {
               return Web3.utils.toBN(
                 Math.trunc(
                   data.data.ethRgtPair.reserveUSD /
-                    data.data.ethUsdtPair.totalSupply *
+                    data.data.ethRgtPair.totalSupply *
                     1e18
                 )
               );
