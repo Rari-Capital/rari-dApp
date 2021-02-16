@@ -233,7 +233,7 @@ export default class Governance {
         },
       },
       sushiSwapDistributions: {
-        DISTRIBUTION_START_BLOCK: 11880000,
+        DISTRIBUTION_START_BLOCK: 11909000,
         DISTRIBUTION_PERIOD: 6500 * 365 * 3,
         DISTRIBUTION_END_BLOCK:
           this.DISTRIBUTION_START_BLOCK + this.DISTRIBUTION_PERIOD,
