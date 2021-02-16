@@ -14,22 +14,22 @@ const contractAddresses = {
 
 var abis = {};
 
-abis["RariGovernanceToken"] = require(__dirname +
+abis["RariGovernanceToken"] = require("." +
   "/governance/abi/" +
   "RariGovernanceToken" +
   ".json");
 
-abis["RariGovernanceTokenDistributor"] = require(__dirname +
+abis["RariGovernanceTokenDistributor"] = require("." +
   "/governance/abi/" +
   "RariGovernanceTokenDistributor" +
   ".json");
 
-abis["RariGovernanceTokenVesting"] = require(__dirname +
+abis["RariGovernanceTokenVesting"] = require("." +
   "/governance/abi/" +
   "RariGovernanceTokenVesting" +
   ".json");
 
-abis["RariGovernanceTokenUniswapDistributor"] = require(__dirname +
+abis["RariGovernanceTokenUniswapDistributor"] = require("." +
   "/governance/abi/" +
   "RariGovernanceTokenUniswapDistributor" +
   ".json");

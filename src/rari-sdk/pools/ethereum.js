@@ -13,22 +13,22 @@ const contractAddresses = {
 
 var abis = {};
 
-abis["RariFundController"] = require(__dirname +
+abis["RariFundController"] = require("." +
   "/ethereum/abi/" +
   "RariFundController" +
   ".json");
 
-abis["RariFundManager"] = require(__dirname +
+abis["RariFundManager"] = require("." +
   "/ethereum/abi/" +
   "RariFundManager" +
   ".json");
 
-abis["RariFundToken"] = require(__dirname +
+abis["RariFundToken"] = require("." +
   "/ethereum/abi/" +
   "RariFundToken" +
   ".json");
 
-abis["RariFundProxy"] = require(__dirname +
+abis["RariFundProxy"] = require("." +
   "/ethereum/abi/" +
   "RariFundProxy" +
   ".json");
@@ -42,7 +42,7 @@ const legacyContractAddresses = {
 var legacyAbis = {};
 
 legacyAbis["v1.0.0"] = {};
-legacyAbis["v1.0.0"]["RariFundController"] = require(__dirname +
+legacyAbis["v1.0.0"]["RariFundController"] = require("." +
   "/ethereum/abi/legacy/" +
   "v1.0.0" +
   "/" +
