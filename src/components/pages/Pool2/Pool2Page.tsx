@@ -18,6 +18,7 @@ import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
+import Pool2Modal from "./Pool2Modal";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -336,8 +337,19 @@ const GeneralInfo = () => {
 
   const isMobile = useIsSmallScreen();
 
+  const {
+    isOpen: isDepositModalOpen,
+    onOpen: openDepositModal,
+    onClose: closeDepositModal,
+  } = useDisclosure();
+
   return (
     <>
+      <Pool2Modal
+        token={rari.governance.rgt.sushiSwapDistributions.LP_TOKEN_CONTRACT}
+        isOpen={isDepositModalOpen}
+        onClose={closeDepositModal}
+      />
       <Heading fontSize="20px">{apr ?? "?"}% APY</Heading>
       <Text mt={3} width="70%" textAlign="center">
         {t("Deposit your LP tokens here to earn bonus RGT rewards!")}
@@ -350,6 +362,7 @@ const GeneralInfo = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
+        onClick={openDepositModal}
       >
         <Center expand>{t("Deposit")}</Center>
       </DashboardBox>
