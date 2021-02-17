@@ -8,7 +8,6 @@ import OptionsMenu from "./OptionsMenu";
 interface Props {
   isOpen: boolean;
   onClose: () => any;
-  token: string;
 }
 
 enum CurrentScreen {
@@ -39,7 +38,6 @@ const DepositModal = (props: Props) => {
           <AmountSelect
             onClose={props.onClose}
             openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
-            token={props.token}
             mode={mode}
           />
         ) : (

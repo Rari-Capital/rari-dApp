@@ -6,12 +6,15 @@ import Cache from "./cache.js";
 
 var erc20Abi = require("." + "/abi/ERC20.json");
 
-const contractAddresses = {
+export const contractAddresses = {
   RariGovernanceToken: "0xD291E7a03283640FDc51b121aC401383A46cC623",
   RariGovernanceTokenDistributor: "0x9C0CaEb986c003417D21A7Daaf30221d61FC1043",
-  RariGovernanceTokenUniswapDistributor: "0x1FA69a416bCF8572577d3949b742fBB0a9CD98c7",
+  RariGovernanceTokenUniswapDistributor:
+    "0x1FA69a416bCF8572577d3949b742fBB0a9CD98c7",
   RariGovernanceTokenVesting: "0xA54B473028f4ba881F1eD6B670af4103e8F9B98a",
 };
+
+export const LP_TOKEN_CONTRACT = "0x18a797c7c70c1bf22fdee1c09062aba709cacf04";
 
 var abis = {};
 
@@ -242,7 +245,7 @@ export default class Governance {
           .toBN("568717819057309757517546")
           .muln(80)
           .divn(100),
-        LP_TOKEN_CONTRACT: "0x18a797c7c70c1bf22fdee1c09062aba709cacf04",
+        LP_TOKEN_CONTRACT,
         getDistributedAtBlock: function (blockNumber) {
           var startBlock =
             self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK;
@@ -268,7 +271,12 @@ export default class Governance {
             }
           } else {
             // Predicted APY if we have't started the distribution period or we don't have enough data
-            if (blockNumber - 270 < self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK) blockNumber = self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK + 270;
+            if (
+              blockNumber - 270 <
+              self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK
+            )
+              blockNumber =
+                self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK + 270;
 
             // Get APY from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
             var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
@@ -295,7 +303,12 @@ export default class Governance {
         },
         getCurrentApr: async function (blockNumber, totalStakedUsd) {
           // Predicted APY if we have't started the distribution period or we don't have enough data
-          if (blockNumber - 270 < self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK) blockNumber = self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK + 270;
+          if (
+            blockNumber - 270 <
+            self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK
+          )
+            blockNumber =
+              self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK + 270;
 
           // Get APR from difference in distribution over last 270 blocks (estimating a 1 hour time difference)
           var rgtDistributedPastHour = self.rgt.sushiSwapDistributions
@@ -337,11 +350,11 @@ export default class Governance {
                   }
                 )
               ).data;
-  
+
               return Web3.utils.toBN(
                 Math.trunc(
-                  data.data.ethRgtPair.reserveUSD /
-                    data.data.ethRgtPair.totalSupply *
+                  (data.data.ethRgtPair.reserveUSD /
+                    data.data.ethRgtPair.totalSupply) *
                     1e18
                 )
               );
@@ -353,7 +366,9 @@ export default class Governance {
           });
         },
         totalStakedUsd: async function () {
-          return (await self.rgt.sushiSwapDistributions.totalStaked()).mul(await self.rgt.sushiSwapDistributions.getLpTokenUsdPrice()).div(Web3.utils.toBN(1e18));
+          return (await self.rgt.sushiSwapDistributions.totalStaked())
+            .mul(await self.rgt.sushiSwapDistributions.getLpTokenUsdPrice())
+            .div(Web3.utils.toBN(1e18));
         },
         stakingBalanceOf: async function (account) {
           return Web3.utils.toBN(
@@ -363,12 +378,27 @@ export default class Governance {
           );
         },
         deposit: async function (amount, options) {
-          var slp = new self.web3.eth.Contract(erc20Abi, self.rgt.sushiSwapDistributions.LP_TOKEN_CONTRACT);
-          var allowance = Web3.utils.toBN(await slp.methods.allowance(options.from, self.contracts.RariGovernanceTokenUniswapDistributor.options.address).call())
+          var slp = new self.web3.eth.Contract(
+            erc20Abi,
+            self.rgt.sushiSwapDistributions.LP_TOKEN_CONTRACT
+          );
+          var allowance = Web3.utils.toBN(
+            await slp.methods
+              .allowance(
+                options.from,
+                self.contracts.RariGovernanceTokenUniswapDistributor.options
+                  .address
+              )
+              .call()
+          );
           amount = Web3.utils.toBN(amount);
           if (amount.gt(allowance))
             await slp.methods
-              .approve(self.contracts.RariGovernanceTokenUniswapDistributor.options.address, amount)
+              .approve(
+                self.contracts.RariGovernanceTokenUniswapDistributor.options
+                  .address,
+                amount
+              )
               .send(options);
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
             .deposit(amount)

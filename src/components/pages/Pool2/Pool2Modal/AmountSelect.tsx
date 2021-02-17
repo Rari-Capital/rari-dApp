@@ -36,6 +36,8 @@ import { ModalDivider } from "../../../shared/Modal";
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
 
+import { LP_TOKEN_CONTRACT } from "../../../../rari-sdk/governance";
+
 interface Props {
   onClose: () => any;
   token: string;
@@ -45,12 +47,10 @@ interface Props {
 
 enum UserAction {
   NO_ACTION,
-  REQUESTED_QUOTE,
-  VIEWING_QUOTE,
   WAITING_FOR_TRANSACTIONS,
 }
 
-const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
+const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
   const toast = useToast();
 
   const queryCache = useQueryCache();
@@ -118,7 +118,7 @@ const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
   // }
   else if (!amountIsValid) {
     depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
-      token,
+      token: "ETH-RGT SLP",
     });
   } else {
     depositOrWithdrawAlert = t("Click review + confirm to continue!");
@@ -218,19 +218,13 @@ const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
             expand
           >
             <AmountInput
-              selectedToken={token}
               displayAmount={userEnteredAmount}
               updateAmount={updateAmount}
             />
 
-            <TokenNameAndMaxButton
-              selectedToken={token}
-              updateAmount={updateAmount}
-            />
+            <TokenNameAndMaxButton updateAmount={updateAmount} />
           </Row>
         </DashboardBox>
-
-        <StatsColumn token={token} mode={mode} />
 
         <Button
           mt={4}
@@ -249,95 +243,21 @@ const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
           // isLoading={!poolTokenBalance}
           isDisabled={!amountIsValid}
         >
-          {userAction === UserAction.VIEWING_QUOTE ? t("Confirm") : t("Review")}
+          {t("Confirm")}
         </Button>
       </Column>
-      {userAction === UserAction.VIEWING_QUOTE ? (
-        //TODO: COLOR
-        <ApprovalNotch color={"#C34535"} amount={quoteAmount!} />
-      ) : null}
     </>
   );
 };
 
 export default AmountSelect;
 
-const StatsColumn = ({ token, mode }: { token: string; mode: Mode }) => {
-  //TODO: BETTER COLOR SOURCE
-  const tokenData = tokens[token] ?? {
-    color: "#C34535",
-    logoURL:
-      "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
-  };
-
-  const { t } = useTranslation();
-  return (
-    <DashboardBox mt={4} width="100%" height="190px">
-      <Column
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="flex-start"
-        expand
-        py={3}
-        px={4}
-        fontSize="lg"
-      >
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          color={tokenData.color}
-        >
-          <Text fontWeight="bold">{t("Wallet Balance")}:</Text>
-          <Text fontWeight="bold">
-            {"25,000.01"} {token}
-          </Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold">{t("Supply Rate")}:</Text>
-          <Text fontWeight="bold">{"4.37%"}</Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold">{t("Borrow Limit")}:</Text>
-          <Text fontWeight="bold">{"$10,000.00"}</Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold">{t("Borrow Limit Used")}:</Text>
-          <Text fontWeight="bold">{"$1,512.00"}</Text>
-        </Row>
-      </Column>
-    </DashboardBox>
-  );
-};
-
 const TokenNameAndMaxButton = ({
-  selectedToken,
   updateAmount,
 }: {
-  selectedToken: string;
-
   updateAmount: (newAmount: string) => any;
 }) => {
   //TODO: BETTER COLOR SOURCE
-  const token = tokens[selectedToken] ?? {
-    color: "#C34535",
-    logoURL:
-      "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
-  };
 
   const { rari, address } = useRari();
 
@@ -347,7 +267,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(token, rari, address);
+    const balance = await fetchTokenBalance(LP_TOKEN_CONTRACT, rari, address);
 
     maxBN = balance;
 
@@ -355,7 +275,7 @@ const TokenNameAndMaxButton = ({
       updateAmount("0.0");
     } else {
       const str = new BigNumber(maxBN.toString())
-        .div(10 ** token.decimals)
+        .div(10 ** 18)
         .toFixed(18)
         // Remove trailing zeroes
         .replace(/\.?0+$/, "");
@@ -381,12 +301,14 @@ const TokenNameAndMaxButton = ({
             height="100%"
             borderRadius="50%"
             backgroundImage={`url(${SmallWhiteCircle})`}
-            src={token.logoURL}
+            src={
+              "https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
+            }
             alt=""
           />
         </Box>
         <Heading fontSize="24px" mr={2}>
-          {selectedToken}
+          ETH-RGT SLP
         </Heading>
       </Row>
 
@@ -414,14 +336,11 @@ const TokenNameAndMaxButton = ({
 const AmountInput = ({
   displayAmount,
   updateAmount,
-  selectedToken,
 }: {
   displayAmount: string;
   updateAmount: (symbol: string) => any;
-  selectedToken: string;
 }) => {
   //TODO: BETTER COLOR SOURCE
-  const token = tokens[selectedToken] ?? { color: "#C34535" };
 
   return (
     <Input
@@ -430,53 +349,12 @@ const AmountInput = ({
       fontSize="3xl"
       fontWeight="bold"
       variant="unstyled"
-      _placeholder={{ color: token.color }}
+      _placeholder={{ color: "#929192" }}
       placeholder="0.0"
       value={displayAmount}
-      color={token.color}
+      color={"#929192"}
       onChange={(event) => updateAmount(event.target.value)}
-      mr={DASHBOARD_BOX_SPACING.asPxString()}
+      mr={4}
     />
-  );
-};
-
-const ApprovalNotch = ({ color, amount }: { amount: BN; color: string }) => {
-  const { t } = useTranslation();
-
-  const formattedAmount = (() => {
-    const usdFormatted = smallStringUsdFormatter(
-      new BigNumber(amount.toString()).div(1e18).toString()
-    );
-
-    return usdFormatted;
-  })();
-
-  return (
-    <AttentionSeeker effect="headShake" triggerOnce>
-      <Box
-        borderRadius="0 0 10px 10px"
-        borderWidth="0 1px 1px 1px"
-        borderColor="#272727"
-        bg="#121212"
-        width={{ md: "auto", base: "90%" }}
-        height={{ md: "30px", base: "60px" }}
-        color={color}
-        position="absolute"
-        mx="auto"
-        px={4}
-        left="50%"
-        transform="translateX(-50%)"
-        bottom={{ md: "-30px", base: "-60px" }}
-        whiteSpace={{ md: "nowrap", base: "inherit" }}
-      >
-        <Center expand>
-          <Text fontSize="xs" pb="5px" textAlign="center" className="blinking">
-            {t("You will deposit {{amount}}. Click confirm to approve.", {
-              amount: formattedAmount,
-            })}
-          </Text>
-        </Center>
-      </Box>
-    </AttentionSeeker>
   );
 };
