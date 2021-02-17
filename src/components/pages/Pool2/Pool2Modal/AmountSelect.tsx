@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column } from "buttered-chakra";
 
 import LogRocket from "logrocket";
 import {
@@ -19,15 +19,16 @@ import BigNumber from "bignumber.js";
 
 import { useQueryCache } from "react-query";
 
-import { AttentionSeeker } from "react-awesome-reveal";
-
 import { HashLoader } from "react-spinners";
 
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../../context/RariContext";
-import { fetchTokenBalance } from "../../../../hooks/useTokenBalance";
-import { BN, smallStringUsdFormatter } from "../../../../utils/bigUtils";
-import { tokens } from "../../../../utils/tokenUtils";
+import {
+  fetchTokenBalance,
+  useTokenBalance,
+} from "../../../../hooks/useTokenBalance";
+import { BN } from "../../../../utils/bigUtils";
+
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
 } from "../../../shared/DashboardBox";
@@ -40,7 +41,6 @@ import { LP_TOKEN_CONTRACT } from "../../../../rari-sdk/governance";
 
 interface Props {
   onClose: () => any;
-  token: string;
   mode: Mode;
   openOptions: () => any;
 }
@@ -57,8 +57,6 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
-  const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
-
   const [userEnteredAmount, _setUserEnteredAmount] = useState("");
 
   const [amount, _setAmount] = useState<BigNumber | null>(
@@ -66,6 +64,10 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
   );
 
   const { t } = useTranslation();
+
+  const { rari, address } = useRari();
+
+  const { data: balance } = useTokenBalance(LP_TOKEN_CONTRACT);
 
   const updateAmount = (newAmount: string) => {
     if (newAmount.startsWith("-")) {
@@ -79,7 +81,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
-      // _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
+      _setAmount(bigAmount.multipliedBy(10 ** 18));
     } catch (e) {
       // If the number was invalid, set the amount to null to disable confirming:
       _setAmount(null);
@@ -89,17 +91,15 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
   };
 
   const amountIsValid = (() => {
-    // if (amount === null || amount.isZero()) {
-    //   return false;
-    // }
+    if (amount === null || amount.isZero()) {
+      return false;
+    }
 
-    // if (!poolTokenBalance) {
-    //   return false;
-    // }
+    if (!balance) {
+      return false;
+    }
 
-    // return amount.lte(poolTokenBalance.toString());
-
-    return true;
+    return amount.lte(balance.toString());
   })();
 
   let depositOrWithdrawAlert;
@@ -110,13 +110,11 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
     } else if (mode === Mode.WITHDRAW) {
       depositOrWithdrawAlert = t("Enter a valid amount to withdraw.");
     }
-  }
-  // else if (!poolTokenBalance || !sfiBalance) {
-  //   depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
-  //     token: tranchePool,
-  //   });
-  // }
-  else if (!amountIsValid) {
+  } else if (!balance) {
+    depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
+      token: "ETH-RGT SLP",
+    });
+  } else if (!amountIsValid) {
     depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
       token: "ETH-RGT SLP",
     });
@@ -126,6 +124,18 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
   const onConfirm = async () => {
     try {
+      setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
+
+      if (mode === Mode.DEPOSIT) {
+        await rari.governance.rgt.sushiSwapDistributions.deposit(amount, {
+          from: address,
+        });
+      } else {
+        await rari.governance.rgt.sushiSwapDistributions.withdraw(amount, {
+          from: address,
+        });
+      }
+
       await queryCache.refetchQueries();
       onClose();
     } catch (e) {
@@ -154,17 +164,14 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
   return userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center" p={4}>
-      <HashLoader
-        size={70}
-        //TODO: COLOR
-        color={"#C34535"}
-        loading
-      />
+      <HashLoader size={70} color={"#929192"} loading />
       <Heading mt="30px" textAlign="center" size="md">
         {t("Check your wallet to submit the transactions")}
       </Heading>
       <Text fontSize="sm" mt="15px" textAlign="center">
-        {t("Do not close this tab until you submit all transactions!")}
+        {mode === Mode.DEPOSIT
+          ? t("Do not close this tab until you submit both transactions!")
+          : t("You may close this tab after submitting the transaction.")}
       </Text>
     </Column>
   ) : (
@@ -222,7 +229,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
               updateAmount={updateAmount}
             />
 
-            <TokenNameAndMaxButton updateAmount={updateAmount} />
+            <TokenNameAndMaxButton updateAmount={updateAmount} mode={mode} />
           </Row>
         </DashboardBox>
 
@@ -233,14 +240,12 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
           borderRadius="10px"
           width="100%"
           height="70px"
-          //TODO: COLOR
-          bg={"#C34535"}
+          bg={"#929192"}
           _hover={{ transform: "scale(1.02)" }}
           _active={{ transform: "scale(0.95)" }}
-          //TODO: COLOR
           color={"#FFF"}
           onClick={onConfirm}
-          // isLoading={!poolTokenBalance}
+          isLoading={!balance}
           isDisabled={!amountIsValid}
         >
           {t("Confirm")}
@@ -254,11 +259,11 @@ export default AmountSelect;
 
 const TokenNameAndMaxButton = ({
   updateAmount,
+  mode,
 }: {
   updateAmount: (newAmount: string) => any;
+  mode: Mode;
 }) => {
-  //TODO: BETTER COLOR SOURCE
-
   const { rari, address } = useRari();
 
   const [isMaxLoading, setIsMaxLoading] = useState(false);
@@ -267,9 +272,17 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(LP_TOKEN_CONTRACT, rari, address);
+    if (mode === Mode.DEPOSIT) {
+      const balance = await fetchTokenBalance(LP_TOKEN_CONTRACT, rari, address);
 
-    maxBN = balance;
+      maxBN = balance;
+    } else {
+      const deposited = await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
+        address
+      );
+
+      maxBN = deposited;
+    }
 
     if (maxBN.isNeg() || maxBN.isZero()) {
       updateAmount("0.0");
@@ -293,9 +306,17 @@ const TokenNameAndMaxButton = ({
   const { t } = useTranslation();
 
   return (
-    <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-        <Box height="25px" width="25px" mr={2}>
+    <Row
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="center"
+      flexShrink={0}
+    >
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        flexShrink={0}
+      >
+        <Box height="30px" width="30px" mr={2}>
           <Image
             width="100%"
             height="100%"
@@ -308,11 +329,12 @@ const TokenNameAndMaxButton = ({
           />
         </Box>
         <Heading fontSize="24px" mr={2}>
-          ETH-RGT SLP
+          ETH-RGT
         </Heading>
       </Row>
 
       <Button
+        flexShrink={0}
         ml={1}
         height="28px"
         width="58px"
@@ -340,10 +362,9 @@ const AmountInput = ({
   displayAmount: string;
   updateAmount: (symbol: string) => any;
 }) => {
-  //TODO: BETTER COLOR SOURCE
-
   return (
     <Input
+      width="100%"
       type="number"
       inputMode="decimal"
       fontSize="3xl"

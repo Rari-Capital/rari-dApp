@@ -22,8 +22,6 @@ export enum Mode {
   WITHDRAW,
 }
 
-export const SLP_TOKEN_DATA = {};
-
 const DepositModal = (props: Props) => {
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
 
@@ -37,7 +35,7 @@ const DepositModal = (props: Props) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent {...MODAL_PROPS} height="500px">
+      <ModalContent {...MODAL_PROPS} height="300px">
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
             onClose={props.onClose}
