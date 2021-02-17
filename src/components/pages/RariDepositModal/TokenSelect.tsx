@@ -157,7 +157,7 @@ const TokenRow = React.memo(
     const token = tokens[tokenKeys[index]];
 
     const { data: balance, isLoading: isBalanceLoading } = useTokenBalance(
-      token
+      token.address
     );
 
     return (

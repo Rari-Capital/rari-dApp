@@ -5,6 +5,8 @@ import AmountSelect from "./AmountSelect";
 import { MODAL_PROPS } from "../../../shared/Modal";
 import OptionsMenu from "./OptionsMenu";
 
+import Rari from "../../../../rari-sdk/index";
+
 interface Props {
   isOpen: boolean;
   onClose: () => any;
@@ -19,6 +21,8 @@ export enum Mode {
   DEPOSIT,
   WITHDRAW,
 }
+
+export const SLP_TOKEN_DATA = {};
 
 const DepositModal = (props: Props) => {
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);

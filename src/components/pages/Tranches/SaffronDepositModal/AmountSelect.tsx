@@ -95,7 +95,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
   const { rari, address } = useRari();
 
-  const { data: poolTokenBalance } = useTokenBalance(token);
+  const { data: poolTokenBalance } = useTokenBalance(token.address);
 
   const { sfiBalance } = useSFIBalance();
 
@@ -434,7 +434,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(token, rari, address);
+    const balance = await fetchTokenBalance(token.address, rari, address);
 
     maxBN = balance;
 
