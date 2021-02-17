@@ -4,12 +4,14 @@ const formatter = Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 5,
+  maximumFractionDigits: 5,
 });
 
 const smallFormatter = Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
 const shortFormatter = new Intl.NumberFormat("en-US", {

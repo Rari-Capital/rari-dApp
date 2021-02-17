@@ -7,7 +7,7 @@ import MStableSubpool from "../subpools/mstable.js";
 import Cache from "../cache.js";
 import { get0xSwapOrders } from "../0x.js";
 
-var erc20Abi = require(__dirname + "/../abi/ERC20.json");
+var erc20Abi = require("." + "/../abi/ERC20.json");
 
 const contractAddresses = {
   RariFundController: "0x369855b051D1b2dBee88a792DCFc08614ff4e262",
@@ -18,11 +18,27 @@ const contractAddresses = {
 };
 
 var abis = {};
-for (const contractName of Object.keys(contractAddresses))
-  abis[contractName] = require(__dirname +
+abis["RariFundController"] = require("." +
     "/stable/abi/" +
-    contractName +
+    "RariFundController" +
     ".json");
+abis["RariFundManager"] = require("." +
+    "/stable/abi/" +
+    "RariFundManager" +
+    ".json");
+abis["RariFundToken"] = require("." +
+    "/stable/abi/" +
+    "RariFundToken" +
+    ".json");
+abis["RariFundPriceConsumer"] = require("." +
+    "/stable/abi/" +
+    "RariFundPriceConsumer" +
+    ".json");
+abis["RariFundProxy"] = require("." +
+    "/stable/abi/" +
+    "RariFundProxy" +
+    ".json");
+
 
 const legacyContractAddresses = {
   "v1.0.0": {
@@ -50,17 +66,100 @@ const legacyContractAddresses = {
 
 var legacyAbis = {};
 
-for (const version of Object.keys(legacyContractAddresses))
-  for (const contractName of Object.keys(legacyContractAddresses[version])) {
-    if (!legacyAbis[version]) legacyAbis[version] = {};
-    legacyAbis[version][contractName] = require(__dirname +
-      "/stable/abi/legacy/" +
-      version +
-      "/" +
-      contractName +
-      ".json");
-  }
+  
+  // 1.0.0
 
+legacyAbis["v1.0.0"] = {};
+
+legacyAbis["v1.0.0"]["RariFundManager"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundManager" +
+  ".json");
+
+legacyAbis["v1.0.0"]["RariFundToken"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundToken" +
+  ".json");
+
+legacyAbis["v1.0.0"]["RariFundProxy"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 1.1.0
+
+legacyAbis["v1.1.0"] = {};
+legacyAbis["v1.1.0"]["RariFundManager"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundManager" +
+  ".json");
+
+legacyAbis["v1.1.0"]["RariFundController"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundController" +
+  ".json");
+
+legacyAbis["v1.1.0"]["RariFundProxy"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 1.2.0
+
+legacyAbis["v1.2.0"] = {};
+legacyAbis["v1.2.0"]["RariFundProxy"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.2.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 2.0.0
+
+legacyAbis["v2.0.0"] = {};
+legacyAbis["v2.0.0"]["RariFundManager"] = require("." +
+  "/stable/abi/legacy/" +
+  "v2.0.0" +
+  "/" +
+  "RariFundManager" +
+  ".json");
+
+legacyAbis["v2.0.0"]["RariFundController"] = require("." +
+  "/stable/abi/legacy/" +
+  "v2.0.0" +
+  "/" +
+  "RariFundController" +
+  ".json");
+
+legacyAbis["v2.0.0"]["RariFundProxy"] = require("." +
+  "/stable/abi/legacy/" +
+  "v2.0.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 2.2.0
+
+legacyAbis["v2.2.0"] = {};
+legacyAbis["v2.2.0"]["RariFundProxy"] = require("." +
+  "/stable/abi/legacy/" +
+  "v1.2.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+        
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
   POOL_NAME = "Rari Stable Pool";

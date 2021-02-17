@@ -24,16 +24,30 @@ const legacyContractAddresses = {
 
 var legacyAbis = {};
 
-for (const version of Object.keys(legacyContractAddresses))
-  for (const contractName of Object.keys(legacyContractAddresses[version])) {
-    if (!legacyAbis[version]) legacyAbis[version] = {};
-    legacyAbis[version][contractName] = require(__dirname +
-      "/yield/abi/legacy/" +
-      version +
-      "/" +
-      contractName +
-      ".json");
-  }
+// 1.0.0
+legacyAbis["v1.0.0"] = {};
+legacyAbis["v1.0.0"]["RariFundController"] = require("." +
+  "/yield/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundController" +
+  ".json");
+
+legacyAbis["v1.0.0"]["RariFundProxy"] = require("." +
+  "/yield/abi/legacy/" +
+  "v1.0.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+// 1.1.0
+legacyAbis["v1.1.0"] = {};
+legacyAbis["v1.1.0"]["RariFundProxy"] = require("." +
+  "/yield/abi/legacy/" +
+  "v1.1.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
 
 export default class YieldPool extends StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/yield/";

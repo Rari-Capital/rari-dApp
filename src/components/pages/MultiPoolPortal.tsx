@@ -573,7 +573,7 @@ const InterestEarned = () => {
   );
 };
 
-const NewsAndTwitterLink = () => {
+export const NewsAndTwitterLink = () => {
   const { t } = useTranslation();
 
   return (

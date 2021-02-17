@@ -65,6 +65,13 @@ const RSSAssetsPage = loadable(
   }
 );
 
+const Pool2Page = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Pool2/Pool2Page"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -104,6 +111,8 @@ const App = React.memo(() => {
       </Route>
 
       <Route path="/tranches" element={<TranchesPage />} />
+
+      <Route path="/pool2" element={<Pool2Page />} />
 
       <Route path="/fuse" element={<FusePoolsPage />} />
       <Route path="/fuse/new-pool" element={<FusePoolEditPage isNewPool />} />

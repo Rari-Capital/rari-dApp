@@ -90,10 +90,18 @@ export const Header = ({
         {lessLinks ? null : (
           <HeaderLink
             ml={4}
-            name={t("Governance")}
+            name={t("Vote")}
             route="https://vote.rari.capital"
           />
         )}
+
+        <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
+
+        {/* <HeaderLink
+            ml={4}
+            name={t("Forums")}
+            route="https://forums.rari.capital"
+          /> */}
 
         <HeaderLink
           ml={4}

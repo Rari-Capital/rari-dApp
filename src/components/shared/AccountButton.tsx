@@ -104,7 +104,7 @@ const Buttons = ({
             as="button"
             height="40px"
             flexShrink={0}
-            width="100px"
+            width="98px"
             onClick={openClaimRGTModal}
             fontWeight="bold"
           >

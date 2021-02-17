@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import CaptionedStat, { CaptionedStatProps } from "./CaptionedStat";
 
-function useInterval(callback: () => any, delay: number) {
+export function useInterval(callback: () => any, delay: number) {
   const intervalId = React.useRef<null | number>(null);
   const savedCallback = React.useRef(callback);
   React.useEffect(() => {
