@@ -322,13 +322,15 @@ const GeneralInfo = () => {
     const blockNumber = await rari.web3.eth.getBlockNumber();
     const tvl = await rari.governance.rgt.sushiSwapDistributions.totalStakedUsd();
 
-    return parseInt(
-      rari.web3.utils.fromWei(
-        await rari.governance.rgt.sushiSwapDistributions.getCurrentApr(
-          blockNumber,
-          tvl
+    return (
+      parseInt(
+        rari.web3.utils.fromWei(
+          await rari.governance.rgt.sushiSwapDistributions.getCurrentApr(
+            blockNumber,
+            tvl
+          )
         )
-      )
+      ) * 100
     ).toFixed(2);
   });
 
