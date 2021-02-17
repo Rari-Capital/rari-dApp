@@ -31,13 +31,11 @@ export const Header = ({
   isAuthed,
   isPool,
   isFuse,
-  lessLinks,
   padding,
 }: {
   isAuthed: boolean;
   isFuse?: boolean;
   isPool?: boolean;
-  lessLinks?: boolean;
   padding?: boolean;
 }) => {
   const { t } = useTranslation();
@@ -85,17 +83,11 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
 
+        <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
+
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-        {lessLinks ? null : (
-          <HeaderLink
-            ml={4}
-            name={t("Vote")}
-            route="https://vote.rari.capital"
-          />
-        )}
-
-        <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
+        <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />
 
         {/* <HeaderLink
             ml={4}
