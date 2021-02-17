@@ -4,6 +4,8 @@ import axios from "axios";
 
 import Cache from "./cache.js";
 
+var erc20Abi = require("." + "/abi/ERC20.json");
+
 const contractAddresses = {
   RariGovernanceToken: "0xD291E7a03283640FDc51b121aC401383A46cC623",
   RariGovernanceTokenDistributor: "0x9C0CaEb986c003417D21A7Daaf30221d61FC1043",
@@ -240,6 +242,7 @@ export default class Governance {
           .toBN("568717819057309757517546")
           .muln(80)
           .divn(100),
+        LP_TOKEN_CONTRACT: "0x18a797c7c70c1bf22fdee1c09062aba709cacf04",
         getDistributedAtBlock: function (blockNumber) {
           var startBlock =
             self.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK;
@@ -360,13 +363,20 @@ export default class Governance {
           );
         },
         deposit: async function (amount, options) {
+          var slp = new self.web3.eth.Contract(erc20Abi, self.rgt.sushiSwapDistributions.LP_TOKEN_CONTRACT);
+          var allowance = Web3.utils.toBN(await slp.methods.allowance(options.from, self.contracts.RariGovernanceTokenUniswapDistributor.options.address).call())
+          amount = Web3.utils.toBN(amount);
+          if (amount.gt(allowance))
+            await slp.methods
+              .approve(self.contracts.RariGovernanceTokenUniswapDistributor.options.address, amount)
+              .send(options);
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
-            .deposit(account)
+            .deposit(amount)
             .send(options);
         },
         withdraw: async function (amount, options) {
           await self.contracts.RariGovernanceTokenUniswapDistributor.methods
-            .withdraw(account)
+            .withdraw(amount)
             .send(options);
         },
         getUnclaimed: async function (account) {
