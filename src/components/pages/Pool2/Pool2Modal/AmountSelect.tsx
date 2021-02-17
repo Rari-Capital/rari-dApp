@@ -119,7 +119,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
       token: "ETH-RGT SLP",
     });
   } else {
-    depositOrWithdrawAlert = t("Click review + confirm to continue!");
+    depositOrWithdrawAlert = t("Click confirm to continue!");
   }
 
   const onConfirm = async () => {

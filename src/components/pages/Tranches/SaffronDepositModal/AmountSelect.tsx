@@ -198,7 +198,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
       }
     );
   } else {
-    depositOrWithdrawAlert = t("Click review + confirm to continue!");
+    depositOrWithdrawAlert = t("Click confirm to continue!");
   }
 
   const onConfirm = async () => {
