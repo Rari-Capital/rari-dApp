@@ -346,7 +346,7 @@ const GeneralInfo = () => {
   return (
     <>
       <Pool2Modal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
-      <Heading fontSize="20px">{apr ?? "?"}% APY</Heading>
+      <Heading fontSize="20px">{apr ?? "?"}% APR</Heading>
       <Text mt={3} width="70%" textAlign="center">
         {t("Deposit your LP tokens here to earn bonus RGT rewards!")}
       </Text>
