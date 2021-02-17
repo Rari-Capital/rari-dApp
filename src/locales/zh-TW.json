@@ -74,7 +74,6 @@
   "Overview": "總覽",
   "Moved": "感動",
   "Access": "訪問",
-  "Governance": "管治",
   "Forums": "論壇",
   "Do not increase the price of gas more than 1.5x the prefilled amount!": "汽油價格不要超過預充量的1.5倍！",
   "Pools": "泳池",
@@ -156,7 +155,6 @@
   "Create": "創造",
   "Apply": "應用",
   "None": "沒有",
-  "Invalid address!": "無效地址！",
   "Current Members:": "現有成員：",
   "Wallet Balance": "錢包餘額",
   "Supply Rate": "供應率",
@@ -180,7 +178,6 @@
   "You will withdraw {{amount}} before fees. Click confirm to approve.": "您將在收費前提取{{amount}}。 點擊確認以批准。",
   "This is not a valid Ethereum address!": "這不是有效的以太坊地址！",
   "Market Cap": "市值",
-  "Liquidity": "流動性",
   "Volatility": "揮發性",
   "Swap Volume": "交換量",
   "Exchanges": "交流交流",
@@ -207,5 +204,6 @@
   "here": "這裡",
   "and stake them for extra rewards!": "並放下它們以獲得額外的獎勵！",
   "Your Balance": "您的餘額",
-  "Click confirm to continue!": "單擊確認繼續！"
+  "Click confirm to continue!": "單擊確認繼續！",
+  "Click review + confirm to continue!": "__NOT_TRANSLATED__"
 }
