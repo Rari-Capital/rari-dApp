@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import {
+  useInterval,
+  useDisclosure,
+  Heading,
+  Link,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { Column, Center, RowOrColumn, useWindowSize } from "buttered-chakra";
-import { Heading, Link, Spinner, Text, useDisclosure } from "@chakra-ui/react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useRari } from "../../context/RariContext";
-import CopyrightSpacer from "../shared/CopyrightSpacer";
-import DashboardBox from "../shared/DashboardBox";
-import ForceAuthModal from "../shared/ForceAuthModal";
-import { Header } from "../shared/Header";
+import { useRari } from "../../../context/RariContext";
+import { smallUsdFormatter } from "../../../utils/bigUtils";
+import { ClaimRGTModal } from "../../shared/ClaimRGTModal";
+import CopyrightSpacer from "../../shared/CopyrightSpacer";
+import DashboardBox from "../../shared/DashboardBox";
+import ForceAuthModal from "../../shared/ForceAuthModal";
+import { Header } from "../../shared/Header";
+import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
-import { useInterval } from "../shared/MovingStat";
-import { NewsAndTwitterLink } from "./MultiPoolPortal";
-import { ClaimRGTModal } from "../shared/ClaimRGTModal";
-import { smallUsdFormatter } from "../../utils/bigUtils";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
