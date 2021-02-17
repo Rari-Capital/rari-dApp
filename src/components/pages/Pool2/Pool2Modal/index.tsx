@@ -5,8 +5,6 @@ import AmountSelect from "./AmountSelect";
 import { MODAL_PROPS } from "../../../shared/Modal";
 import OptionsMenu from "./OptionsMenu";
 
-import Rari from "../../../../rari-sdk/index";
-
 interface Props {
   isOpen: boolean;
   onClose: () => any;
