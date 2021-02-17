@@ -6,7 +6,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Center, RowOrColumn, useWindowSize, Column } from "buttered-chakra";
+import { Center, RowOrColumn, Column } from "buttered-chakra";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
@@ -19,6 +19,7 @@ import { Header } from "../../shared/Header";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
 import Pool2Modal from "./Pool2Modal";
+import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -367,9 +368,3 @@ const GeneralInfo = () => {
 };
 
 export default Pool2Page;
-
-const useIsSmallScreen = () => {
-  const { width } = useWindowSize();
-
-  return width < 1030;
-};
