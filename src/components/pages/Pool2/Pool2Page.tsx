@@ -28,7 +28,7 @@ const Pool2Page = () => {
 
   return (
     <>
-      <ForceAuthModal />y
+      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
