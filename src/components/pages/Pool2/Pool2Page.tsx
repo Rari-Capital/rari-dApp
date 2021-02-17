@@ -6,7 +6,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Column, Center, RowOrColumn, useWindowSize } from "buttered-chakra";
+import { Center, RowOrColumn, useWindowSize, Column } from "buttered-chakra";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
@@ -28,8 +28,7 @@ const Pool2Page = () => {
 
   return (
     <>
-      <ForceAuthModal />
-
+      <ForceAuthModal />y
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -87,13 +86,13 @@ const Pool2Page = () => {
               >
                 <Column
                   mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                  width="164px"
+                  crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                  width={isMobile ? "100%" : "164px"}
                   flexShrink={0}
                 >
                   <Heading fontSize="25px">{t("RGT-ETH Pool")} </Heading>
 
-                  <Text mt={3}>
+                  <Text mt={3} textAlign={isMobile ? "center" : "left"}>
                     {t(
                       "Provide liquidity to the RGT-ETH pool to acquire LP tokens"
                     )}{" "}
@@ -108,21 +107,23 @@ const Pool2Page = () => {
                 </Column>
 
                 <Column
+                  mt={isMobile ? 4 : 0}
                   mainAxisAlignment="flex-start"
                   crossAxisAlignment="center"
                   width="100%"
                   height="100%"
-                  ml={4}
+                  ml={isMobile ? 0 : 4}
                 >
                   <GeneralInfo />
                 </Column>
 
                 <Column
+                  mt={isMobile ? 4 : 0}
                   mainAxisAlignment="flex-start"
                   crossAxisAlignment="center"
                   width="100%"
                   height="100%"
-                  ml={4}
+                  ml={isMobile ? 0 : 4}
                 >
                   <YourBalance />
                 </Column>
@@ -266,13 +267,13 @@ const YourBalance = () => {
     }
   );
 
-  console.log(balance);
-
   const {
     isOpen: isClaimRGTModalOpen,
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
+
+  const isMobile = useIsSmallScreen();
 
   return (
     <Column
@@ -297,7 +298,7 @@ const YourBalance = () => {
         </b>
       </Text>
       <DashboardBox
-        mt="auto"
+        mt={isMobile ? 4 : "auto"}
         width="70%"
         height="45px"
         borderRadius="7px"
@@ -331,6 +332,8 @@ const GeneralInfo = () => {
     ).toFixed(2);
   });
 
+  const isMobile = useIsSmallScreen();
+
   return (
     <>
       <Heading fontSize="20px">{apr ?? "?"}% APY</Heading>
@@ -338,7 +341,7 @@ const GeneralInfo = () => {
         {t("Deposit your LP tokens here to earn bonus RGT rewards!")}
       </Text>
       <DashboardBox
-        mt="auto"
+        mt={isMobile ? 4 : "auto"}
         width="70%"
         height="45px"
         borderRadius="7px"
