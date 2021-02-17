@@ -38,7 +38,7 @@ const RSSAssetsPage = loadable(
 );
 
 const Pool2Page = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/Pool2Page"),
+  () => import(/* webpackPrefetch: true */ "./pages/Pool2/Pool2Page"),
   {
     fallback: <FullPageSpinner />,
   }
