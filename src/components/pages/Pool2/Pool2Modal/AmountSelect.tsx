@@ -17,7 +17,7 @@ import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
-import { useQueryCache } from "react-query";
+import { useQuery, useQueryCache } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -69,6 +69,10 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
   const { data: balance } = useTokenBalance(LP_TOKEN_CONTRACT);
 
+  const { data: staked } = useQuery(address + "pool2BalanceBN", () => {
+    return rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(address);
+  });
+
   const updateAmount = (newAmount: string) => {
     if (newAmount.startsWith("-")) {
       return;
@@ -95,11 +99,15 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
       return false;
     }
 
-    if (!balance) {
+    if (!balance || !staked) {
       return false;
     }
 
-    return amount.lte(balance.toString());
+    if (mode === Mode.DEPOSIT) {
+      return amount.lte(balance.toString());
+    } else {
+      return amount.lte(staked.toString());
+    }
   })();
 
   let depositOrWithdrawAlert;
