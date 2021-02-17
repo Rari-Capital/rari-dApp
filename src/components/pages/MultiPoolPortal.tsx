@@ -83,7 +83,7 @@ const MultiPoolPortal = React.memo(() => {
         width={columnWidth}
         px={columnWidth === "100%" ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} lessLinks={columnWidth === "700px"} />
+        <Header isAuthed={isAuthed} />
 
         <FundStats />
 

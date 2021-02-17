@@ -75,7 +75,7 @@ const AmountSelect = ({
   const {
     data: selectedTokenBalance,
     isLoading: isSelectedTokenBalanceLoading,
-  } = useTokenBalance(token);
+  } = useTokenBalance(token.address);
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
@@ -462,7 +462,7 @@ const TokenNameAndMaxButton = ({
     let maxBN: BN;
 
     if (mode === Mode.DEPOSIT) {
-      const balance = await fetchTokenBalance(token, rari, address);
+      const balance = await fetchTokenBalance(token.address, rari, address);
 
       if (token.symbol === "ETH") {
         const ethPriceBN = await rari.getEthUsdPriceBN();
