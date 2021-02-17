@@ -291,7 +291,7 @@ const YourBalance = () => {
       />
       <Heading fontSize="20px">{t("Your Balance")}</Heading>
       <Text mt={3} width="70%" textAlign="center">
-        {balance ? balance.toFixed(8) : "0"} SLP
+        {balance ? balance.toFixed(8) : "0"} Staked SLP
       </Text>
       <Text mt={5} width="70%" textAlign="center">
         <b>

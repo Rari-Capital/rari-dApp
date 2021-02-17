@@ -88,7 +88,6 @@
   "Tranche Details": "批次详细信息",
   "Deposits are locked until the end of each 2 week epoch.": "存款被锁定，直到每个2周纪元结束。",
   "SFI staking is required to enter the A tranche!": "必须进行SFI抵押才能进入A档！",
-  "Click review + confirm to continue!": "点击评论+确认以继续！",
   "SFI and interest is distributed to LPs proportionally at the end of each epoch.": "SFI和兴趣在每个时期结束时按比例分配给LP。",
   "Liquidity added to other tranches as needed.": "流动资金可根据需要添加到其他部分。",
   "Epoch {{epoch}} Redemption Date": "时代{{epoch}}兑换日期",
@@ -135,5 +134,6 @@
   "Provide liquidity to the RGT-ETH pool to acquire LP tokens": "__NOT_TRANSLATED__",
   "here": "__NOT_TRANSLATED__",
   "and stake them for extra rewards!": "__NOT_TRANSLATED__",
-  "Your Balance": "__NOT_TRANSLATED__"
+  "Your Balance": "__NOT_TRANSLATED__",
+  "Click confirm to continue!": "__NOT_TRANSLATED__"
 }

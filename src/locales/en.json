@@ -88,7 +88,6 @@
   "Tranche Details": "Tranche Details",
   "Deposits are locked until the end of each 2 week epoch.": "Deposits are locked until the end of each 2 week epoch.",
   "SFI staking is required to enter the A tranche!": "SFI staking is required to enter the A tranche!",
-  "Click review + confirm to continue!": "Click review + confirm to continue!",
   "SFI and interest is distributed to LPs proportionally at the end of each epoch.": "SFI and interest is distributed to LPs proportionally at the end of each epoch.",
   "Liquidity added to other tranches as needed.": "Liquidity added to other tranches as needed.",
   "Epoch {{epoch}} Redemption Date": "Epoch {{epoch}} Redemption Date",
@@ -135,5 +134,6 @@
   "Provide liquidity to the RGT-ETH pool to acquire LP tokens": "Provide liquidity to the RGT-ETH pool to acquire LP tokens",
   "here": "here",
   "and stake them for extra rewards!": "and stake them for extra rewards!",
-  "Your Balance": "Your Balance"
+  "Your Balance": "Your Balance",
+  "Click confirm to continue!": "Click confirm to continue!"
 }
