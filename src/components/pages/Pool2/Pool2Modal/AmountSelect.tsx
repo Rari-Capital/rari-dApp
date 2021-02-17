@@ -134,12 +134,15 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
     try {
       setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
 
+      //@ts-ignore
+      const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
+
       if (mode === Mode.DEPOSIT) {
-        await rari.governance.rgt.sushiSwapDistributions.deposit(amount, {
+        await rari.governance.rgt.sushiSwapDistributions.deposit(amountBN, {
           from: address,
         });
       } else {
-        await rari.governance.rgt.sushiSwapDistributions.withdraw(amount, {
+        await rari.governance.rgt.sushiSwapDistributions.withdraw(amountBN, {
           from: address,
         });
       }
