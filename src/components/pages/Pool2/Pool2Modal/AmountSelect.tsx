@@ -316,7 +316,7 @@ const TokenNameAndMaxButton = ({
         crossAxisAlignment="center"
         flexShrink={0}
       >
-        <Box height="30px" width="30px" mr={2}>
+        <Box height="30px" width="30px" mr={2} mb="2px">
           <Image
             width="100%"
             height="100%"
