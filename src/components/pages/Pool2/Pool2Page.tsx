@@ -325,13 +325,13 @@ const GeneralInfo = () => {
 
     return (
       parseInt(
-        rari.web3.utils.fromWei(
+        (
           await rari.governance.rgt.sushiSwapDistributions.getCurrentApr(
             blockNumber,
             tvl
           )
-        )
-      ) * 100
+        ).toString()
+      ) / 1e16
     ).toFixed(2);
   });
 
