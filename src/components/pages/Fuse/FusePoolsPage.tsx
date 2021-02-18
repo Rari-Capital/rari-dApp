@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Avatar, AvatarGroup, Link, Text } from "@chakra-ui/react";
+import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row } from "buttered-chakra";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
@@ -15,7 +15,16 @@ import { ModalDivider } from "../../shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
+import FuseTabBar, { useFilter } from "./FuseTabBar";
+import { useQuery, useQueryCache } from "react-query";
+import { useTokenData } from "../../../hooks/useTokenData";
+import Fuse from "fuse.js";
+
+function filterOnlyObjectProperties(obj: any) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([k]) => isNaN(k as any))
+  ) as any;
+}
 
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -57,9 +66,122 @@ const FusePoolsPage = React.memo(() => {
 export default FusePoolsPage;
 
 const PoolList = () => {
-  // const filter = useFilter();
+  const filter = useFilter();
 
   const { t } = useTranslation();
+
+  const { fuse, rari, address } = useRari();
+
+  const queryCache = useQueryCache();
+
+  const { data: _pools } = useQuery(address + " fusePoolList", async () => {
+    console.log(
+      await fuse.contracts.FusePoolDirectory.methods
+        .getPoolsByAccountWithData(address)
+        .call()
+    );
+    const {
+      0: ids,
+      1: fusePools,
+      2: totalSuppliedETH,
+      3: totalBorrowedETH,
+    } = await (filter === "my-pools"
+      ? fuse.contracts.FusePoolDirectory.methods
+          .getPoolsByAccountWithData(address)
+          .call()
+      : fuse.contracts.FusePoolDirectory.methods
+          .getPublicPoolsWithData()
+          .call());
+
+    const merged: {
+      id: number;
+      pool: {
+        name: string;
+        creator: string;
+        comptroller: string;
+        isPrivate: boolean;
+      };
+      cTokens: {
+        cToken: string;
+        underlyingName: string;
+        underlyingSymbol: string;
+        underlyingDecimals: string;
+        underlyingToken: string;
+        borrowRatePerBlock: string;
+        supplyRatePerBlock: string;
+      }[];
+      suppliedUSD: number;
+      borrowedUSD: number;
+    }[] = [];
+
+    const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
+
+    for (let id = 0; id < ids.length; id++) {
+      // const comptrollerInstance = new rari.web3.eth.Contract(
+      //   JSON.parse(
+      //     fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+      //   ),
+      //   fusePools[id].comptroller
+      // );
+
+      // const assets = comptrollerInstance.methods.allMarkets();
+
+      const cTokens = await fuse.contracts.FusePoolDirectory.methods
+        .getPoolAssetsWithData(fusePools[id].comptroller)
+        .call({ from: address });
+
+      merged.push({
+        // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
+        cTokens: cTokens.map(filterOnlyObjectProperties),
+        pool: filterOnlyObjectProperties(fusePools[id]),
+        id: ids[id],
+        suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
+        borrowedUSD: (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice),
+      });
+    }
+
+    return merged;
+  });
+
+  useEffect(() => {
+    queryCache.refetchQueries([address + " fusePoolList"], { active: true });
+  }, [address, filter]);
+
+  const filteredPools = useMemo(() => {
+    if (!_pools) {
+      return undefined;
+    }
+
+    const nonEmptyPools = _pools.filter((pool) => pool.cTokens.length > 0);
+
+    if (!filter) {
+      return nonEmptyPools.sort((a, b) =>
+        b.suppliedUSD > a.suppliedUSD ? 1 : -1
+      );
+    }
+
+    if (filter === "my-pools") {
+      return nonEmptyPools.sort((a, b) =>
+        b.suppliedUSD > a.suppliedUSD ? 1 : -1
+      );
+    }
+
+    const options = {
+      keys: [
+        "pool.name",
+        "id",
+        "cToken.cToken",
+        "cTokens.underlyingName",
+        "cTokens.underlyingSymbol",
+        "cTokens.underlyingToken",
+      ],
+    };
+
+    const filtered = new Fuse(nonEmptyPools, options).search(filter);
+    return filtered
+      .map((item) => item.item)
+      .sort((a, b) => (b.suppliedUSD > a.suppliedUSD ? 1 : -1));
+  }, [_pools, filter]);
 
   return (
     <Column
@@ -97,7 +219,7 @@ const PoolList = () => {
         </Text>
 
         <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Collateral Factor")}
+          {t("RSS Pool Score")}
         </Text>
       </Row>
 
@@ -109,104 +231,30 @@ const PoolList = () => {
         width="100%"
         pl={4}
         pr={1}
-        pt={2}
+        pt="6px"
         overflow="scroll"
       >
-        <PoolRow
-          mt={2}
-          tokens={[
-            {
-              symbol: "UNI",
-              icon:
-                "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
-            },
-
-            {
-              symbol: "SUSHI",
-              icon:
-                "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
-            },
-
-            {
-              symbol: "ZRX",
-              icon:
-                "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
-            },
-
-            {
-              symbol: "1INCH",
-              icon:
-                "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
-            },
-          ]}
-          poolNumber={4}
-          tvl={163712}
-          borrowed={21510}
-          collatRatio={55.5}
-        />
-
-        <PoolRow
-          mt={2}
-          tokens={[
-            {
-              symbol: "AAVE",
-              icon:
-                "https://assets.coingecko.com/coins/images/12645/small/AAVE.png?1601374110",
-            },
-
-            {
-              symbol: "COMP",
-              icon:
-                "https://assets.coingecko.com/coins/images/10775/small/COMP.png?1592625425",
-            },
-          ]}
-          poolNumber={3}
-          tvl={145600}
-          borrowed={26510}
-          collatRatio={55.5}
-        />
-
-        <PoolRow
-          mt={2}
-          tokens={[
-            {
-              symbol: "RGT",
-              icon:
-                "https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632",
-            },
-
-            {
-              symbol: "SFI",
-              icon:
-                "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
-            },
-          ]}
-          poolNumber={1}
-          tvl={100000}
-          borrowed={1000}
-          collatRatio={70}
-        />
-
-        <PoolRow
-          mt={2}
-          tokens={[
-            {
-              symbol: "GRT",
-              icon:
-                "https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png?1608145566",
-            },
-
-            {
-              symbol: "LINK",
-              icon:
-                "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png?1547034700",
-            },
-          ]}
-          poolNumber={2}
-          tvl={12000}
-          borrowed={2000}
-          collatRatio={65.2}
-        />
+        {filteredPools ? (
+          filteredPools.map((pool) => {
+            return (
+              <PoolRow
+                key={pool.id}
+                mt={2}
+                name={pool.pool.name}
+                tokens={pool.cTokens.map((token) => ({
+                  symbol: token.underlyingSymbol,
+                  address: token.underlyingToken,
+                }))}
+                poolNumber={pool.id}
+                tvl={pool.suppliedUSD}
+                borrowed={pool.borrowedUSD}
+                rss={"A"}
+              />
+            );
+          })
+        ) : (
+          <Spinner mt={4} />
+        )}
       </Column>
     </Column>
   );
@@ -217,15 +265,17 @@ const PoolRow = ({
   poolNumber,
   tvl,
   borrowed,
-  collatRatio,
+  rss,
   mt,
+  name,
 }: {
-  tokens: { symbol: string; icon: string }[];
+  tokens: { symbol: string; address: string }[];
   poolNumber: number;
   tvl: number;
   borrowed: number;
-  collatRatio: number;
+  rss: string;
   mt?: number | string;
+  name: string;
 }) => {
   return (
     <Link
@@ -249,23 +299,20 @@ const PoolRow = ({
           width="40%"
         >
           <AvatarGroup size="xs" max={5}>
-            {tokens.map(({ symbol, icon }) => {
-              return (
-                <Avatar
-                  key={symbol}
-                  bg="#FFF"
-                  borderWidth="1px"
-                  name={symbol}
-                  src={icon}
-                />
-              );
+            {tokens.map(({ address }) => {
+              return <CTokenIcon key={address} address={address} />;
             })}
           </AvatarGroup>
 
           <Text ml={2}>
-            {tokens.map(({ symbol }, index, array) => {
-              return symbol + (index !== array.length - 1 ? " / " : "");
-            })}
+            {name}&nbsp;
+            <b>
+              (
+              {tokens.map(({ symbol }, index, array) => {
+                return symbol + (index !== array.length - 1 ? " / " : "");
+              })}
+              )
+            </b>
           </Text>
         </Row>
 
@@ -281,9 +328,33 @@ const PoolRow = ({
           <b>{smallUsdFormatter(borrowed)}</b>
         </Center>
         <Center height="100%" width="15%">
-          <b>{collatRatio.toFixed(1)}%</b>
+          <b>{rss}</b>
         </Center>
       </Row>
     </Link>
+  );
+};
+
+const CTokenIcon = ({
+  address,
+  ...avatarProps
+}: {
+  address: string;
+  [key: string]: any;
+}) => {
+  const tokenData = useTokenData(address);
+
+  return (
+    <Avatar
+      {...avatarProps}
+      key={address}
+      bg="#FFF"
+      borderWidth="1px"
+      name={tokenData?.symbol ?? "Loading..."}
+      src={
+        tokenData?.logoURL ??
+        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+      }
+    />
   );
 };
