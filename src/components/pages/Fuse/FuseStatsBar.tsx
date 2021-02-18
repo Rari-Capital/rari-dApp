@@ -2,7 +2,10 @@ import { Heading } from "@chakra-ui/react";
 import { RowOrColumn, Column, Center } from "buttered-chakra";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
+import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import { smallUsdFormatter } from "../../../utils/bigUtils";
 import CaptionedStat from "../../shared/CaptionedStat";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
 
@@ -10,6 +13,36 @@ const FuseStatsBar = () => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
+
+  const { address, fuse, rari } = useRari();
+
+  const { data: totalBorrowAndSupply } = useQuery(
+    address + " totalBorrowAndSupply",
+    async () => {
+      const {
+        0: ids,
+        1: fusePools,
+        2: totalSuppliedETH,
+        3: totalBorrowedETH,
+      } = await fuse.contracts.FusePoolDirectory.methods
+        .getPoolsBySupplierWithData(address)
+        .call();
+
+      const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
+
+      let totalSuppliedUSD = 0;
+      let totalBorrowedUSD = 0;
+
+      for (let id = 0; id < ids.length; id++) {
+        totalSuppliedUSD +=
+          (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice);
+
+        totalBorrowedUSD = (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice);
+      }
+
+      return { totalSuppliedUSD, totalBorrowedUSD };
+    }
+  );
 
   return (
     <RowOrColumn
@@ -50,7 +83,11 @@ const FuseStatsBar = () => {
             captionFirst={false}
             statSize="3xl"
             captionSize="sm"
-            stat={"$75,000.00"}
+            stat={
+              totalBorrowAndSupply
+                ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
+                : "$?"
+            }
             caption={t("Total Supply Balance")}
           />
         </Center>
@@ -68,7 +105,11 @@ const FuseStatsBar = () => {
             captionFirst={false}
             statSize="3xl"
             captionSize="sm"
-            stat={"$21,000.00"}
+            stat={
+              totalBorrowAndSupply
+                ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
+                : "$?"
+            }
             caption={t("Total Borrow Balance")}
           />
         </Center>

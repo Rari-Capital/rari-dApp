@@ -84,7 +84,7 @@ const PoolList = () => {
         3: totalBorrowedETH,
       } = await (filter === "my-pools"
         ? fuse.contracts.FusePoolDirectory.methods
-            .getPoolsByAccountWithData(address)
+            .getPoolsBySupplierWithData(address)
             .call()
         : fuse.contracts.FusePoolDirectory.methods
             .getPublicPoolsWithData()
