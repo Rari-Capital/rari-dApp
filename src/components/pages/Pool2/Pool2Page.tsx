@@ -248,7 +248,7 @@ const YourBalance = () => {
 
   const { rari, address } = useRari();
 
-  const { data: balance } = useQuery(address + "pool2Balance", async () => {
+  const { data: balance } = useQuery(address + " pool2Balance", async () => {
     return parseFloat(
       rari.web3.utils.fromWei(
         await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
@@ -259,7 +259,7 @@ const YourBalance = () => {
   });
 
   const { data: earned } = useQuery(
-    address + "pool2Unclaimed RGT",
+    address + " pool2Unclaimed RGT",
     async () => {
       return parseFloat(
         rari.web3.utils.fromWei(

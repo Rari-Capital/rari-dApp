@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row } from "buttered-chakra";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
@@ -16,7 +16,7 @@ import { ModalDivider } from "../../shared/Modal";
 import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar, { useFilter } from "./FuseTabBar";
-import { useQuery, useQueryCache } from "react-query";
+import { useQuery } from "react-query";
 import { useTokenData } from "../../../hooks/useTokenData";
 import Fuse from "fuse.js";
 
@@ -68,84 +68,69 @@ export default FusePoolsPage;
 const PoolList = () => {
   const filter = useFilter();
 
+  const isMyPools = filter === "my-pools";
+
   const { t } = useTranslation();
 
   const { fuse, rari, address } = useRari();
 
-  const queryCache = useQueryCache();
+  const { data: _pools } = useQuery(
+    address + " fusePoolList" + (isMyPools ? " my-pools" : ""),
+    async () => {
+      const {
+        0: ids,
+        1: fusePools,
+        2: totalSuppliedETH,
+        3: totalBorrowedETH,
+      } = await (filter === "my-pools"
+        ? fuse.contracts.FusePoolDirectory.methods
+            .getPoolsByAccountWithData(address)
+            .call()
+        : fuse.contracts.FusePoolDirectory.methods
+            .getPublicPoolsWithData()
+            .call());
 
-  const { data: _pools } = useQuery(address + " fusePoolList", async () => {
-    console.log(
-      await fuse.contracts.FusePoolDirectory.methods
-        .getPoolsByAccountWithData(address)
-        .call()
-    );
-    const {
-      0: ids,
-      1: fusePools,
-      2: totalSuppliedETH,
-      3: totalBorrowedETH,
-    } = await (filter === "my-pools"
-      ? fuse.contracts.FusePoolDirectory.methods
-          .getPoolsByAccountWithData(address)
-          .call()
-      : fuse.contracts.FusePoolDirectory.methods
-          .getPublicPoolsWithData()
-          .call());
+      const merged: {
+        id: number;
+        pool: {
+          name: string;
+          creator: string;
+          comptroller: string;
+          isPrivate: boolean;
+        };
+        cTokens: {
+          cToken: string;
+          underlyingName: string;
+          underlyingSymbol: string;
+          underlyingDecimals: string;
+          underlyingToken: string;
+          borrowRatePerBlock: string;
+          supplyRatePerBlock: string;
+        }[];
+        suppliedUSD: number;
+        borrowedUSD: number;
+      }[] = [];
 
-    const merged: {
-      id: number;
-      pool: {
-        name: string;
-        creator: string;
-        comptroller: string;
-        isPrivate: boolean;
-      };
-      cTokens: {
-        cToken: string;
-        underlyingName: string;
-        underlyingSymbol: string;
-        underlyingDecimals: string;
-        underlyingToken: string;
-        borrowRatePerBlock: string;
-        supplyRatePerBlock: string;
-      }[];
-      suppliedUSD: number;
-      borrowedUSD: number;
-    }[] = [];
+      const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
 
-    const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
+      for (let id = 0; id < ids.length; id++) {
+        const cTokens = await fuse.contracts.FusePoolDirectory.methods
+          .getPoolAssetsWithData(fusePools[id].comptroller)
+          .call({ from: address });
 
-    for (let id = 0; id < ids.length; id++) {
-      // const comptrollerInstance = new rari.web3.eth.Contract(
-      //   JSON.parse(
-      //     fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-      //   ),
-      //   fusePools[id].comptroller
-      // );
+        merged.push({
+          // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
+          cTokens: cTokens.map(filterOnlyObjectProperties),
+          pool: filterOnlyObjectProperties(fusePools[id]),
+          id: ids[id],
+          suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
+          borrowedUSD: (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice),
+        });
+      }
 
-      // const assets = comptrollerInstance.methods.allMarkets();
-
-      const cTokens = await fuse.contracts.FusePoolDirectory.methods
-        .getPoolAssetsWithData(fusePools[id].comptroller)
-        .call({ from: address });
-
-      merged.push({
-        // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
-        cTokens: cTokens.map(filterOnlyObjectProperties),
-        pool: filterOnlyObjectProperties(fusePools[id]),
-        id: ids[id],
-        suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
-        borrowedUSD: (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice),
-      });
+      return merged;
     }
-
-    return merged;
-  });
-
-  useEffect(() => {
-    queryCache.refetchQueries([address + " fusePoolList"], { active: true });
-  }, [address, filter]);
+  );
 
   const filteredPools = useMemo(() => {
     if (!_pools) {
@@ -160,7 +145,7 @@ const PoolList = () => {
       );
     }
 
-    if (filter === "my-pools") {
+    if (isMyPools) {
       return nonEmptyPools.sort((a, b) =>
         b.suppliedUSD > a.suppliedUSD ? 1 : -1
       );
@@ -181,7 +166,7 @@ const PoolList = () => {
     return filtered
       .map((item) => item.item)
       .sort((a, b) => (b.suppliedUSD > a.suppliedUSD ? 1 : -1));
-  }, [_pools, filter]);
+  }, [_pools, filter, isMyPools]);
 
   return (
     <Column
@@ -239,16 +224,16 @@ const PoolList = () => {
             return (
               <PoolRow
                 key={pool.id}
-                mt={2}
+                poolNumber={pool.id}
                 name={pool.pool.name}
+                tvl={pool.suppliedUSD}
+                borrowed={pool.borrowedUSD}
+                rss={"A"}
                 tokens={pool.cTokens.map((token) => ({
                   symbol: token.underlyingSymbol,
                   address: token.underlyingToken,
                 }))}
-                poolNumber={pool.id}
-                tvl={pool.suppliedUSD}
-                borrowed={pool.borrowedUSD}
-                rss={"A"}
+                mt={2}
               />
             );
           })

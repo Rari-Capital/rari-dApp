@@ -12,7 +12,7 @@ export const ETH_TOKEN_DATA = {
   color: "#7b7b83",
   overlayTextColor: "#fff",
   logoURL:
-    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+    "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png",
 };
 
 export interface TokenData {

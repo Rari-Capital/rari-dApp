@@ -62,7 +62,7 @@ export const ClaimRGTModal = ({
   );
 
   const { data: pool2Unclaimed } = useQuery(
-    address + "pool2Unclaimed RGT",
+    address + " pool2Unclaimed RGT",
     async () => {
       return parseFloat(
         rari.web3.utils.fromWei(
