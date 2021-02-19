@@ -264,7 +264,7 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
             {supplyAPY.toFixed(3)}%
           </Text>
 
-          <Text fontSize="sm">{(supplyAPY / 52).toFixed(3)}% </Text>
+          <Text fontSize="sm">{(supplyAPY / 52).toFixed(3)}%</Text>
         </Column>
 
         <Column
@@ -437,7 +437,7 @@ const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
             {borrowAPY.toFixed(3)}%
           </Text>
 
-          <Text fontSize="sm">{(borrowAPY / 52).toFixed(3)}</Text>
+          <Text fontSize="sm">{(borrowAPY / 52).toFixed(3)}%</Text>
         </Column>
 
         <Column
