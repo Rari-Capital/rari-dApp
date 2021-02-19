@@ -91,7 +91,6 @@ const FuseTabBar = () => {
         </ButtonGroup>
 
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
-
         <TabLink route="/fuse" text={t("All Pools")} />
 
         {poolId ? (
