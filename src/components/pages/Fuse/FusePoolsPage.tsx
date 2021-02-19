@@ -294,9 +294,11 @@ const PoolRow = ({
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           height="100%"
-          width="40%"
+          width="38%"
+          mr="2%"
+          overflow="scroll"
         >
-          <AvatarGroup size="xs" max={5}>
+          <AvatarGroup size="xs" max={20}>
             {tokens.map(({ address }) => {
               return <CTokenIcon key={address} address={address} />;
             })}
@@ -304,7 +306,7 @@ const PoolRow = ({
 
           <Text ml={2}>{name}</Text>
 
-          <Text ml={2} mb="3px" fontWeight="bold">
+          <Text ml={2} mb="3px" fontWeight="bold" flexShrink={0}>
             <b>
               (
               {tokens.map(({ symbol }, index, array) => {
