@@ -146,7 +146,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       }, 7);
 
       const exchanges = await weightedCalculation(async () => {
-        let reputableExchanges = [];
+        let reputableExchanges: any[] = [];
 
         for (const exchange of tickers) {
           const name = exchange.market.identifier;
@@ -181,6 +181,7 @@ export default async (request: NowRequest, response: NowResponse) => {
             return 1;
           } else {
             console.log(e);
+            return 0;
           }
         }
       }, 3);
