@@ -85,6 +85,8 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
 
+        <HeaderLink ml={4} name={t("Faucet")} route="/faucet" />
+
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
         <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />

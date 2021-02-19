@@ -425,7 +425,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text mt={4} mb={5} fontSize="md" textAlign="center">
-            {isPoolBalanceLoading ? "$?" : balanceData!.formattedBalance}
+            {isPoolBalanceLoading ? "$?" : balanceData?.formattedBalance}
           </Text>
         </SimpleTooltip>
 

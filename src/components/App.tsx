@@ -72,6 +72,13 @@ const Pool2Page = loadable(
   }
 );
 
+const FaucetPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Faucet/FaucetPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -113,6 +120,7 @@ const App = React.memo(() => {
       <Route path="/tranches" element={<TranchesPage />} />
 
       <Route path="/pool2" element={<Pool2Page />} />
+      <Route path="/faucet" element={<FaucetPage />} />
 
       <Route path="/fuse" element={<FusePoolsPage />} />
       <Route path="/fuse/new-pool" element={<FusePoolEditPage isNewPool />} />
