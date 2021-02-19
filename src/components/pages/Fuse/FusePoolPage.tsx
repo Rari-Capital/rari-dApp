@@ -176,7 +176,7 @@ const SupplyList = ({
         </Text>
 
         <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("Interest")}
+          {t("APY/Weekly")}
         </Text>
 
         <Text width="27%" fontWeight="bold" textAlign="right">
@@ -212,7 +212,7 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const { t } = useTranslation();
+  const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
 
   return (
     <>
@@ -261,10 +261,10 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
             fontWeight="bold"
             fontSize="17px"
           >
-            {((asset.supplyRatePerBlock * 2372500) / 1e16).toFixed(3)}%
+            {supplyAPY.toFixed(3)}%
           </Text>
 
-          <Text fontSize="sm">{t("Supply APY")}</Text>
+          <Text fontSize="sm">{(supplyAPY / 52).toFixed(3)}% </Text>
         </Column>
 
         <Column
@@ -349,7 +349,7 @@ const BorrowList = ({
         </Text>
 
         <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("Interest")}
+          {t("APY/Weekly")}
         </Text>
 
         <Text width="23%" fontWeight="bold" textAlign="right">
@@ -385,7 +385,7 @@ const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const { t } = useTranslation();
+  const borrowAPY = (asset.borrowRatePerBlock * 2372500) / 1e16;
 
   return (
     <>
@@ -434,10 +434,10 @@ const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
             fontWeight="bold"
             fontSize="17px"
           >
-            {((asset.borrowRatePerBlock * 2372500) / 1e16).toFixed(3)}%
+            {borrowAPY.toFixed(3)}%
           </Text>
 
-          <Text fontSize="sm">{t("Borrow APY")}</Text>
+          <Text fontSize="sm">{(borrowAPY / 52).toFixed(3)}</Text>
         </Column>
 
         <Column
