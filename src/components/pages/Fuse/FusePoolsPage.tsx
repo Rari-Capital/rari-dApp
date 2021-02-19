@@ -251,7 +251,7 @@ const PoolList = () => {
             );
           })
         ) : (
-          <Spinner mt={4} />
+          <Spinner my={8} />
         )}
       </Column>
     </Column>
