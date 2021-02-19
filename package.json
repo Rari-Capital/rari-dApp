@@ -19,7 +19,7 @@
     "@types/jest": "^26.0.13",
     "@types/loadable__component": "^5.13.1",
     "@types/mathjs": "^6.0.11",
-    "@types/node": "^14.11.7",
+    "@types/node": "^14.14.31",
     "@types/node-fetch": "^2.5.8",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
