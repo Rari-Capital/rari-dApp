@@ -134,11 +134,9 @@
   "{{factor}}% Reserve Factor": "{{factor}}％储备因子",
   "Current Utilization": "电流利用率",
   "Asset": "资产",
-  "APY/Earned": "APY /收益",
   "Balance": "结余",
   "Collateral": "抵押品",
   "Borrow Balance:": "借款余额:",
-  "APY/Accrued": "APY /已累计",
   "Borrowed": "借来的",
   "Liquidity": "流动性",
   "Pool Assets": "合并资产",
@@ -205,5 +203,9 @@
   "and stake them for extra rewards!": "并放下它们以获得额外的奖励！",
   "Your Balance": "您的余额",
   "Click confirm to continue!": "单击确认继续！",
-  "Click review + confirm to continue!": "__NOT_TRANSLATED__"
+  "Click review + confirm to continue!": "点击评论+确认以继续！",
+  "Interest": "兴趣",
+  "Supply APY": "供应APY",
+  "Borrow APY": "借用APY",
+  "RSS Pool Score": "RSS池分数"
 }

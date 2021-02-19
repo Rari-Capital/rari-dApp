@@ -30,11 +30,9 @@
   "{{factor}}% Reserve Factor": "{{factor}}% Reserve Factor",
   "Current Utilization": "Current Utilization",
   "Asset": "Asset",
-  "APY/Earned": "APY/Earned",
   "Balance": "Balance",
   "Collateral": "Collateral",
   "Borrow Balance:": "Borrow Balance:",
-  "APY/Accrued": "APY/Accrued",
   "Borrowed": "Borrowed",
   "Liquidity": "Liquidity",
   "Pool Assets": "Pool Assets",
@@ -205,5 +203,9 @@
   "here": "here",
   "and stake them for extra rewards!": "and stake them for extra rewards!",
   "Your Balance": "Your Balance",
-  "Click confirm to continue!": "Click confirm to continue!"
+  "Click confirm to continue!": "Click confirm to continue!",
+  "Interest": "Interest",
+  "Supply APY": "Supply APY",
+  "Borrow APY": "Borrow APY",
+  "RSS Pool Score": "RSS Pool Score"
 }
