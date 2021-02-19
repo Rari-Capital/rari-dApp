@@ -20,10 +20,36 @@ import { useQuery } from "react-query";
 import { useTokenData } from "../../../hooks/useTokenData";
 import Fuse from "fuse.js";
 
-function filterOnlyObjectProperties(obj: any) {
+export function filterOnlyObjectProperties(obj: any) {
   return Object.fromEntries(
     Object.entries(obj).filter(([k]) => isNaN(k as any))
   ) as any;
+}
+
+export interface FuseAsset {
+  cToken: string;
+
+  borrowBalance: number;
+  supplyBalance: number;
+  liquidity: number;
+
+  membership: boolean;
+
+  underlyingName: string;
+  underlyingSymbol: string;
+  underlyingToken: string;
+  underlyingDecimals: number;
+  underlyingPrice: number;
+
+  borrowRatePerBlock: number;
+  supplyRatePerBlock: number;
+}
+
+export interface FusePool {
+  name: string;
+  creator: string;
+  comptroller: string;
+  isPrivate: boolean;
 }
 
 const FusePoolsPage = React.memo(() => {
@@ -92,21 +118,8 @@ const PoolList = () => {
 
       const merged: {
         id: number;
-        pool: {
-          name: string;
-          creator: string;
-          comptroller: string;
-          isPrivate: boolean;
-        };
-        cTokens: {
-          cToken: string;
-          underlyingName: string;
-          underlyingSymbol: string;
-          underlyingDecimals: string;
-          underlyingToken: string;
-          borrowRatePerBlock: string;
-          supplyRatePerBlock: string;
-        }[];
+        pool: FusePool;
+        cTokens: FuseAsset[];
         suppliedUSD: number;
         borrowedUSD: number;
       }[] = [];
