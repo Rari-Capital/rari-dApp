@@ -29,6 +29,7 @@ import PoolModal from "./Modals/PoolModal";
 export interface USDPricedFuseAsset extends FuseAsset {
   supplyUSD: number;
   borrowUSD: number;
+  liquidityUSD: number;
 }
 
 const FusePoolPage = React.memo(() => {
@@ -64,6 +65,9 @@ const FusePoolPage = React.memo(() => {
 
       asset.borrowUSD =
         ((asset.borrowBalance * asset.underlyingPrice) / 1e36) * ethPrice;
+
+      asset.liquidityUSD =
+        ((asset.liquidity * asset.underlyingPrice) / 1e36) * ethPrice;
 
       totalBorrowedUSD += asset.borrowUSD;
       totalSuppliedUSD += asset.supplyUSD;
@@ -119,7 +123,16 @@ const FusePoolPage = React.memo(() => {
             mt={DASHBOARD_BOX_SPACING.asPxString()}
             height={isMobile ? "auto" : "500px"}
           >
-            <BorrowList />
+            {data ? (
+              <BorrowList
+                assets={data.assets}
+                totalBorrowedUSD={data.totalBorrowedUSD}
+              />
+            ) : (
+              <Center expand>
+                <Spinner />
+              </Center>
+            )}
           </DashboardBox>
         </RowOrColumn>
       </Column>
@@ -147,7 +160,7 @@ const SupplyList = ({
       height="100%"
     >
       <Heading size="md" px={4} py={3}>
-        {t("Supply Balance:")} {smallUsdFormatter(totalSuppliedUSD)}
+        {t("Supply Balance:")} {shortUsdFormatter(totalSuppliedUSD)}
       </Heading>
       <ModalDivider />
 
@@ -304,10 +317,14 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
   );
 };
 
-const BorrowList = () => {
+const BorrowList = ({
+  assets,
+  totalBorrowedUSD,
+}: {
+  assets: USDPricedFuseAsset[];
+  totalBorrowedUSD: number;
+}) => {
   const { t } = useTranslation();
-
-  const isMobile = useIsSemiSmallScreen();
 
   return (
     <Column
@@ -316,7 +333,7 @@ const BorrowList = () => {
       height="100%"
     >
       <Heading size="md" px={4} py={3}>
-        {t("Borrow Balance:")} {"$10,000"}
+        {t("Borrow Balance:")} {smallUsdFormatter(totalBorrowedUSD)}
       </Heading>
       <ModalDivider />
 
@@ -332,14 +349,14 @@ const BorrowList = () => {
         </Text>
 
         <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("APY/Accrued")}
+          {t("Interest")}
         </Text>
 
-        <Text width="27%" fontWeight="bold" textAlign="right">
+        <Text width="23%" fontWeight="bold" textAlign="right">
           {t("Borrowed")}
         </Text>
 
-        <Text width="20%" fontWeight="bold" textAlign="right">
+        <Text width="24%" fontWeight="bold" textAlign="right">
           {t("Liquidity")}
         </Text>
       </Row>
@@ -351,56 +368,30 @@ const BorrowList = () => {
         overflowY="auto"
         mt={1}
       >
-        <AssetBorrowRow
-          symbol="RGT"
-          icon="https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
-          apy={15.2}
-          accrued={0}
-          borrowed={0}
-          liquidity={12200000}
-        />
-        <AssetBorrowRow
-          symbol="SFI"
-          icon="https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144"
-          color="#C34535"
-          apy={90.2}
-          accrued={30.2}
-          borrowed={1500}
-          liquidity={15423003}
-        />
+        {assets.map((asset) => {
+          return <AssetBorrowRow key={asset.underlyingToken} asset={asset} />;
+        })}
       </Column>
     </Column>
   );
 };
 
-const AssetBorrowRow = ({
-  symbol,
-  icon,
-  apy,
-  accrued,
-  borrowed,
-  liquidity,
-  color,
-}: {
-  symbol: string;
-  icon: string;
-  apy: number;
-  accrued: number;
-  borrowed: number;
-  liquidity: number;
-  color?: string;
-}) => {
+const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
   const {
     isOpen: isModalOpen,
     onOpen: openModal,
     onClose: closeModal,
   } = useDisclosure();
 
+  const tokenData = useTokenData(asset.underlyingToken);
+
+  const { t } = useTranslation();
+
   return (
     <>
       <PoolModal
         depositSide={false}
-        token={symbol}
+        token={asset.underlyingToken}
         isOpen={isModalOpen}
         onClose={closeModal}
       />
@@ -419,9 +410,17 @@ const AssetBorrowRow = ({
           crossAxisAlignment="center"
           width="27%"
         >
-          <Avatar bg="#FFF" boxSize="37px" name="RGT" src={icon} />
+          <Avatar
+            bg="#FFF"
+            boxSize="37px"
+            name={tokenData?.symbol ?? "Loading..."}
+            src={
+              tokenData?.logoURL ??
+              "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+            }
+          />
           <Text fontWeight="bold" fontSize="lg" ml={2}>
-            {symbol}
+            {asset.underlyingSymbol}
           </Text>
         </Row>
 
@@ -430,40 +429,56 @@ const AssetBorrowRow = ({
           crossAxisAlignment="flex-end"
           width="27%"
         >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {apy}%
+          <Text
+            color={tokenData?.color ?? "#FF"}
+            fontWeight="bold"
+            fontSize="17px"
+          >
+            {((asset.borrowRatePerBlock * 2372500) / 1e16).toFixed(3)}%
+          </Text>
+
+          <Text fontSize="sm">{t("Borrow APY")}</Text>
+        </Column>
+
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-end"
+          width="23%"
+        >
+          <Text
+            color={tokenData?.color ?? "#FFF"}
+            fontWeight="bold"
+            fontSize="17px"
+          >
+            {smallUsdFormatter(asset.borrowUSD)}
           </Text>
 
           <Text fontSize="sm">
-            {smallUsdFormatter(accrued).replace("$", "")} {symbol}
+            {smallUsdFormatter(
+              asset.borrowBalance / 10 ** asset.underlyingDecimals
+            ).replace("$", "")}{" "}
+            {asset.underlyingSymbol}
           </Text>
         </Column>
 
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
-          width="27%"
+          width="24%"
         >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {smallUsdFormatter(borrowed * Math.random() * 10)}
+          <Text
+            color={tokenData?.color ?? "#FFF"}
+            fontWeight="bold"
+            fontSize="17px"
+          >
+            {shortUsdFormatter(asset.liquidityUSD)}
           </Text>
 
           <Text fontSize="sm">
-            {smallUsdFormatter(borrowed).replace("$", "")} {symbol}
-          </Text>
-        </Column>
-
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="20%"
-        >
-          <Text color={color ?? "#FFF"} fontWeight="bold" fontSize="17px">
-            {shortUsdFormatter(liquidity * Math.random() * 10)}
-          </Text>
-
-          <Text fontSize="sm">
-            {shortUsdFormatter(liquidity).replace("$", "")} {symbol}
+            {shortUsdFormatter(
+              asset.liquidity / 10 ** asset.underlyingDecimals
+            ).replace("$", "")}{" "}
+            {asset.underlyingSymbol}
           </Text>
         </Column>
       </Row>
