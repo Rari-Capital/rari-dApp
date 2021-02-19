@@ -60,14 +60,10 @@ const FusePoolPage = React.memo(() => {
       let asset = assets[i];
 
       asset.supplyUSD =
-        ((asset.supplyBalance * asset.underlyingPrice) /
-          10 ** (asset.underlyingDecimals * 2)) *
-        ethPrice;
+        ((asset.supplyBalance * asset.underlyingPrice) / 1e36) * ethPrice;
 
       asset.borrowUSD =
-        ((asset.borrowBalance * asset.underlyingPrice) /
-          10 ** (asset.underlyingDecimals * 2)) *
-        ethPrice;
+        ((asset.borrowBalance * asset.underlyingPrice) / 1e36) * ethPrice;
 
       totalBorrowedUSD += asset.borrowUSD;
       totalSuppliedUSD += asset.supplyUSD;

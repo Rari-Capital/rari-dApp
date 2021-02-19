@@ -21,7 +21,6 @@ const FuseStatsBar = () => {
     async () => {
       const {
         0: ids,
-        1: fusePools,
         2: totalSuppliedETH,
         3: totalBorrowedETH,
       } = await fuse.contracts.FusePoolDirectory.methods
