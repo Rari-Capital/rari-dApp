@@ -302,8 +302,9 @@ const PoolRow = ({
             })}
           </AvatarGroup>
 
-          <Text ml={2}>
-            {name}&nbsp;
+          <Text ml={2}>{name}</Text>
+
+          <Text ml={2} mb="3px" fontWeight="bold">
             <b>
               (
               {tokens.map(({ symbol }, index, array) => {
