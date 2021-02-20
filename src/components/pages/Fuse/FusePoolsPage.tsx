@@ -108,6 +108,8 @@ const PoolList = () => {
         1: fusePools,
         2: totalSuppliedETH,
         3: totalBorrowedETH,
+        4: underlyingTokens,
+        5: underlyingSymbols,
       } = await (filter === "my-pools"
         ? fuse.contracts.FusePoolDirectory.methods
             .getPoolsBySupplierWithData(address)
@@ -116,24 +118,21 @@ const PoolList = () => {
             .getPublicPoolsWithData()
             .call());
 
+      const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
+
       const merged: {
         id: number;
         pool: FusePool;
-        cTokens: FuseAsset[];
+        underlyingTokens: string[];
+        underlyingSymbols: string[];
         suppliedUSD: number;
         borrowedUSD: number;
       }[] = [];
-
-      const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
-
       for (let id = 0; id < ids.length; id++) {
-        const cTokens = await fuse.contracts.FusePoolDirectory.methods
-          .getPoolAssetsWithData(fusePools[id].comptroller)
-          .call({ from: address });
-
         merged.push({
           // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
-          cTokens: cTokens.map(filterOnlyObjectProperties),
+          underlyingTokens: underlyingTokens[id],
+          underlyingSymbols: underlyingSymbols[id],
           pool: filterOnlyObjectProperties(fusePools[id]),
           id: ids[id],
           suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
@@ -150,7 +149,9 @@ const PoolList = () => {
       return undefined;
     }
 
-    const nonEmptyPools = _pools.filter((pool) => pool.cTokens.length > 0);
+    const nonEmptyPools = _pools.filter(
+      (pool) => pool.underlyingTokens.length > 0
+    );
 
     if (!filter) {
       return nonEmptyPools.sort((a, b) =>
@@ -242,9 +243,9 @@ const PoolList = () => {
                 tvl={pool.suppliedUSD}
                 borrowed={pool.borrowedUSD}
                 rss={"A"}
-                tokens={pool.cTokens.map((token) => ({
-                  symbol: token.underlyingSymbol,
-                  address: token.underlyingToken,
+                tokens={pool.underlyingTokens.map((address, index) => ({
+                  symbol: pool.underlyingSymbols[index],
+                  address,
                 }))}
                 mt={2}
               />
