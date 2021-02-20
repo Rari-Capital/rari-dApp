@@ -160,7 +160,7 @@ const SupplyList = ({
       height="100%"
     >
       <Heading size="md" px={4} py={3}>
-        {t("Supply Balance:")} {shortUsdFormatter(totalSuppliedUSD)}
+        {t("Supply Balance:")} {smallUsdFormatter(totalSuppliedUSD)}
       </Heading>
       <ModalDivider />
 
