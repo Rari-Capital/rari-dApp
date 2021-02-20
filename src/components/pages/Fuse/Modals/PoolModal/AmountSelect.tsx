@@ -108,7 +108,19 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       return false;
     }
 
-    return amount.lte(balance.toString());
+    if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
+      return amount.lte(balance.toString());
+    }
+
+    if (mode === Mode.BORROW) {
+      // TODO: CALC BORROW LIMIT AND SUBTRACT BORROWED CURRENTLY THEN USE PRICE OF THIS TOKEN
+      return true;
+    }
+
+    if (mode === Mode.WITHDRAW) {
+      // TODO: HELP
+      return true;
+    }
   })();
 
   let depositOrWithdrawAlert;
@@ -157,6 +169,8 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
             ),
         asset.cToken
       );
+
+      // TODO: CHECK IF REVERTS BEFORE AND SHOW TOAST!
 
       if (mode === Mode.SUPPLY) {
         if (!isETH) {
@@ -366,6 +380,8 @@ const StatsColumn = ({
 
   const borrowLimi = useBorrowLimit(assets);
 
+  // TODO: SHOW AFTER ACTION STATS WITH ARROW LIKE ->
+
   return (
     <DashboardBox mt={4} width="100%" height="190px">
       <Column
@@ -443,14 +459,21 @@ const TokenNameAndMaxButton = ({
 
   const setToMax = async () => {
     setIsMaxLoading(true);
-    let maxBN: BN;
+    let maxBN: BN = {} as any;
 
-    if (mode === Mode.SUPPLY) {
+    if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
       const balance = await fetchTokenBalance(tokenAddress, rari, address);
 
       maxBN = balance;
-    } else {
-      //TODO
+    }
+
+    if (mode === Mode.BORROW) {
+      // TODO: CALC BORROW LIMIT AND SUBTRACT BORROWED CURRENTLY THEN USE PRICE OF THIS TOKEN
+      maxBN = rari.web3.utils.toBN(0);
+    }
+
+    if (mode === Mode.WITHDRAW) {
+      // TODO: HELP
       maxBN = rari.web3.utils.toBN(0);
     }
 
