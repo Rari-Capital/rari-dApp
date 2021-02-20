@@ -9,7 +9,6 @@ import {
   Text,
   Image,
   Input,
-  Link,
   useToast,
   IconButton,
 } from "@chakra-ui/react";
@@ -91,6 +90,14 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
       _setAmount(bigAmount.multipliedBy(10 ** asset.underlyingDecimals));
+
+      console.log(
+        "RE INFLATED",
+        bigAmount
+          .multipliedBy(10 ** asset.underlyingDecimals)
+          .decimalPlaces(0)
+          .toString()
+      );
     } catch (e) {
       // If the number was invalid, set the amount to null to disable confirming:
       _setAmount(null);
@@ -108,8 +115,12 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       return false;
     }
 
-    if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
+    if (mode === Mode.SUPPLY) {
       return amount.lte(balance.toString());
+    }
+
+    if (mode === Mode.REPAY) {
+      return amount.lte(balance.toString()) && amount.lte(asset.borrowBalance);
     }
 
     if (mode === Mode.BORROW) {
@@ -140,11 +151,28 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       token: asset.underlyingSymbol,
     });
   } else if (!amountIsValid) {
-    depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
-      token: asset.underlyingSymbol,
-    });
+    if (mode === Mode.SUPPLY) {
+      depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
+        token: asset.underlyingSymbol,
+      });
+    } else if (mode === Mode.REPAY) {
+      depositOrWithdrawAlert = t(
+        "You don't have enough {{token}} or are trying to over-repay!",
+        {
+          token: asset.underlyingSymbol,
+        }
+      );
+    } else if (mode === Mode.WITHDRAW) {
+      depositOrWithdrawAlert = t(
+        "You cannot withdraw this much; try repaying some debt."
+      );
+    } else if (mode === Mode.BORROW) {
+      depositOrWithdrawAlert = t(
+        "You cannot borrow this much; try supplying more collateral."
+      );
+    }
   } else {
-    depositOrWithdrawAlert = t("Click review + confirm to continue!");
+    depositOrWithdrawAlert = t("Click confirm to continue!");
   }
 
   const onConfirm = async () => {
@@ -153,6 +181,8 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
 
       //@ts-ignore
       const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
+
+      console.log("BN'D REINFLATED", amountBN.toString());
 
       const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
       const cToken = new rari.web3.eth.Contract(
@@ -295,12 +325,7 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
         height="100%"
       >
         <Text fontWeight="bold" fontSize="sm" textAlign="center">
-          <Link
-            href="https://www.notion.so/Fees-e4689d7b800f485098548dd9e9d0a69f"
-            isExternal
-          >
-            {depositOrWithdrawAlert}
-          </Link>
+          {depositOrWithdrawAlert}
         </Text>
 
         <DashboardBox width="100%" height="70px" mt={4}>
@@ -323,8 +348,7 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
                 "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
               }
               symbol={asset.underlyingSymbol}
-              tokenAddress={asset.underlyingToken}
-              decimals={asset.underlyingDecimals}
+              asset={asset}
               updateAmount={updateAmount}
             />
           </Row>
@@ -442,14 +466,12 @@ const TokenNameAndMaxButton = ({
   symbol,
   updateAmount,
   logoURL,
-  tokenAddress,
-  decimals,
+  asset,
   mode,
 }: {
   symbol: string;
   logoURL: string;
-  tokenAddress: string;
-  decimals: number;
+  asset: USDPricedFuseAsset;
   mode: Mode;
   updateAmount: (newAmount: string) => any;
 }) => {
@@ -461,10 +483,31 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN = {} as any;
 
-    if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
-      const balance = await fetchTokenBalance(tokenAddress, rari, address);
+    if (mode === Mode.SUPPLY) {
+      const balance = await fetchTokenBalance(
+        asset.underlyingToken,
+        rari,
+        address
+      );
 
       maxBN = balance;
+    }
+
+    if (mode === Mode.REPAY) {
+      const balance = await fetchTokenBalance(
+        asset.underlyingToken,
+        rari,
+        address
+      );
+      const debt = rari.web3.utils.toBN(asset.borrowBalance);
+
+      if (balance.gt(debt)) {
+        maxBN = debt;
+      } else {
+        maxBN = balance;
+      }
+
+      // TODO: WHY DO I HAVE TO SEND TWO TXs to FULLY REPAY? IS INTEREST BEING ACCURED WHEN I SUBMIT THE FIRST REPAY? IS THERE A WAY TO FULL REPAY?
     }
 
     if (mode === Mode.BORROW) {
@@ -477,20 +520,20 @@ const TokenNameAndMaxButton = ({
       maxBN = rari.web3.utils.toBN(0);
     }
 
+    console.log("BORROW", asset.borrowBalance);
+    console.log("MAX BN", maxBN.toString());
     if (maxBN.isNeg() || maxBN.isZero()) {
       updateAmount("0.0");
     } else {
       const str = new BigNumber(maxBN.toString())
-        .div(10 ** decimals)
+        .div(10 ** asset.underlyingDecimals)
         .toFixed(18)
         // Remove trailing zeroes
         .replace(/\.?0+$/, "");
 
-      if (str.startsWith("0.000000")) {
-        updateAmount("0.0");
-      } else {
-        updateAmount(str);
-      }
+      console.log("DECIMAL VERSION", str);
+
+      updateAmount(str);
     }
 
     setIsMaxLoading(false);
