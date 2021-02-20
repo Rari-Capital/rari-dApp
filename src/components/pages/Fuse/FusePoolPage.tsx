@@ -9,7 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
@@ -97,7 +97,10 @@ const FusePoolPage = React.memo(() => {
         <FuseTabBar />
 
         {data?.totalBorrowedUSD ? (
-          <CollateralRatioBar borrowUSD={data?.totalBorrowedUSD} />
+          <CollateralRatioBar
+            assets={data.assets}
+            borrowUSD={data.totalBorrowedUSD}
+          />
         ) : null}
 
         <RowOrColumn
@@ -151,10 +154,26 @@ const FusePoolPage = React.memo(() => {
 
 export default FusePoolPage;
 
-const CollateralRatioBar = ({ borrowUSD }: { borrowUSD: number }) => {
+const CollateralRatioBar = ({
+  assets,
+  borrowUSD,
+}: {
+  assets: USDPricedFuseAsset[];
+  borrowUSD: number;
+}) => {
   const { t } = useTranslation();
 
-  const ratio = 90;
+  const maxBorrow = useMemo(() => {
+    let maxBorrow = 0;
+    for (let i = 0; i < assets.length; i++) {
+      let asset = assets[i];
+
+      maxBorrow += asset.supplyUSD * (asset.collateralFactor / 1e18);
+    }
+    return maxBorrow;
+  }, [assets]);
+
+  const ratio = (borrowUSD / maxBorrow) * 100;
 
   return (
     <DashboardBox width="100%" height="65px" mt={4} p={4}>
@@ -193,7 +212,7 @@ const CollateralRatioBar = ({ borrowUSD }: { borrowUSD: number }) => {
           )}
         >
           <Text flexShrink={0} mt="2px" ml={3} fontSize="10px">
-            $?
+            {smallUsdFormatter(maxBorrow)}
           </Text>
         </SimpleTooltip>
       </Row>

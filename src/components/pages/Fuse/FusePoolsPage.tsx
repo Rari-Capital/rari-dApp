@@ -41,6 +41,8 @@ export interface FuseAsset {
   underlyingDecimals: number;
   underlyingPrice: number;
 
+  collateralFactor: number;
+
   borrowRatePerBlock: number;
   supplyRatePerBlock: number;
 }
