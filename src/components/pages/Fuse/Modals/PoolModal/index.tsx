@@ -41,7 +41,7 @@ const DepositModal = (props: Props) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent {...MODAL_PROPS} height="510px">
+      <ModalContent {...MODAL_PROPS} height={{ md: "510px", base: "540px" }}>
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
             onClose={props.onClose}
