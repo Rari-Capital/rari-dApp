@@ -421,7 +421,7 @@ const StatsColumn = ({
 
   const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
 
-  const borrowLimi = useBorrowLimit(assets);
+  const borrowLimit = useBorrowLimit(assets);
 
   // TODO: SHOW AFTER ACTION STATS WITH ARROW LIKE ->
 
@@ -465,7 +465,7 @@ const StatsColumn = ({
           width="100%"
         >
           <Text fontWeight="bold">{t("Borrow Limit")}:</Text>
-          <Text fontWeight="bold">{smallUsdFormatter(borrowLimi)}</Text>
+          <Text fontWeight="bold">{smallUsdFormatter(borrowLimit)}</Text>
         </Row>
 
         <Row
