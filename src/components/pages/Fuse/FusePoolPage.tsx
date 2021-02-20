@@ -5,11 +5,12 @@ import {
   Switch,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "react-query";
+import { useQuery, useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
 // import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
@@ -73,7 +74,7 @@ const FusePoolPage = React.memo(() => {
       totalSuppliedUSD += asset.supplyUSD;
     }
 
-    return { assets, totalSuppliedUSD, totalBorrowedUSD };
+    return { assets, comptroller, totalSuppliedUSD, totalBorrowedUSD };
   });
 
   return (
@@ -108,6 +109,7 @@ const FusePoolPage = React.memo(() => {
             {data ? (
               <SupplyList
                 assets={data.assets}
+                comptrollerAddress={data.comptroller}
                 totalSuppliedUSD={data.totalSuppliedUSD}
               />
             ) : (
@@ -147,9 +149,11 @@ export default FusePoolPage;
 const SupplyList = ({
   assets,
   totalSuppliedUSD,
+  comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
   totalSuppliedUSD: number;
+  comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
 
@@ -196,23 +200,89 @@ const SupplyList = ({
         mt={1}
       >
         {assets.map((asset) => {
-          return <AssetSupplyRow key={asset.underlyingToken} asset={asset} />;
+          return (
+            <AssetSupplyRow
+              comptrollerAddress={comptrollerAddress}
+              key={asset.underlyingToken}
+              asset={asset}
+            />
+          );
         })}
       </Column>
     </Column>
   );
 };
 
-const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
+const AssetSupplyRow = ({
+  asset,
+  comptrollerAddress,
+}: {
+  asset: USDPricedFuseAsset;
+  comptrollerAddress: string;
+}) => {
   const {
     isOpen: isModalOpen,
     onOpen: openModal,
     onClose: closeModal,
   } = useDisclosure();
 
+  const { rari, fuse, address } = useRari();
+
   const tokenData = useTokenData(asset.underlyingToken);
 
   const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
+
+  const queryCache = useQueryCache();
+
+  const toast = useToast();
+
+  const onToggleCollateral = async () => {
+    const comptroller = new rari.web3.eth.Contract(
+      JSON.parse(
+        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+      ),
+      comptrollerAddress
+    );
+
+    let call;
+    if (asset.membership) {
+      call = comptroller.methods.exitMarket(asset.cToken);
+    } else {
+      call = comptroller.methods.enterMarkets([asset.cToken]);
+    }
+
+    let response = await call.call({ from: address });
+    // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
+    if (response[0] !== "0") {
+      if (asset.membership) {
+        toast({
+          title: "Error! Code: " + response,
+          description:
+            "You cannot disable this asset as collateral as you would not have enough collateral posted to keep your borrow. Try adding more collateral of another type or paying back some of your debt.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      } else {
+        toast({
+          title: "Error! Code: " + response,
+          description:
+            "You cannot enable this asset as collateral at this time.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
+
+      return;
+    }
+
+    await call.send({ from: address });
+
+    queryCache.refetchQueries();
+  };
 
   return (
     <>
@@ -229,13 +299,13 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
         width="100%"
         px={4}
         mb={3}
-        as="button"
-        onClick={openModal}
       >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="27%"
+          as="button"
+          onClick={openModal}
         >
           <Avatar
             bg="#FFF"
@@ -255,6 +325,8 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
           width="27%"
+          as="button"
+          onClick={openModal}
         >
           <Text
             color={tokenData?.color ?? "#FF"}
@@ -271,6 +343,8 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
           width="27%"
+          as="button"
+          onClick={openModal}
         >
           <Text
             color={tokenData?.color ?? "#FFF"}
@@ -307,6 +381,7 @@ const AssetSupplyRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
           <Switch
             isChecked={asset.membership}
             className={asset.underlyingSymbol + "-switch"}
+            onChange={onToggleCollateral}
             size="md"
             mt={1}
             mr={5}
