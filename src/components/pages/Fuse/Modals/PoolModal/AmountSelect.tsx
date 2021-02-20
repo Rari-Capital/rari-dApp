@@ -158,9 +158,51 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
         asset.cToken
       );
 
-      await (isETH
-        ? cToken.methods.mint().send({ from: address, value: amountBN })
-        : cToken.methods.mint(amount).send({ from: address }));
+      if (mode === Mode.SUPPLY) {
+        if (!isETH) {
+          const token = new rari.web3.eth.Contract(
+            JSON.parse(
+              fuse.compoundContracts[
+                "contracts/EIP20Interface.sol:EIP20Interface"
+              ].abi
+            ),
+            asset.underlyingToken
+          );
+
+          await token.methods
+            .approve(cToken.options.address, amountBN)
+            .send({ from: address });
+        }
+
+        await (isETH
+          ? cToken.methods.mint().send({ from: address, value: amountBN })
+          : cToken.methods.mint(amountBN).send({ from: address }));
+      } else if (mode === Mode.REPAY) {
+        if (!isETH) {
+          const token = new rari.web3.eth.Contract(
+            JSON.parse(
+              fuse.compoundContracts[
+                "contracts/EIP20Interface.sol:EIP20Interface"
+              ].abi
+            ),
+            asset.underlyingToken
+          );
+
+          await token.methods
+            .approve(cToken.options.address, amountBN)
+            .send({ from: address });
+        }
+
+        await (isETH
+          ? cToken.methods
+              .repayBorrow()
+              .send({ from: address, value: amountBN })
+          : cToken.methods.replayBorrow(amountBN).send({ from: address }));
+      } else if (mode === Mode.BORROW) {
+        await cToken.methods.borrow(amountBN).send({ from: address });
+      } else if (mode === Mode.WITHDRAW) {
+        await cToken.methods.redeemUnderlying(amountBN).send({ from: address });
+      }
 
       await queryCache.refetchQueries();
       onClose();
