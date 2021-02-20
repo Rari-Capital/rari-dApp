@@ -90,14 +90,6 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
       _setAmount(bigAmount.multipliedBy(10 ** asset.underlyingDecimals));
-
-      console.log(
-        "RE INFLATED",
-        bigAmount
-          .multipliedBy(10 ** asset.underlyingDecimals)
-          .decimalPlaces(0)
-          .toString()
-      );
     } catch (e) {
       // If the number was invalid, set the amount to null to disable confirming:
       _setAmount(null);
@@ -181,8 +173,6 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
 
       //@ts-ignore
       const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
-
-      console.log("BN'D REINFLATED", amountBN.toString());
 
       const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
       const cToken = new rari.web3.eth.Contract(
@@ -511,7 +501,7 @@ const TokenNameAndMaxButton = ({
     }
 
     if (mode === Mode.BORROW) {
-      // TODO: CALC BORROW LIMIT AND SUBTRACT BORROWED CURRENTLY THEN USE PRICE OF THIS TOKEN
+      // TODO: CALC BORROW LIMIT AND SUBTRACT BORROWED CURRENTLY THEN USE PRICE OF THIS TOKEN?
       maxBN = rari.web3.utils.toBN(0);
     }
 
@@ -520,8 +510,6 @@ const TokenNameAndMaxButton = ({
       maxBN = rari.web3.utils.toBN(0);
     }
 
-    console.log("BORROW", asset.borrowBalance);
-    console.log("MAX BN", maxBN.toString());
     if (maxBN.isNeg() || maxBN.isZero()) {
       updateAmount("0.0");
     } else {
@@ -530,8 +518,6 @@ const TokenNameAndMaxButton = ({
         .toFixed(18)
         // Remove trailing zeroes
         .replace(/\.?0+$/, "");
-
-      console.log("DECIMAL VERSION", str);
 
       updateAmount(str);
     }
