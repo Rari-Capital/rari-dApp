@@ -9,8 +9,9 @@ import { USDPricedFuseAsset } from "../../FusePoolPage";
 interface Props {
   isOpen: boolean;
   onClose: () => any;
-  asset: USDPricedFuseAsset;
   depositSide: boolean;
+  index: number;
+  assets: USDPricedFuseAsset[];
 }
 
 enum CurrentScreen {
@@ -40,12 +41,13 @@ const DepositModal = (props: Props) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent {...MODAL_PROPS} height="500px">
+      <ModalContent {...MODAL_PROPS} height="510px">
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
             onClose={props.onClose}
             openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
-            asset={props.asset}
+            assets={props.assets}
+            index={props.index}
             mode={mode}
           />
         ) : (

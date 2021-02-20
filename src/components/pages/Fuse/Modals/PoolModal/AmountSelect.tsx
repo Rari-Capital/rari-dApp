@@ -23,8 +23,11 @@ import { HashLoader } from "react-spinners";
 
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../../../context/RariContext";
-import { fetchTokenBalance } from "../../../../../hooks/useTokenBalance";
-import { BN } from "../../../../../utils/bigUtils";
+import {
+  fetchTokenBalance,
+  useTokenBalance,
+} from "../../../../../hooks/useTokenBalance";
+import { BN, smallUsdFormatter } from "../../../../../utils/bigUtils";
 
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -34,11 +37,16 @@ import { ModalDivider } from "../../../../shared/Modal";
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
 import { USDPricedFuseAsset } from "../../FusePoolPage";
-import { useTokenData } from "../../../../../hooks/useTokenData";
+import {
+  ETH_TOKEN_DATA,
+  useTokenData,
+} from "../../../../../hooks/useTokenData";
+import { useBorrowLimit } from "../../../../../hooks/useBorrowLimit";
 
 interface Props {
   onClose: () => any;
-  asset: USDPricedFuseAsset;
+  assets: USDPricedFuseAsset[];
+  index: number;
   mode: Mode;
   openOptions: () => any;
 }
@@ -48,16 +56,19 @@ enum UserAction {
   WAITING_FOR_TRANSACTIONS,
 }
 
-const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
+const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
+  const asset = assets[index];
+
+  const { rari, address, fuse } = useRari();
+
   const toast = useToast();
 
   const queryCache = useQueryCache();
 
   const tokenData = useTokenData(asset.underlyingToken);
+  const { data: balance } = useTokenBalance(asset.underlyingToken);
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
-
-  const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
 
   const [userEnteredAmount, _setUserEnteredAmount] = useState("");
 
@@ -79,7 +90,7 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
 
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
-      // _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
+      _setAmount(bigAmount.multipliedBy(10 ** asset.underlyingDecimals));
     } catch (e) {
       // If the number was invalid, set the amount to null to disable confirming:
       _setAmount(null);
@@ -89,17 +100,15 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
   };
 
   const amountIsValid = (() => {
-    // if (amount === null || amount.isZero()) {
-    //   return false;
-    // }
+    if (amount === null || amount.isZero()) {
+      return false;
+    }
 
-    // if (!poolTokenBalance) {
-    //   return false;
-    // }
+    if (!balance) {
+      return false;
+    }
 
-    // return amount.lte(poolTokenBalance.toString());
-
-    return true;
+    return amount.lte(balance.toString());
   })();
 
   let depositOrWithdrawAlert;
@@ -114,13 +123,11 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
     } else {
       depositOrWithdrawAlert = t("Enter a valid amount to repay.");
     }
-  }
-  // else if (!poolTokenBalance || !sfiBalance) {
-  //   depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
-  //     token: tranchePool,
-  //   });
-  // }
-  else if (!amountIsValid) {
+  } else if (!balance) {
+    depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
+      token: asset.underlyingSymbol,
+    });
+  } else if (!amountIsValid) {
     depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
       token: asset.underlyingSymbol,
     });
@@ -130,6 +137,31 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
 
   const onConfirm = async () => {
     try {
+      setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
+
+      //@ts-ignore
+      const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
+
+      const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
+      const cToken = new rari.web3.eth.Contract(
+        isETH
+          ? JSON.parse(
+              fuse.compoundContracts[
+                "contracts/CEtherDelegator.sol:CEtherDelegator"
+              ].abi
+            )
+          : JSON.parse(
+              fuse.compoundContracts[
+                "contracts/EIP20Interface.sol:EIP20Interface"
+              ]
+            ),
+        asset.cToken
+      );
+
+      await (isETH
+        ? cToken.methods.mint().send({ from: address, value: amountBN })
+        : cToken.methods.mint(amount).send({ from: address }));
+
       await queryCache.refetchQueries();
       onClose();
     } catch (e) {
@@ -158,12 +190,7 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
 
   return userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center" p={4}>
-      <HashLoader
-        size={70}
-        //TODO: COLOR
-        color={"#C34535"}
-        loading
-      />
+      <HashLoader size={70} color={tokenData?.color ?? "#FFF"} loading />
       <Heading mt="30px" textAlign="center" size="md">
         {t("Check your wallet to submit the transactions")}
       </Heading>
@@ -234,6 +261,7 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
             />
 
             <TokenNameAndMaxButton
+              mode={mode}
               logoURL={
                 tokenData?.logoURL ??
                 "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -248,7 +276,8 @@ const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
 
         <StatsColumn
           color={tokenData?.color ?? "#FFF"}
-          asset={asset}
+          assets={assets}
+          index={index}
           mode={mode}
         />
 
@@ -279,13 +308,22 @@ export default AmountSelect;
 const StatsColumn = ({
   color,
   mode,
-  asset,
+  assets,
+  index,
 }: {
   color: string;
   mode: Mode;
-  asset: USDPricedFuseAsset;
+  assets: USDPricedFuseAsset[];
+  index: number;
 }) => {
   const { t } = useTranslation();
+
+  const asset = assets[index];
+
+  const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
+
+  const borrowLimi = useBorrowLimit(assets);
+
   return (
     <DashboardBox mt={4} width="100%" height="190px">
       <Column
@@ -302,9 +340,12 @@ const StatsColumn = ({
           width="100%"
           color={color}
         >
-          <Text fontWeight="bold">{t("Wallet Balance")}:</Text>
+          <Text fontWeight="bold">{t("Supply Balance")}:</Text>
           <Text fontWeight="bold">
-            {"25,000.01"} {asset.underlyingSymbol}
+            {smallUsdFormatter(
+              asset.supplyBalance / 10 ** asset.underlyingDecimals
+            ).replace("$", "")}{" "}
+            {asset.underlyingSymbol}
           </Text>
         </Row>
 
@@ -314,7 +355,7 @@ const StatsColumn = ({
           width="100%"
         >
           <Text fontWeight="bold">{t("Supply Rate")}:</Text>
-          <Text fontWeight="bold">{"4.37%"}</Text>
+          <Text fontWeight="bold">{supplyAPY.toFixed(3)}%</Text>
         </Row>
 
         <Row
@@ -323,7 +364,7 @@ const StatsColumn = ({
           width="100%"
         >
           <Text fontWeight="bold">{t("Borrow Limit")}:</Text>
-          <Text fontWeight="bold">{"$10,000.00"}</Text>
+          <Text fontWeight="bold">{smallUsdFormatter(borrowLimi)}</Text>
         </Row>
 
         <Row
@@ -332,7 +373,7 @@ const StatsColumn = ({
           width="100%"
         >
           <Text fontWeight="bold">{t("Borrow Limit Used")}:</Text>
-          <Text fontWeight="bold">{"$1,512.00"}</Text>
+          <Text fontWeight="bold">{smallUsdFormatter(asset.borrowUSD)}</Text>
         </Row>
       </Column>
     </DashboardBox>
@@ -345,11 +386,13 @@ const TokenNameAndMaxButton = ({
   logoURL,
   tokenAddress,
   decimals,
+  mode,
 }: {
   symbol: string;
   logoURL: string;
   tokenAddress: string;
   decimals: number;
+  mode: Mode;
   updateAmount: (newAmount: string) => any;
 }) => {
   const { rari, address } = useRari();
@@ -360,9 +403,14 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(tokenAddress, rari, address);
+    if (mode === Mode.SUPPLY) {
+      const balance = await fetchTokenBalance(tokenAddress, rari, address);
 
-    maxBN = balance;
+      maxBN = balance;
+    } else {
+      //TODO
+      maxBN = rari.web3.utils.toBN(0);
+    }
 
     if (maxBN.isNeg() || maxBN.isZero()) {
       updateAmount("0.0");

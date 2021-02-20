@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
+import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
@@ -163,15 +164,7 @@ const CollateralRatioBar = ({
 }) => {
   const { t } = useTranslation();
 
-  const maxBorrow = useMemo(() => {
-    let maxBorrow = 0;
-    for (let i = 0; i < assets.length; i++) {
-      let asset = assets[i];
-
-      maxBorrow += asset.supplyUSD * (asset.collateralFactor / 1e18);
-    }
-    return maxBorrow;
-  }, [assets]);
+  const maxBorrow = useBorrowLimit(assets);
 
   const ratio = (borrowUSD / maxBorrow) * 100;
 
@@ -273,12 +266,13 @@ const SupplyList = ({
         overflowY="auto"
         mt={1}
       >
-        {assets.map((asset) => {
+        {assets.map((asset, index) => {
           return (
             <AssetSupplyRow
               comptrollerAddress={comptrollerAddress}
               key={asset.underlyingToken}
-              asset={asset}
+              assets={assets}
+              index={index}
             />
           );
         })}
@@ -288,10 +282,12 @@ const SupplyList = ({
 };
 
 const AssetSupplyRow = ({
-  asset,
+  assets,
+  index,
   comptrollerAddress,
 }: {
-  asset: USDPricedFuseAsset;
+  assets: USDPricedFuseAsset[];
+  index: number;
   comptrollerAddress: string;
 }) => {
   const {
@@ -299,6 +295,8 @@ const AssetSupplyRow = ({
     onOpen: openModal,
     onClose: closeModal,
   } = useDisclosure();
+
+  const asset = assets[index];
 
   const { rari, fuse, address } = useRari();
 
@@ -362,7 +360,8 @@ const AssetSupplyRow = ({
     <>
       <PoolModal
         depositSide
-        asset={asset}
+        assets={assets}
+        index={index}
         isOpen={isModalOpen}
         onClose={closeModal}
       />
@@ -517,15 +516,29 @@ const BorrowList = ({
         overflowY="auto"
         mt={1}
       >
-        {assets.map((asset) => {
-          return <AssetBorrowRow key={asset.underlyingToken} asset={asset} />;
+        {assets.map((asset, index) => {
+          return (
+            <AssetBorrowRow
+              key={asset.underlyingToken}
+              assets={assets}
+              index={index}
+            />
+          );
         })}
       </Column>
     </Column>
   );
 };
 
-const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
+const AssetBorrowRow = ({
+  assets,
+  index,
+}: {
+  assets: USDPricedFuseAsset[];
+  index: number;
+}) => {
+  const asset = assets[index];
+
   const {
     isOpen: isModalOpen,
     onOpen: openModal,
@@ -540,7 +553,8 @@ const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
     <>
       <PoolModal
         depositSide={false}
-        asset={asset}
+        assets={assets}
+        index={index}
         isOpen={isModalOpen}
         onClose={closeModal}
       />
