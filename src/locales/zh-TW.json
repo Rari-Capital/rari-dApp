@@ -204,8 +204,8 @@
   "Your Balance": "您的餘額",
   "Click confirm to continue!": "單擊確認繼續！",
   "Click review + confirm to continue!": "點擊評論+確認以繼續！",
-  "Interest": "興趣",
-  "Supply APY": "供應APY",
-  "Borrow APY": "借用APY",
-  "RSS Pool Score": "RSS池分數"
+  "RSS Pool Score": "RSS池分數",
+  "Keep this bar from filling up to avoid being liquidated!": "請勿填充此欄，以免被清算！",
+  "If your borrow amount reaches this value, you will be liquidated.": "如果您的借貸金額達到此值，您將被清算。",
+  "APY/Weekly": "APY /每週"
 }

@@ -204,8 +204,8 @@
   "and stake them for extra rewards!": "and stake them for extra rewards!",
   "Your Balance": "Your Balance",
   "Click confirm to continue!": "Click confirm to continue!",
-  "Interest": "Interest",
-  "Supply APY": "Supply APY",
-  "Borrow APY": "Borrow APY",
-  "RSS Pool Score": "RSS Pool Score"
+  "RSS Pool Score": "RSS Pool Score",
+  "Keep this bar from filling up to avoid being liquidated!": "Keep this bar from filling up to avoid being liquidated!",
+  "If your borrow amount reaches this value, you will be liquidated.": "If your borrow amount reaches this value, you will be liquidated.",
+  "APY/Weekly": "APY/Weekly"
 }
