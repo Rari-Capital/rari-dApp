@@ -1,6 +1,7 @@
 import {
   Avatar,
   Heading,
+  Progress,
   Spinner,
   Switch,
   Text,
@@ -18,10 +19,11 @@ import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
+import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { filterOnlyObjectProperties, FuseAsset } from "./FusePoolsPage";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
@@ -39,6 +41,8 @@ const FusePoolPage = React.memo(() => {
   const isMobile = useIsSemiSmallScreen();
 
   let { poolId } = useParams();
+
+  const { t } = useTranslation();
 
   const { data } = useQuery(poolId + " poolData " + address, async () => {
     const comptroller = (
@@ -87,7 +91,7 @@ const FusePoolPage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1150px"}
-        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
 
@@ -95,15 +99,19 @@ const FusePoolPage = React.memo(() => {
 
         <FuseTabBar />
 
+        {data?.totalBorrowedUSD ? (
+          <CollateralRatioBar borrowUSD={data?.totalBorrowedUSD} />
+        ) : null}
+
         <RowOrColumn
           width="100%"
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
+          mt={4}
           isRow={!isMobile}
         >
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
             height={isMobile ? "auto" : "500px"}
           >
             {data ? (
@@ -121,8 +129,8 @@ const FusePoolPage = React.memo(() => {
 
           <DashboardBox
             ml={isMobile ? 0 : 4}
+            mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "50%"}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
             height={isMobile ? "auto" : "500px"}
           >
             {data ? (
@@ -145,6 +153,47 @@ const FusePoolPage = React.memo(() => {
 });
 
 export default FusePoolPage;
+
+const CollateralRatioBar = ({ borrowUSD }: { borrowUSD: number }) => {
+  const { t } = useTranslation();
+
+  return (
+    <DashboardBox width="100%" height="65px" mt={4} p={4}>
+      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" expand>
+        <SimpleTooltip
+          label={t("Keep this bar from filling up to avoid being liquidated!")}
+        >
+          <Text flexShrink={0} mr={4}>
+            {t("Borrow Limit")}
+          </Text>
+        </SimpleTooltip>
+
+        <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
+          0%
+        </Text>
+
+        <Progress
+          size="xs"
+          width="100%"
+          colorScheme="whatsapp"
+          borderRadius="10px"
+          // value={20}
+          isIndeterminate
+        />
+
+        <SimpleTooltip
+          label={t(
+            "If your borrow amount reaches this value, you will be liquidated."
+          )}
+        >
+          <Text flexShrink={0} mt="2px" ml={3} fontSize="10px">
+            $?
+          </Text>
+        </SimpleTooltip>
+      </Row>
+    </DashboardBox>
+  );
+};
 
 const SupplyList = ({
   assets,
