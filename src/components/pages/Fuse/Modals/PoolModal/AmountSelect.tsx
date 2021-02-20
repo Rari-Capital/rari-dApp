@@ -55,6 +55,21 @@ enum UserAction {
   WAITING_FOR_TRANSACTIONS,
 }
 
+async function testForCompoundErrorAndSend(
+  txObject: any,
+  caller: string,
+  failMessage: string
+) {
+  let response = await txObject.call({ from: caller });
+
+  // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
+  if (response[0] !== "0") {
+    throw new Error(failMessage + " Code: " + response);
+  }
+
+  return txObject.send({ from: caller });
+}
+
 const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
   const asset = assets[index];
 
@@ -190,8 +205,6 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
         asset.cToken
       );
 
-      // TODO: CHECK IF REVERTS BEFORE AND SHOW TOAST!
-
       if (mode === Mode.SUPPLY) {
         if (!isETH) {
           const token = new rari.web3.eth.Contract(
@@ -210,7 +223,11 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
 
         await (isETH
           ? cToken.methods.mint().send({ from: address, value: amountBN })
-          : cToken.methods.mint(amountBN).send({ from: address }));
+          : testForCompoundErrorAndSend(
+              cToken.methods.mint(amountBN),
+              address,
+              "Cannot deposit this amount right now!"
+            ));
       } else if (mode === Mode.REPAY) {
         if (!isETH) {
           const token = new rari.web3.eth.Contract(
@@ -231,11 +248,23 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
           ? cToken.methods
               .repayBorrow()
               .send({ from: address, value: amountBN })
-          : cToken.methods.replayBorrow(amountBN).send({ from: address }));
+          : testForCompoundErrorAndSend(
+              cToken.methods.repayBorrow(amountBN),
+              address,
+              "Cannot repay this amount right now!"
+            ));
       } else if (mode === Mode.BORROW) {
-        await cToken.methods.borrow(amountBN).send({ from: address });
+        await testForCompoundErrorAndSend(
+          cToken.methods.borrow(amountBN),
+          address,
+          "Cannot borrow this amount right now!"
+        );
       } else if (mode === Mode.WITHDRAW) {
-        await cToken.methods.redeemUnderlying(amountBN).send({ from: address });
+        await testForCompoundErrorAndSend(
+          cToken.methods.redeemUnderlying(amountBN),
+          address,
+          "Cannot withdraw this amount right now!"
+        );
       }
 
       await queryCache.refetchQueries();
