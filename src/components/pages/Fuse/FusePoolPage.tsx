@@ -13,7 +13,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
-// import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
@@ -41,8 +40,6 @@ const FusePoolPage = React.memo(() => {
   const isMobile = useIsSemiSmallScreen();
 
   let { poolId } = useParams();
-
-  const { t } = useTranslation();
 
   const { data } = useQuery(poolId + " poolData " + address, async () => {
     const comptroller = (
