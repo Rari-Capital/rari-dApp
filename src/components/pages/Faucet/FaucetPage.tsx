@@ -5,6 +5,7 @@ import {
   Link,
   Spinner,
   Text,
+  Box,
 } from "@chakra-ui/react";
 import { Center, RowOrColumn, Column, Row } from "buttered-chakra";
 import React, { useState } from "react";
@@ -31,25 +32,33 @@ let rewards = [
         pool_id: 1,
         pool_name: "Pool 1",
         pool_share_percent: 20,
-        redeemable: true
+        redeemable: true,
+        token_ids: [1, 2],
+        token_amounts: [10, 20]
     },
     {
         pool_id: 2,
         pool_name: "Pool 2",
         pool_share_percent: 5,
-        redeemable: false
+        redeemable: false,
+        token_ids: [1],
+        token_amounts: [10]
     },
     {
         pool_id: 3,
         pool_name: "Pool 3",
         pool_share_percent: 70,
-        redeemable: true
+        redeemable: true,
+        token_ids: [1, 2, 3, 4],
+        token_amounts: [10, 20, 30, 40]
     },
     {
         pool_id: 4,
         pool_name: "Pool 4",
         pool_share_percent: 50,
-        redeemable: true
+        redeemable: true,
+        token_ids: [1, 2, 3 ],
+        token_amounts: [10, 20, 30 ]
     }
 ]
 
@@ -79,13 +88,13 @@ const FaucetPage = () => {
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
         >
-          <DashboardBox height={isMobile ? "110px" : "95px"} width="100%">
+          <DashboardBox width="100%">
             <Column
               expand
               mainAxisAlignment="center"
               crossAxisAlignment={isMobile ? "center" : "flex-start"}
               textAlign="center"
-              px={4}
+              p={4}
             >
                 <Heading size="lg">{t("Faucet Rewards - Redeemable NFTs for Liquidity Providing")}</Heading>
 
@@ -142,8 +151,6 @@ const FaucetPage = () => {
                         })}
                     </Column>
                 </Column>
-
-                
               </RowOrColumn>
             </DashboardBox>
           </RowOrColumn>
@@ -161,6 +168,7 @@ const claimNFTs = () => {
 
 const ExpandingModal = ({ text, description, reward }: { text: string, description: string, reward: any }) => {
     const [open, setOpen] = useState(false);
+    const [clickOpen, setClickOpen] = useState(false);
     const isMobile = useIsSmallScreen();
     const { t } = useTranslation();
 
@@ -168,11 +176,19 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
         <DashboardBox
                 height={isMobile ? "auto" : "100%"}
                 width={isMobile ? "100%" : "100%"}
-                onClick={() => setOpen(!open)}
+                onClick={() => setClickOpen(!clickOpen)}
+                onMouseOver={() => setOpen(true)}
+                onMouseLeave={() => setOpen(false)}
                 cursor="pointer"
                 p={4}
                 my={4}
             >
+              <Column
+                mainAxisAlignment="flex-end"
+                crossAxisAlignment={isMobile ? "center" : "flex-end"}
+                flexShrink={0}
+                pb={4}
+              >
                 <RowOrColumn
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="flex-start"
@@ -185,38 +201,38 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                     crossAxisAlignment={isMobile ? "center" : "flex-start"}
                     width={"auto"}
                     flexShrink={0}
+                    my={"auto"}
                 >
-                    <Text textAlign={isMobile ? "center" : "left"}>
-                        {t(text)}{" "}
-                    </Text>
-                    {open ? (
-                        <Row
-                            mainAxisAlignment="flex-end"
-                            crossAxisAlignment={isMobile ? "center" : "flex-end"}
-                        >
-                            <Text p={"0 0.5rem 0 0"} textAlign={isMobile ? "center" : "left"}>
-                                {t(description)}{" "}
-                                <Link
-                                    isExternal
-                                    // TODO: Define the pool link
-                                    href={"Pool link"}
-                                >
-                                    <u>{t(reward.pool_name)}</u>
-                                </Link>{" "}
-                            </Text>
-                            <Column
-                                mainAxisAlignment="flex-end"
-                                crossAxisAlignment={isMobile ? "center" : "flex-end"}
-                                p={"0 0.5rem 0 0 "}
-                                flexShrink={0}
-                            >
-                                <ProgressBar colorShift={true} fillColor="blue" percent={reward.pool_share_percent} />
-                            </Column>
-                            <Text textAlign={isMobile ? "center" : "left"}>
-                                {t(reward.pool_share_percent + "%")}{" "}
-                            </Text>
-                        </Row>
-                    ) : ('')}
+                    <svg xmlns="//www.w3.org/2000/svg" version="1.1" className="svg-filters" style={{display: "none"}}>
+                      <defs>
+                        <filter id="marker-shape">
+                          <feTurbulence type="fractalNoise" baseFrequency="0 0.15" numOctaves="1" result="warp" />
+                          <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+                        </filter>
+                      </defs>
+                    </svg>
+                      <Text my={"auto"} height={"1em"} width={"fit-content"} py={0} pr={6} textAlign={isMobile ? "center" : "left"}>
+                          <Link
+                              textDecoration={"none"}
+                              isExternal={false}
+                              href={`/fuse/pool/${reward.pool_id}`} // * If external preferred, prepend ${window.location.origin}
+                          >
+                            <div style={{
+                              content: "",
+                              backgroundColor: "#d6232a",
+                              width: "130%",
+                              height: "1.2em",
+                              position: "relative",
+                              zIndex: 0,
+                              filter: "url(#marker-shape)",
+                              left: "-0.25em",
+                              top: "0.1em",
+                              padding: "0 0.25em",
+                              WebkitFontSmoothing: "subpixel-antialiased"
+                            }}></div>
+                            <p style={{height: "1em", position: "relative", fontWeight: "bold", top: "-20px", left: "5px"}}>{t(text)}</p>
+                          </Link>{" "}
+                      </Text>
                 </Column>
                 <Column
                     mainAxisAlignment="flex-end"
@@ -228,20 +244,91 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                         mainAxisAlignment="flex-end"
                         crossAxisAlignment={isMobile ? "center" : "flex-end"}
                     >
+                      <Box
+                        pr={2}
+                      >
                         <GlowingButton
                             mt={1}
                             label={t("Claim Pool NFTs")}
-                            fontSize="xl"
-                            disabled={(reward.redeemable)}
+                            fontSize="l"
+                            disabled={!(reward.redeemable)}
                             onClick={claimNFTs}
                             width="100%"
-                            height="20px"
+                            height="30px"
                         />
-                        {open ? (<FaAngleUp size={25} />) :
+                      </Box>
+                        {open || clickOpen ? (<FaAngleUp size={25} />) :
                         (<FaAngleDown size={25} />)}
                     </Row>
                 </Column>
             </RowOrColumn>
+            </Column>
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment={isMobile ? "center" : "flex-start"}
+              flexShrink={0}
+              transition={"0.2s ease-out"}
+              visibility={open || clickOpen ? "visible" : "hidden"}
+              display={open || clickOpen ? "initial" : "none"}
+            >
+                <RowOrColumn
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                  height="100%"
+                  width="100%"
+                  isRow={!isMobile}
+              >
+                  <Column
+                      mainAxisAlignment="flex-start"
+                      crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                      width={"auto"}
+                      flexShrink={0}
+                  >
+                    <Text width={"fit-content"} py={0} pr={2} textAlign={isMobile ? "center" : "left"}>
+                        {t("Pool TVL Percent:")}{" "}
+                    </Text>
+                  </Column>
+                  <Column
+                      mainAxisAlignment="flex-start"
+                      crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                      py={0}
+                      pr={2}
+                      width={"auto"}
+                      flexShrink={0}
+                  >
+                      <ProgressBar colorShift={true} fillColor="blue" percent={reward.pool_share_percent} />
+                  </Column>
+                  <Column
+                      mainAxisAlignment="flex-start"
+                      crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                      width={"auto"}
+                      flexShrink={0}
+                  >
+                    <Text width={"fit-content"} textAlign={isMobile ? "center" : "left"}>
+                            {t(reward.pool_share_percent + "%")}{" "}
+                        </Text>
+                  </Column>
+              </RowOrColumn>
+              <RowOrColumn
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                  height="100%"
+                  width="100%"
+                  isRow={!isMobile}
+              >
+                  <Column
+                      mainAxisAlignment="flex-start"
+                      crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                      width={"auto"}
+                      flexShrink={0}
+                  >
+                    <Text width={"fit-content"} py={0} textAlign={isMobile ? "center" : "left"}>
+                        {t("Tokens available to claim:")}{" "}
+                        {reward.token_amounts.reduce((total: number, num: number) => total + num, 0)}
+                    </Text>
+                  </Column>
+              </RowOrColumn>
+            </Column>
         </DashboardBox>
     );
 }
