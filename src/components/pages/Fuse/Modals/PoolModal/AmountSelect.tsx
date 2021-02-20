@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column } from "buttered-chakra";
 
 import LogRocket from "logrocket";
 import {
@@ -19,15 +19,13 @@ import BigNumber from "bignumber.js";
 
 import { useQueryCache } from "react-query";
 
-import { AttentionSeeker } from "react-awesome-reveal";
-
 import { HashLoader } from "react-spinners";
 
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../../../context/RariContext";
 import { fetchTokenBalance } from "../../../../../hooks/useTokenBalance";
-import { BN, smallStringUsdFormatter } from "../../../../../utils/bigUtils";
-import { tokens } from "../../../../../utils/tokenUtils";
+import { BN } from "../../../../../utils/bigUtils";
+
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
 } from "../../../../shared/DashboardBox";
@@ -35,25 +33,27 @@ import { ModalDivider } from "../../../../shared/Modal";
 
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
+import { USDPricedFuseAsset } from "../../FusePoolPage";
+import { useTokenData } from "../../../../../hooks/useTokenData";
 
 interface Props {
   onClose: () => any;
-  token: string;
+  asset: USDPricedFuseAsset;
   mode: Mode;
   openOptions: () => any;
 }
 
 enum UserAction {
   NO_ACTION,
-  REQUESTED_QUOTE,
-  VIEWING_QUOTE,
   WAITING_FOR_TRANSACTIONS,
 }
 
-const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
+const AmountSelect = ({ onClose, asset, mode, openOptions }: Props) => {
   const toast = useToast();
 
   const queryCache = useQueryCache();
+
+  const tokenData = useTokenData(asset.underlyingToken);
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
@@ -122,7 +122,7 @@ const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
   // }
   else if (!amountIsValid) {
     depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
-      token,
+      token: asset.underlyingSymbol,
     });
   } else {
     depositOrWithdrawAlert = t("Click review + confirm to continue!");
@@ -228,19 +228,29 @@ const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
             expand
           >
             <AmountInput
-              selectedToken={token}
+              color={tokenData?.color ?? "#FFF"}
               displayAmount={userEnteredAmount}
               updateAmount={updateAmount}
             />
 
             <TokenNameAndMaxButton
-              selectedToken={token}
+              logoURL={
+                tokenData?.logoURL ??
+                "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+              }
+              symbol={asset.underlyingSymbol}
+              tokenAddress={asset.underlyingToken}
+              decimals={asset.underlyingDecimals}
               updateAmount={updateAmount}
             />
           </Row>
         </DashboardBox>
 
-        <StatsColumn token={token} mode={mode} />
+        <StatsColumn
+          color={tokenData?.color ?? "#FFF"}
+          asset={asset}
+          mode={mode}
+        />
 
         <Button
           mt={4}
@@ -249,37 +259,32 @@ const AmountSelect = ({ onClose, token, mode, openOptions }: Props) => {
           borderRadius="10px"
           width="100%"
           height="70px"
-          //TODO: COLOR
-          bg={"#C34535"}
+          bg={tokenData?.color ?? "#FFF"}
+          color={tokenData?.overlayTextColor ?? "#000"}
           _hover={{ transform: "scale(1.02)" }}
           _active={{ transform: "scale(0.95)" }}
-          //TODO: COLOR
-          color={"#FFF"}
           onClick={onConfirm}
           // isLoading={!poolTokenBalance}
           isDisabled={!amountIsValid}
         >
-          {userAction === UserAction.VIEWING_QUOTE ? t("Confirm") : t("Review")}
+          {t("Confirm")}
         </Button>
       </Column>
-      {userAction === UserAction.VIEWING_QUOTE ? (
-        //TODO: COLOR
-        <ApprovalNotch color={"#C34535"} amount={quoteAmount!} />
-      ) : null}
     </>
   );
 };
 
 export default AmountSelect;
 
-const StatsColumn = ({ token, mode }: { token: string; mode: Mode }) => {
-  //TODO: BETTER COLOR SOURCE
-  const tokenData = tokens[token] ?? {
-    color: "#C34535",
-    logoURL:
-      "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
-  };
-
+const StatsColumn = ({
+  color,
+  mode,
+  asset,
+}: {
+  color: string;
+  mode: Mode;
+  asset: USDPricedFuseAsset;
+}) => {
   const { t } = useTranslation();
   return (
     <DashboardBox mt={4} width="100%" height="190px">
@@ -295,11 +300,11 @@ const StatsColumn = ({ token, mode }: { token: string; mode: Mode }) => {
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
           width="100%"
-          color={tokenData.color}
+          color={color}
         >
           <Text fontWeight="bold">{t("Wallet Balance")}:</Text>
           <Text fontWeight="bold">
-            {"25,000.01"} {token}
+            {"25,000.01"} {asset.underlyingSymbol}
           </Text>
         </Row>
 
@@ -335,20 +340,18 @@ const StatsColumn = ({ token, mode }: { token: string; mode: Mode }) => {
 };
 
 const TokenNameAndMaxButton = ({
-  selectedToken,
+  symbol,
   updateAmount,
+  logoURL,
+  tokenAddress,
+  decimals,
 }: {
-  selectedToken: string;
-
+  symbol: string;
+  logoURL: string;
+  tokenAddress: string;
+  decimals: number;
   updateAmount: (newAmount: string) => any;
 }) => {
-  //TODO: BETTER COLOR SOURCE
-  const token = tokens[selectedToken] ?? {
-    color: "#C34535",
-    logoURL:
-      "https://assets.coingecko.com/coins/images/13117/small/sfi_red_250px.png?1606020144",
-  };
-
   const { rari, address } = useRari();
 
   const [isMaxLoading, setIsMaxLoading] = useState(false);
@@ -357,7 +360,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(token.address, rari, address);
+    const balance = await fetchTokenBalance(tokenAddress, rari, address);
 
     maxBN = balance;
 
@@ -365,7 +368,7 @@ const TokenNameAndMaxButton = ({
       updateAmount("0.0");
     } else {
       const str = new BigNumber(maxBN.toString())
-        .div(10 ** token.decimals)
+        .div(10 ** decimals)
         .toFixed(18)
         // Remove trailing zeroes
         .replace(/\.?0+$/, "");
@@ -385,18 +388,18 @@ const TokenNameAndMaxButton = ({
   return (
     <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-        <Box height="25px" width="25px" mr={2}>
+        <Box height="25px" width="25px" mb="2px" mr={2}>
           <Image
             width="100%"
             height="100%"
             borderRadius="50%"
             backgroundImage={`url(${SmallWhiteCircle})`}
-            src={token.logoURL}
+            src={logoURL}
             alt=""
           />
         </Box>
         <Heading fontSize="24px" mr={2}>
-          {selectedToken}
+          {symbol}
         </Heading>
       </Row>
 
@@ -424,15 +427,12 @@ const TokenNameAndMaxButton = ({
 const AmountInput = ({
   displayAmount,
   updateAmount,
-  selectedToken,
+  color,
 }: {
   displayAmount: string;
   updateAmount: (symbol: string) => any;
-  selectedToken: string;
+  color: string;
 }) => {
-  //TODO: BETTER COLOR SOURCE
-  const token = tokens[selectedToken] ?? { color: "#C34535" };
-
   return (
     <Input
       type="number"
@@ -440,53 +440,12 @@ const AmountInput = ({
       fontSize="3xl"
       fontWeight="bold"
       variant="unstyled"
-      _placeholder={{ color: token.color }}
+      _placeholder={{ color }}
       placeholder="0.0"
       value={displayAmount}
-      color={token.color}
+      color={color}
       onChange={(event) => updateAmount(event.target.value)}
       mr={DASHBOARD_BOX_SPACING.asPxString()}
     />
-  );
-};
-
-const ApprovalNotch = ({ color, amount }: { amount: BN; color: string }) => {
-  const { t } = useTranslation();
-
-  const formattedAmount = (() => {
-    const usdFormatted = smallStringUsdFormatter(
-      new BigNumber(amount.toString()).div(1e18).toString()
-    );
-
-    return usdFormatted;
-  })();
-
-  return (
-    <AttentionSeeker effect="headShake" triggerOnce>
-      <Box
-        borderRadius="0 0 10px 10px"
-        borderWidth="0 1px 1px 1px"
-        borderColor="#272727"
-        bg="#121212"
-        width={{ md: "auto", base: "90%" }}
-        height={{ md: "30px", base: "60px" }}
-        color={color}
-        position="absolute"
-        mx="auto"
-        px={4}
-        left="50%"
-        transform="translateX(-50%)"
-        bottom={{ md: "-30px", base: "-60px" }}
-        whiteSpace={{ md: "nowrap", base: "inherit" }}
-      >
-        <Center expand>
-          <Text fontSize="xs" pb="5px" textAlign="center" className="blinking">
-            {t("You will deposit {{amount}}. Click confirm to approve.", {
-              amount: formattedAmount,
-            })}
-          </Text>
-        </Center>
-      </Box>
-    </AttentionSeeker>
   );
 };

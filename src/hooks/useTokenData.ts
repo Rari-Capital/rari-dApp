@@ -9,7 +9,7 @@ export const ETH_TOKEN_DATA = {
   address: "0x0000000000000000000000000000000000000000",
   name: "Ethereum Network Token",
   decimals: 18,
-  color: "#7b7b83",
+  color: "#627EEA",
   overlayTextColor: "#fff",
   logoURL:
     "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png",

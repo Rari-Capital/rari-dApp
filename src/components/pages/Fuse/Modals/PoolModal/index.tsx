@@ -4,11 +4,12 @@ import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 import AmountSelect from "./AmountSelect";
 import { MODAL_PROPS } from "../../../../shared/Modal";
 import OptionsMenu from "./OptionsMenu";
+import { USDPricedFuseAsset } from "../../FusePoolPage";
 
 interface Props {
   isOpen: boolean;
   onClose: () => any;
-  token: string;
+  asset: USDPricedFuseAsset;
   depositSide: boolean;
 }
 
@@ -44,7 +45,7 @@ const DepositModal = (props: Props) => {
           <AmountSelect
             onClose={props.onClose}
             openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
-            token={props.token}
+            asset={props.asset}
             mode={mode}
           />
         ) : (

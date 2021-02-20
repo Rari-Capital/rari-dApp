@@ -362,7 +362,7 @@ const AssetSupplyRow = ({
     <>
       <PoolModal
         depositSide
-        token={asset.underlyingToken}
+        asset={asset}
         isOpen={isModalOpen}
         onClose={closeModal}
       />
@@ -540,7 +540,7 @@ const AssetBorrowRow = ({ asset }: { asset: USDPricedFuseAsset }) => {
     <>
       <PoolModal
         depositSide={false}
-        token={asset.underlyingToken}
+        asset={asset}
         isOpen={isModalOpen}
         onClose={closeModal}
       />
