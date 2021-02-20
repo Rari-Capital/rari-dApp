@@ -6,7 +6,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Center, RowOrColumn, Column } from "buttered-chakra";
+import { Center, RowOrColumn, Column, Row } from "buttered-chakra";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
@@ -19,6 +19,40 @@ import { Header } from "../../shared/Header";
 import { useQuery } from "react-query";
 import FaucetModal from "./FaucetModal";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
+// @ts-ignore
+import ProgressBar from 'react-percent-bar';
+import { ModalTitleWithCloseButton } from "../../shared/Modal";
+import { GlowingButton } from "../../shared/GlowingButton";
+
+// TODO: Actually fetch these
+let rewards = [
+    {
+        pool_id: 1,
+        pool_name: "Pool 1",
+        pool_share_percent: 20,
+        redeemable: true
+    },
+    {
+        pool_id: 2,
+        pool_name: "Pool 2",
+        pool_share_percent: 5,
+        redeemable: false
+    },
+    {
+        pool_id: 3,
+        pool_name: "Pool 3",
+        pool_share_percent: 70,
+        redeemable: true
+    },
+    {
+        pool_id: 4,
+        pool_name: "Pool 4",
+        pool_share_percent: 50,
+        redeemable: true
+    }
+]
+
 
 const FaucetPage = () => {
   const { isAuthed } = useRari();
@@ -74,11 +108,11 @@ const FaucetPage = () => {
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
             width="100%"
-            height={isMobile ? "auto" : "200px"}
+            height={isMobile ? "auto" : "100%"}
           >
             <DashboardBox
               height={isMobile ? "auto" : "100%"}
-              width={isMobile ? "100%" : "70%"}
+              width={isMobile ? "100%" : "100%"}
               p={4}
             >
               <RowOrColumn
@@ -89,76 +123,29 @@ const FaucetPage = () => {
                 isRow={!isMobile}
               >
                 <Column
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment={isMobile ? "center" : "flex-start"}
-                  width={isMobile ? "100%" : "164px"}
-                  flexShrink={0}
+                    mainAxisAlignment="flex-start"
+                    crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                    width={"100%"}
+                    height={"100%"}
                 >
-                  <Heading fontSize="25px">{t("RGT-ETH Pool")} </Heading>
+                    <Heading fontSize="25px">{t("NFT Pool Rewards")} </Heading>
 
-                  <Text mt={3} textAlign={isMobile ? "center" : "left"}>
-                    {t(
-                      "Provide liquidity to the RGT-ETH pool to acquire LP tokens"
-                    )}{" "}
-                    <Link
-                      isExternal
-                      href="https://app.sushiswap.fi/pair/0x18a797c7c70c1bf22fdee1c09062aba709cacf04"
+                    <Column
+                    mainAxisAlignment="flex-start"
+                    crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                    width={"100%"}
+                    height={"100%"}
+                    overflowY="scroll"
                     >
-                      <u>{t("here")}</u>
-                    </Link>{" "}
-                    {t("and stake them for extra rewards!")}
-                  </Text>
+                        {rewards.map((reward) => {
+                            return (<ExpandingModal text={reward.pool_name} description={""} reward={reward} />)
+                        })}
+                    </Column>
                 </Column>
 
-                <Column
-                  mt={isMobile ? 4 : 0}
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="center"
-                  width="100%"
-                  height="100%"
-                  ml={isMobile ? 0 : 4}
-                >
-                  <GeneralInfo />
-                </Column>
-
-                <Column
-                  mt={isMobile ? 4 : 0}
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="center"
-                  width="100%"
-                  height="100%"
-                  ml={isMobile ? 0 : 4}
-                >
-                  <YourBalance />
-                </Column>
+                
               </RowOrColumn>
             </DashboardBox>
-
-            <Column
-              mt={isMobile ? 4 : 0}
-              pl={isMobile ? 0 : 4}
-              width={isMobile ? "100%" : "30%"}
-              height={isMobile ? "auto" : "100%"}
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="flex-start"
-            >
-              <DashboardBox
-                p={4}
-                width="100%"
-                height={isMobile ? "auto" : "50%"}
-              >
-                <TotalStaked />
-              </DashboardBox>
-
-              <DashboardBox
-                mt={4}
-                p={4}
-                width="100%"
-                height={isMobile ? "auto" : "50%"}
-              >
-                <StartAndEnd />
-              </DashboardBox>
-            </Column>
           </RowOrColumn>
         </Column>
       </Column>
@@ -166,6 +153,98 @@ const FaucetPage = () => {
     </>
   );
 };
+
+const claimNFTs = () => {
+
+}
+
+
+const ExpandingModal = ({ text, description, reward }: { text: string, description: string, reward: any }) => {
+    const [open, setOpen] = useState(false);
+    const isMobile = useIsSmallScreen();
+    const { t } = useTranslation();
+
+    return (
+        <DashboardBox
+                height={isMobile ? "auto" : "100%"}
+                width={isMobile ? "100%" : "100%"}
+                onClick={() => setOpen(!open)}
+                cursor="pointer"
+                p={4}
+                my={4}
+            >
+                <RowOrColumn
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+                height="100%"
+                width="100%"
+                isRow={!isMobile}
+            >
+                <Column
+                    mainAxisAlignment="flex-start"
+                    crossAxisAlignment={isMobile ? "center" : "flex-start"}
+                    width={"auto"}
+                    flexShrink={0}
+                >
+                    <Text textAlign={isMobile ? "center" : "left"}>
+                        {t(text)}{" "}
+                    </Text>
+                    {open ? (
+                        <Row
+                            mainAxisAlignment="flex-end"
+                            crossAxisAlignment={isMobile ? "center" : "flex-end"}
+                        >
+                            <Text p={"0 0.5rem 0 0"} textAlign={isMobile ? "center" : "left"}>
+                                {t(description)}{" "}
+                                <Link
+                                    isExternal
+                                    // TODO: Define the pool link
+                                    href={"Pool link"}
+                                >
+                                    <u>{t(reward.pool_name)}</u>
+                                </Link>{" "}
+                            </Text>
+                            <Column
+                                mainAxisAlignment="flex-end"
+                                crossAxisAlignment={isMobile ? "center" : "flex-end"}
+                                p={"0 0.5rem 0 0 "}
+                                flexShrink={0}
+                            >
+                                <ProgressBar colorShift={true} fillColor="blue" percent={reward.pool_share_percent} />
+                            </Column>
+                            <Text textAlign={isMobile ? "center" : "left"}>
+                                {t(reward.pool_share_percent + "%")}{" "}
+                            </Text>
+                        </Row>
+                    ) : ('')}
+                </Column>
+                <Column
+                    mainAxisAlignment="flex-end"
+                    crossAxisAlignment={isMobile ? "center" : "flex-end"}
+                    m={"auto 0 auto auto"}
+                    flexShrink={0}
+                >
+                    <Row
+                        mainAxisAlignment="flex-end"
+                        crossAxisAlignment={isMobile ? "center" : "flex-end"}
+                    >
+                        <GlowingButton
+                            mt={1}
+                            label={t("Claim Pool NFTs")}
+                            fontSize="xl"
+                            disabled={(reward.redeemable)}
+                            onClick={claimNFTs}
+                            width="100%"
+                            height="20px"
+                        />
+                        {open ? (<FaAngleUp size={25} />) :
+                        (<FaAngleDown size={25} />)}
+                    </Row>
+                </Column>
+            </RowOrColumn>
+        </DashboardBox>
+    );
+}
 
 export const TotalStaked = () => {
   const { t } = useTranslation();
@@ -180,14 +259,14 @@ export const TotalStaked = () => {
     );
   });
 
-  return (
-    <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
-      <Heading mb={1} size="sm">
-        {t("Total Staked (USD)")}
-      </Heading>
-      <Text>{totalStaked ? smallUsdFormatter(totalStaked) : "?"}</Text>
-    </Column>
-  );
+    return (
+        <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
+            <Heading mb={1} size="sm">
+                {t("Total Staked (USD)")}
+            </Heading>
+            <Text>{totalStaked ? smallUsdFormatter(totalStaked) : "?"}</Text>
+        </Column>
+    );
 };
 
 const startDate = Date.parse("22 Feb 2021 00:10:00 PST");
@@ -245,128 +324,5 @@ const Countdown = ({ endDate }: { endDate: number }) => {
   );
 };
 
-const YourBalance = () => {
-  const { t } = useTranslation();
-
-  const { rari, address } = useRari();
-
-  const { data: balance } = useQuery(address + " pool2Balance", async () => {
-    return parseFloat(
-      rari.web3.utils.fromWei(
-        await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
-          address
-        )
-      )
-    );
-  });
-
-  const { data: earned } = useQuery(
-    address + " pool2Unclaimed RGT",
-    async () => {
-      return parseFloat(
-        rari.web3.utils.fromWei(
-          await rari.governance.rgt.sushiSwapDistributions.getUnclaimed(address)
-        )
-      );
-    }
-  );
-
-  const {
-    isOpen: isClaimRGTModalOpen,
-    onOpen: openClaimRGTModal,
-    onClose: closeClaimRGTModal,
-  } = useDisclosure();
-
-  const isMobile = useIsSmallScreen();
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="center"
-      width="100%"
-      height="100%"
-      style={!balance ? { opacity: "0.3", pointerEvents: "none" } : {}}
-    >
-      <ClaimRGTModal
-        isOpen={isClaimRGTModalOpen}
-        onClose={closeClaimRGTModal}
-        defaultMode="pool2"
-      />
-      <Heading fontSize="20px">{t("Your Balance")}</Heading>
-      <Text mt={3} width="70%" textAlign="center">
-        {balance ? balance.toFixed(4) : "0"} Staked SLP
-      </Text>
-      <Text mt={5} width="70%" textAlign="center">
-        <b>
-          {earned ? earned.toFixed(2) : "0"} {t("RGT Earned")}
-        </b>
-      </Text>
-      <DashboardBox
-        mt={isMobile ? 4 : "auto"}
-        width="70%"
-        height="45px"
-        borderRadius="7px"
-        fontSize="xl"
-        fontWeight="bold"
-        as="button"
-        onClick={openClaimRGTModal}
-      >
-        <Center expand>{t("Claim RGT")}</Center>
-      </DashboardBox>
-    </Column>
-  );
-};
-
-const GeneralInfo = () => {
-  const { t } = useTranslation();
-
-  const { rari } = useRari();
-
-  const { data: apr } = useQuery("pool2APR", async () => {
-    const blockNumber = await rari.web3.eth.getBlockNumber();
-    const tvl = await rari.governance.rgt.sushiSwapDistributions.totalStakedUsd();
-
-    return (
-      parseInt(
-        (
-          await rari.governance.rgt.sushiSwapDistributions.getCurrentApr(
-            blockNumber,
-            tvl
-          )
-        ).toString()
-      ) / 1e16
-    ).toFixed(2);
-  });
-
-  const isMobile = useIsSmallScreen();
-
-  const {
-    isOpen: isDepositModalOpen,
-    onOpen: openDepositModal,
-    onClose: closeDepositModal,
-  } = useDisclosure();
-
-  return (
-    <>
-      <FaucetModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
-      <Heading fontSize="20px">{apr ?? "?"}% APR</Heading>
-      <Text mt={3} width="70%" textAlign="center">
-        {t("Deposit your LP tokens here to earn bonus RGT rewards!")}
-      </Text>
-      <DashboardBox
-        mt={isMobile ? 4 : "auto"}
-        width="70%"
-        height="45px"
-        borderRadius="7px"
-        fontSize="xl"
-        fontWeight="bold"
-        as="button"
-        onClick={openDepositModal}
-      >
-        <Center expand>{t("Deposit")}</Center>
-      </DashboardBox>
-    </>
-  );
-};
 
 export default FaucetPage;
