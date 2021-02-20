@@ -166,14 +166,7 @@ const PoolList = () => {
     }
 
     const options = {
-      keys: [
-        "pool.name",
-        "id",
-        "cToken.cToken",
-        "cTokens.underlyingName",
-        "cTokens.underlyingSymbol",
-        "cTokens.underlyingToken",
-      ],
+      keys: ["pool.name", "id", "underlyingTokens", "underlyingSymbols"],
     };
 
     const filtered = new Fuse(nonEmptyPools, options).search(filter);
