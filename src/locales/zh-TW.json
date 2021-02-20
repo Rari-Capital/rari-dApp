@@ -156,7 +156,6 @@
   "Current Members:": "現有成員：",
   "Supply Rate": "供應率",
   "Borrow Limit": "借入限額",
-  "Borrow Limit Used": "借入限額已使用",
   "Want to supply?": "要供應嗎？",
   "Want to borrow?": "想藉嗎？",
   "Want to repay?": "要還款嗎？",
@@ -209,5 +208,6 @@
   "You don't have enough {{token}} or are trying to over-repay!": "您沒有足夠的{{token}}或正嘗試超額還款！",
   "You cannot withdraw this much; try repaying some debt.": "您不能撤出那麼多錢； 嘗試償還一些債務。",
   "You cannot borrow this much; try supplying more collateral.": "你不能藉這麼多錢。 嘗試提供更多抵押品",
-  "Supply Balance": "供應平衡"
+  "Supply Balance": "供應平衡",
+  "Debt Balance": "債務餘額"
 }

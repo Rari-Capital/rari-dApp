@@ -473,7 +473,7 @@ const StatsColumn = ({
           crossAxisAlignment="center"
           width="100%"
         >
-          <Text fontWeight="bold">{t("Borrow Limit Used")}:</Text>
+          <Text fontWeight="bold">{t("Debt Balance")}:</Text>
           <Text fontWeight="bold">{smallUsdFormatter(asset.borrowUSD)}</Text>
         </Row>
       </Column>

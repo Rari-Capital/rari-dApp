@@ -60,7 +60,6 @@
   "Review": "Review",
   "Supply Rate": "Supply Rate",
   "Borrow Limit": "Borrow Limit",
-  "Borrow Limit Used": "Borrow Limit Used",
   "MAX": "MAX",
   "You will deposit {{amount}}. Click confirm to approve.": "You will deposit {{amount}}. Click confirm to approve.",
   "Options": "Options",
@@ -209,5 +208,6 @@
   "You don't have enough {{token}} or are trying to over-repay!": "You don't have enough {{token}} or are trying to over-repay!",
   "You cannot withdraw this much; try repaying some debt.": "You cannot withdraw this much; try repaying some debt.",
   "You cannot borrow this much; try supplying more collateral.": "You cannot borrow this much; try supplying more collateral.",
-  "Supply Balance": "Supply Balance"
+  "Supply Balance": "Supply Balance",
+  "Debt Balance": "Debt Balance"
 }
