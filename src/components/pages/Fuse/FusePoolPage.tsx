@@ -157,6 +157,8 @@ export default FusePoolPage;
 const CollateralRatioBar = ({ borrowUSD }: { borrowUSD: number }) => {
   const { t } = useTranslation();
 
+  const ratio = 90;
+
   return (
     <DashboardBox width="100%" height="65px" mt={4} p={4}>
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" expand>
@@ -175,10 +177,17 @@ const CollateralRatioBar = ({ borrowUSD }: { borrowUSD: number }) => {
         <Progress
           size="xs"
           width="100%"
-          colorScheme="whatsapp"
+          colorScheme={
+            ratio <= 40
+              ? "whatsapp"
+              : ratio <= 60
+              ? "yellow"
+              : ratio <= 80
+              ? "orange"
+              : "red"
+          }
           borderRadius="10px"
-          // value={20}
-          isIndeterminate
+          value={ratio}
         />
 
         <SimpleTooltip
