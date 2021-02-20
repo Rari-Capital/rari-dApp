@@ -55,11 +55,9 @@
   "Current Members:": "Current Members:",
   "Loading your balance of {{token}}...": "Loading your balance of {{token}}...",
   "You don't have enough {{token}}.": "You don't have enough {{token}}.",
-  "Click review + confirm to continue!": "Click review + confirm to continue!",
   "Check your wallet to submit the transactions": "Check your wallet to submit the transactions",
   "Do not close this tab until you submit all transactions!": "Do not close this tab until you submit all transactions!",
   "Review": "Review",
-  "Wallet Balance": "Wallet Balance",
   "Supply Rate": "Supply Rate",
   "Borrow Limit": "Borrow Limit",
   "Borrow Limit Used": "Borrow Limit Used",
@@ -207,5 +205,9 @@
   "RSS Pool Score": "RSS Pool Score",
   "Keep this bar from filling up to avoid being liquidated!": "Keep this bar from filling up to avoid being liquidated!",
   "If your borrow amount reaches this value, you will be liquidated.": "If your borrow amount reaches this value, you will be liquidated.",
-  "APY/Weekly": "APY/Weekly"
+  "APY/Weekly": "APY/Weekly",
+  "You don't have enough {{token}} or are trying to over-repay!": "You don't have enough {{token}} or are trying to over-repay!",
+  "You cannot withdraw this much; try repaying some debt.": "You cannot withdraw this much; try repaying some debt.",
+  "You cannot borrow this much; try supplying more collateral.": "You cannot borrow this much; try supplying more collateral.",
+  "Supply Balance": "Supply Balance"
 }

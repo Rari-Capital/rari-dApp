@@ -9,7 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
-import React, { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";

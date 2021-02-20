@@ -154,7 +154,6 @@
   "Apply": "應用",
   "None": "沒有",
   "Current Members:": "現有成員：",
-  "Wallet Balance": "錢包餘額",
   "Supply Rate": "供應率",
   "Borrow Limit": "借入限額",
   "Borrow Limit Used": "借入限額已使用",
@@ -203,9 +202,12 @@
   "and stake them for extra rewards!": "並放下它們以獲得額外的獎勵！",
   "Your Balance": "您的餘額",
   "Click confirm to continue!": "單擊確認繼續！",
-  "Click review + confirm to continue!": "點擊評論+確認以繼續！",
   "RSS Pool Score": "RSS池分數",
   "Keep this bar from filling up to avoid being liquidated!": "請勿填充此欄，以免被清算！",
   "If your borrow amount reaches this value, you will be liquidated.": "如果您的借貸金額達到此值，您將被清算。",
-  "APY/Weekly": "APY /每週"
+  "APY/Weekly": "APY /每週",
+  "You don't have enough {{token}} or are trying to over-repay!": "您沒有足夠的{{token}}或正嘗試超額還款！",
+  "You cannot withdraw this much; try repaying some debt.": "您不能撤出那麼多錢； 嘗試償還一些債務。",
+  "You cannot borrow this much; try supplying more collateral.": "你不能藉這麼多錢。 嘗試提供更多抵押品",
+  "Supply Balance": "供應平衡"
 }
