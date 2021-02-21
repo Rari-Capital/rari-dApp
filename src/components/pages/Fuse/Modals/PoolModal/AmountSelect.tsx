@@ -190,12 +190,11 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       const isRepayingMax =
         amount!.eq(asset.borrowBalance) && !isETH && mode === Mode.REPAY;
 
+      isRepayingMax && console.log("Using max repay!");
+
       const max = new BigNumber(2).pow(256).minus(1).toFixed(0);
 
-      const amountBN = rari.web3.utils.toBN(
-        // If they are repaying max, we approve uint256(-1)
-        isRepayingMax ? max : amount!.toFixed(0)
-      );
+      const amountBN = rari.web3.utils.toBN(amount!.toFixed(0));
 
       const cToken = new rari.web3.eth.Contract(
         isETH
@@ -252,7 +251,7 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
                 .repayBorrow()
                 .send({ from: address, value: amountBN })
             : testForCompoundErrorAndSend(
-                cToken.methods.repayBorrow(amountBN),
+                cToken.methods.repayBorrow(isRepayingMax ? max : amountBN),
                 address,
                 "Cannot repay this amount right now!"
               ));
