@@ -58,7 +58,6 @@
   "Check your wallet to submit the transactions": "Check your wallet to submit the transactions",
   "Do not close this tab until you submit all transactions!": "Do not close this tab until you submit all transactions!",
   "Review": "Review",
-  "Supply Rate": "Supply Rate",
   "Borrow Limit": "Borrow Limit",
   "MAX": "MAX",
   "You will deposit {{amount}}. Click confirm to approve.": "You will deposit {{amount}}. Click confirm to approve.",
@@ -209,5 +208,7 @@
   "You cannot withdraw this much; try repaying some debt.": "You cannot withdraw this much; try repaying some debt.",
   "You cannot borrow this much; try supplying more collateral.": "You cannot borrow this much; try supplying more collateral.",
   "Supply Balance": "Supply Balance",
-  "Debt Balance": "Debt Balance"
+  "Debt Balance": "Debt Balance",
+  "Supply APY": "Supply APY",
+  "Borrow APY": "Borrow APY"
 }

@@ -424,6 +424,7 @@ const StatsColumn = ({
   const asset = assets[index];
 
   const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
+  const borrowAPY = (asset.borrowRatePerBlock * 2372500) / 1e16;
 
   const borrowLimit = useBorrowLimit(assets);
 
@@ -446,11 +447,20 @@ const StatsColumn = ({
           color={color}
         >
           <Text fontWeight="bold">{t("Supply Balance")}:</Text>
-          <Text fontWeight="bold">
+          <Text fontWeight="bold" fontSize={mode === Mode.SUPPLY ? "sm" : "lg"}>
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
             {asset.underlyingSymbol}
+            {mode === Mode.SUPPLY ? (
+              <>
+                {" → "}
+                {smallUsdFormatter(
+                  asset.supplyBalance / 10 ** asset.underlyingDecimals
+                ).replace("$", "")}{" "}
+                {asset.underlyingSymbol}
+              </>
+            ) : null}
           </Text>
         </Row>
 
@@ -459,8 +469,17 @@ const StatsColumn = ({
           crossAxisAlignment="center"
           width="100%"
         >
-          <Text fontWeight="bold">{t("Supply Rate")}:</Text>
-          <Text fontWeight="bold">{supplyAPY.toFixed(3)}%</Text>
+          <Text fontWeight="bold">
+            {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
+              ? t("Supply APY")
+              : t("Borrow APY")}
+          </Text>
+          <Text fontWeight="bold">
+            {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
+              ? supplyAPY.toFixed(3)
+              : borrowAPY.toFixed(3)}
+            %
+          </Text>
         </Row>
 
         <Row
@@ -469,7 +488,11 @@ const StatsColumn = ({
           width="100%"
         >
           <Text fontWeight="bold">{t("Borrow Limit")}:</Text>
-          <Text fontWeight="bold">{smallUsdFormatter(borrowLimit)}</Text>
+          <Text fontWeight="bold" fontSize="sm">
+            {smallUsdFormatter(borrowLimit)}
+            {" → "}
+            {smallUsdFormatter(borrowLimit)}
+          </Text>
         </Row>
 
         <Row
@@ -478,7 +501,18 @@ const StatsColumn = ({
           width="100%"
         >
           <Text fontWeight="bold">{t("Debt Balance")}:</Text>
-          <Text fontWeight="bold">{smallUsdFormatter(asset.borrowUSD)}</Text>
+          <Text
+            fontWeight="bold"
+            fontSize={mode === Mode.REPAY || mode === Mode.BORROW ? "sm" : "lg"}
+          >
+            {smallUsdFormatter(asset.borrowUSD)}
+            {mode === Mode.REPAY || mode === Mode.BORROW ? (
+              <>
+                {" → "}
+                {smallUsdFormatter(asset.borrowUSD)}
+              </>
+            ) : null}
+          </Text>
         </Row>
       </Column>
     </DashboardBox>
@@ -529,8 +563,6 @@ const TokenNameAndMaxButton = ({
       } else {
         maxBN = balance;
       }
-
-      // TODO: WHY DO I HAVE TO SEND TWO TXs to FULLY REPAY? IS INTEREST BEING ACCURED WHEN I SUBMIT THE FIRST REPAY? IS THERE A WAY TO FULL REPAY?
     }
 
     if (mode === Mode.BORROW) {
