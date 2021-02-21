@@ -529,8 +529,6 @@ const TokenNameAndMaxButton = ({
       } else {
         maxBN = balance;
       }
-
-      // TODO: WHY DO I HAVE TO SEND TWO TXs to FULLY REPAY? IS INTEREST BEING ACCURED WHEN I SUBMIT THE FIRST REPAY? IS THERE A WAY TO FULL REPAY?
     }
 
     if (mode === Mode.BORROW) {
