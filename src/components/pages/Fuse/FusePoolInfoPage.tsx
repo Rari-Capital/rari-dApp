@@ -5,6 +5,7 @@ import {
   Heading,
   Link,
   Select,
+  Spinner,
   Text,
 } from "@chakra-ui/react";
 import {
@@ -36,11 +37,18 @@ import Chart from "react-apexcharts";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
+import { useQuery } from "react-query";
+import { useFusePoolData } from "../../../hooks/useFusePoolData";
+import { USDPricedFuseAsset } from "./FusePoolPage";
+import { useTokenData } from "../../../hooks/useTokenData";
 
 const FusePoolInfoPage = React.memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
+
+  let { poolId } = useParams();
+  const data = useFusePoolData(poolId);
 
   return (
     <>
@@ -69,18 +77,30 @@ const FusePoolInfoPage = React.memo(() => {
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
             mt={DASHBOARD_BOX_SPACING.asPxString()}
-            height="auto"
+            height={isMobile ? "auto" : "450px"}
           >
-            <OracleAndInterestRates />
+            {data ? (
+              <OracleAndInterestRates />
+            ) : (
+              <Center expand>
+                <Spinner my={8} />
+              </Center>
+            )}
           </DashboardBox>
 
           <DashboardBox
             ml={isMobile ? 0 : 4}
             width={isMobile ? "100%" : "50%"}
             mt={DASHBOARD_BOX_SPACING.asPxString()}
-            height="auto"
+            height={isMobile ? "auto" : "450px"}
           >
-            <AssetAndOtherInfo />
+            {data ? (
+              <AssetAndOtherInfo assets={data.assets} />
+            ) : (
+              <Center expand>
+                <Spinner my={8} />
+              </Center>
+            )}
           </DashboardBox>
         </RowOrColumn>
       </Column>
@@ -93,8 +113,6 @@ const FusePoolInfoPage = React.memo(() => {
 export default FusePoolInfoPage;
 
 const OracleAndInterestRates = () => {
-  const isMobile = useIsSemiSmallScreen();
-
   let { poolId } = useParams();
 
   const { t } = useTranslation();
@@ -129,7 +147,8 @@ const OracleAndInterestRates = () => {
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "450px"}
+      height="100%"
+      width="100%"
     >
       <Row
         mainAxisAlignment="space-between"
@@ -260,52 +279,57 @@ const StatRow = ({
   );
 };
 
-const AssetAndOtherInfo = () => {
+const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
   const isMobile = useIsSemiSmallScreen();
 
   let { poolId } = useParams();
 
+  const { fuse } = useRari();
+
   const { t } = useTranslation();
 
-  const borrowCurve = Array.from({ length: 100 }, (_, i) => {
-    let y = 0;
+  const [selectedAsset, setSelectedAsset] = useState(assets[0]);
+  const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
 
-    if (i < 80) {
-      y = i * 0.1;
-    } else {
-      y = 5 + i * 0.25;
+  const { data } = useQuery(selectedAsset.cToken + " curves", async () => {
+    const interestRateModel = await fuse.getInterestRateModel(
+      selectedAsset.cToken
+    );
+
+    if (interestRateModel === null) {
+      return { borrowerRates: null, supplierRates: null };
     }
 
-    return { x: i, y };
-  });
+    let borrowerRates = [];
+    let supplierRates = [];
+    for (var i = 0; i <= 100; i++) {
+      const borrowLevel = interestRateModel
+        .getBorrowRate((i * 1e16).toString())
+        .mul(2372500)
+        .div(1e16);
+      const supplyLevel = interestRateModel
+        .getSupplyRate((i * 1e16).toString())
+        .mul(2372500)
+        .div(1e16);
 
-  const depositCurve = Array.from({ length: 100 }, (_, i) => {
-    let y = 0;
-
-    if (i < 82) {
-      y = i * 0.09;
-    } else {
-      y = 5 + i * 0.23;
+      borrowerRates.push({ x: i, y: borrowLevel });
+      supplierRates.push({ x: i, y: supplyLevel });
     }
 
-    return { x: i, y };
+    return { borrowerRates, supplierRates };
   });
-
-  const [selectedAsset, setSelectedAsset] = useState("SUSHI");
-
-  const assetColors: any = { SUSHI: "#DD2D44" };
 
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "450px"}
       width="100%"
+      height="100%"
     >
       <Heading size="sm" px={4} py={3}>
         {t("Pool {{num}}'s {{token}} Interest Rate Model", {
           num: poolId,
-          token: selectedAsset,
+          token: selectedAsset.underlyingSymbol,
         })}
       </Heading>
       <ModalDivider />
@@ -325,13 +349,14 @@ const AssetAndOtherInfo = () => {
             <>
               <Text fontSize="12px" fontWeight="normal" ml={4}>
                 {t("{{factor}}% Collateral Factor", {
-                  factor: 75,
+                  factor: selectedAsset.collateralFactor / 1e16,
                 })}
               </Text>
 
               <Text fontSize="12px" fontWeight="normal" ml={3}>
                 {t("{{factor}}% Reserve Factor", {
-                  factor: 10,
+                  // TODO: DAVID NEEDS TO ADD TO FUSEASSET STRUCT
+                  factor: 20,
                 })}
               </Text>
             </>
@@ -344,16 +369,21 @@ const AssetAndOtherInfo = () => {
           fontWeight="bold"
           width="130px"
           _focus={{ outline: "none" }}
-          color={assetColors[selectedAsset] ?? "#FFF"}
+          color={selectedTokenData?.color ?? "#FFF"}
+          onChange={(event) =>
+            setSelectedAsset(assets[event.target.value as any])
+          }
         >
-          <option className="black-bg-option" value="week">
-            {selectedAsset}
-          </option>
+          {assets.map((asset, index) => (
+            <option className="black-bg-option" value={index}>
+              {asset.underlyingSymbol}
+            </option>
+          ))}
         </Select>
       </Row>
 
       <Box
-        height={isMobile ? "300px" : "100%"}
+        height="100%"
         width="100%"
         color="#000000"
         overflow="hidden"
@@ -361,46 +391,60 @@ const AssetAndOtherInfo = () => {
         pr={3}
         className="hide-bottom-tooltip"
       >
-        <Chart
-          options={{
-            ...InterestRateChartOptions,
-            annotations: {
-              points: [
-                {
-                  x: 30,
-                  y: 3,
-                  marker: {
-                    size: 8,
-                  },
+        {data ? (
+          data.supplierRates === null ? (
+            <Center expand color="#FFFFFF">
+              <Text>
+                {t("No graph is available for this asset's interest curves.")}
+              </Text>
+            </Center>
+          ) : (
+            <Chart
+              options={{
+                ...InterestRateChartOptions,
+                annotations: {
+                  points: [
+                    {
+                      x: 30,
+                      y: 3,
+                      marker: {
+                        size: 8,
+                      },
 
-                  label: {
-                    borderWidth: 0,
-                    text: t("Current Utilization"),
-                    style: {
-                      background: "#121212",
-                      color: "#FFF",
+                      label: {
+                        borderWidth: 0,
+                        text: t("Current Utilization"),
+                        style: {
+                          background: "#121212",
+                          color: "#FFF",
+                        },
+                      },
                     },
-                  },
+                  ],
                 },
-              ],
-            },
 
-            colors: ["#FFFFFF", assetColors[selectedAsset] ?? "#282727"],
-          }}
-          type="line"
-          width="100%"
-          height="100%"
-          series={[
-            {
-              name: "Borrow Rate",
-              data: borrowCurve,
-            },
-            {
-              name: "Deposit Rate",
-              data: depositCurve,
-            },
-          ]}
-        />
+                colors: ["#FFFFFF", "#282727"],
+              }}
+              type="line"
+              width="100%"
+              height="100%"
+              series={[
+                {
+                  name: "Borrow Rate",
+                  data: data.borrowerRates,
+                },
+                {
+                  name: "Deposit Rate",
+                  data: data.supplierRates,
+                },
+              ]}
+            />
+          )
+        ) : (
+          <Center expand color="#FFFFFF">
+            <Spinner />
+          </Center>
+        )}
       </Box>
     </Column>
   );
