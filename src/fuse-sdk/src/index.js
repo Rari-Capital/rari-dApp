@@ -287,16 +287,17 @@ export default class Fuse {
 
       // Deploy CEtherDelegator proxy contract if necessary
       var cEtherDelegator = new this.web3.eth.Contract(JSON.parse(contracts["contracts/CEtherDelegator.sol:CEtherDelegator"].abi));
-      let deployArgs = [conf.comptroller, conf.interestRateModel, conf.initialExchangeRateMantissa.toString(), conf.name, conf.symbol, conf.decimals, conf.admin, implementationAddress, "0x0"];
+      let deployArgs = [conf.comptroller, conf.interestRateModel, conf.initialExchangeRateMantissa.toString(), conf.name, conf.symbol, conf.decimals, conf.admin, implementationAddress, "0x0", reserveFactor ? reserveFactor : 0, adminFee ? adminFee : 0];
       cEtherDelegator = await cEtherDelegator.deploy({ data: "0x" + contracts["contracts/CEtherDelegator.sol:CEtherDelegator"].bin, arguments: deployArgs }).send(options);
 
       // Register new asset with Comptroller
       var comptroller = new this.web3.eth.Contract(JSON.parse(contracts["contracts/Comptroller.sol:Comptroller"].abi), conf.comptroller);
       cEtherDelegator.options.jsonInterface = JSON.parse(contracts["contracts/CEtherDelegate.sol:CEtherDelegate"].abi);
-      if (supportMarket) await comptroller.methods._supportMarket(cEtherDelegator.options.address).send(options);
-      if (collateralFactor) await comptroller.methods._setCollateralFactor(cEtherDelegator.options.address, collateralFactor).send(options);
-      if (reserveFactor) await cEtherDelegator.methods._setReserveFactor(reserveFactor).send(options);
-      if (adminFee) await cEtherDelegator.methods._setAdminFee(adminFee).send(options);
+
+      if (supportMarket) {
+        if (collateralFactor) await comptroller.methods._supportMarketAndSetCollateralFactor(cEtherDelegator.options.address, collateralFactor).send(options);
+        else await comptroller.methods._supportMarket(cEtherDelegator.options.address).send(options);
+      }
 
       // Return cToken proxy and implementation contract addresses
       return [cEtherDelegator.options.address, implementationAddress];
@@ -469,15 +470,16 @@ export default class Fuse {
 
       // Deploy CErc20Delegator proxy contract if necessary
       var cErc20Delegator = new this.web3.eth.Contract(JSON.parse(contracts["contracts/CErc20Delegator.sol:CErc20Delegator"].abi));
-      let deployArgs = [conf.underlying, conf.comptroller, conf.interestRateModel, conf.initialExchangeRateMantissa.toString(), conf.name, conf.symbol, conf.decimals, conf.admin, implementationAddress, "0x0"];
+      let deployArgs = [conf.underlying, conf.comptroller, conf.interestRateModel, conf.initialExchangeRateMantissa.toString(), conf.name, conf.symbol, conf.decimals, conf.admin, implementationAddress, "0x0", reserveFactor ? reserveFactor : 0, adminFee ? adminFee : 0];
       cErc20Delegator = await cErc20Delegator.deploy({ data: "0x" + contracts["contracts/CErc20Delegator.sol:CErc20Delegator"].bin, arguments: deployArgs }).send(options);
 
       // Register new asset with Comptroller
       cErc20Delegator.options.jsonInterface = JSON.parse(contracts["contracts/CErc20Delegate.sol:CErc20Delegate"].abi);
-      if (supportMarket) await comptroller.methods._supportMarket(cErc20Delegator.options.address).send(options);
-      if (collateralFactor) await comptroller.methods._setCollateralFactor(cErc20Delegator.options.address, collateralFactor).send(options);
-      if (reserveFactor) await cErc20Delegator.methods._setReserveFactor(reserveFactor).send(options);
-      if (adminFee) await cErc20Delegator.methods._setAdminFee(adminFee).send(options);
+
+      if (supportMarket) {
+        if (collateralFactor) await comptroller.methods._supportMarketAndSetCollateralFactor(cErc20Delegator.options.address, collateralFactor).send(options);
+        else await comptroller.methods._supportMarket(cErc20Delegator.options.address).send(options);
+      }
 
       // Return cToken proxy and implementation contract addresses
       return [cErc20Delegator.options.address, implementationAddress];
