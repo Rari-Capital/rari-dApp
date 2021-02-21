@@ -534,7 +534,7 @@ const StatsColumn = ({
           crossAxisAlignment="center"
           width="100%"
         >
-          <Text fontWeight="bold">
+          <Text fontWeight="bold" flexShrink={0}>
             {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
               ? t("Supply APY")
               : t("Borrow APY")}
@@ -552,10 +552,18 @@ const StatsColumn = ({
           crossAxisAlignment="center"
           width="100%"
         >
-          <Text fontWeight="bold">{t("Borrow Limit")}:</Text>
-          <Text fontWeight="bold" fontSize="sm">
+          <Text fontWeight="bold" flexShrink={0}>
+            {t("Borrow Limit")}:
+          </Text>
+          <Text
+            fontWeight="bold"
+            fontSize={
+              mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
+            }
+          >
             {smallUsdFormatter(borrowLimit)}
 
+            {/* The borrow limit won't increase if the asset is not enabled for collateral. Maybe we should have "max" borrow limit? */}
             {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
             updatedAsset ? (
               <>
