@@ -440,7 +440,7 @@ const TokenNameAndMaxButton = ({
     maxBN = balance;
 
     if (maxBN.isNeg() || maxBN.isZero()) {
-      updateAmount("0.0");
+      updateAmount("");
     } else {
       const str = new BigNumber(maxBN.toString())
         .div(10 ** token.decimals)
@@ -449,7 +449,7 @@ const TokenNameAndMaxButton = ({
         .replace(/\.?0+$/, "");
 
       if (str.startsWith("0.000000")) {
-        updateAmount("0.0");
+        updateAmount("");
       } else {
         updateAmount(str);
       }
