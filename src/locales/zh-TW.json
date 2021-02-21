@@ -154,7 +154,6 @@
   "Apply": "應用",
   "None": "沒有",
   "Current Members:": "現有成員：",
-  "Supply Rate": "供應率",
   "Borrow Limit": "借入限額",
   "Want to supply?": "要供應嗎？",
   "Want to borrow?": "想藉嗎？",
@@ -209,5 +208,7 @@
   "You cannot withdraw this much; try repaying some debt.": "您不能撤出那麼多錢； 嘗試償還一些債務。",
   "You cannot borrow this much; try supplying more collateral.": "你不能藉這麼多錢。 嘗試提供更多抵押品",
   "Supply Balance": "供應平衡",
-  "Debt Balance": "債務餘額"
+  "Debt Balance": "債務餘額",
+  "Supply APY": "供應APY",
+  "Borrow APY": "借用APY"
 }

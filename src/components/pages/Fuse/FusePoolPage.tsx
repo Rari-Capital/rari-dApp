@@ -63,8 +63,6 @@ const FusePoolPage = React.memo(() => {
     for (let i = 0; i < assets.length; i++) {
       let asset = assets[i];
 
-      // TODO: MAKE PRECISE VIA BIGNUMBERS
-
       asset.supplyUSD =
         ((asset.supplyBalance * asset.underlyingPrice) / 1e36) * ethPrice;
 
