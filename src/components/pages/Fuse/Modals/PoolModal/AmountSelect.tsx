@@ -200,12 +200,12 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
         isETH
           ? JSON.parse(
               fuse.compoundContracts[
-                "contracts/CEtherDelegator.sol:CEtherDelegator"
+                "contracts/CEtherDelegate.sol:CEtherDelegate"
               ].abi
             )
           : JSON.parse(
               fuse.compoundContracts[
-                "contracts/CErc20Delegator.sol:CErc20Delegator"
+                "contracts/CErc20Delegate.sol:CErc20Delegate"
               ].abi
             ),
         asset.cToken
