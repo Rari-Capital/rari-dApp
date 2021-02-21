@@ -6,8 +6,10 @@ export const useBorrowLimit = (assets: USDPricedFuseAsset[]) => {
     let maxBorrow = 0;
     for (let i = 0; i < assets.length; i++) {
       let asset = assets[i];
-      // TODO: MAKE PRECISE VIA BIGNUMBERS
-      maxBorrow += asset.supplyUSD * (asset.collateralFactor / 1e18);
+
+      if (asset.membership) {
+        maxBorrow += asset.supplyUSD * (asset.collateralFactor / 1e18);
+      }
     }
     return maxBorrow;
   }, [assets]);
