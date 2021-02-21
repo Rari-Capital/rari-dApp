@@ -186,10 +186,17 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
     try {
       setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
 
-      //@ts-ignore
-      const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
-
       const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
+      const isRepayingMax =
+        amount!.eq(asset.borrowBalance) && !isETH && mode === Mode.REPAY;
+
+      const max = new BigNumber(2).pow(256).minus(1).toFixed(0);
+
+      const amountBN = rari.web3.utils.toBN(
+        // If they are repaying max, we approve uint256(-1)
+        isRepayingMax ? max : amount!.toFixed(0)
+      );
+
       const cToken = new rari.web3.eth.Contract(
         isETH
           ? JSON.parse(
@@ -199,13 +206,13 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
             )
           : JSON.parse(
               fuse.compoundContracts[
-                "contracts/EIP20Interface.sol:EIP20Interface"
-              ]
+                "contracts/CErc20Delegator.sol:CErc20Delegator"
+              ].abi
             ),
         asset.cToken
       );
 
-      if (mode === Mode.SUPPLY) {
+      if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
         if (!isETH) {
           const token = new rari.web3.eth.Contract(
             JSON.parse(
@@ -216,43 +223,40 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
             asset.underlyingToken
           );
 
-          await token.methods
-            .approve(cToken.options.address, amountBN)
-            .send({ from: address });
+          const hasApprovedEnough = rari.web3.utils
+            .toBN(
+              await token.methods
+                .allowance(address, cToken.options.address)
+                .call()
+            )
+            .gte(amountBN);
+
+          if (!hasApprovedEnough) {
+            await token.methods
+              .approve(cToken.options.address, max)
+              .send({ from: address });
+          }
         }
 
-        await (isETH
-          ? cToken.methods.mint().send({ from: address, value: amountBN })
-          : testForCompoundErrorAndSend(
-              cToken.methods.mint(amountBN),
-              address,
-              "Cannot deposit this amount right now!"
-            ));
-      } else if (mode === Mode.REPAY) {
-        if (!isETH) {
-          const token = new rari.web3.eth.Contract(
-            JSON.parse(
-              fuse.compoundContracts[
-                "contracts/EIP20Interface.sol:EIP20Interface"
-              ].abi
-            ),
-            asset.underlyingToken
-          );
-
-          await token.methods
-            .approve(cToken.options.address, amountBN)
-            .send({ from: address });
+        if (mode === Mode.SUPPLY) {
+          await (isETH
+            ? cToken.methods.mint().send({ from: address, value: amountBN })
+            : testForCompoundErrorAndSend(
+                cToken.methods.mint(amountBN),
+                address,
+                "Cannot deposit this amount right now!"
+              ));
+        } else {
+          await (isETH
+            ? cToken.methods
+                .repayBorrow()
+                .send({ from: address, value: amountBN })
+            : testForCompoundErrorAndSend(
+                cToken.methods.repayBorrow(amountBN),
+                address,
+                "Cannot repay this amount right now!"
+              ));
         }
-
-        await (isETH
-          ? cToken.methods
-              .repayBorrow()
-              .send({ from: address, value: amountBN })
-          : testForCompoundErrorAndSend(
-              cToken.methods.repayBorrow(amountBN),
-              address,
-              "Cannot repay this amount right now!"
-            ));
       } else if (mode === Mode.BORROW) {
         await testForCompoundErrorAndSend(
           cToken.methods.borrow(amountBN),
@@ -270,6 +274,7 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
       await queryCache.refetchQueries();
       onClose();
     } catch (e) {
+      console.log(e);
       let message: string;
 
       if (e instanceof Error) {
