@@ -16,7 +16,7 @@ import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
-import { useQueryCache } from "react-query";
+import { useQuery, useQueryCache } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -378,6 +378,7 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
         </DashboardBox>
 
         <StatsColumn
+          amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
           color={tokenData?.color ?? "#FFF"}
           assets={assets}
           index={index}
@@ -413,22 +414,79 @@ const StatsColumn = ({
   mode,
   assets,
   index,
+  amount,
 }: {
   color: string;
   mode: Mode;
   assets: USDPricedFuseAsset[];
   index: number;
+  amount: number;
 }) => {
   const { t } = useTranslation();
 
+  const { rari } = useRari();
+
+  const { data: updatedAssets } = useQuery(
+    mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
+    async () => {
+      const ethPrice: number = rari.web3.utils.fromWei(
+        await rari.getEthUsdPriceBN()
+      ) as any;
+
+      return assets.map((value, _index) => {
+        if (_index === index) {
+          if (mode === Mode.SUPPLY) {
+            const supplyBalance = parseInt(value.supplyBalance as any) + amount;
+
+            return {
+              ...value,
+              supplyBalance,
+              supplyUSD:
+                ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
+            };
+          } else if (mode === Mode.WITHDRAW) {
+            const supplyBalance = parseInt(value.supplyBalance as any) - amount;
+
+            return {
+              ...value,
+              supplyBalance,
+              supplyUSD:
+                ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
+            };
+          } else if (mode === Mode.BORROW) {
+            const borrowBalance = parseInt(value.borrowBalance as any) + amount;
+
+            return {
+              ...value,
+              borrowBalance,
+              borrowUSD:
+                ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
+            };
+          } else if (mode === Mode.REPAY) {
+            const borrowBalance = parseInt(value.borrowBalance as any) - amount;
+
+            return {
+              ...value,
+              borrowBalance,
+              borrowUSD:
+                ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
+            };
+          }
+        }
+
+        return value;
+      }) as USDPricedFuseAsset[];
+    }
+  );
+
   const asset = assets[index];
+  const updatedAsset = updatedAssets ? updatedAssets[index] : null;
+
+  const borrowLimit = useBorrowLimit(assets);
+  const updatedBorrowLimit = useBorrowLimit(updatedAssets ?? []);
 
   const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
   const borrowAPY = (asset.borrowRatePerBlock * 2372500) / 1e16;
-
-  const borrowLimit = useBorrowLimit(assets);
-
-  // TODO: SHOW AFTER ACTION STATS WITH ARROW LIKE ->
 
   return (
     <DashboardBox mt={4} width="100%" height="190px">
@@ -447,16 +505,23 @@ const StatsColumn = ({
           color={color}
         >
           <Text fontWeight="bold">{t("Supply Balance")}:</Text>
-          <Text fontWeight="bold" fontSize={mode === Mode.SUPPLY ? "sm" : "lg"}>
+          <Text
+            fontWeight="bold"
+            fontSize={
+              mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
+            }
+          >
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
             {asset.underlyingSymbol}
-            {mode === Mode.SUPPLY ? (
+            {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
+            updatedAsset ? (
               <>
                 {" → "}
                 {smallUsdFormatter(
-                  asset.supplyBalance / 10 ** asset.underlyingDecimals
+                  updatedAsset!.supplyBalance /
+                    10 ** updatedAsset!.underlyingDecimals
                 ).replace("$", "")}{" "}
                 {asset.underlyingSymbol}
               </>
@@ -490,8 +555,14 @@ const StatsColumn = ({
           <Text fontWeight="bold">{t("Borrow Limit")}:</Text>
           <Text fontWeight="bold" fontSize="sm">
             {smallUsdFormatter(borrowLimit)}
-            {" → "}
-            {smallUsdFormatter(borrowLimit)}
+
+            {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
+            updatedAsset ? (
+              <>
+                {" → "}
+                {smallUsdFormatter(updatedBorrowLimit)}
+              </>
+            ) : null}
           </Text>
         </Row>
 
@@ -506,10 +577,10 @@ const StatsColumn = ({
             fontSize={mode === Mode.REPAY || mode === Mode.BORROW ? "sm" : "lg"}
           >
             {smallUsdFormatter(asset.borrowUSD)}
-            {mode === Mode.REPAY || mode === Mode.BORROW ? (
+            {(mode === Mode.REPAY || mode === Mode.BORROW) && updatedAsset ? (
               <>
                 {" → "}
-                {smallUsdFormatter(asset.borrowUSD)}
+                {smallUsdFormatter(updatedAsset.borrowUSD)}
               </>
             ) : null}
           </Text>
