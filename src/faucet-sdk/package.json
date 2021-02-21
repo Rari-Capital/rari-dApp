@@ -1,0 +1,25 @@
+{
+  "name": "@rari-capital/faucet-sdk",
+  "version": "0.1.0",
+  "description": "JavaScript SDK for easy implementation of Faucet by Rari Capital.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rari-Capital/faucet-sdk.git"
+  },
+  "author": "Andreas Bigger <bigger@usc.edu>",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/Rari-Capital/faucet-sdk/issues"
+  },
+  "homepage": "https://github.com/Rari-Capital/faucet-sdk#readme",
+  "dependencies": {
+    "axios": "^0.20.0"
+  },
+  "peerDependencies": {
+    "web3": "*"
+  }
+}

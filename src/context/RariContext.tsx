@@ -15,6 +15,8 @@ import Rari from "../rari-sdk/index";
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
 import Fuse from "../fuse-sdk/src";
+// @ts-ignore
+import Faucet from "../faucet-sdk/src";
 
 function getWeb3Provider() {
   if (window.ethereum) {
@@ -117,6 +119,7 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
 export interface RariContextData {
   rari: Rari;
   fuse: Fuse;
+  faucet: Faucet;
   web3ModalProvider: any | null;
   isAuthed: boolean;
   login: () => Promise<any>;
@@ -135,6 +138,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const [rari, setRari] = useState<Rari>(() => new Rari(getWeb3Provider()));
   const [fuse, setFuse] = useState<Fuse>(() => new Fuse(getWeb3Provider()));
+  const [faucet, setFaucet] = useState<Faucet>(() => new Faucet(getWeb3Provider()));
 
   const toast = useToast();
 
@@ -175,9 +179,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = new Fuse(modalProvider);
+      const faucetInstance = new Faucet(modalProvider);
 
       setRari(rariInstance);
       setFuse(fuseInstance);
+      setFaucet(faucetInstance);
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         console.log("Address array: ", addresses);
@@ -249,12 +255,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       web3ModalProvider,
       rari,
       fuse,
+      faucet,
       isAuthed: address !== EmptyAddress,
       login,
       logout,
       address,
     }),
-    [rari, web3ModalProvider, login, logout, address, fuse]
+    [rari, web3ModalProvider, login, logout, address, fuse, faucet]
   );
 
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;

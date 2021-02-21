@@ -30,6 +30,7 @@ import { GlowingButton } from "../../shared/GlowingButton";
 import { useLocation } from "react-router-dom";
 import Fuse from "fuse.js";
 import { useTokenData } from "../../../hooks/useTokenData";
+import { ClaimNFTs } from "./FaucetModal/ClaimNFTs";
 
 // TODO: Actually fetch these
 let rewards = [
@@ -247,6 +248,12 @@ const ExpandingModal = ({ text, description, reward, pools }: { text: string, de
     const pool: any = getPool(reward.pool_id, pools);
     // console.log("pool: ", pool);
 
+    const {
+    isOpen: isClaimPoolNFTsOpen,
+    onOpen: openPoolNFTClaim,
+    onClose: closePoolNFTClaim,
+  } = useDisclosure();
+
     const normalized_pool_share = reward.pool_share_percent > 100 ? 100 : (reward.pool_share_percent < 0 ? 0 : reward.pool_share_percent);
 
     return (
@@ -260,6 +267,10 @@ const ExpandingModal = ({ text, description, reward, pools }: { text: string, de
                 p={4}
                 my={4}
             >
+              <ClaimNFTs
+                isOpen={isClaimPoolNFTsOpen}
+                onClose={closePoolNFTClaim}
+              />
               <Column
                 mainAxisAlignment="flex-end"
                 crossAxisAlignment={isMobile ? "center" : "flex-end"}
@@ -399,7 +410,7 @@ const ExpandingModal = ({ text, description, reward, pools }: { text: string, de
                             label={t("Claim All Pool NFTs")}
                             fontSize="l"
                             disabled={!(reward.redeemable)}
-                            onClick={claimNFTs}
+                            onClick={openPoolNFTClaim}
                             width="100%"
                             height="30px"
                         />
