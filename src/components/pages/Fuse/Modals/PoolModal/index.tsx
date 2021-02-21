@@ -12,6 +12,7 @@ interface Props {
   defaultMode: Mode;
   index: number;
   assets: USDPricedFuseAsset[];
+  comptrollerAddress: string;
 }
 
 enum CurrentScreen {
@@ -46,6 +47,7 @@ const DepositModal = (props: Props) => {
       <ModalContent {...MODAL_PROPS} height={{ md: "510px", base: "540px" }}>
         {currentScreen === CurrentScreen.MAIN ? (
           <AmountSelect
+            comptrollerAddress={props.comptrollerAddress}
             onClose={props.onClose}
             openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
             assets={props.assets}

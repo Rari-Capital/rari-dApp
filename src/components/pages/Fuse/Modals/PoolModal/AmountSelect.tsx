@@ -47,6 +47,7 @@ interface Props {
   assets: USDPricedFuseAsset[];
   index: number;
   mode: Mode;
+  comptrollerAddress: string;
   openOptions: () => any;
 }
 
@@ -70,7 +71,14 @@ async function testForCompoundErrorAndSend(
   return txObject.send({ from: caller });
 }
 
-const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
+const AmountSelect = ({
+  onClose,
+  assets,
+  index,
+  mode,
+  openOptions,
+  comptrollerAddress,
+}: Props) => {
   const asset = assets[index];
 
   const { rari, address, fuse } = useRari();
@@ -365,12 +373,12 @@ const AmountSelect = ({ onClose, assets, index, mode, openOptions }: Props) => {
             />
 
             <TokenNameAndMaxButton
+              comptrollerAddress={comptrollerAddress}
               mode={mode}
               logoURL={
                 tokenData?.logoURL ??
                 "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
               }
-              symbol={asset.underlyingSymbol}
               asset={asset}
               updateAmount={updateAmount}
             />
@@ -599,19 +607,19 @@ const StatsColumn = ({
 };
 
 const TokenNameAndMaxButton = ({
-  symbol,
   updateAmount,
   logoURL,
   asset,
   mode,
+  comptrollerAddress,
 }: {
-  symbol: string;
   logoURL: string;
   asset: USDPricedFuseAsset;
   mode: Mode;
+  comptrollerAddress: string;
   updateAmount: (newAmount: string) => any;
 }) => {
-  const { rari, address } = useRari();
+  const { rari, fuse, address } = useRari();
 
   const [isMaxLoading, setIsMaxLoading] = useState(false);
 
@@ -645,12 +653,34 @@ const TokenNameAndMaxButton = ({
     }
 
     if (mode === Mode.BORROW) {
-      // TODO: CALC BORROW LIMIT AND SUBTRACT BORROWED CURRENTLY THEN USE PRICE OF THIS TOKEN?
+      // TODO:
+      const comptroller = new rari.web3.eth.Contract(
+        JSON.parse(
+          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+        ),
+        comptrollerAddress
+      );
+
+      console.log(
+        await comptroller.methods.getMaxBorrow(address, asset.cToken).call()
+      );
+
       maxBN = rari.web3.utils.toBN(0);
     }
 
     if (mode === Mode.WITHDRAW) {
-      // TODO: HELP
+      // TODO:
+      const comptroller = new rari.web3.eth.Contract(
+        JSON.parse(
+          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+        ),
+        comptrollerAddress
+      );
+
+      console.log(
+        await comptroller.methods.getMaxWithdraw(address, asset.cToken).call()
+      );
+
       maxBN = rari.web3.utils.toBN(0);
     }
 
@@ -685,7 +715,7 @@ const TokenNameAndMaxButton = ({
           />
         </Box>
         <Heading fontSize="24px" mr={2}>
-          {symbol}
+          {asset.underlyingSymbol}
         </Heading>
       </Row>
 

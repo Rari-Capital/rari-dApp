@@ -136,6 +136,7 @@ const FusePoolPage = React.memo(() => {
           >
             {data ? (
               <BorrowList
+                comptrollerAddress={data.comptroller}
                 assets={data.assets}
                 totalBorrowedUSD={data.totalBorrowedUSD}
               />
@@ -360,6 +361,7 @@ const AssetSupplyRow = ({
     <>
       <PoolModal
         defaultMode={Mode.SUPPLY}
+        comptrollerAddress={comptrollerAddress}
         assets={assets}
         index={index}
         isOpen={isModalOpen}
@@ -468,9 +470,11 @@ const AssetSupplyRow = ({
 const BorrowList = ({
   assets,
   totalBorrowedUSD,
+  comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
   totalBorrowedUSD: number;
+  comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
 
@@ -519,6 +523,7 @@ const BorrowList = ({
         {assets.map((asset, index) => {
           return (
             <AssetBorrowRow
+              comptrollerAddress={comptrollerAddress}
               key={asset.underlyingToken}
               assets={assets}
               index={index}
@@ -533,9 +538,11 @@ const BorrowList = ({
 const AssetBorrowRow = ({
   assets,
   index,
+  comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
+  comptrollerAddress: string;
 }) => {
   const asset = assets[index];
 
@@ -552,6 +559,7 @@ const AssetBorrowRow = ({
   return (
     <>
       <PoolModal
+        comptrollerAddress={comptrollerAddress}
         defaultMode={Mode.BORROW}
         assets={assets}
         index={index}
