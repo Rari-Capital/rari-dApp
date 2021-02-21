@@ -6,9 +6,11 @@ import {
   Spinner,
   Text,
   Box,
+  Avatar,
+  AvatarGroup,
 } from "@chakra-ui/react";
 import { Center, RowOrColumn, Column, Row } from "buttered-chakra";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
 import { smallUsdFormatter } from "../../../utils/bigUtils";
@@ -25,6 +27,9 @@ import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import ProgressBar from 'react-percent-bar';
 import { ModalTitleWithCloseButton } from "../../shared/Modal";
 import { GlowingButton } from "../../shared/GlowingButton";
+import { useLocation } from "react-router-dom";
+import Fuse from "fuse.js";
+import { useTokenData } from "../../../hooks/useTokenData";
 
 // TODO: Actually fetch these
 let rewards = [
@@ -38,16 +43,16 @@ let rewards = [
     },
     {
         pool_id: 2,
-        pool_name: "Pool 2",
-        pool_share_percent: 5,
+        pool_name: "Does super long pool name break anything??? ascjascjbksjbjshdbcjsbdcj ascjascjbksjbjshdbcjsbdcj ascjascjbksjbjshdbcjsbdcj sdjbchsjdbc jshbdcjsbdc",
+        pool_share_percent: 110,
         redeemable: false,
         token_ids: [1],
         token_amounts: [10]
     },
     {
         pool_id: 3,
-        pool_name: "Pool 3",
-        pool_share_percent: 70,
+        pool_name: "Negative Percent Test",
+        pool_share_percent: -10,
         redeemable: true,
         token_ids: [1, 2, 3, 4],
         token_amounts: [10, 20, 30, 40]
@@ -55,6 +60,22 @@ let rewards = [
     {
         pool_id: 4,
         pool_name: "Pool 4",
+        pool_share_percent: 50,
+        redeemable: true,
+        token_ids: [1, 2, 3 ],
+        token_amounts: [10, 20, 30 ]
+    },
+    {
+        pool_id: 5,
+        pool_name: "Pool 5",
+        pool_share_percent: 70,
+        redeemable: true,
+        token_ids: [1, 2, 3, 4],
+        token_amounts: [10, 20, 30, 40]
+    },
+    {
+        pool_id: 6,
+        pool_name: "Pool 6",
         pool_share_percent: 50,
         redeemable: true,
         token_ids: [1, 2, 3 ],
@@ -69,6 +90,55 @@ const FaucetPage = () => {
   const { t } = useTranslation();
 
   const isMobile = useIsSmallScreen();
+
+  const filter = useFilter();
+
+  const isMyPools = filter === "my-pools";
+
+  const { fuse, rari, address } = useRari();
+
+  const { data: _pools } = useQuery(
+    address + " fusePoolList" + (isMyPools ? " my-pools" : ""),
+    async () => {
+      const {
+        0: ids,
+        1: fusePools,
+        2: totalSuppliedETH,
+        3: totalBorrowedETH,
+        4: underlyingTokens,
+        5: underlyingSymbols,
+      } = await (filter === "my-pools"
+        ? fuse.contracts.FusePoolDirectory.methods
+            .getPoolsBySupplierWithData(address)
+            .call()
+        : fuse.contracts.FusePoolDirectory.methods
+            .getPublicPoolsWithData()
+            .call());
+
+      const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
+
+      const merged: {
+        id: number;
+        pool: FusePool;
+        underlyingTokens: string[];
+        underlyingSymbols: string[];
+        suppliedUSD: number;
+        borrowedUSD: number;
+      }[] = [];
+      for (let id = 0; id < ids.length; id++) {
+        merged.push({
+          underlyingTokens: underlyingTokens[id],
+          underlyingSymbols: underlyingSymbols[id],
+          pool: filterOnlyObjectProperties(fusePools[id]),
+          id: ids[id],
+          suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
+          borrowedUSD: (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice),
+        });
+      }
+
+      return merged;
+    }
+  );
 
   return (
     <>
@@ -147,7 +217,7 @@ const FaucetPage = () => {
                     overflowY="scroll"
                     >
                         {rewards.map((reward) => {
-                            return (<ExpandingModal text={reward.pool_name} description={""} reward={reward} />)
+                            return (<ExpandingModal pools={_pools} text={reward.pool_name} description={""} reward={reward} />)
                         })}
                     </Column>
                 </Column>
@@ -166,11 +236,16 @@ const claimNFTs = () => {
 }
 
 
-const ExpandingModal = ({ text, description, reward }: { text: string, description: string, reward: any }) => {
+const ExpandingModal = ({ text, description, reward, pools }: { text: string, description: string, reward: any, pools: any }) => {
     const [open, setOpen] = useState(false);
     const [clickOpen, setClickOpen] = useState(false);
     const isMobile = useIsSmallScreen();
     const { t } = useTranslation();
+
+    const pool: any = getPool(reward.pool_id, pools);
+    console.log("pool: ", pool);
+
+    const normalized_pool_share = reward.pool_share_percent > 100 ? 100 : (reward.pool_share_percent < 0 ? 0 : reward.pool_share_percent);
 
     return (
         <DashboardBox
@@ -200,6 +275,7 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                     mainAxisAlignment="flex-start"
                     crossAxisAlignment={isMobile ? "center" : "flex-start"}
                     width={"auto"}
+                    pl={2}
                     flexShrink={0}
                     my={"auto"}
                 >
@@ -220,7 +296,8 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                             <div style={{
                               content: "",
                               backgroundColor: "#d6232a",
-                              width: "130%",
+                              width: "100%",
+                              marginRight: "10px",
                               height: "1.2em",
                               position: "relative",
                               zIndex: 0,
@@ -230,7 +307,7 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                               padding: "0 0.25em",
                               WebkitFontSmoothing: "subpixel-antialiased"
                             }}></div>
-                            <p style={{height: "1em", position: "relative", fontWeight: "bold", top: "-20px", left: "5px"}}>{t(text)}</p>
+                            <p style={{height: "1em", paddingRight: "16px", position: "relative", fontWeight: "bold", top: "-20px", left: "5px"}}>{t(text)}</p>
                           </Link>{" "}
                       </Text>
                 </Column>
@@ -244,19 +321,11 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                         mainAxisAlignment="flex-end"
                         crossAxisAlignment={isMobile ? "center" : "flex-end"}
                     >
-                      <Box
-                        pr={2}
-                      >
-                        <GlowingButton
-                            mt={1}
-                            label={t("Claim Pool NFTs")}
-                            fontSize="l"
-                            disabled={!(reward.redeemable)}
-                            onClick={claimNFTs}
-                            width="100%"
-                            height="30px"
-                        />
-                      </Box>
+                      <AvatarGroup size="xs" max={20}>
+                        {pool ? pool.underlyingTokens.map(({ address }: any) => {
+                          return <CTokenIcon key={address} address={address} />;
+                        }) : ''}
+                      </AvatarGroup>
                         {open || clickOpen ? (<FaAngleUp size={25} />) :
                         (<FaAngleDown size={25} />)}
                     </Row>
@@ -276,12 +345,14 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                   crossAxisAlignment="flex-start"
                   height="100%"
                   width="100%"
+                  py={2}
                   isRow={!isMobile}
               >
                   <Column
                       mainAxisAlignment="flex-start"
                       crossAxisAlignment={isMobile ? "center" : "flex-start"}
                       width={"auto"}
+                      my={"auto"}
                       flexShrink={0}
                   >
                     <Text width={"fit-content"} py={0} pr={2} textAlign={isMobile ? "center" : "left"}>
@@ -293,21 +364,41 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                       crossAxisAlignment={isMobile ? "center" : "flex-start"}
                       py={0}
                       pr={2}
+                      my={"auto"}
                       width={"auto"}
                       flexShrink={0}
                   >
-                      <ProgressBar colorShift={true} fillColor="blue" percent={reward.pool_share_percent} />
+                      <ProgressBar colorShift={true} fillColor="blue" percent={normalized_pool_share} />
                   </Column>
                   <Column
                       mainAxisAlignment="flex-start"
                       crossAxisAlignment={isMobile ? "center" : "flex-start"}
                       width={"auto"}
+                      my={"auto"}
                       flexShrink={0}
                   >
                     <Text width={"fit-content"} textAlign={isMobile ? "center" : "left"}>
-                            {t(reward.pool_share_percent + "%")}{" "}
+                            {t(normalized_pool_share + "%")}{" "}
                         </Text>
                   </Column>
+                  <Column
+                      mainAxisAlignment="flex-end"
+                      crossAxisAlignment={isMobile ? "center" : "flex-end"}
+                      width={"auto"}
+                      ml={"auto"}
+                      my={"auto"}
+                      flexShrink={0}
+                  >
+                        <GlowingButton
+                            my={"auto"}
+                            label={t("Claim All Pool NFTs")}
+                            fontSize="l"
+                            disabled={!(reward.redeemable)}
+                            onClick={claimNFTs}
+                            width="100%"
+                            height="30px"
+                        />
+                      </Column>
               </RowOrColumn>
               <RowOrColumn
                   mainAxisAlignment="flex-start"
@@ -315,6 +406,7 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
                   height="100%"
                   width="100%"
                   isRow={!isMobile}
+                  py={2}
               >
                   <Column
                       mainAxisAlignment="flex-start"
@@ -332,6 +424,70 @@ const ExpandingModal = ({ text, description, reward }: { text: string, descripti
         </DashboardBox>
     );
 }
+
+const useFilter = () => {
+  return new URLSearchParams(useLocation().search).get("filter");
+}
+
+export interface FusePool {
+  name: string;
+  creator: string;
+  comptroller: string;
+  isPrivate: boolean;
+}
+
+const getPool = (pool_id: any, pools: any) => {
+    if (!pools) {
+      return undefined;
+    }
+
+    const curr_pool = pools.filter(
+      (pool: any) => pool.underlyingTokens.length > 0
+    ).filter((pool: any) => pool.id === pool_id);
+
+    const options = {
+      keys: [
+        "pool.name",
+        "id",
+        "cToken.cToken",
+        "cTokens.underlyingName",
+        "cTokens.underlyingSymbol",
+        "cTokens.underlyingToken",
+      ],
+    };
+
+    return new Fuse(curr_pool, options);
+};
+
+const filterOnlyObjectProperties = (obj: any) => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([k]) => isNaN(k as any))
+  ) as any;
+}
+
+const CTokenIcon = ({
+  address,
+  ...avatarProps
+}: {
+  address: string;
+  [key: string]: any;
+}) => {
+  const tokenData = useTokenData(address);
+
+  return (
+    <Avatar
+      {...avatarProps}
+      key={address}
+      bg="#FFF"
+      borderWidth="1px"
+      name={tokenData?.symbol ?? "Loading..."}
+      src={
+        tokenData?.logoURL ??
+        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+      }
+    />
+  );
+};
 
 export const TotalStaked = () => {
   const { t } = useTranslation();
