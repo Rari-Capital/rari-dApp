@@ -16,16 +16,17 @@ export default class Fuse {
   static FUSE_SAFE_LIQUIDATOR_CONTRACT_ADDRESS = "0x0165878A594ca255338adfa4d48449f69242Eb8F"; // TODO: Set correct mainnet address after deployment
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"; // TODO: Set correct mainnet address after deployment
 
-  static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS = "0xE14E15c2a43232791bd35B326BC5446CC2Ad9CD7"; // TODO: Set correct mainnet address after deployment
-  static CERC20_DELEGATE_CONTRACT_ADDRESS = "0x99dF4ba7A2404e2cDFDa8c6427e03E13EA23D19f"; // TODO: Set correct mainnet address after deployment
-  static CETHER_DELEGATE_CONTRACT_ADDRESS = "0x026838c33C05caCe3495bfE51261f7D942fddf8A"; // TODO: Set correct mainnet address after deployment
+  static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS = "0x1ca334e4bceb0c6d95733d11ed0e9b52caf66807"; // TODO: Set correct mainnet address after deployment
+  static CERC20_DELEGATE_CONTRACT_ADDRESS = "0xee8163c19f2ff59410edc6494505c129bddd3851"; // TODO: Set correct mainnet address after deployment
+  static CETHER_DELEGATE_CONTRACT_ADDRESS = "0x8a0ab5a52ddcf13a9d5b68f7961289f5e08ebc5f"; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS = "0xc629c26dced4277419cde234012f8160a0278a79";
   static COINBASE_PRO_REPORTER_ADDRESS = "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC";
 
-  static PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS = "0x68aa7c6be5eDbb8434dCE624b8583FE4c25Cac8B"; // TODO: Set correct mainnet address after deployment
-  static PUBLIC_CHAINLINK_PRICE_ORACLE_CONTRACT_ADDRESS = "0x5fdbfc67a415a811dd8e5de570ddf65207ceb94f"; // TODO: Set correct mainnet address after deployment
-  static PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS = "0x68ae90e1da41761aad06a7f188584ca806012f5e"; // TODO: Set correct mainnet address after deployment
+  static PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS = "0xb4c963cc484857e668f884194ee46ea29f6180a2"; // TODO: Set correct mainnet address after deployment
+  static PUBLIC_CHAINLINK_PRICE_ORACLE_CONTRACT_ADDRESS = "0x026838c33c05cace3495bfe51261f7d942fddf8a"; // TODO: Set correct mainnet address after deployment
+  static PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS = "0x8ff698981fb7673eda1ae2e2723bc9aea33b9f61"; // TODO: Set correct mainnet address after deployment
+  static PUBLIC_UNISWAP_SPOT_VIEW_CONTRACT_ADDRESS = ""; // TODO: Set correct mainnet address after deployment
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1";
