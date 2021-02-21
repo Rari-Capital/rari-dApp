@@ -140,6 +140,8 @@ const FaucetPage = () => {
     }
   );
 
+  // console.log("pools", _pools);
+
   return (
     <>
       <ForceAuthModal />
@@ -243,7 +245,7 @@ const ExpandingModal = ({ text, description, reward, pools }: { text: string, de
     const { t } = useTranslation();
 
     const pool: any = getPool(reward.pool_id, pools);
-    console.log("pool: ", pool);
+    // console.log("pool: ", pool);
 
     const normalized_pool_share = reward.pool_share_percent > 100 ? 100 : (reward.pool_share_percent < 0 ? 0 : reward.pool_share_percent);
 
@@ -274,7 +276,10 @@ const ExpandingModal = ({ text, description, reward, pools }: { text: string, de
                 <Column
                     mainAxisAlignment="flex-start"
                     crossAxisAlignment={isMobile ? "center" : "flex-start"}
-                    width={"auto"}
+                    width={"90%"}
+                    overflow={"scroll"}
+                    ml={0}
+                    mr={"auto"}
                     pl={2}
                     flexShrink={0}
                     my={"auto"}
@@ -287,7 +292,7 @@ const ExpandingModal = ({ text, description, reward, pools }: { text: string, de
                         </filter>
                       </defs>
                     </svg>
-                      <Text my={"auto"} height={"1em"} width={"fit-content"} py={0} pr={6} textAlign={isMobile ? "center" : "left"}>
+                      <Text my={"auto"} ml={0} mr={"auto"} height={"1.3em"} width={"fit-content"} py={0} pr={6} textAlign={isMobile ? "center" : "left"}>
                           <Link
                               textDecoration={"none"}
                               isExternal={false}
