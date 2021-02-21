@@ -150,7 +150,7 @@ export default class Fuse {
           break;
         case "ChainlinkPriceOracle":
           var priceOracle = new this.web3.eth.Contract(JSON.parse(contracts["contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"].abi));
-          priceOracle = await priceOracle.deploy({ data: "0x" + contracts["contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"].bin }).send(options);
+          priceOracle = await priceOracle.deploy({ data: "0x" + contracts["contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"].bin, arguments: [conf.maxSecondsBeforePriceIsStale ? conf.maxSecondsBeforePriceIsStale : 0] }).send(options);
           break;
         case "UniswapAnchoredView":
           // Input validation/default config
