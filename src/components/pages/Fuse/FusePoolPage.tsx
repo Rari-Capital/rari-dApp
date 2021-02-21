@@ -27,7 +27,7 @@ import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { filterOnlyObjectProperties, FuseAsset } from "./FusePoolsPage";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
-import PoolModal from "./Modals/PoolModal";
+import PoolModal, { Mode } from "./Modals/PoolModal";
 
 export interface USDPricedFuseAsset extends FuseAsset {
   supplyUSD: number;
@@ -361,7 +361,7 @@ const AssetSupplyRow = ({
   return (
     <>
       <PoolModal
-        depositSide
+        defaultMode={Mode.SUPPLY}
         assets={assets}
         index={index}
         isOpen={isModalOpen}
@@ -554,7 +554,7 @@ const AssetBorrowRow = ({
   return (
     <>
       <PoolModal
-        depositSide={false}
+        defaultMode={Mode.BORROW}
         assets={assets}
         index={index}
         isOpen={isModalOpen}

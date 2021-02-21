@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 
 import AmountSelect from "./AmountSelect";
@@ -9,7 +9,7 @@ import { USDPricedFuseAsset } from "../../FusePoolPage";
 interface Props {
   isOpen: boolean;
   onClose: () => any;
-  depositSide: boolean;
+  defaultMode: Mode;
   index: number;
   assets: USDPricedFuseAsset[];
 }
@@ -29,9 +29,11 @@ export enum Mode {
 const DepositModal = (props: Props) => {
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
 
-  const [mode, setMode] = useState(
-    props.depositSide ? Mode.SUPPLY : Mode.BORROW
-  );
+  const [mode, setMode] = useState(props.defaultMode);
+
+  useEffect(() => {
+    setMode(props.defaultMode);
+  }, [props.isOpen, props.defaultMode]);
 
   return (
     <Modal
