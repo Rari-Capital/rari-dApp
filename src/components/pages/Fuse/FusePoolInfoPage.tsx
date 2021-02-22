@@ -290,10 +290,9 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
   const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
-  const selectedAssetUtilization = (
-    (selectedAsset.totalBorrow / selectedAsset.totalSupply) *
-    100
-  ).toFixed(0);
+  const selectedAssetUtilization = parseFloat(
+    ((selectedAsset.totalBorrow / selectedAsset.totalSupply) * 100).toFixed(0)
+  );
 
   const { data } = useQuery(selectedAsset.cToken + " curves", async () => {
     const interestRateModel = await fuse.getInterestRateModel(
@@ -411,10 +410,29 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
               options={{
                 ...FuseUtilizationChartOptions,
                 annotations: {
+                  points: [
+                    {
+                      x: selectedAssetUtilization,
+                      y: data.borrowerRates[selectedAssetUtilization].y,
+                      marker: {
+                        size: 6,
+                        fillColor: "#FFF",
+                        strokeColor: "#DDDCDC",
+                      },
+                    },
+                    {
+                      x: selectedAssetUtilization,
+                      y: data.supplierRates[selectedAssetUtilization].y,
+                      marker: {
+                        size: 6,
+                        fillColor: selectedTokenData?.color ?? "#A6A6A6",
+                        strokeColor: "#FFF",
+                      },
+                    },
+                  ],
                   xaxis: [
                     {
-                      x: parseInt(selectedAssetUtilization),
-
+                      x: selectedAssetUtilization,
                       label: {
                         text: t("Current Utilization"),
                         orientation: "horizontal",
