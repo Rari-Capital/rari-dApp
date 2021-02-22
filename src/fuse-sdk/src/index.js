@@ -269,7 +269,9 @@ export default class Fuse {
           if (!conf.chainlinkPriceOracle)
             conf.chainlinkPriceOracle = await this.deployPriceOracle(
               "ChainlinkPriceOracle",
-              {},
+              {
+                maxSecondsBeforePriceIsStale: conf.maxSecondsBeforePriceIsStale,
+              },
               options
             );
 
@@ -280,7 +282,9 @@ export default class Fuse {
               {
                 anchorPeriod: conf.anchorPeriod,
                 tokenConfigs: conf.tokenConfigs,
+                canAdminOverwrite: conf.canAdminOverwrite,
                 isPublic: conf.isPublic,
+                maxSecondsBeforePriceIsStale: conf.maxSecondsBeforePriceIsStale,
               },
               options
             );
@@ -373,6 +377,8 @@ export default class Fuse {
             conf.anchorPeriod,
             tokenConfigs,
             conf.canAdminOverwrite ? true : false,
+            conf.isSecure ? true : false,
+            conf.maxSecondsBeforePriceIsStale ? conf.maxSecondsBeforePriceIsStale : 0,
           ];
           priceOracle = await priceOracle
             .deploy({
@@ -425,6 +431,7 @@ export default class Fuse {
             conf.tokenConfigs !== undefined ? conf.tokenConfigs : [],
             conf.canAdminOverwrite && !conf.isPublic ? true : false,
             conf.isPublic ? true : false,
+            conf.maxSecondsBeforePriceIsStale ? conf.maxSecondsBeforePriceIsStale : 0,
           ];
           priceOracle = await priceOracle
             .deploy({
