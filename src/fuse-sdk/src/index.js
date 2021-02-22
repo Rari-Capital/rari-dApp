@@ -791,7 +791,7 @@ export default class Fuse {
       );
 
       // Check for price feed assuming !bypassPriceFeedCheck
-      if (!bypassPriceFeedCheck) checkErc20PriceFeed(comptroller, conf);
+      if (!bypassPriceFeedCheck) await this.checkForCErc20PriceFeed(comptroller, conf);
 
       // Deploy CErc20Delegate implementation contract if necessary
       if (!implementationAddress) {
@@ -903,7 +903,7 @@ export default class Fuse {
       return interestRateModel;
     };
 
-    this.checkCErc20PriceFeed = async function (comptroller, conf) {
+    this.checkForCErc20PriceFeed = async function (comptroller, conf) {
       // Check for ChainlinkPriceOracle with a corresponding feed
       var priceOracle = await comptroller.methods.oracle().call();
       var chainlinkPriceOracle = new this.web3.eth.Contract(
