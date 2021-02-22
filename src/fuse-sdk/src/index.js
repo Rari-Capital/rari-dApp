@@ -598,7 +598,7 @@ export default class Fuse {
               baseRatePerYear: "20000000000000000",
               multiplierPerYear: "200000000000000000",
             };
-          deployArgs = [conf.baseRatePerBlock, conf.multiplierPerBlock];
+          deployArgs = [conf.baseRatePerYear, conf.multiplierPerYear];
           break;
       }
 
