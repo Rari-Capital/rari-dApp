@@ -21,7 +21,7 @@ import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { shortUsdFormatter } from "../../../utils/bigUtils";
-import { InterestRateChartOptions } from "../../../utils/chartOptions";
+import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox, {
@@ -409,19 +409,15 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           ) : (
             <Chart
               options={{
-                ...InterestRateChartOptions,
+                ...FuseUtilizationChartOptions,
                 annotations: {
-                  points: [
+                  xaxis: [
                     {
                       x: parseInt(selectedAssetUtilization),
-                      y: data.borrowerRates[selectedAssetUtilization as any].y,
-                      marker: {
-                        size: 8,
-                      },
 
                       label: {
-                        borderWidth: 0,
                         text: t("Current Utilization"),
+                        orientation: "horizontal",
                         style: {
                           background: "#121212",
                           color: "#FFF",

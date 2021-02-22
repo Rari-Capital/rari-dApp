@@ -247,3 +247,11 @@ export const InterestRateChartOptions = {
     },
   },
 };
+
+export const FuseUtilizationChartOptions = {
+  ...InterestRateChartOptions,
+
+  grid: {
+    ...LineChartOptions.grid,
+  },
+};
