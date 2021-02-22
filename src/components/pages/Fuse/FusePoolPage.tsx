@@ -37,7 +37,7 @@ export interface USDPricedFuseAsset extends FuseAsset {
 }
 
 const FusePoolPage = React.memo(() => {
-  const { isAuthed, fuse, address, rari } = useRari();
+  const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
 
