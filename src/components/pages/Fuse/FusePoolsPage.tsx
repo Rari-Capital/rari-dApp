@@ -42,9 +42,14 @@ export interface FuseAsset {
   underlyingPrice: number;
 
   collateralFactor: number;
+  reserveFactor: number;
+  adminFee: number;
 
   borrowRatePerBlock: number;
   supplyRatePerBlock: number;
+
+  totalBorrow: number;
+  totalSupply: number;
 }
 
 export interface FusePool {

@@ -284,12 +284,16 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   let { poolId } = useParams();
 
-  const { fuse } = useRari();
+  const { fuse, rari } = useRari();
 
   const { t } = useTranslation();
 
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
   const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
+  const selectedAssetUtilization = (
+    (selectedAsset.totalBorrow / selectedAsset.totalSupply) *
+    100
+  ).toFixed(0);
 
   const { data } = useQuery(selectedAsset.cToken + " curves", async () => {
     const interestRateModel = await fuse.getInterestRateModel(
@@ -303,14 +307,19 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
     let borrowerRates = [];
     let supplierRates = [];
     for (var i = 0; i <= 100; i++) {
-      const borrowLevel = interestRateModel
-        .getBorrowRate((i * 1e16).toString())
-        .mul(2372500)
-        .div(1e16);
-      const supplyLevel = interestRateModel
-        .getSupplyRate((i * 1e16).toString())
-        .mul(2372500)
-        .div(1e16);
+      const borrowLevel =
+        (interestRateModel.getBorrowRate(
+          rari.web3.utils.toBN((i * 1e16).toString())
+        ) *
+          2372500) /
+        1e16;
+
+      const supplyLevel =
+        (interestRateModel.getSupplyRate(
+          rari.web3.utils.toBN((i * 1e16).toString())
+        ) *
+          2372500) /
+        1e16;
 
       borrowerRates.push({ x: i, y: borrowLevel });
       supplierRates.push({ x: i, y: supplyLevel });
@@ -355,8 +364,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
               <Text fontSize="12px" fontWeight="normal" ml={3}>
                 {t("{{factor}}% Reserve Factor", {
-                  // TODO: DAVID NEEDS TO ADD TO FUSEASSET STRUCT
-                  factor: 20,
+                  factor: selectedAsset.reserveFactor / 1e16,
                 })}
               </Text>
             </>
@@ -375,7 +383,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           }
         >
           {assets.map((asset, index) => (
-            <option className="black-bg-option" value={index}>
+            <option className="black-bg-option" value={index} key={index}>
               {asset.underlyingSymbol}
             </option>
           ))}
@@ -405,8 +413,8 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
                 annotations: {
                   points: [
                     {
-                      x: 30,
-                      y: 3,
+                      x: parseInt(selectedAssetUtilization),
+                      y: data.borrowerRates[selectedAssetUtilization as any].y,
                       marker: {
                         size: 8,
                       },
@@ -423,7 +431,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
                   ],
                 },
 
-                colors: ["#FFFFFF", "#282727"],
+                colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
               }}
               type="line"
               width="100%"
