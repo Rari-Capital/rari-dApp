@@ -182,7 +182,7 @@ const OracleAndInterestRates = () => {
         my={4}
         px={4}
       >
-        <AvatarGroup size="sm" max={5}>
+        <AvatarGroup size="sm" max={5} pt={1}>
           {poolTokens.map(({ symbol, icon }) => {
             return (
               <Avatar
