@@ -235,9 +235,9 @@ const Countdown = ({ endDate }: { endDate: number }) => {
   }, 1000);
 
   return (
-    <Text>
+    <Text fontSize="sm">
       <b>{days}</b> days&nbsp; <b>{hours}</b> hrs&nbsp; <b>{minutes}</b>{" "}
-      min.&nbsp; <b>{seconds}</b> sec
+      mins&nbsp; <b>{seconds}</b> sec
     </Text>
   );
 };
