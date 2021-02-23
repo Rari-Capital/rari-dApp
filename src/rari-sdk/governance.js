@@ -46,7 +46,7 @@ export default class Governance {
 
   constructor(web3) {
     this.web3 = web3;
-    this.cache = new Cache({ rgtUsdPrice: 900, lpTokenUsdPrice: 900 });
+    this.cache = new Cache({ rgtUsdPrice: 900, lpTokenData: 900 });
 
     this.contracts = {};
     for (const contractName of Object.keys(contractAddresses))
@@ -60,7 +60,7 @@ export default class Governance {
     this.rgt = {
       getExchangeRate: async function () {
         // TODO: RGT price getter function from Coingecko
-        return self.cache.getOrUpdate("rgtUsdPrice", async function () {
+        return await self.cache.getOrUpdate("rgtUsdPrice", async function () {
           /* try {
             return Web3.utils.toBN(Math.trunc((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=rgt")).data.rgt.usd * 1e18));
           } catch (error) {
@@ -333,37 +333,62 @@ export default class Governance {
               .call()
           );
         },
-        getLpTokenUsdPrice: async function () {
+        getLpTokenData: async function () {
           // TODO: RGT price getter function from Coingecko
-          return self.cache.getOrUpdate("lpTokenUsdPrice", async function () {
+          return await self.cache.getOrUpdate("lpTokenData", async function () {
             try {
-              var data = (
+              return (
                 await axios.post(
                   "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
                   {
                     query: `{
                       ethRgtPair: pair(id: "0x18a797c7c70c1bf22fdee1c09062aba709cacf04") {
                         reserveUSD
+                        reserve0
+    										reserve1
                         totalSupply
                       }
                     }`,
                   }
                 )
               ).data;
-
-              return Web3.utils.toBN(
-                Math.trunc(
-                  (data.data.ethRgtPair.reserveUSD /
-                    data.data.ethRgtPair.totalSupply) *
-                    1e18
-                )
-              );
             } catch (error) {
               throw new Error(
                 "Error retrieving data from The Graph API: " + error
               );
             }
           });
+        },
+        getLpTokenUsdPrice: async function () {
+          // TODO: RGT price getter function from Coingecko
+          var data = await self.rgt.sushiSwapDistributions.getLpTokenData();
+          return Web3.utils.toBN(
+            Math.trunc(
+              (data.data.ethRgtPair.reserveUSD /
+                data.data.ethRgtPair.totalSupply) *
+                1e18
+            )
+          );
+        },
+        getReservesPerLpToken: async function () {
+          // TODO: RGT price getter function from Coingecko
+          var data = await self.rgt.sushiSwapDistributions.getLpTokenData();
+          return {
+            rgt: Web3.utils.toBN(
+              Math.trunc(
+                (data.data.ethRgtPair.reserve1 /
+                  data.data.ethRgtPair.totalSupply) *
+                  1e18
+              )
+            ),
+            eth: Web3.utils.toBN(
+              Math.trunc(
+                (data.data.ethRgtPair.reserve0 /
+                  data.data.ethRgtPair.totalSupply) *
+                  1e18
+              )
+            ),
+          };
         },
         totalStakedUsd: async function () {
           return (await self.rgt.sushiSwapDistributions.totalStaked())
@@ -376,6 +401,19 @@ export default class Governance {
               .stakingBalances(account)
               .call()
           );
+        },
+        usdStakingBalanceOf: async function (account) {
+          return (await self.rgt.sushiSwapDistributions.stakingBalanceOf(account))
+            .mul(await self.rgt.sushiSwapDistributions.getLpTokenUsdPrice())
+            .div(Web3.utils.toBN(1e18));
+        },
+        stakedReservesOf: async function (account) {
+          var stakingBalance = await self.rgt.sushiSwapDistributions.stakingBalanceOf(account);
+          var reservesPerLpToken = await self.rgt.sushiSwapDistributions.getReservesPerLpToken();
+          return {
+            rgt: reservesPerLpToken.rgt.mul(stakingBalance).div(Web3.utils.toBN(1e18)),
+            eth: reservesPerLpToken.eth.mul(stakingBalance).div(Web3.utils.toBN(1e18)),
+          };
         },
         deposit: async function (amount, options) {
           var slp = new self.web3.eth.Contract(
