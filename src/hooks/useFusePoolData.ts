@@ -9,13 +9,15 @@ export const useFusePoolData = (poolId: string) => {
 
   const { data } = useQuery(poolId + " poolData " + address, async () => {
     const comptroller = (
-      await fuse.contracts.FusePoolDirectory.methods.pools(poolId).call()
+      await fuse.contracts.FusePoolDirectory.methods
+        .pools(poolId)
+        .call({ from: address })
     ).comptroller;
 
     let assets: USDPricedFuseAsset[] = (
       await fuse.contracts.FusePoolDirectory.methods
         .getPoolAssetsWithData(comptroller)
-        .call()
+        .call({ from: address })
     ).map(filterOnlyObjectProperties);
 
     let totalSupplyBalanceUSD = 0;
