@@ -15,8 +15,11 @@ export const useFusePoolData = (poolId: string) => {
     let assets: USDPricedFuseAsset[] = (
       await fuse.contracts.FusePoolDirectory.methods
         .getPoolAssetsWithData(comptroller)
-        .call({ from: address })
+        .call()
     ).map(filterOnlyObjectProperties);
+
+    let totalSupplyBalanceUSD = 0;
+    let totalBorrowBalanceUSD = 0;
 
     let totalSuppliedUSD = 0;
     let totalBorrowedUSD = 0;
@@ -28,20 +31,37 @@ export const useFusePoolData = (poolId: string) => {
     for (let i = 0; i < assets.length; i++) {
       let asset = assets[i];
 
-      asset.supplyUSD =
+      asset.supplyBalanceUSD =
         ((asset.supplyBalance * asset.underlyingPrice) / 1e36) * ethPrice;
 
-      asset.borrowUSD =
+      asset.borrowBalanceUSD =
         ((asset.borrowBalance * asset.underlyingPrice) / 1e36) * ethPrice;
+
+      totalSupplyBalanceUSD += asset.supplyBalanceUSD;
+      totalBorrowBalanceUSD += asset.borrowBalanceUSD;
+
+      asset.totalSupplyUSD =
+        ((asset.totalSupply * asset.underlyingPrice) / 1e36) * ethPrice;
+      asset.totalBorrowUSD =
+        ((asset.totalBorrow * asset.underlyingPrice) / 1e36) * ethPrice;
+
+      totalSuppliedUSD += asset.totalSupplyUSD;
+      totalBorrowedUSD += asset.totalBorrowUSD;
 
       asset.liquidityUSD =
         ((asset.liquidity * asset.underlyingPrice) / 1e36) * ethPrice;
-
-      totalBorrowedUSD += asset.borrowUSD;
-      totalSuppliedUSD += asset.supplyUSD;
     }
 
-    return { assets, comptroller, totalSuppliedUSD, totalBorrowedUSD };
+    return {
+      assets,
+      comptroller,
+
+      totalSuppliedUSD,
+      totalBorrowedUSD,
+
+      totalSupplyBalanceUSD,
+      totalBorrowBalanceUSD,
+    };
   });
 
   return data;

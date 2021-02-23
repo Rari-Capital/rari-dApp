@@ -592,11 +592,11 @@ const StatsColumn = ({
             fontWeight="bold"
             fontSize={mode === Mode.REPAY || mode === Mode.BORROW ? "sm" : "lg"}
           >
-            {smallUsdFormatter(asset.borrowUSD)}
+            {smallUsdFormatter(asset.borrowBalanceUSD)}
             {(mode === Mode.REPAY || mode === Mode.BORROW) && updatedAsset ? (
               <>
                 {" → "}
-                {smallUsdFormatter(updatedAsset.borrowUSD)}
+                {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
               </>
             ) : null}
           </Text>

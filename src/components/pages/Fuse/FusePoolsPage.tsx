@@ -43,7 +43,9 @@ export interface FuseAsset {
 
   collateralFactor: number;
   reserveFactor: number;
+
   adminFee: number;
+  fuseFee: number;
 
   borrowRatePerBlock: number;
   supplyRatePerBlock: number;
@@ -337,7 +339,7 @@ const PoolRow = ({
   );
 };
 
-const CTokenIcon = ({
+export const CTokenIcon = ({
   address,
   ...avatarProps
 }: {

@@ -8,7 +8,7 @@ export const useBorrowLimit = (assets: USDPricedFuseAsset[]) => {
       let asset = assets[i];
 
       if (asset.membership) {
-        maxBorrow += asset.supplyUSD * (asset.collateralFactor / 1e18);
+        maxBorrow += asset.supplyBalanceUSD * (asset.collateralFactor / 1e18);
       }
     }
     return maxBorrow;

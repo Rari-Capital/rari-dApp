@@ -1,5 +1,4 @@
 import {
-  Avatar,
   AvatarGroup,
   Box,
   Heading,
@@ -7,6 +6,7 @@ import {
   Select,
   Spinner,
   Text,
+  useClipboard,
 } from "@chakra-ui/react";
 import {
   Column,
@@ -41,6 +41,8 @@ import { useQuery } from "react-query";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { USDPricedFuseAsset } from "./FusePoolPage";
 import { useTokenData } from "../../../hooks/useTokenData";
+import { CTokenIcon } from "./FusePoolsPage";
+import { shortAddress } from "../../../utils/shortAddress";
 
 const FusePoolInfoPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -80,7 +82,12 @@ const FusePoolInfoPage = React.memo(() => {
             height={isMobile ? "auto" : "450px"}
           >
             {data ? (
-              <OracleAndInterestRates />
+              <OracleAndInterestRates
+                assets={data.assets}
+                totalSuppliedUSD={data.totalSuppliedUSD}
+                totalBorrowedUSD={data.totalBorrowedUSD}
+                comptrollerAddress={data.comptroller}
+              />
             ) : (
               <Center expand>
                 <Spinner my={8} />
@@ -112,36 +119,34 @@ const FusePoolInfoPage = React.memo(() => {
 
 export default FusePoolInfoPage;
 
-const OracleAndInterestRates = () => {
+const OracleAndInterestRates = ({
+  assets,
+  totalSuppliedUSD,
+  totalBorrowedUSD,
+  comptrollerAddress,
+}: {
+  assets: USDPricedFuseAsset[];
+  totalSuppliedUSD: number;
+  totalBorrowedUSD: number;
+  comptrollerAddress: string;
+}) => {
   let { poolId } = useParams();
 
   const { t } = useTranslation();
 
-  const poolTokens = [
-    {
-      symbol: "UNI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
-    },
+  const { rari, fuse } = useRari();
 
-    {
-      symbol: "SUSHI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
-    },
+  const { data: admin } = useQuery(comptrollerAddress + " admin", () => {
+    const comptroller = new rari.web3.eth.Contract(
+      JSON.parse(
+        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+      ),
+      comptrollerAddress
+    );
 
-    {
-      symbol: "ZRX",
-      icon:
-        "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
-    },
-
-    {
-      symbol: "1INCH",
-      icon:
-        "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
-    },
-  ];
+    return comptroller.methods.admin().call();
+  });
+  const { hasCopied, onCopy } = useClipboard(admin ?? "");
 
   return (
     <Column
@@ -182,23 +187,15 @@ const OracleAndInterestRates = () => {
         my={4}
         px={4}
       >
-        <AvatarGroup size="sm" max={5} pt={1}>
-          {poolTokens.map(({ symbol, icon }) => {
-            return (
-              <Avatar
-                key={symbol}
-                bg="#FFF"
-                borderWidth="1px"
-                name={symbol}
-                src={icon}
-              />
-            );
+        <AvatarGroup size="xs" max={20}>
+          {assets.map(({ underlyingToken, cToken }) => {
+            return <CTokenIcon key={cToken} address={underlyingToken} />;
           })}
         </AvatarGroup>
 
         <Text mt={3} lineHeight={1}>
-          {poolTokens.map(({ symbol }, index, array) => {
-            return symbol + (index !== array.length - 1 ? " / " : "");
+          {assets.map(({ underlyingSymbol }, index, array) => {
+            return underlyingSymbol + (index !== array.length - 1 ? " / " : "");
           })}
         </Text>
       </Column>
@@ -214,30 +211,51 @@ const OracleAndInterestRates = () => {
       >
         <StatRow
           statATitle={t("Total Supplied")}
-          statA={shortUsdFormatter(3400000)}
+          statA={shortUsdFormatter(totalSuppliedUSD)}
           statBTitle={t("Total Borrowed")}
-          statB={shortUsdFormatter(1400000)}
+          statB={shortUsdFormatter(totalBorrowedUSD)}
         />
 
         <StatRow
-          statATitle={t("# of Suppliers")}
-          statA={shortUsdFormatter(1750).replace("$", "")}
-          statBTitle={t("# of Borrowers")}
-          statB={shortUsdFormatter(100).replace("$", "")}
+          statATitle={t("Available Liquidity")}
+          statA={shortUsdFormatter(
+            assets.reduce((a, b) => a + b.liquidityUSD, 0)
+          )}
+          statBTitle={t("Average Utilization Factor")}
+          statB={
+            assets
+              .reduce((a, b, _, { length }) => {
+                // @ts-ignore
+                return b.totalSupply === "0"
+                  ? 0
+                  : a + ((b.totalBorrow / b.totalSupply) * 100) / length;
+              }, 0)
+              .toFixed(0) + "%"
+          }
         />
 
         <StatRow
-          statATitle={t("Editable")}
+          statATitle={t("Upgradeable")}
           statA={t("Yes")}
-          statBTitle={t("Edit Timelock")}
-          statB={24 + " " + t("hours")}
+          statBTitle={
+            hasCopied ? t("Admin (copied!)") : t("Admin (click to copy)")
+          }
+          statB={admin ? shortAddress(admin) : "?"}
+          onClick={onCopy}
         />
 
         <StatRow
-          statATitle={t("Fees")}
-          statA={"10% Fuse Interest Fee"}
-          statBTitle={t("Access")}
-          statB={t("Public")}
+          statATitle={t("Fuse Interest Fee")}
+          statA={assets[0].fuseFee / 1e16 + "%"}
+          statBTitle={t("Average Admin Fee")}
+          statB={
+            assets
+              .reduce(
+                (a, b, _, { length }) => a + b.adminFee / 1e16 / length,
+                0
+              )
+              .toFixed(1) + "%"
+          }
         />
 
         <Center width="100%" mt={8} mb={12}>
@@ -255,11 +273,13 @@ const StatRow = ({
   statA,
   statBTitle,
   statB,
+  ...other
 }: {
   statATitle: string;
   statA: string;
   statBTitle: string;
   statB: string;
+  [key: string]: any;
 }) => {
   return (
     <RowOnDesktopColumnOnMobile
@@ -267,6 +287,7 @@ const StatRow = ({
       crossAxisAlignment="center"
       width="100%"
       mb={4}
+      {...other}
     >
       <Text width="50%" textAlign="center">
         {statATitle}: <b>{statA}</b>
@@ -290,9 +311,16 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
   const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
-  const selectedAssetUtilization = parseFloat(
-    ((selectedAsset.totalBorrow / selectedAsset.totalSupply) * 100).toFixed(0)
-  );
+  const selectedAssetUtilization =
+    // @ts-ignore
+    selectedAsset.totalSupply === "0"
+      ? 0
+      : parseFloat(
+          (
+            (selectedAsset.totalBorrow / selectedAsset.totalSupply) *
+            100
+          ).toFixed(0)
+        );
 
   const { data } = useQuery(selectedAsset.cToken + " curves", async () => {
     const interestRateModel = await fuse.getInterestRateModel(

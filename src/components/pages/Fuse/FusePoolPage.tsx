@@ -31,8 +31,12 @@ import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
 
 export interface USDPricedFuseAsset extends FuseAsset {
-  supplyUSD: number;
-  borrowUSD: number;
+  supplyBalanceUSD: number;
+  borrowBalanceUSD: number;
+
+  totalSupplyUSD: number;
+  totalBorrowUSD: number;
+
   liquidityUSD: number;
 }
 
@@ -85,7 +89,7 @@ const FusePoolPage = React.memo(() => {
               <SupplyList
                 assets={data.assets}
                 comptrollerAddress={data.comptroller}
-                totalSuppliedUSD={data.totalSuppliedUSD}
+                supplyBalanceUSD={data.totalSupplyBalanceUSD}
               />
             ) : (
               <Center expand>
@@ -104,7 +108,7 @@ const FusePoolPage = React.memo(() => {
               <BorrowList
                 comptrollerAddress={data.comptroller}
                 assets={data.assets}
-                totalBorrowedUSD={data.totalBorrowedUSD}
+                borrowBalanceUSD={data.totalBorrowBalanceUSD}
               />
             ) : (
               <Center expand>
@@ -182,11 +186,11 @@ const CollateralRatioBar = ({
 
 const SupplyList = ({
   assets,
-  totalSuppliedUSD,
+  supplyBalanceUSD,
   comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
-  totalSuppliedUSD: number;
+  supplyBalanceUSD: number;
   comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
@@ -198,7 +202,7 @@ const SupplyList = ({
       height="100%"
     >
       <Heading size="md" px={4} py={3}>
-        {t("Supply Balance:")} {smallUsdFormatter(totalSuppliedUSD)}
+        {t("Supply Balance:")} {smallUsdFormatter(supplyBalanceUSD)}
       </Heading>
       <ModalDivider />
 
@@ -392,7 +396,7 @@ const AssetSupplyRow = ({
             fontWeight="bold"
             fontSize="17px"
           >
-            {smallUsdFormatter(asset.supplyUSD)}
+            {smallUsdFormatter(asset.supplyBalanceUSD)}
           </Text>
 
           <Text fontSize="sm">
@@ -435,11 +439,11 @@ const AssetSupplyRow = ({
 
 const BorrowList = ({
   assets,
-  totalBorrowedUSD,
+  borrowBalanceUSD,
   comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
-  totalBorrowedUSD: number;
+  borrowBalanceUSD: number;
   comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
@@ -451,7 +455,7 @@ const BorrowList = ({
       height="100%"
     >
       <Heading size="md" px={4} py={3}>
-        {t("Borrow Balance:")} {smallUsdFormatter(totalBorrowedUSD)}
+        {t("Borrow Balance:")} {smallUsdFormatter(borrowBalanceUSD)}
       </Heading>
       <ModalDivider />
 
@@ -587,7 +591,7 @@ const AssetBorrowRow = ({
             fontWeight="bold"
             fontSize="17px"
           >
-            {smallUsdFormatter(asset.borrowUSD)}
+            {smallUsdFormatter(asset.borrowBalanceUSD)}
           </Text>
 
           <Text fontSize="sm">
