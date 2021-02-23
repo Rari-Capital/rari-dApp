@@ -114,7 +114,7 @@ const Pool2Page = () => {
                   crossAxisAlignment="center"
                   width="100%"
                   height="100%"
-                  ml={isMobile ? 0 : 4}
+                  ml={isMobile ? 0 : 3}
                 >
                   <GeneralInfo />
                 </Column>
@@ -125,7 +125,7 @@ const Pool2Page = () => {
                   crossAxisAlignment="center"
                   width="100%"
                   height="100%"
-                  ml={isMobile ? 0 : 4}
+                  ml={isMobile ? 0 : 3}
                 >
                   <YourBalance />
                 </Column>
@@ -249,13 +249,29 @@ const YourBalance = () => {
   const { rari, address } = useRari();
 
   const { data: balance } = useQuery(address + " pool2Balance", async () => {
-    return parseFloat(
+    const SLP = parseFloat(
       rari.web3.utils.fromWei(
         await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
           address
         )
       )
     );
+
+    const {
+      eth: _eth,
+      rgt: _rgt,
+    } = await rari.governance.rgt.sushiSwapDistributions.stakedReservesOf(
+      address
+    );
+
+    return {
+      SLP,
+      hasDeposited: SLP > 0,
+      // @ts-ignore
+      eth: _eth.toString() / 1e18,
+      // @ts-ignore
+      rgt: _rgt.toString() / 1e18,
+    };
   });
 
   const { data: earned } = useQuery(
@@ -283,7 +299,9 @@ const YourBalance = () => {
       crossAxisAlignment="center"
       width="100%"
       height="100%"
-      style={!balance ? { opacity: "0.3", pointerEvents: "none" } : {}}
+      style={
+        !balance?.hasDeposited ? { opacity: "0.3", pointerEvents: "none" } : {}
+      }
     >
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}
@@ -291,12 +309,16 @@ const YourBalance = () => {
         defaultMode="pool2"
       />
       <Heading fontSize="20px">{t("Your Balance")}</Heading>
-      <Text mt={3} width="70%" textAlign="center">
-        {balance ? balance.toFixed(4) : "0"} Staked SLP
+      <Text fontSize="sm" mt={2} width="70%" textAlign="center">
+        {balance?.hasDeposited ? balance.SLP!.toFixed(4) : "0.0000"} Staked SLP
       </Text>
-      <Text mt={5} width="70%" textAlign="center">
+      <Text mt={1} fontSize="xs" width="70%" textAlign="center">
+        {balance?.hasDeposited ? balance.eth!.toFixed(0) : "0.0000"} ETH{" + "}
+        {balance?.hasDeposited ? balance.rgt!.toFixed(0) : "0.0000"} RGT
+      </Text>
+      <Text mt={2} width="70%" textAlign="center">
         <b>
-          {earned ? earned.toFixed(2) : "0"} {t("RGT Earned")}
+          {earned ? earned.toFixed(2) : "0.00"} {t("RGT Earned")}
         </b>
       </Text>
       <DashboardBox
