@@ -54,11 +54,20 @@ export default class Fuse {
     PreferredPriceOracle:
       "0x76520d6fcfcfa7f457ab83d7b73db055f7bad3bd5f064df2500abcbbdec6f11f",
     ChainlinkPriceOracle:
-      "0x7390a299baa380530decfe24773f3b740db1ad552e3a241cde75cd9d74e7a3c7",
+      "0x75ada3e289c572fdbd36538042f896b9b8f4346ab095866882549211ed2db8f6",
+    Keep3rPriceOracle:
+      "0x48e68237796c3d830eeefbe9c8f6ab5a7e8c1f9c6d8a499ff6438d4441a03122",
+    MasterPriceOracle:
+      "0xfa5e52d51adbcafa8bafe9538d7ade0f4371556e24024f60e44218cac131e67c",
     UniswapView:
       "0x262201ec0397bfc12b95236a81826647a722f219c6d789449d287b1917273fbd",
     UniswapAnchoredView:
       "0x688f4a293eda38ea8a0f5e24576aace04b3d16a186838fc1c886bac8f33e1818",
+    UniswapLpTokenView:
+      "0xd78d8ccc739ba3615129ec68756d31d72dfd7b5d8f1d6ad3546bc88f03ddcec6",
+    RecursivePriceOracle: "",
+    YVaultPriceOracle: "",
+    AlphaHomoraV1PriceOracle: "",
   };
 
   constructor(web3Provider) {
@@ -113,8 +122,14 @@ export default class Fuse {
           "SimplePriceOracle",
           "PreferredPriceOracle",
           "ChainlinkPriceOracle",
+          "Keep3rPriceOracle",
+          "MasterPriceOracle",
           "UniswapAnchoredView",
           "UniswapView",
+          "UniswapLpTokenView",
+          "RecursivePriceOracle",
+          "YVaultPriceOracle",
+          "AlphaHomoraV1PriceOracle",
         ].indexOf(priceOracle) >= 0
       ) {
         try {
@@ -209,8 +224,14 @@ export default class Fuse {
           "SimplePriceOracle",
           "PreferredPriceOracle",
           "ChainlinkPriceOracle",
+          "Keep3rPriceOracle",
+          "MasterPriceOracle",
           "UniswapAnchoredView",
           "UniswapView",
+          "UniswapLpTokenView",
+          "RecursivePriceOracle",
+          "YVaultPriceOracle",
+          "AlphaHomoraV1PriceOracle",
         ].indexOf(priceOracle) >= 0
       ) {
         try {
@@ -443,6 +464,30 @@ export default class Fuse {
               arguments: deployArgs,
             })
             .send(options);
+          break;
+        case "UniswapLpTokenView":
+          var priceOracle = new this.web3.eth.Contract(JSON.parse(openOracleContracts["contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView"].abi));
+          var deployArgs = [
+            conf.useRootOracle ? true : false,
+          ];
+          priceOracle = await priceOracle.deploy({ data: "0x" + openOracleContracts["contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView"].bin, arguments: deployArgs }).send(options);
+          break;
+        case "Keep3rPriceOracle":
+          var priceOracle = new this.web3.eth.Contract(JSON.parse(contracts["contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle"].abi));
+          var deployArgs = [
+            conf.sushiswap ? true : false,
+          ];
+          priceOracle = await priceOracle.deploy({ data: "0x" + contracts["contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle"].bin, arguments: deployArgs }).send(options);
+          break;
+        case "MasterPriceOracle":
+          var priceOracle = new this.web3.eth.Contract(JSON.parse(contracts["contracts/MasterPriceOracle.sol:MasterPriceOracle"].abi));
+          var deployArgs = [
+            conf.underlyings ? conf.underlyings : [],
+            conf.oracles ? conf.oracles : [],
+            conf.admin ? conf.admin : options.from,
+            conf.canAdminOverwrite ? true : false,
+          ];
+          priceOracle = await priceOracle.deploy({ data: "0x" + contracts["contracts/MasterPriceOracle.sol:MasterPriceOracle"].bin, arguments: deployArgs }).send(options);
           break;
         default:
           var priceOracle = new this.web3.eth.Contract(

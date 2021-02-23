@@ -10,6 +10,11 @@ var usedContractAbiKeys = [
   "contracts/PreferredPriceOracle.sol:PreferredPriceOracle",
   "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle",
   "contracts/SimplePriceOracle.sol:SimplePriceOracle",
+  "contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle",
+  "contracts/MasterPriceOracle.sol:MasterPriceOracle",
+  "contracts/RecursivePriceOracle.sol:RecursivePriceOracle",
+  "contracts/YVaultPriceOracle.sol:YVaultPriceOracle",
+  "contracts/AlphaHomoraV1PriceOracle.sol:AlphaHomoraV1PriceOracle",
   "contracts/CEtherDelegate.sol:CEtherDelegate",
   "contracts/CEtherDelegator.sol:CEtherDelegator",
   "contracts/EIP20Interface.sol:EIP20Interface",
@@ -30,6 +35,11 @@ var usedContractBinKeys = [
   "contracts/PreferredPriceOracle.sol:PreferredPriceOracle",
   "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle",
   "contracts/SimplePriceOracle.sol:SimplePriceOracle",
+  "contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle",
+  "contracts/MasterPriceOracle.sol:MasterPriceOracle",
+  "contracts/RecursivePriceOracle.sol:RecursivePriceOracle",
+  "contracts/YVaultPriceOracle.sol:YVaultPriceOracle",
+  "contracts/AlphaHomoraV1PriceOracle.sol:AlphaHomoraV1PriceOracle",
   "contracts/CEtherDelegate.sol:CEtherDelegate",
   "contracts/CEtherDelegator.sol:CEtherDelegator",
   "contracts/CErc20Delegate.sol:CErc20Delegate",
@@ -48,7 +58,8 @@ minContracts = {};
 var usedContractAbiKeys = [
   "contracts/Uniswap/UniswapAnchoredView.sol:UniswapAnchoredView",
   "contracts/OpenOraclePriceData.sol:OpenOraclePriceData",
-  "contracts/Uniswap/UniswapView.sol:UniswapView"
+  "contracts/Uniswap/UniswapView.sol:UniswapView",
+  "contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView",
 ];
 for (const contractKey of usedContractAbiKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
@@ -56,7 +67,8 @@ for (const contractKey of usedContractAbiKeys) {
 }
 var usedContractBinKeys = [
   "contracts/Uniswap/UniswapAnchoredView.sol:UniswapAnchoredView",
-  "contracts/Uniswap/UniswapView.sol:UniswapView"
+  "contracts/Uniswap/UniswapView.sol:UniswapView",
+  "contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView",
 ];
 for (const contractKey of usedContractBinKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
