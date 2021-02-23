@@ -16,7 +16,7 @@ import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
-import { useQuery, useQueryCache } from "react-query";
+import { QueryResult, useQuery, useQueryCache } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -434,7 +434,7 @@ const StatsColumn = ({
 
   const { rari } = useRari();
 
-  const { data: updatedAssets } = useQuery(
+  const { data: updatedAssets }: QueryResult<USDPricedFuseAsset[]> = useQuery(
     mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
     async () => {
       const ethPrice: number = rari.web3.utils.fromWei(
@@ -449,7 +449,7 @@ const StatsColumn = ({
             return {
               ...value,
               supplyBalance,
-              supplyUSD:
+              supplyBalanceUSD:
                 ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
             };
           } else if (mode === Mode.WITHDRAW) {
@@ -458,7 +458,7 @@ const StatsColumn = ({
             return {
               ...value,
               supplyBalance,
-              supplyUSD:
+              supplyBalanceUSD:
                 ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
             };
           } else if (mode === Mode.BORROW) {
@@ -467,7 +467,8 @@ const StatsColumn = ({
             return {
               ...value,
               borrowBalance,
-              borrowUSD:
+
+              borrowBalanceUSD:
                 ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
             };
           } else if (mode === Mode.REPAY) {
@@ -476,14 +477,14 @@ const StatsColumn = ({
             return {
               ...value,
               borrowBalance,
-              borrowUSD:
+              borrowBalanceUSD:
                 ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
             };
           }
         }
 
         return value;
-      }) as USDPricedFuseAsset[];
+      });
     }
   );
 
@@ -621,6 +622,8 @@ const TokenNameAndMaxButton = ({
 }) => {
   const { rari, fuse, address } = useRari();
 
+  const toast = useToast();
+
   const [isMaxLoading, setIsMaxLoading] = useState(false);
 
   const setToMax = async () => {
@@ -653,7 +656,6 @@ const TokenNameAndMaxButton = ({
     }
 
     if (mode === Mode.BORROW) {
-      // TODO:
       const comptroller = new rari.web3.eth.Contract(
         JSON.parse(
           fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
@@ -661,15 +663,27 @@ const TokenNameAndMaxButton = ({
         comptrollerAddress
       );
 
-      console.log(
-        await comptroller.methods.getMaxBorrow(address, asset.cToken).call()
-      );
+      const { 0: err, 1: maxBorrow } = await comptroller.methods
+        .getMaxBorrow(address, asset.cToken)
+        .call();
 
-      maxBN = rari.web3.utils.toBN(0);
+      if (err !== 0) {
+        maxBN = rari.web3.utils.toBN(maxBorrow);
+      } else {
+        toast({
+          title: "Error! Code: " + err,
+          description: "Could not fetch your max borrow amount!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        maxBN = rari.web3.utils.toBN(0);
+      }
     }
 
     if (mode === Mode.WITHDRAW) {
-      // TODO:
       const comptroller = new rari.web3.eth.Contract(
         JSON.parse(
           fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
@@ -677,11 +691,24 @@ const TokenNameAndMaxButton = ({
         comptrollerAddress
       );
 
-      console.log(
-        await comptroller.methods.getMaxWithdraw(address, asset.cToken).call()
-      );
+      const { 0: err, 1: maxRedeem } = await comptroller.methods
+        .getMaxRedeem(address, asset.cToken)
+        .call();
 
-      maxBN = rari.web3.utils.toBN(0);
+      if (err !== 0) {
+        maxBN = rari.web3.utils.toBN(maxRedeem);
+      } else {
+        toast({
+          title: "Error! Code: " + err,
+          description: "Could not fetch your max withdraw amount!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        maxBN = rari.web3.utils.toBN(0);
+      }
     }
 
     if (maxBN.isNeg() || maxBN.isZero()) {
