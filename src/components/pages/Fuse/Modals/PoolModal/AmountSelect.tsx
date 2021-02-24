@@ -112,7 +112,7 @@ async function fetchMaxAmount(
 
     const { 0: err, 1: maxBorrow } = await comptroller.methods
       .getMaxBorrow(address, asset.cToken)
-      .call({ from: address });
+      .call();
 
     if (err !== 0) {
       return fuse.web3.utils.toBN(maxBorrow);
@@ -131,7 +131,7 @@ async function fetchMaxAmount(
 
     const { 0: err, 1: maxRedeem } = await comptroller.methods
       .getMaxRedeem(address, asset.cToken)
-      .call({ from: address });
+      .call();
 
     if (err !== 0) {
       return fuse.web3.utils.toBN(maxRedeem);
