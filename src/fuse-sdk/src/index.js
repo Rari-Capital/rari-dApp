@@ -54,28 +54,17 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    PreferredPriceOracle:
-      "0x7e1245c55ff349d8b029338a99e83f7b98e85fb6315df2764bc93fa4701de82e",
-    ChainlinkPriceOracle:
-      "0xc0d44d5eb32304f8f06c06d6cdb25481fcaae7575adec54b9e25320248182efa",
-    Keep3rPriceOracle:
-      "0x48e68237796c3d830eeefbe9c8f6ab5a7e8c1f9c6d8a499ff6438d4441a03122",
-    MasterPriceOracle:
-      "0xfa5e52d51adbcafa8bafe9538d7ade0f4371556e24024f60e44218cac131e67c",
-    UniswapView:
-      "0xa32e81955930dd4c89f94bb5d93665cf26f021549fe81029f00570a3a8bd8a05",
-    UniswapAnchoredView:
-      "0x16d2e7d6ec9ce92ebbee55b16f99a6e915f965530ddb591e16a37c949695cda0",
-    UniswapLpTokenView:
-      "0x6e1324afd9b8c744d2547cba8179ad8b982a5767ab1ca463f7c4eac47b798850",
-    RecursivePriceOracle:
-      "0x09a958d820b06468505458ed3b75371b33a11ed2f224d70313ed8585155a4718",
-    YVaultV1PriceOracle:
-      "0xe0cdb4efa271b8d0b931cef83bfe3da22b93c96be6993c1fbb6b177dc89eb285",
-    YVaultV2PriceOracle:
-      "0xaf141407fc243ef60dd01a5ce6b36af36316d0782122a70b63d0b72a7884852f",
-    AlphaHomoraV1PriceOracle:
-      "0xe1ff9e8ec350a065c7cd16ad9871833ac6be3afaf94aae8562a1926af9de1228",
+    PreferredPriceOracle: "0x77571ad70d28b1714d458bca62cd308b0a4c0e842749df89e2ecae1c5aba89cb",
+    ChainlinkPriceOracle: "0xce264499dff972a3b8a7e3d97c7fc56b6ac31545ff08889a8ae1de9cd2291855",
+    Keep3rPriceOracle: "0x5ee8cf1420a5634b1506def6fe7f58d3e3faa40c27287e96e3d026633b76a231",
+    MasterPriceOracle: "0x2be6e8d322176d9ecde17c4155d23e31eead7158a6b79364fb08efa1808309e1",
+    UniswapView: "0xa32e81955930dd4c89f94bb5d93665cf26f021549fe81029f00570a3a8bd8a05",
+    UniswapAnchoredView: "0x16d2e7d6ec9ce92ebbee55b16f99a6e915f965530ddb591e16a37c949695cda0",
+    UniswapLpTokenView: "0x6e1324afd9b8c744d2547cba8179ad8b982a5767ab1ca463f7c4eac47b798850",
+    RecursivePriceOracle: "0xadee3889a85c5fa8acb145f28614b9a6d47d3bb66276a431b92ef2fcc4483ded",
+    YVaultV1PriceOracle: "0x72aaa43c3951d75c59631a432a1d29e9f1c2d16f8f134daff47afc718c85ea45",
+    YVaultV2PriceOracle: "0x3c953c4673cb08350a5c4d67082cd1de692913f14e18035da79633ad6e7fb695",
+    AlphaHomoraV1PriceOracle: "0x1ebf22ccd482ddaa89e4d929e3c53021d9d758b244e1baff72ef8b421c96540c",
   };
 
   constructor(web3Provider) {
