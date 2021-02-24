@@ -21,6 +21,8 @@ export default class Fuse {
     "0x0165878A594ca255338adfa4d48449f69242Eb8F"; // TODO: Set correct mainnet address after deployment
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS =
     "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"; // TODO: Set correct mainnet address after deployment
+  static FUSE_POOL_LENS_CONTRACT_ADDRESS =
+    "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"; // TODO: Set correct mainnet address after deployment
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
     "0x1ca334e4bceb0c6d95733d11ed0e9b52caf66807"; // TODO: Set correct mainnet address after deployment
