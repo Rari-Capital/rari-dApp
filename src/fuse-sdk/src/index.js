@@ -63,11 +63,11 @@ export default class Fuse {
     MasterPriceOracle:
       "0xfa5e52d51adbcafa8bafe9538d7ade0f4371556e24024f60e44218cac131e67c",
     UniswapView:
-      "0x7b61acc83441231036447fc759c994f548e3550596a82b8ec9e8fe10eb9d88fc",
+      "0xa32e81955930dd4c89f94bb5d93665cf26f021549fe81029f00570a3a8bd8a05",
     UniswapAnchoredView:
-      "0x8956cba52dcec6fa6eb5c56e9dda81ec908051c29e41d9b428690cce5b38a7ec",
+      "0x16d2e7d6ec9ce92ebbee55b16f99a6e915f965530ddb591e16a37c949695cda0",
     UniswapLpTokenView:
-      "0xd78d8ccc739ba3615129ec68756d31d72dfd7b5d8f1d6ad3546bc88f03ddcec6",
+      "0x6e1324afd9b8c744d2547cba8179ad8b982a5767ab1ca463f7c4eac47b798850",
     RecursivePriceOracle:
       "0x09a958d820b06468505458ed3b75371b33a11ed2f224d70313ed8585155a4718",
     YVaultV1PriceOracle:
