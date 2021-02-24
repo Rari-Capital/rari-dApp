@@ -307,7 +307,9 @@ const PoolRow = ({
             })}
           </AvatarGroup>
 
-          <Text ml={2}>{name}</Text>
+          <Text ml={2} flexShrink={0}>
+            {name}
+          </Text>
 
           <Text ml={2} mb="3px" fontWeight="bold" flexShrink={0}>
             <b>

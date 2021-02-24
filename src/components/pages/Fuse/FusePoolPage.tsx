@@ -269,7 +269,7 @@ const AssetSupplyRow = ({
 
   const asset = assets[index];
 
-  const { rari, fuse, address } = useRari();
+  const { fuse, address } = useRari();
 
   const tokenData = useTokenData(asset.underlyingToken);
 
@@ -280,7 +280,7 @@ const AssetSupplyRow = ({
   const toast = useToast();
 
   const onToggleCollateral = async () => {
-    const comptroller = new rari.web3.eth.Contract(
+    const comptroller = new fuse.web3.eth.Contract(
       JSON.parse(
         fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
       ),
@@ -413,12 +413,18 @@ const AssetSupplyRow = ({
           crossAxisAlignment="center"
         >
           <style>
-            {`
+            {`  
             
             .${
               asset.underlyingSymbol + "-switch"
             } > .chakra-switch__track[data-checked] {
-              background-color: ${tokenData?.color ?? "#282727"} !important;
+              background-color: ${
+                tokenData?.color
+                  ? tokenData.color === "#FFFFFF"
+                    ? "#282727"
+                    : tokenData.color
+                  : "#282727"
+              } !important;
             }
 
             `}
@@ -474,11 +480,11 @@ const BorrowList = ({
           {t("APY/Weekly")}
         </Text>
 
-        <Text width="23%" fontWeight="bold" textAlign="right">
+        <Text width="27%" fontWeight="bold" textAlign="right">
           {t("Borrowed")}
         </Text>
 
-        <Text width="24%" fontWeight="bold" textAlign="right">
+        <Text width="20%" fontWeight="bold" textAlign="right">
           {t("Liquidity")}
         </Text>
       </Row>
@@ -584,7 +590,7 @@ const AssetBorrowRow = ({
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
-          width="23%"
+          width="27%"
         >
           <Text
             color={tokenData?.color ?? "#FFF"}
@@ -605,7 +611,7 @@ const AssetBorrowRow = ({
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
-          width="24%"
+          width="20%"
         >
           <Text
             color={tokenData?.color ?? "#FFF"}

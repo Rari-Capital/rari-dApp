@@ -22,11 +22,8 @@ import { HashLoader } from "react-spinners";
 
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../../../context/RariContext";
-import {
-  fetchTokenBalance,
-  useTokenBalance,
-} from "../../../../../hooks/useTokenBalance";
-import { BN, smallUsdFormatter } from "../../../../../utils/bigUtils";
+import { fetchTokenBalance } from "../../../../../hooks/useTokenBalance";
+import { smallUsdFormatter } from "../../../../../utils/bigUtils";
 
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
@@ -41,6 +38,8 @@ import {
   useTokenData,
 } from "../../../../../hooks/useTokenData";
 import { useBorrowLimit } from "../../../../../hooks/useBorrowLimit";
+
+import Fuse from "../../../../../fuse-sdk";
 
 interface Props {
   onClose: () => any;
@@ -71,6 +70,77 @@ async function testForCompoundErrorAndSend(
   return txObject.send({ from: caller });
 }
 
+async function fetchMaxAmount(
+  mode: Mode,
+  fuse: Fuse,
+  address: string,
+  asset: USDPricedFuseAsset,
+  comptrollerAddress: string
+) {
+  if (mode === Mode.SUPPLY) {
+    const balance = await fetchTokenBalance(
+      asset.underlyingToken,
+      fuse.web3,
+      address
+    );
+
+    return balance;
+  }
+
+  if (mode === Mode.REPAY) {
+    const balance = await fetchTokenBalance(
+      asset.underlyingToken,
+      fuse.web3,
+      address
+    );
+    const debt = fuse.web3.utils.toBN(asset.borrowBalance);
+
+    if (balance.gt(debt)) {
+      return debt;
+    } else {
+      return balance;
+    }
+  }
+
+  if (mode === Mode.BORROW) {
+    const comptroller = new fuse.web3.eth.Contract(
+      JSON.parse(
+        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+      ),
+      comptrollerAddress
+    );
+
+    const { 0: err, 1: maxBorrow } = await comptroller.methods
+      .getMaxBorrow(address, asset.cToken)
+      .call({ from: address });
+
+    if (err !== 0) {
+      return fuse.web3.utils.toBN(maxBorrow);
+    } else {
+      throw new Error("Could not fetch your max borrow amount! Code: " + err);
+    }
+  }
+
+  if (mode === Mode.WITHDRAW) {
+    const comptroller = new fuse.web3.eth.Contract(
+      JSON.parse(
+        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+      ),
+      comptrollerAddress
+    );
+
+    const { 0: err, 1: maxRedeem } = await comptroller.methods
+      .getMaxRedeem(address, asset.cToken)
+      .call({ from: address });
+
+    if (err !== 0) {
+      return fuse.web3.utils.toBN(maxRedeem);
+    } else {
+      throw new Error("Could not fetch your max withdraw amount! Code: " + err);
+    }
+  }
+}
+
 const AmountSelect = ({
   onClose,
   assets,
@@ -81,14 +151,13 @@ const AmountSelect = ({
 }: Props) => {
   const asset = assets[index];
 
-  const { rari, address, fuse } = useRari();
+  const { address, fuse } = useRari();
 
   const toast = useToast();
 
   const queryCache = useQueryCache();
 
   const tokenData = useTokenData(asset.underlyingToken);
-  const { data: balance } = useTokenBalance(asset.underlyingToken);
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
@@ -121,33 +190,37 @@ const AmountSelect = ({
     setUserAction(UserAction.NO_ACTION);
   };
 
-  const amountIsValid = (() => {
-    if (amount === null || amount.isZero()) {
-      return false;
-    }
+  const { data: amountIsValid } = useQuery(
+    (amount?.toString() ?? "null") + " isValid",
+    async () => {
+      if (amount === null || amount.isZero()) {
+        return false;
+      }
 
-    if (!balance) {
-      return false;
-    }
+      try {
+        const max = await fetchMaxAmount(
+          mode,
+          fuse,
+          address,
+          asset,
+          comptrollerAddress
+        );
 
-    if (mode === Mode.SUPPLY) {
-      return amount.lte(balance.toString());
-    }
+        return amount.lte(max!.toString());
+      } catch (e) {
+        toast({
+          title: "Error!",
+          description: e.toString(),
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-right",
+        });
 
-    if (mode === Mode.REPAY) {
-      return amount.lte(balance.toString()) && amount.lte(asset.borrowBalance);
+        return false;
+      }
     }
-
-    if (mode === Mode.BORROW) {
-      // TODO: CALC BORROW LIMIT AND SUBTRACT BORROWED CURRENTLY THEN USE PRICE OF THIS TOKEN
-      return true;
-    }
-
-    if (mode === Mode.WITHDRAW) {
-      // TODO: HELP
-      return true;
-    }
-  })();
+  );
 
   let depositOrWithdrawAlert;
 
@@ -161,7 +234,7 @@ const AmountSelect = ({
     } else {
       depositOrWithdrawAlert = t("Enter a valid amount to repay.");
     }
-  } else if (!balance) {
+  } else if (amountIsValid === undefined) {
     depositOrWithdrawAlert = t("Loading your balance of {{token}}...", {
       token: asset.underlyingSymbol,
     });
@@ -202,9 +275,9 @@ const AmountSelect = ({
 
       const max = new BigNumber(2).pow(256).minus(1).toFixed(0);
 
-      const amountBN = rari.web3.utils.toBN(amount!.toFixed(0));
+      const amountBN = fuse.web3.utils.toBN(amount!.toFixed(0));
 
-      const cToken = new rari.web3.eth.Contract(
+      const cToken = new fuse.web3.eth.Contract(
         isETH
           ? JSON.parse(
               fuse.compoundContracts[
@@ -221,7 +294,7 @@ const AmountSelect = ({
 
       if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
         if (!isETH) {
-          const token = new rari.web3.eth.Contract(
+          const token = new fuse.web3.eth.Contract(
             JSON.parse(
               fuse.compoundContracts[
                 "contracts/EIP20Interface.sol:EIP20Interface"
@@ -230,7 +303,7 @@ const AmountSelect = ({
             asset.underlyingToken
           );
 
-          const hasApprovedEnough = rari.web3.utils
+          const hasApprovedEnough = fuse.web3.utils
             .toBN(
               await token.methods
                 .allowance(address, cToken.options.address)
@@ -620,7 +693,7 @@ const TokenNameAndMaxButton = ({
   comptrollerAddress: string;
   updateAmount: (newAmount: string) => any;
 }) => {
-  const { rari, fuse, address } = useRari();
+  const { fuse, address } = useRari();
 
   const toast = useToast();
 
@@ -628,102 +701,39 @@ const TokenNameAndMaxButton = ({
 
   const setToMax = async () => {
     setIsMaxLoading(true);
-    let maxBN: BN = {} as any;
 
-    if (mode === Mode.SUPPLY) {
-      const balance = await fetchTokenBalance(
-        asset.underlyingToken,
-        rari,
-        address
-      );
-
-      maxBN = balance;
-    }
-
-    if (mode === Mode.REPAY) {
-      const balance = await fetchTokenBalance(
-        asset.underlyingToken,
-        rari,
-        address
-      );
-      const debt = rari.web3.utils.toBN(asset.borrowBalance);
-
-      if (balance.gt(debt)) {
-        maxBN = debt;
-      } else {
-        maxBN = balance;
-      }
-    }
-
-    if (mode === Mode.BORROW) {
-      const comptroller = new rari.web3.eth.Contract(
-        JSON.parse(
-          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-        ),
+    try {
+      const maxBN = await fetchMaxAmount(
+        mode,
+        fuse,
+        address,
+        asset,
         comptrollerAddress
       );
 
-      const { 0: err, 1: maxBorrow } = await comptroller.methods
-        .getMaxBorrow(address, asset.cToken)
-        .call();
-
-      if (err !== 0) {
-        maxBN = rari.web3.utils.toBN(maxBorrow);
+      if (maxBN!.isNeg() || maxBN!.isZero()) {
+        updateAmount("");
       } else {
-        toast({
-          title: "Error! Code: " + err,
-          description: "Could not fetch your max borrow amount!",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
+        const str = new BigNumber(maxBN!.toString())
+          .div(10 ** asset.underlyingDecimals)
+          .toFixed(18)
+          // Remove trailing zeroes
+          .replace(/\.?0+$/, "");
 
-        maxBN = rari.web3.utils.toBN(0);
+        updateAmount(str);
       }
+
+      setIsMaxLoading(false);
+    } catch (e) {
+      toast({
+        title: "Error!",
+        description: e.toString(),
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
     }
-
-    if (mode === Mode.WITHDRAW) {
-      const comptroller = new rari.web3.eth.Contract(
-        JSON.parse(
-          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-        ),
-        comptrollerAddress
-      );
-
-      const { 0: err, 1: maxRedeem } = await comptroller.methods
-        .getMaxRedeem(address, asset.cToken)
-        .call();
-
-      if (err !== 0) {
-        maxBN = rari.web3.utils.toBN(maxRedeem);
-      } else {
-        toast({
-          title: "Error! Code: " + err,
-          description: "Could not fetch your max withdraw amount!",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
-
-        maxBN = rari.web3.utils.toBN(0);
-      }
-    }
-
-    if (maxBN.isNeg() || maxBN.isZero()) {
-      updateAmount("");
-    } else {
-      const str = new BigNumber(maxBN.toString())
-        .div(10 ** asset.underlyingDecimals)
-        .toFixed(18)
-        // Remove trailing zeroes
-        .replace(/\.?0+$/, "");
-
-      updateAmount(str);
-    }
-
-    setIsMaxLoading(false);
   };
 
   const { t } = useTranslation();
