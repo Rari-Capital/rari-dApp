@@ -284,7 +284,11 @@ const TokenNameAndMaxButton = ({
     let maxBN: BN;
 
     if (mode === Mode.DEPOSIT) {
-      const balance = await fetchTokenBalance(LP_TOKEN_CONTRACT, rari, address);
+      const balance = await fetchTokenBalance(
+        LP_TOKEN_CONTRACT,
+        rari.web3,
+        address
+      );
 
       maxBN = balance;
     } else {

@@ -435,7 +435,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(token.address, rari, address);
+    const balance = await fetchTokenBalance(token.address, rari.web3, address);
 
     maxBN = balance;
 

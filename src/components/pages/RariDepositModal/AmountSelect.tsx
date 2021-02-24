@@ -462,7 +462,11 @@ const TokenNameAndMaxButton = ({
     let maxBN: BN;
 
     if (mode === Mode.DEPOSIT) {
-      const balance = await fetchTokenBalance(token.address, rari, address);
+      const balance = await fetchTokenBalance(
+        token.address,
+        rari.web3,
+        address
+      );
 
       if (token.symbol === "ETH") {
         const ethPriceBN = await rari.getEthUsdPriceBN();
