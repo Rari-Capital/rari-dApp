@@ -136,17 +136,25 @@ const OracleAndInterestRates = ({
 
   const { rari, fuse } = useRari();
 
-  const { data: admin } = useQuery(comptrollerAddress + " admin", () => {
-    const comptroller = new rari.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-      ),
-      comptrollerAddress
-    );
+  const { data } = useQuery(
+    comptrollerAddress + " oracleAndAdmin",
+    async () => {
+      const comptroller = new rari.web3.eth.Contract(
+        JSON.parse(
+          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+        ),
+        comptrollerAddress
+      );
 
-    return comptroller.methods.admin().call();
-  });
-  const { hasCopied, onCopy } = useClipboard(admin ?? "");
+      return {
+        admin: await comptroller.methods.admin().call(),
+        oracle: await fuse.getPriceOracle(
+          await comptroller.methods.oracle().call()
+        ),
+      };
+    }
+  );
+  const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
   return (
     <Column
@@ -240,7 +248,7 @@ const OracleAndInterestRates = ({
           statBTitle={
             hasCopied ? t("Admin (copied!)") : t("Admin (click to copy)")
           }
-          statB={admin ? shortAddress(admin) : "?"}
+          statB={data?.admin ? shortAddress(data.admin) : "?"}
           onClick={onCopy}
         />
 
@@ -260,7 +268,8 @@ const OracleAndInterestRates = ({
 
         <Center width="100%" mt={8} mb={12}>
           <Text textAlign="center">
-            {t("Oracles Used")}: <b>Chainlink + Uniswap TWAP</b>
+            {t("Oracle Used")}:{" "}
+            <b>{data ? data.oracle ?? t("Unrecognized Oracle") : "?"}</b>
           </Text>
         </Center>
       </Column>
