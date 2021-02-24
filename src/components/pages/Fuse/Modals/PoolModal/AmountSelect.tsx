@@ -586,17 +586,19 @@ const StatsColumn = ({
           width="100%"
           color={color}
         >
-          <Text fontWeight="bold">{t("Supply Balance")}:</Text>
+          <Text fontWeight="bold" flexShrink={0}>
+            {t("Supply Balance")}:
+          </Text>
           <Text
             fontWeight="bold"
+            flexShrink={0}
             fontSize={
               mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
             }
           >
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
-            ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
+            ).replace("$", "")}
             {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
             updatedAsset ? (
               <>
@@ -604,10 +606,10 @@ const StatsColumn = ({
                 {smallUsdFormatter(
                   updatedAsset!.supplyBalance /
                     10 ** updatedAsset!.underlyingDecimals
-                ).replace("$", "")}{" "}
-                {asset.underlyingSymbol}
+                ).replace("$", "")}
               </>
-            ) : null}
+            ) : null}{" "}
+            {asset.underlyingSymbol}
           </Text>
         </Row>
 
