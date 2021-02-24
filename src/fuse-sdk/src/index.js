@@ -6,6 +6,7 @@ import DAIInterestRateModelV2 from "./irm/DAIInterestRateModelV2.js";
 import WhitePaperInterestRateModel from "./irm/WhitePaperInterestRateModel.js";
 
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
+var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistrbutorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
 var contracts = require(__dirname + "/contracts/compound-protocol.min.json")
@@ -52,22 +53,27 @@ export default class Fuse {
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
     PreferredPriceOracle:
-      "0x76520d6fcfcfa7f457ab83d7b73db055f7bad3bd5f064df2500abcbbdec6f11f",
+      "0x7e1245c55ff349d8b029338a99e83f7b98e85fb6315df2764bc93fa4701de82e",
     ChainlinkPriceOracle:
-      "0x75ada3e289c572fdbd36538042f896b9b8f4346ab095866882549211ed2db8f6",
+      "0xc0d44d5eb32304f8f06c06d6cdb25481fcaae7575adec54b9e25320248182efa",
     Keep3rPriceOracle:
       "0x48e68237796c3d830eeefbe9c8f6ab5a7e8c1f9c6d8a499ff6438d4441a03122",
     MasterPriceOracle:
       "0xfa5e52d51adbcafa8bafe9538d7ade0f4371556e24024f60e44218cac131e67c",
     UniswapView:
-      "0x262201ec0397bfc12b95236a81826647a722f219c6d789449d287b1917273fbd",
+      "0x7b61acc83441231036447fc759c994f548e3550596a82b8ec9e8fe10eb9d88fc",
     UniswapAnchoredView:
-      "0x688f4a293eda38ea8a0f5e24576aace04b3d16a186838fc1c886bac8f33e1818",
+      "0x8956cba52dcec6fa6eb5c56e9dda81ec908051c29e41d9b428690cce5b38a7ec",
     UniswapLpTokenView:
       "0xd78d8ccc739ba3615129ec68756d31d72dfd7b5d8f1d6ad3546bc88f03ddcec6",
-    RecursivePriceOracle: "",
-    YVaultPriceOracle: "",
-    AlphaHomoraV1PriceOracle: "",
+    RecursivePriceOracle:
+      "0x09a958d820b06468505458ed3b75371b33a11ed2f224d70313ed8585155a4718",
+    YVaultV1PriceOracle:
+      "0xe0cdb4efa271b8d0b931cef83bfe3da22b93c96be6993c1fbb6b177dc89eb285",
+    YVaultV2PriceOracle:
+      "0xaf141407fc243ef60dd01a5ce6b36af36316d0782122a70b63d0b72a7884852f",
+    AlphaHomoraV1PriceOracle:
+      "0xe1ff9e8ec350a065c7cd16ad9871833ac6be3afaf94aae8562a1926af9de1228",
   };
 
   constructor(web3Provider) {
@@ -77,6 +83,10 @@ export default class Fuse {
       FusePoolDirectory: new this.web3.eth.Contract(
         fusePoolDirectoryAbi,
         Fuse.FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS
+      ),
+      FusePoolLens: new this.web3.eth.Contract(
+        fusePoolLensAbi,
+        Fuse.FUSE_POOL_LENS_CONTRACT_ADDRESS
       ),
       FuseSafeLiquidator: new this.web3.eth.Contract(
         fuseSafeLiquidatorAbi,
@@ -128,7 +138,8 @@ export default class Fuse {
           "UniswapView",
           "UniswapLpTokenView",
           "RecursivePriceOracle",
-          "YVaultPriceOracle",
+          "YVaultV1PriceOracle",
+          "YVaultV2PriceOracle",
           "AlphaHomoraV1PriceOracle",
         ].indexOf(priceOracle) >= 0
       ) {
@@ -230,7 +241,8 @@ export default class Fuse {
           "UniswapView",
           "UniswapLpTokenView",
           "RecursivePriceOracle",
-          "YVaultPriceOracle",
+          "YVaultV1PriceOracle",
+          "YVaultV2PriceOracle",
           "AlphaHomoraV1PriceOracle",
         ].indexOf(priceOracle) >= 0
       ) {
