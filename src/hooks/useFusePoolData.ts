@@ -15,7 +15,7 @@ export const useFusePoolData = (poolId: string) => {
     ).comptroller;
 
     let assets: USDPricedFuseAsset[] = (
-      await fuse.contracts.FusePoolDirectory.methods
+      await fuse.contracts.FusePoolLens.methods
         .getPoolAssetsWithData(comptroller)
         .call({ from: address })
     ).map(filterOnlyObjectProperties);

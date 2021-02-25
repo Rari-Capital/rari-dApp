@@ -120,12 +120,10 @@ const PoolList = () => {
         4: underlyingTokens,
         5: underlyingSymbols,
       } = await (filter === "my-pools"
-        ? fuse.contracts.FusePoolDirectory.methods
+        ? fuse.contracts.FusePoolLens.methods
             .getPoolsBySupplierWithData(address)
             .call()
-        : fuse.contracts.FusePoolDirectory.methods
-            .getPublicPoolsWithData()
-            .call());
+        : fuse.contracts.FusePoolLens.methods.getPublicPoolsWithData().call());
 
       const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
 

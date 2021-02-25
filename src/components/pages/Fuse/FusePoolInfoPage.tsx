@@ -180,7 +180,7 @@ const OracleAndInterestRates = ({
         >
           <DashboardBox height="35px">
             <Center expand px={2} fontWeight="bold">
-              Edit
+              {t("Edit")}
             </Center>
           </DashboardBox>
         </Link>

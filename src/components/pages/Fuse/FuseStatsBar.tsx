@@ -22,7 +22,7 @@ const FuseStatsBar = () => {
       const {
         0: supplyETH,
         1: borrowETH,
-      } = await fuse.contracts.FusePoolDirectory.methods
+      } = await fuse.contracts.FusePoolLens.methods
         .getUserSummary(address)
         .call();
 
