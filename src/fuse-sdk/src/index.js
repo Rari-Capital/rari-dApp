@@ -1026,14 +1026,11 @@ export default class Fuse {
 
       try {
         var chainlinkPriceFeed = await chainlinkPriceOracle.methods
-          .priceFeeds(conf.underlying)
+          .hasPriceFeed(conf.underlying)
           .call();
       } catch {}
 
-      if (
-        chainlinkPriceFeed === undefined ||
-        Web3.utils.toBN(chainlinkPriceFeed).isZero()
-      ) {
+      if (chainlinkPriceFeed === undefined || !chainlinkPriceFeed) {
         // Check for PreferredPriceOracle with underlying ChainlinkPriceOracle with a corresponding feed
         var preferredPriceOracle = new this.web3.eth.Contract(
           JSON.parse(
@@ -1056,15 +1053,12 @@ export default class Fuse {
             chainlinkPriceOracle
           );
           var chainlinkPriceFeed = await chainlinkPriceOracle.methods
-            .priceFeeds(conf.underlying)
+            .hasPriceFeed(conf.underlying)
             .call();
         } catch {}
       }
 
-      if (
-        chainlinkPriceFeed === undefined ||
-        Web3.utils.toBN(chainlinkPriceFeed).isZero()
-      ) {
+      if (chainlinkPriceFeed === undefined || !chainlinkPriceFeed) {
         // Check if we can get a UniswapAnchoredView
         var isUniswapAnchoredView = false;
 
