@@ -76,6 +76,7 @@ export default class Fuse {
       "0x3c953c4673cb08350a5c4d67082cd1de692913f14e18035da79633ad6e7fb695",
     AlphaHomoraV1PriceOracle:
       "0x1ebf22ccd482ddaa89e4d929e3c53021d9d758b244e1baff72ef8b421c96540c",
+    SynthetixPriceOracle: "",
   };
 
   constructor(web3Provider) {
@@ -143,6 +144,7 @@ export default class Fuse {
           "YVaultV1PriceOracle",
           "YVaultV2PriceOracle",
           "AlphaHomoraV1PriceOracle",
+          "SynthetixPriceOracle",
         ].indexOf(priceOracle) >= 0
       ) {
         try {
@@ -246,6 +248,7 @@ export default class Fuse {
           "YVaultV1PriceOracle",
           "YVaultV2PriceOracle",
           "AlphaHomoraV1PriceOracle",
+          "SynthetixPriceOracle",
         ].indexOf(priceOracle) >= 0
       ) {
         try {
