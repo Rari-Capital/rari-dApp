@@ -36,13 +36,18 @@ export default class Fuse {
   static COINBASE_PRO_REPORTER_ADDRESS =
     "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC";
 
-  static PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS =
-    "0xb4c963cc484857e668f884194ee46ea29f6180a2"; // TODO: Set correct mainnet address after deployment
-  static PUBLIC_CHAINLINK_PRICE_ORACLE_CONTRACT_ADDRESS =
-    "0x026838c33c05cace3495bfe51261f7d942fddf8a"; // TODO: Set correct mainnet address after deployment
-  static PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS =
-    "0x8ff698981fb7673eda1ae2e2723bc9aea33b9f61"; // TODO: Set correct mainnet address after deployment
-  static PUBLIC_UNISWAP_SPOT_VIEW_CONTRACT_ADDRESS = ""; // TODO: Set correct mainnet address after deployment
+  static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
+    PreferredPriceOracle: "0xb4c963cc484857e668f884194ee46ea29f6180a2", // TODO: Set correct mainnet address after deployment
+    ChainlinkPriceOracle: "0x026838c33c05cace3495bfe51261f7d942fddf8a", // TODO: Set correct mainnet address after deployment
+    UniswapView: "0x8ff698981fb7673eda1ae2e2723bc9aea33b9f61", // TODO: Set correct mainnet address after deployment
+    Keep3rPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    UniswapLpTokenView: "", // TODO: Set correct mainnet address after deployment
+    RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
+    YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    YVaultV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    AlphaHomoraV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    SynthetixPriceOracle: "", // TODO: Set correct mainnet address after deployment
+  };
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1";
@@ -143,7 +148,9 @@ export default class Fuse {
       liquidationIncentive,
       priceOracle,
       priceOracleConf,
-      options
+      options,
+      enforceWhitelist,
+      whitelist
     ) {
       // Deploy new price oracle via SDK if requested
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
@@ -218,6 +225,17 @@ export default class Fuse {
           "Accepting admin status failed: " +
           (error.message ? error.message : error)
         );
+      }
+
+      // Whitelist
+      if (enforceWhitelist) {
+        var comptroller = new this.web3.eth.Contract(
+          JSON.parse(contracts["contracts/Comptroller.sol:Comptroller"].abi),
+          poolAddress
+        );
+
+        await comptroller.methods._setEnforceWhitelist(true).send(options);
+        await comptroller.methods._setWhitelistStatuses(whitelist, Array(whitelist.length).fill(true)).send(options);
       }
 
       return [poolAddress, implementationAddress, priceOracle];
