@@ -24,6 +24,7 @@ import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
+import { useNavigate } from "react-router-dom";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -62,6 +63,7 @@ const PoolConfiguration = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { fuse, address } = useRari();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [oracle, setOracle] = useState("");
@@ -140,6 +142,10 @@ const PoolConfiguration = () => {
       position: "top-right",
     });
 
+    // TODO
+    let id = 0;
+
+    navigate(`/fuse/pool/${id}/edit`);
     setIsCreating(false);
   };
 
