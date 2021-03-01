@@ -148,7 +148,9 @@ export default class Fuse {
       liquidationIncentive,
       priceOracle,
       priceOracleConf,
-      options
+      options,
+      enforceWhitelist,
+      whitelist
     ) {
       // Deploy new price oracle via SDK if requested
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
@@ -223,6 +225,17 @@ export default class Fuse {
           "Accepting admin status failed: " +
           (error.message ? error.message : error)
         );
+      }
+
+      // Whitelist
+      if (enforceWhitelist) {
+        var comptroller = new this.web3.eth.Contract(
+          JSON.parse(contracts["contracts/Comptroller.sol:Comptroller"].abi),
+          poolAddress
+        );
+
+        await comptroller.methods._setEnforceWhitelist(true).send(options);
+        await comptroller.methods._setWhitelistStatuses(whitelist, Array(whitelist.length).fill(true)).send(options);
       }
 
       return [poolAddress, implementationAddress, priceOracle];
