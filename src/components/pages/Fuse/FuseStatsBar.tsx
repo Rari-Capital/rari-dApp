@@ -7,7 +7,7 @@ import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "../../../utils/bigUtils";
 import CaptionedStat from "../../shared/CaptionedStat";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 
 const FuseStatsBar = () => {
   const isMobile = useIsSmallScreen();
@@ -67,8 +67,8 @@ const FuseStatsBar = () => {
         width={isMobile ? "100%" : "240px"}
         height={isMobile ? "auto" : "100%"}
         flexShrink={0}
-        mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-        ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
+        mt={isMobile ? 4 : 0}
+        ml={isMobile ? 0 : 4}
       >
         <Center expand p={4}>
           <CaptionedStat
@@ -89,8 +89,8 @@ const FuseStatsBar = () => {
         width={isMobile ? "100%" : "240px"}
         height={isMobile ? "auto" : "100%"}
         flexShrink={0}
-        mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-        ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
+        mt={isMobile ? 4 : 0}
+        ml={isMobile ? 0 : 4}
       >
         <Center expand p={4}>
           <CaptionedStat

@@ -7,7 +7,7 @@ import { Column } from "buttered-chakra";
 
 import { Mode } from ".";
 import { useTranslation } from "react-i18next";
-import { DASHBOARD_BOX_SPACING } from "../../../../shared/DashboardBox";
+
 import {
   ModalTitleWithCloseButton,
   ModalDivider,
@@ -35,7 +35,7 @@ const OptionsMenu = ({
       <ModalTitleWithCloseButton text={t("Options")} onClose={onClose} />
       <ModalDivider />
       <Column
-        mt={DASHBOARD_BOX_SPACING.asPxString()}
+        mt={4}
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
       >

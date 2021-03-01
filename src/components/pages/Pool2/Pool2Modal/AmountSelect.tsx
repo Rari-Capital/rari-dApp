@@ -191,7 +191,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
         width="100%"
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
       >
         <Box width="40px" />
         <Heading fontSize="27px">
@@ -216,7 +216,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
         height="100%"
       >
         <Text fontWeight="bold" fontSize="sm" textAlign="center">
@@ -230,7 +230,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
         <DashboardBox width="100%" height="70px" mt={4}>
           <Row
-            p={DASHBOARD_BOX_SPACING.asPxString()}
+            p={4}
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             expand

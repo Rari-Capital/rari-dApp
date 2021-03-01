@@ -39,112 +39,96 @@ const noop = {};
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-const FusePoolEditPage = React.memo(
-  ({ isNewPool }: { isNewPool?: boolean }) => {
-    const { isAuthed } = useRari();
+const FusePoolEditPage = React.memo(() => {
+  const { isAuthed } = useRari();
 
-    const isMobile = useIsSemiSmallScreen();
+  const isMobile = useIsSemiSmallScreen();
 
-    const {
-      isOpen: isAddAssetModalOpen,
-      onOpen: openAddAssetModal,
-      onClose: closeAddAssetModal,
-    } = useDisclosure();
+  const {
+    isOpen: isAddAssetModalOpen,
+    onOpen: openAddAssetModal,
+    onClose: closeAddAssetModal,
+  } = useDisclosure();
 
-    const {
-      isOpen: isAddToWhitelistModalOpen,
-      onOpen: openAddToWhitelistModal,
-      onClose: closeAddToWhitelistModal,
-    } = useDisclosure();
+  const {
+    isOpen: isAddToWhitelistModalOpen,
+    onOpen: openAddToWhitelistModal,
+    onClose: closeAddToWhitelistModal,
+  } = useDisclosure();
 
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
-    return (
-      <>
-        <ForceAuthModal />
+  return (
+    <>
+      <ForceAuthModal />
 
-        <AddAssetModal
-          isOpen={isAddAssetModalOpen}
-          onClose={closeAddAssetModal}
-        />
+      <AddAssetModal
+        isOpen={isAddAssetModalOpen}
+        onClose={closeAddAssetModal}
+      />
 
-        <AddToWhitelistModal
-          isOpen={isAddToWhitelistModalOpen}
-          onClose={closeAddToWhitelistModal}
-        />
+      <AddToWhitelistModal
+        isOpen={isAddToWhitelistModalOpen}
+        onClose={closeAddToWhitelistModal}
+      />
 
-        <Column
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        color="#FFFFFF"
+        mx="auto"
+        width={isMobile ? "100%" : "1150px"}
+        px={isMobile ? 4 : 0}
+      >
+        <Header isAuthed={isAuthed} isFuse />
+
+        <FuseStatsBar />
+
+        <FuseTabBar />
+
+        <RowOrColumn
+          width="100%"
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          color="#FFFFFF"
-          mx="auto"
-          width={isMobile ? "100%" : "1150px"}
-          px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+          crossAxisAlignment="flex-start"
+          isRow={!isMobile}
         >
-          <Header isAuthed={isAuthed} isFuse />
-
-          <FuseStatsBar />
-
-          <FuseTabBar />
-
-          <RowOrColumn
-            width="100%"
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            isRow={!isMobile}
-          >
-            <DashboardBox
-              width={isMobile ? "100%" : "50%"}
-              mt={DASHBOARD_BOX_SPACING.asPxString()}
-              height="auto"
-            >
-              <PoolConfiguration
-                isNewPool={isNewPool}
-                openAddToWhitelistModal={openAddToWhitelistModal}
-              />
-            </DashboardBox>
-
-            <Box pl={isMobile ? 0 : 4} width={isMobile ? "100%" : "50%"}>
-              <DashboardBox
-                width="100%"
-                mt={DASHBOARD_BOX_SPACING.asPxString()}
-                height="auto"
-              >
-                <AssetConfiguration
-                  isNewPool={isNewPool}
-                  openAddAssetModal={openAddAssetModal}
-                />
-              </DashboardBox>
-            </Box>
-          </RowOrColumn>
-
-          <DashboardBox
-            width="100%"
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
-            height="auto"
-            fontSize="xl"
-            py={3}
-            as="button"
-          >
-            <Center expand fontWeight="bold">
-              {isNewPool ? t("Create") : t("Apply")}
-            </Center>
+          <DashboardBox width={isMobile ? "100%" : "50%"} mt={4} height="auto">
+            <PoolConfiguration
+              openAddToWhitelistModal={openAddToWhitelistModal}
+            />
           </DashboardBox>
-        </Column>
 
-        <CopyrightSpacer forceShow />
-      </>
-    );
-  }
-);
+          <Box pl={isMobile ? 0 : 4} width={isMobile ? "100%" : "50%"}>
+            <DashboardBox width="100%" mt={4} height="auto">
+              <AssetConfiguration openAddAssetModal={openAddAssetModal} />
+            </DashboardBox>
+          </Box>
+        </RowOrColumn>
+
+        <DashboardBox
+          width="100%"
+          mt={4}
+          height="auto"
+          fontSize="xl"
+          py={3}
+          as="button"
+        >
+          <Center expand fontWeight="bold">
+            {t("Create")}
+          </Center>
+        </DashboardBox>
+      </Column>
+
+      <CopyrightSpacer forceShow />
+    </>
+  );
+});
 
 export default FusePoolEditPage;
 
 const PoolConfiguration = ({
-  isNewPool,
   openAddToWhitelistModal,
 }: {
-  isNewPool?: boolean;
   openAddToWhitelistModal: () => any;
 }) => {
   const isMobile = useIsSemiSmallScreen();
@@ -312,10 +296,8 @@ const PoolConfiguration = ({
 
 const AssetConfiguration = ({
   openAddAssetModal,
-  isNewPool,
 }: {
   openAddAssetModal: () => any;
-  isNewPool?: boolean;
 }) => {
   const isMobile = useIsSemiSmallScreen();
 

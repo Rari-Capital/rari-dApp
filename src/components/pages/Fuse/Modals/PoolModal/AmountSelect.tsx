@@ -394,7 +394,7 @@ const AmountSelect = ({
         width="100%"
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
       >
         <Box width="40px" />
         <Heading fontSize="27px">
@@ -425,7 +425,7 @@ const AmountSelect = ({
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={DASHBOARD_BOX_SPACING.asPxString()}
+        p={4}
         height="100%"
       >
         <Text fontWeight="bold" fontSize="sm" textAlign="center">
@@ -434,7 +434,7 @@ const AmountSelect = ({
 
         <DashboardBox width="100%" height="70px" mt={4}>
           <Row
-            p={DASHBOARD_BOX_SPACING.asPxString()}
+            p={4}
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             expand
@@ -741,7 +741,11 @@ const TokenNameAndMaxButton = ({
   const { t } = useTranslation();
 
   return (
-    <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+    <Row
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="center"
+      flexShrink={0}
+    >
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
         <Box height="25px" width="25px" mb="2px" mr={2}>
           <Image
@@ -753,7 +757,7 @@ const TokenNameAndMaxButton = ({
             alt=""
           />
         </Box>
-        <Heading fontSize="24px" mr={2}>
+        <Heading fontSize="24px" mr={2} flexShrink={0}>
           {asset.underlyingSymbol}
         </Heading>
       </Row>
@@ -800,7 +804,7 @@ const AmountInput = ({
       value={displayAmount}
       color={color}
       onChange={(event) => updateAmount(event.target.value)}
-      mr={DASHBOARD_BOX_SPACING.asPxString()}
+      mr={4}
     />
   );
 };

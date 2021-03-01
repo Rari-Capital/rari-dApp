@@ -79,6 +79,22 @@ export default class Fuse {
     SynthetixPriceOracle: "",
   };
 
+  static ORACLES = [
+    "SimplePriceOracle",
+    "PreferredPriceOracle",
+    "ChainlinkPriceOracle",
+    "Keep3rPriceOracle",
+    "MasterPriceOracle",
+    "UniswapAnchoredView",
+    "UniswapView",
+    "UniswapLpTokenView",
+    "RecursivePriceOracle",
+    "YVaultV1PriceOracle",
+    "YVaultV2PriceOracle",
+    "AlphaHomoraV1PriceOracle",
+    "SynthetixPriceOracle",
+  ];
+
   constructor(web3Provider) {
     this.web3 = new Web3(web3Provider);
 
@@ -130,23 +146,7 @@ export default class Fuse {
       options
     ) {
       // Deploy new price oracle via SDK if requested
-      if (
-        [
-          "SimplePriceOracle",
-          "PreferredPriceOracle",
-          "ChainlinkPriceOracle",
-          "Keep3rPriceOracle",
-          "MasterPriceOracle",
-          "UniswapAnchoredView",
-          "UniswapView",
-          "UniswapLpTokenView",
-          "RecursivePriceOracle",
-          "YVaultV1PriceOracle",
-          "YVaultV2PriceOracle",
-          "AlphaHomoraV1PriceOracle",
-          "SynthetixPriceOracle",
-        ].indexOf(priceOracle) >= 0
-      ) {
+      if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
           priceOracle = await this.deployPriceOracle(
             priceOracle,
@@ -234,23 +234,7 @@ export default class Fuse {
       options
     ) {
       // Deploy new price oracle via SDK if requested
-      if (
-        [
-          "SimplePriceOracle",
-          "PreferredPriceOracle",
-          "ChainlinkPriceOracle",
-          "Keep3rPriceOracle",
-          "MasterPriceOracle",
-          "UniswapAnchoredView",
-          "UniswapView",
-          "UniswapLpTokenView",
-          "RecursivePriceOracle",
-          "YVaultV1PriceOracle",
-          "YVaultV2PriceOracle",
-          "AlphaHomoraV1PriceOracle",
-          "SynthetixPriceOracle",
-        ].indexOf(priceOracle) >= 0
-      ) {
+      if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
           priceOracle = await this.deployPriceOracle(
             priceOracle,
@@ -804,8 +788,14 @@ export default class Fuse {
       options
     ) {
       // Check conf.initialExchangeRateMantissa
-      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null || Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero())
-        conf.initialExchangeRateMantissa = Web3.utils.toBN(0.02e36).div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
+      if (
+        conf.initialExchangeRateMantissa === undefined ||
+        conf.initialExchangeRateMantissa === null ||
+        Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero()
+      )
+        conf.initialExchangeRateMantissa = Web3.utils
+          .toBN(0.02e36)
+          .div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
 
       // Deploy CEtherDelegate implementation contract if necessary
       if (!implementationAddress) {
@@ -890,10 +880,22 @@ export default class Fuse {
       bypassPriceFeedCheck
     ) {
       // Check conf.initialExchangeRateMantissa
-      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null || Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero()) {
-        var erc20 = new this.web3.eth.Contract(JSON.parse(contracts["contracts/EIP20Interface.sol:EIP20Interface"].abi), conf.underlying);
+      if (
+        conf.initialExchangeRateMantissa === undefined ||
+        conf.initialExchangeRateMantissa === null ||
+        Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero()
+      ) {
+        var erc20 = new this.web3.eth.Contract(
+          JSON.parse(
+            contracts["contracts/EIP20Interface.sol:EIP20Interface"].abi
+          ),
+          conf.underlying
+        );
         var underlyingDecimals = await erc20.methods.decimals().call();
-        conf.initialExchangeRateMantissa = Web3.utils.toBN(0.02e18).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(underlyingDecimals))).div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)))
+        conf.initialExchangeRateMantissa = Web3.utils
+          .toBN(0.02e18)
+          .mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(underlyingDecimals)))
+          .div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
       }
 
       // Get Comptroller
@@ -1428,7 +1430,9 @@ export default class Fuse {
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
       );
-      for (const model of Object.keys(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES))
+      for (const model of Object.keys(
+        Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
+      ))
         if (
           runtimeBytecodeHash ==
           Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model]

@@ -361,7 +361,7 @@ const AssetSupplyRow = ({
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
           />
-          <Text fontWeight="bold" fontSize="lg" ml={2}>
+          <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
             {asset.underlyingSymbol}
           </Text>
         </Row>
@@ -566,7 +566,7 @@ const AssetBorrowRow = ({
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
           />
-          <Text fontWeight="bold" fontSize="lg" ml={2}>
+          <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
             {asset.underlyingSymbol}
           </Text>
         </Row>

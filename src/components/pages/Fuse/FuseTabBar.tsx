@@ -5,7 +5,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 import { Link as RouterLink } from "react-router-dom";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
@@ -28,11 +28,7 @@ const FuseTabBar = () => {
   const filter = useFilter();
 
   return (
-    <DashboardBox
-      width="100%"
-      mt={DASHBOARD_BOX_SPACING.asPxString()}
-      height={isMobile ? "auto" : "65px"}
-    >
+    <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "65px"}>
       <RowOrColumn
         isRow={!isMobile}
         expand
@@ -92,6 +88,7 @@ const FuseTabBar = () => {
 
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
         <TabLink route="/fuse" text={t("All Pools")} />
+        <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
 
         {poolId ? (
           <ButtonGroup
@@ -99,8 +96,8 @@ const FuseTabBar = () => {
             isAttached
             variant="outline"
             height="35px"
-            ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
-            mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+            ml={isMobile ? 0 : 4}
+            mt={isMobile ? 4 : 0}
           >
             <DashboardBox {...activeStyle}>
               <Link
@@ -129,22 +126,7 @@ const FuseTabBar = () => {
           </ButtonGroup>
         ) : null}
 
-        <DashboardBox
-          mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
-          ml={isMobile ? 0 : "auto"}
-          height="35px"
-        >
-          <Link
-            /* @ts-ignore */
-            as={RouterLink}
-            to={`/fuse/new-pool`}
-            className="no-underline"
-          >
-            <Center expand pl={2} pr={3} fontWeight="bold">
-              <SmallAddIcon mr={1} /> {t("New Pool")}
-            </Center>
-          </Link>
-        </DashboardBox>
+        <NewPoolButton />
       </RowOrColumn>
     </DashboardBox>
   );
@@ -161,8 +143,8 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
       as={RouterLink}
       className="no-underline"
       to={route}
-      ml={isMobile ? 0 : DASHBOARD_BOX_SPACING.asPxString()}
-      mt={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+      ml={isMobile ? 0 : 4}
+      mt={isMobile ? 4 : 0}
     >
       <DashboardBox
         height="35px"
@@ -176,6 +158,36 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
         </Center>
       </DashboardBox>
     </Link>
+  );
+};
+
+const NewPoolButton = () => {
+  const isMobile = useIsSmallScreen();
+  const { t } = useTranslation();
+
+  const location = useLocation();
+
+  return (
+    <DashboardBox
+      mt={isMobile ? 4 : 0}
+      ml={isMobile ? 0 : "auto"}
+      height="35px"
+      {...("/fuse/new-pool" ===
+      location.pathname.replace(/\/+$/, "") + window.location.search
+        ? activeStyle
+        : noop)}
+    >
+      <Link
+        /* @ts-ignore */
+        as={RouterLink}
+        to={`/fuse/new-pool`}
+        className="no-underline"
+      >
+        <Center expand pl={2} pr={3} fontWeight="bold">
+          <SmallAddIcon mr={1} /> {t("New Pool")}
+        </Center>
+      </Link>
+    </DashboardBox>
   );
 };
 

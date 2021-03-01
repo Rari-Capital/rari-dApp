@@ -62,7 +62,7 @@ const FusePoolInfoPage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1150px"}
-        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
 
@@ -78,7 +78,7 @@ const FusePoolInfoPage = React.memo(() => {
         >
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
             height={isMobile ? "auto" : "450px"}
           >
             {data ? (
@@ -98,7 +98,7 @@ const FusePoolInfoPage = React.memo(() => {
           <DashboardBox
             ml={isMobile ? 0 : 4}
             width={isMobile ? "100%" : "50%"}
-            mt={DASHBOARD_BOX_SPACING.asPxString()}
+            mt={4}
             height={isMobile ? "auto" : "450px"}
           >
             {data ? (

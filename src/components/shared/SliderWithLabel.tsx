@@ -12,7 +12,13 @@ export const SliderWithLabel = ({
   value,
   setValue,
   formatValue,
+  min,
+  max,
+  step,
 }: {
+  min?: number;
+  max?: number;
+  step?: number;
   value: number;
   setValue: (value: number) => any;
   formatValue?: (value: number) => string;
@@ -23,11 +29,13 @@ export const SliderWithLabel = ({
         {formatValue ? formatValue(value) : value}
       </Text>
       <Slider
-        aria-label="slider-ex-1"
         width="190px"
         colorScheme="white"
         onChange={setValue}
         value={value}
+        min={min ?? 0}
+        max={max ?? 100}
+        step={step ?? 1}
       >
         <SliderTrack>
           <SliderFilledTrack />

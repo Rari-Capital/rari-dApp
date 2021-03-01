@@ -58,6 +58,13 @@ const FusePoolEditPage = loadable(
   }
 );
 
+const FusePoolCreatePage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Fuse/FusePoolCreatePage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const RSSAssetsPage = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/RSSAssetsPage"),
   {
@@ -115,7 +122,7 @@ const App = React.memo(() => {
       <Route path="/pool2" element={<Pool2Page />} />
 
       <Route path="/fuse" element={<FusePoolsPage />} />
-      <Route path="/fuse/new-pool" element={<FusePoolEditPage isNewPool />} />
+      <Route path="/fuse/new-pool" element={<FusePoolCreatePage />} />
       <Route path="/fuse/pool/:poolId" element={<FusePoolPage />} />
       <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
       <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />

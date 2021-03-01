@@ -8,7 +8,7 @@ import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "../../../utils/bigUtils";
 
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox, { DASHBOARD_BOX_SPACING } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
@@ -76,7 +76,7 @@ const FusePoolsPage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
-        px={isMobile ? DASHBOARD_BOX_SPACING.asPxString() : 0}
+        px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
 
@@ -84,11 +84,7 @@ const FusePoolsPage = React.memo(() => {
 
         <FuseTabBar />
 
-        <DashboardBox
-          width="100%"
-          mt={DASHBOARD_BOX_SPACING.asPxString()}
-          height={isMobile ? "auto" : "600px"}
-        >
+        <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "600px"}>
           <PoolList />
         </DashboardBox>
       </Column>
@@ -104,13 +100,14 @@ const PoolList = () => {
   const filter = useFilter();
 
   const isMyPools = filter === "my-pools";
+  const isCreatedPools = filter === "created-pools";
 
   const { t } = useTranslation();
 
   const { fuse, rari, address } = useRari();
 
   const { data: _pools } = useQuery(
-    address + " fusePoolList" + (isMyPools ? " my-pools" : ""),
+    address + " fusePoolList" + (isMyPools || isCreatedPools ? filter : ""),
     async () => {
       const {
         0: ids,
@@ -119,9 +116,13 @@ const PoolList = () => {
         3: totalBorrowedETH,
         4: underlyingTokens,
         5: underlyingSymbols,
-      } = await (filter === "my-pools"
+      } = await (isMyPools
         ? fuse.contracts.FusePoolLens.methods
             .getPoolsBySupplierWithData(address)
+            .call()
+        : isCreatedPools
+        ? fuse.contracts.FusePoolLens.methods
+            .getPoolsByAccountWithData(address)
             .call()
         : fuse.contracts.FusePoolLens.methods.getPublicPoolsWithData().call());
 
@@ -166,7 +167,7 @@ const PoolList = () => {
       );
     }
 
-    if (isMyPools) {
+    if (isMyPools || isCreatedPools) {
       return nonEmptyPools.sort((a, b) =>
         b.suppliedUSD > a.suppliedUSD ? 1 : -1
       );
@@ -180,7 +181,7 @@ const PoolList = () => {
     return filtered
       .map((item) => item.item)
       .sort((a, b) => (b.suppliedUSD > a.suppliedUSD ? 1 : -1));
-  }, [_pools, filter, isMyPools]);
+  }, [_pools, filter, isMyPools, isCreatedPools]);
 
   return (
     <Column
