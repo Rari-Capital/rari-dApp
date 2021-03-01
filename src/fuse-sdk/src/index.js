@@ -311,8 +311,8 @@ export default class Fuse {
             );
 
           // Deploy Uniswap price oracle
-          if (!conf.uniswapPriceOracle)
-            conf.uniswapPriceOracle = await this.deployPriceOracle(
+          if (!conf.secondaryPriceOracle)
+            conf.secondaryPriceOracle = await this.deployPriceOracle(
               "UniswapView",
               {
                 anchorPeriod: conf.anchorPeriod,
@@ -339,7 +339,7 @@ export default class Fuse {
                 contracts[
                   "contracts/PreferredPriceOracle.sol:PreferredPriceOracle"
                 ].bin,
-              arguments: [conf.chainlinkPriceOracle, conf.uniswapPriceOracle],
+              arguments: [conf.chainlinkPriceOracle, conf.secondaryPriceOracle],
             })
             .send(options);
 
@@ -1420,12 +1420,7 @@ export default class Fuse {
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
       );
-      for (const model of [
-        "PreferredPriceOracle",
-        "ChainlinkPriceOracle",
-        "UniswapView",
-        "UniswapAnchoredView",
-      ])
+      for (const model of Object.keys(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES))
         if (
           runtimeBytecodeHash ==
           Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model]
