@@ -29,9 +29,7 @@ import {
 } from "../../../../hooks/useTokenBalance";
 import { BN } from "../../../../utils/bigUtils";
 
-import DashboardBox, {
-  DASHBOARD_BOX_SPACING,
-} from "../../../shared/DashboardBox";
+import DashboardBox from "../../../shared/DashboardBox";
 import { ModalDivider } from "../../../shared/Modal";
 
 import { Mode } from ".";
