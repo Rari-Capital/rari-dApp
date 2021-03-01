@@ -800,6 +800,10 @@ export default class Fuse {
       implementationAddress,
       options
     ) {
+      // Check conf.initialExchangeRateMantissa
+      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null)
+        conf.initialExchangeRateMantissa = Web3.utils.toBN(2e18).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
+
       // Deploy CEtherDelegate implementation contract if necessary
       if (!implementationAddress) {
         var cEtherDelegate = new this.web3.eth.Contract(
@@ -882,6 +886,13 @@ export default class Fuse {
       options,
       bypassPriceFeedCheck
     ) {
+      // Check conf.initialExchangeRateMantissa
+      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null) {
+        var erc20 = new this.web3.eth.Contract(JSON.parse(contracts["contracts/EIP20Interface.sol:EIP20Interface"].abi), conf.underlying);
+        var underlyingDecimals = await erc20.methods.decimals().call();
+        conf.initialExchangeRateMantissa = Web3.utils.toBN(2).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(underlyingDecimals))).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)))
+      }
+
       // Get Comptroller
       var comptroller = new this.web3.eth.Contract(
         JSON.parse(contracts["contracts/Comptroller.sol:Comptroller"].abi),
