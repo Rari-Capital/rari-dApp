@@ -25,9 +25,7 @@ import { useRari } from "../../../../../context/RariContext";
 import { fetchTokenBalance } from "../../../../../hooks/useTokenBalance";
 import { smallUsdFormatter } from "../../../../../utils/bigUtils";
 
-import DashboardBox, {
-  DASHBOARD_BOX_SPACING,
-} from "../../../../shared/DashboardBox";
+import DashboardBox from "../../../../shared/DashboardBox";
 import { ModalDivider } from "../../../../shared/Modal";
 
 import { Mode } from ".";
