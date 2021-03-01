@@ -801,8 +801,8 @@ export default class Fuse {
       options
     ) {
       // Check conf.initialExchangeRateMantissa
-      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null)
-        conf.initialExchangeRateMantissa = Web3.utils.toBN(2e18).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
+      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null || Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero())
+        conf.initialExchangeRateMantissa = Web3.utils.toBN(0.02e36).div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
 
       // Deploy CEtherDelegate implementation contract if necessary
       if (!implementationAddress) {
@@ -887,10 +887,10 @@ export default class Fuse {
       bypassPriceFeedCheck
     ) {
       // Check conf.initialExchangeRateMantissa
-      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null) {
+      if (conf.initialExchangeRateMantissa === undefined || conf.initialExchangeRateMantissa === null || Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero()) {
         var erc20 = new this.web3.eth.Contract(JSON.parse(contracts["contracts/EIP20Interface.sol:EIP20Interface"].abi), conf.underlying);
         var underlyingDecimals = await erc20.methods.decimals().call();
-        conf.initialExchangeRateMantissa = Web3.utils.toBN(2).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(underlyingDecimals))).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)))
+        conf.initialExchangeRateMantissa = Web3.utils.toBN(0.02e18).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(underlyingDecimals))).div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)))
       }
 
       // Get Comptroller
