@@ -25,6 +25,7 @@ import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
+import Fuse from "../../../fuse-sdk";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -122,7 +123,7 @@ const PoolConfiguration = () => {
       );
     }
 
-    await fuse.deployPool(
+    const [poolAddress] = await fuse.deployPool(
       name,
       whitelist,
       bigCloseFactor,
@@ -142,11 +143,19 @@ const PoolConfiguration = () => {
       position: "top-right",
     });
 
-    // TODO
-    let id = 0;
+    const event = (
+      await fuse.contracts.FusePoolDirectory.getPastEvents("PoolRegistered", {
+        fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
+        toBlock: "latest",
+      })
+    ).filter(
+      (event) =>
+        event.returnValues.pool.comptroller.toLowerCase() ===
+        poolAddress.toLowerCase()
+    )[0];
 
+    let id = event.returnValues.index;
     navigate(`/fuse/pool/${id}/edit`);
-    setIsCreating(false);
   };
 
   return (
@@ -182,7 +191,12 @@ const PoolConfiguration = () => {
               onChange={(event) => setOracle(event.target.value)}
               placeholder="Select Oracle"
             >
-              <option value="0x026838c33c05cace3495bfe51261f7d942fddf8a">
+              <option
+                value={
+                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES
+                    .ChainlinkPriceOracle
+                }
+              >
                 ChainlinkPriceOracle
               </option>
             </Select>
