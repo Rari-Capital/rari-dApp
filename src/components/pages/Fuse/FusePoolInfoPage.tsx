@@ -45,7 +45,7 @@ const FusePoolInfoPage = React.memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
-
+  const { t } = useTranslation();
   let { poolId } = useParams();
   const data = useFusePoolData(poolId);
 
@@ -81,6 +81,7 @@ const FusePoolInfoPage = React.memo(() => {
             {data ? (
               <OracleAndInterestRates
                 assets={data.assets}
+                name={data.name}
                 totalSuppliedUSD={data.totalSuppliedUSD}
                 totalBorrowedUSD={data.totalBorrowedUSD}
                 comptrollerAddress={data.comptroller}
@@ -99,7 +100,11 @@ const FusePoolInfoPage = React.memo(() => {
             height={isMobile ? "auto" : "450px"}
           >
             {data ? (
-              <AssetAndOtherInfo assets={data.assets} />
+              data.assets.length > 0 ? (
+                <AssetAndOtherInfo assets={data.assets} />
+              ) : (
+                <Center expand>{t("There are no assets in this pool.")}</Center>
+              )
             ) : (
               <Center expand>
                 <Spinner my={8} />
@@ -118,11 +123,13 @@ export default FusePoolInfoPage;
 
 const OracleAndInterestRates = ({
   assets,
+  name,
   totalSuppliedUSD,
   totalBorrowedUSD,
   comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
+  name: string;
   totalSuppliedUSD: number;
   totalBorrowedUSD: number;
   comptrollerAddress: string;
@@ -131,26 +138,41 @@ const OracleAndInterestRates = ({
 
   const { t } = useTranslation();
 
-  const { rari, fuse } = useRari();
+  const { fuse } = useRari();
 
-  const { data } = useQuery(
-    comptrollerAddress + " oracleAndAdmin",
-    async () => {
-      const comptroller = new rari.web3.eth.Contract(
-        JSON.parse(
-          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-        ),
-        comptrollerAddress
-      );
+  const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
+    const comptroller = new fuse.web3.eth.Contract(
+      JSON.parse(
+        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+      ),
+      comptrollerAddress
+    );
 
-      return {
-        admin: await comptroller.methods.admin().call(),
-        oracle: await fuse.getPriceOracle(
-          await comptroller.methods.oracle().call()
-        ),
-      };
-    }
-  );
+    const {
+      0: admin,
+      1: upgradeable,
+    } = await fuse.contracts.FusePoolLens.methods
+      .getPoolOwnership(comptrollerAddress)
+      .call();
+
+    const oracle = await fuse.getPriceOracle(
+      await comptroller.methods.oracle().call()
+    );
+
+    const closeFactor = await comptroller.methods.closeFactorMantissa().call();
+
+    const liquidationIncentive = await comptroller.methods
+      .liquidationIncentiveMantissa()
+      .call();
+
+    return {
+      admin,
+      upgradeable,
+      oracle,
+      closeFactor,
+      liquidationIncentive,
+    };
+  });
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
   return (
@@ -167,7 +189,9 @@ const OracleAndInterestRates = ({
         px={4}
         height="49px"
       >
-        <Heading size="sm">{t("Pool {{num}} Info", { num: poolId })}</Heading>
+        <Heading size="sm">
+          {t("Pool {{num}} Info", { num: poolId, name })}
+        </Heading>
 
         <Link
           /* @ts-ignore */
@@ -192,17 +216,27 @@ const OracleAndInterestRates = ({
         my={4}
         px={4}
       >
-        <AvatarGroup size="xs" max={20}>
-          {assets.map(({ underlyingToken, cToken }) => {
-            return <CTokenIcon key={cToken} address={underlyingToken} />;
-          })}
-        </AvatarGroup>
+        {assets.length > 0 ? (
+          <>
+            <AvatarGroup size="xs" max={20}>
+              {assets.map(({ underlyingToken, cToken }) => {
+                return <CTokenIcon key={cToken} address={underlyingToken} />;
+              })}
+            </AvatarGroup>
 
-        <Text mt={3} lineHeight={1}>
-          {assets.map(({ underlyingSymbol }, index, array) => {
-            return underlyingSymbol + (index !== array.length - 1 ? " / " : "");
-          })}
-        </Text>
+            <Text mt={3} lineHeight={1}>
+              {name} (
+              {assets.map(({ underlyingSymbol }, index, array) => {
+                return (
+                  underlyingSymbol + (index !== array.length - 1 ? " / " : "")
+                );
+              })}
+              )
+            </Text>
+          </>
+        ) : (
+          <Text>{name}</Text>
+        )}
       </Column>
 
       <ModalDivider />
@@ -241,7 +275,7 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Upgradeable")}
-          statA={t("Yes")}
+          statA={data ? (data.upgradeable ? "Yes" : "No") : "?"}
           statBTitle={
             hasCopied ? t("Admin (copied!)") : t("Admin (click to copy)")
           }
@@ -251,7 +285,7 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Fuse Interest Fee")}
-          statA={assets[0].fuseFee / 1e16 + "%"}
+          statA={assets.length > 0 ? assets[0].fuseFee / 1e16 + "%" : "10%"}
           statBTitle={t("Average Admin Fee")}
           statB={
             assets
@@ -260,6 +294,17 @@ const OracleAndInterestRates = ({
                 0
               )
               .toFixed(1) + "%"
+          }
+        />
+
+        <StatRow
+          statATitle={t("Close Factor")}
+          statA={data?.closeFactor ? data.closeFactor / 1e16 + "%" : "?%"}
+          statBTitle={t("Liquidation Incentive")}
+          statB={
+            data?.liquidationIncentive
+              ? data.liquidationIncentive / 1e16 - 100 + "%"
+              : "?%"
           }
         />
 
