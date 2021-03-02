@@ -43,7 +43,7 @@ export default class Fuse {
     ChainlinkPriceOracle: "0x026838c33c05cace3495bfe51261f7d942fddf8a", // TODO: Set correct mainnet address after deployment
     UniswapView: "0x8ff698981fb7673eda1ae2e2723bc9aea33b9f61", // TODO: Set correct mainnet address after deployment
     Keep3rPriceOracle: "", // TODO: Set correct mainnet address after deployment
-    UniswapLpTokenView: "", // TODO: Set correct mainnet address after deployment
+    UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
@@ -61,29 +61,18 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    PreferredPriceOracle:
-      "0x77571ad70d28b1714d458bca62cd308b0a4c0e842749df89e2ecae1c5aba89cb",
-    ChainlinkPriceOracle:
-      "0xce264499dff972a3b8a7e3d97c7fc56b6ac31545ff08889a8ae1de9cd2291855",
-    Keep3rPriceOracle:
-      "0x5ee8cf1420a5634b1506def6fe7f58d3e3faa40c27287e96e3d026633b76a231",
-    MasterPriceOracle:
-      "0x2be6e8d322176d9ecde17c4155d23e31eead7158a6b79364fb08efa1808309e1",
-    UniswapView:
-      "0xa32e81955930dd4c89f94bb5d93665cf26f021549fe81029f00570a3a8bd8a05",
-    UniswapAnchoredView:
-      "0x16d2e7d6ec9ce92ebbee55b16f99a6e915f965530ddb591e16a37c949695cda0",
-    UniswapLpTokenView:
-      "0x6e1324afd9b8c744d2547cba8179ad8b982a5767ab1ca463f7c4eac47b798850",
-    RecursivePriceOracle:
-      "0xadee3889a85c5fa8acb145f28614b9a6d47d3bb66276a431b92ef2fcc4483ded",
-    YVaultV1PriceOracle:
-      "0x72aaa43c3951d75c59631a432a1d29e9f1c2d16f8f134daff47afc718c85ea45",
-    YVaultV2PriceOracle:
-      "0x3c953c4673cb08350a5c4d67082cd1de692913f14e18035da79633ad6e7fb695",
-    AlphaHomoraV1PriceOracle:
-      "0x1ebf22ccd482ddaa89e4d929e3c53021d9d758b244e1baff72ef8b421c96540c",
-    SynthetixPriceOracle: "",
+    "PreferredPriceOracle": "0xf29124deee924fe30a5e7e0be7a2f6b03365196056e552663b9ef9428e414fab",
+    "ChainlinkPriceOracle": "0xc8bd346a626fb319efe6b2e42b463eef27577b24b5b84b6811f4cd331f75c11f",
+    "Keep3rPriceOracle": "0x646fbee1fc2764bc271ec9b5fe0e004c6b36c5ecf4620e6394fb9c5be9182d0b",
+    "MasterPriceOracle": "0xf0c2d895938a68860f5c244581bdab08056126fa1596f0a111dae4bc0b265210",
+    "UniswapAnchoredView": "0xfb58ee7546e25ab8f0a1ae4feebb2acbad518fd16201dbb2e94cec39542e2ac4",
+    "UniswapView": "0xf3995d9454d6f8922022916f823ed743d6f2a88ad6e5e984ffe6c5ce25b0f343",
+    "UniswapLpTokenPriceOracle": "0x2019d8aa08d853deab86b5daa5fb75be7af89666a1eabbed2d99d9f246046095",
+    "RecursivePriceOracle": "0xc2933882348e9a8bd50ca2132ecc578577daa49fc5d5ac4af68ee2a0c60972f6",
+    "YVaultV1PriceOracle": "0xc74cbf48df66a164789ad9b7d8a057eb9760bcca5ac852202f5f4018da95616b",
+    "YVaultV2PriceOracle": "0xa7fd1aca6fa003c74f6b92a77e8ac6505f50dc067c340686f7b5f5e940bcdc88",
+    "AlphaHomoraV1PriceOracle": "0x42401429634dcf51120cff9d5ffe3cff44cfc751ca139cb7992ed12f9e81fe23",
+    "SynthetixPriceOracle": "0x253aaf31ad010b9880d68beb6f554aa9bd2c148e5b7d5d01e5e63ebe1d046092",
   };
 
   static ORACLES = [
@@ -94,7 +83,7 @@ export default class Fuse {
     "MasterPriceOracle",
     "UniswapAnchoredView",
     "UniswapView",
-    "UniswapLpTokenView",
+    "UniswapLpTokenPriceOracle",
     "RecursivePriceOracle",
     "YVaultV1PriceOracle",
     "YVaultV2PriceOracle",
@@ -475,14 +464,14 @@ export default class Fuse {
             })
             .send(options);
           break;
-        case "UniswapLpTokenView":
+        case "UniswapLpTokenPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
-            oracleContracts["UniswapLpTokenView"].abi
+            oracleContracts["UniswapLpTokenPriceOracle"].abi
           );
           var deployArgs = [conf.useRootOracle ? true : false];
           priceOracle = await priceOracle
             .deploy({
-              data: oracleContracts["UniswapLpTokenView"].bin,
+              data: oracleContracts["UniswapLpTokenPriceOracle"].bin,
               arguments: deployArgs,
             })
             .send(options);
