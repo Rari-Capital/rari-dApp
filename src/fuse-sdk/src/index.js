@@ -8,7 +8,7 @@ import WhitePaperInterestRateModel from "./irm/WhitePaperInterestRateModel.js";
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
-var fuseFeeDistrbutorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
+var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
 var contracts = require(__dirname + "/contracts/compound-protocol.min.json")
   .contracts;
 var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
@@ -107,8 +107,8 @@ export default class Fuse {
         fuseSafeLiquidatorAbi,
         Fuse.FUSE_SAFE_LIQUIDATOR_CONTRACT_ADDRESS
       ),
-      FuseFeeDistrbutor: new this.web3.eth.Contract(
-        fuseFeeDistrbutorAbi,
+      FuseFeeDistributor: new this.web3.eth.Contract(
+        fuseFeeDistributorAbi,
         Fuse.FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS
       ),
     };
@@ -718,7 +718,7 @@ export default class Fuse {
         !Web3.utils.toBN(reserveFactor).isZero() ||
         !Web3.utils.toBN(adminFee).isZero()
       ) {
-        var fuseFee = await this.contracts.FuseFeeDistrbutor.methods
+        var fuseFee = await this.contracts.FuseFeeDistributor.methods
           .interestFeeRate()
           .call();
         if (
