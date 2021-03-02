@@ -192,6 +192,7 @@ const PoolConfiguration = () => {
               placeholder="Select Oracle"
             >
               <option
+                className="black-bg-option"
                 value={
                   Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES
                     .ChainlinkPriceOracle

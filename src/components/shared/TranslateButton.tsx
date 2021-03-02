@@ -17,9 +17,15 @@ export const LanguageSelect = (extraProps: SelectProps) => {
       width="100%"
       {...extraProps}
     >
-      <option value="en">English</option>
-      <option value="zh-CN">简体中文</option>
-      <option value="zh-TW">中國傳統的</option>
+      <option className="black-bg-option" value="en">
+        English
+      </option>
+      <option className="black-bg-option" value="zh-CN">
+        简体中文
+      </option>
+      <option className="black-bg-option" value="zh-TW">
+        中國傳統的
+      </option>
     </Select>
   );
 };

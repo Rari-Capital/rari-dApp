@@ -162,10 +162,16 @@ export const ClaimRGTModal = ({
             value={mode}
             onChange={(event) => setMode(event.target.value)}
           >
-            <option value="pool2">{t("Pool2 Rewards")}</option>
-            <option value="yieldagg">{t("Yield Aggregator Rewards")}</option>
+            <option value="pool2" className="black-bg-option">
+              {t("Pool2 Rewards")}
+            </option>
+            <option value="yieldagg" className="black-bg-option">
+              {t("Yield Aggregator Rewards")}
+            </option>
             {mode === "private" ? (
-              <option value="private">{t("Private RGT")}</option>
+              <option value="private" className="black-bg-option">
+                {t("Private RGT")}
+              </option>
             ) : null}
           </Select>
 
