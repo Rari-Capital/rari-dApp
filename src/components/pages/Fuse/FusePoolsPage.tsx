@@ -157,27 +157,19 @@ const PoolList = () => {
       return undefined;
     }
 
-    const nonEmptyPools = _pools.filter(
-      (pool) => pool.underlyingTokens.length > 0
-    );
-
     if (!filter) {
-      return nonEmptyPools.sort((a, b) =>
-        b.suppliedUSD > a.suppliedUSD ? 1 : -1
-      );
+      return _pools.sort((a, b) => (b.suppliedUSD > a.suppliedUSD ? 1 : -1));
     }
 
     if (isMyPools || isCreatedPools) {
-      return nonEmptyPools.sort((a, b) =>
-        b.suppliedUSD > a.suppliedUSD ? 1 : -1
-      );
+      return _pools.sort((a, b) => (b.suppliedUSD > a.suppliedUSD ? 1 : -1));
     }
 
     const options = {
       keys: ["pool.name", "id", "underlyingTokens", "underlyingSymbols"],
     };
 
-    const filtered = new Fuse(nonEmptyPools, options).search(filter);
+    const filtered = new Fuse(_pools, options).search(filter);
     return filtered
       .map((item) => item.item)
       .sort((a, b) => (b.suppliedUSD > a.suppliedUSD ? 1 : -1));
@@ -277,6 +269,8 @@ const PoolRow = ({
   mt?: number | string;
   name: string;
 }) => {
+  const isEmpty = tokens.length === 0;
+
   return (
     <Link
       /* @ts-ignore */
@@ -300,25 +294,27 @@ const PoolRow = ({
           mr="2%"
           overflow="scroll"
         >
-          <AvatarGroup size="xs" max={20}>
-            {tokens.map(({ address }) => {
-              return <CTokenIcon key={address} address={address} />;
-            })}
-          </AvatarGroup>
-
-          <Text ml={2} flexShrink={0}>
-            {name}
-          </Text>
-
-          <Text ml={2} mb="3px" fontWeight="bold" flexShrink={0}>
-            <b>
-              (
-              {tokens.map(({ symbol }, index, array) => {
-                return symbol + (index !== array.length - 1 ? " / " : "");
+          {isEmpty ? null : (
+            <AvatarGroup size="xs" max={20} mr={2}>
+              {tokens.map(({ address }) => {
+                return <CTokenIcon key={address} address={address} />;
               })}
-              )
-            </b>
-          </Text>
+            </AvatarGroup>
+          )}
+
+          <Text flexShrink={0}>{name}</Text>
+
+          {isEmpty ? null : (
+            <Text ml={2} mb="3px" fontWeight="bold" flexShrink={0}>
+              <b>
+                (
+                {tokens.map(({ symbol }, index, array) => {
+                  return symbol + (index !== array.length - 1 ? " / " : "");
+                })}
+                )
+              </b>
+            </Text>
+          )}
         </Row>
 
         <Center height="100%" width="15%">

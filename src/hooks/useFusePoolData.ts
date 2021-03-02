@@ -8,11 +8,13 @@ export const useFusePoolData = (poolId: string) => {
   const { fuse, rari, address } = useRari();
 
   const { data } = useQuery(poolId + " poolData " + address, async () => {
-    const comptroller = (
-      await fuse.contracts.FusePoolDirectory.methods
-        .pools(poolId)
-        .call({ from: address })
-    ).comptroller;
+    const {
+      comptroller,
+      name,
+      isPrivate,
+    } = await fuse.contracts.FusePoolDirectory.methods
+      .pools(poolId)
+      .call({ from: address });
 
     let assets: USDPricedFuseAsset[] = (
       await fuse.contracts.FusePoolLens.methods
@@ -57,6 +59,8 @@ export const useFusePoolData = (poolId: string) => {
     return {
       assets,
       comptroller,
+      name,
+      isPrivate,
 
       totalSuppliedUSD,
       totalBorrowedUSD,

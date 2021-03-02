@@ -71,7 +71,7 @@ const PoolConfiguration = () => {
   const [whitelist, setWhitelisted] = useState(false);
 
   const [closeFactor, setCloseFactor] = useState(50);
-  const [liquidationIncentive, setLiquidationIncentive] = useState(1.08);
+  const [liquidationIncentive, setLiquidationIncentive] = useState(8);
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -106,12 +106,16 @@ const PoolConfiguration = () => {
 
     const maxAssets = "20";
 
+    // 50% -> 0.5 * 1e18
     const bigCloseFactor = new BigNumber(closeFactor)
-      .multipliedBy(1e18)
       .dividedBy(100)
+      .multipliedBy(1e18)
       .toFixed(0);
 
+    // 8% -> 1.08 * 1e8
     const bigLiquidationIncentive = new BigNumber(liquidationIncentive)
+      .dividedBy(100)
+      .plus(1)
       .multipliedBy(1e18)
       .toFixed(0);
 
@@ -226,6 +230,8 @@ const PoolConfiguration = () => {
               value={closeFactor}
               setValue={setCloseFactor}
               formatValue={formatPercentage}
+              min={5}
+              max={90}
             />
           </OptionRow>
 
@@ -237,10 +243,9 @@ const PoolConfiguration = () => {
             <SliderWithLabel
               value={liquidationIncentive}
               setValue={setLiquidationIncentive}
-              formatValue={(num) => num.toFixed(2)}
-              min={1}
-              step={0.01}
-              max={1.5}
+              formatValue={formatPercentage}
+              min={0}
+              max={50}
             />
           </OptionRow>
         </Column>

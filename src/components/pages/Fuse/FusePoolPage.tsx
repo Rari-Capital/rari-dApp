@@ -206,29 +206,31 @@ const SupplyList = ({
       </Heading>
       <ModalDivider />
 
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
-        width="100%"
-        px={4}
-        mt={4}
-      >
-        <Text width="27%" fontWeight="bold" pl={1}>
-          {t("Asset")}
-        </Text>
+      {assets.length > 0 ? (
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          width="100%"
+          px={4}
+          mt={4}
+        >
+          <Text width="27%" fontWeight="bold" pl={1}>
+            {t("Asset")}
+          </Text>
 
-        <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("APY/Weekly")}
-        </Text>
+          <Text width="27%" fontWeight="bold" textAlign="right">
+            {t("APY/Weekly")}
+          </Text>
 
-        <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("Balance")}
-        </Text>
+          <Text width="27%" fontWeight="bold" textAlign="right">
+            {t("Balance")}
+          </Text>
 
-        <Text width="20%" fontWeight="bold" textAlign="right">
-          {t("Collateral")}
-        </Text>
-      </Row>
+          <Text width="20%" fontWeight="bold" textAlign="right">
+            {t("Collateral")}
+          </Text>
+        </Row>
+      ) : null}
 
       <Column
         mainAxisAlignment="flex-start"
@@ -237,16 +239,20 @@ const SupplyList = ({
         overflowY="auto"
         mt={1}
       >
-        {assets.map((asset, index) => {
-          return (
-            <AssetSupplyRow
-              comptrollerAddress={comptrollerAddress}
-              key={asset.underlyingToken}
-              assets={assets}
-              index={index}
-            />
-          );
-        })}
+        {assets.length > 0 ? (
+          assets.map((asset, index) => {
+            return (
+              <AssetSupplyRow
+                comptrollerAddress={comptrollerAddress}
+                key={asset.underlyingToken}
+                assets={assets}
+                index={index}
+              />
+            );
+          })
+        ) : (
+          <Center expand>{t("There are no assets in this pool.")}</Center>
+        )}
       </Column>
     </Column>
   );
@@ -465,29 +471,31 @@ const BorrowList = ({
       </Heading>
       <ModalDivider />
 
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
-        width="100%"
-        px={4}
-        mt={4}
-      >
-        <Text width="27%" fontWeight="bold" pl={1}>
-          {t("Asset")}
-        </Text>
+      {assets.length > 0 ? (
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          width="100%"
+          px={4}
+          mt={4}
+        >
+          <Text width="27%" fontWeight="bold" pl={1}>
+            {t("Asset")}
+          </Text>
 
-        <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("APY/Weekly")}
-        </Text>
+          <Text width="27%" fontWeight="bold" textAlign="right">
+            {t("APY/Weekly")}
+          </Text>
 
-        <Text width="27%" fontWeight="bold" textAlign="right">
-          {t("Borrowed")}
-        </Text>
+          <Text width="27%" fontWeight="bold" textAlign="right">
+            {t("Borrowed")}
+          </Text>
 
-        <Text width="20%" fontWeight="bold" textAlign="right">
-          {t("Liquidity")}
-        </Text>
-      </Row>
+          <Text width="20%" fontWeight="bold" textAlign="right">
+            {t("Liquidity")}
+          </Text>
+        </Row>
+      ) : null}
 
       <Column
         mainAxisAlignment="flex-start"
@@ -496,16 +504,20 @@ const BorrowList = ({
         overflowY="auto"
         mt={1}
       >
-        {assets.map((asset, index) => {
-          return (
-            <AssetBorrowRow
-              comptrollerAddress={comptrollerAddress}
-              key={asset.underlyingToken}
-              assets={assets}
-              index={index}
-            />
-          );
-        })}
+        {assets.length > 0 ? (
+          assets.map((asset, index) => {
+            return (
+              <AssetBorrowRow
+                comptrollerAddress={comptrollerAddress}
+                key={asset.underlyingToken}
+                assets={assets}
+                index={index}
+              />
+            );
+          })
+        ) : (
+          <Center expand>{t("There are no assets in this pool.")}</Center>
+        )}
       </Column>
     </Column>
   );
