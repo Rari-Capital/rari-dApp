@@ -780,7 +780,7 @@ export default class Fuse {
         Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero()
       )
         conf.initialExchangeRateMantissa = Web3.utils
-          .toBN(0.02e36)
+          .toBN(0.02e18).mul(Web3.utils.toBN(1e18))
           .div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
 
       // Deploy CEtherDelegate implementation contract if necessary
