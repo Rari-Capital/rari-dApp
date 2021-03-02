@@ -13,6 +13,8 @@ var contracts = require(__dirname + "/contracts/compound-protocol.min.json")
   .contracts;
 var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
   .contracts;
+var oracleContracts = require(__dirname + "/contracts/oracles.min.json")
+  .contracts;
 
 export default class Fuse {
   static FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS =
@@ -332,18 +334,14 @@ export default class Fuse {
           // Deploy PreferredPriceOracle
           var priceOracle = new this.web3.eth.Contract(
             JSON.parse(
-              contracts[
-                "contracts/PreferredPriceOracle.sol:PreferredPriceOracle"
-              ].abi
+              oracleContracts["PreferredPriceOracle"].abi
             )
           );
           priceOracle = await priceOracle
             .deploy({
               data:
                 "0x" +
-                contracts[
-                  "contracts/PreferredPriceOracle.sol:PreferredPriceOracle"
-                ].bin,
+                oracleContracts["PreferredPriceOracle"].bin,
               arguments: [conf.chainlinkPriceOracle, conf.secondaryPriceOracle],
             })
             .send(options);
@@ -352,18 +350,14 @@ export default class Fuse {
         case "ChainlinkPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             JSON.parse(
-              contracts[
-                "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"
-              ].abi
+              oracleContracts["ChainlinkPriceOracle"].abi
             )
           );
           priceOracle = await priceOracle
             .deploy({
               data:
                 "0x" +
-                contracts[
-                  "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"
-                ].bin,
+                oracleContracts["ChainlinkPriceOracle"].bin,
               arguments: [
                 conf.maxSecondsBeforePriceIsStale
                   ? conf.maxSecondsBeforePriceIsStale
@@ -491,9 +485,7 @@ export default class Fuse {
         case "UniswapLpTokenView":
           var priceOracle = new this.web3.eth.Contract(
             JSON.parse(
-              openOracleContracts[
-                "contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView"
-              ].abi
+              oracleContracts["UniswapLpTokenView"].abi
             )
           );
           var deployArgs = [conf.useRootOracle ? true : false];
@@ -501,9 +493,7 @@ export default class Fuse {
             .deploy({
               data:
                 "0x" +
-                openOracleContracts[
-                  "contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView"
-                ].bin,
+                oracleContracts["UniswapLpTokenView"].bin,
               arguments: deployArgs,
             })
             .send(options);
@@ -511,7 +501,7 @@ export default class Fuse {
         case "Keep3rPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             JSON.parse(
-              contracts["contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle"].abi
+              oracleContracts["Keep3rPriceOracle"].abi
             )
           );
           var deployArgs = [conf.sushiswap ? true : false];
@@ -519,7 +509,7 @@ export default class Fuse {
             .deploy({
               data:
                 "0x" +
-                contracts["contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle"]
+                oracleContracts["Keep3rPriceOracle"]
                   .bin,
               arguments: deployArgs,
             })
@@ -528,7 +518,7 @@ export default class Fuse {
         case "MasterPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             JSON.parse(
-              contracts["contracts/MasterPriceOracle.sol:MasterPriceOracle"].abi
+              oracleContracts["MasterPriceOracle"].abi
             )
           );
           var deployArgs = [
@@ -541,13 +531,13 @@ export default class Fuse {
             .deploy({
               data:
                 "0x" +
-                contracts["contracts/MasterPriceOracle.sol:MasterPriceOracle"]
+                oracleContracts["MasterPriceOracle"]
                   .bin,
               arguments: deployArgs,
             })
             .send(options);
           break;
-        default:
+        case "SimplePriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             JSON.parse(contracts["contracts/" + model + ".sol:" + model].abi)
           );
@@ -555,6 +545,17 @@ export default class Fuse {
             .deploy({
               data:
                 "0x" + contracts["contracts/" + model + ".sol:" + model].bin,
+            })
+            .send(options);
+          break;
+        default:
+          var priceOracle = new this.web3.eth.Contract(
+            JSON.parse(oracleContracts[model].abi)
+          );
+          priceOracle = await priceOracle
+            .deploy({
+              data:
+                "0x" + oracleContracts[model].bin,
             })
             .send(options);
           break;
@@ -1041,8 +1042,7 @@ export default class Fuse {
       var priceOracle = await comptroller.methods.oracle().call();
       var chainlinkPriceOracle = new this.web3.eth.Contract(
         JSON.parse(
-          contracts["contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"]
-            .abi
+          oracleContracts["ChainlinkPriceOracle"].abi
         ),
         priceOracle
       );
@@ -1057,8 +1057,7 @@ export default class Fuse {
         // Check for PreferredPriceOracle with underlying ChainlinkPriceOracle with a corresponding feed
         var preferredPriceOracle = new this.web3.eth.Contract(
           JSON.parse(
-            contracts["contracts/PreferredPriceOracle.sol:PreferredPriceOracle"]
-              .abi
+            oracleContracts["PreferredPriceOracle"].abi
           ),
           priceOracle
         );
@@ -1069,9 +1068,7 @@ export default class Fuse {
             .call();
           chainlinkPriceOracle = new this.web3.eth.Contract(
             JSON.parse(
-              contracts[
-                "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle"
-              ].abi
+              oracleContracts["ChainlinkPriceOracle"].abi
             ),
             chainlinkPriceOracle
           );
@@ -1113,9 +1110,7 @@ export default class Fuse {
             // Check for PreferredPriceOracle with underlying UniswapAnchoredView
             var preferredPriceOracle = new this.web3.eth.Contract(
               JSON.parse(
-                contracts[
-                  "contracts/PreferredPriceOracle.sol:PreferredPriceOracle"
-                ].abi
+                oracleContracts["PreferredPriceOracle"].abi
               ),
               priceOracle
             );

@@ -7,16 +7,6 @@ var minContracts = {};
 var usedContractAbiKeys = [
   "contracts/Comptroller.sol:Comptroller",
   "contracts/Unitroller.sol:Unitroller",
-  "contracts/PreferredPriceOracle.sol:PreferredPriceOracle",
-  "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle",
-  "contracts/SimplePriceOracle.sol:SimplePriceOracle",
-  "contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle",
-  "contracts/MasterPriceOracle.sol:MasterPriceOracle",
-  "contracts/RecursivePriceOracle.sol:RecursivePriceOracle",
-  "contracts/YVaultV1PriceOracle.sol:YVaultV1PriceOracle",
-  "contracts/YVaultV2PriceOracle.sol:YVaultV2PriceOracle",
-  "contracts/AlphaHomoraV1PriceOracle.sol:AlphaHomoraV1PriceOracle",
-  "contracts/SynthetixPriceOracle.sol:SynthetixPriceOracle",
   "contracts/CEtherDelegate.sol:CEtherDelegate",
   "contracts/CEtherDelegator.sol:CEtherDelegator",
   "contracts/EIP20Interface.sol:EIP20Interface",
@@ -34,16 +24,6 @@ for (const contractKey of usedContractAbiKeys) {
 var usedContractBinKeys = [
   "contracts/Comptroller.sol:Comptroller",
   "contracts/Unitroller.sol:Unitroller",
-  "contracts/PreferredPriceOracle.sol:PreferredPriceOracle",
-  "contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle",
-  "contracts/SimplePriceOracle.sol:SimplePriceOracle",
-  "contracts/Keep3rPriceOracle.sol:Keep3rPriceOracle",
-  "contracts/MasterPriceOracle.sol:MasterPriceOracle",
-  "contracts/RecursivePriceOracle.sol:RecursivePriceOracle",
-  "contracts/YVaultV1PriceOracle.sol:YVaultV1PriceOracle",
-  "contracts/YVaultV2PriceOracle.sol:YVaultV2PriceOracle",
-  "contracts/AlphaHomoraV1PriceOracle.sol:AlphaHomoraV1PriceOracle",
-  "contracts/SynthetixPriceOracle.sol:SynthetixPriceOracle",
   "contracts/CEtherDelegate.sol:CEtherDelegate",
   "contracts/CEtherDelegator.sol:CEtherDelegator",
   "contracts/CErc20Delegate.sol:CErc20Delegate",
@@ -63,7 +43,6 @@ var usedContractAbiKeys = [
   "contracts/Uniswap/UniswapAnchoredView.sol:UniswapAnchoredView",
   "contracts/OpenOraclePriceData.sol:OpenOraclePriceData",
   "contracts/Uniswap/UniswapView.sol:UniswapView",
-  "contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView",
 ];
 for (const contractKey of usedContractAbiKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
@@ -72,10 +51,16 @@ for (const contractKey of usedContractAbiKeys) {
 var usedContractBinKeys = [
   "contracts/Uniswap/UniswapAnchoredView.sol:UniswapAnchoredView",
   "contracts/Uniswap/UniswapView.sol:UniswapView",
-  "contracts/Uniswap/UniswapLpTokenView.sol:UniswapLpTokenView",
 ];
 for (const contractKey of usedContractBinKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
   minContracts[contractKey].bin = openOracleContracts[contractKey].bin;
 }
 fs.writeFileSync(__dirname + "/../src/contracts/open-oracle.min.json", JSON.stringify({ contracts: minContracts }));
+
+minContracts = {};
+fs.readdirSync(__dirname + "/../src/contracts/oracles/").forEach(file => {
+  var contract = JSON.parse(fs.readFileSync(__dirname + "/../src/contracts/oracles/" + file));
+  minContracts[contract.contractName] = { abi: contract.abi, bin: contract.bytecode };
+});
+fs.writeFileSync(__dirname + "/../src/contracts/oracles.min.json", JSON.stringify({ contracts: minContracts }));
