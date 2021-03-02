@@ -7,7 +7,7 @@ var contracts = require(__dirname + "/../contracts/compound-protocol.min.json")
 
 export default class DAIInterestRateModelV2 extends JumpRateModel {
   static RUNTIME_BYTECODE_HASH =
-    "0x4b4c4f6386fd72d3f041a03e9eee3945189457fcf4299e99098d360a9f619539";
+    "0x44c31017cf8acb973002a343d9fdcf660da0b1ac0e3b56a360aadbf7ceefebd5";
 
   initialized;
 
