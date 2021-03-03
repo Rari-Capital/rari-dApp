@@ -138,7 +138,7 @@ const OracleAndInterestRates = ({
 
   const { t } = useTranslation();
 
-  const { fuse } = useRari();
+  const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
     const comptroller = new fuse.web3.eth.Contract(
@@ -168,11 +168,14 @@ const OracleAndInterestRates = ({
     return {
       admin,
       upgradeable,
+      isPowerfulAdmin:
+        admin.toLowerCase() === address.toLowerCase() && upgradeable,
       oracle,
       closeFactor,
       liquidationIncentive,
     };
   });
+
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
   return (
@@ -188,23 +191,26 @@ const OracleAndInterestRates = ({
         width="100%"
         px={4}
         height="49px"
+        flexShrink={0}
       >
         <Heading size="sm">
           {t("Pool {{num}} Info", { num: poolId, name })}
         </Heading>
 
-        <Link
-          /* @ts-ignore */
-          as={RouterLink}
-          className="no-underline"
-          to="../edit"
-        >
-          <DashboardBox height="35px">
-            <Center expand px={2} fontWeight="bold">
-              {t("Edit")}
-            </Center>
-          </DashboardBox>
-        </Link>
+        {data?.isPowerfulAdmin ? (
+          <Link
+            /* @ts-ignore */
+            as={RouterLink}
+            className="no-underline"
+            to="../edit"
+          >
+            <DashboardBox height="35px">
+              <Center expand px={2} fontWeight="bold">
+                {t("Edit")}
+              </Center>
+            </DashboardBox>
+          </Link>
+        ) : null}
       </Row>
 
       <ModalDivider />
