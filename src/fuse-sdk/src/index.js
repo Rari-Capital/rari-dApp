@@ -134,14 +134,13 @@ export default class Fuse {
 
     this.deployPool = async function (
       poolName,
-      isPrivate,
+      enforceWhitelist,
       closeFactor,
       maxAssets,
       liquidationIncentive,
       priceOracle,
       priceOracleConf,
       options,
-      enforceWhitelist,
       whitelist
     ) {
       // Deploy new price oracle via SDK if requested
@@ -182,7 +181,7 @@ export default class Fuse {
           .deployPool(
             poolName,
             implementationAddress,
-            isPrivate,
+            enforceWhitelist,
             closeFactor,
             maxAssets,
             liquidationIncentive,
@@ -226,66 +225,8 @@ export default class Fuse {
           poolAddress
         );
 
-        await comptroller.methods._setEnforceWhitelist(true).send(options);
+        // Already enforced so now we just need to add the addresses
         await comptroller.methods._setWhitelistStatuses(whitelist, Array(whitelist.length).fill(true)).send(options);
-      }
-
-      return [poolAddress, implementationAddress, priceOracle];
-    };
-
-    this._deployPool = async function (
-      poolName,
-      isPrivate,
-      closeFactor,
-      maxAssets,
-      liquidationIncentive,
-      priceOracle,
-      priceOracleConf,
-      options
-    ) {
-      // Deploy new price oracle via SDK if requested
-      if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
-        try {
-          priceOracle = await this.deployPriceOracle(
-            priceOracle,
-            priceOracleConf,
-            options
-          ); // TODO: anchorMantissa / anchorPeriod
-        } catch (error) {
-          throw (
-            "Deployment of price oracle failed: " +
-            (error.message ? error.message : error)
-          );
-        }
-      }
-
-      // Deploy new pool via SDK
-      try {
-        var [poolAddress, implementationAddress] = await this.deployComptroller(
-          closeFactor,
-          maxAssets,
-          liquidationIncentive,
-          priceOracle,
-          null,
-          options
-        );
-      } catch (error) {
-        throw (
-          "Deployment of Comptroller failed: " +
-          (error.message ? error.message : error)
-        );
-      }
-
-      // Register new pool with FusePoolDirectory
-      try {
-        await this.contracts.FusePoolDirectory.methods
-          .registerPool(poolName, poolAddress, isPrivate)
-          .send(options);
-      } catch (error) {
-        throw (
-          "Registration of new Fuse pool failed: " +
-          (error.message ? error.message : error)
-        );
       }
 
       return [poolAddress, implementationAddress, priceOracle];
