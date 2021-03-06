@@ -343,6 +343,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       for (let i = 0; i < assets.length; i++) {
         const asset = assets[i];
 
+        console.time(asset.underlyingSymbol);
         fetch(
           `http://${process.env.VERCEL_URL}/api/rss?address=` +
             asset.underlyingToken
@@ -352,6 +353,8 @@ export default async (request: NowRequest, response: NowResponse) => {
             assetsRSS[i] = rss;
             totalRSS += rss.totalScore;
             completed++;
+
+            console.timeEnd(asset.underlyingSymbol);
 
             if (completed === assets.length) {
               resolve(true);
@@ -430,6 +433,8 @@ export default async (request: NowRequest, response: NowResponse) => {
 
       lastUpdated,
     });
+
+    console.log("done!");
   } else {
     response.status(404).send("Specify address or poolID!");
   }
