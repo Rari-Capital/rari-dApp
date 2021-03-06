@@ -153,6 +153,8 @@ async function fetchMaxAmount(
       .getMaxRedeem(address, asset.cToken)
       .call();
 
+    console.log(maxRedeem, address, asset.cToken);
+
     if (err !== 0) {
       return fuse.web3.utils.toBN(maxRedeem);
     } else {
@@ -371,7 +373,10 @@ const AmountSelect = ({
         );
       }
 
-      await queryCache.refetchQueries();
+      queryCache.refetchQueries();
+      // Wait 2 seconds for refetch and then close modal.
+      // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       onClose();
     } catch (e) {
       console.log(e);

@@ -169,9 +169,14 @@ const OracleAndInterestRates = ({
       .liquidationIncentiveMantissa()
       .call();
 
+    const enforceWhitelist = await comptroller.methods
+      .enforceWhitelist()
+      .call();
+
     return {
       admin,
       upgradeable,
+      enforceWhitelist,
       isPowerfulAdmin:
         admin.toLowerCase() === address.toLowerCase() && upgradeable,
       oracle,
@@ -316,12 +321,12 @@ const OracleAndInterestRates = ({
           }
         />
 
-        <Center width="100%" mt={4} mb={12}>
-          <Text textAlign="center">
-            {t("Oracle Used")}:{" "}
-            <b>{data ? data.oracle ?? t("Unrecognized Oracle") : "?"}</b>
-          </Text>
-        </Center>
+        <StatRow
+          statATitle={t("Oracle")}
+          statA={data ? data.oracle ?? t("Unrecognized Oracle") : "?"}
+          statBTitle={t("Whitelist")}
+          statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
+        />
       </Column>
     </Column>
   );
