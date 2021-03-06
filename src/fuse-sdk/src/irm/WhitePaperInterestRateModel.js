@@ -5,7 +5,7 @@ var contracts = require(__dirname + "/../contracts/compound-protocol.min.json")
 
 export default class WhitePaperInterestRateModel {
   static RUNTIME_BYTECODE_HASH =
-    "0x63d79af1b5e0b2cc00b5658d0c1456c1b6ccc205ba831fb1ddf39de43e21ade6";
+    "0xe3164248fb86cce0eb8037c9a5c8d05aac2b2ebdb46741939be466a7b17d0b83";
 
   initialized;
 
