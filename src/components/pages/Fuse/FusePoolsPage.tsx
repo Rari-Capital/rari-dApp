@@ -20,6 +20,7 @@ import { useQuery } from "react-query";
 import { useTokenData } from "../../../hooks/useTokenData";
 import Fuse from "fuse.js";
 import { filterOnlyObjectProperties } from "../../../utils/fetchFusePoolData";
+import { letterScore, usePoolRSS } from "../../../hooks/useRSS";
 
 export interface FusePool {
   name: string;
@@ -202,7 +203,6 @@ const PoolList = () => {
                 name={pool.pool.name}
                 tvl={pool.suppliedUSD}
                 borrowed={pool.borrowedUSD}
-                rss={"A"}
                 tokens={pool.underlyingTokens.map((address, index) => ({
                   symbol: pool.underlyingSymbols[index],
                   address,
@@ -224,7 +224,7 @@ const PoolRow = ({
   poolNumber,
   tvl,
   borrowed,
-  rss,
+
   mt,
   name,
 }: {
@@ -232,11 +232,15 @@ const PoolRow = ({
   poolNumber: number;
   tvl: number;
   borrowed: number;
-  rss: string;
+
   mt?: number | string;
   name: string;
 }) => {
   const isEmpty = tokens.length === 0;
+
+  const rss = usePoolRSS(poolNumber);
+
+  const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
   return (
     <Link
@@ -296,7 +300,7 @@ const PoolRow = ({
           <b>{smallUsdFormatter(borrowed)}</b>
         </Center>
         <Center height="100%" width="15%">
-          <b>{rss}</b>
+          <b>{rssScore}</b>
         </Center>
       </Row>
     </Link>
