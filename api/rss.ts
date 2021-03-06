@@ -336,6 +336,8 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     // Do all the fetching in parallel and then resolve this promise once they have all fetched.
     await new Promise((resolve) => {
+      let completed = 0;
+
       for (let i = 0; i < assets.length; i++) {
         const asset = assets[i];
 
@@ -347,8 +349,9 @@ export default async (request: NowRequest, response: NowResponse) => {
           .then((rss) => {
             assetsRSS[i] = rss;
             totalRSS += rss.totalScore;
+            completed++;
 
-            if (assetsRSS.length === assets.length) {
+            if (completed === assets.length) {
               resolve(true);
             }
           });
