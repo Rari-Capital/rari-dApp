@@ -26,6 +26,8 @@ import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import Fuse from "../../../fuse-sdk";
+import { QuestionIcon } from "@chakra-ui/icons";
+import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -174,7 +176,7 @@ const PoolConfiguration = () => {
 
           <OptionRow>
             <Text fontWeight="bold" mr={4}>
-              {t("Name:")}
+              {t("Name")}
             </Text>
             <Input
               width="20%"
@@ -210,7 +212,15 @@ const PoolConfiguration = () => {
           <ModalDivider />
 
           <OptionRow>
-            <Text fontWeight="bold">{t("Whitelisted")}:</Text>
+            <SimpleTooltip
+              label={t(
+                "If enabled you will be able to limit the ability to supply to the pool to a select group of addresses. The pool will not show up on the 'all pools' list."
+              )}
+            >
+              <Text fontWeight="bold">
+                {t("Whitelisted")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+            </SimpleTooltip>
 
             <Switch
               h="20px"
@@ -224,7 +234,15 @@ const PoolConfiguration = () => {
           <ModalDivider />
 
           <OptionRow>
-            <Text fontWeight="bold">{t("Close Factor")}:</Text>
+            <SimpleTooltip
+              label={t(
+                "The percent, ranging from 0% to 100%, of a liquidatable account's borrow that can be repaid in a single liquidate transaction. If a user has multiple borrowed assets, the closeFactor applies to any single borrowed asset, not the aggregated value of a user’s outstanding borrowing. Compound's close factor is 50%."
+              )}
+            >
+              <Text fontWeight="bold">
+                {t("Close Factor")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+            </SimpleTooltip>
 
             <SliderWithLabel
               value={closeFactor}
@@ -238,7 +256,15 @@ const PoolConfiguration = () => {
           <ModalDivider />
 
           <OptionRow>
-            <Text fontWeight="bold">{t("Liquidation Incentive")}:</Text>
+            <SimpleTooltip
+              label={t(
+                "The additional collateral given to liquidators as an incentive to perform liquidation of underwater accounts. For example, if the liquidation incentive is 10%, liquidators receive an extra 10% of the borrowers collateral for every unit they close. Compound's liquidation incentive is 8%."
+              )}
+            >
+              <Text fontWeight="bold">
+                {t("Liquidation Incentive")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+            </SimpleTooltip>
 
             <SliderWithLabel
               value={liquidationIncentive}

@@ -28,6 +28,23 @@ const fuse = new Fuse(
 async function computeAssetRSS(address: string) {
   address = address.toLowerCase();
 
+  // MAX SCORE FOR ETH
+  if (address === "0x0000000000000000000000000000000000000000") {
+    return {
+      liquidityUSD: 4_000_000_000,
+
+      mcap: 33,
+      volatility: 20,
+      liquidity: 32,
+      swapCount: 7,
+      coingeckoMetadata: 2,
+      exchanges: 3,
+      transfers: 3,
+
+      totalScore: 100,
+    };
+  }
+
   try {
     console.time("gecko");
     const {
