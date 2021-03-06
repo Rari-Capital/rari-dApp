@@ -29,6 +29,7 @@ async function computeAssetRSS(address: string) {
   address = address.toLowerCase();
 
   try {
+    console.time("gecko");
     const {
       market_data: {
         market_cap: { usd: asset_market_cap },
@@ -39,7 +40,9 @@ async function computeAssetRSS(address: string) {
     } = await fetch(
       `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
     ).then((res) => res.json());
+    console.timeEnd("gecko");
 
+    console.time("uni");
     const uniData = await fetch(
       "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
       {
@@ -57,7 +60,9 @@ async function computeAssetRSS(address: string) {
         headers: { "Content-Type": "application/json" },
       }
     ).then((res) => res.json());
+    console.timeEnd("uni");
 
+    console.time("sushi");
     const sushiData = await fetch(
       "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
       {
@@ -75,13 +80,16 @@ async function computeAssetRSS(address: string) {
         headers: { "Content-Type": "application/json" },
       }
     ).then((res) => res.json());
+    console.timeEnd("sushi");
 
     const mcap = await weightedCalculation(async () => {
+      console.time("deficoins");
       const defiCoins = await fetch(
         `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=decentralized_finance_defi&order=market_cap_desc&per_page=10&page=1&sparkline=false`
       )
         .then((res) => res.json())
         .then((array) => array.slice(0, 30));
+      console.timeEnd("deficoins");
 
       const medianDefiCoinMcap = median(
         defiCoins.map((coin) => coin.market_cap)
@@ -117,19 +125,23 @@ async function computeAssetRSS(address: string) {
     }, 32);
 
     const volatility = await weightedCalculation(async () => {
+      console.time("variation");
       const assetVariation = await fetch(
         `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=30`
       )
         .then((res) => res.json())
         .then((data) => data.prices.map(([, price]) => price))
         .then((prices) => variance(prices));
+      console.timeEnd("variation");
 
+      console.time("ethVariation");
       const ethVariation = await fetch(
         `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/?vs_currency=usd&days=30`
       )
         .then((res) => res.json())
         .then((data) => data.prices.map(([, price]) => price))
         .then((prices) => variance(prices));
+      console.timeEnd("ethVariation");
 
       const peak = ethVariation * 3;
 
@@ -165,6 +177,7 @@ async function computeAssetRSS(address: string) {
     }, 3);
 
     const transfers = await weightedCalculation(async () => {
+      console.time("transferAmount");
       const contract = new fuse.web3.eth.Contract(ERC20ABI as any, address);
 
       try {
@@ -173,8 +186,12 @@ async function computeAssetRSS(address: string) {
           toBlock: await fuse.web3.eth.getBlockNumber(),
         });
 
+        console.timeEnd("transferAmount");
+
         return transfers.length >= 500 ? transfers.length / 10_000 : 0;
       } catch (e) {
+        console.timeEnd("transferAmount");
+
         if (
           e.message === "Returned error: query returned more than 10000 results"
         ) {
@@ -248,11 +265,13 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     response.json({ ...(await computeAssetRSS(address)), lastUpdated });
   } else if (poolID) {
+    console.time("poolData");
     const { assets, totalLiquidityUSD, comptroller } = await fetchFusePoolData(
       poolID,
       "0x0000000000000000000000000000000000000000",
       fuse
     );
+    console.timeEnd("poolData");
 
     const liquidity = await weightedCalculation(async () => {
       return totalLiquidityUSD > 50_000 ? totalLiquidityUSD / 2_000_000 : 0;
@@ -297,17 +316,27 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
     let totalRSS = 0;
-    for (let i = 0; i < assets.length; i++) {
-      const asset = assets[i];
 
-      const rss = await fetch(
-        `http://${process.env.VERCEL_URL}/api/rss?address=` +
-          asset.underlyingToken
-      ).then((res) => res.json());
+    // Do all the fetching in parallel and then resolve this promise once they have all fetched.
+    await new Promise((resolve) => {
+      for (let i = 0; i < assets.length; i++) {
+        const asset = assets[i];
 
-      assetsRSS.push(rss);
-      totalRSS += rss.totalScore;
-    }
+        fetch(
+          `http://${process.env.VERCEL_URL}/api/rss?address=` +
+            asset.underlyingToken
+        )
+          .then((res) => res.json())
+          .then((rss) => {
+            assetsRSS[i] = rss;
+            totalRSS += rss.totalScore;
+
+            if (assetsRSS.length === assets.length) {
+              resolve(true);
+            }
+          });
+      }
+    });
 
     const averageRSS = await weightedCalculation(async () => {
       return totalRSS / assets.length / 100;
