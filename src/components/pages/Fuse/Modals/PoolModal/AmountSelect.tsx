@@ -30,7 +30,7 @@ import { ModalDivider } from "../../../../shared/Modal";
 
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
-import { USDPricedFuseAsset } from "../../FusePoolPage";
+
 import {
   ETH_TOKEN_DATA,
   useTokenData,
@@ -38,6 +38,7 @@ import {
 import { useBorrowLimit } from "../../../../../hooks/useBorrowLimit";
 
 import Fuse from "../../../../../fuse-sdk";
+import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 
 interface Props {
   onClose: () => any;

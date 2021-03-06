@@ -19,40 +19,7 @@ import FuseTabBar, { useFilter } from "./FuseTabBar";
 import { useQuery } from "react-query";
 import { useTokenData } from "../../../hooks/useTokenData";
 import Fuse from "fuse.js";
-
-export function filterOnlyObjectProperties(obj: any) {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([k]) => isNaN(k as any))
-  ) as any;
-}
-
-export interface FuseAsset {
-  cToken: string;
-
-  borrowBalance: number;
-  supplyBalance: number;
-  liquidity: number;
-
-  membership: boolean;
-
-  underlyingName: string;
-  underlyingSymbol: string;
-  underlyingToken: string;
-  underlyingDecimals: number;
-  underlyingPrice: number;
-
-  collateralFactor: number;
-  reserveFactor: number;
-
-  adminFee: number;
-  fuseFee: number;
-
-  borrowRatePerBlock: number;
-  supplyRatePerBlock: number;
-
-  totalBorrow: number;
-  totalSupply: number;
-}
+import { filterOnlyObjectProperties } from "../../../utils/fetchFusePoolData";
 
 export interface FusePool {
   name: string;

@@ -1,14 +1,17 @@
 import { NowRequest, NowResponse } from "@vercel/node";
 
-import { variance, median, add } from "mathjs";
+import { variance, median } from "mathjs";
 import fetch from "node-fetch";
-import Web3 from "web3";
+import Fuse from "../src/fuse-sdk";
 
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
+import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
 
 function clamp(num, min, max) {
   return num <= min ? min : num >= max ? max : num;
 }
+
+type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
 const weightedCalculation = async (
   calculation: () => Promise<number>,
@@ -17,11 +20,14 @@ const weightedCalculation = async (
   return clamp((await calculation()) ?? 0, 0, 1) * weight;
 };
 
-const web3 = new Web3(
-  `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+const fuse = new Fuse(
+  `http://api.rari.capital:21917`
+  //TODO: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
 );
 
 async function computeAssetRSS(address: string) {
+  address = address.toLowerCase();
+
   try {
     const {
       market_data: {
@@ -93,6 +99,8 @@ async function computeAssetRSS(address: string) {
       }
     }, 33);
 
+    let liquidityUSD = 0;
+
     const liquidity = await weightedCalculation(async () => {
       const uniLiquidity = parseFloat(
         uniData.data.token?.totalLiquidity ?? "0"
@@ -101,9 +109,11 @@ async function computeAssetRSS(address: string) {
         sushiData.data.token?.totalLiquidity ?? "0"
       );
 
-      const totalLiquidity = uniLiquidity + sushiLiquidity;
+      const totalLiquidity = uniLiquidity + sushiLiquidity * price_usd;
 
-      return (totalLiquidity * price_usd) / 220_000_000;
+      liquidityUSD = totalLiquidity;
+
+      return totalLiquidity / 220_000_000;
     }, 32);
 
     const volatility = await weightedCalculation(async () => {
@@ -155,12 +165,12 @@ async function computeAssetRSS(address: string) {
     }, 3);
 
     const transfers = await weightedCalculation(async () => {
-      const contract = new web3.eth.Contract(ERC20ABI as any, address);
+      const contract = new fuse.web3.eth.Contract(ERC20ABI as any, address);
 
       try {
         const transfers = await contract.getPastEvents("Transfer", {
           fromBlock: 0,
-          toBlock: await web3.eth.getBlockNumber(),
+          toBlock: await fuse.web3.eth.getBlockNumber(),
         });
 
         return transfers.length >= 500 ? transfers.length / 10_000 : 0;
@@ -186,6 +196,8 @@ async function computeAssetRSS(address: string) {
     }, 2);
 
     return {
+      liquidityUSD,
+
       mcap,
       volatility,
       liquidity,
@@ -207,6 +219,8 @@ async function computeAssetRSS(address: string) {
     console.log(e);
 
     return {
+      liquidityUSD: 0,
+
       mcap: 0,
       volatility: 0,
       liquidity: 0,
@@ -231,8 +245,127 @@ export default async (request: NowRequest, response: NowResponse) => {
 
   if (address) {
     response.setHeader("Cache-Control", "s-maxage=604800");
+
     response.json({ ...(await computeAssetRSS(address)), lastUpdated });
   } else if (poolID) {
+    const { assets, totalLiquidityUSD, comptroller } = await fetchFusePoolData(
+      poolID,
+      "0x0000000000000000000000000000000000000000",
+      fuse
+    );
+
+    const liquidity = await weightedCalculation(async () => {
+      return totalLiquidityUSD > 50_000 ? totalLiquidityUSD / 2_000_000 : 0;
+    }, 25);
+
+    const collateralFactor = await weightedCalculation(async () => {
+      const avgCollatFactor = assets.reduce(
+        (a, b, _, { length }) => a + b.collateralFactor / 1e16 / length,
+        0
+      );
+
+      return avgCollatFactor <= 45 ? 1 : 1 - avgCollatFactor / 90;
+    }, 15);
+
+    const reserveFactor = await weightedCalculation(async () => {
+      const avgReserveFactor = assets.reduce(
+        (a, b, _, { length }) => a + b.reserveFactor / 1e16 / length,
+        0
+      );
+
+      return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 22;
+    }, 15);
+
+    const utilization = await weightedCalculation(async () => {
+      for (let i = 0; i < assets.length; i++) {
+        const asset = assets[i];
+
+        // If this asset has more than 75% utilization, fail
+        if (
+          // @ts-ignore
+          asset.totalSupply === "0"
+            ? false
+            : asset.totalBorrow / asset.totalSupply >= 0.75
+        ) {
+          return 0;
+        }
+      }
+
+      return 1;
+    }, 15);
+
+    let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
+    let totalRSS = 0;
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+
+      const rss = await computeAssetRSS(asset.underlyingToken);
+
+      assetsRSS.push(rss);
+      totalRSS += rss.totalScore;
+    }
+
+    const averageRSS = await weightedCalculation(async () => {
+      return totalRSS / assets.length / 100;
+    }, 15);
+
+    const upgradeable = await weightedCalculation(async () => {
+      const {
+        1: upgradeable,
+      } = await fuse.contracts.FusePoolLens.methods
+        .getPoolOwnership(comptroller)
+        .call();
+
+      return upgradeable ? 0 : 1;
+    }, 15);
+
+    const mustPass = await weightedCalculation(async () => {
+      const liquidationIncentive =
+        (await comptroller.methods.liquidationIncentiveMantissa().call()) /
+          1e16 -
+        100;
+
+      for (let i = 0; i < assetsRSS.length; i++) {
+        const rss = assetsRSS[i];
+        const asset = assets[i];
+
+        // If the AMM liquidity is less than 2x the $ amount supplied, fail
+        if (rss.liquidityUSD < 2 * asset.totalSupplyUSD) {
+          return 0;
+        }
+
+        // If the liquidation incentive is less than or equal to 1/10th of the collateral factor, fail
+        // Ex: Incentive is 8%, Factor is 75%
+        const collateralFactor = asset.collateralFactor / 1e16;
+        if (liquidationIncentive <= collateralFactor / 10) {
+          return 0;
+        }
+      }
+
+      return 1;
+    }, 15);
+
+    response.setHeader("Cache-Control", "s-maxage=604800");
+    response.json({
+      liquidity,
+      collateralFactor,
+      reserveFactor,
+      utilization,
+      averageRSS,
+      upgradeable,
+      mustPass,
+
+      totalScore:
+        liquidity +
+        collateralFactor +
+        reserveFactor +
+        utilization +
+        averageRSS +
+        upgradeable +
+        mustPass,
+
+      lastUpdated,
+    });
   } else {
     response.status(404).send("Specify address or poolID!");
   }

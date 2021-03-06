@@ -19,26 +19,17 @@ import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
+import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
-import { FuseAsset } from "./FusePoolsPage";
+
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
-
-export interface USDPricedFuseAsset extends FuseAsset {
-  supplyBalanceUSD: number;
-  borrowBalanceUSD: number;
-
-  totalSupplyUSD: number;
-  totalBorrowUSD: number;
-
-  liquidityUSD: number;
-}
 
 const FusePoolPage = React.memo(() => {
   const { isAuthed } = useRari();

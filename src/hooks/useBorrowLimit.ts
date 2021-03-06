@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { USDPricedFuseAsset } from "../components/pages/Fuse/FusePoolPage";
+import { USDPricedFuseAsset } from "../utils/fetchFusePoolData";
 
 export const useBorrowLimit = (assets: USDPricedFuseAsset[]) => {
   const maxBorrow = useMemo(() => {

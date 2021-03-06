@@ -5,6 +5,8 @@ import JumpRateModel from "./irm/JumpRateModel.js";
 import DAIInterestRateModelV2 from "./irm/DAIInterestRateModelV2.js";
 import WhitePaperInterestRateModel from "./irm/WhitePaperInterestRateModel.js";
 
+import BigNumber from "bignumber.js";
+
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
@@ -15,6 +17,8 @@ var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
   .contracts;
 var oracleContracts = require(__dirname + "/contracts/oracles.min.json")
   .contracts;
+
+const axios = require("axios");
 
 export default class Fuse {
   static FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS =
@@ -61,18 +65,30 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    "PreferredPriceOracle": "0xf29124deee924fe30a5e7e0be7a2f6b03365196056e552663b9ef9428e414fab",
-    "ChainlinkPriceOracle": "0xc8bd346a626fb319efe6b2e42b463eef27577b24b5b84b6811f4cd331f75c11f",
-    "Keep3rPriceOracle": "0x646fbee1fc2764bc271ec9b5fe0e004c6b36c5ecf4620e6394fb9c5be9182d0b",
-    "MasterPriceOracle": "0xf0c2d895938a68860f5c244581bdab08056126fa1596f0a111dae4bc0b265210",
-    "UniswapAnchoredView": "0xfb58ee7546e25ab8f0a1ae4feebb2acbad518fd16201dbb2e94cec39542e2ac4",
-    "UniswapView": "0xf3995d9454d6f8922022916f823ed743d6f2a88ad6e5e984ffe6c5ce25b0f343",
-    "UniswapLpTokenPriceOracle": "0x2019d8aa08d853deab86b5daa5fb75be7af89666a1eabbed2d99d9f246046095",
-    "RecursivePriceOracle": "0xc2933882348e9a8bd50ca2132ecc578577daa49fc5d5ac4af68ee2a0c60972f6",
-    "YVaultV1PriceOracle": "0xc74cbf48df66a164789ad9b7d8a057eb9760bcca5ac852202f5f4018da95616b",
-    "YVaultV2PriceOracle": "0xa7fd1aca6fa003c74f6b92a77e8ac6505f50dc067c340686f7b5f5e940bcdc88",
-    "AlphaHomoraV1PriceOracle": "0x42401429634dcf51120cff9d5ffe3cff44cfc751ca139cb7992ed12f9e81fe23",
-    "SynthetixPriceOracle": "0x253aaf31ad010b9880d68beb6f554aa9bd2c148e5b7d5d01e5e63ebe1d046092",
+    PreferredPriceOracle:
+      "0xf29124deee924fe30a5e7e0be7a2f6b03365196056e552663b9ef9428e414fab",
+    ChainlinkPriceOracle:
+      "0xc8bd346a626fb319efe6b2e42b463eef27577b24b5b84b6811f4cd331f75c11f",
+    Keep3rPriceOracle:
+      "0x646fbee1fc2764bc271ec9b5fe0e004c6b36c5ecf4620e6394fb9c5be9182d0b",
+    MasterPriceOracle:
+      "0xf0c2d895938a68860f5c244581bdab08056126fa1596f0a111dae4bc0b265210",
+    UniswapAnchoredView:
+      "0xfb58ee7546e25ab8f0a1ae4feebb2acbad518fd16201dbb2e94cec39542e2ac4",
+    UniswapView:
+      "0xf3995d9454d6f8922022916f823ed743d6f2a88ad6e5e984ffe6c5ce25b0f343",
+    UniswapLpTokenPriceOracle:
+      "0x2019d8aa08d853deab86b5daa5fb75be7af89666a1eabbed2d99d9f246046095",
+    RecursivePriceOracle:
+      "0xc2933882348e9a8bd50ca2132ecc578577daa49fc5d5ac4af68ee2a0c60972f6",
+    YVaultV1PriceOracle:
+      "0xc74cbf48df66a164789ad9b7d8a057eb9760bcca5ac852202f5f4018da95616b",
+    YVaultV2PriceOracle:
+      "0xa7fd1aca6fa003c74f6b92a77e8ac6505f50dc067c340686f7b5f5e940bcdc88",
+    AlphaHomoraV1PriceOracle:
+      "0x42401429634dcf51120cff9d5ffe3cff44cfc751ca139cb7992ed12f9e81fe23",
+    SynthetixPriceOracle:
+      "0x253aaf31ad010b9880d68beb6f554aa9bd2c148e5b7d5d01e5e63ebe1d046092",
   };
 
   static ORACLES = [
@@ -93,6 +109,20 @@ export default class Fuse {
 
   constructor(web3Provider) {
     this.web3 = new Web3(web3Provider);
+
+    this.getEthUsdPriceBN = async function () {
+      return Web3.utils.toBN(
+        new BigNumber(
+          (
+            await axios.get(
+              "https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum"
+            )
+          ).data.ethereum.usd
+        )
+          .multipliedBy(1e18)
+          .toFixed(0)
+      );
+    };
 
     this.contracts = {
       FusePoolDirectory: new this.web3.eth.Contract(
@@ -226,7 +256,9 @@ export default class Fuse {
         );
 
         // Already enforced so now we just need to add the addresses
-        await comptroller.methods._setWhitelistStatuses(whitelist, Array(whitelist.length).fill(true)).send(options);
+        await comptroller.methods
+          ._setWhitelistStatuses(whitelist, Array(whitelist.length).fill(true))
+          .send(options);
       }
 
       return [poolAddress, implementationAddress, priceOracle];
@@ -448,12 +480,16 @@ export default class Fuse {
           break;
         case "SimplePriceOracle":
           var priceOracle = new this.web3.eth.Contract(
-            JSON.parse(contracts["contracts/SimplePriceOracle.sol:SimplePriceOracle"].abi)
+            JSON.parse(
+              contracts["contracts/SimplePriceOracle.sol:SimplePriceOracle"].abi
+            )
           );
           priceOracle = await priceOracle
             .deploy({
               data:
-                "0x" + contracts["contracts/SimplePriceOracle.sol:SimplePriceOracle"].bin,
+                "0x" +
+                contracts["contracts/SimplePriceOracle.sol:SimplePriceOracle"]
+                  .bin,
             })
             .send(options);
           break;
@@ -721,7 +757,8 @@ export default class Fuse {
         Web3.utils.toBN(conf.initialExchangeRateMantissa).isZero()
       )
         conf.initialExchangeRateMantissa = Web3.utils
-          .toBN(0.02e18).mul(Web3.utils.toBN(1e18))
+          .toBN(0.02e18)
+          .mul(Web3.utils.toBN(1e18))
           .div(Web3.utils.toBN(10).pow(Web3.utils.toBN(conf.decimals)));
 
       // Deploy CEtherDelegate implementation contract if necessary

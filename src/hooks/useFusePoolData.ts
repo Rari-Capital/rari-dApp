@@ -1,73 +1,13 @@
 import { useQuery } from "react-query";
 
-import { USDPricedFuseAsset } from "../components/pages/Fuse/FusePoolPage";
-import { filterOnlyObjectProperties } from "../components/pages/Fuse/FusePoolsPage";
 import { useRari } from "../context/RariContext";
+import { fetchFusePoolData } from "../utils/fetchFusePoolData";
 
 export const useFusePoolData = (poolId: string) => {
   const { fuse, rari, address } = useRari();
 
-  const { data } = useQuery(poolId + " poolData " + address, async () => {
-    const {
-      comptroller,
-      name,
-      isPrivate,
-    } = await fuse.contracts.FusePoolDirectory.methods
-      .pools(poolId)
-      .call({ from: address });
-
-    let assets: USDPricedFuseAsset[] = (
-      await fuse.contracts.FusePoolLens.methods
-        .getPoolAssetsWithData(comptroller)
-        .call({ from: address })
-    ).map(filterOnlyObjectProperties);
-
-    let totalSupplyBalanceUSD = 0;
-    let totalBorrowBalanceUSD = 0;
-
-    let totalSuppliedUSD = 0;
-    let totalBorrowedUSD = 0;
-
-    const ethPrice: number = rari.web3.utils.fromWei(
-      await rari.getEthUsdPriceBN()
-    ) as any;
-
-    for (let i = 0; i < assets.length; i++) {
-      let asset = assets[i];
-
-      asset.supplyBalanceUSD =
-        ((asset.supplyBalance * asset.underlyingPrice) / 1e36) * ethPrice;
-
-      asset.borrowBalanceUSD =
-        ((asset.borrowBalance * asset.underlyingPrice) / 1e36) * ethPrice;
-
-      totalSupplyBalanceUSD += asset.supplyBalanceUSD;
-      totalBorrowBalanceUSD += asset.borrowBalanceUSD;
-
-      asset.totalSupplyUSD =
-        ((asset.totalSupply * asset.underlyingPrice) / 1e36) * ethPrice;
-      asset.totalBorrowUSD =
-        ((asset.totalBorrow * asset.underlyingPrice) / 1e36) * ethPrice;
-
-      totalSuppliedUSD += asset.totalSupplyUSD;
-      totalBorrowedUSD += asset.totalBorrowUSD;
-
-      asset.liquidityUSD =
-        ((asset.liquidity * asset.underlyingPrice) / 1e36) * ethPrice;
-    }
-
-    return {
-      assets,
-      comptroller,
-      name,
-      isPrivate,
-
-      totalSuppliedUSD,
-      totalBorrowedUSD,
-
-      totalSupplyBalanceUSD,
-      totalBorrowBalanceUSD,
-    };
+  const { data } = useQuery(poolId + " poolData " + address, () => {
+    return fetchFusePoolData(poolId, address, fuse, rari);
   });
 
   return data;

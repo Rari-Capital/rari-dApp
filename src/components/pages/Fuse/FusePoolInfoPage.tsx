@@ -36,10 +36,11 @@ import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { useQuery } from "react-query";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { USDPricedFuseAsset } from "./FusePoolPage";
+
 import { useTokenData } from "../../../hooks/useTokenData";
 import { CTokenIcon } from "./FusePoolsPage";
 import { shortAddress } from "../../../utils/shortAddress";
+import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 
 const FusePoolInfoPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -84,6 +85,7 @@ const FusePoolInfoPage = React.memo(() => {
                 name={data.name}
                 totalSuppliedUSD={data.totalSuppliedUSD}
                 totalBorrowedUSD={data.totalBorrowedUSD}
+                totalLiquidityUSD={data.totalLiquidityUSD}
                 comptrollerAddress={data.comptroller}
               />
             ) : (
@@ -126,12 +128,14 @@ const OracleAndInterestRates = ({
   name,
   totalSuppliedUSD,
   totalBorrowedUSD,
+  totalLiquidityUSD,
   comptrollerAddress,
 }: {
   assets: USDPricedFuseAsset[];
   name: string;
   totalSuppliedUSD: number;
   totalBorrowedUSD: number;
+  totalLiquidityUSD: number;
   comptrollerAddress: string;
 }) => {
   let { poolId } = useParams();
@@ -263,9 +267,7 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Available Liquidity")}
-          statA={shortUsdFormatter(
-            assets.reduce((a, b) => a + b.liquidityUSD, 0)
-          )}
+          statA={shortUsdFormatter(totalLiquidityUSD)}
           statBTitle={t("Average Utilization Factor")}
           statB={
             assets
