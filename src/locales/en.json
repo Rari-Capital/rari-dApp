@@ -209,7 +209,6 @@
   "Admin (click to copy)": "Admin (click to copy)",
   "Fuse Interest Fee": "Fuse Interest Fee",
   "Average Admin Fee": "Average Admin Fee",
-  "Oracle Used": "Oracle Used",
   "Unrecognized Oracle": "Unrecognized Oracle",
   "No graph is available for this asset's interest curves.": "No graph is available for this asset's interest curves.",
   "Edit": "Edit",
@@ -222,5 +221,6 @@
   "The additional collateral given to liquidators as an incentive to perform liquidation of underwater accounts. For example, if the liquidation incentive is 10%, liquidators receive an extra 10% of the borrowers collateral for every unit they close. Compound's liquidation incentive is 8%.": "The additional collateral given to liquidators as an incentive to perform liquidation of underwater accounts. For example, if the liquidation incentive is 10%, liquidators receive an extra 10% of the borrowers collateral for every unit they close. Compound's liquidation incentive is 8%.",
   "Liquidation Incentive": "Liquidation Incentive",
   "There are no assets in this pool.": "There are no assets in this pool.",
-  "Created Pools": "Created Pools"
+  "Created Pools": "Created Pools",
+  "Already added:": "Already added:"
 }

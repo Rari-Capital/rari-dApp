@@ -209,7 +209,6 @@
   "Admin (click to copy)": "管理員（點擊複製！）",
   "Fuse Interest Fee": "保險絲利息費",
   "Average Admin Fee": "平均管理費",
-  "Oracle Used": "甲骨文使用",
   "Unrecognized Oracle": "無法識別的甲骨文",
   "No graph is available for this asset's interest curves.": "該資產的利息曲線沒有可用的圖形。",
   "Edit": "編輯",
@@ -222,5 +221,6 @@
   "The additional collateral given to liquidators as an incentive to perform liquidation of underwater accounts. For example, if the liquidation incentive is 10%, liquidators receive an extra 10% of the borrowers collateral for every unit they close. Compound's liquidation incentive is 8%.": "為清算人提供的額外抵押品，以鼓勵他們進行水下賬戶清算。 例如，如果清算激勵為10％，那麼清算人為關閉的每個單位可獲得額外10％的借款人抵押品。 複合公司的清算激勵為8％。",
   "Liquidation Incentive": "清算激勵",
   "There are no assets in this pool.": "There are no assets in this pool.",
-  "Created Pools": "創建的池"
+  "Created Pools": "創建的池",
+  "Already added:": "已經加入："
 }
