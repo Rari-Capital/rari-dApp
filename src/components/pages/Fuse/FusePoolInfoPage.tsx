@@ -316,7 +316,7 @@ const OracleAndInterestRates = ({
           }
         />
 
-        <Center width="100%" mt={8} mb={12}>
+        <Center width="100%" mt={4} mb={12}>
           <Text textAlign="center">
             {t("Oracle Used")}:{" "}
             <b>{data ? data.oracle ?? t("Unrecognized Oracle") : "?"}</b>

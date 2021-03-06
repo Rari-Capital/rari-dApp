@@ -264,7 +264,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         0
       );
 
-      return avgCollatFactor <= 45 ? 1 : 1 - avgCollatFactor / 90;
+      // Returns a percentage in the range of 45% -> 90% (where 90% is 0% and 45% is 100%)
+      return -1 * (1 / 45) * avgCollatFactor + 2;
     }, 15);
 
     const reserveFactor = await weightedCalculation(async () => {
@@ -300,7 +301,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       const asset = assets[i];
 
       const rss = await fetch(
-        "/api/rss?address=" + asset.underlyingToken
+        "http://localhost:3000/api/rss?address=" + asset.underlyingToken
       ).then((res) => res.json());
 
       console.log(rss);
@@ -324,8 +325,17 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 15);
 
     const mustPass = await weightedCalculation(async () => {
+      const comptrollerContract = new fuse.web3.eth.Contract(
+        JSON.parse(
+          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+        ),
+        comptroller
+      );
+
       const liquidationIncentive =
-        (await comptroller.methods.liquidationIncentiveMantissa().call()) /
+        (await comptrollerContract.methods
+          .liquidationIncentiveMantissa()
+          .call()) /
           1e16 -
         100;
 
