@@ -301,8 +301,8 @@ export default async (request: NowRequest, response: NowResponse) => {
       const asset = assets[i];
 
       const rss = await fetch(
-        //TODO MAKE THIS WORK FOR PROD AND CHANGE TO LOCALHOST IN DEV? IS THERE AN ENV VAR WE CAN USE?
-        "http://localhost:3000/api/rss?address=" + asset.underlyingToken
+        `http://${process.env.VERCEL_URL}/api/rss?address=` +
+          asset.underlyingToken
       ).then((res) => res.json());
 
       assetsRSS.push(rss);
