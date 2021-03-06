@@ -299,7 +299,11 @@ export default async (request: NowRequest, response: NowResponse) => {
     for (let i = 0; i < assets.length; i++) {
       const asset = assets[i];
 
-      const rss = await computeAssetRSS(asset.underlyingToken);
+      const rss = await fetch(
+        "/api/rss?address=" + asset.underlyingToken
+      ).then((res) => res.json());
+
+      console.log(rss);
 
       assetsRSS.push(rss);
       totalRSS += rss.totalScore;
