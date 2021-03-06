@@ -6,6 +6,7 @@ import {
   Input,
   useToast,
   Spinner,
+  IconButton,
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "buttered-chakra";
 import React, { ReactNode, useState } from "react";
@@ -26,7 +27,7 @@ import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
 import Fuse from "../../../fuse-sdk";
-import { QuestionIcon } from "@chakra-ui/icons";
+import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
@@ -70,7 +71,9 @@ const PoolConfiguration = () => {
 
   const [name, setName] = useState("");
   const [oracle, setOracle] = useState("");
-  const [whitelist, setWhitelisted] = useState(false);
+  const [isWhitelisted, setIsWhitelisted] = useState(false);
+  const [whitelist, setWhitelist] = useState<string[]>([]);
+  const [_whitelistInput, _setWhitelistInput] = useState("");
 
   const [closeFactor, setCloseFactor] = useState(50);
   const [liquidationIncentive, setLiquidationIncentive] = useState(8);
@@ -122,22 +125,17 @@ const PoolConfiguration = () => {
       .toFixed(0);
 
     let reporter = null;
-    if (oracle === "UniswapAnchoredView") {
-      reporter = prompt(
-        "What reporter address would you like to use? (Coinbase Pro is the default.)",
-        "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC"
-      );
-    }
 
     const [poolAddress] = await fuse.deployPool(
       name,
-      whitelist,
+      isWhitelisted,
       bigCloseFactor,
       maxAssets,
       bigLiquidationIncentive,
       oracle,
       { reporter },
-      { from: address }
+      { from: address },
+      isWhitelisted ? whitelist : null
     );
 
     toast({
@@ -224,12 +222,87 @@ const PoolConfiguration = () => {
 
             <Switch
               h="20px"
-              isChecked={whitelist}
-              onChange={() => setWhitelisted((past) => !past)}
+              isChecked={isWhitelisted}
+              onChange={() => {
+                setIsWhitelisted((past) => !past);
+                // Add the user to the whitelist by default
+                if (whitelist.length === 0) {
+                  setWhitelist([address]);
+                }
+              }}
               className="black-switch"
               colorScheme="#121212"
             />
           </OptionRow>
+
+          {isWhitelisted ? (
+            <>
+              <OptionRow my={0} mb={4}>
+                <Input
+                  width="100%"
+                  value={_whitelistInput}
+                  onChange={(event) => _setWhitelistInput(event.target.value)}
+                  placeholder="0x0000000000000000000000000000000000000000"
+                  _placeholder={{ color: "#FFF" }}
+                />
+                <IconButton
+                  flexShrink={0}
+                  aria-label="add"
+                  icon={<AddIcon />}
+                  width="35px"
+                  ml={2}
+                  bg="#282727"
+                  color="#FFF"
+                  borderWidth="1px"
+                  backgroundColor="transparent"
+                  onClick={() => {
+                    //TODO; validate is an address
+                    if (
+                      fuse.web3.utils.isAddress(_whitelistInput) &&
+                      !whitelist.includes(_whitelistInput)
+                    ) {
+                      setWhitelist((past) => [...past, _whitelistInput]);
+                      _setWhitelistInput("");
+                    } else {
+                      toast({
+                        title: "Error!",
+                        description:
+                          "This is not a valid ethereum address (or you have already entered this address)",
+                        status: "error",
+                        duration: 2000,
+                        isClosable: true,
+                        position: "top-right",
+                      });
+                    }
+                  }}
+                  _hover={{}}
+                  _active={{}}
+                />
+              </OptionRow>
+              {whitelist.length > 0 ? (
+                <Text mb={4} ml={4} width="100%">
+                  <b>{t("Already added:")} </b>
+                  {whitelist.map((user, index, array) => (
+                    <Text
+                      key={user}
+                      className="underline-on-hover"
+                      as="button"
+                      onClick={() =>
+                        // Filter out the user we are removing
+                        setWhitelist(
+                          array.filter(function (_, i) {
+                            return index !== i;
+                          })
+                        )
+                      }
+                    >
+                      {user + (array.length - 1 === index ? "" : ", ")}
+                    </Text>
+                  ))}
+                </Text>
+              ) : null}
+            </>
+          ) : null}
 
           <ModalDivider />
 
@@ -294,7 +367,13 @@ const PoolConfiguration = () => {
   );
 };
 
-const OptionRow = ({ children }: { children: ReactNode }) => {
+const OptionRow = ({
+  children,
+  ...others
+}: {
+  children: ReactNode;
+  [key: string]: any;
+}) => {
   return (
     <Row
       mainAxisAlignment="space-between"
@@ -303,6 +382,7 @@ const OptionRow = ({ children }: { children: ReactNode }) => {
       my={4}
       px={4}
       overflowX="auto"
+      {...others}
     >
       {children}
     </Row>

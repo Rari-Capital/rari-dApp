@@ -142,3 +142,7 @@ img:not([src]) {
 .black-switch > .chakra-switch__track[data-checked] {
   background-color: #282727 !important;
 }
+
+.underline-on-hover:hover {
+  text-decoration: underline;
+}
