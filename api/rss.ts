@@ -46,68 +46,111 @@ async function computeAssetRSS(address: string) {
   }
 
   try {
-    console.time("gecko");
-    const {
-      market_data: {
-        market_cap: { usd: asset_market_cap },
-        current_price: { usd: price_usd },
+    // Fetch all the data in parallel
+    const [
+      {
+        market_data: {
+          market_cap: { usd: asset_market_cap },
+          current_price: { usd: price_usd },
+        },
+        tickers,
+        community_data: { twitter_followers },
       },
-      tickers,
-      community_data: { twitter_followers },
-    } = await fetch(
-      `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
-    ).then((res) => res.json());
-    console.timeEnd("gecko");
 
-    console.time("uni");
-    const uniData = await fetch(
-      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
-      {
+      uniData,
+
+      sushiData,
+
+      defiCoins,
+
+      assetVariation,
+
+      ethVariation,
+
+      transferList,
+    ] = await Promise.all([
+      fetch(
+        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
+      ).then((res) => res.json()),
+
+      fetch("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", {
         method: "post",
 
         body: JSON.stringify({
           query: `{
-      token(id: "${address}") {
-        totalLiquidity
-        txCount
-      }
-    }`,
+  token(id: "${address}") {
+    totalLiquidity
+    txCount
+  }
+}`,
         }),
 
         headers: { "Content-Type": "application/json" },
-      }
-    ).then((res) => res.json());
-    console.timeEnd("uni");
+      }).then((res) => res.json()),
 
-    console.time("sushi");
-    const sushiData = await fetch(
-      "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
-      {
-        method: "post",
+      fetch(
+        "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
+        {
+          method: "post",
 
-        body: JSON.stringify({
-          query: `{
-          token(id: "${address}") {
-            totalLiquidity
-            txCount
-          }
-        }`,
-        }),
+          body: JSON.stringify({
+            query: `{
+            token(id: "${address}") {
+              totalLiquidity
+              txCount
+            }
+          }`,
+          }),
 
-        headers: { "Content-Type": "application/json" },
-      }
-    ).then((res) => res.json());
-    console.timeEnd("sushi");
+          headers: { "Content-Type": "application/json" },
+        }
+      ).then((res) => res.json()),
 
-    const mcap = await weightedCalculation(async () => {
-      console.time("deficoins");
-      const defiCoins = await fetch(
+      fetch(
         `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=decentralized_finance_defi&order=market_cap_desc&per_page=10&page=1&sparkline=false`
       )
         .then((res) => res.json())
-        .then((array) => array.slice(0, 30));
-      console.timeEnd("deficoins");
+        .then((array) => array.slice(0, 30)),
 
+      fetch(
+        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=30`
+      )
+        .then((res) => res.json())
+        .then((data) => data.prices.map(([, price]) => price))
+        .then((prices) => variance(prices)),
+
+      fetch(
+        `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/?vs_currency=usd&days=30`
+      )
+        .then((res) => res.json())
+        .then((data) => data.prices.map(([, price]) => price))
+        .then((prices) => variance(prices)),
+
+      (async () => {
+        const contract = new fuse.web3.eth.Contract(ERC20ABI as any, address);
+
+        try {
+          const transfers = await contract.getPastEvents("Transfer", {
+            fromBlock: 0,
+            toBlock: await fuse.web3.eth.getBlockNumber(),
+          });
+
+          return transfers;
+        } catch (e) {
+          if (
+            e.message ===
+            "Returned error: query returned more than 10000 results"
+          ) {
+            return new Array(10_000);
+          } else {
+            console.log(e);
+            return [];
+          }
+        }
+      })(),
+    ]);
+
+    const mcap = await weightedCalculation(async () => {
       const medianDefiCoinMcap = median(
         defiCoins.map((coin) => coin.market_cap)
       );
@@ -142,24 +185,6 @@ async function computeAssetRSS(address: string) {
     }, 32);
 
     const volatility = await weightedCalculation(async () => {
-      console.time("variation");
-      const assetVariation = await fetch(
-        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=30`
-      )
-        .then((res) => res.json())
-        .then((data) => data.prices.map(([, price]) => price))
-        .then((prices) => variance(prices));
-      console.timeEnd("variation");
-
-      console.time("ethVariation");
-      const ethVariation = await fetch(
-        `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/?vs_currency=usd&days=30`
-      )
-        .then((res) => res.json())
-        .then((data) => data.prices.map(([, price]) => price))
-        .then((prices) => variance(prices));
-      console.timeEnd("ethVariation");
-
       const peak = ethVariation * 3;
 
       return 1 - assetVariation / peak;
@@ -194,30 +219,7 @@ async function computeAssetRSS(address: string) {
     }, 3);
 
     const transfers = await weightedCalculation(async () => {
-      console.time("transferAmount");
-      const contract = new fuse.web3.eth.Contract(ERC20ABI as any, address);
-
-      try {
-        const transfers = await contract.getPastEvents("Transfer", {
-          fromBlock: 0,
-          toBlock: await fuse.web3.eth.getBlockNumber(),
-        });
-
-        console.timeEnd("transferAmount");
-
-        return transfers.length >= 500 ? transfers.length / 10_000 : 0;
-      } catch (e) {
-        console.timeEnd("transferAmount");
-
-        if (
-          e.message === "Returned error: query returned more than 10000 results"
-        ) {
-          return 1;
-        } else {
-          console.log(e);
-          return 0;
-        }
-      }
+      return transferList.length >= 500 ? transferList.length / 10_000 : 0;
     }, 3);
 
     const coingeckoMetadata = await weightedCalculation(async () => {
