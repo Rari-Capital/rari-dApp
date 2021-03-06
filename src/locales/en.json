@@ -16,7 +16,6 @@
   "Pool {{num}} Info": "Pool {{num}} Info",
   "Total Supplied": "Total Supplied",
   "Total Borrowed": "Total Borrowed",
-  "Yes": "Yes",
   "Pool {{num}}'s {{token}} Interest Rate Model": "Pool {{num}}'s {{token}} Interest Rate Model",
   "Utilization vs APY": "Utilization vs APY",
   "{{factor}}% Collateral Factor": "{{factor}}% Collateral Factor",
@@ -41,7 +40,6 @@
   "Whoops! Looks like something went wrong!": "Whoops! Looks like something went wrong!",
   "You can either reload the page, or report this error to us on our": "You can either reload the page, or report this error to us on our",
   "Create": "Create",
-  "Apply": "Apply",
   "None": "None",
   "Access": "Access",
   "Confirm": "Confirm",
@@ -214,5 +212,15 @@
   "Oracle Used": "Oracle Used",
   "Unrecognized Oracle": "Unrecognized Oracle",
   "No graph is available for this asset's interest curves.": "No graph is available for this asset's interest curves.",
-  "Edit": "Edit"
+  "Edit": "Edit",
+  "Create Pool": "Create Pool",
+  "Name": "Name",
+  "If enabled you will be able to limit the ability to supply to the pool to a select group of addresses. The pool will not show up on the 'all pools' list.": "If enabled you will be able to limit the ability to supply to the pool to a select group of addresses. The pool will not show up on the 'all pools' list.",
+  "Whitelisted": "Whitelisted",
+  "The percent, ranging from 0% to 100%, of a liquidatable account's borrow that can be repaid in a single liquidate transaction. If a user has multiple borrowed assets, the closeFactor applies to any single borrowed asset, not the aggregated value of a user’s outstanding borrowing. Compound's close factor is 50%.": "The percent, ranging from 0% to 100%, of a liquidatable account's borrow that can be repaid in a single liquidate transaction. If a user has multiple borrowed assets, the closeFactor applies to any single borrowed asset, not the aggregated value of a user’s outstanding borrowing. Compound's close factor is 50%.",
+  "Close Factor": "Close Factor",
+  "The additional collateral given to liquidators as an incentive to perform liquidation of underwater accounts. For example, if the liquidation incentive is 10%, liquidators receive an extra 10% of the borrowers collateral for every unit they close. Compound's liquidation incentive is 8%.": "The additional collateral given to liquidators as an incentive to perform liquidation of underwater accounts. For example, if the liquidation incentive is 10%, liquidators receive an extra 10% of the borrowers collateral for every unit they close. Compound's liquidation incentive is 8%.",
+  "Liquidation Incentive": "Liquidation Incentive",
+  "There are no assets in this pool.": "There are no assets in this pool.",
+  "Created Pools": "Created Pools"
 }
