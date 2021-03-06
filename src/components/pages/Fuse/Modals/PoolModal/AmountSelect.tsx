@@ -54,6 +54,27 @@ enum UserAction {
   WAITING_FOR_TRANSACTIONS,
 }
 
+enum TokenErrorCodes {
+  NO_ERROR,
+  UNAUTHORIZED,
+  BAD_INPUT,
+  COMPTROLLER_REJECTION,
+  COMPTROLLER_CALCULATION_ERROR,
+  INTEREST_RATE_MODEL_ERROR,
+  INVALID_ACCOUNT_PAIR,
+  INVALID_CLOSE_AMOUNT_REQUESTED,
+  INVALID_COLLATERAL_FACTOR,
+  MATH_ERROR,
+  MARKET_NOT_FRESH,
+  MARKET_NOT_LISTED,
+  TOKEN_INSUFFICIENT_ALLOWANCE,
+  TOKEN_INSUFFICIENT_BALANCE,
+  TOKEN_INSUFFICIENT_CASH,
+  TOKEN_TRANSFER_IN_FAILED,
+  TOKEN_TRANSFER_OUT_FAILED,
+  UTILIZATION_ABOVE_MAX,
+}
+
 async function testForCompoundErrorAndSend(
   txObject: any,
   caller: string,
@@ -63,7 +84,7 @@ async function testForCompoundErrorAndSend(
 
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
-    throw new Error(failMessage + " Code: " + response);
+    throw new Error(failMessage + " Code: " + TokenErrorCodes[response]);
   }
 
   return txObject.send({ from: caller });
