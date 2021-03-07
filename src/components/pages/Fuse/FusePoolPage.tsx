@@ -83,7 +83,7 @@ const FusePoolPage = React.memo(() => {
                 supplyBalanceUSD={data.totalSupplyBalanceUSD}
               />
             ) : (
-              <Center height="200px">
+              <Center height={!isMobile ? "100%" : "200px"}>
                 <Spinner />
               </Center>
             )}
@@ -102,7 +102,7 @@ const FusePoolPage = React.memo(() => {
                 borrowBalanceUSD={data.totalBorrowBalanceUSD}
               />
             ) : (
-              <Center height="200px">
+              <Center height={!isMobile ? "100%" : "200px"}>
                 <Spinner />
               </Center>
             )}
