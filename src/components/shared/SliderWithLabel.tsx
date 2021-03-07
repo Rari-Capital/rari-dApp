@@ -15,6 +15,7 @@ export const SliderWithLabel = ({
   min,
   max,
   step,
+  ...others
 }: {
   min?: number;
   max?: number;
@@ -22,9 +23,10 @@ export const SliderWithLabel = ({
   value: number;
   setValue: (value: number) => any;
   formatValue?: (value: number) => string;
+  [key: string]: any;
 }) => {
   return (
-    <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+    <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" {...others}>
       <Text fontWeight="bold" mr={2}>
         {formatValue ? formatValue(value) : value}
       </Text>

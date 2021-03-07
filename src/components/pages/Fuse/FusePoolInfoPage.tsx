@@ -99,7 +99,7 @@ const FusePoolInfoPage = React.memo(() => {
             ml={isMobile ? 0 : 4}
             width={isMobile ? "100%" : "50%"}
             mt={4}
-            height={isMobile ? "auto" : "450px"}
+            height={isMobile ? "300px" : "450px"}
           >
             {data ? (
               data.assets.length > 0 ? (

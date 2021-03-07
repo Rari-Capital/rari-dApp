@@ -1,12 +1,6 @@
 {
-  "Pool Configuration": "Pool Configuration",
   "Assets:": "Assets:",
-  "Private": "Private",
   "Whitelist": "Whitelist",
-  "Add Address": "Add Address",
-  "Editable": "Editable",
-  "Interest Fee": "Interest Fee",
-  "Asset Configurations": "Asset Configurations",
   "Add Asset": "Add Asset",
   "Collateral Factor": "Collateral Factor",
   "Reserve Factor": "Reserve Factor",
@@ -40,7 +34,6 @@
   "Whoops! Looks like something went wrong!": "Whoops! Looks like something went wrong!",
   "You can either reload the page, or report this error to us on our": "You can either reload the page, or report this error to us on our",
   "Create": "Create",
-  "None": "None",
   "Access": "Access",
   "Confirm": "Confirm",
   "Current Members:": "Current Members:",
@@ -222,5 +215,10 @@
   "Liquidation Incentive": "Liquidation Incentive",
   "There are no assets in this pool.": "There are no assets in this pool.",
   "Created Pools": "Created Pools",
-  "Already added:": "Already added:"
+  "Already added:": "Already added:",
+  "Pool {{num}} Configuration": "Pool {{num}} Configuration",
+  "Disable": "Disable",
+  "Renounce Ownership": "Renounce Ownership",
+  "Assets Configuration": "Assets Configuration",
+  "Save": "Save"
 }

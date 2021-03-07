@@ -1,5 +1,4 @@
 import {
-  Avatar,
   AvatarGroup,
   Box,
   Heading,
@@ -7,6 +6,7 @@ import {
   Text,
   Switch,
   useDisclosure,
+  Spinner,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
 import React, { useState } from "react";
@@ -30,6 +30,9 @@ import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import AddAssetModal from "./Modals/AddAssetModal";
 import AddToWhitelistModal from "./Modals/AddToWhitelistModal";
+import { useFusePoolData } from "../../../hooks/useFusePoolData";
+import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
+import { CTokenIcon } from "./FusePoolsPage";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = {};
@@ -54,6 +57,10 @@ const FusePoolEditPage = React.memo(() => {
   } = useDisclosure();
 
   const { t } = useTranslation();
+
+  const { poolId } = useParams();
+
+  const data = useFusePoolData(poolId);
 
   return (
     <>
@@ -89,31 +96,63 @@ const FusePoolEditPage = React.memo(() => {
           crossAxisAlignment="flex-start"
           isRow={!isMobile}
         >
-          <DashboardBox width={isMobile ? "100%" : "50%"} mt={4} height="auto">
-            <PoolConfiguration
-              openAddToWhitelistModal={openAddToWhitelistModal}
-            />
+          <DashboardBox
+            width={isMobile ? "100%" : "50%"}
+            height={isMobile ? "auto" : "440px"}
+            mt={4}
+          >
+            {data ? (
+              <PoolConfiguration
+                assets={data.assets}
+                openAddToWhitelistModal={openAddToWhitelistModal}
+              />
+            ) : (
+              <Center expand>
+                <Spinner my={8} />
+              </Center>
+            )}
           </DashboardBox>
 
           <Box pl={isMobile ? 0 : 4} width={isMobile ? "100%" : "50%"}>
-            <DashboardBox width="100%" mt={4} height="auto">
-              <AssetConfiguration openAddAssetModal={openAddAssetModal} />
+            <DashboardBox
+              width="100%"
+              mt={4}
+              height={isMobile ? "auto" : "440px"}
+            >
+              {data ? (
+                data.assets.length > 0 ? (
+                  <AssetConfiguration
+                    assets={data.assets}
+                    openAddAssetModal={openAddAssetModal}
+                  />
+                ) : (
+                  <Column
+                    expand
+                    mainAxisAlignment="center"
+                    crossAxisAlignment="center"
+                    py={4}
+                  >
+                    {t("There are no assets in this pool.")}
+
+                    <DashboardBox
+                      onClick={openAddAssetModal}
+                      mt={4}
+                      as="button"
+                      py={1}
+                      px={2}
+                    >
+                      {t("Add Asset")}
+                    </DashboardBox>
+                  </Column>
+                )
+              ) : (
+                <Center expand>
+                  <Spinner my={8} />
+                </Center>
+              )}
             </DashboardBox>
           </Box>
         </RowOrColumn>
-
-        <DashboardBox
-          width="100%"
-          mt={4}
-          height="auto"
-          fontSize="xl"
-          py={3}
-          as="button"
-        >
-          <Center expand fontWeight="bold">
-            {t("Create")}
-          </Center>
-        </DashboardBox>
       </Column>
 
       <CopyrightSpacer forceShow />
@@ -125,46 +164,21 @@ export default FusePoolEditPage;
 
 const PoolConfiguration = ({
   openAddToWhitelistModal,
+  assets,
 }: {
   openAddToWhitelistModal: () => any;
+  assets: USDPricedFuseAsset[];
 }) => {
-  const isMobile = useIsSemiSmallScreen();
-
   const { t } = useTranslation();
-
-  const poolTokens = [
-    {
-      symbol: "SUSHI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
-    },
-    {
-      symbol: "UNI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
-    },
-    {
-      symbol: "ZRX",
-      icon:
-        "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
-    },
-    {
-      symbol: "1INCH",
-      icon:
-        "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
-    },
-  ];
 
   const [interestFee, setInterestFee] = useState(10);
 
+  const { poolId } = useParams();
+
   return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "440px"}
-    >
+    <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
       <Heading size="sm" px={4} py={4}>
-        {t("Pool Configuration")}
+        {t("Pool {{num}} Configuration", { num: poolId })}
       </Heading>
 
       <ModalDivider />
@@ -182,29 +196,24 @@ const PoolConfiguration = ({
           {t("Assets:")}
         </Text>
 
-        {poolTokens.length > 0 ? (
+        {assets.length > 0 ? (
           <>
-            <AvatarGroup color="#000" size="sm" max={5} mr={2}>
-              {poolTokens.map(({ symbol, icon }) => {
-                return (
-                  <Avatar
-                    key={symbol}
-                    bg="#FFF"
-                    borderWidth="1px"
-                    name={symbol}
-                    src={icon}
-                  />
-                );
+            <AvatarGroup size="xs" max={20}>
+              {assets.map(({ underlyingToken, cToken }) => {
+                return <CTokenIcon key={cToken} address={underlyingToken} />;
               })}
             </AvatarGroup>
-            <Text pr={2} lineHeight={1} whiteSpace="nowrap">
-              {poolTokens.map(({ symbol }, index, array) => {
-                return symbol + (index !== array.length - 1 ? " / " : "");
+
+            <Text ml={2} flexShrink={0}>
+              {assets.map(({ underlyingSymbol }, index, array) => {
+                return (
+                  underlyingSymbol + (index !== array.length - 1 ? " / " : "")
+                );
               })}
             </Text>
           </>
         ) : (
-          t("None")
+          <Text>None</Text>
         )}
       </Row>
 
@@ -216,27 +225,8 @@ const PoolConfiguration = ({
         width="100%"
       >
         <Row
-          my={4}
-          px={4}
           width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-        >
-          <Text fontWeight="bold">{t("Private")}:</Text>
-
-          <Switch
-            h="20px"
-            className="black-switch"
-            colorScheme="#121212"
-            isChecked
-          />
-        </Row>
-
-        <ModalDivider />
-
-        <Row
-          width="100%"
-          mainAxisAlignment="space-between"
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           my={4}
           px={4}
@@ -244,13 +234,24 @@ const PoolConfiguration = ({
           <Text fontWeight="bold">{t("Whitelist")}:</Text>
 
           <DashboardBox
+            ml="auto"
             height="35px"
-            ml={2}
             as="button"
             onClick={openAddToWhitelistModal}
           >
             <Center expand px={2} fontWeight="bold">
-              {t("Add Address")}
+              {t("Edit")}
+            </Center>
+          </DashboardBox>
+
+          <DashboardBox
+            height="35px"
+            ml={3}
+            as="button"
+            onClick={openAddToWhitelistModal}
+          >
+            <Center expand px={2} fontWeight="bold">
+              {t("Disable")}
             </Center>
           </DashboardBox>
         </Row>
@@ -264,27 +265,60 @@ const PoolConfiguration = ({
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
         >
-          <Text fontWeight="bold">{t("Editable")}:</Text>
+          <Text fontWeight="bold">{t("Upgradeable")}:</Text>
 
-          <Switch h="20px" className="black-switch" colorScheme="whatsapp" />
+          <DashboardBox
+            height="35px"
+            ml={3}
+            as="button"
+            onClick={openAddToWhitelistModal}
+          >
+            <Center expand px={2} fontWeight="bold">
+              {t("Renounce Ownership")}
+            </Center>
+          </DashboardBox>
         </Row>
 
         <ModalDivider />
 
         <Row
           width="100%"
-          mainAxisAlignment="space-between"
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           my={4}
           px={4}
         >
-          <Text fontWeight="bold">{t("Interest Fee")}:</Text>
+          <Text fontWeight="bold">{t("Close Factor")}:</Text>
 
           <SliderWithLabel
+            ml="auto"
             value={interestFee}
             setValue={setInterestFee}
             formatValue={formatPercentage}
           />
+
+          <SaveButton />
+        </Row>
+
+        <ModalDivider />
+
+        <Row
+          width="100%"
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          my={4}
+          px={4}
+        >
+          <Text fontWeight="bold">{t("Liquidation Incentive")}:</Text>
+
+          <SliderWithLabel
+            ml="auto"
+            value={interestFee}
+            setValue={setInterestFee}
+            formatValue={formatPercentage}
+          />
+
+          <SaveButton />
         </Row>
       </Column>
     </Column>
@@ -293,8 +327,10 @@ const PoolConfiguration = ({
 
 const AssetConfiguration = ({
   openAddAssetModal,
+  assets,
 }: {
   openAddAssetModal: () => any;
+  assets: USDPricedFuseAsset[];
 }) => {
   const isMobile = useIsSemiSmallScreen();
 
@@ -302,33 +338,7 @@ const AssetConfiguration = ({
 
   const { t } = useTranslation();
 
-  const [selectedAsset, setSelectedAsset] = useState("SUSHI");
-
-  const poolTokens = [
-    {
-      symbol: "SUSHI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12271/small/512x512_Logo_no_chop.png?1606986688",
-    },
-
-    {
-      symbol: "UNI",
-      icon:
-        "https://assets.coingecko.com/coins/images/12504/small/uniswap-uni.png?1600306604",
-    },
-
-    {
-      symbol: "ZRX",
-      icon:
-        "https://assets.coingecko.com/coins/images/863/small/0x.png?1547034672",
-    },
-
-    {
-      symbol: "1INCH",
-      icon:
-        "https://assets.coingecko.com/coins/images/13469/small/1inch-token.png?1608803028",
-    },
-  ];
+  const [selectedAsset, setSelectedAsset] = useState(assets[0]);
 
   const [collateralFactor, setCollateralFactor] = useState(75);
   const [reserveFactor, setReserveFactor] = useState(10);
@@ -349,7 +359,7 @@ const AssetConfiguration = ({
         flexShrink={0}
       >
         <Heading size="sm" ml={4}>
-          {t("Asset Configurations", { num: poolId })}
+          {t("Assets Configuration")}
         </Heading>
 
         <DashboardBox
@@ -382,23 +392,24 @@ const AssetConfiguration = ({
         <Text fontWeight="bold" mr={2}>
           {t("Assets:")}
         </Text>
-        {poolTokens.length > 0
-          ? poolTokens.map(({ symbol }) => {
-              return (
-                <Box pr={2} key={symbol}>
-                  <DashboardBox
-                    as="button"
-                    onClick={() => setSelectedAsset(symbol)}
-                    {...(symbol === selectedAsset ? activeStyle : noop)}
-                  >
-                    <Center expand px={4} py={1} fontWeight="bold">
-                      {symbol}
-                    </Center>
-                  </DashboardBox>
-                </Box>
-              );
-            })
-          : t("None")}
+
+        {assets.map((asset) => {
+          return (
+            <Box pr={2} key={asset.cToken}>
+              <DashboardBox
+                as="button"
+                onClick={() => setSelectedAsset(asset)}
+                {...(asset.cToken === selectedAsset.cToken
+                  ? activeStyle
+                  : noop)}
+              >
+                <Center expand px={4} py={1} fontWeight="bold">
+                  {asset.underlyingSymbol}
+                </Center>
+              </DashboardBox>
+            </Box>
+          );
+        })}
       </Row>
 
       <ModalDivider />
@@ -574,5 +585,23 @@ export const AssetSettings = ({
         />
       </Box>
     </Column>
+  );
+};
+
+const SaveButton = ({ ...others }: { [key: string]: any }) => {
+  const { t } = useTranslation();
+
+  return (
+    <DashboardBox
+      flexShrink={0}
+      ml={2}
+      width="60px"
+      height="35px"
+      as="button"
+      fontWeight="bold"
+      {...others}
+    >
+      {t("Save")}
+    </DashboardBox>
   );
 };
