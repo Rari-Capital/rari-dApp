@@ -13,8 +13,8 @@ export const SaffronContext = React.createContext<
   SaffronContextType | undefined
 >(undefined);
 
-const SaffronStrategyAddress = "0xBB565b07A32Ca022122ff525430D197ed89EC28e";
-const SaffronPoolAddress = "0xFaA5790E21cB443305a25703C3F8D73B8205C7cf";
+const SaffronStrategyAddress = "0x769e038F3c449C096DE53245993B9b622741264a";
+const SaffronPoolAddress = "0xFc2f466b2b72f9D5269D7C1945f840549A5FeE58";
 
 export const SaffronProvider = React.memo(({ children }) => {
   const { rari } = useRari();
