@@ -153,8 +153,6 @@ async function fetchMaxAmount(
       .getMaxRedeem(address, asset.cToken)
       .call();
 
-    console.log(maxRedeem, address, asset.cToken);
-
     if (err !== 0) {
       return fuse.web3.utils.toBN(maxRedeem);
     } else {
