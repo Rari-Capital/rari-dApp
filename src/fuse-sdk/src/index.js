@@ -107,6 +107,11 @@ export default class Fuse {
     "SynthetixPriceOracle",
   ];
 
+  static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
+    "WhitePaperInterestRateModel": "0x4084A1CEb13516eEaa03a047679cE64DF5c7476A",
+    "JumpRateModel": "0xce103d6D89eA4588d909f5f728ca8C14C94Bb3D6"
+  };
+
   constructor(web3Provider) {
     this.web3 = new Web3(web3Provider);
 
