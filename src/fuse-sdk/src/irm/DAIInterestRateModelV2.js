@@ -44,8 +44,14 @@ export default class DAIInterestRateModelV2 extends JumpRateModel {
     this.reserves = Web3.utils.toBN(
       await contract.methods.totalReserves().call()
     );
+  }
 
-    this.initialized = true;
+  async _init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    await super._init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa);
+    this.dsrPerBlock = Web3.utils.toBN(0); // TODO: Make this work if DSR ever goes positive again
+    this.cash = Web3.utils.toBN(0);
+    this.borrows = Web3.utils.toBN(0);
+    this.reserves = Web3.utils.toBN(0);
   }
 
   getSupplyRate(utilizationRate) {

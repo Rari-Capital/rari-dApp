@@ -51,6 +51,31 @@ export default class JumpRateModel {
     this.initialized = true;
   }
 
+  async _init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    this.baseRatePerBlock = Web3.utils.toBN(
+      baseRatePerBlock
+    );
+    this.multiplierPerBlock = Web3.utils.toBN(
+      multiplierPerBlock
+    );
+    this.jumpMultiplierPerBlock = Web3.utils.toBN(
+      jumpMultiplierPerBlock
+    );
+    this.kink = Web3.utils.toBN(kink);
+
+    this.reserveFactorMantissa = Web3.utils.toBN(
+      reserveFactorMantissa
+    );
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(adminFeeMantissa)
+    );
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(fuseFeeMantissa)
+    );
+
+    this.initialized = true;
+  }
+
   getBorrowRate(utilizationRate) {
     if (!this.initialized)
       throw new Error("Interest rate model class not initialized.");

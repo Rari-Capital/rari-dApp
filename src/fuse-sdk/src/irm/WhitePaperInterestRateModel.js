@@ -49,6 +49,27 @@ export default class WhitePaperInterestRateModel {
     this.initialized = true;
   }
 
+  async _init(baseRatePerBlock, multiplierPerBlock, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    this.baseRatePerBlock = Web3.utils.toBN(
+      baseRatePerBlock
+    );
+    this.multiplierPerBlock = Web3.utils.toBN(
+      multiplierPerBlock
+    );
+
+    this.reserveFactorMantissa = Web3.utils.toBN(
+      reserveFactorMantissa
+    );
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(adminFeeMantissa)
+    );
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(fuseFeeMantissa)
+    );
+
+    this.initialized = true;
+  }
+
   getBorrowRate(utilizationRate) {
     if (!this.initialized)
       throw new Error("Interest rate model class not initialized.");
