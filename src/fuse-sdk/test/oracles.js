@@ -501,10 +501,10 @@ describe('MasterPriceOracle, UniswapLpTokenPriceOracle', function() {
     var chainlinkPriceOracle = await fuse.deployPriceOracle("ChainlinkPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
 
     // Deploy UniswapLpTokenPriceOracle
-    var UniswapLpTokenPriceOracle = await fuse.deployPriceOracle("UniswapLpTokenPriceOracle", { useRootOracle: true }, { from: accounts[0], gasPrice: "0" });
+    var uniswapLpTokenPriceOracle = await fuse.deployPriceOracle("UniswapLpTokenPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
 
     // Deploy pool with MasterPriceOracle
-    var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: "MasterPriceOracle", priceOracleConf: { underlyings: [usdc, usdt, mln, yfi, usdcUsdtUniswapLpToken, ethMlnUniswapLpToken, yfiEthSushiSwapLpToken], oracles: [chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, UniswapLpTokenPriceOracle, UniswapLpTokenPriceOracle, UniswapLpTokenPriceOracle] } }, { from: accounts[0], gasPrice: "0" });
+    var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: "MasterPriceOracle", priceOracleConf: { underlyings: [usdc, usdt, mln, yfi, usdcUsdtUniswapLpToken, ethMlnUniswapLpToken, yfiEthSushiSwapLpToken], oracles: [chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, uniswapLpTokenPriceOracle, uniswapLpTokenPriceOracle, uniswapLpTokenPriceOracle] } }, { from: accounts[0], gasPrice: "0" });
     comptroller = new fuse.web3.eth.Contract(comptrollerAbi, poolAddress);
     masterPriceOracle = new fuse.web3.eth.Contract(fuse.oracleContracts["MasterPriceOracle"].abi, priceOracleAddress);
 
@@ -800,3 +800,162 @@ describe('SynthetixPriceOracle', function() {
     });
   });
 });
+
+describe('MasterPriceOracle, CurveLpTokenPriceOracle', function() {
+  this.timeout(15000);
+  var accounts, assetAddresses, comptroller, masterPriceOracle;
+
+  before(async function() {
+    this.timeout(30000);
+    accounts = await fuse.web3.eth.getAccounts();
+
+    // Addresses
+    var dai = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+    var usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    var usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+    var threePoolCurveLpToken = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
+    var wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
+    var renbtc = "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d";
+    var renCurveLpToken = "0x49849C98ae39Fff122806C06791Fa73784FB3675";
+    var ust = "0xa47c8bf37f92abed4a126bda807a7b7498661acd";
+    var ustCurveLpToken = "0x94e131324b6054c0D789b190b2dAC504e4361b53";
+
+    // Deploy ChainlinkPriceOracle
+    var chainlinkPriceOracle = await fuse.deployPriceOracle("ChainlinkPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
+
+    // Deploy CurveLpTokenPriceOracle
+    var curveLpTokenPriceOracle = await fuse.deployPriceOracle("CurveLpTokenPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
+
+    // Register LP tokens with CurveLpTokenPriceOracle
+    var curveOracleContract = new fuse.web3.eth.Contract(fuse.oracleContracts["CurveLpTokenPriceOracle"].abi, curveLpTokenPriceOracle);
+    for (const lpToken of [threePoolCurveLpToken, renCurveLpToken, ustCurveLpToken]) await curveOracleContract.methods.registerPool(lpToken).send({ from: accounts[0], gasPrice: "0" });
+
+    // Deploy pool with MasterPriceOracle
+    var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: "MasterPriceOracle", priceOracleConf: { underlyings: [dai, usdc, usdt, wbtc, renbtc, ust, threePoolCurveLpToken, renCurveLpToken, ustCurveLpToken], oracles: [chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, curveLpTokenPriceOracle, curveLpTokenPriceOracle, curveLpTokenPriceOracle] } }, { from: accounts[0], gasPrice: "0" });
+    comptroller = new fuse.web3.eth.Contract(comptrollerAbi, poolAddress);
+    masterPriceOracle = new fuse.web3.eth.Contract(fuse.oracleContracts["MasterPriceOracle"].abi, priceOracleAddress);
+
+    // Deploy assets
+    assetAddresses = {};
+    for (const conf of [
+      { name: "Fuse ETH", symbol: "fETH" },
+      { name: "Fuse WETH", symbol: "fWETH", underlying: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" },
+      { name: "Fuse 3Crv", symbol: "f3Crv", underlying: threePoolCurveLpToken },
+      { name: "Fuse crvRenWBTC", symbol: "fcrvRenWBTC", underlying: renCurveLpToken },
+      { name: "Fuse ust3CRV", symbol: "fust3CRV", underlying: ustCurveLpToken }
+    ]) {
+      assetAddresses[conf.symbol] = await deployAsset({ comptroller: poolAddress, ...conf }, undefined, undefined, undefined, { from: accounts[0], gasPrice: "0" }, true);
+    }
+  });
+
+  describe('#getUnderlyingPrice()', function() {
+    it('should check token prices', async function() {
+      for (const symbol of Object.keys(assetAddresses)) {
+        var underlying = symbol === "fETH" ? null : await (new fuse.web3.eth.Contract(cErc20Abi, assetAddresses[symbol])).methods.underlying().call();
+        var oraclePrice = (await masterPriceOracle.methods.getUnderlyingPrice(assetAddresses[symbol]).call()) / (10 ** (36 - (symbol === "fETH" ? 18 : (await (new fuse.web3.eth.Contract(erc20Abi, underlying)).methods.decimals().call()))));
+        var expectedPrice = symbol === "fETH" || underlying.toLowerCase() == "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase() ? 1 : (await getCurveLpTokenPrice(underlying));
+        // console.log(symbol + ": " + oraclePrice + " ETH (expected " + expectedPrice + " ETH)");
+        assert(oraclePrice >= expectedPrice * 0.9 && oraclePrice <= expectedPrice * 1.1);
+      }
+    });
+  });
+});
+
+async function getCurveLpTokenPrice(lpToken) {
+  var abi = [{
+    "name": "get_virtual_price_from_lp_token",
+    "outputs": [{
+      "type": "uint256",
+      "name": ""
+    }],
+    "inputs": [{
+      "type": "address",
+      "name": "_token"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+  }];
+  var registry = new fuse.web3.eth.Contract(abi, "0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c");
+  var virtualPrice = (await registry.methods.get_virtual_price_from_lp_token(lpToken).call()) / 1e18;
+  switch (lpToken) {
+    case "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490":
+    case "0x94e131324b6054c0D789b190b2dAC504e4361b53":
+      return virtualPrice * (await getTokenPrice("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"));
+      break;
+    case "0x49849C98ae39Fff122806C06791Fa73784FB3675":
+      return virtualPrice * (await getTokenPrice("0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"));
+      break;
+    default: throw "Invalid LP token supplied to Curve LP token price getter.";
+  }
+}
+
+describe('MasterPriceOracle, BalancerLpTokenPriceOracle', function() {
+  this.timeout(15000);
+  var accounts, assetAddresses, comptroller, masterPriceOracle;
+
+  before(async function() {
+    this.timeout(30000);
+    accounts = await fuse.web3.eth.getAccounts();
+
+    // Addresses
+    var wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
+    var wbtcWethBalancerPoolToken = "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5";
+    var bal = "0xba100000625a3754423978a60c9317c58a424e3D";
+    var balWethBalancerPoolToken = "0x59a19d8c652fa0284f44113d0ff9aba70bd46fb4";
+    var susd = "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51";
+    var stsla = "0x918dA91Ccbc32B7a6A0cc4eCd5987bbab6E31e6D";
+    var susdStslaBalancerPoolToken = "0x055db9aff4311788264798356bbf3a733ae181c6";
+
+    // Deploy ChainlinkPriceOracle
+    var chainlinkPriceOracle = await fuse.deployPriceOracle("ChainlinkPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
+
+    // Deploy BalancerLpTokenPriceOracle
+    var balancerLpTokenPriceOracle = await fuse.deployPriceOracle("BalancerLpTokenPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
+
+    // Deploy pool with MasterPriceOracle
+    var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: "MasterPriceOracle", priceOracleConf: { underlyings: [wbtc, bal, susd, stsla, wbtcWethBalancerPoolToken, balWethBalancerPoolToken, susdStslaBalancerPoolToken], oracles: [chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, chainlinkPriceOracle, balancerLpTokenPriceOracle, balancerLpTokenPriceOracle, balancerLpTokenPriceOracle] } }, { from: accounts[0], gasPrice: "0" });
+    comptroller = new fuse.web3.eth.Contract(comptrollerAbi, poolAddress);
+    masterPriceOracle = new fuse.web3.eth.Contract(fuse.oracleContracts["MasterPriceOracle"].abi, priceOracleAddress);
+
+    // Deploy assets
+    assetAddresses = {};
+    for (const conf of [
+      { name: "Fuse ETH", symbol: "fETH" },
+      { name: "Fuse WETH", symbol: "fWETH", underlying: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" },
+      { name: "Fuse WBTC-WETH (Balancer)", symbol: "fbWBTC-WETH", underlying: wbtcWethBalancerPoolToken },
+      { name: "Fuse BAL-WETH (Balancer)", symbol: "fbBAL-WETH", underlying: balWethBalancerPoolToken },
+      { name: "Fuse sUSD-sTSLA (Balancer)", symbol: "fbsUSD-sTSLA", underlying: susdStslaBalancerPoolToken }
+    ]) {
+      assetAddresses[conf.symbol] = await deployAsset({ comptroller: poolAddress, ...conf }, undefined, undefined, undefined, { from: accounts[0], gasPrice: "0" }, true);
+    }
+  });
+
+  describe('#getUnderlyingPrice()', function() {
+    it('should check token prices', async function() {
+      for (const symbol of Object.keys(assetAddresses)) {
+        var underlying = symbol === "fETH" ? null : await (new fuse.web3.eth.Contract(cErc20Abi, assetAddresses[symbol])).methods.underlying().call();
+        var oraclePrice = (await masterPriceOracle.methods.getUnderlyingPrice(assetAddresses[symbol]).call()) / (10 ** (36 - (symbol === "fETH" ? 18 : (await (new fuse.web3.eth.Contract(erc20Abi, underlying)).methods.decimals().call()))));
+        var expectedPrice = symbol === "fETH" || underlying.toLowerCase() == "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase() ? 1 : (await getBalancerLpTokenPrice(underlying));
+        // console.log(symbol + ": " + oraclePrice + " ETH (expected " + expectedPrice + " ETH)");
+        assert(oraclePrice >= expectedPrice * 0.9 && oraclePrice <= expectedPrice * 1.1);
+      }
+    });
+  });
+});
+
+async function getBalancerLpTokenPrice(lpToken) {
+  var data = (
+    await axios.post(
+      "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
+      {
+        query: `{
+          pool(id: "` + lpToken.toLowerCase() + `") {
+            liquidity
+            totalShares
+          }
+        }`,
+      }
+    )
+  ).data;
+  return parseFloat(data.data.pool.liquidity) / parseFloat(data.data.pool.totalShares) * (await getTokenPrice("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"));
+}
