@@ -74,7 +74,6 @@ async function deployPool(conf, options) {
 
 async function deployAsset(conf, collateralFactor, reserveFactor, adminFee, options, bypassPriceFeedCheck) {
   if (conf.interestRateModel === undefined) conf.interestRateModel = "0x6bc8fe27d0c7207733656595e73c0d5cf7afae36";
-  if (conf.initialExchangeRateMantissa === undefined) conf.initialExchangeRateMantissa = Fuse.Web3.utils.toBN(1e18);
   if (conf.decimals === undefined) conf.decimals = 8;
   if (conf.admin === undefined) conf.admin = options.from;
   if (collateralFactor === undefined) collateralFactor = Fuse.Web3.utils.toBN(0.75e18);
