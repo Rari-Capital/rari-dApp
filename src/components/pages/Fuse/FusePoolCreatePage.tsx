@@ -4,9 +4,9 @@ import {
   Text,
   Switch,
   Input,
-  useToast,
   Spinner,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "buttered-chakra";
 import React, { ReactNode, useState } from "react";
@@ -73,7 +73,6 @@ const PoolConfiguration = () => {
   const [oracle, setOracle] = useState("");
   const [isWhitelisted, setIsWhitelisted] = useState(false);
   const [whitelist, setWhitelist] = useState<string[]>([]);
-  const [_whitelistInput, _setWhitelistInput] = useState("");
 
   const [closeFactor, setCloseFactor] = useState(50);
   const [liquidationIncentive, setLiquidationIncentive] = useState(8);
@@ -236,72 +235,19 @@ const PoolConfiguration = () => {
           </OptionRow>
 
           {isWhitelisted ? (
-            <>
-              <OptionRow my={0} mb={4}>
-                <Input
-                  width="100%"
-                  value={_whitelistInput}
-                  onChange={(event) => _setWhitelistInput(event.target.value)}
-                  placeholder="0x0000000000000000000000000000000000000000"
-                  _placeholder={{ color: "#FFF" }}
-                />
-                <IconButton
-                  flexShrink={0}
-                  aria-label="add"
-                  icon={<AddIcon />}
-                  width="35px"
-                  ml={2}
-                  bg="#282727"
-                  color="#FFF"
-                  borderWidth="1px"
-                  backgroundColor="transparent"
-                  onClick={() => {
-                    //TODO; validate is an address
-                    if (
-                      fuse.web3.utils.isAddress(_whitelistInput) &&
-                      !whitelist.includes(_whitelistInput)
-                    ) {
-                      setWhitelist((past) => [...past, _whitelistInput]);
-                      _setWhitelistInput("");
-                    } else {
-                      toast({
-                        title: "Error!",
-                        description:
-                          "This is not a valid ethereum address (or you have already entered this address)",
-                        status: "error",
-                        duration: 2000,
-                        isClosable: true,
-                        position: "top-right",
-                      });
-                    }
-                  }}
-                  _hover={{}}
-                  _active={{}}
-                />
-              </OptionRow>
-              {whitelist.length > 0 ? (
-                <Text mb={4} ml={4} width="100%">
-                  <b>{t("Already added:")} </b>
-                  {whitelist.map((user, index, array) => (
-                    <Text
-                      key={user}
-                      className="underline-on-hover"
-                      as="button"
-                      onClick={() =>
-                        // Filter out the user we are removing
-                        setWhitelist(
-                          array.filter(function (_, i) {
-                            return index !== i;
-                          })
-                        )
-                      }
-                    >
-                      {user + (array.length - 1 === index ? "" : ", ")}
-                    </Text>
-                  ))}
-                </Text>
-              ) : null}
-            </>
+            <WhitelistInfo
+              whitelist={whitelist}
+              addToWhitelist={(user) => {
+                setWhitelist((past) => [...past, user]);
+              }}
+              removeFromWhitelist={(user) => {
+                setWhitelist((past) =>
+                  past.filter(function (item) {
+                    return item !== user;
+                  })
+                );
+              }}
+            />
           ) : null}
 
           <ModalDivider />
@@ -386,5 +332,82 @@ const OptionRow = ({
     >
       {children}
     </Row>
+  );
+};
+
+export const WhitelistInfo = ({
+  whitelist,
+  addToWhitelist,
+  removeFromWhitelist,
+}: {
+  whitelist: string[];
+  addToWhitelist: (user: string) => any;
+  removeFromWhitelist: (user: string) => any;
+}) => {
+  const [_whitelistInput, _setWhitelistInput] = useState("");
+  const { t } = useTranslation();
+  const { fuse } = useRari();
+  const toast = useToast();
+
+  return (
+    <>
+      <OptionRow my={0} mb={4}>
+        <Input
+          width="100%"
+          value={_whitelistInput}
+          onChange={(event) => _setWhitelistInput(event.target.value)}
+          placeholder="0x0000000000000000000000000000000000000000"
+          _placeholder={{ color: "#FFF" }}
+        />
+        <IconButton
+          flexShrink={0}
+          aria-label="add"
+          icon={<AddIcon />}
+          width="35px"
+          ml={2}
+          bg="#282727"
+          color="#FFF"
+          borderWidth="1px"
+          backgroundColor="transparent"
+          onClick={() => {
+            if (
+              fuse.web3.utils.isAddress(_whitelistInput) &&
+              !whitelist.includes(_whitelistInput)
+            ) {
+              addToWhitelist(_whitelistInput);
+              _setWhitelistInput("");
+            } else {
+              toast({
+                title: "Error!",
+                description:
+                  "This is not a valid ethereum address (or you have already entered this address)",
+                status: "error",
+                duration: 2000,
+                isClosable: true,
+                position: "top-right",
+              });
+            }
+          }}
+          _hover={{}}
+          _active={{}}
+        />
+      </OptionRow>
+      {whitelist.length > 0 ? (
+        <Text mb={4} ml={4} width="100%">
+          <b>{t("Already added:")} </b>
+          {whitelist.map((user, index, array) => (
+            <Text
+              key={user}
+              className="underline-on-hover"
+              as="button"
+              onClick={() => removeFromWhitelist(user)}
+            >
+              {user}
+              {array.length - 1 === index ? null : <>,&nbsp;</>}
+            </Text>
+          ))}
+        </Text>
+      ) : null}
+    </>
   );
 };

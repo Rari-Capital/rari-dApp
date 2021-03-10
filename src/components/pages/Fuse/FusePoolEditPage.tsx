@@ -9,7 +9,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
-import React, { useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
@@ -29,15 +29,75 @@ import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import AddAssetModal from "./Modals/AddAssetModal";
-import AddToWhitelistModal from "./Modals/AddToWhitelistModal";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { CTokenIcon } from "./FusePoolsPage";
+import { createComptroller } from "../../../utils/createComptroller";
+import { useQueryCache, useQuery } from "react-query";
+import { WhitelistInfo } from "./FusePoolCreatePage";
+
+import { useExtraPoolInfo } from "./FusePoolInfoPage";
+import BigNumber from "bignumber.js";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = {};
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
+
+enum ComptrollerErrorCodes {
+  NO_ERROR,
+  UNAUTHORIZED,
+  COMPTROLLER_MISMATCH,
+  INSUFFICIENT_SHORTFALL,
+  INSUFFICIENT_LIQUIDITY,
+  INVALID_CLOSE_FACTOR,
+  INVALID_COLLATERAL_FACTOR,
+  INVALID_LIQUIDATION_INCENTIVE,
+  MARKET_NOT_ENTERED, // no longer possible
+  MARKET_NOT_LISTED,
+  MARKET_ALREADY_LISTED,
+  MATH_ERROR,
+  NONZERO_BORROW_BALANCE,
+  PRICE_ERROR,
+  REJECTION,
+  SNAPSHOT_ERROR,
+  TOO_MANY_ASSETS,
+  TOO_MUCH_REPAY,
+  SUPPLIER_NOT_WHITELISTED,
+  BORROW_BELOW_MIN,
+  SUPPLY_ABOVE_MAX,
+}
+
+const useIsUpgradeable = (comptrollerAddress: string) => {
+  const { fuse } = useRari();
+
+  const { data } = useQuery(comptrollerAddress + " isUpgradeable", async () => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const isUpgradeable: boolean = await comptroller.methods
+      .adminHasRights()
+      .call();
+
+    return isUpgradeable;
+  });
+
+  return data;
+};
+
+async function testForCompoundErrorAndSend(
+  txObject: any,
+  caller: string,
+  failMessage: string
+) {
+  let response = await txObject.call({ from: caller });
+
+  // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
+  if (response[0] !== "0") {
+    throw new Error(failMessage + " Code: " + ComptrollerErrorCodes[response]);
+  }
+
+  return txObject.send({ from: caller });
+}
 
 const FusePoolEditPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -48,12 +108,6 @@ const FusePoolEditPage = React.memo(() => {
     isOpen: isAddAssetModalOpen,
     onOpen: openAddAssetModal,
     onClose: closeAddAssetModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isAddToWhitelistModalOpen,
-    onOpen: openAddToWhitelistModal,
-    onClose: closeAddToWhitelistModal,
   } = useDisclosure();
 
   const { t } = useTranslation();
@@ -69,11 +123,6 @@ const FusePoolEditPage = React.memo(() => {
       <AddAssetModal
         isOpen={isAddAssetModalOpen}
         onClose={closeAddAssetModal}
-      />
-
-      <AddToWhitelistModal
-        isOpen={isAddToWhitelistModalOpen}
-        onClose={closeAddToWhitelistModal}
       />
 
       <Column
@@ -104,7 +153,7 @@ const FusePoolEditPage = React.memo(() => {
             {data ? (
               <PoolConfiguration
                 assets={data.assets}
-                openAddToWhitelistModal={openAddToWhitelistModal}
+                comptrollerAddress={data.comptroller}
               />
             ) : (
               <Center expand>
@@ -122,8 +171,9 @@ const FusePoolEditPage = React.memo(() => {
               {data ? (
                 data.assets.length > 0 ? (
                   <AssetConfiguration
-                    assets={data.assets}
                     openAddAssetModal={openAddAssetModal}
+                    assets={data.assets}
+                    comptrollerAddress={data.comptroller}
                   />
                 ) : (
                   <Column
@@ -134,15 +184,10 @@ const FusePoolEditPage = React.memo(() => {
                   >
                     {t("There are no assets in this pool.")}
 
-                    <DashboardBox
-                      onClick={openAddAssetModal}
-                      mt={4}
-                      as="button"
-                      py={1}
-                      px={2}
-                    >
-                      {t("Add Asset")}
-                    </DashboardBox>
+                    <AddAssetButton
+                      comptrollerAddress={data.comptroller}
+                      openAddAssetModal={openAddAssetModal}
+                    />
                   </Column>
                 )
               ) : (
@@ -163,164 +208,281 @@ const FusePoolEditPage = React.memo(() => {
 export default FusePoolEditPage;
 
 const PoolConfiguration = ({
-  openAddToWhitelistModal,
   assets,
+  comptrollerAddress,
 }: {
-  openAddToWhitelistModal: () => any;
   assets: USDPricedFuseAsset[];
+  comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
-
-  const [interestFee, setInterestFee] = useState(10);
-
   const { poolId } = useParams();
 
+  const { fuse, address } = useRari();
+
+  const queryCache = useQueryCache();
+
+  const data = useExtraPoolInfo(comptrollerAddress);
+
+  const changeWhitelistStatus = async (enforce: boolean) => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    await testForCompoundErrorAndSend(
+      comptroller.methods._setWhitelistEnforcement(enforce),
+      address,
+      ""
+    );
+
+    queryCache.refetchQueries();
+  };
+
+  const addToWhitelist = async (newUser: string) => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const newList = [...data!.whitelist, newUser];
+
+    await testForCompoundErrorAndSend(
+      comptroller.methods._setWhitelistStatuses(
+        newList,
+        Array(newList.length).fill(true)
+      ),
+      address,
+      ""
+    );
+
+    queryCache.refetchQueries();
+  };
+
+  const removeFromWhitelist = async (removeUser: string) => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const whitelist = data!.whitelist;
+
+    await testForCompoundErrorAndSend(
+      comptroller.methods._setWhitelistStatuses(
+        whitelist,
+        whitelist.map((user) => user !== removeUser)
+      ),
+      address,
+      ""
+    );
+
+    queryCache.refetchQueries();
+  };
+
+  const renounceOwnership = async () => {
+    const unitroller = new fuse.web3.eth.Contract(
+      JSON.parse(
+        fuse.compoundContracts["contracts/Unitroller.sol:Unitroller"].abi
+      ),
+      comptrollerAddress
+    );
+
+    await testForCompoundErrorAndSend(
+      unitroller.methods._renounceAdminRights(),
+      address,
+      ""
+    );
+
+    // TODO: Revoke admin rights on all the cTokens!
+
+    queryCache.refetchQueries();
+  };
+
+  const [closeFactor, setCloseFactor] = useState(50);
+  const [liquidationIncentive, setLiquidationIncentive] = useState(8);
+
+  // Update values on refetch!
+  useEffect(() => {
+    if (data) {
+      setCloseFactor(data.closeFactor / 1e16);
+      setLiquidationIncentive(data.liquidationIncentive / 1e16 - 100);
+    }
+  }, [data?.closeFactor, data?.liquidationIncentive]);
+
+  const updateCloseFactor = async () => {
+    // 50% -> 0.5 * 1e18
+    const bigCloseFactor = new BigNumber(closeFactor)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    await testForCompoundErrorAndSend(
+      comptroller.methods._setCloseFactor(bigCloseFactor),
+      address,
+      ""
+    );
+
+    queryCache.refetchQueries();
+  };
+
+  const updateLiquidationIncentive = async () => {
+    // 8% -> 1.08 * 1e8
+    const bigLiquidationIncentive = new BigNumber(liquidationIncentive)
+      .dividedBy(100)
+      .plus(1)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    await testForCompoundErrorAndSend(
+      comptroller.methods._setLiquidationIncentive(bigLiquidationIncentive),
+      address,
+      ""
+    );
+
+    queryCache.refetchQueries();
+  };
+
   return (
-    <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      height="100%"
+    >
       <Heading size="sm" px={4} py={4}>
         {t("Pool {{num}} Configuration", { num: poolId })}
       </Heading>
 
       <ModalDivider />
 
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        my={4}
-        px={4}
-        height="40px"
-        overflowX="auto"
-      >
-        <Text fontWeight="bold" mr={2}>
-          {t("Assets:")}
-        </Text>
-
-        {assets.length > 0 ? (
-          <>
-            <AvatarGroup size="xs" max={20}>
-              {assets.map(({ underlyingToken, cToken }) => {
-                return <CTokenIcon key={cToken} address={underlyingToken} />;
-              })}
-            </AvatarGroup>
-
-            <Text ml={2} flexShrink={0}>
-              {assets.map(({ underlyingSymbol }, index, array) => {
-                return (
-                  underlyingSymbol + (index !== array.length - 1 ? " / " : "")
-                );
-              })}
+      {data ? (
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          height="100%"
+          width="100%"
+          overflowY="auto"
+        >
+          <ConfigRow>
+            <Text fontWeight="bold" mr={2}>
+              {t("Assets:")}
             </Text>
-          </>
-        ) : (
-          <Text>None</Text>
-        )}
-      </Row>
 
-      <ModalDivider />
+            {assets.length > 0 ? (
+              <>
+                <AvatarGroup size="xs" max={20}>
+                  {assets.map(({ underlyingToken, cToken }) => {
+                    return (
+                      <CTokenIcon key={cToken} address={underlyingToken} />
+                    );
+                  })}
+                </AvatarGroup>
 
-      <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
-        width="100%"
-      >
-        <Row
-          width="100%"
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Whitelist")}:</Text>
+                <Text ml={2} flexShrink={0}>
+                  {assets.map(({ underlyingSymbol }, index, array) => {
+                    return (
+                      underlyingSymbol +
+                      (index !== array.length - 1 ? " / " : "")
+                    );
+                  })}
+                </Text>
+              </>
+            ) : (
+              <Text>{t("None")}</Text>
+            )}
+          </ConfigRow>
 
-          <DashboardBox
-            ml="auto"
-            height="35px"
-            as="button"
-            onClick={openAddToWhitelistModal}
+          <ModalDivider />
+
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            width="100%"
           >
-            <Center expand px={2} fontWeight="bold">
-              {t("Edit")}
-            </Center>
-          </DashboardBox>
+            <ConfigRow>
+              <Text fontWeight="bold">{t("Whitelist")}:</Text>
 
-          <DashboardBox
-            height="35px"
-            ml={3}
-            as="button"
-            onClick={openAddToWhitelistModal}
-          >
-            <Center expand px={2} fontWeight="bold">
-              {t("Disable")}
-            </Center>
-          </DashboardBox>
-        </Row>
+              <Switch
+                ml="auto"
+                h="20px"
+                isDisabled={!data.upgradeable}
+                isChecked={data.enforceWhitelist}
+                onChange={() => {
+                  changeWhitelistStatus(!data.enforceWhitelist);
+                }}
+                className="black-switch"
+                colorScheme="#121212"
+              />
+            </ConfigRow>
 
-        <ModalDivider />
+            {data.enforceWhitelist ? (
+              <WhitelistInfo
+                whitelist={data.whitelist}
+                addToWhitelist={addToWhitelist}
+                removeFromWhitelist={removeFromWhitelist}
+              />
+            ) : null}
 
-        <Row
-          my={4}
-          px={4}
-          width="100%"
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-        >
-          <Text fontWeight="bold">{t("Upgradeable")}:</Text>
+            <ModalDivider />
 
-          <DashboardBox
-            height="35px"
-            ml={3}
-            as="button"
-            onClick={openAddToWhitelistModal}
-          >
-            <Center expand px={2} fontWeight="bold">
-              {t("Renounce Ownership")}
-            </Center>
-          </DashboardBox>
-        </Row>
+            <ConfigRow>
+              <Text fontWeight="bold">{t("Upgradeable")}:</Text>
 
-        <ModalDivider />
+              {data.upgradeable ? (
+                <DashboardBox
+                  height="35px"
+                  ml="auto"
+                  as="button"
+                  onClick={renounceOwnership}
+                >
+                  <Center expand px={2} fontWeight="bold">
+                    {t("Renounce Ownership")}
+                  </Center>
+                </DashboardBox>
+              ) : (
+                <Text ml="auto" fontWeight="bold">
+                  {t("Admin Rights Disabled")}
+                </Text>
+              )}
+            </ConfigRow>
 
-        <Row
-          width="100%"
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Close Factor")}:</Text>
+            <ModalDivider />
 
-          <SliderWithLabel
-            ml="auto"
-            value={interestFee}
-            setValue={setInterestFee}
-            formatValue={formatPercentage}
-          />
+            <ConfigRow>
+              <Text fontWeight="bold">{t("Close Factor")}:</Text>
 
-          <SaveButton />
-        </Row>
+              <SliderWithLabel
+                ml="auto"
+                value={closeFactor}
+                setValue={setCloseFactor}
+                formatValue={formatPercentage}
+                min={5}
+                max={90}
+              />
 
-        <ModalDivider />
+              {data.upgradeable ? (
+                <SaveButton onClick={updateCloseFactor} />
+              ) : null}
+            </ConfigRow>
 
-        <Row
-          width="100%"
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          my={4}
-          px={4}
-        >
-          <Text fontWeight="bold">{t("Liquidation Incentive")}:</Text>
+            <ModalDivider />
 
-          <SliderWithLabel
-            ml="auto"
-            value={interestFee}
-            setValue={setInterestFee}
-            formatValue={formatPercentage}
-          />
+            <ConfigRow>
+              <Text fontWeight="bold">{t("Liquidation Incentive")}:</Text>
 
-          <SaveButton />
-        </Row>
-      </Column>
+              <SliderWithLabel
+                ml="auto"
+                value={liquidationIncentive}
+                setValue={setLiquidationIncentive}
+                formatValue={formatPercentage}
+                min={0}
+                max={50}
+              />
+
+              {data.upgradeable ? (
+                <SaveButton onClick={updateLiquidationIncentive} />
+              ) : null}
+            </ConfigRow>
+          </Column>
+        </Column>
+      ) : (
+        <Center expand>
+          <Spinner />
+        </Center>
+      )}
     </Column>
   );
 };
@@ -328,15 +490,17 @@ const PoolConfiguration = ({
 const AssetConfiguration = ({
   openAddAssetModal,
   assets,
+  comptrollerAddress,
 }: {
   openAddAssetModal: () => any;
   assets: USDPricedFuseAsset[];
+  comptrollerAddress: string;
 }) => {
   const isMobile = useIsSemiSmallScreen();
 
-  let { poolId } = useParams();
-
   const { t } = useTranslation();
+
+  // const { fuse } = useRari();
 
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
 
@@ -351,44 +515,20 @@ const AssetConfiguration = ({
       width="100%"
       flexShrink={0}
     >
-      <Row
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        width="100%"
-        height="55px"
-        flexShrink={0}
-      >
+      <ConfigRow>
         <Heading size="sm" ml={4}>
           {t("Assets Configuration")}
         </Heading>
 
-        <DashboardBox
-          mr={4}
-          height="35px"
-          width="110px"
-          flexShrink={0}
-          ml={2}
-          as="button"
-          onClick={openAddAssetModal}
-        >
-          <Center expand px={2} fontWeight="bold">
-            {t("Add Asset")}
-          </Center>
-        </DashboardBox>
-      </Row>
+        <AddAssetButton
+          comptrollerAddress={comptrollerAddress}
+          openAddAssetModal={openAddAssetModal}
+        />
+      </ConfigRow>
 
       <ModalDivider />
 
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-        py={3}
-        px={4}
-        overflowX="scroll"
-        flexShrink={0}
-        height="58px"
-      >
+      <ConfigRow>
         <Text fontWeight="bold" mr={2}>
           {t("Assets:")}
         </Text>
@@ -410,7 +550,7 @@ const AssetConfiguration = ({
             </Box>
           );
         })}
-      </Row>
+      </ConfigRow>
 
       <ModalDivider />
 
@@ -472,13 +612,7 @@ export const AssetSettings = ({
       width="100%"
       height="100%"
     >
-      <Row
-        width="100%"
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        my={4}
-        px={4}
-      >
+      <ConfigRow>
         <Text fontWeight="bold">{t("Collateral Factor")}:</Text>
 
         <SliderWithLabel
@@ -486,35 +620,24 @@ export const AssetSettings = ({
           setValue={setCollateralFactor}
           formatValue={formatPercentage}
         />
-      </Row>
+      </ConfigRow>
 
       <ModalDivider />
 
-      <Row
-        width="100%"
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        my={4}
-        px={4}
-      >
+      <ConfigRow>
         <Text fontWeight="bold">{t("Reserve Factor")}:</Text>
 
         <SliderWithLabel
+          ml="auto"
           value={reserveFactor}
           setValue={setReserveFactor}
           formatValue={formatPercentage}
         />
-      </Row>
+      </ConfigRow>
 
       <ModalDivider />
 
-      <Row
-        width="100%"
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        my={4}
-        px={4}
-      >
+      <ConfigRow>
         <Text fontWeight="bold">{t("Oracle")}:</Text>
 
         <Select
@@ -528,17 +651,11 @@ export const AssetSettings = ({
             {t("Chainlink")}
           </option>
         </Select>
-      </Row>
+      </ConfigRow>
 
       <ModalDivider />
 
-      <Row
-        width="100%"
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        my={4}
-        px={4}
-      >
+      <ConfigRow>
         <Text fontWeight="bold">{t("Interest Model")}:</Text>
 
         <Select
@@ -552,7 +669,7 @@ export const AssetSettings = ({
             {t("DAI Interest Rate Model")}
           </option>
         </Select>
-      </Row>
+      </ConfigRow>
 
       <Box
         height="170px"
@@ -588,7 +705,13 @@ export const AssetSettings = ({
   );
 };
 
-const SaveButton = ({ ...others }: { [key: string]: any }) => {
+const SaveButton = ({
+  onClick,
+  ...others
+}: {
+  onClick: () => any;
+  [key: string]: any;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -599,9 +722,51 @@ const SaveButton = ({ ...others }: { [key: string]: any }) => {
       height="35px"
       as="button"
       fontWeight="bold"
+      onClick={onClick}
       {...others}
     >
       {t("Save")}
     </DashboardBox>
+  );
+};
+
+const AddAssetButton = ({
+  openAddAssetModal,
+  comptrollerAddress,
+}: {
+  openAddAssetModal: () => any;
+  comptrollerAddress: string;
+}) => {
+  const { t } = useTranslation();
+
+  const isUpgradeable = useIsUpgradeable(comptrollerAddress);
+
+  return isUpgradeable ? (
+    <DashboardBox onClick={openAddAssetModal} mt={4} as="button" py={1} px={2}>
+      {t("Add Asset")}
+    </DashboardBox>
+  ) : null;
+};
+
+const ConfigRow = ({
+  children,
+  ...others
+}: {
+  children: ReactNode;
+  [key: string]: any;
+}) => {
+  return (
+    <Row
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="center"
+      width="100%"
+      my={4}
+      px={4}
+      overflowX="auto"
+      flexShrink={0}
+      {...others}
+    >
+      {children}
+    </Row>
   );
 };
