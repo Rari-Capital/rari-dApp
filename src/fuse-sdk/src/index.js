@@ -31,11 +31,11 @@ export default class Fuse {
     "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"; // TODO: Set correct mainnet address after deployment
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0x1ca334e4bceb0c6d95733d11ed0e9b52caf66807"; // TODO: Set correct mainnet address after deployment
+    "0xce103d6d89ea4588d909f5f728ca8c14c94bb3d6"; // TODO: Set correct mainnet address after deployment
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
-    "0xee8163c19f2ff59410edc6494505c129bddd3851"; // TODO: Set correct mainnet address after deployment
+    "0x4084a1ceb13516eeaa03a047679ce64df5c7476a"; // TODO: Set correct mainnet address after deployment
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
-    "0x8a0ab5a52ddcf13a9d5b68f7961289f5e08ebc5f"; // TODO: Set correct mainnet address after deployment
+    "0x0b08f5041284fe4107f959e86275b0e5a4f6ce2a"; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79";
@@ -43,9 +43,9 @@ export default class Fuse {
     "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC";
 
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
-    PreferredPriceOracle: "0xb4c963cc484857e668f884194ee46ea29f6180a2", // TODO: Set correct mainnet address after deployment
-    ChainlinkPriceOracle: "0x026838c33c05cace3495bfe51261f7d942fddf8a", // TODO: Set correct mainnet address after deployment
-    UniswapView: "0x8ff698981fb7673eda1ae2e2723bc9aea33b9f61", // TODO: Set correct mainnet address after deployment
+    PreferredPriceOracle: "0x8a0ab5a52ddcf13a9d5b68f7961289f5e08ebc5f", // TODO: Set correct mainnet address after deployment
+    ChainlinkPriceOracle: "0x1ca334e4bceb0c6d95733d11ed0e9b52caf66807", // TODO: Set correct mainnet address after deployment
+    UniswapView: "0xee8163c19f2ff59410edc6494505c129bddd3851", // TODO: Set correct mainnet address after deployment
     Keep3rPriceOracle: "", // TODO: Set correct mainnet address after deployment
     UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
@@ -108,8 +108,8 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    "WhitePaperInterestRateModel": "0x4084A1CEb13516eEaa03a047679cE64DF5c7476A",
-    "JumpRateModel": "0xce103d6D89eA4588d909f5f728ca8C14C94Bb3D6"
+    "WhitePaperInterestRateModel": "0xb2AAa6b64dC52376A5d376B45902C23b460D3F2c",
+    "JumpRateModel": "0x1e9cfb9fda76c4259e1137022ae3374277f2b857"
   };
 
   constructor(web3Provider) {
