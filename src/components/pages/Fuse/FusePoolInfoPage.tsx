@@ -41,6 +41,54 @@ import { useTokenData } from "../../../hooks/useTokenData";
 import { CTokenIcon } from "./FusePoolsPage";
 import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
+import { createComptroller } from "../../../utils/createComptroller";
+
+export const useExtraPoolInfo = (comptrollerAddress: string) => {
+  //TODO: Promise.all()
+
+  const { fuse, address } = useRari();
+
+  const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const {
+      0: admin,
+      1: upgradeable,
+    } = await fuse.contracts.FusePoolLens.methods
+      .getPoolOwnership(comptrollerAddress)
+      .call();
+
+    const oracle = await fuse.getPriceOracle(
+      await comptroller.methods.oracle().call()
+    );
+
+    const closeFactor = await comptroller.methods.closeFactorMantissa().call();
+
+    const liquidationIncentive = await comptroller.methods
+      .liquidationIncentiveMantissa()
+      .call();
+
+    const enforceWhitelist = await comptroller.methods
+      .enforceWhitelist()
+      .call();
+
+    const whitelist: string[] = await comptroller.methods.getWhitelist().call();
+
+    return {
+      admin,
+      upgradeable,
+      enforceWhitelist,
+      whitelist,
+      isPowerfulAdmin:
+        admin.toLowerCase() === address.toLowerCase() && upgradeable,
+      oracle,
+      closeFactor,
+      liquidationIncentive,
+    };
+  });
+
+  return data;
+};
 
 const FusePoolInfoPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -142,48 +190,7 @@ const OracleAndInterestRates = ({
 
   const { t } = useTranslation();
 
-  const { fuse, address } = useRari();
-
-  const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
-    const comptroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-      ),
-      comptrollerAddress
-    );
-
-    const {
-      0: admin,
-      1: upgradeable,
-    } = await fuse.contracts.FusePoolLens.methods
-      .getPoolOwnership(comptrollerAddress)
-      .call();
-
-    const oracle = await fuse.getPriceOracle(
-      await comptroller.methods.oracle().call()
-    );
-
-    const closeFactor = await comptroller.methods.closeFactorMantissa().call();
-
-    const liquidationIncentive = await comptroller.methods
-      .liquidationIncentiveMantissa()
-      .call();
-
-    const enforceWhitelist = await comptroller.methods
-      .enforceWhitelist()
-      .call();
-
-    return {
-      admin,
-      upgradeable,
-      enforceWhitelist,
-      isPowerfulAdmin:
-        admin.toLowerCase() === address.toLowerCase() && upgradeable,
-      oracle,
-      closeFactor,
-      liquidationIncentive,
-    };
-  });
+  const data = useExtraPoolInfo(comptrollerAddress);
 
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 

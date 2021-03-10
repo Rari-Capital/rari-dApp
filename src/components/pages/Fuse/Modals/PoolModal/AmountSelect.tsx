@@ -39,6 +39,7 @@ import { useBorrowLimit } from "../../../../../hooks/useBorrowLimit";
 
 import Fuse from "../../../../../fuse-sdk";
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
+import { createComptroller } from "../../../../../utils/createComptroller";
 
 interface Props {
   onClose: () => any;
@@ -123,12 +124,7 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.BORROW) {
-    const comptroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-      ),
-      comptrollerAddress
-    );
+    const comptroller = createComptroller(comptrollerAddress, fuse);
 
     const { 0: err, 1: maxBorrow } = await comptroller.methods
       .getMaxBorrow(address, asset.cToken)
@@ -142,12 +138,7 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.WITHDRAW) {
-    const comptroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-      ),
-      comptrollerAddress
-    );
+    const comptroller = createComptroller(comptrollerAddress, fuse);
 
     const { 0: err, 1: maxRedeem } = await comptroller.methods
       .getMaxRedeem(address, asset.cToken)

@@ -19,6 +19,7 @@ import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
+import { createComptroller } from "../../../utils/createComptroller";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
@@ -277,12 +278,7 @@ const AssetSupplyRow = ({
   const toast = useToast();
 
   const onToggleCollateral = async () => {
-    const comptroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-      ),
-      comptrollerAddress
-    );
+    const comptroller = createComptroller(comptrollerAddress, fuse);
 
     let call;
     if (asset.membership) {
