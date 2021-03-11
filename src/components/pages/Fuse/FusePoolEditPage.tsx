@@ -526,9 +526,13 @@ const AssetConfiguration = ({
           {t("Assets:")}
         </Text>
 
-        {assets.map((asset) => {
+        {assets.map((asset, index, array) => {
           return (
-            <Box pr={2} key={asset.cToken}>
+            <Box
+              pr={index === array.length - 1 ? 4 : 2}
+              key={asset.cToken}
+              flexShrink={0}
+            >
               <DashboardBox
                 as="button"
                 onClick={() => setSelectedAsset(asset)}
