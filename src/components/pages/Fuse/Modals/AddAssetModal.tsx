@@ -6,26 +6,302 @@ import {
   Input,
   Button,
   Box,
+  Text,
   Image,
+  Select,
+  Spinner,
 } from "@chakra-ui/react";
-import { Column } from "buttered-chakra";
+import { Column, Center } from "buttered-chakra";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DASHBOARD_BOX_PROPS } from "../../../shared/DashboardBox";
 import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
 
-import { AssetSettings } from "../FusePoolEditPage";
-import { useTokenData } from "../../../../hooks/useTokenData";
+import { TokenData, useTokenData } from "../../../../hooks/useTokenData";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
+import { useRari } from "../../../../context/RariContext";
+import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
+import { SliderWithLabel } from "../../../shared/SliderWithLabel";
+import { convertIRMtoCurve } from "../FusePoolInfoPage";
 
-interface Props {
+import Fuse from "../../../../fuse-sdk";
+import Chart from "react-apexcharts";
+import { ConfigRow } from "../FusePoolEditPage";
+import { useQuery } from "react-query";
+import { QuestionIcon } from "@chakra-ui/icons";
+import { SimpleTooltip } from "../../../shared/SimpleTooltip";
+import BigNumber from "bignumber.js";
+
+const formatPercentage = (value: number) => value.toFixed(0) + "%";
+
+export const AssetSettings = ({
+  tokenData,
+  comptrollerAddress,
+}: {
+  comptrollerAddress: string;
+  tokenData: TokenData;
+}) => {
+  const { t } = useTranslation();
+  const { fuse, address } = useRari();
+
+  const [isDeploying, setIsDeploying] = useState(false);
+
+  const [collateralFactor, setCollateralFactor] = useState(50);
+  const [reserveFactor, setReserveFactor] = useState(10);
+  const [adminFee, setAdminFee] = useState(5);
+
+  const [interestRateModel, setInterestRateModel] = useState(
+    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
+  );
+
+  const { data: curves } = useQuery(
+    interestRateModel + adminFee + reserveFactor + " irm",
+    async () => {
+      const IRM = await fuse.identifyInterestRateModel(interestRateModel);
+
+      await IRM._init(
+        fuse.web3,
+        interestRateModel,
+        // reserve factor
+        reserveFactor * 1e16,
+        // admin fee
+        adminFee * 1e16,
+        // hardcoded 10% Fuse fee
+        0.1e18
+      );
+
+      return convertIRMtoCurve(IRM, fuse);
+    }
+  );
+
+  const deploy = async () => {
+    setIsDeploying(true);
+
+    // 50% -> 0.5 * 1e18
+    const bigCollateralFacotr = new BigNumber(collateralFactor)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    // 10% -> 0.1 * 1e18
+    const bigReserveFactor = new BigNumber(reserveFactor)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    // 5% -> 0.05 * 1e18
+    const bigAdminFee = new BigNumber(adminFee)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    const conf: any = {
+      underlying: tokenData.address,
+      comptroller: comptrollerAddress,
+      interestRateModel,
+      initialExchangeRateMantissa: fuse.web3.utils.toBN(1e18),
+      // TODO: APPEND POOL RELATED DATA TO THIS
+      name: tokenData.name,
+      symbol: tokenData.symbol,
+      decimals: 8,
+      admin: address,
+    };
+
+    await fuse.deployAsset(
+      conf,
+      bigCollateralFacotr,
+      bigReserveFactor,
+      bigAdminFee,
+      { from: address }
+    );
+
+    // queryCache.refetchQueries();
+
+    // closeModal();
+  };
+
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      overflowY="auto"
+      width="100%"
+      height="100%"
+    >
+      <ConfigRow>
+        <SimpleTooltip
+          label={t(
+            "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset."
+          )}
+        >
+          <Text fontWeight="bold">
+            {t("Collateral Factor")} <QuestionIcon ml={1} mb="4px" />
+          </Text>
+        </SimpleTooltip>
+
+        <SliderWithLabel
+          ml="auto"
+          value={collateralFactor}
+          setValue={setCollateralFactor}
+          formatValue={formatPercentage}
+        />
+      </ConfigRow>
+
+      <ModalDivider />
+
+      <ConfigRow>
+        <SimpleTooltip
+          label={t(
+            "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction."
+          )}
+        >
+          <Text fontWeight="bold">
+            {t("Reserve Factor")} <QuestionIcon ml={1} mb="4px" />
+          </Text>
+        </SimpleTooltip>
+
+        <SliderWithLabel
+          ml="auto"
+          value={reserveFactor}
+          setValue={setReserveFactor}
+          formatValue={formatPercentage}
+          max={50}
+        />
+      </ConfigRow>
+      <ModalDivider />
+
+      <ConfigRow>
+        <SimpleTooltip
+          label={t(
+            "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee."
+          )}
+        >
+          <Text fontWeight="bold">
+            {t("Admin Fee")} <QuestionIcon ml={1} mb="4px" />
+          </Text>
+        </SimpleTooltip>
+
+        <SliderWithLabel
+          ml="auto"
+          value={adminFee}
+          setValue={setAdminFee}
+          formatValue={formatPercentage}
+          max={30}
+        />
+      </ConfigRow>
+
+      <ModalDivider />
+
+      <ConfigRow>
+        <SimpleTooltip
+          label={t(
+            "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels."
+          )}
+        >
+          <Text fontWeight="bold">
+            {t("Interest Model")} <QuestionIcon ml={1} mb="4px" />
+          </Text>
+        </SimpleTooltip>
+
+        <Select
+          {...DASHBOARD_BOX_PROPS}
+          ml="auto"
+          borderRadius="7px"
+          fontWeight="bold"
+          _focus={{ outline: "none" }}
+          width="230px"
+          value={interestRateModel}
+          onChange={(event) => setInterestRateModel(event.target.value)}
+        >
+          <option
+            className="black-bg-option"
+            value={
+              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
+            }
+          >
+            JumpRateModel
+          </option>
+
+          <option
+            className="black-bg-option"
+            value={
+              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+                .WhitePaperInterestRateModel
+            }
+          >
+            WhitePaperRateModel
+          </option>
+        </Select>
+      </ConfigRow>
+
+      <Box
+        height="170px"
+        width="100%"
+        color="#000000"
+        overflow="hidden"
+        pl={2}
+        pr={3}
+        className="hide-bottom-tooltip"
+        flexShrink={0}
+      >
+        {curves ? (
+          <Chart
+            options={{
+              ...FuseIRMDemoChartOptions,
+              colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
+            }}
+            type="line"
+            width="100%"
+            height="100%"
+            series={[
+              {
+                name: "Borrow Rate",
+                data: curves.borrowerRates,
+              },
+              {
+                name: "Deposit Rate",
+                data: curves.supplierRates,
+              },
+            ]}
+          />
+        ) : (
+          <Center expand color="#FFF">
+            <Spinner />
+          </Center>
+        )}
+      </Box>
+
+      <Box px={4} mt={4} width="100%">
+        <Button
+          fontWeight="bold"
+          fontSize="2xl"
+          borderRadius="10px"
+          width="100%"
+          height="70px"
+          color={tokenData.overlayTextColor! ?? "#000"}
+          bg={tokenData.color! ?? "#FFF"}
+          _hover={{ transform: "scale(1.02)" }}
+          _active={{ transform: "scale(0.95)" }}
+          isLoading={isDeploying}
+          onClick={deploy}
+        >
+          {t("Confirm")}
+        </Button>
+      </Box>
+    </Column>
+  );
+};
+
+const AddAssetModal = ({
+  comptrollerAddress,
+  isOpen,
+  onClose,
+}: {
+  comptrollerAddress: string;
   isOpen: boolean;
-
   onClose: () => any;
-}
-
-const AddAssetModal = (props: Props) => {
+}) => {
   const { t } = useTranslation();
 
   const [tokenAddress, _setTokenAddress] = useState<string>("");
@@ -34,14 +310,11 @@ const AddAssetModal = (props: Props) => {
 
   const isEmpty = tokenAddress.trim() === "";
 
-  const [collateralFactor, setCollateralFactor] = useState(75);
-  const [reserveFactor, setReserveFactor] = useState(10);
-
   return (
     <Modal
       motionPreset="slideInBottom"
-      isOpen={props.isOpen}
-      onClose={props.onClose}
+      isOpen={isOpen}
+      onClose={onClose}
       isCentered
     >
       <ModalOverlay />
@@ -81,9 +354,10 @@ const AddAssetModal = (props: Props) => {
             </>
           ) : null}
 
-          <Box px={4} mt={isEmpty ? 4 : 0} mb={4} width="100%">
+          <Center px={4} mt={isEmpty ? 4 : 0} width="100%">
             <Input
-              width="100%"
+              width="375px"
+              textAlign="center"
               placeholder={t(
                 "Token Address: 0x00000000000000000000000000000000000000"
               )}
@@ -101,37 +375,17 @@ const AddAssetModal = (props: Props) => {
               _hover={{ bg: "#282727" }}
               bg="#282727"
             />
-          </Box>
+          </Center>
 
-          <ModalDivider />
-
-          {tokenData?.color ? (
-            <AssetSettings
-              collateralFactor={collateralFactor}
-              setCollateralFactor={setCollateralFactor}
-              reserveFactor={reserveFactor}
-              setReserveFactor={setReserveFactor}
-              color={tokenData.color}
-            />
+          {tokenData?.symbol ? (
+            <>
+              <ModalDivider mt={4} />
+              <AssetSettings
+                comptrollerAddress={comptrollerAddress}
+                tokenData={tokenData}
+              />
+            </>
           ) : null}
-
-          <Box px={4} mt={4} width="100%">
-            <Button
-              fontWeight="bold"
-              fontSize="2xl"
-              borderRadius="10px"
-              width="100%"
-              height="70px"
-              color={tokenData?.overlayTextColor ?? "#000"}
-              bg={tokenData?.color ?? "#FFF"}
-              _hover={{ transform: "scale(1.02)" }}
-              _active={{ transform: "scale(0.95)" }}
-              isLoading={!tokenData}
-              isDisabled={isEmpty || !tokenData?.symbol}
-            >
-              {t("Confirm")}
-            </Button>
-          </Box>
         </Column>
       </ModalContent>
     </Modal>

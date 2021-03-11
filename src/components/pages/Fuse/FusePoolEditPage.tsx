@@ -2,7 +2,6 @@ import {
   AvatarGroup,
   Box,
   Heading,
-  Select,
   Text,
   Switch,
   useDisclosure,
@@ -15,15 +14,11 @@ import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
-import { InterestRateChartOptions } from "../../../utils/chartOptions";
-
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
+import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
-
-import Chart from "react-apexcharts";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
@@ -68,7 +63,7 @@ enum ComptrollerErrorCodes {
   SUPPLY_ABOVE_MAX,
 }
 
-const useIsUpgradeable = (comptrollerAddress: string) => {
+export const useIsUpgradeable = (comptrollerAddress: string) => {
   const { fuse } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " isUpgradeable", async () => {
@@ -84,7 +79,7 @@ const useIsUpgradeable = (comptrollerAddress: string) => {
   return data;
 };
 
-async function testForCompoundErrorAndSend(
+async function testForComptrollerErrorAndSend(
   txObject: any,
   caller: string,
   failMessage: string
@@ -121,6 +116,7 @@ const FusePoolEditPage = React.memo(() => {
       <ForceAuthModal />
 
       <AddAssetModal
+        comptrollerAddress={data?.comptroller}
         isOpen={isAddAssetModalOpen}
         onClose={closeAddAssetModal}
       />
@@ -182,7 +178,7 @@ const FusePoolEditPage = React.memo(() => {
                     crossAxisAlignment="center"
                     py={4}
                   >
-                    {t("There are no assets in this pool.")}
+                    <Text mb={4}>{t("There are no assets in this pool.")}</Text>
 
                     <AddAssetButton
                       comptrollerAddress={data.comptroller}
@@ -226,7 +222,7 @@ const PoolConfiguration = ({
   const changeWhitelistStatus = async (enforce: boolean) => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    await testForCompoundErrorAndSend(
+    await testForComptrollerErrorAndSend(
       comptroller.methods._setWhitelistEnforcement(enforce),
       address,
       ""
@@ -240,7 +236,7 @@ const PoolConfiguration = ({
 
     const newList = [...data!.whitelist, newUser];
 
-    await testForCompoundErrorAndSend(
+    await testForComptrollerErrorAndSend(
       comptroller.methods._setWhitelistStatuses(
         newList,
         Array(newList.length).fill(true)
@@ -257,7 +253,7 @@ const PoolConfiguration = ({
 
     const whitelist = data!.whitelist;
 
-    await testForCompoundErrorAndSend(
+    await testForComptrollerErrorAndSend(
       comptroller.methods._setWhitelistStatuses(
         whitelist,
         whitelist.map((user) => user !== removeUser)
@@ -277,7 +273,7 @@ const PoolConfiguration = ({
       comptrollerAddress
     );
 
-    await testForCompoundErrorAndSend(
+    await testForComptrollerErrorAndSend(
       unitroller.methods._renounceAdminRights(),
       address,
       ""
@@ -293,7 +289,7 @@ const PoolConfiguration = ({
 
   // Update values on refetch!
   useEffect(() => {
-    if (data) {
+    if (data?.closeFactor && data?.liquidationIncentive) {
       setCloseFactor(data.closeFactor / 1e16);
       setLiquidationIncentive(data.liquidationIncentive / 1e16 - 100);
     }
@@ -308,7 +304,7 @@ const PoolConfiguration = ({
 
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    await testForCompoundErrorAndSend(
+    await testForComptrollerErrorAndSend(
       comptroller.methods._setCloseFactor(bigCloseFactor),
       address,
       ""
@@ -327,7 +323,7 @@ const PoolConfiguration = ({
 
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    await testForCompoundErrorAndSend(
+    await testForComptrollerErrorAndSend(
       comptroller.methods._setLiquidationIncentive(bigLiquidationIncentive),
       address,
       ""
@@ -515,10 +511,8 @@ const AssetConfiguration = ({
       width="100%"
       flexShrink={0}
     >
-      <ConfigRow>
-        <Heading size="sm" ml={4}>
-          {t("Assets Configuration")}
-        </Heading>
+      <ConfigRow mainAxisAlignment="space-between">
+        <Heading size="sm">{t("Assets Configuration")}</Heading>
 
         <AddAssetButton
           comptrollerAddress={comptrollerAddress}
@@ -554,153 +548,13 @@ const AssetConfiguration = ({
 
       <ModalDivider />
 
-      <AssetSettings
+      {/* <AssetSettings
         collateralFactor={collateralFactor}
         setCollateralFactor={setCollateralFactor}
         reserveFactor={reserveFactor}
         setReserveFactor={setReserveFactor}
         color="#DD2D44"
-      />
-    </Column>
-  );
-};
-
-export const AssetSettings = ({
-  collateralFactor,
-  setCollateralFactor,
-  reserveFactor,
-  setReserveFactor,
-  color,
-}: {
-  collateralFactor: number;
-  setCollateralFactor: (value: number) => any;
-  reserveFactor: number;
-  setReserveFactor: (value: number) => any;
-  color?: string;
-}) => {
-  const { t } = useTranslation();
-
-  const borrowCurve = Array.from({ length: 100 }, (_, i) => {
-    let y = 0;
-
-    if (i < 80) {
-      y = i * 0.1;
-    } else {
-      y = 5 + i * 0.25;
-    }
-
-    return { x: i, y };
-  });
-
-  const depositCurve = Array.from({ length: 100 }, (_, i) => {
-    let y = 0;
-
-    if (i < 82) {
-      y = i * 0.09;
-    } else {
-      y = 5 + i * 0.23;
-    }
-
-    return { x: i, y };
-  });
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      overflowY="auto"
-      width="100%"
-      height="100%"
-    >
-      <ConfigRow>
-        <Text fontWeight="bold">{t("Collateral Factor")}:</Text>
-
-        <SliderWithLabel
-          value={collateralFactor}
-          setValue={setCollateralFactor}
-          formatValue={formatPercentage}
-        />
-      </ConfigRow>
-
-      <ModalDivider />
-
-      <ConfigRow>
-        <Text fontWeight="bold">{t("Reserve Factor")}:</Text>
-
-        <SliderWithLabel
-          ml="auto"
-          value={reserveFactor}
-          setValue={setReserveFactor}
-          formatValue={formatPercentage}
-        />
-      </ConfigRow>
-
-      <ModalDivider />
-
-      <ConfigRow>
-        <Text fontWeight="bold">{t("Oracle")}:</Text>
-
-        <Select
-          {...DASHBOARD_BOX_PROPS}
-          borderRadius="7px"
-          fontWeight="bold"
-          width="auto"
-          _focus={{ outline: "none" }}
-        >
-          <option className="black-bg-option" value="chainlink">
-            {t("Chainlink")}
-          </option>
-        </Select>
-      </ConfigRow>
-
-      <ModalDivider />
-
-      <ConfigRow>
-        <Text fontWeight="bold">{t("Interest Model")}:</Text>
-
-        <Select
-          {...DASHBOARD_BOX_PROPS}
-          borderRadius="7px"
-          fontWeight="bold"
-          width="auto"
-          _focus={{ outline: "none" }}
-        >
-          <option className="black-bg-option" value="dai">
-            {t("DAI Interest Rate Model")}
-          </option>
-        </Select>
-      </ConfigRow>
-
-      <Box
-        height="170px"
-        width="100%"
-        color="#000000"
-        overflow="hidden"
-        pl={2}
-        pr={3}
-        className="hide-bottom-tooltip"
-        flexShrink={0}
-      >
-        <Chart
-          options={{
-            ...InterestRateChartOptions,
-            colors: ["#FFFFFF", color ?? "#282727"],
-          }}
-          type="line"
-          width="100%"
-          height="100%"
-          series={[
-            {
-              name: "Borrow Rate",
-              data: borrowCurve,
-            },
-            {
-              name: "Deposit Rate",
-              data: depositCurve,
-            },
-          ]}
-        />
-      </Box>
+      /> */}
     </Column>
   );
 };
@@ -742,13 +596,13 @@ const AddAssetButton = ({
   const isUpgradeable = useIsUpgradeable(comptrollerAddress);
 
   return isUpgradeable ? (
-    <DashboardBox onClick={openAddAssetModal} mt={4} as="button" py={1} px={2}>
+    <DashboardBox onClick={openAddAssetModal} as="button" py={1} px={2}>
       {t("Add Asset")}
     </DashboardBox>
   ) : null;
 };
 
-const ConfigRow = ({
+export const ConfigRow = ({
   children,
   ...others
 }: {

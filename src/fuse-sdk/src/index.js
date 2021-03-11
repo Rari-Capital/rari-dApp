@@ -108,8 +108,8 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    "WhitePaperInterestRateModel": "0xb2AAa6b64dC52376A5d376B45902C23b460D3F2c",
-    "JumpRateModel": "0x1e9cfb9fda76c4259e1137022ae3374277f2b857"
+    WhitePaperInterestRateModel: "0xb2AAa6b64dC52376A5d376B45902C23b460D3F2c",
+    JumpRateModel: "0x1e9cfb9fda76c4259e1137022ae3374277f2b857",
   };
 
   constructor(web3Provider) {
@@ -946,6 +946,34 @@ export default class Fuse {
       return [cErc20Delegator.options.address, implementationAddress];
     };
 
+    this.identifyInterestRateModel = async function (interestRateModelAddress) {
+      // Get interest rate model type from runtime bytecode hash and init class
+      var interestRateModels = {
+        JumpRateModel: JumpRateModel,
+        DAIInterestRateModelV2: DAIInterestRateModelV2,
+        WhitePaperInterestRateModel: WhitePaperInterestRateModel,
+      };
+
+      var runtimeBytecodeHash = Web3.utils.sha3(
+        await this.web3.eth.getCode(interestRateModelAddress)
+      );
+      var interestRateModel = null;
+
+      for (const model of [
+        "JumpRateModel",
+        "DAIInterestRateModelV2",
+        "WhitePaperInterestRateModel",
+      ])
+        if (
+          runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH
+        )
+          interestRateModel = new interestRateModels[model]();
+
+      if (interestRateModel === null) return null;
+
+      return interestRateModel;
+    };
+
     this.getInterestRateModel = async function (assetAddress) {
       // Get interest rate model address from asset address
       var assetContract = new this.web3.eth.Contract(
@@ -958,27 +986,10 @@ export default class Fuse {
         .interestRateModel()
         .call();
 
-      // Get interest rate model type from runtime bytecode hash and init class
-      var interestRateModels = {
-        JumpRateModel: JumpRateModel,
-        DAIInterestRateModelV2: DAIInterestRateModelV2,
-        WhitePaperInterestRateModel: WhitePaperInterestRateModel,
-      };
-
-      var runtimeBytecodeHash = Web3.utils.sha3(
-        await this.web3.eth.getCode(interestRateModelAddress)
+      var interestRateModel = await this.identifyInterestRateModel(
+        interestRateModelAddress
       );
-      var interestRateModel = null;
-      for (const model of [
-        "JumpRateModel",
-        "DAIInterestRateModelV2",
-        "WhitePaperInterestRateModel",
-      ])
-        if (
-          runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH
-        )
-          interestRateModel = new interestRateModels[model]();
-      if (interestRateModel === null) return null;
+
       await interestRateModel.init(
         this.web3,
         interestRateModelAddress,

@@ -76,7 +76,7 @@ enum TokenErrorCodes {
   UTILIZATION_ABOVE_MAX,
 }
 
-async function testForCompoundErrorAndSend(
+export async function testForCTokenErrorAndSend(
   txObject: any,
   caller: string,
   failMessage: string
@@ -332,7 +332,7 @@ const AmountSelect = ({
         if (mode === Mode.SUPPLY) {
           await (isETH
             ? cToken.methods.mint().send({ from: address, value: amountBN })
-            : testForCompoundErrorAndSend(
+            : testForCTokenErrorAndSend(
                 cToken.methods.mint(amountBN),
                 address,
                 "Cannot deposit this amount right now!"
@@ -342,20 +342,20 @@ const AmountSelect = ({
             ? cToken.methods
                 .repayBorrow()
                 .send({ from: address, value: amountBN })
-            : testForCompoundErrorAndSend(
+            : testForCTokenErrorAndSend(
                 cToken.methods.repayBorrow(isRepayingMax ? max : amountBN),
                 address,
                 "Cannot repay this amount right now!"
               ));
         }
       } else if (mode === Mode.BORROW) {
-        await testForCompoundErrorAndSend(
+        await testForCTokenErrorAndSend(
           cToken.methods.borrow(amountBN),
           address,
           "Cannot borrow this amount right now!"
         );
       } else if (mode === Mode.WITHDRAW) {
-        await testForCompoundErrorAndSend(
+        await testForCTokenErrorAndSend(
           cToken.methods.redeemUnderlying(amountBN),
           address,
           "Cannot withdraw this amount right now!"

@@ -255,3 +255,14 @@ export const FuseUtilizationChartOptions = {
     ...LineChartOptions.grid,
   },
 };
+
+export const FuseIRMDemoChartOptions = {
+  ...InterestRateChartOptions,
+
+  grid: {
+    ...LineChartOptions.grid,
+    padding: {
+      top: -30,
+    },
+  },
+};

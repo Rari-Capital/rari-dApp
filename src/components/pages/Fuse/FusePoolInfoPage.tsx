@@ -42,6 +42,7 @@ import { CTokenIcon } from "./FusePoolsPage";
 import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../utils/createComptroller";
+import Fuse from "../../../fuse-sdk";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   //TODO: Promise.all()
@@ -266,7 +267,7 @@ const OracleAndInterestRates = ({
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        mt={8}
+        my={8}
         px={4}
         width="100%"
       >
@@ -376,7 +377,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   let { poolId } = useParams();
 
-  const { fuse, rari } = useRari();
+  const { fuse } = useRari();
 
   const { t } = useTranslation();
 
@@ -402,28 +403,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
       return { borrowerRates: null, supplierRates: null };
     }
 
-    let borrowerRates = [];
-    let supplierRates = [];
-    for (var i = 0; i <= 100; i++) {
-      const borrowLevel =
-        (interestRateModel.getBorrowRate(
-          rari.web3.utils.toBN((i * 1e16).toString())
-        ) *
-          2372500) /
-        1e16;
-
-      const supplyLevel =
-        (interestRateModel.getSupplyRate(
-          rari.web3.utils.toBN((i * 1e16).toString())
-        ) *
-          2372500) /
-        1e16;
-
-      borrowerRates.push({ x: i, y: borrowLevel });
-      supplierRates.push({ x: i, y: supplyLevel });
-    }
-
-    return { borrowerRates, supplierRates };
+    return convertIRMtoCurve(interestRateModel, fuse);
   });
 
   return (
@@ -569,4 +549,29 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
       </Box>
     </Column>
   );
+};
+
+export const convertIRMtoCurve = (interestRateModel: any, fuse: Fuse) => {
+  let borrowerRates = [];
+  let supplierRates = [];
+  for (var i = 0; i <= 100; i++) {
+    const borrowLevel =
+      (interestRateModel.getBorrowRate(
+        fuse.web3.utils.toBN((i * 1e16).toString())
+      ) *
+        2372500) /
+      1e16;
+
+    const supplyLevel =
+      (interestRateModel.getSupplyRate(
+        fuse.web3.utils.toBN((i * 1e16).toString())
+      ) *
+        2372500) /
+      1e16;
+
+    borrowerRates.push({ x: i, y: borrowLevel });
+    supplierRates.push({ x: i, y: supplyLevel });
+  }
+
+  return { borrowerRates, supplierRates };
 };
