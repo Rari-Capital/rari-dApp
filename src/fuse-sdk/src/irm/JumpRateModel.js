@@ -51,21 +51,40 @@ export default class JumpRateModel {
     this.initialized = true;
   }
 
-  async _init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+  async _init(web3, interestRateModelAddress, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    var contract = new web3.eth.Contract(
+      JSON.parse(contracts["contracts/JumpRateModel.sol:JumpRateModel"].abi),
+      interestRateModelAddress
+    );
     this.baseRatePerBlock = Web3.utils.toBN(
-      baseRatePerBlock
+      await contract.methods.baseRatePerBlock().call()
     );
     this.multiplierPerBlock = Web3.utils.toBN(
-      multiplierPerBlock
+      await contract.methods.multiplierPerBlock().call()
     );
     this.jumpMultiplierPerBlock = Web3.utils.toBN(
-      jumpMultiplierPerBlock
+      await contract.methods.jumpMultiplierPerBlock().call()
     );
+    this.kink = Web3.utils.toBN(await contract.methods.kink().call());
+
+    this.reserveFactorMantissa = Web3.utils.toBN(reserveFactorMantissa);
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(adminFeeMantissa)
+    );
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(fuseFeeMantissa)
+    );
+
+    this.initialized = true;
+  }
+
+  async __init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    this.baseRatePerBlock = Web3.utils.toBN(baseRatePerBlock);
+    this.multiplierPerBlock = Web3.utils.toBN(multiplierPerBlock);
+    this.jumpMultiplierPerBlock = Web3.utils.toBN(jumpMultiplierPerBlock);
     this.kink = Web3.utils.toBN(kink);
 
-    this.reserveFactorMantissa = Web3.utils.toBN(
-      reserveFactorMantissa
-    );
+    this.reserveFactorMantissa = Web3.utils.toBN(reserveFactorMantissa);
     this.reserveFactorMantissa.iadd(
       Web3.utils.toBN(adminFeeMantissa)
     );

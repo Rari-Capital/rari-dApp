@@ -18,7 +18,7 @@ export default class DAIInterestRateModelV2 extends JumpRateModel {
   reserves;
 
   async init(web3, interestRateModelAddress, assetAddress) {
-    await super.init(interestRateModelAddress, assetAddress);
+    await super.init(web3, interestRateModelAddress, assetAddress);
 
     var contract = new web3.eth.Contract(
       JSON.parse(
@@ -46,8 +46,27 @@ export default class DAIInterestRateModelV2 extends JumpRateModel {
     );
   }
 
-  async _init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
-    await super._init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa);
+  async _init(web3, interestRateModelAddress, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    await super._init(web3, interestRateModelAddress, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa);
+
+    var contract = new web3.eth.Contract(
+      JSON.parse(
+        contracts["contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2"]
+          .abi
+      ),
+      interestRateModelAddress
+    );
+    this.dsrPerBlock = Web3.utils.toBN(
+      await contract.methods.dsrPerBlock().call()
+    );
+
+    this.cash = Web3.utils.toBN(0);
+    this.borrows = Web3.utils.toBN(0);
+    this.reserves = Web3.utils.toBN(0);
+  }
+
+  async __init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    await super.__init(baseRatePerBlock, multiplierPerBlock, jumpMultiplierPerBlock, kink, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa);
     this.dsrPerBlock = Web3.utils.toBN(0); // TODO: Make this work if DSR ever goes positive again
     this.cash = Web3.utils.toBN(0);
     this.borrows = Web3.utils.toBN(0);

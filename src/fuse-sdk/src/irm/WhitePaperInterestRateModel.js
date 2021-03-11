@@ -49,17 +49,38 @@ export default class WhitePaperInterestRateModel {
     this.initialized = true;
   }
 
-  async _init(baseRatePerBlock, multiplierPerBlock, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+  async _init(web3, interestRateModelAddress, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    var contract = new web3.eth.Contract(
+      JSON.parse(
+        contracts[
+          "contracts/WhitePaperInterestRateModel.sol:WhitePaperInterestRateModel"
+        ].abi
+      ),
+      interestRateModelAddress
+    );
     this.baseRatePerBlock = Web3.utils.toBN(
-      baseRatePerBlock
+      await contract.methods.baseRatePerBlock().call()
     );
     this.multiplierPerBlock = Web3.utils.toBN(
-      multiplierPerBlock
+      await contract.methods.multiplierPerBlock().call()
     );
 
-    this.reserveFactorMantissa = Web3.utils.toBN(
-      reserveFactorMantissa
+    this.reserveFactorMantissa = Web3.utils.toBN(reserveFactorMantissa);
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(adminFeeMantissa)
     );
+    this.reserveFactorMantissa.iadd(
+      Web3.utils.toBN(fuseFeeMantissa)
+    );
+
+    this.initialized = true;
+  }
+
+  async __init(baseRatePerBlock, multiplierPerBlock, reserveFactorMantissa, adminFeeMantissa, fuseFeeMantissa) {
+    this.baseRatePerBlock = Web3.utils.toBN(baseRatePerBlock);
+    this.multiplierPerBlock = Web3.utils.toBN(multiplierPerBlock);
+
+    this.reserveFactorMantissa = Web3.utils.toBN(reserveFactorMantissa);
     this.reserveFactorMantissa.iadd(
       Web3.utils.toBN(adminFeeMantissa)
     );
