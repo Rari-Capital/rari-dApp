@@ -10,6 +10,7 @@ import {
   Image,
   Select,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import { Column, Center } from "buttered-chakra";
 import React, { useState } from "react";
@@ -28,7 +29,7 @@ import { convertIRMtoCurve } from "../FusePoolInfoPage";
 import Fuse from "../../../../fuse-sdk";
 import Chart from "react-apexcharts";
 import { ConfigRow } from "../FusePoolEditPage";
-import { useQuery } from "react-query";
+import { useQuery, useQueryCache } from "react-query";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
 import BigNumber from "bignumber.js";
@@ -38,12 +39,16 @@ const formatPercentage = (value: number) => value.toFixed(0) + "%";
 export const AssetSettings = ({
   tokenData,
   comptrollerAddress,
+  closeModal,
 }: {
   comptrollerAddress: string;
   tokenData: TokenData;
+  closeModal: () => any;
 }) => {
   const { t } = useTranslation();
   const { fuse, address } = useRari();
+  const toast = useToast();
+  const queryCache = useQueryCache();
 
   const [isDeploying, setIsDeploying] = useState(false);
 
@@ -59,6 +64,10 @@ export const AssetSettings = ({
     interestRateModel + adminFee + reserveFactor + " irm",
     async () => {
       const IRM = await fuse.identifyInterestRateModel(interestRateModel);
+
+      if (IRM === null) {
+        return null;
+      }
 
       await IRM._init(
         fuse.web3,
@@ -108,17 +117,35 @@ export const AssetSettings = ({
       admin: address,
     };
 
-    await fuse.deployAsset(
-      conf,
-      bigCollateralFacotr,
-      bigReserveFactor,
-      bigAdminFee,
-      { from: address }
-    );
+    try {
+      await fuse.deployAsset(
+        conf,
+        bigCollateralFacotr,
+        bigReserveFactor,
+        bigAdminFee,
+        { from: address }
+      );
+    } catch (e) {
+      toast({
+        title: "Error!",
+        description: e.toString(),
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
 
-    // queryCache.refetchQueries();
+      closeModal();
 
-    // closeModal();
+      return;
+    }
+
+    queryCache.refetchQueries();
+    // Wait 2 seconds for refetch and then close modal.
+    // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    closeModal();
   };
 
   return (
@@ -265,9 +292,15 @@ export const AssetSettings = ({
               },
             ]}
           />
-        ) : (
+        ) : curves === undefined ? (
           <Center expand color="#FFF">
             <Spinner />
+          </Center>
+        ) : (
+          <Center expand color="#FFFFFF">
+            <Text>
+              {t("No graph is available for this asset's interest curves.")}
+            </Text>
           </Center>
         )}
       </Box>
@@ -383,6 +416,7 @@ const AddAssetModal = ({
               <AssetSettings
                 comptrollerAddress={comptrollerAddress}
                 tokenData={tokenData}
+                closeModal={onClose}
               />
             </>
           ) : null}
