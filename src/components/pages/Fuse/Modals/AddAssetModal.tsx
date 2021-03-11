@@ -40,7 +40,11 @@ export const AssetSettings = ({
   tokenData,
   comptrollerAddress,
   closeModal,
+  poolName,
+  poolID,
 }: {
+  poolName: string;
+  poolID: string;
   comptrollerAddress: string;
   tokenData: TokenData;
   closeModal: () => any;
@@ -110,9 +114,11 @@ export const AssetSettings = ({
       comptroller: comptrollerAddress,
       interestRateModel,
       initialExchangeRateMantissa: fuse.web3.utils.toBN(1e18),
-      // TODO: APPEND POOL RELATED DATA TO THIS
-      name: tokenData.name,
-      symbol: tokenData.symbol,
+
+      // Ex: BOGGED USDC
+      name: poolName + " " + tokenData.name,
+      // Ex: fUSDC-456
+      symbol: "f" + tokenData.symbol + "-" + poolID,
       decimals: 8,
       admin: address,
     };
@@ -328,10 +334,14 @@ export const AssetSettings = ({
 
 const AddAssetModal = ({
   comptrollerAddress,
+  poolName,
+  poolID,
   isOpen,
   onClose,
 }: {
   comptrollerAddress: string;
+  poolName: string;
+  poolID: string;
   isOpen: boolean;
   onClose: () => any;
 }) => {
@@ -417,6 +427,8 @@ const AddAssetModal = ({
                 comptrollerAddress={comptrollerAddress}
                 tokenData={tokenData}
                 closeModal={onClose}
+                poolName={poolName}
+                poolID={poolID}
               />
             </>
           ) : null}

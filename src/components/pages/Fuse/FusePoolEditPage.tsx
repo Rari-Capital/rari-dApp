@@ -115,11 +115,15 @@ const FusePoolEditPage = React.memo(() => {
     <>
       <ForceAuthModal />
 
-      <AddAssetModal
-        comptrollerAddress={data?.comptroller}
-        isOpen={isAddAssetModalOpen}
-        onClose={closeAddAssetModal}
-      />
+      {data ? (
+        <AddAssetModal
+          comptrollerAddress={data.comptroller}
+          poolName={data.name}
+          poolID={poolId}
+          isOpen={isAddAssetModalOpen}
+          onClose={closeAddAssetModal}
+        />
+      ) : null}
 
       <Column
         mainAxisAlignment="flex-start"
@@ -496,12 +500,7 @@ const AssetConfiguration = ({
 
   const { t } = useTranslation();
 
-  // const { fuse } = useRari();
-
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
-
-  const [collateralFactor, setCollateralFactor] = useState(75);
-  const [reserveFactor, setReserveFactor] = useState(10);
 
   return (
     <Column
