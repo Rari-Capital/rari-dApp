@@ -178,6 +178,7 @@ export const AssetSettings = ({
           value={collateralFactor}
           setValue={setCollateralFactor}
           formatValue={formatPercentage}
+          max={90}
         />
       </ConfigRow>
 
