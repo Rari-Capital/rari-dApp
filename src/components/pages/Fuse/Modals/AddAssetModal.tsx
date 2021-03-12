@@ -28,14 +28,30 @@ import { convertIRMtoCurve } from "../FusePoolInfoPage";
 
 import Fuse from "../../../../fuse-sdk";
 import Chart from "react-apexcharts";
-import { ConfigRow } from "../FusePoolEditPage";
+import {
+  ConfigRow,
+  SaveButton,
+  testForComptrollerErrorAndSend,
+} from "../FusePoolEditPage";
 import { useQuery, useQueryCache } from "react-query";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
 import BigNumber from "bignumber.js";
 import { createComptroller } from "../../../../utils/createComptroller";
+import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
+
+const createCToken = (fuse: Fuse, cTokenAddress: string) => {
+  const cErc20Delegate = new fuse.web3.eth.Contract(
+    JSON.parse(
+      fuse.compoundContracts["contracts/CErc20Delegate.sol:CErc20Delegate"].abi
+    ),
+    cTokenAddress
+  );
+
+  return cErc20Delegate;
+};
 
 export const useCTokenData = (
   comptrollerAddress?: string,
@@ -47,29 +63,20 @@ export const useCTokenData = (
     if (comptrollerAddress && cTokenAddress) {
       const comptroller = createComptroller(comptrollerAddress, fuse);
 
-      const cErc20Delegate = new fuse.web3.eth.Contract(
-        JSON.parse(
-          fuse.compoundContracts["contracts/CErc20Delegate.sol:CErc20Delegate"]
-            .abi
-        ),
-        cTokenAddress
-      );
+      const cToken = createCToken(fuse, cTokenAddress);
 
       // TODO: Promise.all()
 
-      const reserveFactorMantissa = await cErc20Delegate.methods
+      const adminFeeMantissa = await cToken.methods.adminFeeMantissa().call();
+      const reserveFactorMantissa = await cToken.methods
         .reserveFactorMantissa()
         .call();
-      const adminFeeMantissa = await cErc20Delegate.methods
-        .adminFeeMantissa()
+      const interestRateModelAddress = await cToken.methods
+        .interestRateModel()
         .call();
 
       const { collateralFactorMantissa } = await comptroller.methods
         .markets(cTokenAddress)
-        .call();
-
-      const interestRateModelAddress = await cErc20Delegate.methods
-        .interestRateModel()
         .call();
 
       return {
@@ -115,19 +122,6 @@ export const AssetSettings = ({
   const [interestRateModel, setInterestRateModel] = useState(
     Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
   );
-
-  const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
-
-  // Update values on refetch!
-  useEffect(() => {
-    if (cTokenData) {
-      setCollateralFactor(cTokenData.collateralFactorMantissa / 1e16);
-      setReserveFactor(cTokenData.reserveFactorMantissa / 1e16);
-      setAdminFee(cTokenData.adminFeeMantissa / 1e16);
-
-      setInterestRateModel(cTokenData.interestRateModelAddress);
-    }
-  }, [cTokenData]);
 
   const { data: curves } = useQuery(
     interestRateModel + adminFee + reserveFactor + " irm",
@@ -219,6 +213,80 @@ export const AssetSettings = ({
     closeModal();
   };
 
+  const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
+
+  // Update values on refetch!
+  useEffect(() => {
+    if (cTokenData) {
+      setCollateralFactor(cTokenData.collateralFactorMantissa / 1e16);
+      setReserveFactor(cTokenData.reserveFactorMantissa / 1e16);
+      setAdminFee(cTokenData.adminFeeMantissa / 1e16);
+
+      setInterestRateModel(cTokenData.interestRateModelAddress);
+    }
+  }, [cTokenData]);
+
+  const updateCollateralFactor = async () => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    // 70% -> 0.7 * 1e18
+    const bigCollateralFactor = new BigNumber(collateralFactor)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    await testForComptrollerErrorAndSend(
+      comptroller.methods._setCollateralFactor(
+        cTokenAddress,
+        bigCollateralFactor
+      ),
+      address,
+      ""
+    );
+  };
+
+  const updateReserveFactor = async () => {
+    const cToken = createCToken(fuse, cTokenAddress!);
+
+    // 10% -> 0.1 * 1e18
+    const bigReserveFactor = new BigNumber(reserveFactor)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    await testForCTokenErrorAndSend(
+      cToken.methods._setReserveFactor(bigReserveFactor),
+      address,
+      ""
+    );
+  };
+
+  const updateAdminFee = async () => {
+    const cToken = createCToken(fuse, cTokenAddress!);
+
+    // 5% -> 0.05 * 1e18
+    const bigAdminFee = new BigNumber(adminFee)
+      .dividedBy(100)
+      .multipliedBy(1e18)
+      .toFixed(0);
+
+    await testForCTokenErrorAndSend(
+      cToken.methods._setAdminFee(bigAdminFee),
+      address,
+      ""
+    );
+  };
+
+  const updateInterestRateModel = async () => {
+    const cToken = createCToken(fuse, cTokenAddress!);
+
+    await testForCTokenErrorAndSend(
+      cToken.methods._setInterestRateModel(interestRateModel),
+      address,
+      ""
+    );
+  };
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -245,6 +313,10 @@ export const AssetSettings = ({
           formatValue={formatPercentage}
           max={90}
         />
+
+        {cTokenAddress ? (
+          <SaveButton ml={3} onClick={updateCollateralFactor} />
+        ) : null}
       </ConfigRow>
 
       <ModalDivider />
@@ -267,6 +339,10 @@ export const AssetSettings = ({
           formatValue={formatPercentage}
           max={50}
         />
+
+        {cTokenAddress ? (
+          <SaveButton ml={3} onClick={updateReserveFactor} />
+        ) : null}
       </ConfigRow>
       <ModalDivider />
 
@@ -288,6 +364,8 @@ export const AssetSettings = ({
           formatValue={formatPercentage}
           max={30}
         />
+
+        {cTokenAddress ? <SaveButton ml={3} onClick={updateAdminFee} /> : null}
       </ConfigRow>
 
       <ModalDivider />
@@ -332,6 +410,14 @@ export const AssetSettings = ({
             WhitePaperRateModel
           </option>
         </Select>
+
+        {cTokenAddress ? (
+          <SaveButton
+            height="40px"
+            borderRadius="7px"
+            onClick={updateInterestRateModel}
+          />
+        ) : null}
       </ConfigRow>
 
       <Box

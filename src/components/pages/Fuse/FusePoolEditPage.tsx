@@ -80,7 +80,7 @@ export const useIsUpgradeable = (comptrollerAddress: string) => {
   return data;
 };
 
-async function testForComptrollerErrorAndSend(
+export async function testForComptrollerErrorAndSend(
   txObject: any,
   caller: string,
   failMessage: string
@@ -600,7 +600,7 @@ const ColoredAssetSettings = ({
   );
 };
 
-const SaveButton = ({
+export const SaveButton = ({
   onClick,
   ...others
 }: {
