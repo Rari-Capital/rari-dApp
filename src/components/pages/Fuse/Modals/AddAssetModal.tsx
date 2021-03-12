@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center } from "buttered-chakra";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { DASHBOARD_BOX_PROPS } from "../../../shared/DashboardBox";
@@ -33,20 +33,72 @@ import { useQuery, useQueryCache } from "react-query";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
 import BigNumber from "bignumber.js";
+import { createComptroller } from "../../../../utils/createComptroller";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
+export const useCTokenData = (
+  comptrollerAddress?: string,
+  cTokenAddress?: string
+) => {
+  const { fuse } = useRari();
+
+  const { data } = useQuery(cTokenAddress + " cTokenData", async () => {
+    if (comptrollerAddress && cTokenAddress) {
+      const comptroller = createComptroller(comptrollerAddress, fuse);
+
+      const cErc20Delegate = new fuse.web3.eth.Contract(
+        JSON.parse(
+          fuse.compoundContracts["contracts/CErc20Delegate.sol:CErc20Delegate"]
+            .abi
+        ),
+        cTokenAddress
+      );
+
+      // TODO: Promise.all()
+
+      const reserveFactorMantissa = await cErc20Delegate.methods
+        .reserveFactorMantissa()
+        .call();
+      const adminFeeMantissa = await cErc20Delegate.methods
+        .adminFeeMantissa()
+        .call();
+
+      const { collateralFactorMantissa } = await comptroller.methods
+        .markets(cTokenAddress)
+        .call();
+
+      const interestRateModelAddress = await cErc20Delegate.methods
+        .interestRateModel()
+        .call();
+
+      return {
+        reserveFactorMantissa,
+        adminFeeMantissa,
+        collateralFactorMantissa,
+        interestRateModelAddress,
+      };
+    } else {
+      return null;
+    }
+  });
+
+  return data;
+};
+
 export const AssetSettings = ({
-  tokenData,
-  comptrollerAddress,
-  closeModal,
   poolName,
   poolID,
+  tokenData,
+  comptrollerAddress,
+  cTokenAddress,
+  closeModal,
 }: {
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   tokenData: TokenData;
+  cTokenAddress?: string;
   closeModal: () => any;
 }) => {
   const { t } = useTranslation();
@@ -63,6 +115,19 @@ export const AssetSettings = ({
   const [interestRateModel, setInterestRateModel] = useState(
     Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
   );
+
+  const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
+
+  // Update values on refetch!
+  useEffect(() => {
+    if (cTokenData) {
+      setCollateralFactor(cTokenData.collateralFactorMantissa / 1e16);
+      setReserveFactor(cTokenData.reserveFactorMantissa / 1e16);
+      setAdminFee(cTokenData.adminFeeMantissa / 1e16);
+
+      setInterestRateModel(cTokenData.interestRateModelAddress);
+    }
+  }, [cTokenData]);
 
   const { data: curves } = useQuery(
     interestRateModel + adminFee + reserveFactor + " irm",
@@ -312,23 +377,25 @@ export const AssetSettings = ({
         )}
       </Box>
 
-      <Box px={4} mt={4} width="100%">
-        <Button
-          fontWeight="bold"
-          fontSize="2xl"
-          borderRadius="10px"
-          width="100%"
-          height="70px"
-          color={tokenData.overlayTextColor! ?? "#000"}
-          bg={tokenData.color! ?? "#FFF"}
-          _hover={{ transform: "scale(1.02)" }}
-          _active={{ transform: "scale(0.95)" }}
-          isLoading={isDeploying}
-          onClick={deploy}
-        >
-          {t("Confirm")}
-        </Button>
-      </Box>
+      {cTokenAddress ? null : (
+        <Box px={4} mt={4} width="100%">
+          <Button
+            fontWeight="bold"
+            fontSize="2xl"
+            borderRadius="10px"
+            width="100%"
+            height="70px"
+            color={tokenData.overlayTextColor! ?? "#000"}
+            bg={tokenData.color! ?? "#FFF"}
+            _hover={{ transform: "scale(1.02)" }}
+            _active={{ transform: "scale(0.95)" }}
+            isLoading={isDeploying}
+            onClick={deploy}
+          >
+            {t("Confirm")}
+          </Button>
+        </Box>
+      )}
     </Column>
   );
 };

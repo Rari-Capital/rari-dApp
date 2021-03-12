@@ -23,7 +23,7 @@ import { ModalDivider } from "../../shared/Modal";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
-import AddAssetModal from "./Modals/AddAssetModal";
+import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { CTokenIcon } from "./FusePoolsPage";
@@ -33,9 +33,10 @@ import { WhitelistInfo } from "./FusePoolCreatePage";
 
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
 import BigNumber from "bignumber.js";
+import { useTokenData } from "../../../hooks/useTokenData";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
-const noop = {};
+const noop = () => {};
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -174,6 +175,8 @@ const FusePoolEditPage = React.memo(() => {
                     openAddAssetModal={openAddAssetModal}
                     assets={data.assets}
                     comptrollerAddress={data.comptroller}
+                    poolID={poolId}
+                    poolName={data.name}
                   />
                 ) : (
                   <Column
@@ -293,11 +296,11 @@ const PoolConfiguration = ({
 
   // Update values on refetch!
   useEffect(() => {
-    if (data?.closeFactor && data?.liquidationIncentive) {
+    if (data) {
       setCloseFactor(data.closeFactor / 1e16);
       setLiquidationIncentive(data.liquidationIncentive / 1e16 - 100);
     }
-  }, [data?.closeFactor, data?.liquidationIncentive]);
+  }, [data]);
 
   const updateCloseFactor = async () => {
     // 50% -> 0.5 * 1e18
@@ -491,10 +494,14 @@ const AssetConfiguration = ({
   openAddAssetModal,
   assets,
   comptrollerAddress,
+  poolName,
+  poolID,
 }: {
   openAddAssetModal: () => any;
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
+  poolName: string;
+  poolID: string;
 }) => {
   const isMobile = useIsSemiSmallScreen();
 
@@ -551,14 +558,45 @@ const AssetConfiguration = ({
 
       <ModalDivider />
 
-      {/* <AssetSettings
-        collateralFactor={collateralFactor}
-        setCollateralFactor={setCollateralFactor}
-        reserveFactor={reserveFactor}
-        setReserveFactor={setReserveFactor}
-        color="#DD2D44"
-      /> */}
+      <ColoredAssetSettings
+        comptrollerAddress={comptrollerAddress}
+        tokenAddress={selectedAsset.underlyingToken}
+        cTokenAddress={selectedAsset.cToken}
+        poolName={poolName}
+        poolID={poolID}
+      />
     </Column>
+  );
+};
+
+const ColoredAssetSettings = ({
+  tokenAddress,
+  poolName,
+  poolID,
+  comptrollerAddress,
+  cTokenAddress,
+}: {
+  tokenAddress: string;
+  poolName: string;
+  poolID: string;
+  comptrollerAddress: string;
+  cTokenAddress: string;
+}) => {
+  const tokenData = useTokenData(tokenAddress);
+
+  return tokenData ? (
+    <AssetSettings
+      closeModal={noop}
+      comptrollerAddress={comptrollerAddress}
+      poolName={poolName}
+      poolID={poolID}
+      tokenData={tokenData}
+      cTokenAddress={cTokenAddress}
+    />
+  ) : (
+    <Center expand>
+      <Spinner />
+    </Center>
   );
 };
 
