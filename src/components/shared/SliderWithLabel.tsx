@@ -15,12 +15,14 @@ export const SliderWithLabel = ({
   min,
   max,
   step,
+  isDisabled,
   ...others
 }: {
   min?: number;
   max?: number;
   step?: number;
   value: number;
+  isDisabled?: boolean;
   setValue: (value: number) => any;
   formatValue?: (value: number) => string;
   [key: string]: any;
@@ -38,6 +40,7 @@ export const SliderWithLabel = ({
         min={min ?? 0}
         max={max ?? 100}
         step={step ?? 1}
+        isDisabled={isDisabled}
       >
         <SliderTrack>
           <SliderFilledTrack />

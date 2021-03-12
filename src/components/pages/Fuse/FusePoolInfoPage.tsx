@@ -247,7 +247,7 @@ const OracleAndInterestRates = ({
               })}
             </AvatarGroup>
 
-            <Text mt={3} lineHeight={1}>
+            <Text mt={3} lineHeight={1} textAlign="center">
               {name} (
               {assets.map(({ underlyingSymbol }, index, array) => {
                 return (

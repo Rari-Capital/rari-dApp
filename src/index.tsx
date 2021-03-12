@@ -31,6 +31,7 @@ import { version } from "../package.json";
 export { version };
 
 if (process.env.NODE_ENV === "production") {
+  console.log("Using logrocket...");
   LogRocket.init("eczu2e/rari-capital", {
     console: {
       shouldAggregateConsoleErrors: true,
