@@ -45,41 +45,38 @@ import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
-  //TODO: Promise.all()
-
   const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    const {
-      0: admin,
-      1: upgradeable,
-    } = await fuse.contracts.FusePoolLens.methods
-      .getPoolOwnership(comptrollerAddress)
-      .call();
+    const [
+      { 0: admin, 1: upgradeable },
+      oracle,
+      closeFactor,
+      liquidationIncentive,
+      enforceWhitelist,
+      whitelist,
+    ] = await Promise.all([
+      fuse.contracts.FusePoolLens.methods
+        .getPoolOwnership(comptrollerAddress)
+        .call(),
 
-    const oracle = await fuse.getPriceOracle(
-      await comptroller.methods.oracle().call()
-    );
+      fuse.getPriceOracle(await comptroller.methods.oracle().call()),
 
-    const closeFactor = await comptroller.methods.closeFactorMantissa().call();
+      comptroller.methods.closeFactorMantissa().call(),
 
-    const liquidationIncentive = await comptroller.methods
-      .liquidationIncentiveMantissa()
-      .call();
+      comptroller.methods.liquidationIncentiveMantissa().call(),
+      comptroller.methods.enforceWhitelist().call(),
 
-    const enforceWhitelist = await comptroller.methods
-      .enforceWhitelist()
-      .call();
-
-    const whitelist: string[] = await comptroller.methods.getWhitelist().call();
+      comptroller.methods.getWhitelist().call(),
+    ]);
 
     return {
       admin,
       upgradeable,
       enforceWhitelist,
-      whitelist,
+      whitelist: whitelist as string[],
       isPowerfulAdmin:
         admin.toLowerCase() === address.toLowerCase() && upgradeable,
       oracle,

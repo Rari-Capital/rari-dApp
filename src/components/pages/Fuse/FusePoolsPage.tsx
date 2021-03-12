@@ -77,24 +77,29 @@ const PoolList = () => {
   const { data: _pools } = useQuery(
     address + " fusePoolList" + (isMyPools || isCreatedPools ? filter : ""),
     async () => {
-      const {
-        0: ids,
-        1: fusePools,
-        2: totalSuppliedETH,
-        3: totalBorrowedETH,
-        4: underlyingTokens,
-        5: underlyingSymbols,
-      } = await (isMyPools
-        ? fuse.contracts.FusePoolLens.methods
-            .getPoolsBySupplierWithData(address)
-            .call()
-        : isCreatedPools
-        ? fuse.contracts.FusePoolLens.methods
-            .getPoolsByAccountWithData(address)
-            .call()
-        : fuse.contracts.FusePoolLens.methods.getPublicPoolsWithData().call());
+      const [
+        {
+          0: ids,
+          1: fusePools,
+          2: totalSuppliedETH,
+          3: totalBorrowedETH,
+          4: underlyingTokens,
+          5: underlyingSymbols,
+        },
+        ethPrice,
+      ] = await Promise.all([
+        isMyPools
+          ? fuse.contracts.FusePoolLens.methods
+              .getPoolsBySupplierWithData(address)
+              .call()
+          : isCreatedPools
+          ? fuse.contracts.FusePoolLens.methods
+              .getPoolsByAccountWithData(address)
+              .call()
+          : fuse.contracts.FusePoolLens.methods.getPublicPoolsWithData().call(),
 
-      const ethPrice = rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
+        rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
+      ]);
 
       const merged: {
         id: number;
