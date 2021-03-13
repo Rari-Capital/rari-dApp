@@ -8,7 +8,7 @@ export const handleGenericError = (e: any, toast: (input: any) => any) => {
     message = e.toString();
     LogRocket.captureException(e);
   } else {
-    message = JSON.stringify(e);
+    message = e.message ?? JSON.stringify(e);
     LogRocket.captureException(new Error(message));
   }
 
