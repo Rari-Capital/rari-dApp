@@ -29,6 +29,8 @@ import { useNavigate } from "react-router-dom";
 import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
+import LogRocket from "logrocket";
+import { handleGenericError } from "../../../utils/errorHandling";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -125,40 +127,44 @@ const PoolConfiguration = () => {
 
     let reporter = null;
 
-    const [poolAddress] = await fuse.deployPool(
-      name,
-      isWhitelisted,
-      bigCloseFactor,
-      maxAssets,
-      bigLiquidationIncentive,
-      oracle,
-      { reporter },
-      { from: address },
-      isWhitelisted ? whitelist : null
-    );
+    try {
+      const [poolAddress] = await fuse.deployPool(
+        name,
+        isWhitelisted,
+        bigCloseFactor,
+        maxAssets,
+        bigLiquidationIncentive,
+        oracle,
+        { reporter },
+        { from: address },
+        isWhitelisted ? whitelist : null
+      );
 
-    toast({
-      title: "Your pool has been deployed!",
-      description: "You may now add assets to it.",
-      status: "success",
-      duration: 2000,
-      isClosable: true,
-      position: "top-right",
-    });
+      toast({
+        title: "Your pool has been deployed!",
+        description: "You may now add assets to it.",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
 
-    const event = (
-      await fuse.contracts.FusePoolDirectory.getPastEvents("PoolRegistered", {
-        fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
-        toBlock: "latest",
-      })
-    ).filter(
-      (event) =>
-        event.returnValues.pool.comptroller.toLowerCase() ===
-        poolAddress.toLowerCase()
-    )[0];
+      const event = (
+        await fuse.contracts.FusePoolDirectory.getPastEvents("PoolRegistered", {
+          fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
+          toBlock: "latest",
+        })
+      ).filter(
+        (event) =>
+          event.returnValues.pool.comptroller.toLowerCase() ===
+          poolAddress.toLowerCase()
+      )[0];
 
-    let id = event.returnValues.index;
-    navigate(`/fuse/pool/${id}/edit`);
+      let id = event.returnValues.index;
+      navigate(`/fuse/pool/${id}/edit`);
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   return (

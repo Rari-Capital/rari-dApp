@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Row, Column } from "buttered-chakra";
 
-import LogRocket from "logrocket";
 import {
   Heading,
   Box,
@@ -36,6 +35,7 @@ import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
 
 import { LP_TOKEN_CONTRACT } from "../../../../rari-sdk/governance";
+import { handleGenericError } from "../../../../utils/errorHandling";
 
 interface Props {
   onClose: () => any;
@@ -151,25 +151,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       onClose();
     } catch (e) {
-      let message: string;
-
-      if (e instanceof Error) {
-        message = e.toString();
-        LogRocket.captureException(e);
-      } else {
-        message = JSON.stringify(e);
-        LogRocket.captureException(new Error(message));
-      }
-
-      toast({
-        title: "Error!",
-        description: message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
-
+      handleGenericError(e, toast);
       setUserAction(UserAction.NO_ACTION);
     }
   };

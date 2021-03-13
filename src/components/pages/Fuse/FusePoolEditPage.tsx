@@ -6,6 +6,7 @@ import {
   Switch,
   useDisclosure,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
 import React, { ReactNode, useEffect, useState } from "react";
@@ -34,6 +35,8 @@ import { WhitelistInfo } from "./FusePoolCreatePage";
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
 import BigNumber from "bignumber.js";
 import { useTokenData } from "../../../hooks/useTokenData";
+import LogRocket from "logrocket";
+import { handleGenericError } from "../../../utils/errorHandling";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -89,7 +92,12 @@ export async function testForComptrollerErrorAndSend(
 
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
-    throw new Error(failMessage + " Code: " + ComptrollerErrorCodes[response]);
+    const err = new Error(
+      failMessage + " Code: " + ComptrollerErrorCodes[response]
+    );
+
+    LogRocket.captureException(err);
+    throw err;
   }
 
   return txObject.send({ from: caller });
@@ -223,19 +231,24 @@ const PoolConfiguration = ({
   const { fuse, address } = useRari();
 
   const queryCache = useQueryCache();
+  const toast = useToast();
 
   const data = useExtraPoolInfo(comptrollerAddress);
 
   const changeWhitelistStatus = async (enforce: boolean) => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    await testForComptrollerErrorAndSend(
-      comptroller.methods._setWhitelistEnforcement(enforce),
-      address,
-      ""
-    );
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setWhitelistEnforcement(enforce),
+        address,
+        ""
+      );
 
-    queryCache.refetchQueries();
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const addToWhitelist = async (newUser: string) => {
@@ -243,33 +256,40 @@ const PoolConfiguration = ({
 
     const newList = [...data!.whitelist, newUser];
 
-    await testForComptrollerErrorAndSend(
-      comptroller.methods._setWhitelistStatuses(
-        newList,
-        Array(newList.length).fill(true)
-      ),
-      address,
-      ""
-    );
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setWhitelistStatuses(
+          newList,
+          Array(newList.length).fill(true)
+        ),
+        address,
+        ""
+      );
 
-    queryCache.refetchQueries();
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const removeFromWhitelist = async (removeUser: string) => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
     const whitelist = data!.whitelist;
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setWhitelistStatuses(
+          whitelist,
+          whitelist.map((user) => user !== removeUser)
+        ),
+        address,
+        ""
+      );
 
-    await testForComptrollerErrorAndSend(
-      comptroller.methods._setWhitelistStatuses(
-        whitelist,
-        whitelist.map((user) => user !== removeUser)
-      ),
-      address,
-      ""
-    );
-
-    queryCache.refetchQueries();
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const renounceOwnership = async () => {
@@ -280,15 +300,18 @@ const PoolConfiguration = ({
       comptrollerAddress
     );
 
-    await testForComptrollerErrorAndSend(
-      unitroller.methods._renounceAdminRights(),
-      address,
-      ""
-    );
+    try {
+      // TODO: Revoke admin rights on all the cTokens!
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._renounceAdminRights(),
+        address,
+        ""
+      );
 
-    // TODO: Revoke admin rights on all the cTokens!
-
-    queryCache.refetchQueries();
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const [closeFactor, setCloseFactor] = useState(50);
@@ -311,13 +334,17 @@ const PoolConfiguration = ({
 
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    await testForComptrollerErrorAndSend(
-      comptroller.methods._setCloseFactor(bigCloseFactor),
-      address,
-      ""
-    );
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setCloseFactor(bigCloseFactor),
+        address,
+        ""
+      );
 
-    queryCache.refetchQueries();
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const updateLiquidationIncentive = async () => {
@@ -330,13 +357,17 @@ const PoolConfiguration = ({
 
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
-    await testForComptrollerErrorAndSend(
-      comptroller.methods._setLiquidationIncentive(bigLiquidationIncentive),
-      address,
-      ""
-    );
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setLiquidationIncentive(bigLiquidationIncentive),
+        address,
+        ""
+      );
 
-    queryCache.refetchQueries();
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   return (
@@ -637,7 +668,13 @@ const AddAssetButton = ({
   const isUpgradeable = useIsUpgradeable(comptrollerAddress);
 
   return isUpgradeable ? (
-    <DashboardBox onClick={openAddAssetModal} as="button" py={1} px={2}>
+    <DashboardBox
+      onClick={openAddAssetModal}
+      as="button"
+      py={1}
+      px={2}
+      fontWeight="bold"
+    >
       {t("Add Asset")}
     </DashboardBox>
   ) : null;

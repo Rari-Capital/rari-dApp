@@ -40,6 +40,7 @@ import { useBorrowLimit } from "../../../../../hooks/useBorrowLimit";
 import Fuse from "../../../../../fuse-sdk";
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../../../utils/createComptroller";
+import { handleGenericError } from "../../../../../utils/errorHandling";
 
 interface Props {
   onClose: () => any;
@@ -85,7 +86,10 @@ export async function testForCTokenErrorAndSend(
 
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
-    throw new Error(failMessage + " Code: " + TokenErrorCodes[response]);
+    const err = new Error(failMessage + " Code: " + TokenErrorCodes[response]);
+
+    LogRocket.captureException(err);
+    throw err;
   }
 
   return txObject.send({ from: caller });
@@ -219,15 +223,7 @@ const AmountSelect = ({
 
         return amount.lte(max!.toString());
       } catch (e) {
-        toast({
-          title: "Error!",
-          description: e.toString(),
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-right",
-        });
-
+        handleGenericError(e, toast);
         return false;
       }
     }
@@ -363,31 +359,14 @@ const AmountSelect = ({
       }
 
       queryCache.refetchQueries();
+
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
       await new Promise((resolve) => setTimeout(resolve, 2000));
+
       onClose();
     } catch (e) {
-      console.log(e);
-      let message: string;
-
-      if (e instanceof Error) {
-        message = e.toString();
-        LogRocket.captureException(e);
-      } else {
-        message = JSON.stringify(e);
-        LogRocket.captureException(new Error(message));
-      }
-
-      toast({
-        title: "Error!",
-        description: message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
-
+      handleGenericError(e, toast);
       setUserAction(UserAction.NO_ACTION);
     }
   };
@@ -741,14 +720,7 @@ const TokenNameAndMaxButton = ({
 
       setIsMaxLoading(false);
     } catch (e) {
-      toast({
-        title: "Error!",
-        description: e.toString(),
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
+      handleGenericError(e, toast);
     }
   };
 

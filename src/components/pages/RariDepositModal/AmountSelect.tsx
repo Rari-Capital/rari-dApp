@@ -41,8 +41,8 @@ import {
 } from "../../../hooks/useMaxWithdraw";
 import { AttentionSeeker } from "react-awesome-reveal";
 
-import LogRocket from "logrocket";
 import { HashLoader } from "react-spinners";
+import { handleGenericError } from "../../../utils/errorHandling";
 
 interface Props {
   selectedToken: string;
@@ -295,25 +295,7 @@ const AmountSelect = ({
 
       onClose();
     } catch (e) {
-      let message: string;
-
-      if (e instanceof Error) {
-        message = e.toString();
-        LogRocket.captureException(e);
-      } else {
-        message = JSON.stringify(e);
-        LogRocket.captureException(new Error(message));
-      }
-
-      toast({
-        title: "Error!",
-        description: message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
-
+      handleGenericError(e, toast);
       setUserAction(UserAction.NO_ACTION);
     }
   };

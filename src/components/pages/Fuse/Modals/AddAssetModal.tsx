@@ -40,6 +40,8 @@ import BigNumber from "bignumber.js";
 import { createComptroller } from "../../../../utils/createComptroller";
 import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 
+import { handleGenericError } from "../../../../utils/errorHandling";
+
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
 const createCToken = (fuse: Fuse, cTokenAddress: string) => {
@@ -187,25 +189,23 @@ export const AssetSettings = ({
         bigAdminFee,
         { from: address }
       );
-    } catch (e) {
+
+      queryCache.refetchQueries();
+      // Wait 2 seconds for refetch and then close modal.
+      // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       toast({
-        title: "Error!",
-        description: e.toString(),
-        status: "error",
-        duration: 9000,
+        title: "You have successfully added an asset to this pool!",
+        description: "You may now lend and borrow with this asset.",
+        status: "success",
+        duration: 2000,
         isClosable: true,
         position: "top-right",
       });
-
-      closeModal();
-
-      return;
+    } catch (e) {
+      handleGenericError(e, toast);
     }
-
-    queryCache.refetchQueries();
-    // Wait 2 seconds for refetch and then close modal.
-    // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
-    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     closeModal();
   };
@@ -232,14 +232,20 @@ export const AssetSettings = ({
       .multipliedBy(1e18)
       .toFixed(0);
 
-    await testForComptrollerErrorAndSend(
-      comptroller.methods._setCollateralFactor(
-        cTokenAddress,
-        bigCollateralFactor
-      ),
-      address,
-      ""
-    );
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setCollateralFactor(
+          cTokenAddress,
+          bigCollateralFactor
+        ),
+        address,
+        ""
+      );
+
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const updateReserveFactor = async () => {
@@ -250,12 +256,17 @@ export const AssetSettings = ({
       .dividedBy(100)
       .multipliedBy(1e18)
       .toFixed(0);
+    try {
+      await testForCTokenErrorAndSend(
+        cToken.methods._setReserveFactor(bigReserveFactor),
+        address,
+        ""
+      );
 
-    await testForCTokenErrorAndSend(
-      cToken.methods._setReserveFactor(bigReserveFactor),
-      address,
-      ""
-    );
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const updateAdminFee = async () => {
@@ -267,21 +278,33 @@ export const AssetSettings = ({
       .multipliedBy(1e18)
       .toFixed(0);
 
-    await testForCTokenErrorAndSend(
-      cToken.methods._setAdminFee(bigAdminFee),
-      address,
-      ""
-    );
+    try {
+      await testForCTokenErrorAndSend(
+        cToken.methods._setAdminFee(bigAdminFee),
+        address,
+        ""
+      );
+
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   const updateInterestRateModel = async () => {
     const cToken = createCToken(fuse, cTokenAddress!);
 
-    await testForCTokenErrorAndSend(
-      cToken.methods._setInterestRateModel(interestRateModel),
-      address,
-      ""
-    );
+    try {
+      await testForCTokenErrorAndSend(
+        cToken.methods._setInterestRateModel(interestRateModel),
+        address,
+        ""
+      );
+
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
   };
 
   return (

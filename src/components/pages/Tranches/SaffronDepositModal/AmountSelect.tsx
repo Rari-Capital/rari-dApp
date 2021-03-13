@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Row, Column } from "buttered-chakra";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
-import LogRocket from "logrocket";
 import {
   Heading,
   Box,
@@ -40,6 +39,7 @@ import {
 
 import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
 import { Token } from "rari-tokens-generator";
+import { handleGenericError } from "../../../../utils/errorHandling";
 
 function noop() {}
 
@@ -293,25 +293,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       onClose();
     } catch (e) {
-      let message: string;
-
-      if (e instanceof Error) {
-        message = e.toString();
-        LogRocket.captureException(e);
-      } else {
-        message = JSON.stringify(e);
-        LogRocket.captureException(new Error(message));
-      }
-
-      toast({
-        title: "Error!",
-        description: message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
-
+      handleGenericError(e, toast);
       setUserAction(UserAction.NO_ACTION);
     }
   };
