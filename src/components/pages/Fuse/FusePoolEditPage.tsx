@@ -317,11 +317,21 @@ const PoolConfiguration = ({
   const [closeFactor, setCloseFactor] = useState(50);
   const [liquidationIncentive, setLiquidationIncentive] = useState(8);
 
+  const scaleCloseFactor = (_closeFactor: number) => {
+    return _closeFactor / 1e16;
+  };
+
+  const scaleLiquidationIncentive = (_liquidationIncentive: number) => {
+    return _liquidationIncentive / 1e16 - 100;
+  };
+
   // Update values on refetch!
   useEffect(() => {
     if (data) {
-      setCloseFactor(data.closeFactor / 1e16);
-      setLiquidationIncentive(data.liquidationIncentive / 1e16 - 100);
+      setCloseFactor(scaleCloseFactor(data.closeFactor));
+      setLiquidationIncentive(
+        scaleLiquidationIncentive(data.liquidationIncentive)
+      );
     }
   }, [data]);
 
@@ -475,8 +485,12 @@ const PoolConfiguration = ({
 
             <ModalDivider />
 
-            <ConfigRow>
+            <ConfigRow height="35px">
               <Text fontWeight="bold">{t("Close Factor")}:</Text>
+
+              {data && scaleCloseFactor(data.closeFactor) !== closeFactor ? (
+                <SaveButton onClick={updateCloseFactor} />
+              ) : null}
 
               <SliderWithLabel
                 ml="auto"
@@ -486,16 +500,18 @@ const PoolConfiguration = ({
                 min={5}
                 max={90}
               />
-
-              {data.upgradeable ? (
-                <SaveButton onClick={updateCloseFactor} />
-              ) : null}
             </ConfigRow>
 
             <ModalDivider />
 
-            <ConfigRow>
+            <ConfigRow height="35px">
               <Text fontWeight="bold">{t("Liquidation Incentive")}:</Text>
+
+              {data &&
+              scaleLiquidationIncentive(data.liquidationIncentive) !==
+                liquidationIncentive ? (
+                <SaveButton onClick={updateLiquidationIncentive} />
+              ) : null}
 
               <SliderWithLabel
                 ml="auto"
@@ -505,10 +521,6 @@ const PoolConfiguration = ({
                 min={0}
                 max={50}
               />
-
-              {data.upgradeable ? (
-                <SaveButton onClick={updateLiquidationIncentive} />
-              ) : null}
             </ConfigRow>
           </Column>
         </Column>

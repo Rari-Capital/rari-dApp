@@ -118,6 +118,18 @@ export const AssetSettings = ({
   const [reserveFactor, setReserveFactor] = useState(10);
   const [adminFee, setAdminFee] = useState(5);
 
+  const scaleCollateralFactor = (_collateralFactor: number) => {
+    return _collateralFactor / 1e16;
+  };
+
+  const scaleReserveFactor = (_reserveFactor: number) => {
+    return _reserveFactor / 1e16;
+  };
+
+  const scaleAdminFee = (_adminFee: number) => {
+    return _adminFee / 1e16;
+  };
+
   const [interestRateModel, setInterestRateModel] = useState(
     Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
   );
@@ -203,11 +215,11 @@ export const AssetSettings = ({
         isClosable: true,
         position: "top-right",
       });
+
+      closeModal();
     } catch (e) {
       handleGenericError(e, toast);
     }
-
-    closeModal();
   };
 
   const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
@@ -315,7 +327,7 @@ export const AssetSettings = ({
       width="100%"
       height="100%"
     >
-      <ConfigRow>
+      <ConfigRow height="35px">
         <SimpleTooltip
           label={t(
             "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset."
@@ -326,6 +338,12 @@ export const AssetSettings = ({
           </Text>
         </SimpleTooltip>
 
+        {cTokenData &&
+        collateralFactor !==
+          scaleCollateralFactor(cTokenData.collateralFactorMantissa) ? (
+          <SaveButton ml={3} onClick={updateCollateralFactor} />
+        ) : null}
+
         <SliderWithLabel
           ml="auto"
           value={collateralFactor}
@@ -333,15 +351,11 @@ export const AssetSettings = ({
           formatValue={formatPercentage}
           max={90}
         />
-
-        {cTokenAddress ? (
-          <SaveButton ml={3} onClick={updateCollateralFactor} />
-        ) : null}
       </ConfigRow>
 
       <ModalDivider />
 
-      <ConfigRow>
+      <ConfigRow height="35px">
         <SimpleTooltip
           label={t(
             "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction."
@@ -352,6 +366,12 @@ export const AssetSettings = ({
           </Text>
         </SimpleTooltip>
 
+        {cTokenData &&
+        reserveFactor !==
+          scaleReserveFactor(cTokenData.reserveFactorMantissa) ? (
+          <SaveButton ml={3} onClick={updateReserveFactor} />
+        ) : null}
+
         <SliderWithLabel
           ml="auto"
           value={reserveFactor}
@@ -359,14 +379,10 @@ export const AssetSettings = ({
           formatValue={formatPercentage}
           max={50}
         />
-
-        {cTokenAddress ? (
-          <SaveButton ml={3} onClick={updateReserveFactor} />
-        ) : null}
       </ConfigRow>
       <ModalDivider />
 
-      <ConfigRow>
+      <ConfigRow height="35px">
         <SimpleTooltip
           label={t(
             "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee."
@@ -377,6 +393,11 @@ export const AssetSettings = ({
           </Text>
         </SimpleTooltip>
 
+        {cTokenData &&
+        adminFee !== scaleAdminFee(cTokenData.adminFeeMantissa) ? (
+          <SaveButton ml={3} onClick={updateAdminFee} />
+        ) : null}
+
         <SliderWithLabel
           ml="auto"
           value={adminFee}
@@ -384,8 +405,6 @@ export const AssetSettings = ({
           formatValue={formatPercentage}
           max={30}
         />
-
-        {cTokenAddress ? <SaveButton ml={3} onClick={updateAdminFee} /> : null}
       </ConfigRow>
 
       <ModalDivider />
@@ -431,7 +450,8 @@ export const AssetSettings = ({
           </option>
         </Select>
 
-        {cTokenAddress ? (
+        {cTokenData &&
+        cTokenData.interestRateModelAddress !== interestRateModel ? (
           <SaveButton
             height="40px"
             borderRadius="7px"
