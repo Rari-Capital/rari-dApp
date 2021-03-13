@@ -46,7 +46,8 @@ export default class Fuse {
     PreferredPriceOracle: "0x8a0ab5a52ddcf13a9d5b68f7961289f5e08ebc5f", // TODO: Set correct mainnet address after deployment
     ChainlinkPriceOracle: "0x1ca334e4bceb0c6d95733d11ed0e9b52caf66807", // TODO: Set correct mainnet address after deployment
     UniswapView: "0xee8163c19f2ff59410edc6494505c129bddd3851", // TODO: Set correct mainnet address after deployment
-    Keep3rPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    Keep3rPriceOracle: "0xe43442bCac98a68C1Ae1DDa08307f8cB5b136355", // TODO: Set correct mainnet address after deployment
+    Keep3rSushiSwapPriceOracle: "0x4570ef886C3CA0B382739054e18192E2dA979015", // TODO: Set correct mainnet address after deployment
     UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
