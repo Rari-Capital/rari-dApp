@@ -62,22 +62,19 @@ export const useCTokenData = (
   const { data } = useQuery(cTokenAddress + " cTokenData", async () => {
     if (comptrollerAddress && cTokenAddress) {
       const comptroller = createComptroller(comptrollerAddress, fuse);
-
       const cToken = createCToken(fuse, cTokenAddress);
 
-      // TODO: Promise.all()
-
-      const adminFeeMantissa = await cToken.methods.adminFeeMantissa().call();
-      const reserveFactorMantissa = await cToken.methods
-        .reserveFactorMantissa()
-        .call();
-      const interestRateModelAddress = await cToken.methods
-        .interestRateModel()
-        .call();
-
-      const { collateralFactorMantissa } = await comptroller.methods
-        .markets(cTokenAddress)
-        .call();
+      const [
+        adminFeeMantissa,
+        reserveFactorMantissa,
+        interestRateModelAddress,
+        { collateralFactorMantissa },
+      ] = await Promise.all([
+        cToken.methods.adminFeeMantissa().call(),
+        cToken.methods.reserveFactorMantissa().call(),
+        cToken.methods.interestRateModel().call(),
+        comptroller.methods.markets(cTokenAddress).call(),
+      ]);
 
       return {
         reserveFactorMantissa,

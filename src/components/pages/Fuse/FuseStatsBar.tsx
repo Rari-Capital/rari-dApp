@@ -19,16 +19,11 @@ const FuseStatsBar = () => {
   const { data: totalBorrowAndSupply } = useQuery(
     address + " totalBorrowAndSupply",
     async () => {
-      const {
-        0: supplyETH,
-        1: borrowETH,
-      } = await fuse.contracts.FusePoolLens.methods
-        .getUserSummary(address)
-        .call();
+      const [{ 0: supplyETH, 1: borrowETH }, ethPrice] = await Promise.all([
+        fuse.contracts.FusePoolLens.methods.getUserSummary(address).call(),
 
-      const ethPrice = rari.web3.utils.fromWei(
-        await rari.getEthUsdPriceBN()
-      ) as any;
+        rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()) as any,
+      ]);
 
       return {
         totalSuppliedUSD: (supplyETH / 1e18) * ethPrice,
