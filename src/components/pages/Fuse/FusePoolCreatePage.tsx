@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
-import LogRocket from "logrocket";
+
 import { handleGenericError } from "../../../utils/errorHandling";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
