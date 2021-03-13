@@ -291,7 +291,9 @@ describe('ChainlinkPriceOracle', function() {
       { name: "Fuse USDC", symbol: "fUSDC", underlying: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
       { name: "Fuse USDT", symbol: "fUSDT", underlying: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
       { name: "Fuse DAI", symbol: "fDAI", underlying: "0x6b175474e89094c44da98b954eedeac495271d0f" },
-      { name: "Fuse MLN", symbol: "fMLN", underlying: "0xec67005c4e498ec7f55e092bd1d35cbc47c91892" }
+      { name: "Fuse MLN", symbol: "fMLN", underlying: "0xec67005c4e498ec7f55e092bd1d35cbc47c91892" },
+      { name: "Fuse sTSLA", symbol: "fsTSLA", underlying: "0x918dA91Ccbc32B7a6A0cc4eCd5987bbab6E31e6D" },
+      { name: "Fuse DIGG", symbol: "fDIGG", underlying: "0x798D1bE841a82a273720CE31c822C61a67a601C3" }
     ]) {
       assetAddresses[conf.symbol] = await deployAsset({ comptroller: poolAddress, ...conf }, undefined, undefined, undefined, { from: accounts[0], gasPrice: "0" }, true);
     }
