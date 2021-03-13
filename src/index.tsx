@@ -30,14 +30,14 @@ import { ErrorBoundary } from "react-error-boundary";
 import { version } from "../package.json";
 export { version };
 
-// if (process.env.NODE_ENV === "production") {
-//   LogRocket.init("eczu2e/rari-capital", {
-//     console: {
-//       shouldAggregateConsoleErrors: true,
-//     },
-//     release: version,
-//   });
-// }
+if (process.env.NODE_ENV === "production") {
+  LogRocket.init("eczu2e/rari-capital", {
+    console: {
+      shouldAggregateConsoleErrors: true,
+    },
+    release: version,
+  });
+}
 
 console.log("Version " + version);
 
