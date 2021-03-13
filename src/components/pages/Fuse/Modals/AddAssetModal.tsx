@@ -451,7 +451,8 @@ export const AssetSettings = ({
         </Select>
 
         {cTokenData &&
-        cTokenData.interestRateModelAddress !== interestRateModel ? (
+        cTokenData.interestRateModelAddress.toLowerCase() !==
+          interestRateModel.toLowerCase() ? (
           <SaveButton
             height="40px"
             borderRadius="7px"
