@@ -12,7 +12,10 @@ export const fetchTokenBalance = async (
 ) => {
   let stringBalance;
 
-  if (tokenAddress === ETH_TOKEN_DATA.address) {
+  if (
+    tokenAddress === ETH_TOKEN_DATA.address ||
+    tokenAddress === "NO_ADDRESS_HERE_USE_WETH_FOR_ADDRESS"
+  ) {
     stringBalance = await rari.web3.eth.getBalance(address);
   } else {
     const contract = new rari.web3.eth.Contract(ERC20ABI as any, tokenAddress);
