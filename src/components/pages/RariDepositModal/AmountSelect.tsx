@@ -454,20 +454,22 @@ const TokenNameAndMaxButton = ({
       );
 
       if (token.symbol === "ETH") {
-        const ethPriceBN = await rari.getEthUsdPriceBN();
+        // Subtract gas from ETH max
 
-        const gasAnd0xFeesInUSD = 23;
+        // Ex: 100 (in GWEI)
+        const { standard } = await fetch(
+          "https://gasprice.poa.network"
+        ).then((res) => res.json());
 
-        // Subtract gasAnd0xFeesInUSD worth of ETH.
-        maxBN = balance.sub(
-          rari.web3.utils.toBN(
-            // @ts-ignore
-            new BigNumber(gasAnd0xFeesInUSD * 1e18)
-              .div(ethPriceBN.toString())
-              .multipliedBy(1e18)
-              .decimalPlaces(0)
-          )
+        const gasPrice = rari.web3.utils.toBN(
+          // @ts-ignore For some reason it's returning a string not a BN
+          rari.web3.utils.toWei(standard.toString(), "gwei")
         );
+
+        const gasWEI = rari.web3.utils.toBN(500000).mul(gasPrice);
+
+        // Subtract the ETH that is needed for gas.
+        maxBN = balance.sub(gasWEI);
       } else {
         maxBN = balance;
       }

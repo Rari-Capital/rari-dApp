@@ -23,7 +23,7 @@ import { HashLoader } from "react-spinners";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../../../context/RariContext";
 import { fetchTokenBalance } from "../../../../../hooks/useTokenBalance";
-import { smallUsdFormatter } from "../../../../../utils/bigUtils";
+import { BN, smallUsdFormatter } from "../../../../../utils/bigUtils";
 
 import DashboardBox from "../../../../shared/DashboardBox";
 import { ModalDivider } from "../../../../shared/Modal";
@@ -326,23 +326,79 @@ const AmountSelect = ({
         }
 
         if (mode === Mode.SUPPLY) {
-          await (isETH
-            ? cToken.methods.mint().send({ from: address, value: amountBN })
-            : testForCTokenErrorAndSend(
-                cToken.methods.mint(amountBN),
-                address,
-                "Cannot deposit this amount right now!"
-              ));
-        } else {
-          await (isETH
-            ? cToken.methods
-                .repayBorrow()
-                .send({ from: address, value: amountBN })
-            : testForCTokenErrorAndSend(
-                cToken.methods.repayBorrow(isRepayingMax ? max : amountBN),
-                address,
-                "Cannot repay this amount right now!"
-              ));
+          const call = cToken.methods.mint();
+
+          if (isETH) {
+            if (
+              // If they are supplying their whole balance:
+              amountBN.toString() === (await fuse.web3.eth.getBalance(address))
+            ) {
+              // Subtract gas for max ETH
+
+              const { gasWEI, gasPrice, estimatedGas } = await fetchGasForCall(
+                call,
+                amountBN,
+                fuse,
+                address
+              );
+
+              await call.send({
+                from: address,
+                value: amountBN.sub(gasWEI),
+
+                gasPrice,
+                gas: estimatedGas,
+              });
+            } else {
+              await call.send({
+                from: address,
+                value: amountBN,
+              });
+            }
+          } else {
+            await testForCTokenErrorAndSend(
+              cToken.methods.mint(amountBN),
+              address,
+              "Cannot deposit this amount right now!"
+            );
+          }
+        } else if (mode === Mode.REPAY) {
+          if (isETH) {
+            const call = cToken.methods.repayBorrow();
+
+            if (
+              // If they are repaying their whole balance:
+              amountBN.toString() === (await fuse.web3.eth.getBalance(address))
+            ) {
+              // Subtract gas for max ETH
+
+              const { gasWEI, gasPrice, estimatedGas } = await fetchGasForCall(
+                call,
+                amountBN,
+                fuse,
+                address
+              );
+
+              await call.send({
+                from: address,
+                value: amountBN.sub(gasWEI),
+
+                gasPrice,
+                gas: estimatedGas,
+              });
+            } else {
+              await call.send({
+                from: address,
+                value: amountBN,
+              });
+            }
+          } else {
+            await testForCTokenErrorAndSend(
+              cToken.methods.repayBorrow(isRepayingMax ? max : amountBN),
+              address,
+              "Cannot repay this amount right now!"
+            );
+          }
         }
       } else if (mode === Mode.BORROW) {
         await testForCTokenErrorAndSend(
