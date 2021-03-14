@@ -359,9 +359,9 @@ const AmountSelect = ({
         }
 
         if (mode === Mode.SUPPLY) {
-          const call = cToken.methods.mint();
-
           if (isETH) {
+            const call = cToken.methods.mint();
+
             if (
               // If they are supplying their whole balance:
               amountBN.toString() === (await fuse.web3.eth.getBalance(address))
