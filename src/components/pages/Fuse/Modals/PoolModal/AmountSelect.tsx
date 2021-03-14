@@ -95,6 +95,39 @@ export async function testForCTokenErrorAndSend(
   return txObject.send({ from: caller });
 }
 
+const fetchGasForCall = async (
+  call: any,
+  amountBN: BN,
+  fuse: Fuse,
+  address: string
+) => {
+  const estimatedGas = fuse.web3.utils.toBN(
+    (
+      (await call.estimateGas({
+        from: address,
+        // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
+        value: amountBN.div(fuse.web3.utils.toBN(2)),
+      })) *
+      // 50% more gas for limit:
+      1.5
+    ).toFixed(0)
+  );
+
+  // Ex: 100 (in GWEI)
+  const { standard } = await fetch("https://gasprice.poa.network").then((res) =>
+    res.json()
+  );
+
+  const gasPrice = fuse.web3.utils.toBN(
+    // @ts-ignore For some reason it's returning a string not a BN
+    fuse.web3.utils.toWei(standard.toString(), "gwei")
+  );
+
+  const gasWEI = estimatedGas.mul(gasPrice);
+
+  return { gasWEI, gasPrice, estimatedGas };
+};
+
 async function fetchMaxAmount(
   mode: Mode,
   fuse: Fuse,
