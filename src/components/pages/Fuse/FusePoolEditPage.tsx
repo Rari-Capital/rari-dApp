@@ -127,6 +127,7 @@ const FusePoolEditPage = React.memo(() => {
       {data ? (
         <AddAssetModal
           comptrollerAddress={data.comptroller}
+          existingAssets={data.assets}
           poolName={data.name}
           poolID={poolId}
           isOpen={isAddAssetModalOpen}

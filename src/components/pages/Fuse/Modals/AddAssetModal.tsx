@@ -16,10 +16,16 @@ import { Column, Center } from "buttered-chakra";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { DASHBOARD_BOX_PROPS } from "../../../shared/DashboardBox";
+import DashboardBox, {
+  DASHBOARD_BOX_PROPS,
+} from "../../../shared/DashboardBox";
 import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
 
-import { TokenData, useTokenData } from "../../../../hooks/useTokenData";
+import {
+  ETH_TOKEN_DATA,
+  TokenData,
+  useTokenData,
+} from "../../../../hooks/useTokenData";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 import { useRari } from "../../../../context/RariContext";
 import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
@@ -41,6 +47,7 @@ import { createComptroller } from "../../../../utils/createComptroller";
 import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 
 import { handleGenericError } from "../../../../utils/errorHandling";
+import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -98,13 +105,19 @@ export const AssetSettings = ({
   tokenData,
   comptrollerAddress,
   cTokenAddress,
+  existingAssets,
   closeModal,
 }: {
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   tokenData: TokenData;
+
+  // Only for editing mode
   cTokenAddress?: string;
+
+  // Only for add asset modal
+  existingAssets?: USDPricedFuseAsset[];
   closeModal: () => any;
 }) => {
   const { t } = useTranslation();
@@ -159,6 +172,24 @@ export const AssetSettings = ({
   );
 
   const deploy = async () => {
+    // If pool already contains this asset:
+    if (
+      existingAssets!.some(
+        (asset) => asset.underlyingToken === tokenData.address
+      )
+    ) {
+      toast({
+        title: "Error!",
+        description: "You have already added this asset to this pool.",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      return;
+    }
+
     setIsDeploying(true);
 
     // 50% -> 0.5 * 1e18
@@ -533,12 +564,14 @@ const AddAssetModal = ({
   poolID,
   isOpen,
   onClose,
+  existingAssets,
 }: {
   comptrollerAddress: string;
   poolName: string;
   poolID: string;
   isOpen: boolean;
   onClose: () => any;
+  existingAssets: USDPricedFuseAsset[];
 }) => {
   const { t } = useTranslation();
 
@@ -594,10 +627,10 @@ const AddAssetModal = ({
 
           <Center px={4} mt={isEmpty ? 4 : 0} width="100%">
             <Input
-              width="375px"
+              width="100%"
               textAlign="center"
               placeholder={t(
-                "Token Address: 0x00000000000000000000000000000000000000"
+                "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
               )}
               height="40px"
               variant="filled"
@@ -613,6 +646,25 @@ const AddAssetModal = ({
               _hover={{ bg: "#282727" }}
               bg="#282727"
             />
+
+            {!existingAssets.some(
+              // If ETH hasn't been added:
+              (asset) => asset.underlyingToken === ETH_TOKEN_DATA.address
+            ) ? (
+              <DashboardBox
+                flexShrink={0}
+                as="button"
+                ml={2}
+                height="40px"
+                borderRadius="10px"
+                px={2}
+                fontSize="sm"
+                fontWeight="bold"
+                onClick={() => _setTokenAddress(ETH_TOKEN_DATA.address)}
+              >
+                <Center expand>ETH</Center>
+              </DashboardBox>
+            ) : null}
           </Center>
 
           {tokenData?.symbol ? (
@@ -624,6 +676,7 @@ const AddAssetModal = ({
                 closeModal={onClose}
                 poolName={poolName}
                 poolID={poolID}
+                existingAssets={existingAssets}
               />
             </>
           ) : null}
