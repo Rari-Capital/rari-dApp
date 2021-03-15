@@ -243,7 +243,9 @@ const SupplyList = ({
             );
           })
         ) : (
-          <Center expand>{t("There are no assets in this pool.")}</Center>
+          <Center expand my={8}>
+            {t("There are no assets in this pool.")}
+          </Center>
         )}
       </Column>
     </Column>
@@ -503,7 +505,9 @@ const BorrowList = ({
             );
           })
         ) : (
-          <Center expand>{t("There are no assets in this pool.")}</Center>
+          <Center expand my={8}>
+            {t("There are no assets in this pool.")}
+          </Center>
         )}
       </Column>
     </Column>
