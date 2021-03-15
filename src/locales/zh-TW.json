@@ -140,7 +140,6 @@
   "Want to borrow?": "想藉嗎？",
   "Want to repay?": "要還款嗎？",
   "Supply Balance:": "供應平衡",
-  "Token Address: 0x00000000000000000000000000000000000000": "令牌地址：0x00000000000000000000000000000000000000000000",
   "Enter a valid amount to supply.": "輸入要供應的有效數量。",
   "Enter a valid amount to borrow.": "輸入有效的借入金額。",
   "Enter a valid amount to repay.": "輸入有效的還款額。",
@@ -223,5 +222,6 @@
   "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction.": "在给定资产上产生的利息部分，将其路由到该资产的储备库。 储备池可保护贷方免受借款人违约和清算故障的影响。",
   "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.": "在给定资产上生成的利息部分，作为费用被路由到该资产的管理地址。",
   "Admin Fee": "管理费",
-  "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.": "为资产选择的利率模型定义了不同利用率下借款人和供应商的利率。"
+  "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.": "为资产选择的利率模型定义了不同利用率下借款人和供应商的利率。",
+  "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }

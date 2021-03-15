@@ -140,7 +140,6 @@
   "Connect with your {{provider}} account": "Connect with your {{provider}} account",
   "Supply Balance:": "Supply Balance:",
   "Isolated money markets you can use today that will power the decentralized future of tomorrow.": "Isolated money markets you can use today that will power the decentralized future of tomorrow.",
-  "Token Address: 0x00000000000000000000000000000000000000": "Token Address: 0x00000000000000000000000000000000000000",
   "Enter a valid amount to supply.": "Enter a valid amount to supply.",
   "Enter a valid amount to borrow.": "Enter a valid amount to borrow.",
   "Enter a valid amount to repay.": "Enter a valid amount to repay.",
@@ -223,5 +222,6 @@
   "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction.": "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction.",
   "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.": "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.",
   "Admin Fee": "Admin Fee",
-  "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.": "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels."
+  "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.": "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.",
+  "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
