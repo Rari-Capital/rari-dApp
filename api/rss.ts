@@ -304,7 +304,7 @@ export default async (request: NowRequest, response: NowResponse) => {
 
       // Returns a percentage in the range of 45% -> 90% (where 90% is 0% and 45% is 100%)
       return -1 * (1 / 45) * avgCollatFactor + 2;
-    }, 15);
+    }, 10);
 
     const reserveFactor = await weightedCalculation(async () => {
       const avgReserveFactor = assets.reduce(
@@ -313,7 +313,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       );
 
       return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 22;
-    }, 15);
+    }, 10);
 
     const utilization = await weightedCalculation(async () => {
       for (let i = 0; i < assets.length; i++) {
@@ -331,7 +331,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       }
 
       return 1;
-    }, 15);
+    }, 10);
 
     let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
     let totalRSS = 0;
@@ -375,7 +375,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         .call();
 
       return upgradeable ? 0 : 1;
-    }, 15);
+    }, 10);
 
     const mustPass = await weightedCalculation(async () => {
       const comptrollerContract = new fuse.web3.eth.Contract(
@@ -410,7 +410,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       }
 
       return 1;
-    }, 15);
+    }, 20);
 
     response.setHeader("Cache-Control", "s-maxage=604800");
     response.json({
