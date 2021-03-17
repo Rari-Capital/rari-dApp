@@ -1,6 +1,10 @@
 import Fuse from "../fuse-sdk";
 import Rari from "../rari-sdk/index";
 
+// @ts-ignore
+import Filter from "bad-words";
+const filter = new Filter();
+
 export function filterOnlyObjectProperties(obj: any) {
   return Object.fromEntries(
     Object.entries(obj).filter(([k]) => isNaN(k as any))
@@ -53,11 +57,14 @@ export const fetchFusePoolData = async (
 ) => {
   const {
     comptroller,
-    name,
+    name: _unfiliteredName,
     isPrivate,
   } = await fuse.contracts.FusePoolDirectory.methods
     .pools(poolId)
     .call({ from: address });
+
+  // Remove any profanity from the pool name
+  const name = filter.clean(_unfiliteredName);
 
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
