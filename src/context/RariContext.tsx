@@ -15,7 +15,6 @@ import Rari from "../rari-sdk/index";
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
 import Fuse from "../fuse-sdk/src";
-import { Center } from "buttered-chakra";
 
 function getWeb3Provider() {
   if (window.ethereum) {
@@ -117,6 +116,7 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
 
 export interface RariContextData {
   rari: Rari;
+  fuse: Fuse;
   web3ModalProvider: any | null;
   isAuthed: boolean;
   login: () => Promise<any>;
@@ -133,8 +133,6 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [wrongNetwork, setIsWrongNetwork] = useState(false);
-
   const [rari, setRari] = useState<Rari>(() => new Rari(getWeb3Provider()));
   const [fuse, setFuse] = useState<Fuse>(() => new Fuse(getWeb3Provider()));
 
@@ -145,6 +143,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     Promise.all([rari.web3.eth.net.getId(), rari.web3.eth.getChainId()]).then(
       ([netId, chainId]) => {
         console.log("Network ID: " + netId, "Chain ID: " + chainId);
+
+        if (process.env.NODE_ENV === "development") {
+          return;
+        }
+
         if (netId !== 1 || chainId !== 1) {
           setIsWrongNetwork(true);
 
@@ -175,8 +178,10 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
+      const fuseInstance = new Fuse(modalProvider);
 
       setRari(rariInstance);
+      setFuse(fuseInstance);
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         console.log("Address array: ", addresses);
@@ -247,12 +252,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       web3ModalProvider,
       rari,
+      fuse,
       isAuthed: address !== EmptyAddress,
       login,
       logout,
       address,
     }),
-    [rari, web3ModalProvider, login, logout, address]
+    [rari, web3ModalProvider, login, logout, address, fuse]
   );
 
   return wrongNetwork ? (

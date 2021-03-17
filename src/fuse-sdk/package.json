@@ -1,0 +1,25 @@
+{
+  "name": "@rari-capital/fuse-sdk",
+  "version": "0.2.0",
+  "description": "JavaScript SDK for easy implementation of Fuse by Rari Capital.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rari-Capital/fuse-sdk.git"
+  },
+  "author": "David Lucid <david@rari.capital>",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/Rari-Capital/fuse-sdk/issues"
+  },
+  "homepage": "https://github.com/Rari-Capital/fuse-sdk#readme",
+  "dependencies": {
+    "axios": "^0.20.0"
+  },
+  "peerDependencies": {
+    "web3": "*"
+  }
+}

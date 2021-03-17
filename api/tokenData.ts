@@ -85,11 +85,22 @@ export default async (request: NowRequest, response: NowResponse) => {
     return;
   }
 
+  let logoURL;
+
+  // Fetch the logo from trustwallet if possible!
+  const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+  const trustWalletLogoResponse = await fetch(trustWalletURL);
+  if (trustWalletLogoResponse.ok) {
+    logoURL = trustWalletURL;
+  } else {
+    logoURL = small;
+  }
+
   response.setHeader("Cache-Control", "max-age=25920, s-maxage=259200");
   response.json({
     ...basicTokenInfo,
     color: color.Vibrant.getHex(),
     overlayTextColor: color.Vibrant.getTitleTextColor(),
-    logoURL: small,
+    logoURL,
   });
 };
