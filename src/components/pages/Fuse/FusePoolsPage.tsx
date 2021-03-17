@@ -19,7 +19,10 @@ import FuseTabBar, { useFilter } from "./FuseTabBar";
 import { useQuery } from "react-query";
 import { useTokenData } from "../../../hooks/useTokenData";
 import Fuse from "fuse.js";
-import { filterOnlyObjectProperties } from "../../../utils/fetchFusePoolData";
+import {
+  filter as wordFilter,
+  filterOnlyObjectProperties,
+} from "../../../utils/fetchFusePoolData";
 import { letterScore, usePoolRSS } from "../../../hooks/useRSS";
 
 export interface FusePool {
@@ -205,7 +208,7 @@ const PoolList = () => {
               <PoolRow
                 key={pool.id}
                 poolNumber={pool.id}
-                name={pool.pool.name}
+                name={wordFilter.clean(pool.pool.name)}
                 tvl={pool.suppliedUSD}
                 borrowed={pool.borrowedUSD}
                 tokens={pool.underlyingTokens.map((address, index) => ({

@@ -3,7 +3,7 @@ import Rari from "../rari-sdk/index";
 
 // @ts-ignore
 import Filter from "bad-words";
-const filter = new Filter();
+export const filter = new Filter();
 
 export function filterOnlyObjectProperties(obj: any) {
   return Object.fromEntries(
