@@ -54,7 +54,7 @@ const FuseStatsBar = () => {
           <Heading size="lg">{t("Fuse")}</Heading>
 
           {t(
-            "Isolated money markets you can use today that will power the decentralized future of tomorrow."
+            "Isolated lending pools you can use today that will power the decentralized future of tomorrow."
           )}
         </Column>
       </DashboardBox>
