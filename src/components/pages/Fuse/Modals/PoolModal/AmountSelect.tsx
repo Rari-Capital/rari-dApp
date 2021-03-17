@@ -41,15 +41,8 @@ import Fuse from "../../../../../fuse-sdk";
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../../../utils/createComptroller";
 import { handleGenericError } from "../../../../../utils/errorHandling";
-
-interface Props {
-  onClose: () => any;
-  assets: USDPricedFuseAsset[];
-  index: number;
-  mode: Mode;
-  comptrollerAddress: string;
-  openOptions: () => any;
-}
+import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
+import { useParams } from "react-router-dom";
 
 enum UserAction {
   NO_ACTION,
@@ -198,10 +191,23 @@ const AmountSelect = ({
   mode,
   openOptions,
   comptrollerAddress,
-}: Props) => {
+}: {
+  onClose: () => any;
+  assets: USDPricedFuseAsset[];
+  index: number;
+  mode: Mode;
+  comptrollerAddress: string;
+  openOptions: () => any;
+}) => {
   const asset = assets[index];
 
   const { address, fuse } = useRari();
+
+  // ----------------------------------------------------------------
+  // TODO: Remove after guarded launch
+  const { poolId } = useParams();
+  const poolData = useFusePoolData(poolId);
+  // ----------------------------------------------------------------
 
   const toast = useToast();
 
@@ -361,6 +367,25 @@ const AmountSelect = ({
         }
 
         if (mode === Mode.SUPPLY) {
+          // ----------------------------------------------------------------
+          // TODO: Remove after guarded launch: Check that they aren't going above the 1 mil per pool limit
+          const ethPrice: number = (await fuse.web3.utils.fromWei(
+            await fuse.getEthUsdPriceBN()
+          )) as any;
+          if (
+            poolData!.totalSupplyBalanceUSD +
+              (parseInt(amountBN.toString()) *
+                asset.underlyingPrice *
+                ethPrice) /
+                1e36 >=
+            1_000_000
+          ) {
+            throw new Error(
+              "As part of our guarded launch, you are not allowed to supply >$1,000,000 to a pool at this time."
+            );
+          }
+          // ----------------------------------------------------------------
+
           if (isETH) {
             const call = cToken.methods.mint();
 
