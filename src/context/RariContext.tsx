@@ -14,6 +14,18 @@ import Rari from "../rari-sdk/index";
 
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
+import Fuse from "../fuse-sdk/src";
+import { Center } from "buttered-chakra";
+
+function getWeb3Provider() {
+  if (window.ethereum) {
+    return window.ethereum;
+  } else if (window.web3) {
+    return window.web3.currentProvider;
+  } else {
+    return `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`;
+  }
+}
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -121,20 +133,10 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [rari, setRari] = useState<Rari>(() => {
-    if (window.ethereum) {
-      console.log("Using window.ethereum!");
-      return new Rari(window.ethereum);
-    } else if (window.web3) {
-      console.log("Using window.web3!");
-      return new Rari(window.web3.currentProvider);
-    } else {
-      console.log("Using infura!");
-      return new Rari(
-        `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
-      );
-    }
-  });
+  const [wrongNetwork, setIsWrongNetwork] = useState(false);
+
+  const [rari, setRari] = useState<Rari>(() => new Rari(getWeb3Provider()));
+  const [fuse, setFuse] = useState<Fuse>(() => new Fuse(getWeb3Provider()));
 
   const toast = useToast();
 
@@ -144,6 +146,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       ([netId, chainId]) => {
         console.log("Network ID: " + netId, "Chain ID: " + chainId);
         if (netId !== 1 || chainId !== 1) {
+          setIsWrongNetwork(true);
+
           setTimeout(() => {
             toast({
               title: "Wrong network!",
@@ -155,6 +159,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
               isClosable: true,
             });
           }, 1500);
+        } else {
+          setIsWrongNetwork(false);
         }
       }
     );
@@ -249,7 +255,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     [rari, web3ModalProvider, login, logout, address]
   );
 
-  return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
+  return wrongNetwork ? (
+    <Center height="100vh" color="#FFF" fontSize="xl">
+      Switch to the mainnet network.
+    </Center>
+  ) : (
+    <RariContext.Provider value={value}>{children}</RariContext.Provider>
+  );
 };
 
 export function useRari() {
