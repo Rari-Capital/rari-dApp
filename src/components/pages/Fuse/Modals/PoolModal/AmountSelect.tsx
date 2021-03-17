@@ -341,6 +341,27 @@ const AmountSelect = ({
       );
 
       if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
+        // ----------------------------------------------------------------
+        if (mode === Mode.SUPPLY) {
+          // TODO: Remove after guarded launch: Check that they aren't going above the 1 mil per pool limit
+          const ethPrice: number = (await fuse.web3.utils.fromWei(
+            await fuse.getEthUsdPriceBN()
+          )) as any;
+          if (
+            poolData!.totalSupplyBalanceUSD +
+              (parseInt(amountBN.toString()) *
+                asset.underlyingPrice *
+                ethPrice) /
+                1e36 >=
+            1_000_000
+          ) {
+            throw new Error(
+              "As part of our guarded launch, you are not allowed to supply >$1,000,000 to a pool at this time."
+            );
+          }
+        }
+        // ----------------------------------------------------------------
+
         if (!isETH) {
           const token = new fuse.web3.eth.Contract(
             JSON.parse(
@@ -367,25 +388,6 @@ const AmountSelect = ({
         }
 
         if (mode === Mode.SUPPLY) {
-          // ----------------------------------------------------------------
-          // TODO: Remove after guarded launch: Check that they aren't going above the 1 mil per pool limit
-          const ethPrice: number = (await fuse.web3.utils.fromWei(
-            await fuse.getEthUsdPriceBN()
-          )) as any;
-          if (
-            poolData!.totalSupplyBalanceUSD +
-              (parseInt(amountBN.toString()) *
-                asset.underlyingPrice *
-                ethPrice) /
-                1e36 >=
-            1_000_000
-          ) {
-            throw new Error(
-              "As part of our guarded launch, you are not allowed to supply >$1,000,000 to a pool at this time."
-            );
-          }
-          // ----------------------------------------------------------------
-
           if (isETH) {
             const call = cToken.methods.mint();
 
