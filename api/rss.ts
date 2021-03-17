@@ -401,6 +401,11 @@ export default async (request: NowRequest, response: NowResponse) => {
           return 0;
         }
 
+        // If any of the RSS asset scores are less than 60, fail
+        if (rss.totalScore < 60) {
+          return 0;
+        }
+
         // If the liquidation incentive is less than or equal to 1/10th of the collateral factor, fail
         // Ex: Incentive is 8%, Factor is 75%
         const collateralFactor = asset.collateralFactor / 1e16;
