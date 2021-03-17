@@ -48,19 +48,25 @@ export const letterScore = (totalScore: number) => {
   }
 
   if (totalScore >= 70) {
-    return "B";
+    return "A-";
   }
 
   if (totalScore >= 60) {
-    return "C";
+    return "B";
   }
 
   if (totalScore >= 50) {
-    return "D";
+    return "C";
   }
 
   if (totalScore >= 40) {
+    return "D";
+  }
+
+  if (totalScore >= 30) {
     return "F";
+  } else {
+    return "UNSAFE";
   }
 };
 

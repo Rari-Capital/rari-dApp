@@ -24,6 +24,7 @@ import {
   filterOnlyObjectProperties,
 } from "../../../utils/fetchFusePoolData";
 import { letterScore, usePoolRSS } from "../../../hooks/useRSS";
+import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 export interface FusePool {
   name: string;
@@ -308,7 +309,13 @@ const PoolRow = ({
           <b>{smallUsdFormatter(borrowed)}</b>
         </Center>
         <Center height="100%" width="15%">
-          <b>{rssScore}</b>
+          <SimpleTooltip
+            label={
+              "Underlying RSS: " + (rss ? rss.totalScore.toFixed(2) : "?") + "%"
+            }
+          >
+            <b>{rssScore}</b>
+          </SimpleTooltip>
         </Center>
       </Row>
     </Link>
