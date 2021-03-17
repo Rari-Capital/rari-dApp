@@ -59,10 +59,10 @@ const FusePoolPage = React.memo(() => {
 
         <FuseTabBar />
 
-        {data?.totalBorrowedUSD ? (
+        {data?.totalBorrowBalanceUSD ? (
           <CollateralRatioBar
             assets={data.assets}
-            borrowUSD={data.totalBorrowedUSD}
+            borrowUSD={data.totalBorrowBalanceUSD}
           />
         ) : null}
 
