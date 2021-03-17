@@ -342,8 +342,8 @@ const AmountSelect = ({
 
       if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
         // ----------------------------------------------------------------
+        // TODO: Remove after guarded launch: Check that they aren't going above the 1 mil per pool limit
         if (mode === Mode.SUPPLY) {
-          // TODO: Remove after guarded launch: Check that they aren't going above the 1 mil per pool limit
           const ethPrice: number = (await fuse.web3.utils.fromWei(
             await fuse.getEthUsdPriceBN()
           )) as any;
