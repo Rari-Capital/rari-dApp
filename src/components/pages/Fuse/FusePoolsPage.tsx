@@ -184,7 +184,7 @@ const PoolList = () => {
         </Text>
 
         <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("RSS Pool Score")}
+          {t("Pool Risk Score")}
         </Text>
       </Row>
 

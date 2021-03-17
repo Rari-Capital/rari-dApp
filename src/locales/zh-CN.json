@@ -180,7 +180,6 @@
   "and stake them for extra rewards!": "并放下它们以获得额外的奖励！",
   "Your Balance": "您的余额",
   "Click confirm to continue!": "单击确认继续！",
-  "RSS Pool Score": "RSS池分数",
   "Keep this bar from filling up to avoid being liquidated!": "请勿填充此栏，以免被清算！",
   "If your borrow amount reaches this value, you will be liquidated.": "如果您的借贷金额达到此值，您将被清算。",
   "APY/Weekly": "APY /每周",
@@ -223,5 +222,6 @@
   "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.": "在給定資產上產生的利息部分，作為費用被路由到該資產的管理地址。",
   "Admin Fee": "管理費",
   "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.": "為資產選擇的利率模型定義了不同利用率下借款人和供應商的利率。",
-  "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "Pool Risk Score": "集合风险评分"
 }
