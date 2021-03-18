@@ -232,16 +232,18 @@ const SupplyList = ({
         mt={1}
       >
         {assets.length > 0 ? (
-          assets.map((asset, index) => {
-            return (
-              <AssetSupplyRow
-                comptrollerAddress={comptrollerAddress}
-                key={asset.underlyingToken}
-                assets={assets}
-                index={index}
-              />
-            );
-          })
+          assets
+            .sort((a, b) => (b.liquidity > a.liquidity ? 1 : -1))
+            .map((asset, index) => {
+              return (
+                <AssetSupplyRow
+                  comptrollerAddress={comptrollerAddress}
+                  key={asset.underlyingToken}
+                  assets={assets}
+                  index={index}
+                />
+              );
+            })
         ) : (
           <Center expand my={8}>
             {t("There are no assets in this pool.")}
@@ -495,16 +497,18 @@ const BorrowList = ({
         mt={1}
       >
         {assets.length > 0 ? (
-          assets.map((asset, index) => {
-            return (
-              <AssetBorrowRow
-                comptrollerAddress={comptrollerAddress}
-                key={asset.underlyingToken}
-                assets={assets}
-                index={index}
-              />
-            );
-          })
+          assets
+            .sort((a, b) => (b.liquidity > a.liquidity ? 1 : -1))
+            .map((asset, index) => {
+              return (
+                <AssetBorrowRow
+                  comptrollerAddress={comptrollerAddress}
+                  key={asset.underlyingToken}
+                  assets={assets}
+                  index={index}
+                />
+              );
+            })
         ) : (
           <Center expand my={8}>
             {t("There are no assets in this pool.")}
