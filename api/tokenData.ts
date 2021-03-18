@@ -7,7 +7,7 @@ import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 import { NowRequest, NowResponse } from "@vercel/node";
 
 const web3 = new Web3(
-  `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+  "https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN"
 );
 
 export default async (request: NowRequest, response: NowResponse) => {

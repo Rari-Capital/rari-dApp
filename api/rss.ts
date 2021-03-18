@@ -21,7 +21,7 @@ const weightedCalculation = async (
 };
 
 const fuse = new Fuse(
-  `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+  "https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN"
 );
 
 async function computeAssetRSS(address: string) {
