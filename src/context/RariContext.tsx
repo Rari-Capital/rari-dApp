@@ -15,27 +15,10 @@ import Rari from "../rari-sdk/index";
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
 import Fuse from "../fuse-sdk/src";
-
-function getWeb3Provider() {
-  if (window.ethereum) {
-    return window.ethereum;
-  } else if (window.web3) {
-    return window.web3.currentProvider;
-  } else {
-    return `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`;
-  }
-}
-
-const initFuse = (provider = getWeb3Provider()) => {
-  const fuse = new Fuse(provider);
-
-  // @ts-ignore We have to do this to avoid Infura ratelimits on our large calls.
-  fuse.contracts.FusePoolLens.setProvider(
-    "https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN"
-  );
-
-  return fuse;
-};
+import {
+  chooseBestWeb3Provider,
+  initFuseWithProviders,
+} from "../utils/web3Providers";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -144,8 +127,10 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [rari, setRari] = useState<Rari>(() => new Rari(getWeb3Provider()));
-  const [fuse, setFuse] = useState<Fuse>(() => initFuse());
+  const [rari, setRari] = useState<Rari>(
+    () => new Rari(chooseBestWeb3Provider())
+  );
+  const [fuse, setFuse] = useState<Fuse>(() => initFuseWithProviders());
 
   const toast = useToast();
 
@@ -185,7 +170,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
-      const fuseInstance = initFuse(modalProvider);
+      const fuseInstance = initFuseWithProviders(modalProvider);
 
       setRari(rariInstance);
       setFuse(fuseInstance);

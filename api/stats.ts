@@ -5,6 +5,7 @@ import EthereumPool from "../src/rari-sdk/pools/ethereum";
 import StablePool from "../src/rari-sdk/pools/stable";
 import YieldPool from "../src/rari-sdk/pools/yield";
 import DaiPool from "../src/rari-sdk/pools/dai";
+import { infuraURL } from "../src/utils/web3Providers";
 
 const fetchTVL = async (rari: Rari) => {
   const [
@@ -68,9 +69,7 @@ const fetchRGTAPR = async (rari: Rari) => {
 };
 
 export default async (request: NowRequest, response: NowResponse) => {
-  const rari = new Rari(
-    `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
-  );
+  const rari = new Rari(infuraURL);
 
   const [
     rawTVL,

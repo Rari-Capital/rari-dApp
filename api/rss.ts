@@ -2,10 +2,10 @@ import { NowRequest, NowResponse } from "@vercel/node";
 
 import { variance, median } from "mathjs";
 import fetch from "node-fetch";
-import Fuse from "../src/fuse-sdk";
 
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
+import { initFuseWithProviders } from "../src/utils/web3Providers";
 
 function clamp(num, min, max) {
   return num <= min ? min : num >= max ? max : num;
@@ -20,9 +20,7 @@ const weightedCalculation = async (
   return clamp((await calculation()) ?? 0, 0, 1) * weight;
 };
 
-const fuse = new Fuse(
-  "https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN"
-);
+const fuse = initFuseWithProviders();
 
 async function computeAssetRSS(address: string) {
   address = address.toLowerCase();
