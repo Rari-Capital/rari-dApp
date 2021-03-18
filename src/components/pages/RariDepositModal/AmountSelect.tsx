@@ -41,8 +41,8 @@ import {
 } from "../../../hooks/useMaxWithdraw";
 import { AttentionSeeker } from "react-awesome-reveal";
 
+import LogRocket from "logrocket";
 import { HashLoader } from "react-spinners";
-import { handleGenericError } from "../../../utils/errorHandling";
 
 interface Props {
   selectedToken: string;
@@ -288,14 +288,29 @@ const AmountSelect = ({
         });
       }
 
-      queryCache.refetchQueries();
-      // Wait 2 seconds for refetch and then close modal.
-      // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await queryCache.refetchQueries();
 
       onClose();
     } catch (e) {
-      handleGenericError(e, toast);
+      let message: string;
+
+      if (e instanceof Error) {
+        message = e.toString();
+        LogRocket.captureException(e);
+      } else {
+        message = JSON.stringify(e);
+        LogRocket.captureException(new Error(message));
+      }
+
+      toast({
+        title: "Error!",
+        description: message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+
       setUserAction(UserAction.NO_ACTION);
     }
   };
@@ -447,29 +462,23 @@ const TokenNameAndMaxButton = ({
     let maxBN: BN;
 
     if (mode === Mode.DEPOSIT) {
-      const balance = await fetchTokenBalance(
-        token.address,
-        rari.web3,
-        address
-      );
+      const balance = await fetchTokenBalance(token.address, rari, address);
 
       if (token.symbol === "ETH") {
-        // Subtract gas from ETH max
+        const ethPriceBN = await rari.getEthUsdPriceBN();
 
-        // Ex: 100 (in GWEI)
-        const { standard } = await fetch(
-          "https://gasprice.poa.network"
-        ).then((res) => res.json());
+        const gasAnd0xFeesInUSD = 23;
 
-        const gasPrice = rari.web3.utils.toBN(
-          // @ts-ignore For some reason it's returning a string not a BN
-          rari.web3.utils.toWei(standard.toString(), "gwei")
+        // Subtract gasAnd0xFeesInUSD worth of ETH.
+        maxBN = balance.sub(
+          rari.web3.utils.toBN(
+            // @ts-ignore
+            new BigNumber(gasAnd0xFeesInUSD * 1e18)
+              .div(ethPriceBN.toString())
+              .multipliedBy(1e18)
+              .decimalPlaces(0)
+          )
         );
-
-        const gasWEI = rari.web3.utils.toBN(500000).mul(gasPrice);
-
-        // Subtract the ETH that is needed for gas.
-        maxBN = balance.sub(gasWEI);
       } else {
         maxBN = balance;
       }
@@ -485,7 +494,7 @@ const TokenNameAndMaxButton = ({
     }
 
     if (maxBN.isNeg() || maxBN.isZero()) {
-      updateAmount("");
+      updateAmount("0.0");
     } else {
       const str = new BigNumber(maxBN.toString())
         .div(10 ** token.decimals)
@@ -494,7 +503,7 @@ const TokenNameAndMaxButton = ({
         .replace(/\.?0+$/, "");
 
       if (str.startsWith("0.000000")) {
-        updateAmount("");
+        updateAmount("0.0");
       } else {
         updateAmount(str);
       }

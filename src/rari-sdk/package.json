@@ -2,7 +2,7 @@
   "name": "@rari-capital/rari-sdk",
   "version": "1.4.0",
   "description": "Rari Capital SDK",
-  "main": "./index.js",
+  "main": "index.js",
   "author": "David Lucid",
   "license": "AGPL-3.0-only",
   "dependencies": {

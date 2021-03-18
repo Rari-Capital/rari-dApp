@@ -25,20 +25,28 @@ var erc20Abi = require("." + "/abi/ERC20.json");
 export default class Rari {
   constructor(web3Provider) {
     this.web3 = new Web3(web3Provider);
-    this.cache = new Cache({ allTokens: 86400, ethUsdPrice: 300 });
+    this.cache = new Cache({ allTokens: 86400 });
 
-    /* const approveFunction = async ({ from, to, encodedFunctionCall, txFee, gasPrice, gas, nonce, relayerAddress, relayHubAddress }) => {
-        try {
-            var response = await request.post("https://app.rari.capital/checkSig.php", { data: JSON.stringify({ from, to, encodedFunctionCall, txFee, gasPrice, gas, nonce, relayerAddress, relayHubAddress }), contentType: 'application/json', });
-        } catch (error) {
-            return console.error("checkSig error:", error);
-        }
-
-        console.log("checkSig response:", response);
-        return response;
+    this.getEthUsdPriceBN = async function () {
+      try {
+        return Web3.utils.toBN((new Big((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum")).data.ethereum.usd)).mul(1e18).toFixed(0));
+      } catch (error) {
+        throw new Error("Error retrieving data from Coingecko API: " + error);
+      }
     };
 
-    this.web3Gsn = new Web3(new OpenZeppelinGSNProvider.GSNProvider(web3Provider, { approveFunction })); */
+    /* const approveFunction = async ({ from, to, encodedFunctionCall, txFee, gasPrice, gas, nonce, relayerAddress, relayHubAddress }) => {
+            try {
+                var response = await request.post("https://app.rari.capital/checkSig.php", { data: JSON.stringify({ from, to, encodedFunctionCall, txFee, gasPrice, gas, nonce, relayerAddress, relayHubAddress }), contentType: 'application/json', });
+            } catch (error) {
+                return console.error("checkSig error:", error);
+            }
+
+            console.log("checkSig response:", response);
+            return response;
+        };
+
+        this.web3Gsn = new Web3(new OpenZeppelinGSNProvider.GSNProvider(web3Provider, { approveFunction })); */
 
     for (const currencyCode of Object.keys(this.internalTokens))
       this.internalTokens[currencyCode].contract = new this.web3.eth.Contract(
@@ -47,16 +55,6 @@ export default class Rari {
       );
 
     var self = this;
-
-    this.getEthUsdPriceBN = async function () {
-      return await self.cache.getOrUpdate("ethUsdPrice", async function () {
-        try {
-          return Web3.utils.toBN((new Big((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum")).data.ethereum.usd)).mul(1e18).toFixed(0));
-        } catch (error) {
-          throw new Error("Error retrieving data from Coingecko API: " + error);
-        }
-      });
-    };
 
     this.getAllTokens = async function (cacheTimeout = 86400) {
       self.cache._raw["allTokens"].timeout =

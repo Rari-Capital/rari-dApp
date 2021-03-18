@@ -13,11 +13,10 @@ import React from "react";
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import {
-  AnimatedFuseSmallLogo,
   AnimatedPoolLogo,
   AnimatedSmallLogo,
-  FuseSmallLogo,
   PoolLogo,
+  SmallLogo,
 } from "./Logos";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -30,11 +29,9 @@ export const HeaderHeightWithTopPadding = new PixelSize(
 export const Header = ({
   isAuthed,
   isPool,
-  isFuse,
   padding,
 }: {
   isAuthed: boolean;
-  isFuse?: boolean;
   isPool?: boolean;
   padding?: boolean;
 }) => {
@@ -55,17 +52,13 @@ export const Header = ({
       {isAuthed ? (
         isPool ? (
           <AnimatedPoolLogo />
-        ) : isFuse ? (
-          <AnimatedFuseSmallLogo />
         ) : (
           <AnimatedSmallLogo />
         )
       ) : isPool ? (
         <PoolLogo />
-      ) : isFuse ? (
-        <FuseSmallLogo />
       ) : (
-        <AnimatedSmallLogo />
+        <SmallLogo />
       )}
 
       <Row
@@ -81,19 +74,17 @@ export const Header = ({
 
         <PoolsLink ml={4} />
 
-        <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
-
-        <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
-
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-        <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />
+        <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
 
         {/* <HeaderLink
             ml={4}
             name={t("Forums")}
             route="https://forums.rari.capital"
           /> */}
+
+        <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />
 
         <HeaderLink
           ml={4}

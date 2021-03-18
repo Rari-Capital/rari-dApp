@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Row, Column } from "buttered-chakra";
 
+import LogRocket from "logrocket";
 import {
   Heading,
   Box,
@@ -28,14 +29,15 @@ import {
 } from "../../../../hooks/useTokenBalance";
 import { BN } from "../../../../utils/bigUtils";
 
-import DashboardBox from "../../../shared/DashboardBox";
+import DashboardBox, {
+  DASHBOARD_BOX_SPACING,
+} from "../../../shared/DashboardBox";
 import { ModalDivider } from "../../../shared/Modal";
 
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
 
 import { LP_TOKEN_CONTRACT } from "../../../../rari-sdk/governance";
-import { handleGenericError } from "../../../../utils/errorHandling";
 
 interface Props {
   onClose: () => any;
@@ -145,13 +147,28 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
         });
       }
 
-      queryCache.refetchQueries();
-      // Wait 2 seconds for refetch and then close modal.
-      // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await queryCache.refetchQueries();
       onClose();
     } catch (e) {
-      handleGenericError(e, toast);
+      let message: string;
+
+      if (e instanceof Error) {
+        message = e.toString();
+        LogRocket.captureException(e);
+      } else {
+        message = JSON.stringify(e);
+        LogRocket.captureException(new Error(message));
+      }
+
+      toast({
+        title: "Error!",
+        description: message,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+
       setUserAction(UserAction.NO_ACTION);
     }
   };
@@ -174,7 +191,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
         width="100%"
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={4}
+        p={DASHBOARD_BOX_SPACING.asPxString()}
       >
         <Box width="40px" />
         <Heading fontSize="27px">
@@ -199,7 +216,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
-        p={4}
+        p={DASHBOARD_BOX_SPACING.asPxString()}
         height="100%"
       >
         <Text fontWeight="bold" fontSize="sm" textAlign="center">
@@ -213,7 +230,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
         <DashboardBox width="100%" height="70px" mt={4}>
           <Row
-            p={4}
+            p={DASHBOARD_BOX_SPACING.asPxString()}
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             expand
@@ -267,11 +284,7 @@ const TokenNameAndMaxButton = ({
     let maxBN: BN;
 
     if (mode === Mode.DEPOSIT) {
-      const balance = await fetchTokenBalance(
-        LP_TOKEN_CONTRACT,
-        rari.web3,
-        address
-      );
+      const balance = await fetchTokenBalance(LP_TOKEN_CONTRACT, rari, address);
 
       maxBN = balance;
     } else {
@@ -283,7 +296,7 @@ const TokenNameAndMaxButton = ({
     }
 
     if (maxBN.isNeg() || maxBN.isZero()) {
-      updateAmount("");
+      updateAmount("0.0");
     } else {
       const str = new BigNumber(maxBN.toString())
         .div(10 ** 18)
@@ -292,7 +305,7 @@ const TokenNameAndMaxButton = ({
         .replace(/\.?0+$/, "");
 
       if (str.startsWith("0.000000")) {
-        updateAmount("");
+        updateAmount("0.0");
       } else {
         updateAmount(str);
       }

@@ -29,7 +29,40 @@ import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useTranslation } from "react-i18next";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { SearchIcon } from "@chakra-ui/icons";
-import { useAssetRSS } from "../../hooks/useRSS";
+
+const useRSS = (address: string) => {
+  const { data } = useQuery(
+    address + " rss",
+    () => {
+      return fetch("/api/rss?address=" + address)
+        .then((res) => res.json())
+        .catch((e) => {
+          console.log("Could not fetch RSS!");
+          console.log(e);
+        }) as Promise<{
+        mcap: number;
+        volatility: number;
+        liquidity: number;
+        swapCount: number;
+        coingeckoMetadata: number;
+        exchanges: number;
+        transfers: number;
+
+        lastUpdated: string;
+        totalScore: number;
+      }>;
+    },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      // 7 days
+      cacheTime: 8.64e7,
+    }
+  );
+
+  return data;
+};
 
 const RSSAssetsPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -192,7 +225,7 @@ const SearchBar = ({ onSearch }: { onSearch: (address: string) => any }) => {
 const TokenRSS = ({ address }: { address: string }) => {
   const tokenData = useTokenData(address);
 
-  const rss = useAssetRSS(address);
+  const rss = useRSS(address);
 
   const { t } = useTranslation();
 

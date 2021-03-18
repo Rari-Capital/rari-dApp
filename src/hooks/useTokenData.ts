@@ -6,13 +6,13 @@ import { useRari } from "../context/RariContext";
 
 export const ETH_TOKEN_DATA = {
   symbol: "ETH",
-  address: "0x0000000000000000000000000000000000000000",
+  address: "NO_ADDRESS_HERE_USE_WETH_FOR_ADDRESS",
   name: "Ethereum Network Token",
   decimals: 18,
-  color: "#627EEA",
+  color: "#7b7b83",
   overlayTextColor: "#fff",
   logoURL:
-    "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png",
+    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
 };
 
 export interface TokenData {

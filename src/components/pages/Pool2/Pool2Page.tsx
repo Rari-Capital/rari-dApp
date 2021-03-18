@@ -6,7 +6,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { Center, RowOrColumn, Column } from "buttered-chakra";
+import { Center, RowOrColumn, useWindowSize, Column } from "buttered-chakra";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
@@ -19,7 +19,6 @@ import { Header } from "../../shared/Header";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
 import Pool2Modal from "./Pool2Modal";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -248,7 +247,7 @@ const YourBalance = () => {
 
   const { rari, address } = useRari();
 
-  const { data: balance } = useQuery(address + " pool2Balance", async () => {
+  const { data: balance } = useQuery(address + "pool2Balance", async () => {
     const SLP = parseFloat(
       rari.web3.utils.fromWei(
         await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
@@ -275,7 +274,7 @@ const YourBalance = () => {
   });
 
   const { data: earned } = useQuery(
-    address + " pool2Unclaimed RGT",
+    address + "pool2Unclaimed RGT",
     async () => {
       return parseFloat(
         rari.web3.utils.fromWei(
@@ -390,3 +389,9 @@ const GeneralInfo = () => {
 };
 
 export default Pool2Page;
+
+const useIsSmallScreen = () => {
+  const { width } = useWindowSize();
+
+  return width < 1030;
+};

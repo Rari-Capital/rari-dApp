@@ -14,17 +14,6 @@ import Rari from "../rari-sdk/index";
 
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
-import Fuse from "../fuse-sdk/src";
-
-function getWeb3Provider() {
-  if (window.ethereum) {
-    return window.ethereum;
-  } else if (window.web3) {
-    return window.web3.currentProvider;
-  } else {
-    return `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`;
-  }
-}
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -116,7 +105,6 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
 
 export interface RariContextData {
   rari: Rari;
-  fuse: Fuse;
   web3ModalProvider: any | null;
   isAuthed: boolean;
   login: () => Promise<any>;
@@ -133,8 +121,20 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const [rari, setRari] = useState<Rari>(() => new Rari(getWeb3Provider()));
-  const [fuse, setFuse] = useState<Fuse>(() => new Fuse(getWeb3Provider()));
+  const [rari, setRari] = useState<Rari>(() => {
+    if (window.ethereum) {
+      console.log("Using window.ethereum!");
+      return new Rari(window.ethereum);
+    } else if (window.web3) {
+      console.log("Using window.web3!");
+      return new Rari(window.web3.currentProvider);
+    } else {
+      console.log("Using infura!");
+      return new Rari(
+        `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+      );
+    }
+  });
 
   const toast = useToast();
 
@@ -143,11 +143,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     Promise.all([rari.web3.eth.net.getId(), rari.web3.eth.getChainId()]).then(
       ([netId, chainId]) => {
         console.log("Network ID: " + netId, "Chain ID: " + chainId);
-
-        if (process.env.NODE_ENV === "development") {
-          return;
-        }
-
         if (netId !== 1 || chainId !== 1) {
           setTimeout(() => {
             toast({
@@ -174,10 +169,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
-      const fuseInstance = new Fuse(modalProvider);
 
       setRari(rariInstance);
-      setFuse(fuseInstance);
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         console.log("Address array: ", addresses);
@@ -248,13 +241,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       web3ModalProvider,
       rari,
-      fuse,
       isAuthed: address !== EmptyAddress,
       login,
       logout,
       address,
     }),
-    [rari, web3ModalProvider, login, logout, address, fuse]
+    [rari, web3ModalProvider, login, logout, address]
   );
 
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
