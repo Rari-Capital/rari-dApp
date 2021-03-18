@@ -67,9 +67,22 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       comptroller.methods.closeFactorMantissa().call(),
 
       comptroller.methods.liquidationIncentiveMantissa().call(),
-      comptroller.methods.enforceWhitelist().call(),
 
-      comptroller.methods.getWhitelist().call(),
+      (() => {
+        try {
+          comptroller.methods.enforceWhitelist().call();
+        } catch (_) {
+          return false;
+        }
+      })(),
+
+      (() => {
+        try {
+          comptroller.methods.getWhitelist().call();
+        } catch (_) {
+          return [];
+        }
+      })(),
     ]);
 
     return {
