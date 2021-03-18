@@ -426,7 +426,7 @@ const AssetSupplyRow = ({
           </style>
           <Switch
             isChecked={asset.membership}
-            className={asset.underlyingSymbol + "-switch"}
+            className={asset.underlyingSymbol + "-switch, fix-switch"}
             onChange={onToggleCollateral}
             size="md"
             mt={1}
