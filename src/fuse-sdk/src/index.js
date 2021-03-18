@@ -22,20 +22,20 @@ const axios = require("axios");
 
 export default class Fuse {
   static FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS =
-    "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"; // TODO: Set correct mainnet address after deployment
+    "0x835482FE0532f169024d5E9410199369aAD5C77E";
   static FUSE_SAFE_LIQUIDATOR_CONTRACT_ADDRESS =
-    "0x0165878A594ca255338adfa4d48449f69242Eb8F"; // TODO: Set correct mainnet address after deployment
+    "0xCc29FE6A0e090D464Abb616E1AE4cEeA415c140E";
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS =
-    "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6"; // TODO: Set correct mainnet address after deployment
+    "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85";
   static FUSE_POOL_LENS_CONTRACT_ADDRESS =
-    "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"; // TODO: Set correct mainnet address after deployment
+    "0x8dA38681826f4ABBe089643D2B3fE4C6e4730493";
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0xce103d6d89ea4588d909f5f728ca8c14c94bb3d6"; // TODO: Set correct mainnet address after deployment
+    "0x94b2200d28932679def4a7d08596a229553a994e";
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
-    "0x4084a1ceb13516eeaa03a047679ce64df5c7476a"; // TODO: Set correct mainnet address after deployment
+    "0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c";
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
-    "0x0b08f5041284fe4107f959e86275b0e5a4f6ce2a"; // TODO: Set correct mainnet address after deployment
+    "0x60884c8faad1b30b1c76100da92b76ed3af849ba";
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79";
@@ -43,11 +43,11 @@ export default class Fuse {
     "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC";
 
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
-    PreferredPriceOracle: "0x8a0ab5a52ddcf13a9d5b68f7961289f5e08ebc5f", // TODO: Set correct mainnet address after deployment
-    ChainlinkPriceOracle: "0x1ca334e4bceb0c6d95733d11ed0e9b52caf66807", // TODO: Set correct mainnet address after deployment
-    UniswapView: "0xee8163c19f2ff59410edc6494505c129bddd3851", // TODO: Set correct mainnet address after deployment
-    Keep3rPriceOracle: "0xe43442bCac98a68C1Ae1DDa08307f8cB5b136355", // TODO: Set correct mainnet address after deployment
-    Keep3rSushiSwapPriceOracle: "0x4570ef886C3CA0B382739054e18192E2dA979015", // TODO: Set correct mainnet address after deployment
+    PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    ChainlinkPriceOracle: "0x76f24e7155ff4472cb26e32c1213e515fc4b99d3",
+    UniswapView: "", // TODO: Set correct mainnet address after deployment
+    Keep3rPriceOracle: "0xb90de476d438b37a4a143bf729a9b2237e544af6",
+    Keep3rSushiSwapPriceOracle: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0",
     UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
@@ -66,30 +66,19 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    PreferredPriceOracle:
-      "0xf29124deee924fe30a5e7e0be7a2f6b03365196056e552663b9ef9428e414fab",
-    ChainlinkPriceOracle:
-      "0xc8bd346a626fb319efe6b2e42b463eef27577b24b5b84b6811f4cd331f75c11f",
-    Keep3rPriceOracle:
-      "0x646fbee1fc2764bc271ec9b5fe0e004c6b36c5ecf4620e6394fb9c5be9182d0b",
-    MasterPriceOracle:
-      "0xf0c2d895938a68860f5c244581bdab08056126fa1596f0a111dae4bc0b265210",
-    UniswapAnchoredView:
-      "0xfb58ee7546e25ab8f0a1ae4feebb2acbad518fd16201dbb2e94cec39542e2ac4",
-    UniswapView:
-      "0xf3995d9454d6f8922022916f823ed743d6f2a88ad6e5e984ffe6c5ce25b0f343",
-    UniswapLpTokenPriceOracle:
-      "0x2019d8aa08d853deab86b5daa5fb75be7af89666a1eabbed2d99d9f246046095",
-    RecursivePriceOracle:
-      "0xc2933882348e9a8bd50ca2132ecc578577daa49fc5d5ac4af68ee2a0c60972f6",
-    YVaultV1PriceOracle:
-      "0xc74cbf48df66a164789ad9b7d8a057eb9760bcca5ac852202f5f4018da95616b",
-    YVaultV2PriceOracle:
-      "0xa7fd1aca6fa003c74f6b92a77e8ac6505f50dc067c340686f7b5f5e940bcdc88",
-    AlphaHomoraV1PriceOracle:
-      "0x42401429634dcf51120cff9d5ffe3cff44cfc751ca139cb7992ed12f9e81fe23",
-    SynthetixPriceOracle:
-      "0x253aaf31ad010b9880d68beb6f554aa9bd2c148e5b7d5d01e5e63ebe1d046092",
+    "SimplePriceOracle": "0x825c814c2e008137a46d355a57d0d89f6eea946ad01f0e8203fd33162e3ed799",
+    "PreferredPriceOracle": "0x3899c6d9b979281ffb059859e0c8c2028662201d3796e0ea10e841e1d68a997f",
+    "ChainlinkPriceOracle": "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
+    "Keep3rPriceOracle": "0x36a0d4743a92d3565f3d2709c41e9983bb263c27c339ddbb8ffa87a939498f7d",
+    "MasterPriceOracle": "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
+    "UniswapAnchoredView": "0x764bdac98ac462a37513087378aef33380ac062baa2f86c2c30e5d6a78fabad0",
+    "UniswapView": "0x817d46149b29738f641c876c56fd7524db4c8d5376f7cc756e94c9e32c29b18b",
+    "UniswapLpTokenPriceOracle": "0xc79e96f40986213d5f9fc403b5f37e00d3b57842ef0fae24c750222c02592f9f",
+    "RecursivePriceOracle": "0x6f5280d0028fff9ae0aaa447c6c36ff3b270d9675b74762ed2caf9ce3371d63e",
+    "YVaultV1PriceOracle": "0xeb5c1b3acb093a4158251f5955540f220c72200ffaf32ce89bfefbce0c0b7f49",
+    "YVaultV2PriceOracle": "0x5a07033c6820e6ecc517dd94d03b5e38bf15334d4b3c0624dcdb810698196608",
+    "AlphaHomoraV1PriceOracle": "0xfbec68bfe8dfa9e8bab8af26ee5ae9adeb2dcbf2c91d11c3dd497b6b6c2deb64",
+    "SynthetixPriceOracle": "0x5c92648ceca2c5698fddc9a35af43275c821961ca9056c50da592566daaebdc6"
   };
 
   static ORACLES = [
@@ -109,8 +98,8 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel: "0xb2AAa6b64dC52376A5d376B45902C23b460D3F2c",
-    JumpRateModel: "0x1e9cfb9fda76c4259e1137022ae3374277f2b857",
+    WhitePaperInterestRateModel: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    JumpRateModel: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
   };
 
   constructor(web3Provider) {
