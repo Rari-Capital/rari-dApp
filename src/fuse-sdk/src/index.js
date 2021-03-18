@@ -1007,7 +1007,8 @@ export default class Fuse {
         priceOracle
       );
 
-      try {
+      if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) var chainlinkPriceFeed = true;
+      else try {
         var chainlinkPriceFeed = await chainlinkPriceOracle.methods
           .hasPriceFeed(conf.underlying)
           .call();
@@ -1135,7 +1136,7 @@ export default class Fuse {
             TWAP: 3,
           };
 
-          if (conf.underlying == "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2") {
+          if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) {
             // WETH
             await uniswapOrUniswapAnchoredView.methods
               .add([
