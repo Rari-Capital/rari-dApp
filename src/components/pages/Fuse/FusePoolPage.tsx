@@ -338,7 +338,8 @@ const AssetSupplyRow = ({
         crossAxisAlignment="center"
         width="100%"
         px={4}
-        mb={3}
+        py={1.5}
+        className="hover-row"
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -551,7 +552,8 @@ const AssetBorrowRow = ({
         crossAxisAlignment="center"
         width="100%"
         px={4}
-        mb={3}
+        py={1.5}
+        className="hover-row"
         as="button"
         onClick={openModal}
       >

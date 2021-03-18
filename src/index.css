@@ -37,6 +37,10 @@ html {
   position: static !important;
 }
 
+.hover-row:hover {
+  background-color: #282727;
+}
+
 /* 
 These fonts only have ASCII glyphs. 
 If you want to add some more glyphs but still remove useless ones go to: https://transfonter.org/ 
