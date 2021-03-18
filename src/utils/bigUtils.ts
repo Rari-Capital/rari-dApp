@@ -14,6 +14,11 @@ const smallFormatter = Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
+const shortFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 1,
+  notation: "compact",
+});
+
 export function smallStringUsdFormatter(num: string) {
   return smallFormatter.format(parseFloat(num));
 }
@@ -28,6 +33,10 @@ export function smallUsdFormatter(num: number) {
 
 export function usdFormatter(num: number) {
   return formatter.format(num);
+}
+
+export function shortUsdFormatter(num: number) {
+  return "$" + shortFormatter.format(num);
 }
 
 const toBN = Web3.utils.toBN;
