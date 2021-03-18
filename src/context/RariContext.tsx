@@ -26,6 +26,17 @@ function getWeb3Provider() {
   }
 }
 
+const initFuse = (provider = getWeb3Provider()) => {
+  const fuse = new Fuse(provider);
+
+  // @ts-ignore
+  fuse.contracts.FusePoolLens.setProvider(
+    "https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN"
+  );
+
+  return fuse;
+};
+
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
     WalletConnectProvider,
@@ -134,7 +145,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
   const [rari, setRari] = useState<Rari>(() => new Rari(getWeb3Provider()));
-  const [fuse, setFuse] = useState<Fuse>(() => new Fuse(getWeb3Provider()));
+  const [fuse, setFuse] = useState<Fuse>(() => initFuse());
 
   const toast = useToast();
 
@@ -174,7 +185,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
-      const fuseInstance = new Fuse(modalProvider);
+      const fuseInstance = initFuse(modalProvider);
 
       setRari(rariInstance);
       setFuse(fuseInstance);
