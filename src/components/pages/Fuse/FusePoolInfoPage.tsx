@@ -60,7 +60,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
     ] = await Promise.all([
       fuse.contracts.FusePoolLens.methods
         .getPoolOwnership(comptrollerAddress)
-        .call(),
+        .call({ gas: 1e18 }),
 
       fuse.getPriceOracle(await comptroller.methods.oracle().call()),
 

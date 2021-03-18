@@ -43,7 +43,7 @@ const noop = () => {};
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-enum ComptrollerErrorCodes {
+export enum ComptrollerErrorCodes {
   NO_ERROR,
   UNAUTHORIZED,
   COMPTROLLER_MISMATCH,

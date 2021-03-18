@@ -1075,7 +1075,7 @@ export default class Fuse {
                 .secondaryOracle()
                 .call();
             } catch {
-              throw "Underlying token price not available via ChainlinkPriceOracle, and no UniswapAnchoredView or UniswapView was found.";
+              throw "Underlying token price for this asset is not available via this oracle.";
             }
 
             try {
