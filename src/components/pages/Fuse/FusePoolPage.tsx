@@ -9,6 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
+import LogRocket from "logrocket";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryCache } from "react-query";
@@ -328,6 +329,8 @@ const AssetSupplyRow = ({
     }
 
     await call.send({ from: address });
+
+    LogRocket.track("Fuse-ToggleCollateral");
 
     queryCache.refetchQueries();
   };

@@ -31,6 +31,7 @@ import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 import { handleGenericError } from "../../../utils/errorHandling";
+import LogRocket from "logrocket";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -159,6 +160,8 @@ const PoolConfiguration = () => {
           event.returnValues.pool.comptroller.toLowerCase() ===
           poolAddress.toLowerCase()
       )[0];
+
+      LogRocket.track("Fuse-CreatePool");
 
       let id = event.returnValues.index;
       navigate(`/fuse/pool/${id}/edit`);

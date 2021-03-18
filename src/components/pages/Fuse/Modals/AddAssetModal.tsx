@@ -48,6 +48,7 @@ import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 
 import { handleGenericError } from "../../../../utils/errorHandling";
 import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
+import LogRocket from "logrocket";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -233,6 +234,8 @@ export const AssetSettings = ({
         { from: address }
       );
 
+      LogRocket.track("Fuse-DeployAsset");
+
       queryCache.refetchQueries();
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
@@ -285,6 +288,8 @@ export const AssetSettings = ({
         ""
       );
 
+      LogRocket.track("Fuse-UpdateCollateralFactor");
+
       queryCache.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
@@ -305,6 +310,8 @@ export const AssetSettings = ({
         address,
         ""
       );
+
+      LogRocket.track("Fuse-UpdateReserveFactor");
 
       queryCache.refetchQueries();
     } catch (e) {
@@ -328,6 +335,8 @@ export const AssetSettings = ({
         ""
       );
 
+      LogRocket.track("Fuse-UpdateAdminFee");
+
       queryCache.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
@@ -343,6 +352,8 @@ export const AssetSettings = ({
         address,
         ""
       );
+
+      LogRocket.track("Fuse-UpdateInterestRateModel");
 
       queryCache.refetchQueries();
     } catch (e) {

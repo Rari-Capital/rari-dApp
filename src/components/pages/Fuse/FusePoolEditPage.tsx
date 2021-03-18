@@ -246,6 +246,8 @@ const PoolConfiguration = ({
         ""
       );
 
+      LogRocket.track("Fuse-ChangeWhitelistStatus");
+
       queryCache.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
@@ -267,6 +269,8 @@ const PoolConfiguration = ({
         ""
       );
 
+      LogRocket.track("Fuse-AddToWhitelist");
+
       queryCache.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
@@ -286,6 +290,8 @@ const PoolConfiguration = ({
         address,
         ""
       );
+
+      LogRocket.track("Fuse-RemoveFromWhitelist");
 
       queryCache.refetchQueries();
     } catch (e) {
@@ -308,6 +314,8 @@ const PoolConfiguration = ({
         address,
         ""
       );
+
+      LogRocket.track("Fuse-RenounceOwnership");
 
       queryCache.refetchQueries();
     } catch (e) {
@@ -352,6 +360,8 @@ const PoolConfiguration = ({
         ""
       );
 
+      LogRocket.track("Fuse-UpdateCloseFactor");
+
       queryCache.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
@@ -374,6 +384,8 @@ const PoolConfiguration = ({
         address,
         ""
       );
+
+      LogRocket.track("Fuse-UpdateLiquidationIncentive");
 
       queryCache.refetchQueries();
     } catch (e) {
