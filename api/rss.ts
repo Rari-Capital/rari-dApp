@@ -151,13 +151,10 @@ async function computeAssetRSS(address: string) {
 
           return transfers;
         } catch (e) {
-          if (
-            e.message ===
-            "Returned error: query returned more than 10000 results"
-          ) {
+          if (e.message.includes("Log response size exceeded")) {
             return new Array(10_000);
           } else {
-            console.log(e);
+            console.log("Past events error:", e);
             return [];
           }
         }
