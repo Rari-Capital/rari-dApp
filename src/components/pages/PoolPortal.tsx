@@ -71,9 +71,10 @@ import {
 } from "../../utils/bigUtils";
 // import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { getSDKPool } from "../../utils/poolUtils";
-import { fetchRGTAPR, usePoolAPY } from "../../hooks/usePoolAPY";
+import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
+import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
