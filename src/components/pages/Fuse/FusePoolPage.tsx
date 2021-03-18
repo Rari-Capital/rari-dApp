@@ -9,7 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
-import React from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
@@ -40,6 +40,16 @@ const FusePoolPage = React.memo(() => {
   let { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+
+  const sortedAssets = useMemo(() => {
+    if (data?.assets) {
+      return data.assets.sort((a, b) =>
+        b.liquidityUSD > a.liquidityUSD ? 1 : -1
+      );
+    } else {
+      return [];
+    }
+  }, [data?.assets]);
 
   return (
     <>
@@ -79,7 +89,7 @@ const FusePoolPage = React.memo(() => {
           >
             {data ? (
               <SupplyList
-                assets={data.assets}
+                assets={sortedAssets}
                 comptrollerAddress={data.comptroller}
                 supplyBalanceUSD={data.totalSupplyBalanceUSD}
               />
@@ -99,7 +109,7 @@ const FusePoolPage = React.memo(() => {
             {data ? (
               <BorrowList
                 comptrollerAddress={data.comptroller}
-                assets={data.assets}
+                assets={sortedAssets}
                 borrowBalanceUSD={data.totalBorrowBalanceUSD}
               />
             ) : (
@@ -232,18 +242,16 @@ const SupplyList = ({
         mt={1}
       >
         {assets.length > 0 ? (
-          assets
-            .sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1))
-            .map((asset, index) => {
-              return (
-                <AssetSupplyRow
-                  comptrollerAddress={comptrollerAddress}
-                  key={asset.underlyingToken}
-                  assets={assets}
-                  index={index}
-                />
-              );
-            })
+          assets.map((asset, index) => {
+            return (
+              <AssetSupplyRow
+                comptrollerAddress={comptrollerAddress}
+                key={asset.underlyingToken}
+                assets={assets}
+                index={index}
+              />
+            );
+          })
         ) : (
           <Center expand my={8}>
             {t("There are no assets in this pool.")}
@@ -497,18 +505,16 @@ const BorrowList = ({
         mt={1}
       >
         {assets.length > 0 ? (
-          assets
-            .sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1))
-            .map((asset, index) => {
-              return (
-                <AssetBorrowRow
-                  comptrollerAddress={comptrollerAddress}
-                  key={asset.underlyingToken}
-                  assets={assets}
-                  index={index}
-                />
-              );
-            })
+          assets.map((asset, index) => {
+            return (
+              <AssetBorrowRow
+                comptrollerAddress={comptrollerAddress}
+                key={asset.underlyingToken}
+                assets={assets}
+                index={index}
+              />
+            );
+          })
         ) : (
           <Center expand my={8}>
             {t("There are no assets in this pool.")}
