@@ -33,7 +33,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
     const isBNB = address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52";
 
-    response.setHeader("Cache-Control", "s-maxage=259200");
+    response.setHeader("Cache-Control", "s-maxage=3600");
     response.json({
       name,
       symbol,
@@ -64,7 +64,7 @@ export default async (request: NowRequest, response: NowResponse) => {
   try {
     color = await Vibrant.from(small).getPalette();
   } catch (error) {
-    response.setHeader("Cache-Control", "max-age=2592, s-maxage=25920");
+    response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
     response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
@@ -77,7 +77,7 @@ export default async (request: NowRequest, response: NowResponse) => {
   }
 
   if (!color.Vibrant) {
-    response.setHeader("Cache-Control", "max-age=2592, s-maxage=25920");
+    response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
     response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
@@ -100,7 +100,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     logoURL = small;
   }
 
-  response.setHeader("Cache-Control", "max-age=25920, s-maxage=259200");
+  response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
   response.json({
     ...basicTokenInfo,
     color: color.Vibrant.getHex(),

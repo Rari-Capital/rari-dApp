@@ -296,7 +296,7 @@ export default async (request: NowRequest, response: NowResponse) => {
   });
 
   if (address) {
-    response.setHeader("Cache-Control", "s-maxage=604800");
+    response.setHeader("Cache-Control", "s-maxage=3600");
 
     response.json({ ...(await computeAssetRSS(address)), lastUpdated });
   } else if (poolID) {
@@ -433,7 +433,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       return 1;
     }, 20);
 
-    response.setHeader("Cache-Control", "s-maxage=604800");
+    response.setHeader("Cache-Control", "s-maxage=3600");
     response.json({
       liquidity,
       collateralFactor,
