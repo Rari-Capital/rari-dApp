@@ -1,11 +1,11 @@
 import Fuse from "../fuse-sdk/src";
 
-export const infuraURL = `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`;
+// export const infuraURL = `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`;
 export const alchemyURL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ID}`;
 
 export function chooseBestWeb3Provider() {
   if (!window) {
-    return infuraURL;
+    return alchemyURL;
   }
 
   if (window.ethereum) {
@@ -13,7 +13,7 @@ export function chooseBestWeb3Provider() {
   } else if (window.web3) {
     return window.web3.currentProvider;
   } else {
-    return infuraURL;
+    return alchemyURL;
   }
 }
 
