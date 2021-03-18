@@ -69,7 +69,7 @@ export const fetchFusePoolData = async (
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
       .getPoolAssetsWithData(comptroller)
-      .call({ from: address })
+      .call({ from: address, gas: 1e18 })
   ).map(filterOnlyObjectProperties);
 
   let totalLiquidityUSD = 0;

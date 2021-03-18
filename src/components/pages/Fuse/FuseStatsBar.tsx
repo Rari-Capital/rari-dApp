@@ -20,7 +20,9 @@ const FuseStatsBar = () => {
     address + " totalBorrowAndSupply",
     async () => {
       const [{ 0: supplyETH, 1: borrowETH }, ethPrice] = await Promise.all([
-        fuse.contracts.FusePoolLens.methods.getUserSummary(address).call(),
+        fuse.contracts.FusePoolLens.methods
+          .getUserSummary(address)
+          .call({ gas: 1e18 }),
 
         rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()) as any,
       ]);

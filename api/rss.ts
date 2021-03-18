@@ -372,7 +372,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         1: upgradeable,
       } = await fuse.contracts.FusePoolLens.methods
         .getPoolOwnership(comptroller)
-        .call();
+        .call({ gas: 1e18 });
 
       return upgradeable ? 0 : 1;
     }, 10);

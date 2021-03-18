@@ -95,12 +95,14 @@ const PoolList = () => {
         isMyPools
           ? fuse.contracts.FusePoolLens.methods
               .getPoolsBySupplierWithData(address)
-              .call()
+              .call({ gas: 1e18 })
           : isCreatedPools
           ? fuse.contracts.FusePoolLens.methods
               .getPoolsByAccountWithData(address)
-              .call()
-          : fuse.contracts.FusePoolLens.methods.getPublicPoolsWithData().call(),
+              .call({ gas: 1e18 })
+          : fuse.contracts.FusePoolLens.methods
+              .getPublicPoolsWithData()
+              .call({ gas: 1e18 }),
 
         rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
       ]);
