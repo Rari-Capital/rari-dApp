@@ -29,7 +29,7 @@ function getWeb3Provider() {
 const initFuse = (provider = getWeb3Provider()) => {
   const fuse = new Fuse(provider);
 
-  // @ts-ignore
+  // @ts-ignore We have to do this to avoid Infura ratelimits on our large calls.
   fuse.contracts.FusePoolLens.setProvider(
     "https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN"
   );
