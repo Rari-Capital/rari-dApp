@@ -233,7 +233,7 @@ const SupplyList = ({
       >
         {assets.length > 0 ? (
           assets
-            .sort((a, b) => (b.liquidity > a.liquidity ? 1 : -1))
+            .sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1))
             .map((asset, index) => {
               return (
                 <AssetSupplyRow
@@ -498,7 +498,7 @@ const BorrowList = ({
       >
         {assets.length > 0 ? (
           assets
-            .sort((a, b) => (b.liquidity > a.liquidity ? 1 : -1))
+            .sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1))
             .map((asset, index) => {
               return (
                 <AssetBorrowRow
