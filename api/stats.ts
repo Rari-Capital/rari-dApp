@@ -2,7 +2,7 @@ import { NowRequest, NowResponse } from "@vercel/node";
 
 import Rari from "../src/rari-sdk/index";
 
-import { alchemyURL } from "../src/utils/web3Providers";
+import { alchemyURL, initFuseWithProviders } from "../src/utils/web3Providers";
 
 import { fetchTVL } from "../src/utils/fetchTVL";
 import {
@@ -12,9 +12,10 @@ import {
 } from "../src/utils/fetchPoolAPY";
 import { Pool } from "../src/utils/poolUtils";
 
-export default async (request: NowRequest, response: NowResponse) => {
-  const rari = new Rari(alchemyURL);
+const rari = new Rari(alchemyURL);
+const fuse = initFuseWithProviders();
 
+export default async (request: NowRequest, response: NowResponse) => {
   const [
     rawTVL,
     rawStablePoolAPY,
@@ -23,7 +24,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     rawDaiPoolAPY,
     rawRgtAPR,
   ] = await Promise.all([
-    fetchTVL(rari),
+    fetchTVL(rari, fuse),
     fetchPoolAPY(rari, Pool.STABLE),
     fetchPoolAPY(rari, Pool.YIELD),
     fetchPoolAPY(rari, Pool.ETH),

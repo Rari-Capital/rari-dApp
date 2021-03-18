@@ -1,22 +1,23 @@
 import Rari from "../rari-sdk/index";
-import { fetchTVL } from "./fetchTVL";
+
 import { getSDKPool, Pool } from "./poolUtils";
 
 export const fetchRGTAPR = async (rari: Rari) => {
-  const blockNumber = await rari.web3.eth.getBlockNumber();
+  // TODO: Won't work with all the staked and Fuse TVL included
+  //   const blockNumber = await rari.web3.eth.getBlockNumber();
 
-  const tvl = await fetchTVL(rari);
+  //   const tvl = await fetchTVL(rari);
 
-  const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
-    blockNumber,
-    tvl
-  );
+  //   const rgtRawAPR = await rari.governance.rgt.distributions.getCurrentApr(
+  //     blockNumber,
+  //     tvl
+  //   );
 
-  const rgtAPR = parseFloat(
-    rari.web3.utils.fromWei(rgtRawAPR.mul(rari.web3.utils.toBN(100)))
-  ).toFixed(0);
+  //   const rgtAPR = parseFloat(
+  //     rari.web3.utils.fromWei(rgtRawAPR.mul(rari.web3.utils.toBN(100)))
+  //   ).toFixed(0);
 
-  return rgtAPR;
+  return "0";
 };
 
 export const fetchPoolAPY = async (rari: Rari, pool: Pool) => {
