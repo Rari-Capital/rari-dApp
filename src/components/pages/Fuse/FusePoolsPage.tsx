@@ -284,16 +284,12 @@ const PoolRow = ({
             </AvatarGroup>
           )}
 
-          <Text flexShrink={0}>{name}</Text>
-
           {isEmpty ? null : (
-            <Text ml={2} mb="3px" fontWeight="bold" flexShrink={0}>
+            <Text mb="1px" fontWeight="bold" flexShrink={0}>
               <b>
-                (
                 {tokens.map(({ symbol }, index, array) => {
                   return symbol + (index !== array.length - 1 ? " / " : "");
                 })}
-                )
               </b>
             </Text>
           )}
