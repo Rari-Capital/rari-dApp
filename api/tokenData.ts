@@ -30,7 +30,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     const name = await tokenContract.methods.name().call();
     const symbol = await tokenContract.methods.symbol().call();
 
-    // BNB IS WEIRD
+    // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
     const isBNB = address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52";
 
     response.setHeader("Cache-Control", "s-maxage=259200");
