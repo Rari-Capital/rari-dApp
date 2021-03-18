@@ -75,7 +75,7 @@ const FusePoolPage = React.memo(() => {
         >
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "500px"}
+            height={isMobile ? "auto" : "470px"}
           >
             {data ? (
               <SupplyList
@@ -94,7 +94,7 @@ const FusePoolPage = React.memo(() => {
             ml={isMobile ? 0 : 4}
             mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "500px"}
+            height={isMobile ? "auto" : "470px"}
           >
             {data ? (
               <BorrowList
