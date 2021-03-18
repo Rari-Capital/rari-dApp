@@ -4,7 +4,7 @@ import Fuse from "../fuse-sdk/src";
 export const alchemyURL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ID}`;
 
 export function chooseBestWeb3Provider() {
-  if (!window) {
+  if (typeof window === "undefined") {
     return alchemyURL;
   }
 
