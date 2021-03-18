@@ -78,9 +78,9 @@ export async function testForCTokenErrorAndSend(
 ) {
   let response = await txObject.call({ from: caller });
 
-  // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
+  // For some reason `response` will be `["0"]` if no error but otherwise it will return a string of a number.
   if (response[0] !== "0") {
-    response = parseInt(response[0]);
+    response = parseInt(response);
 
     let err;
 
