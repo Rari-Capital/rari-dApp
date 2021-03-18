@@ -43,13 +43,14 @@ import { createComptroller } from "../../../../../utils/createComptroller";
 import { handleGenericError } from "../../../../../utils/errorHandling";
 import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
 import { useParams } from "react-router-dom";
+import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 
 enum UserAction {
   NO_ACTION,
   WAITING_FOR_TRANSACTIONS,
 }
 
-enum TokenErrorCodes {
+export enum CTokenErrorCodes {
   NO_ERROR,
   UNAUTHORIZED,
   BAD_INPUT,
@@ -79,7 +80,25 @@ export async function testForCTokenErrorAndSend(
 
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
-    const err = new Error(failMessage + " Code: " + TokenErrorCodes[response]);
+    response = parseInt(response[0]);
+
+    let err;
+
+    if (response >= 1000) {
+      const comptrollerResponse = response - 1000;
+
+      // This is a comptroller error:
+      err = new Error(
+        failMessage +
+          " Comptroller Code: " +
+          ComptrollerErrorCodes[comptrollerResponse]
+      );
+    } else {
+      // This is a standard token error:
+      err = new Error(
+        failMessage + " CToken Code: " + CTokenErrorCodes[response]
+      );
+    }
 
     LogRocket.captureException(err);
     throw err;
