@@ -390,7 +390,9 @@ export default async (request: NowRequest, response: NowResponse) => {
         .call({ gas: 1e18 });
 
       // TODO: Change once multisig: DAO Deployer is safe
-      if (admin === "0xb8f02248d53f7edfa38e79263e743e9390f81942") {
+      if (
+        admin.toLowerCase() === "0xb8f02248d53f7edfa38e79263e743e9390f81942"
+      ) {
         return 1;
       }
 
