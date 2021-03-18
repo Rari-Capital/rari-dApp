@@ -4,9 +4,13 @@ export const infuraURL = `https://mainnet.infura.io/v3/${process.env.REACT_APP_I
 export const alchemyURL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ID}`;
 
 export function chooseBestWeb3Provider() {
-  if (window?.ethereum) {
+  if (!window) {
+    return infuraURL;
+  }
+
+  if (window.ethereum) {
     return window.ethereum;
-  } else if (window?.web3) {
+  } else if (window.web3) {
     return window.web3.currentProvider;
   } else {
     return infuraURL;
