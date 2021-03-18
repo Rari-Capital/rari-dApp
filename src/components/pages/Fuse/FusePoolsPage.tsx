@@ -277,7 +277,7 @@ const PoolRow = ({
           overflow="scroll"
         >
           {isEmpty ? null : (
-            <AvatarGroup size="xs" max={20} mr={2}>
+            <AvatarGroup size="xs" max={30} mr={2}>
               {tokens.map(({ address }) => {
                 return <CTokenIcon key={address} address={address} />;
               })}

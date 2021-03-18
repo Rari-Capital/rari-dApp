@@ -408,7 +408,7 @@ const PoolConfiguration = ({
 
             {assets.length > 0 ? (
               <>
-                <AvatarGroup size="xs" max={20}>
+                <AvatarGroup size="xs" max={30}>
                   {assets.map(({ underlyingToken, cToken }) => {
                     return (
                       <CTokenIcon key={cToken} address={underlyingToken} />
