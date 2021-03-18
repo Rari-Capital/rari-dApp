@@ -19,6 +19,14 @@ html {
   -ms-overflow-style: none;
 }
 
+.apexcharts-tooltip,
+.apexcharts-tooltip.active,
+.apexcharts-xaxistooltip,
+.apexcharts-xaxistooltip.active,
+.apexcharts-marker {
+  transition: none !important;
+}
+
 *::-webkit-scrollbar {
   display: none;
 }
