@@ -32,6 +32,11 @@ html {
   z-index: 9999 !important;
 }
 
+.fix-switch .chakra-switch__input {
+  /* Fixes a bug in the FusePoolPage with the switches creating bottom padding */
+  position: static !important;
+}
+
 /* 
 These fonts only have ASCII glyphs. 
 If you want to add some more glyphs but still remove useless ones go to: https://transfonter.org/ 
