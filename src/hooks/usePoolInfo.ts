@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Pool, usePoolType } from "../context/PoolContext";
+import { usePoolType } from "../context/PoolContext";
+import { Pool } from "../utils/poolUtils";
 
 import EthIcon from "../static/ethicon.png";
 import StableIcon from "../static/stableicon.png";

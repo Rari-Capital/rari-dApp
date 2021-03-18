@@ -36,7 +36,7 @@ import { useRari } from "../../context/RariContext";
 import { MdSwapHoriz } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
-import { Pool, PoolTypeProvider } from "../../context/PoolContext";
+import { PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
 
@@ -61,7 +61,7 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 
 import BigNumber from "bignumber.js";
 import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
-import { getSDKPool } from "../../utils/poolUtils";
+import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
 
 const MultiPoolPortal = React.memo(() => {

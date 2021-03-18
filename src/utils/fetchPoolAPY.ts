@@ -1,7 +1,6 @@
-import { Pool } from "../context/PoolContext";
 import Rari from "../rari-sdk/index";
 import { fetchTVL } from "./fetchTVL";
-import { getSDKPool } from "./poolUtils";
+import { getSDKPool, Pool } from "./poolUtils";
 
 export const fetchRGTAPR = async (rari: Rari) => {
   const blockNumber = await rari.web3.eth.getBlockNumber();
@@ -25,6 +24,17 @@ export const fetchPoolAPY = async (rari: Rari, pool: Pool) => {
     rari,
     pool,
   }).apy.getCurrentRawApy();
+
+  const poolAPY = parseFloat(
+    rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
+  ).toFixed(2);
+
+  return poolAPY;
+};
+
+// TODO: Don't hardcode this.
+export const fetchDAIPoolAPY = async (rari: Rari) => {
+  const poolRawAPY = await rari.pools.dai.apy.getCurrentRawApy();
 
   const poolAPY = parseFloat(
     rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))

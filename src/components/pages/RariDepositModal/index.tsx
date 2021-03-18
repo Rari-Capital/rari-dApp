@@ -5,8 +5,8 @@ import TokenSelect from "./TokenSelect";
 import AmountSelect from "./AmountSelect";
 import OptionsMenu from "./OptionsMenu";
 import { MODAL_PROPS } from "../../shared/Modal";
-import { Pool, usePoolType } from "../../../context/PoolContext";
-import { poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import { usePoolType } from "../../../context/PoolContext";
+import { Pool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
 
 enum CurrentScreen {
   MAIN,

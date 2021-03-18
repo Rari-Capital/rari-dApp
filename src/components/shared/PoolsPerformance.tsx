@@ -14,10 +14,11 @@ import { PoolReturnChartOptions } from "../../utils/chartOptions";
 import Chart from "react-apexcharts";
 
 import { usePoolAPY } from "../../hooks/usePoolAPY";
-import { Pool } from "../../context/PoolContext";
+
 import { SimpleTooltip } from "./SimpleTooltip";
 import { PropagateLoader } from "react-spinners";
 import { InfoIcon } from "@chakra-ui/icons";
+import { Pool } from "../../utils/poolUtils";
 
 const PoolsPerformanceChart = ({ size }: { size: number }) => {
   const {

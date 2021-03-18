@@ -23,10 +23,10 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useTranslation } from "react-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 import { usdFormatter } from "../../../utils/bigUtils";
-import { Pool, usePoolType } from "../../../context/PoolContext";
+import { usePoolType } from "../../../context/PoolContext";
 
 import { Mode } from ".";
-import { poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import { Pool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useNoSlippageCurrencies } from "../../../hooks/useNoSlippageCurrencies";
 

@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Pool } from "../context/PoolContext";
+import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
 import Rari from "../rari-sdk/index";
 import { stringUsdFormatter } from "../utils/bigUtils";

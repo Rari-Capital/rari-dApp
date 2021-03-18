@@ -1,10 +1,5 @@
 import React, { ReactNode } from "react";
-
-export enum Pool {
-  STABLE = "stable",
-  YIELD = "yield",
-  ETH = "eth",
-}
+import { Pool } from "../utils/poolUtils";
 
 export const PoolTypeContext = React.createContext<Pool | undefined>(undefined);
 

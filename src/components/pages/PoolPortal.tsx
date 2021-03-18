@@ -56,7 +56,7 @@ import { useQuery } from "react-query";
 
 import { useTranslation } from "react-i18next";
 
-import { Pool, PoolTypeProvider, usePoolType } from "../../context/PoolContext";
+import { PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 import ForceAuthModal from "../shared/ForceAuthModal";
@@ -70,7 +70,7 @@ import {
   stringUsdFormatter,
 } from "../../utils/bigUtils";
 // import { SimpleTooltip } from "../shared/SimpleTooltip";
-import { getSDKPool } from "../../utils/poolUtils";
+import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";

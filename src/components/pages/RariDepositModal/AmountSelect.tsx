@@ -27,14 +27,18 @@ import { Mode } from ".";
 import { useTranslation } from "react-i18next";
 import { ModalDivider } from "../../shared/Modal";
 import { useRari } from "../../../context/RariContext";
-import { Pool, usePoolType } from "../../../context/PoolContext";
+import { usePoolType } from "../../../context/PoolContext";
 import { BN, smallStringUsdFormatter } from "../../../utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
 import { useQueryCache } from "react-query";
 
-import { getSDKPool, poolHasDivergenceRisk } from "../../../utils/poolUtils";
+import {
+  getSDKPool,
+  Pool,
+  poolHasDivergenceRisk,
+} from "../../../utils/poolUtils";
 import {
   fetchMaxWithdraw,
   useMaxWithdraw,
