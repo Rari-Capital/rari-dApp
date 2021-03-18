@@ -44,6 +44,23 @@ async function computeAssetRSS(address: string) {
     };
   }
 
+  // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
+  if (address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52") {
+    return {
+      liquidityUSD: 0,
+
+      mcap: 33,
+      volatility: 20,
+      liquidity: 0,
+      swapCount: 7,
+      coingeckoMetadata: 0,
+      exchanges: 3,
+      transfers: 3,
+
+      totalScore: 66,
+    };
+  }
+
   try {
     // Fetch all the data in parallel
     const [

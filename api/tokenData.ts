@@ -30,15 +30,19 @@ export default async (request: NowRequest, response: NowResponse) => {
     const name = await tokenContract.methods.name().call();
     const symbol = await tokenContract.methods.symbol().call();
 
+    // BNB IS WEIRD
+    const isBNB = address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52";
+
     response.setHeader("Cache-Control", "s-maxage=259200");
     response.json({
       name,
       symbol,
       decimals,
-      color: "#FFFFFF",
-      overlayTextColor: "#000",
-      logoURL:
-        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+      color: isBNB ? "#E6B93D" : "#FFFFFF",
+      overlayTextColor: isBNB ? "#FFFFFF" : "#000000",
+      logoURL: isBNB
+        ? "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png"
+        : "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
     });
 
     return;
