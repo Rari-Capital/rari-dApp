@@ -404,6 +404,8 @@ const AmountSelect = ({
               .approve(cToken.options.address, max)
               .send({ from: address });
           }
+
+          LogRocket.track("Fuse-Approve");
         }
 
         if (mode === Mode.SUPPLY) {
@@ -443,6 +445,8 @@ const AmountSelect = ({
               "Cannot deposit this amount right now!"
             );
           }
+
+          LogRocket.track("Fuse-Supply");
         } else if (mode === Mode.REPAY) {
           if (isETH) {
             const call = cToken.methods.repayBorrow();
@@ -481,18 +485,24 @@ const AmountSelect = ({
             );
           }
         }
+
+        LogRocket.track("Fuse-Repay");
       } else if (mode === Mode.BORROW) {
         await testForCTokenErrorAndSend(
           cToken.methods.borrow(amountBN),
           address,
           "Cannot borrow this amount right now!"
         );
+
+        LogRocket.track("Fuse-Borrow");
       } else if (mode === Mode.WITHDRAW) {
         await testForCTokenErrorAndSend(
           cToken.methods.redeemUnderlying(amountBN),
           address,
           "Cannot withdraw this amount right now!"
         );
+
+        LogRocket.track("Fuse-Withdraw");
       }
 
       queryCache.refetchQueries();
