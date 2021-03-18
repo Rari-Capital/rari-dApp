@@ -383,10 +383,16 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     const upgradeable = await weightedCalculation(async () => {
       const {
+        0: admin,
         1: upgradeable,
       } = await fuse.contracts.FusePoolLens.methods
         .getPoolOwnership(comptroller)
         .call({ gas: 1e18 });
+
+      // TODO: Change once multisig: DAO Deployer is safe
+      if (admin === "0xb8f02248d53f7edfa38e79263e743e9390f81942") {
+        return 1;
+      }
 
       return upgradeable ? 0 : 1;
     }, 10);
