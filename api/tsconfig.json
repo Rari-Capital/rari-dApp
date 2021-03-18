@@ -1,2 +1,22 @@
-{"compilerOptions": {"noImplicitAny": false}}
-
+{
+    "compilerOptions": {
+      "target": "es5",
+      "allowJs": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "noImplicitAny": false,
+      "noFallthroughCasesInSwitch": true,
+    },
+    "include": [
+      "."
+    ]
+  }
+  

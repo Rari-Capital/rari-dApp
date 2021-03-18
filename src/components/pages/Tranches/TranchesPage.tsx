@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Center,
-  Column,
-  Row,
-  RowOrColumn,
-  useWindowSize,
-} from "buttered-chakra";
+import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
@@ -32,6 +26,7 @@ import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
+import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -718,10 +713,4 @@ export const SFIDistributions = () => {
       </Link>
     </Column>
   );
-};
-
-const useIsSmallScreen = () => {
-  const { width } = useWindowSize();
-
-  return width < 1030;
 };

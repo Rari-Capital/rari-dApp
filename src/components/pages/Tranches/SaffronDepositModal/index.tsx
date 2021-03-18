@@ -15,7 +15,7 @@ interface Props {
   trancheRating: TrancheRating;
 }
 
-const DepositModal = React.memo((props: Props) => {
+const DepositModal = (props: Props) => {
   return (
     <Modal
       motionPreset="slideInBottom"
@@ -39,6 +39,6 @@ const DepositModal = React.memo((props: Props) => {
       </ModalContent>
     </Modal>
   );
-});
+};
 
 export default DepositModal;

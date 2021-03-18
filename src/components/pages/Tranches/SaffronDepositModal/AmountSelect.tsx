@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Row, Column } from "buttered-chakra";
+import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
-import LogRocket from "logrocket";
 import {
   Heading,
   Box,
@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import DashboardBox from "../../../shared/DashboardBox";
 import { tokens } from "../../../../utils/tokenUtils";
-import SmallWhiteCircle from "../../../../static/small-white-circle.png";
+
 import {
   useTokenBalance,
   fetchTokenBalance,
@@ -39,6 +39,7 @@ import {
 
 import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
 import { Token } from "rari-tokens-generator";
+import { handleGenericError } from "../../../../utils/errorHandling";
 
 function noop() {}
 
@@ -286,28 +287,13 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
         .add_liquidity(amountBN.toString(), trancheRatingIndex(trancheRating))
         .send({ from: address });
 
-      await queryCache.refetchQueries();
+      queryCache.refetchQueries();
+      // Wait 2 seconds for refetch and then close modal.
+      // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       onClose();
     } catch (e) {
-      let message: string;
-
-      if (e instanceof Error) {
-        message = e.toString();
-        LogRocket.captureException(e);
-      } else {
-        message = JSON.stringify(e);
-        LogRocket.captureException(new Error(message));
-      }
-
-      toast({
-        title: "Error!",
-        description: message,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top-right",
-      });
-
+      handleGenericError(e, toast);
       setUserAction(UserAction.NO_ACTION);
     }
   };
@@ -434,12 +420,12 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
     let maxBN: BN;
 
-    const balance = await fetchTokenBalance(token.address, rari, address);
+    const balance = await fetchTokenBalance(token.address, rari.web3, address);
 
     maxBN = balance;
 
     if (maxBN.isNeg() || maxBN.isZero()) {
-      updateAmount("0.0");
+      updateAmount("");
     } else {
       const str = new BigNumber(maxBN.toString())
         .div(10 ** token.decimals)
@@ -448,7 +434,7 @@ const TokenNameAndMaxButton = ({
         .replace(/\.?0+$/, "");
 
       if (str.startsWith("0.000000")) {
-        updateAmount("0.0");
+        updateAmount("");
       } else {
         updateAmount(str);
       }
