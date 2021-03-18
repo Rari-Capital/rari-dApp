@@ -21,8 +21,7 @@ const weightedCalculation = async (
 };
 
 const fuse = new Fuse(
-  `http://api.rari.capital:21917`
-  //TODO: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
+  `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
 );
 
 async function computeAssetRSS(address: string) {
