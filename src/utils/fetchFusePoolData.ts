@@ -112,7 +112,7 @@ export const fetchFusePoolData = async (
   }
 
   return {
-    assets,
+    assets: assets.sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1)),
     comptroller,
     name,
     isPrivate,

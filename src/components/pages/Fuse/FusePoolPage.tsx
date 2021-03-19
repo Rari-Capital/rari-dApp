@@ -42,16 +42,6 @@ const FusePoolPage = React.memo(() => {
 
   const data = useFusePoolData(poolId);
 
-  const sortedAssets = useMemo(() => {
-    if (data?.assets) {
-      return data.assets.sort((a, b) =>
-        b.liquidityUSD > a.liquidityUSD ? 1 : -1
-      );
-    } else {
-      return [];
-    }
-  }, [data?.assets]);
-
   return (
     <>
       <ForceAuthModal />
@@ -90,7 +80,7 @@ const FusePoolPage = React.memo(() => {
           >
             {data ? (
               <SupplyList
-                assets={sortedAssets}
+                assets={data.assets}
                 comptrollerAddress={data.comptroller}
                 supplyBalanceUSD={data.totalSupplyBalanceUSD}
               />
@@ -110,7 +100,7 @@ const FusePoolPage = React.memo(() => {
             {data ? (
               <BorrowList
                 comptrollerAddress={data.comptroller}
-                assets={sortedAssets}
+                assets={data.assets}
                 borrowBalanceUSD={data.totalBorrowBalanceUSD}
               />
             ) : (
