@@ -181,7 +181,7 @@
   "Click confirm to continue!": "Click confirm to continue!",
   "Keep this bar from filling up to avoid being liquidated!": "Keep this bar from filling up to avoid being liquidated!",
   "If your borrow amount reaches this value, you will be liquidated.": "If your borrow amount reaches this value, you will be liquidated.",
-  "APY/Weekly": "APY/Weekly",
+  "APY/WPY": "APY/WPY",
   "You don't have enough {{token}} or are trying to over-repay!": "You don't have enough {{token}} or are trying to over-repay!",
   "You cannot withdraw this much; try repaying some debt.": "You cannot withdraw this much; try repaying some debt.",
   "You cannot borrow this much; try supplying more collateral.": "You cannot borrow this much; try supplying more collateral.",

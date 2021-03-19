@@ -218,7 +218,7 @@ const SupplyList = ({
           </Text>
 
           <Text width="27%" fontWeight="bold" textAlign="right">
-            {t("APY/Weekly")}
+            {t("APY/WPY")}
           </Text>
 
           <Text width="27%" fontWeight="bold" textAlign="right">
@@ -489,7 +489,7 @@ const BorrowList = ({
           </Text>
 
           <Text width="27%" fontWeight="bold" textAlign="right">
-            {t("APY/Weekly")}
+            {t("APY/WPY")}
           </Text>
 
           <Text width="27%" fontWeight="bold" textAlign="right">

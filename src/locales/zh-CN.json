@@ -182,7 +182,7 @@
   "Click confirm to continue!": "单击确认继续！",
   "Keep this bar from filling up to avoid being liquidated!": "请勿填充此栏，以免被清算！",
   "If your borrow amount reaches this value, you will be liquidated.": "如果您的借贷金额达到此值，您将被清算。",
-  "APY/Weekly": "APY /每周",
+  "APY/WPY": "APY / WPY",
   "You don't have enough {{token}} or are trying to over-repay!": "您没有足够的{{token}}或正尝试超额还款！",
   "You cannot withdraw this much; try repaying some debt.": "您不能撤出那么多钱； 尝试偿还一些债务。",
   "You cannot borrow this much; try supplying more collateral.": "你不能借这么多钱。 尝试提供更多抵押品",
