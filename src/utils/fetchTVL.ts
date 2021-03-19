@@ -1,5 +1,6 @@
 import Rari from "../rari-sdk/index";
 import Fuse from "../fuse-sdk";
+import BigNumber from "bignumber.js";
 
 export const fetchFuseTVL = async (fuse: Fuse) => {
   const {
@@ -9,7 +10,9 @@ export const fetchFuseTVL = async (fuse: Fuse) => {
     .call({ gas: 1e18 });
 
   return fuse.web3.utils.toBN(
-    totalSuppliedETH.reduce((a: number, b: string) => a + parseInt(b), 0)
+    new BigNumber(
+      totalSuppliedETH.reduce((a: number, b: string) => a + parseInt(b), 0)
+    ).toFixed(0)
   );
 };
 
