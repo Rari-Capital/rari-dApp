@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
 import LogRocket from "logrocket";
-import React, { useMemo } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
@@ -131,6 +131,12 @@ const CollateralRatioBar = ({
   const maxBorrow = useBorrowLimit(assets);
 
   const ratio = (borrowUSD / maxBorrow) * 100;
+
+  useEffect(() => {
+    if (ratio > 95) {
+      LogRocket.track("Fuse-AtRiskOfLiquidation");
+    }
+  }, [ratio]);
 
   return (
     <DashboardBox width="100%" height="65px" mt={4} p={4}>
