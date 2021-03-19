@@ -137,11 +137,11 @@ const PoolList = () => {
     }
 
     if (!filter) {
-      return _pools.sort((a, b) => (b.borrowedUSD > a.borrowedUSD ? 1 : -1));
+      return _pools.sort((a, b) => (b.id > a.id ? 1 : -1));
     }
 
     if (isMyPools || isCreatedPools) {
-      return _pools.sort((a, b) => (b.borrowedUSD > a.borrowedUSD ? 1 : -1));
+      return _pools.sort((a, b) => (b.id > a.id ? 1 : -1));
     }
 
     const options = {
@@ -151,7 +151,7 @@ const PoolList = () => {
     const filtered = new Fuse(_pools, options).search(filter);
     return filtered
       .map((item) => item.item)
-      .sort((a, b) => (b.borrowedUSD > a.borrowedUSD ? 1 : -1));
+      .sort((a, b) => (b.id > a.id ? 1 : -1));
   }, [_pools, filter, isMyPools, isCreatedPools]);
 
   return (
@@ -178,16 +178,17 @@ const PoolList = () => {
           {t("Total Supplied")}
         </Text>
 
-        <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Pool Number")}
-        </Text>
-
         <Row mainAxisAlignment="center" crossAxisAlignment="center" width="15%">
           <Text fontWeight="bold" textAlign="center">
-            {t("Total Borrowed")}
+            {t("Pool Number")}
           </Text>
+
           <ChevronDownIcon ml={1} />
         </Row>
+
+        <Text fontWeight="bold" textAlign="center" width="15%">
+          {t("Total Borrowed")}
+        </Text>
 
         <Text fontWeight="bold" width="15%" textAlign="center">
           {t("Pool Risk Score")}
