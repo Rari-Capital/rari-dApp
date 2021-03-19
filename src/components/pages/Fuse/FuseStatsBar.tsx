@@ -1,20 +1,33 @@
 import { Heading } from "@chakra-ui/react";
 import { RowOrColumn, Column, Center } from "buttered-chakra";
-import React from "react";
+import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "../../../utils/bigUtils";
+import { smallUsdFormatter, usdFormatter } from "../../../utils/bigUtils";
+import { fetchFuseTVL } from "../../../utils/fetchTVL";
 import CaptionedStat from "../../shared/CaptionedStat";
 import DashboardBox from "../../shared/DashboardBox";
+
+import { APYWithRefreshMovingStat } from "../../shared/MovingStat";
 
 const FuseStatsBar = () => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
 
-  const { address, fuse, rari } = useRari();
+  const { address, isAuthed, fuse, rari } = useRari();
+
+  const fetchFuseNumberTVL = async () => {
+    const tvlETH = await fetchFuseTVL(fuse);
+
+    const ethPrice: number = rari.web3.utils.fromWei(
+      await rari.getEthUsdPriceBN()
+    ) as any;
+
+    return (parseInt(tvlETH.toString()) / 1e18) * ethPrice;
+  };
 
   const { data: totalBorrowAndSupply } = useQuery(
     address + " totalBorrowAndSupply",
@@ -60,52 +73,86 @@ const FuseStatsBar = () => {
           )}
         </Column>
       </DashboardBox>
-      <DashboardBox
-        width={isMobile ? "100%" : "240px"}
-        height={isMobile ? "auto" : "100%"}
-        flexShrink={0}
-        mt={isMobile ? 4 : 0}
-        ml={isMobile ? 0 : 4}
-      >
-        <Center expand p={4}>
-          <CaptionedStat
+
+      {isAuthed &&
+      totalBorrowAndSupply &&
+      totalBorrowAndSupply.totalSuppliedUSD > 0 ? (
+        <>
+          <StatBox>
+            <CaptionedStat
+              crossAxisAlignment="center"
+              captionFirst={false}
+              statSize="3xl"
+              captionSize="sm"
+              stat={
+                totalBorrowAndSupply
+                  ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
+                  : "$?"
+              }
+              caption={t("Total Supply Balance")}
+            />
+          </StatBox>
+
+          <StatBox>
+            <CaptionedStat
+              crossAxisAlignment="center"
+              captionFirst={false}
+              statSize="3xl"
+              captionSize="sm"
+              stat={
+                totalBorrowAndSupply
+                  ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
+                  : "$?"
+              }
+              caption={t("Total Borrow Balance")}
+            />
+          </StatBox>
+        </>
+      ) : (
+        <StatBox width={isMobile ? "100%" : "480px"}>
+          <APYWithRefreshMovingStat
+            formatStat={usdFormatter}
+            fetchInterval={40000}
+            loadingPlaceholder="$?"
+            apyInterval={100}
+            fetch={fetchFuseNumberTVL}
+            queryKey={"fuseTVL"}
+            apy={0.15}
+            statSize="3xl"
+            captionSize="xs"
+            caption={t("Total Value Locked Across Fuse")}
             crossAxisAlignment="center"
             captionFirst={false}
-            statSize="3xl"
-            captionSize="sm"
-            stat={
-              totalBorrowAndSupply
-                ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
-                : "$?"
-            }
-            caption={t("Total Supply Balance")}
           />
-        </Center>
-      </DashboardBox>
-      <DashboardBox
-        width={isMobile ? "100%" : "240px"}
-        height={isMobile ? "auto" : "100%"}
-        flexShrink={0}
-        mt={isMobile ? 4 : 0}
-        ml={isMobile ? 0 : 4}
-      >
-        <Center expand p={4}>
-          <CaptionedStat
-            crossAxisAlignment="center"
-            captionFirst={false}
-            statSize="3xl"
-            captionSize="sm"
-            stat={
-              totalBorrowAndSupply
-                ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
-                : "$?"
-            }
-            caption={t("Total Borrow Balance")}
-          />
-        </Center>
-      </DashboardBox>
+        </StatBox>
+      )}
     </RowOrColumn>
   );
 };
 
 export default FuseStatsBar;
+
+const StatBox = ({
+  children,
+  ...others
+}: {
+  children: ReactNode;
+  [key: string]: any;
+}) => {
+  const isMobile = useIsSmallScreen();
+
+  return (
+    <DashboardBox
+      width={isMobile ? "100%" : "240px"}
+      height={isMobile ? "auto" : "100%"}
+      flexShrink={0}
+      mt={isMobile ? 4 : 0}
+      ml={isMobile ? 0 : 4}
+      {...others}
+    >
+      <Center expand p={4}>
+        {children}
+      </Center>
+    </DashboardBox>
+  );
+};

@@ -1,6 +1,18 @@
 import Rari from "../rari-sdk/index";
 import Fuse from "../fuse-sdk";
 
+export const fetchFuseTVL = async (fuse: Fuse) => {
+  const {
+    2: totalSuppliedETH,
+  } = await fuse.contracts.FusePoolLens.methods
+    .getPublicPoolsWithData()
+    .call({ gas: 1e18 });
+
+  return fuse.web3.utils.toBN(
+    totalSuppliedETH.reduce((a: number, b: string) => a + parseInt(b), 0)
+  );
+};
+
 export const fetchTVL = async (rari: Rari, fuse: Fuse) => {
   const [
     stableTVL,
@@ -17,17 +29,7 @@ export const fetchTVL = async (rari: Rari, fuse: Fuse) => {
     rari.pools.dai.balances.getTotalSupply(),
     rari.getEthUsdPriceBN(),
     rari.governance.rgt.sushiSwapDistributions.totalStakedUsd(),
-    (async () => {
-      const {
-        2: totalSuppliedETH,
-      } = await fuse.contracts.FusePoolLens.methods
-        .getPublicPoolsWithData()
-        .call({ gas: 1e18 });
-
-      return fuse.web3.utils.toBN(
-        totalSuppliedETH.reduce((a: number, b: string) => a + parseInt(b), 0)
-      );
-    })(),
+    fetchFuseTVL(fuse),
   ]);
 
   const ethUSDBN = ethPriceBN.div(rari.web3.utils.toBN(1e18));
