@@ -438,6 +438,8 @@ const AssetSupplyRow = ({
             .${asset.underlyingSymbol + "-switch"} .chakra-switch__input {
               /* Fixes a bug in the FusePoolPage with the switches creating bottom padding */
               position: static !important;
+              height: 0px !important;
+              width: 0px !important;
             }
 
             `}
