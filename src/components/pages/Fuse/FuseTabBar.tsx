@@ -58,6 +58,7 @@ const FuseTabBar = () => {
                     navigate("");
                   }
                 }}
+                width="185px"
                 height="100%"
                 ml={2}
                 placeholder={t("Try searching for SOCKS")}
