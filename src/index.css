@@ -40,11 +40,6 @@ html {
   z-index: 9999 !important;
 }
 
-.fix-switch .chakra-switch__input {
-  /* Fixes a bug in the FusePoolPage with the switches creating bottom padding */
-  position: static !important;
-}
-
 .hover-row:hover {
   background-color: #282727;
 }

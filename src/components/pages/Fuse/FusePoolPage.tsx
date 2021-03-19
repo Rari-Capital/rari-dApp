@@ -435,12 +435,16 @@ const AssetSupplyRow = ({
                   : "#282727"
               } !important;
             }
+            .${asset.underlyingSymbol + "-switch"} .chakra-switch__input {
+              /* Fixes a bug in the FusePoolPage with the switches creating bottom padding */
+              position: static !important;
+            }
 
             `}
           </style>
           <Switch
             isChecked={asset.membership}
-            className={asset.underlyingSymbol + "-switch, fix-switch"}
+            className={asset.underlyingSymbol + "-switch"}
             onChange={onToggleCollateral}
             size="md"
             mt={1}
