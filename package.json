@@ -52,7 +52,7 @@
     "react-dom": "^16.13.1",
     "react-double-marquee": "^1.0.6",
     "react-error-boundary": "^3.0.2",
-    "react-i18next": "^11.7.3",
+    "react-i18next": "^11.8.10",
     "react-icons": "^3.11.0",
     "react-ios-pwa-prompt": "^1.8.1",
     "react-jazzicon": "^0.1.3",
