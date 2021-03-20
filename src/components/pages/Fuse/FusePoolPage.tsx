@@ -40,6 +40,12 @@ const FusePoolPage = React.memo(() => {
 
   let { poolId } = useParams();
 
+  if (poolId.toString() === "2") {
+    alert(
+      "There is a UI bug causing an issue with rendering this pool. We are resolving this now. All funds are safe!"
+    );
+  }
+
   const data = useFusePoolData(poolId);
 
   return (
