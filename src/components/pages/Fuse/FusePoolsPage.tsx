@@ -107,14 +107,6 @@ const PoolList = () => {
         rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
       ]);
 
-      fuse.contracts.FusePoolLens.methods
-        .getPublicPoolUsersWithData(fuse.web3.utils.toBN(1e18))
-        .call()
-        .then((result: string[][]) => result[1].flat())
-        .then((users: string[]) => {
-          console.log("Users in need of liquidation: ", users);
-        });
-
       const merged: {
         id: number;
         pool: FusePool;
