@@ -67,8 +67,6 @@
   "Safe returns on ETH": "Safe returns on ETH",
   "Safe returns on stablecoins": "Safe returns on stablecoins",
   "High risk, high reward": "High risk, high reward",
-  "Connect Wallet": "Connect Wallet",
-  "Get Wallet": "Get Wallet",
   "Extra yield from $RGT": "Extra yield from $RGT",
   "Claim RGT": "Claim RGT",
   "Claimable RGT": "Claimable RGT",
@@ -224,5 +222,6 @@
   "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   "Pool Risk Score": "Pool Risk Score",
   "Isolated lending pools you can use today that will power the decentralized future of tomorrow.": "Isolated lending pools you can use today that will power the decentralized future of tomorrow.",
-  "Total Value Locked Across Fuse": "Total Value Locked Across Fuse"
+  "Total Value Locked Across Fuse": "Total Value Locked Across Fuse",
+  "Connecting to your wallet...": "Connecting to your wallet..."
 }

@@ -240,6 +240,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [address]);
 
+  // Automatically open the web3modal (or just login if they have already used the site)
+  useEffect(() => {
+    login();
+  }, [login]);
+
   const value = useMemo(
     () => ({
       web3ModalProvider,
