@@ -1,9 +1,8 @@
 {
   "name": "@rari-capital/fuse-sdk",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "JavaScript SDK for easy implementation of Fuse by Rari Capital.",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
     "test": "mocha"
   },
