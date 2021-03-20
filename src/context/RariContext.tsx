@@ -94,7 +94,7 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
   };
 
   const web3Modal = new Web3Modal.default({
-    cacheProvider: false,
+    cacheProvider: true,
     providerOptions,
     theme: {
       background: DASHBOARD_BOX_PROPS.backgroundColor,
