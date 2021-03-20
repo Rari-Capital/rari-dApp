@@ -47,11 +47,17 @@ export default async (request: NowRequest, response: NowResponse) => {
     return;
   }
 
-  const {
+  let {
     symbol,
     name,
     image: { small },
   } = rawData;
+
+  // FTX swapped the name and symbol so we will correct for that.
+  if (address === "0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9") {
+    symbol = name;
+    name = symbol;
+  }
 
   const basicTokenInfo = {
     symbol: symbol.toUpperCase(),
