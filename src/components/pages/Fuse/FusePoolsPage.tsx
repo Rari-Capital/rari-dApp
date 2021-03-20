@@ -45,26 +45,6 @@ const FusePoolsPage = React.memo(() => {
 
   const isMobile = useIsSmallScreen();
 
-  const toast = useToast();
-
-  // TODO: Remove
-  const [hasShownWarning, setHasShownWarning] = useState(false);
-  useEffect(() => {
-    if (!hasShownWarning) {
-      toast({
-        title: "Error.",
-        description:
-          "We are aware of a UI bug causing issues rendering pool #2. We are resolving this now; all funds are safe.",
-        status: "warning",
-        position: "top-right",
-        duration: 300000,
-        isClosable: true,
-      });
-
-      setHasShownWarning(true);
-    }
-  }, [hasShownWarning]);
-
   return (
     <>
       <ForceAuthModal />
@@ -278,6 +258,26 @@ const PoolRow = ({
   const isEmpty = tokens.length === 0;
 
   const rss = usePoolRSS(poolNumber);
+
+  const toast = useToast();
+
+  // TODO: Remove
+  const [hasShownWarning, setHasShownWarning] = useState(false);
+  useEffect(() => {
+    if (poolNumber.toString() === "2" && !hasShownWarning) {
+      toast({
+        title: "Error.",
+        description:
+          "We are aware of a UI bug causing issues rendering pool #2. We are resolving this now; all funds are safe.",
+        status: "warning",
+        position: "top-right",
+        duration: 300000,
+        isClosable: true,
+      });
+
+      setHasShownWarning(true);
+    }
+  }, [hasShownWarning, poolNumber]);
 
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
