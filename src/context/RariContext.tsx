@@ -19,6 +19,7 @@ import {
   chooseBestWeb3Provider,
   initFuseWithProviders,
 } from "../utils/web3Providers";
+import { useIsMobile } from "buttered-chakra";
 
 async function launchModalLazy(t: (text: string, extra?: any) => string) {
   const [
@@ -240,10 +241,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [address]);
 
-  // Automatically open the web3modal (or just login if they have already used the site)
+  // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
+  const isMobile = useIsMobile();
   useEffect(() => {
-    login();
-  }, [login]);
+    if (!isMobile) {
+      login();
+    }
+  }, [login, isMobile]);
 
   const value = useMemo(
     () => ({

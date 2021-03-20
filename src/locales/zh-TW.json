@@ -223,5 +223,6 @@
   "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   "Pool Risk Score": "集合風險評分",
   "Total Value Locked Across Fuse": "跨保險絲鎖定的總價值",
-  "Connecting to your wallet...": "正在連接到您的錢包..."
+  "Connecting to your wallet...": "正在連接到您的錢包...",
+  "Connect Wallet": "連接錢包"
 }
