@@ -315,7 +315,7 @@ const OracleAndInterestRates = ({
         />
 
         <StatRow
-          statATitle={t("Fuse Interest Fee")}
+          statATitle={t("Platform Fee")}
           statA={assets.length > 0 ? assets[0].fuseFee / 1e16 + "%" : "10%"}
           statBTitle={t("Average Admin Fee")}
           statB={
