@@ -145,7 +145,7 @@ export const AssetSettings = ({
   };
 
   const [interestRateModel, setInterestRateModel] = useState(
-    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
+    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_DAI
   );
 
   const { data: curves } = useQuery(
@@ -475,20 +475,21 @@ export const AssetSettings = ({
           <option
             className="black-bg-option"
             value={
-              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel
+              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+                .JumpRateModel_DAI
             }
           >
-            JumpRateModel
+            DAI JumpRateModel
           </option>
 
           <option
             className="black-bg-option"
             value={
               Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-                .WhitePaperInterestRateModel
+                .WhitePaperInterestRateModel_ETH
             }
           >
-            WhitePaperRateModel
+            ETH WhitePaperRateModel
           </option>
         </Select>
 
