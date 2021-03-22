@@ -189,7 +189,6 @@
   "Supply APY": "供应APY",
   "Borrow APY": "借用APY",
   "Available Liquidity": "可用的流动性",
-  "Average Utilization Factor": "平均利用率",
   "Upgradeable": "可升级",
   "Admin (copied!)": "管理员（已复制！）",
   "Admin (click to copy)": "管理员（点击复制）",
@@ -224,5 +223,6 @@
   "Pool Risk Score": "集合风险评分",
   "Total Value Locked Across Fuse": "跨保险丝锁定的总价值",
   "Connecting to your wallet...": "正在连接到您的钱包...",
-  "Connect Wallet": "连接钱包"
+  "Connect Wallet": "连接钱包",
+  "Pool Utilization": "池利用率"
 }
