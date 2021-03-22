@@ -98,8 +98,10 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
-    JumpRateModel: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
+    WhitePaperInterestRateModel_ETH: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    WhitePaperInterestRateModel_WBTC: "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
+    JumpRateModel_DAI: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
+    JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
   };
 
   constructor(web3Provider) {
