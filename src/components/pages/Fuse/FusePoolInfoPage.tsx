@@ -292,7 +292,7 @@ const OracleAndInterestRates = ({
           statATitle={t("Available Liquidity")}
           statA={shortUsdFormatter(totalLiquidityUSD)}
           statBTitle={t("Pool Utilization")}
-          statB={(totalBorrowedUSD / totalSuppliedUSD).toFixed(2) + "%"}
+          statB={((totalBorrowedUSD / totalSuppliedUSD) * 100).toFixed(2) + "%"}
         />
 
         <StatRow
