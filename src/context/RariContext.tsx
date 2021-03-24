@@ -49,7 +49,7 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
     walletconnect: {
       package: WalletConnectProvider.default,
       options: {
-        infuraId: infuraURL,
+        infuraId: infuraURL.replace("https://mainnet.infura.io/v3/", ""),
       },
       display: {
         description: t("Scan with a wallet to connect"),
