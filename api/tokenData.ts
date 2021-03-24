@@ -5,9 +5,9 @@ import Web3 from "web3";
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 
 import { NowRequest, NowResponse } from "@vercel/node";
-import { alchemyURL } from "../src/utils/web3Providers";
+import { infuraURL } from "../src/utils/web3Providers";
 
-const web3 = new Web3(alchemyURL);
+const web3 = new Web3(infuraURL);
 
 export default async (request: NowRequest, response: NowResponse) => {
   const address = request.query.address as string;

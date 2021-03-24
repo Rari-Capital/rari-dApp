@@ -484,9 +484,9 @@ const AmountSelect = ({
               "Cannot repay this amount right now!"
             );
           }
-        }
 
-        LogRocket.track("Fuse-Repay");
+          LogRocket.track("Fuse-Repay");
+        }
       } else if (mode === Mode.BORROW) {
         await testForCTokenErrorAndSend(
           cToken.methods.borrow(amountBN),

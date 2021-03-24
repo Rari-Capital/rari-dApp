@@ -188,7 +188,6 @@
   "Supply APY": "Supply APY",
   "Borrow APY": "Borrow APY",
   "Available Liquidity": "Available Liquidity",
-  "Average Utilization Factor": "Average Utilization Factor",
   "Upgradeable": "Upgradeable",
   "Admin (copied!)": "Admin (copied!)",
   "Admin (click to copy)": "Admin (click to copy)",
@@ -223,5 +222,7 @@
   "Pool Risk Score": "Pool Risk Score",
   "Isolated lending pools you can use today that will power the decentralized future of tomorrow.": "Isolated lending pools you can use today that will power the decentralized future of tomorrow.",
   "Total Value Locked Across Fuse": "Total Value Locked Across Fuse",
-  "Connecting to your wallet...": "Connecting to your wallet..."
+  "Connecting to your wallet...": "Connecting to your wallet...",
+  "Pool Utilization": "Pool Utilization",
+  "Connect Wallet": "Connect Wallet"
 }
