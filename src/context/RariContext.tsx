@@ -17,6 +17,7 @@ import { useToast } from "@chakra-ui/react";
 import Fuse from "../fuse-sdk/src";
 import {
   chooseBestWeb3Provider,
+  infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
 import { useIsMobile } from "buttered-chakra";
@@ -48,7 +49,7 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
     walletconnect: {
       package: WalletConnectProvider.default,
       options: {
-        infuraId: process.env.REACT_APP_INFURA_ID,
+        infuraId: infuraURL,
       },
       display: {
         description: t("Scan with a wallet to connect"),
