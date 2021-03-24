@@ -155,7 +155,7 @@ export const SettingsModal = ({
 
   const onSwitchWallet = () => {
     onClose();
-    setTimeout(() => login(), 100);
+    setTimeout(() => login(false), 100);
   };
 
   const onClaimRGT = () => {

@@ -22,7 +22,10 @@ import {
 } from "../utils/web3Providers";
 import { useIsMobile } from "buttered-chakra";
 
-async function launchModalLazy(t: (text: string, extra?: any) => string) {
+async function launchModalLazy(
+  t: (text: string, extra?: any) => string,
+  cacheProvider: boolean = true
+) {
   const [
     WalletConnectProvider,
     Portis,
@@ -95,8 +98,12 @@ async function launchModalLazy(t: (text: string, extra?: any) => string) {
     },
   };
 
+  if (!cacheProvider) {
+    localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
+  }
+
   const web3Modal = new Web3Modal.default({
-    cacheProvider: true,
+    cacheProvider,
     providerOptions,
     theme: {
       background: DASHBOARD_BOX_PROPS.backgroundColor,
@@ -115,7 +122,7 @@ export interface RariContextData {
   fuse: Fuse;
   web3ModalProvider: any | null;
   isAuthed: boolean;
-  login: () => Promise<any>;
+  login: (cacheProvider?: boolean) => Promise<any>;
   logout: () => any;
   address: string;
 }
@@ -192,13 +199,16 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     [setRari, setAddress]
   );
 
-  const login = useCallback(async () => {
-    const provider = await launchModalLazy(t);
+  const login = useCallback(
+    async (cacheProvider: boolean = true) => {
+      const provider = await launchModalLazy(t, cacheProvider);
 
-    setWeb3ModalProvider(provider);
+      setWeb3ModalProvider(provider);
 
-    setRariAndAddressFromModal(provider);
-  }, [setWeb3ModalProvider, setRariAndAddressFromModal, t]);
+      setRariAndAddressFromModal(provider);
+    },
+    [setWeb3ModalProvider, setRariAndAddressFromModal, t]
+  );
 
   const refetchAccountData = useCallback(() => {
     console.log("New account, clearing the queryCache!");
