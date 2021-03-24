@@ -280,7 +280,12 @@ const AssetSupplyRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const supplyAPY = (((Math.pow((asset.supplyRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
+  const supplyAPY =
+    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
+    100;
+  const supplyWPY =
+    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 7) - 1) *
+    100;
 
   const queryCache = useQueryCache();
 
@@ -386,7 +391,7 @@ const AssetSupplyRow = ({
             {supplyAPY.toFixed(3)}%
           </Text>
 
-          <Text fontSize="sm">{(supplyAPY / 52).toFixed(3)}%</Text>
+          <Text fontSize="sm">{supplyWPY.toFixed(3)}%</Text>
         </Column>
 
         <Column
@@ -549,7 +554,12 @@ const AssetBorrowRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const borrowAPY = (((Math.pow((asset.borrowRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
+  const borrowAPY =
+    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
+    100;
+  const borrowWPY =
+    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 7) - 1) *
+    100;
 
   return (
     <>
@@ -604,7 +614,7 @@ const AssetBorrowRow = ({
             {borrowAPY.toFixed(3)}%
           </Text>
 
-          <Text fontSize="sm">{(borrowAPY / 52).toFixed(3)}%</Text>
+          <Text fontSize="sm">{borrowWPY.toFixed(3)}%</Text>
         </Column>
 
         <Column
