@@ -707,8 +707,8 @@ const StatsColumn = ({
   const borrowLimit = useBorrowLimit(assets);
   const updatedBorrowLimit = useBorrowLimit(updatedAssets ?? []);
 
-  const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
-  const borrowAPY = (asset.borrowRatePerBlock * 2372500) / 1e16;
+  const supplyAPY = (((Math.pow((asset.supplyRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
+  const borrowAPY = (((Math.pow((asset.borrowRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
 
   return (
     <DashboardBox mt={4} width="100%" height="190px">

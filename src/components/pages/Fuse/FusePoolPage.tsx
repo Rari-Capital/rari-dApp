@@ -280,7 +280,7 @@ const AssetSupplyRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const supplyAPY = (asset.supplyRatePerBlock * 2372500) / 1e16;
+  const supplyAPY = (((Math.pow((asset.supplyRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
 
   const queryCache = useQueryCache();
 
@@ -549,7 +549,7 @@ const AssetBorrowRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const borrowAPY = (asset.borrowRatePerBlock * 2372500) / 1e16;
+  const borrowAPY = (((Math.pow((asset.borrowRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
 
   return (
     <>
