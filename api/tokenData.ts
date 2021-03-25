@@ -10,7 +10,7 @@ import { infuraURL } from "../src/utils/web3Providers";
 const web3 = new Web3(infuraURL);
 
 export default async (request: NowRequest, response: NowResponse) => {
-  response.setHeader("Access-Control-Allow-Origin", "localhost:3000");
+  response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
 
   const address = request.query.address as string;
