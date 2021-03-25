@@ -15,7 +15,7 @@
     "@testing-library/jest-dom": "^5.11.2",
     "@testing-library/react": "^11.0.4",
     "@testing-library/user-event": "^12.1.6",
-    "@toruslabs/torus-embed": "^1.8.4",
+    "@toruslabs/torus-embed": "^1.9.14",
     "@types/jest": "^26.0.13",
     "@types/loadable__component": "^5.13.1",
     "@types/mathjs": "^6.0.11",
