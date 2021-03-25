@@ -556,22 +556,34 @@ export const convertIRMtoCurve = (interestRateModel: any, fuse: Fuse) => {
   let borrowerRates = [];
   let supplierRates = [];
   for (var i = 0; i <= 100; i++) {
-    const borrowLevel =
-      (interestRateModel.getBorrowRate(
-        fuse.web3.utils.toBN((i * 1e16).toString())
-      ) *
-        2372500) /
-      1e16;
-
     const supplyLevel =
-      (interestRateModel.getSupplyRate(
-        fuse.web3.utils.toBN((i * 1e16).toString())
-      ) *
-        2372500) /
-      1e16;
+      (Math.pow(
+        (interestRateModel.getSupplyRate(
+          fuse.web3.utils.toBN((i * 1e16).toString())
+        ) /
+          1e18) *
+          (4 * 60 * 24) +
+          1,
+        365
+      ) -
+        1) *
+      100;
 
-    borrowerRates.push({ x: i, y: borrowLevel });
+    const borrowLevel =
+      (Math.pow(
+        (interestRateModel.getBorrowRate(
+          fuse.web3.utils.toBN((i * 1e16).toString())
+        ) /
+          1e18) *
+          (4 * 60 * 24) +
+          1,
+        365
+      ) -
+        1) *
+      100;
+
     supplierRates.push({ x: i, y: supplyLevel });
+    borrowerRates.push({ x: i, y: borrowLevel });
   }
 
   return { borrowerRates, supplierRates };
