@@ -382,7 +382,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   const { t } = useTranslation();
 
-  const [selectedAsset, setSelectedAsset] = useState(assets[0]);
+  const [selectedAsset, setSelectedAsset] = useState(assets[1]);
   const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
   const selectedAssetUtilization =
     // @ts-ignore
@@ -458,11 +458,18 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           _focus={{ outline: "none" }}
           color={selectedTokenData?.color ?? "#FFF"}
           onChange={(event) =>
-            setSelectedAsset(assets[event.target.value as any])
+            setSelectedAsset(
+              assets.find((asset) => asset.cToken === event.target.value)!
+            )
           }
+          value={selectedAsset.cToken}
         >
-          {assets.map((asset, index) => (
-            <option className="black-bg-option" value={index} key={index}>
+          {assets.map((asset) => (
+            <option
+              className="black-bg-option"
+              value={asset.cToken}
+              key={asset.cToken}
+            >
               {asset.underlyingSymbol}
             </option>
           ))}
