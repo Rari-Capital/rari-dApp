@@ -173,6 +173,15 @@ const FusePoolInfoPage = React.memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
+
+        <DashboardBox width="100%" height="860px" mt={4} overflow="hidden">
+          <iframe
+            src={`https://rari.grafana.net/d/HChNahwGk/fuse-pool-details?orgId=1&refresh=10s&kiosk&var-poolID=${poolId}`}
+            width="100%"
+            height="100%"
+            title="Pool Stats"
+          />
+        </DashboardBox>
       </Column>
 
       <CopyrightSpacer forceShow />
