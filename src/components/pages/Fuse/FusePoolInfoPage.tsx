@@ -173,22 +173,6 @@ const FusePoolInfoPage = React.memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
-
-        <DashboardBox
-          width="100%"
-          height="863px"
-          mt={4}
-          overflow="hidden"
-          pr="2px"
-          bg="#0B0B0D"
-        >
-          <iframe
-            src={`https://rari.grafana.net/d/HChNahwGk/fuse-pool-details?orgId=1&refresh=10s&kiosk&var-poolID=${poolId}`}
-            width="100%"
-            height="100%"
-            title="Pool Stats"
-          />
-        </DashboardBox>
       </Column>
 
       <CopyrightSpacer forceShow />
@@ -233,12 +217,24 @@ const OracleAndInterestRates = ({
         crossAxisAlignment="center"
         width="100%"
         px={4}
-        height="49px"
+        height="60px"
         flexShrink={0}
       >
         <Heading size="sm">
           {t("Pool {{num}} Info", { num: poolId, name })}
         </Heading>
+
+        <Link
+          className="no-underline"
+          isExternal
+          href={`https://rari.grafana.net/d/HChNahwGk/fuse-pool-details?orgId=1&refresh=10s&var-poolID=${poolId}`}
+        >
+          <DashboardBox height="35px">
+            <Center expand px={2} fontWeight="bold">
+              {t("More Info")}
+            </Center>
+          </DashboardBox>
+        </Link>
 
         {data?.isPowerfulAdmin ? (
           <Link
@@ -267,7 +263,7 @@ const OracleAndInterestRates = ({
       >
         {assets.length > 0 ? (
           <>
-            <AvatarGroup size="xs" max={30}>
+            <AvatarGroup mt={1} size="xs" max={30}>
               {assets.map(({ underlyingToken, cToken }) => {
                 return <CTokenIcon key={cToken} address={underlyingToken} />;
               })}
@@ -293,7 +289,7 @@ const OracleAndInterestRates = ({
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        my={8}
+        my={5}
         px={4}
         width="100%"
       >
