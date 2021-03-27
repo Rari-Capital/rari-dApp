@@ -151,7 +151,10 @@ async function computeAssetRSS(address: string) {
 
           return transfers;
         } catch (e) {
-          if (e.message.includes("Log response size exceeded")) {
+          if (
+            e.message.includes("Log response size exceeded") ||
+            e.message.includes("query returned more than")
+          ) {
             return new Array(10_000);
           } else {
             console.log("Past events error:", e);
