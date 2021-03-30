@@ -56,7 +56,7 @@ const FusePoolsPage = React.memo(() => {
 
         <FuseTabBar />
 
-        <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "600px"}>
+        <DashboardBox width="100%" mt={4}>
           <PoolList />
         </DashboardBox>
       </Column>
@@ -159,53 +159,48 @@ const PoolList = () => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       expand
-      pb={4}
     >
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        height="45px"
-        width="100%"
-        flexShrink={0}
-        pl={4}
-        pr={1}
-      >
-        <Text fontWeight="bold" width="40%">
-          {t("Pool Assets")}
-        </Text>
-
-        <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Total Supplied")}
-        </Text>
-
-        <Row mainAxisAlignment="center" crossAxisAlignment="center" width="15%">
-          <Text fontWeight="bold" textAlign="center">
-            {t("Pool Number")}
-          </Text>
-
-          <ChevronDownIcon ml={1} />
-        </Row>
-
-        <Text fontWeight="bold" textAlign="center" width="15%">
-          {t("Total Borrowed")}
-        </Text>
-
-        <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Pool Risk Score")}
-        </Text>
-      </Row>
-
-      <ModalDivider />
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         width="100%"
-        pl={4}
-        pr={1}
-        pt="6px"
-        overflow="scroll"
+        height="auto"
       >
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          height="45px"
+          width="100%"
+          flexShrink={0}
+          pl={4}
+          pr={1}
+        >
+          <Row
+            ml="auto"
+            width="712px"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            pl={12}
+            mr={8}
+          >
+            <Text fontWeight="bold" width="25%" textAlign="center">
+              {t("Total Supplied")}
+            </Text>
+
+            <Text fontWeight="bold" width="25%" textAlign="center">
+              {t("Pool Number")}
+            </Text>
+
+            <Text fontWeight="bold" width="25%" textAlign="center">
+              {t("Total Borrowed")}
+            </Text>
+
+            <Text fontWeight="bold" width="25%" textAlign="center">
+              {t("Pool Risk Score")}
+            </Text>
+          </Row>
+        </Row>
+
         {filteredPools ? (
           filteredPools.map((pool) => {
             return (
@@ -219,7 +214,6 @@ const PoolList = () => {
                   symbol: pool.underlyingSymbols[index],
                   address,
                 }))}
-                mt={2}
               />
             );
           })
@@ -237,7 +231,6 @@ const PoolRow = ({
   tvl,
   borrowed,
 
-  mt,
   name,
 }: {
   tokens: { symbol: string; address: string }[];
@@ -245,12 +238,13 @@ const PoolRow = ({
   tvl: number;
   borrowed: number;
 
-  mt?: number | string;
   name: string;
 }) => {
   const isEmpty = tokens.length === 0;
 
   const rss = usePoolRSS(poolNumber);
+
+  const { t } = useTranslation();
 
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
@@ -265,58 +259,81 @@ const PoolRow = ({
       <Row
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
-        width="100%"
-        height="30px"
-        mt={mt ?? 0}
+        ml={4}
+        mr={8}
+        py={5}
       >
-        <Row
+        <Column
+          width="25%"
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          height="100%"
-          width="38%"
-          mr="2%"
-          overflow="scroll"
         >
           {isEmpty ? null : (
-            <AvatarGroup size="xs" max={30} mr={2}>
-              {tokens.map(({ address }) => {
-                return <CTokenIcon key={address} address={address} />;
-              })}
-            </AvatarGroup>
-          )}
-
-          {isEmpty ? null : (
-            <Text mb="1px" fontWeight="bold" flexShrink={0}>
-              <b>
-                {tokens.map(({ symbol }, index, array) => {
-                  return symbol + (index !== array.length - 1 ? " / " : "");
+            <>
+              <AvatarGroup size="xs" max={13} mr={2}>
+                {tokens.map(({ address }) => {
+                  return <CTokenIcon key={address} address={address} />;
                 })}
-              </b>
-            </Text>
+              </AvatarGroup>
+            </>
           )}
-        </Row>
 
-        <Center height="100%" width="15%">
-          <b>{smallUsdFormatter(tvl)}</b>
-        </Center>
+          <Text mt={1} textAlign="center">
+            {name}
+          </Text>
+        </Column>
 
-        <Center height="100%" width="15%">
-          <b>{poolNumber}</b>
-        </Center>
-
-        <Center height="100%" width="15%">
-          <b>{smallUsdFormatter(borrowed)}</b>
-        </Center>
-        <Center height="100%" width="15%">
-          <SimpleTooltip
-            label={
-              "Underlying RSS: " + (rss ? rss.totalScore.toFixed(2) : "?") + "%"
-            }
+        <Row
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          height="45px"
+          pl={12}
+          width="75%"
+          flexShrink={0}
+        >
+          <Column
+            width="25%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
           >
-            <b>{rssScore}</b>
-          </SimpleTooltip>
-        </Center>
+            {smallUsdFormatter(tvl)}
+          </Column>
+
+          <Column
+            width="25%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+          >
+            {poolNumber}
+          </Column>
+
+          <Column
+            width="25%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+          >
+            {smallUsdFormatter(borrowed)}
+          </Column>
+
+          <Column
+            width="25%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+          >
+            <SimpleTooltip
+              label={
+                "Underlying RSS: " +
+                (rss ? rss.totalScore.toFixed(2) : "?") +
+                "%"
+              }
+            >
+              {rssScore}
+            </SimpleTooltip>
+          </Column>
+        </Row>
       </Row>
+
+      <ModalDivider />
     </Link>
   );
 };
