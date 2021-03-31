@@ -28,6 +28,7 @@ import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
+import { SwitchCSS } from "../../shared/SwitchCSS";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
@@ -438,29 +439,7 @@ const AssetSupplyRow = ({
           mainAxisAlignment="flex-end"
           crossAxisAlignment="center"
         >
-          <style>
-            {`  
-            
-            .${
-              asset.underlyingSymbol + "-switch"
-            } > .chakra-switch__track[data-checked] {
-              background-color: ${
-                tokenData?.color
-                  ? tokenData.color === "#FFFFFF"
-                    ? "#282727"
-                    : tokenData.color
-                  : "#282727"
-              } !important;
-            }
-            .${asset.underlyingSymbol + "-switch"} .chakra-switch__input {
-              /* Fixes a bug in the FusePoolPage with the switches creating bottom padding */
-              position: static !important;
-              height: 0px !important;
-              width: 0px !important;
-            }
-
-            `}
-          </style>
+          <SwitchCSS symbol={asset.underlyingSymbol} color={tokenData?.color} />
           <Switch
             isChecked={asset.membership}
             className={asset.underlyingSymbol + "-switch"}

@@ -11,6 +11,7 @@ import {
   Input,
   useToast,
   IconButton,
+  Switch,
 } from "@chakra-ui/react";
 import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
@@ -44,6 +45,7 @@ import { handleGenericError } from "../../../../../utils/errorHandling";
 import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
 import { useParams } from "react-router-dom";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
+import { SwitchCSS } from "../../../../shared/SwitchCSS";
 
 enum UserAction {
   NO_ACTION,
@@ -240,6 +242,11 @@ const AmountSelect = ({
 
   const [amount, _setAmount] = useState<BigNumber | null>(
     () => new BigNumber(0)
+  );
+
+  const showEnableAsCollateral = !asset.membership && mode === Mode.SUPPLY;
+  const [enableAsCollateral, setEnableAsCollateral] = useState(
+    showEnableAsCollateral
   );
 
   const { t } = useTranslation();
@@ -447,6 +454,14 @@ const AmountSelect = ({
           }
 
           LogRocket.track("Fuse-Supply");
+
+          // If they want to enable as collateral now, enter the market:
+          if (enableAsCollateral) {
+            const comptroller = createComptroller(comptrollerAddress, fuse);
+            await comptroller.methods.enterMarkets([asset.cToken]);
+
+            LogRocket.track("Fuse-ToggleCollateral");
+          }
         } else if (mode === Mode.REPAY) {
           if (isETH) {
             const call = cToken.methods.repayBorrow();
@@ -518,113 +533,149 @@ const AmountSelect = ({
     }
   };
 
-  return userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
-    <Column expand mainAxisAlignment="center" crossAxisAlignment="center" p={4}>
-      <HashLoader size={70} color={tokenData?.color ?? "#FFF"} loading />
-      <Heading mt="30px" textAlign="center" size="md">
-        {t("Check your wallet to submit the transactions")}
-      </Heading>
-      <Text fontSize="sm" mt="15px" textAlign="center">
-        {t("Do not close this tab until you submit all transactions!")}
-      </Text>
-    </Column>
-  ) : (
-    <>
-      <Row
-        width="100%"
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        p={4}
-      >
-        <Box width="40px" />
-        <Heading fontSize="27px">
-          {mode === Mode.SUPPLY
-            ? t("Supply")
-            : mode === Mode.BORROW
-            ? t("Borrow")
-            : mode === Mode.WITHDRAW
-            ? t("Withdraw")
-            : t("Repay")}
-        </Heading>
-        <IconButton
-          color="#FFFFFF"
-          variant="ghost"
-          aria-label="Options"
-          icon={<SettingsIcon />}
-          _hover={{
-            transform: "rotate(360deg)",
-            transition: "all 0.7s ease-in-out",
-          }}
-          _active={{}}
-          onClick={openOptions}
-        />
-      </Row>
-
-      <ModalDivider />
-
-      <Column
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        p={4}
-        height="100%"
-      >
-        <Text fontWeight="bold" fontSize="sm" textAlign="center">
-          {depositOrWithdrawAlert}
-        </Text>
-
-        <DashboardBox width="100%" height="70px" mt={4}>
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      height={{
+        md: showEnableAsCollateral ? "590px" : "510px",
+        base: showEnableAsCollateral ? "630px" : "540px",
+      }}
+    >
+      {userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
+        <Column
+          expand
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          p={4}
+        >
+          <HashLoader size={70} color={tokenData?.color ?? "#FFF"} loading />
+          <Heading mt="30px" textAlign="center" size="md">
+            {t("Check your wallet to submit the transactions")}
+          </Heading>
+          <Text fontSize="sm" mt="15px" textAlign="center">
+            {t("Do not close this tab until you submit all transactions!")}
+          </Text>
+        </Column>
+      ) : (
+        <>
           <Row
-            p={4}
+            width="100%"
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
-            expand
+            p={4}
           >
-            <AmountInput
-              color={tokenData?.color ?? "#FFF"}
-              displayAmount={userEnteredAmount}
-              updateAmount={updateAmount}
-            />
-
-            <TokenNameAndMaxButton
-              comptrollerAddress={comptrollerAddress}
-              mode={mode}
-              logoURL={
-                tokenData?.logoURL ??
-                "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-              }
-              asset={asset}
-              updateAmount={updateAmount}
+            <Box width="40px" />
+            <Heading fontSize="27px">
+              {mode === Mode.SUPPLY
+                ? t("Supply")
+                : mode === Mode.BORROW
+                ? t("Borrow")
+                : mode === Mode.WITHDRAW
+                ? t("Withdraw")
+                : t("Repay")}
+            </Heading>
+            <IconButton
+              color="#FFFFFF"
+              variant="ghost"
+              aria-label="Options"
+              icon={<SettingsIcon />}
+              _hover={{
+                transform: "rotate(360deg)",
+                transition: "all 0.7s ease-in-out",
+              }}
+              _active={{}}
+              onClick={openOptions}
             />
           </Row>
-        </DashboardBox>
+          <ModalDivider />
+          <Column
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            p={4}
+            height="100%"
+          >
+            <Text fontWeight="bold" fontSize="sm" textAlign="center">
+              {depositOrWithdrawAlert}
+            </Text>
+            <DashboardBox width="100%" height="70px" mt={4}>
+              <Row
+                p={4}
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                expand
+              >
+                <AmountInput
+                  color={tokenData?.color ?? "#FFF"}
+                  displayAmount={userEnteredAmount}
+                  updateAmount={updateAmount}
+                />
+                <TokenNameAndMaxButton
+                  comptrollerAddress={comptrollerAddress}
+                  mode={mode}
+                  logoURL={
+                    tokenData?.logoURL ??
+                    "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                  }
+                  asset={asset}
+                  updateAmount={updateAmount}
+                />
+              </Row>
+            </DashboardBox>
+            <StatsColumn
+              amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
+              color={tokenData?.color ?? "#FFF"}
+              assets={assets}
+              index={index}
+              mode={mode}
+              enableAsCollateral={enableAsCollateral}
+            />
 
-        <StatsColumn
-          amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
-          color={tokenData?.color ?? "#FFF"}
-          assets={assets}
-          index={index}
-          mode={mode}
-        />
+            {showEnableAsCollateral ? (
+              <DashboardBox p={4} width="100%" mt={4}>
+                <Row
+                  mainAxisAlignment="space-between"
+                  crossAxisAlignment="center"
+                  width="100%"
+                >
+                  <Text fontWeight="bold">{t("Enable As Collateral")}:</Text>
+                  <SwitchCSS
+                    symbol={asset.underlyingSymbol}
+                    color={tokenData?.color}
+                  />
+                  <Switch
+                    h="20px"
+                    className={asset.underlyingSymbol + "-switch"}
+                    isChecked={enableAsCollateral}
+                    onChange={() => {
+                      setEnableAsCollateral((past) => !past);
+                    }}
+                  />
+                </Row>
+              </DashboardBox>
+            ) : null}
 
-        <Button
-          mt={4}
-          fontWeight="bold"
-          fontSize="2xl"
-          borderRadius="10px"
-          width="100%"
-          height="70px"
-          bg={tokenData?.color ?? "#FFF"}
-          color={tokenData?.overlayTextColor ?? "#000"}
-          _hover={{ transform: "scale(1.02)" }}
-          _active={{ transform: "scale(0.95)" }}
-          onClick={onConfirm}
-          // isLoading={!poolTokenBalance}
-          isDisabled={!amountIsValid}
-        >
-          {t("Confirm")}
-        </Button>
-      </Column>
-    </>
+            <Button
+              mt={4}
+              fontWeight="bold"
+              fontSize="2xl"
+              borderRadius="10px"
+              width="100%"
+              height="70px"
+              bg={tokenData?.color ?? "#FFF"}
+              color={tokenData?.overlayTextColor ?? "#000"}
+              _hover={{ transform: "scale(1.02)" }}
+              _active={{ transform: "scale(0.95)" }}
+              onClick={onConfirm}
+              // isLoading={!poolTokenBalance}
+              isDisabled={!amountIsValid}
+            >
+              {t("Confirm")}
+            </Button>
+          </Column>
+        </>
+      )}
+    </Column>
   );
 };
 
@@ -636,12 +687,14 @@ const StatsColumn = ({
   assets,
   index,
   amount,
+  enableAsCollateral,
 }: {
   color: string;
   mode: Mode;
   assets: USDPricedFuseAsset[];
   index: number;
   amount: number;
+  enableAsCollateral: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -705,10 +758,21 @@ const StatsColumn = ({
   const updatedAsset = updatedAssets ? updatedAssets[index] : null;
 
   const borrowLimit = useBorrowLimit(assets);
-  const updatedBorrowLimit = useBorrowLimit(updatedAssets ?? []);
+  const updatedBorrowLimit = useBorrowLimit(
+    updatedAssets ?? [],
+    enableAsCollateral
+      ? {
+          ignoreIsEnabledCheckFor: asset.cToken,
+        }
+      : undefined
+  );
 
-  const supplyAPY = (((Math.pow((asset.supplyRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
-  const borrowAPY = (((Math.pow((asset.borrowRatePerBlock / 1e18 * (4 * 60 * 24)) + 1, 365))) - 1) * 100;
+  const supplyAPY =
+    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
+    100;
+  const borrowAPY =
+    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
+    100;
 
   return (
     <DashboardBox mt={4} width="100%" height="190px">
@@ -787,7 +851,6 @@ const StatsColumn = ({
           >
             {smallUsdFormatter(borrowLimit)}
 
-            {/* The borrow limit won't increase if the asset is not enabled for collateral. Maybe we should have "max" borrow limit? */}
             {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
             updatedAsset ? (
               <>

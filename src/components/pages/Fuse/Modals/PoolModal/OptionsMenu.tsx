@@ -36,8 +36,9 @@ const OptionsMenu = ({
       <ModalDivider />
       <Column
         mt={4}
-        mainAxisAlignment="space-between"
+        mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
+        height={{ md: "510px", base: "540px" }}
       >
         {mode !== Mode.SUPPLY ? (
           <Button
