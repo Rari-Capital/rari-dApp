@@ -364,8 +364,9 @@ export const AssetSettings = ({
     }
   };
 
-  return cTokenData &&
-    (cTokenAddress ? cTokenData.cTokenAddress === cTokenAddress : true) ? (
+  return (
+    cTokenAddress ? cTokenData?.cTokenAddress === cTokenAddress : true
+  ) ? (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
@@ -472,7 +473,7 @@ export const AssetSettings = ({
           borderRadius="7px"
           fontWeight="bold"
           _focus={{ outline: "none" }}
-          width="300px"
+          width="250px"
           value={interestRateModel.toLowerCase()}
           onChange={(event) => setInterestRateModel(event.target.value)}
         >
