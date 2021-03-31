@@ -54,6 +54,7 @@ export default class Fuse {
     YVaultV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
     AlphaHomoraV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
     SynthetixPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    MasterPriceOracle: "0x1887118E49e0F4A78Bd71B792a49dE03504A764D",
   };
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
