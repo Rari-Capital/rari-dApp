@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row } from "buttered-chakra";
 import React, { useMemo } from "react";
@@ -191,18 +190,15 @@ const PoolList = () => {
           {t("Pool Assets")}
         </Text>
 
-        <Row mainAxisAlignment="center" crossAxisAlignment="center" width="15%">
-          <Text fontWeight="bold" textAlign="center">
-            {t("Total Supplied")}
-          </Text>
-          <ChevronDownIcon ml={1} />
-        </Row>
-
-        <Text fontWeight="bold" textAlign="center" width="15%">
+        <Text fontWeight="bold" textAlign="center" width="13%">
           {t("Pool Number")}
         </Text>
 
-        <Text fontWeight="bold" textAlign="center" width="15%">
+        <Text fontWeight="bold" textAlign="center" width="16%">
+          {t("Total Supplied")}
+        </Text>
+
+        <Text fontWeight="bold" textAlign="center" width="16%">
           {t("Total Borrowed")}
         </Text>
 
@@ -301,15 +297,15 @@ const PoolRow = ({
             <Text mt={2}>{name}</Text>
           </Column>
 
-          <Center height="100%" width="15%">
-            <b>{smallUsdFormatter(tvl)}</b>
-          </Center>
-
-          <Center height="100%" width="15%">
+          <Center height="100%" width="13%">
             <b>{poolNumber}</b>
           </Center>
 
-          <Center height="100%" width="15%">
+          <Center height="100%" width="16%">
+            <b>{smallUsdFormatter(tvl)}</b>
+          </Center>
+
+          <Center height="100%" width="16%">
             <b>{smallUsdFormatter(borrowed)}</b>
           </Center>
           <Center height="100%" width="15%">
