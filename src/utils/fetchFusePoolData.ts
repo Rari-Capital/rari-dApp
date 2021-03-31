@@ -65,7 +65,7 @@ export const fetchFusePoolData = async (
     .call({ from: address });
 
   // Remove any profanity from the pool name
-  const name = filter.replaceWord(_unfiliteredName);
+  const name = filter.clean(_unfiliteredName);
 
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
