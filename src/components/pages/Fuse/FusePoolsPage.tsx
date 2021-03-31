@@ -56,7 +56,7 @@ const FusePoolsPage = React.memo(() => {
 
         <FuseTabBar />
 
-        <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "600px"}>
+        <DashboardBox width="100%" mt={4}>
           <PoolList />
         </DashboardBox>
       </Column>
@@ -146,6 +146,7 @@ const PoolList = () => {
 
     const options = {
       keys: ["pool.name", "id", "underlyingTokens", "underlyingSymbols"],
+      threshold: 0.3,
     };
 
     const filtered = new Fuse(_pools, options).search(filter);
@@ -195,19 +196,15 @@ const PoolList = () => {
         </Text>
       </Row>
 
-      <ModalDivider />
+      <ModalDivider mb={4} />
 
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         width="100%"
-        pl={4}
-        pr={1}
-        pt="6px"
-        overflow="scroll"
       >
         {filteredPools ? (
-          filteredPools.map((pool) => {
+          filteredPools.map((pool, index) => {
             return (
               <PoolRow
                 key={pool.id}
@@ -219,7 +216,7 @@ const PoolList = () => {
                   symbol: pool.underlyingSymbols[index],
                   address,
                 }))}
-                mt={2}
+                noBottomDivider={index === filteredPools.length - 1}
               />
             );
           })
@@ -236,17 +233,15 @@ const PoolRow = ({
   poolNumber,
   tvl,
   borrowed,
-
-  mt,
   name,
+  noBottomDivider,
 }: {
   tokens: { symbol: string; address: string }[];
   poolNumber: number;
   tvl: number;
   borrowed: number;
-
-  mt?: number | string;
   name: string;
+  noBottomDivider?: boolean;
 }) => {
   const isEmpty = tokens.length === 0;
 
@@ -255,69 +250,67 @@ const PoolRow = ({
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
   return (
-    <Link
-      /* @ts-ignore */
-      as={RouterLink}
-      width="100%"
-      className="no-underline"
-      to={"/fuse/pool/" + poolNumber}
-    >
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
+    <>
+      <Link
+        /* @ts-ignore */
+        as={RouterLink}
         width="100%"
-        height="30px"
-        mt={mt ?? 0}
+        className="no-underline"
+        to={"/fuse/pool/" + poolNumber}
       >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          height="100%"
-          width="38%"
-          mr="2%"
-          overflow="scroll"
+          width="100%"
+          height="60px"
+          pl={4}
+          pr={1}
         >
-          {isEmpty ? null : (
-            <AvatarGroup size="xs" max={30} mr={2}>
-              {tokens.map(({ address }) => {
-                return <CTokenIcon key={address} address={address} />;
-              })}
-            </AvatarGroup>
-          )}
-
-          {isEmpty ? null : (
-            <Text mb="1px" fontWeight="bold" flexShrink={0}>
-              <b>
-                {tokens.map(({ symbol }, index, array) => {
-                  return symbol + (index !== array.length - 1 ? " / " : "");
-                })}
-              </b>
-            </Text>
-          )}
-        </Row>
-
-        <Center height="100%" width="15%">
-          <b>{smallUsdFormatter(tvl)}</b>
-        </Center>
-
-        <Center height="100%" width="15%">
-          <b>{poolNumber}</b>
-        </Center>
-
-        <Center height="100%" width="15%">
-          <b>{smallUsdFormatter(borrowed)}</b>
-        </Center>
-        <Center height="100%" width="15%">
-          <SimpleTooltip
-            label={
-              "Underlying RSS: " + (rss ? rss.totalScore.toFixed(2) : "?") + "%"
-            }
+          <Column
+            pt={2}
+            width="40%"
+            height="100%"
+            mainAxisAlignment="center"
+            crossAxisAlignment="flex-start"
           >
-            <b>{rssScore}</b>
-          </SimpleTooltip>
-        </Center>
-      </Row>
-    </Link>
+            {isEmpty ? null : (
+              <AvatarGroup size="xs" max={30} mr={2}>
+                {tokens.map(({ address }) => {
+                  return <CTokenIcon key={address} address={address} />;
+                })}
+              </AvatarGroup>
+            )}
+
+            <Text mt={2}>{name}</Text>
+          </Column>
+
+          <Center height="100%" width="15%">
+            <b>{smallUsdFormatter(tvl)}</b>
+          </Center>
+
+          <Center height="100%" width="15%">
+            <b>{poolNumber}</b>
+          </Center>
+
+          <Center height="100%" width="15%">
+            <b>{smallUsdFormatter(borrowed)}</b>
+          </Center>
+          <Center height="100%" width="15%">
+            <SimpleTooltip
+              label={
+                "Underlying RSS: " +
+                (rss ? rss.totalScore.toFixed(2) : "?") +
+                "%"
+              }
+            >
+              <b>{rssScore}</b>
+            </SimpleTooltip>
+          </Center>
+        </Row>
+      </Link>
+
+      {noBottomDivider ? null : <ModalDivider my={4} />}
+    </>
   );
 };
 
