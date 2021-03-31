@@ -175,7 +175,6 @@ const PoolList = () => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       expand
-      pb={4}
     >
       <Row
         mainAxisAlignment="flex-start"
@@ -207,7 +206,7 @@ const PoolList = () => {
         </Text>
       </Row>
 
-      <ModalDivider mb={4} />
+      <ModalDivider />
 
       <Column
         mainAxisAlignment="flex-start"
@@ -273,7 +272,8 @@ const PoolRow = ({
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          height="60px"
+          height="90px"
+          className="hover-row"
           pl={4}
           pr={1}
         >
@@ -322,7 +322,7 @@ const PoolRow = ({
         </Row>
       </Link>
 
-      {noBottomDivider ? null : <ModalDivider my={4} />}
+      {noBottomDivider ? null : <ModalDivider />}
     </>
   );
 };
