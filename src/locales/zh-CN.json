@@ -226,5 +226,5 @@
   "Enable As Collateral": "启用作为抵押",
   "Pool #{{poolId}} Info": "池＃{{poolId}}信息",
   "Metrics": "指标",
-  "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.": "第一个真正的开放利率协议。 借贷，借贷并创建具有无限灵活性的孤立借贷市场。"
+  "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.": "“向Fuse提供了{{tvl}}，这是第一个真正的开放式利率协议。借贷，借贷和创建具有无限灵活性的孤立借贷市场。” 开放利率协议：借贷，借贷并创建具有无限灵活性的孤立借贷市场。"
 }

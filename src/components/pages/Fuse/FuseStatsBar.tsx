@@ -29,6 +29,8 @@ const FuseStatsBar = () => {
     return (parseInt(tvlETH.toString()) / 1e18) * ethPrice;
   };
 
+  const { data: fuseTVL } = useQuery("fuseTVL", fetchFuseNumberTVL);
+
   const { data: totalBorrowAndSupply } = useQuery(
     address + " totalBorrowAndSupply",
     async () => {
@@ -53,7 +55,7 @@ const FuseStatsBar = () => {
       isRow={!isMobile}
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "120px"}
+      height={isMobile ? "auto" : "130px"}
     >
       <DashboardBox
         width={isMobile ? "100%" : "100%"}
@@ -65,11 +67,15 @@ const FuseStatsBar = () => {
           crossAxisAlignment={isMobile ? "center" : "flex-start"}
           textAlign={isMobile ? "center" : "left"}
           p={4}
+          fontSize="sm"
         >
-          <Heading size="lg">{t("Fuse")}</Heading>
+          <Heading size="lg" mb="2px">
+            {t("Fuse")}
+          </Heading>
 
           {t(
-            "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility."
+            "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.",
+            { tvl: fuseTVL ? smallUsdFormatter(fuseTVL) : "?" }
           )}
         </Column>
       </DashboardBox>
@@ -109,7 +115,7 @@ const FuseStatsBar = () => {
           </StatBox>
         </>
       ) : (
-        <StatBox width={isMobile ? "100%" : "480px"}>
+        <StatBox width={isMobile ? "100%" : "496px"}>
           <APYWithRefreshMovingStat
             formatStat={usdFormatter}
             fetchInterval={40000}
