@@ -102,6 +102,9 @@ export default class Fuse {
     WhitePaperInterestRateModel_WBTC: "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
     JumpRateModel_DAI: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
     JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
+    JumpRateModel_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
+    JumpRateModel_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
+    JumpRateModel_ALCX: "0x58c3e7119ec200c09b2b3a9f8ce3bd77b6b47012",
   };
 
   constructor(web3Provider) {
