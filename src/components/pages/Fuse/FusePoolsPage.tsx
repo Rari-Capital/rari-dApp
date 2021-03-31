@@ -274,11 +274,13 @@ const PoolRow = ({
             crossAxisAlignment="flex-start"
           >
             {isEmpty ? null : (
-              <AvatarGroup size="xs" max={30} mr={2}>
-                {tokens.map(({ address }) => {
-                  return <CTokenIcon key={address} address={address} />;
-                })}
-              </AvatarGroup>
+              <SimpleTooltip label={tokens.map((t) => t.symbol).join(" / ")}>
+                <AvatarGroup size="xs" max={30} mr={2}>
+                  {tokens.map(({ address }) => {
+                    return <CTokenIcon key={address} address={address} />;
+                  })}
+                </AvatarGroup>
+              </SimpleTooltip>
             )}
 
             <Text mt={2}>{name}</Text>

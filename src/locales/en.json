@@ -224,7 +224,7 @@
   "Connecting to your wallet...": "Connecting to your wallet...",
   "Pool Utilization": "Pool Utilization",
   "Connect Wallet": "Connect Wallet",
-  "More Info": "More Info",
   "Enable As Collateral": "Enable As Collateral",
-  "Pool #{{poolId}} Info": "Pool #{{poolId}} Info"
+  "Pool #{{poolId}} Info": "Pool #{{poolId}} Info",
+  "Metrics": "Metrics"
 }

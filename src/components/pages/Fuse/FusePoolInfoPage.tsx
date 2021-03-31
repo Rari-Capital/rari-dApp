@@ -232,7 +232,7 @@ const OracleAndInterestRates = ({
         >
           <DashboardBox height="35px">
             <Center expand px={2} fontWeight="bold">
-              {t("More Info")}
+              {t("Metrics")}
             </Center>
           </DashboardBox>
         </Link>
