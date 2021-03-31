@@ -18,7 +18,6 @@
   "Balance": "Balance",
   "Collateral": "Collateral",
   "Borrow Balance:": "Borrow Balance:",
-  "Borrowed": "Borrowed",
   "Liquidity": "Liquidity",
   "Pool Assets": "Pool Assets",
   "Pool Number": "Pool Number",
@@ -225,5 +224,6 @@
   "Connecting to your wallet...": "Connecting to your wallet...",
   "Pool Utilization": "Pool Utilization",
   "Connect Wallet": "Connect Wallet",
-  "More Info": "More Info"
+  "More Info": "More Info",
+  "Enable As Collateral": "Enable As Collateral"
 }

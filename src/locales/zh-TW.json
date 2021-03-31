@@ -119,7 +119,6 @@
   "Balance": "平衡",
   "Collateral": "抵押品",
   "Borrow Balance:": "借款餘額：",
-  "Borrowed": "借來的",
   "Liquidity": "流動性",
   "Pool Assets": "合併資產",
   "Pool Number": "池號",
@@ -225,5 +224,6 @@
   "Connecting to your wallet...": "正在連接到您的錢包...",
   "Connect Wallet": "連接錢包",
   "Pool Utilization": "池利用率",
-  "More Info": "更多信息"
+  "More Info": "更多信息",
+  "Enable As Collateral": "啟用作為抵押"
 }
