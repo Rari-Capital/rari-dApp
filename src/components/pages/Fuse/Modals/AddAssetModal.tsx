@@ -91,6 +91,7 @@ export const useCTokenData = (
         adminFeeMantissa,
         collateralFactorMantissa,
         interestRateModelAddress,
+        cTokenAddress,
       };
     } else {
       return null;
@@ -145,7 +146,7 @@ export const AssetSettings = ({
   };
 
   const [interestRateModel, setInterestRateModel] = useState(
-    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_DAI
+    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_Gov_Seeds
   );
 
   const { data: curves } = useQuery(
@@ -363,7 +364,8 @@ export const AssetSettings = ({
     }
   };
 
-  return (
+  return cTokenData &&
+    (cTokenAddress ? cTokenData.cTokenAddress === cTokenAddress : true) ? (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
@@ -470,15 +472,19 @@ export const AssetSettings = ({
           borderRadius="7px"
           fontWeight="bold"
           _focus={{ outline: "none" }}
-          width="230px"
-          value={interestRateModel}
+          width="340px"
+          value={interestRateModel.toLowerCase()}
           onChange={(event) => setInterestRateModel(event.target.value)}
         >
           {Object.entries(
             Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
           ).map(([key, value]) => {
             return (
-              <option className="black-bg-option" value={value} key={value}>
+              <option
+                className="black-bg-option"
+                value={value.toLowerCase()}
+                key={key}
+              >
                 {key}
               </option>
             );
@@ -528,7 +534,7 @@ export const AssetSettings = ({
           />
         ) : curves === undefined ? (
           <Center expand color="#FFF">
-            <Spinner />
+            <Spinner my={8} />
           </Center>
         ) : (
           <Center expand color="#FFFFFF">
@@ -559,6 +565,10 @@ export const AssetSettings = ({
         </Box>
       )}
     </Column>
+  ) : (
+    <Center expand>
+      <Spinner my={8} />
+    </Center>
   );
 };
 

@@ -539,7 +539,7 @@ const PoolConfiguration = ({
         </Column>
       ) : (
         <Center expand>
-          <Spinner />
+          <Spinner my={8} />
         </Center>
       )}
     </Column>
@@ -651,7 +651,7 @@ const ColoredAssetSettings = ({
     />
   ) : (
     <Center expand>
-      <Spinner />
+      <Spinner my={8} />
     </Center>
   );
 };
