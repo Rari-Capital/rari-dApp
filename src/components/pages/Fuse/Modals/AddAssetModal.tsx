@@ -231,7 +231,9 @@ export const AssetSettings = ({
         bigCollateralFacotr,
         bigReserveFactor,
         bigAdminFee,
-        { from: address }
+        { from: address },
+        // TODO: Disable this. This bypasses the price feed check. Only using now because only trusted partners are deploying assets.
+        true
       );
 
       LogRocket.track("Fuse-DeployAsset");
@@ -472,25 +474,15 @@ export const AssetSettings = ({
           value={interestRateModel}
           onChange={(event) => setInterestRateModel(event.target.value)}
         >
-          <option
-            className="black-bg-option"
-            value={
-              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-                .JumpRateModel_DAI
-            }
-          >
-            DAI JumpRateModel
-          </option>
-
-          <option
-            className="black-bg-option"
-            value={
-              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-                .WhitePaperInterestRateModel_ETH
-            }
-          >
-            ETH WhitePaperRateModel
-          </option>
+          {Object.entries(
+            Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+          ).map(([key, value]) => {
+            return (
+              <option className="black-bg-option" value={value} key={value}>
+                {key}
+              </option>
+            );
+          })}
         </Select>
 
         {cTokenData &&

@@ -132,7 +132,7 @@ const FuseTabBar = () => {
           </>
         ) : null}
 
-        {/* <NewPoolButton /> */}
+        <NewPoolButton />
       </RowOrColumn>
     </DashboardBox>
   );
