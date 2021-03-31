@@ -416,6 +416,17 @@ const AmountSelect = ({
         }
 
         if (mode === Mode.SUPPLY) {
+          // If they want to enable as collateral now, enter the market:
+          if (enableAsCollateral) {
+            const comptroller = createComptroller(comptrollerAddress, fuse);
+            // Don't await this, we don't care if it gets executed first!
+            comptroller.methods
+              .enterMarkets([asset.cToken])
+              .send({ from: address });
+
+            LogRocket.track("Fuse-ToggleCollateral");
+          }
+
           if (isETH) {
             const call = cToken.methods.mint();
 
@@ -454,16 +465,6 @@ const AmountSelect = ({
           }
 
           LogRocket.track("Fuse-Supply");
-
-          // If they want to enable as collateral now, enter the market:
-          if (enableAsCollateral) {
-            const comptroller = createComptroller(comptrollerAddress, fuse);
-            await comptroller.methods
-              .enterMarkets([asset.cToken])
-              .send({ from: address });
-
-            LogRocket.track("Fuse-ToggleCollateral");
-          }
         } else if (mode === Mode.REPAY) {
           if (isETH) {
             const call = cToken.methods.repayBorrow();
