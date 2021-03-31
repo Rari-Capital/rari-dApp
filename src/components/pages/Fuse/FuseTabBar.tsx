@@ -1,4 +1,4 @@
-import { DeleteIcon, InfoIcon, SmallAddIcon } from "@chakra-ui/icons";
+import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "buttered-chakra";
 import React from "react";
@@ -26,6 +26,7 @@ const FuseTabBar = () => {
   let navigate = useNavigate();
 
   const filter = useFilter();
+  const location = useLocation();
 
   return (
     <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "65px"}>
@@ -92,15 +93,13 @@ const FuseTabBar = () => {
         <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
 
         {poolId ? (
-          <ButtonGroup
-            size="sm"
-            isAttached
-            variant="outline"
-            height="35px"
-            ml={isMobile ? 0 : 4}
-            mt={isMobile ? 4 : 0}
-          >
-            <DashboardBox {...activeStyle}>
+          <>
+            <DashboardBox
+              {...(!location.pathname.includes("info") ? activeStyle : {})}
+              ml={isMobile ? 0 : 4}
+              mt={isMobile ? 4 : 0}
+              height="35px"
+            >
               <Link
                 /* @ts-ignore */
                 as={RouterLink}
@@ -113,18 +112,24 @@ const FuseTabBar = () => {
               </Link>
             </DashboardBox>
 
-            <DashboardBox {...activeStyle}>
+            <DashboardBox
+              {...(location.pathname.includes("info") ? activeStyle : {})}
+              ml={isMobile ? 0 : 4}
+              mt={isMobile ? 4 : 0}
+              height="35px"
+            >
               <Link
                 /* @ts-ignore */
                 as={RouterLink}
                 to={`/fuse/pool/${poolId}/info`}
+                className="no-underline"
               >
-                <Center expand pl="9px" pr="10px" fontWeight="bold">
-                  <InfoIcon />
+                <Center expand px={2} fontWeight="bold">
+                  {t("Pool #{{poolId}} Info", { poolId })}
                 </Center>
               </Link>
             </DashboardBox>
-          </ButtonGroup>
+          </>
         ) : null}
 
         {/* <NewPoolButton /> */}

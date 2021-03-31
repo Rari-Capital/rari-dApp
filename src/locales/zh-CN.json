@@ -225,5 +225,6 @@
   "Connect Wallet": "连接钱包",
   "Pool Utilization": "池利用率",
   "More Info": "更多信息",
-  "Enable As Collateral": "启用作为抵押"
+  "Enable As Collateral": "启用作为抵押",
+  "Pool #{{poolId}} Info": "池＃{{poolId}}信息"
 }
