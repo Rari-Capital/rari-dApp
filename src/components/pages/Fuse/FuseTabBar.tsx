@@ -91,6 +91,10 @@ const FuseTabBar = () => {
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
         <TabLink route="/fuse" text={t("All Pools")} />
         <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
+        <TabExternalLink
+          route="https://rari.grafana.net/goto/61kctV_Gk"
+          text={t("Metrics")}
+        />
 
         {poolId ? (
           <>
@@ -159,6 +163,26 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
           ? activeStyle
           : noop)}
       >
+        <Center expand px={2} fontWeight="bold">
+          {text}
+        </Center>
+      </DashboardBox>
+    </Link>
+  );
+};
+
+const TabExternalLink = ({ route, text }: { route: string; text: string }) => {
+  const isMobile = useIsSmallScreen();
+
+  return (
+    <Link
+      className="no-underline"
+      href={route}
+      isExternal
+      ml={isMobile ? 0 : 4}
+      mt={isMobile ? 4 : 0}
+    >
+      <DashboardBox height="35px">
         <Center expand px={2} fontWeight="bold">
           {text}
         </Center>

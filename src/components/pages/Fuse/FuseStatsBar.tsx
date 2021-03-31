@@ -69,7 +69,7 @@ const FuseStatsBar = () => {
           <Heading size="lg">{t("Fuse")}</Heading>
 
           {t(
-            "Isolated lending pools you can use today that will power the decentralized future of tomorrow."
+            "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility."
           )}
         </Column>
       </DashboardBox>

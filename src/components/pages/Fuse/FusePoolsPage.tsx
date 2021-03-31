@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row } from "buttered-chakra";
 import React, { useMemo } from "react";
@@ -33,6 +32,31 @@ export interface FusePool {
   isPrivate: boolean;
 }
 
+interface MergedPool {
+  id: number;
+  pool: FusePool;
+  underlyingTokens: string[];
+  underlyingSymbols: string[];
+  suppliedUSD: number;
+  borrowedUSD: number;
+}
+
+const poolSort = (pools: MergedPool[]) => {
+  return pools.sort((a, b) => {
+    if (b.suppliedUSD > a.suppliedUSD) {
+      return 1;
+    }
+
+    if (b.suppliedUSD < a.suppliedUSD) {
+      return -1;
+    }
+
+    // They're equal, let's sort by pool number:
+
+    return b.id > a.id ? 1 : -1;
+  });
+};
+
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();
 
@@ -56,7 +80,7 @@ const FusePoolsPage = React.memo(() => {
 
         <FuseTabBar />
 
-        <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "600px"}>
+        <DashboardBox width="100%" mt={4}>
           <PoolList />
         </DashboardBox>
       </Column>
@@ -107,14 +131,7 @@ const PoolList = () => {
         rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
       ]);
 
-      const merged: {
-        id: number;
-        pool: FusePool;
-        underlyingTokens: string[];
-        underlyingSymbols: string[];
-        suppliedUSD: number;
-        borrowedUSD: number;
-      }[] = [];
+      const merged: MergedPool[] = [];
       for (let id = 0; id < ids.length; id++) {
         merged.push({
           // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
@@ -137,21 +154,20 @@ const PoolList = () => {
     }
 
     if (!filter) {
-      return _pools.sort((a, b) => (b.id > a.id ? 1 : -1));
+      return poolSort(_pools);
     }
 
     if (isMyPools || isCreatedPools) {
-      return _pools.sort((a, b) => (b.id > a.id ? 1 : -1));
+      return poolSort(_pools);
     }
 
     const options = {
       keys: ["pool.name", "id", "underlyingTokens", "underlyingSymbols"],
+      threshold: 0.3,
     };
 
     const filtered = new Fuse(_pools, options).search(filter);
-    return filtered
-      .map((item) => item.item)
-      .sort((a, b) => (b.id > a.id ? 1 : -1));
+    return poolSort(filtered.map((item) => item.item));
   }, [_pools, filter, isMyPools, isCreatedPools]);
 
   return (
@@ -159,7 +175,6 @@ const PoolList = () => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       expand
-      pb={4}
     >
       <Row
         mainAxisAlignment="flex-start"
@@ -174,23 +189,19 @@ const PoolList = () => {
           {t("Pool Assets")}
         </Text>
 
-        <Text fontWeight="bold" width="15%" textAlign="center">
+        <Text fontWeight="bold" textAlign="center" width="13%">
+          {t("Pool Number")}
+        </Text>
+
+        <Text fontWeight="bold" textAlign="center" width="16%">
           {t("Total Supplied")}
         </Text>
 
-        <Row mainAxisAlignment="center" crossAxisAlignment="center" width="15%">
-          <Text fontWeight="bold" textAlign="center">
-            {t("Pool Number")}
-          </Text>
-
-          <ChevronDownIcon ml={1} />
-        </Row>
-
-        <Text fontWeight="bold" textAlign="center" width="15%">
+        <Text fontWeight="bold" textAlign="center" width="16%">
           {t("Total Borrowed")}
         </Text>
 
-        <Text fontWeight="bold" width="15%" textAlign="center">
+        <Text fontWeight="bold" textAlign="center" width="15%">
           {t("Pool Risk Score")}
         </Text>
       </Row>
@@ -201,13 +212,9 @@ const PoolList = () => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         width="100%"
-        pl={4}
-        pr={1}
-        pt="6px"
-        overflow="scroll"
       >
         {filteredPools ? (
-          filteredPools.map((pool) => {
+          filteredPools.map((pool, index) => {
             return (
               <PoolRow
                 key={pool.id}
@@ -219,7 +226,7 @@ const PoolList = () => {
                   symbol: pool.underlyingSymbols[index],
                   address,
                 }))}
-                mt={2}
+                noBottomDivider={index === filteredPools.length - 1}
               />
             );
           })
@@ -236,17 +243,15 @@ const PoolRow = ({
   poolNumber,
   tvl,
   borrowed,
-
-  mt,
   name,
+  noBottomDivider,
 }: {
   tokens: { symbol: string; address: string }[];
   poolNumber: number;
   tvl: number;
   borrowed: number;
-
-  mt?: number | string;
   name: string;
+  noBottomDivider?: boolean;
 }) => {
   const isEmpty = tokens.length === 0;
 
@@ -255,69 +260,70 @@ const PoolRow = ({
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
   return (
-    <Link
-      /* @ts-ignore */
-      as={RouterLink}
-      width="100%"
-      className="no-underline"
-      to={"/fuse/pool/" + poolNumber}
-    >
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
+    <>
+      <Link
+        /* @ts-ignore */
+        as={RouterLink}
         width="100%"
-        height="30px"
-        mt={mt ?? 0}
+        className="no-underline"
+        to={"/fuse/pool/" + poolNumber}
       >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          height="100%"
-          width="38%"
-          mr="2%"
-          overflow="scroll"
+          width="100%"
+          height="90px"
+          className="hover-row"
+          pl={4}
+          pr={1}
         >
-          {isEmpty ? null : (
-            <AvatarGroup size="xs" max={30} mr={2}>
-              {tokens.map(({ address }) => {
-                return <CTokenIcon key={address} address={address} />;
-              })}
-            </AvatarGroup>
-          )}
-
-          {isEmpty ? null : (
-            <Text mb="1px" fontWeight="bold" flexShrink={0}>
-              <b>
-                {tokens.map(({ symbol }, index, array) => {
-                  return symbol + (index !== array.length - 1 ? " / " : "");
-                })}
-              </b>
-            </Text>
-          )}
-        </Row>
-
-        <Center height="100%" width="15%">
-          <b>{smallUsdFormatter(tvl)}</b>
-        </Center>
-
-        <Center height="100%" width="15%">
-          <b>{poolNumber}</b>
-        </Center>
-
-        <Center height="100%" width="15%">
-          <b>{smallUsdFormatter(borrowed)}</b>
-        </Center>
-        <Center height="100%" width="15%">
-          <SimpleTooltip
-            label={
-              "Underlying RSS: " + (rss ? rss.totalScore.toFixed(2) : "?") + "%"
-            }
+          <Column
+            pt={2}
+            width="40%"
+            height="100%"
+            mainAxisAlignment="center"
+            crossAxisAlignment="flex-start"
           >
-            <b>{rssScore}</b>
-          </SimpleTooltip>
-        </Center>
-      </Row>
-    </Link>
+            {isEmpty ? null : (
+              <SimpleTooltip label={tokens.map((t) => t.symbol).join(" / ")}>
+                <AvatarGroup size="xs" max={30} mr={2}>
+                  {tokens.map(({ address }) => {
+                    return <CTokenIcon key={address} address={address} />;
+                  })}
+                </AvatarGroup>
+              </SimpleTooltip>
+            )}
+
+            <Text mt={isEmpty ? 0 : 2}>{name}</Text>
+          </Column>
+
+          <Center height="100%" width="13%">
+            <b>{poolNumber}</b>
+          </Center>
+
+          <Center height="100%" width="16%">
+            <b>{smallUsdFormatter(tvl)}</b>
+          </Center>
+
+          <Center height="100%" width="16%">
+            <b>{smallUsdFormatter(borrowed)}</b>
+          </Center>
+          <Center height="100%" width="15%">
+            <SimpleTooltip
+              label={
+                "Underlying RSS: " +
+                (rss ? rss.totalScore.toFixed(2) : "?") +
+                "%"
+              }
+            >
+              <b>{rssScore}</b>
+            </SimpleTooltip>
+          </Center>
+        </Row>
+      </Link>
+
+      {noBottomDivider ? null : <ModalDivider />}
+    </>
   );
 };
 
