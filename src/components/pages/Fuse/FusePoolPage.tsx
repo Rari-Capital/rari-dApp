@@ -70,14 +70,11 @@ const FusePoolPage = React.memo(() => {
         <RowOrColumn
           width="100%"
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
+          crossAxisAlignment="flex-start"
           mt={4}
           isRow={!isMobile}
         >
-          <DashboardBox
-            width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "470px"}
-          >
+          <DashboardBox width={isMobile ? "100%" : "50%"}>
             {data ? (
               <SupplyList
                 assets={data.assets}
@@ -85,7 +82,7 @@ const FusePoolPage = React.memo(() => {
                 supplyBalanceUSD={data.totalSupplyBalanceUSD}
               />
             ) : (
-              <Center height={!isMobile ? "100%" : "200px"}>
+              <Center height="200px">
                 <Spinner />
               </Center>
             )}
@@ -95,7 +92,6 @@ const FusePoolPage = React.memo(() => {
             ml={isMobile ? 0 : 4}
             mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "470px"}
           >
             {data ? (
               <BorrowList
@@ -104,7 +100,7 @@ const FusePoolPage = React.memo(() => {
                 borrowBalanceUSD={data.totalBorrowBalanceUSD}
               />
             ) : (
-              <Center height={!isMobile ? "100%" : "200px"}>
+              <Center height="200px">
                 <Spinner />
               </Center>
             )}
@@ -194,11 +190,17 @@ const SupplyList = ({
 }) => {
   const { t } = useTranslation();
 
+  const suppliedAssets = assets.filter((asset) => asset.supplyBalanceUSD > 1);
+  const nonSuppliedAssets = assets.filter(
+    (asset) => asset.supplyBalanceUSD < 1
+  );
+
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       height="100%"
+      pb={1}
     >
       <Heading size="md" px={4} py={3}>
         {t("Supply Balance:")} {smallUsdFormatter(supplyBalanceUSD)}
@@ -235,20 +237,34 @@ const SupplyList = ({
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
         expand
-        overflowY="auto"
         mt={1}
       >
         {assets.length > 0 ? (
-          assets.map((asset, index) => {
-            return (
-              <AssetSupplyRow
-                comptrollerAddress={comptrollerAddress}
-                key={asset.underlyingToken}
-                assets={assets}
-                index={index}
-              />
-            );
-          })
+          <>
+            {suppliedAssets.map((asset, index) => {
+              return (
+                <AssetSupplyRow
+                  comptrollerAddress={comptrollerAddress}
+                  key={asset.underlyingToken}
+                  assets={suppliedAssets}
+                  index={index}
+                />
+              );
+            })}
+
+            {suppliedAssets.length > 0 ? <ModalDivider my={2} /> : null}
+
+            {nonSuppliedAssets.map((asset, index) => {
+              return (
+                <AssetSupplyRow
+                  comptrollerAddress={comptrollerAddress}
+                  key={asset.underlyingToken}
+                  assets={nonSuppliedAssets}
+                  index={index}
+                />
+              );
+            })}
+          </>
         ) : (
           <Center expand my={8}>
             {t("There are no assets in this pool.")}
@@ -469,12 +485,17 @@ const BorrowList = ({
   comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
+  const borrowedAssets = assets.filter((asset) => asset.borrowBalanceUSD > 1);
+  const nonBorrowedAssets = assets.filter(
+    (asset) => asset.borrowBalanceUSD < 1
+  );
 
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       height="100%"
+      pb={1}
     >
       <Heading size="md" px={4} py={3}>
         {t("Borrow Balance:")} {smallUsdFormatter(borrowBalanceUSD)}
@@ -498,7 +519,7 @@ const BorrowList = ({
           </Text>
 
           <Text width="27%" fontWeight="bold" textAlign="right">
-            {t("Borrowed")}
+            {t("Balance")}
           </Text>
 
           <Text width="20%" fontWeight="bold" textAlign="right">
@@ -511,20 +532,34 @@ const BorrowList = ({
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
         expand
-        overflowY="auto"
         mt={1}
       >
         {assets.length > 0 ? (
-          assets.map((asset, index) => {
-            return (
-              <AssetBorrowRow
-                comptrollerAddress={comptrollerAddress}
-                key={asset.underlyingToken}
-                assets={assets}
-                index={index}
-              />
-            );
-          })
+          <>
+            {borrowedAssets.map((asset, index) => {
+              return (
+                <AssetBorrowRow
+                  comptrollerAddress={comptrollerAddress}
+                  key={asset.underlyingToken}
+                  assets={borrowedAssets}
+                  index={index}
+                />
+              );
+            })}
+
+            {borrowedAssets.length > 0 ? <ModalDivider my={2} /> : null}
+
+            {nonBorrowedAssets.map((asset, index) => {
+              return (
+                <AssetBorrowRow
+                  comptrollerAddress={comptrollerAddress}
+                  key={asset.underlyingToken}
+                  assets={nonBorrowedAssets}
+                  index={index}
+                />
+              );
+            })}
+          </>
         ) : (
           <Center expand my={8}>
             {t("There are no assets in this pool.")}
