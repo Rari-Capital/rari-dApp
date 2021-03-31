@@ -228,7 +228,7 @@ const PoolConfiguration = () => {
                   Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle
                 }
               >
-                Rari DAO MasterPriceOracle
+                Rari MasterPriceOracle
               </option>
             </Select>
           </OptionRow>
