@@ -472,7 +472,7 @@ export const AssetSettings = ({
           borderRadius="7px"
           fontWeight="bold"
           _focus={{ outline: "none" }}
-          width="340px"
+          width="300px"
           value={interestRateModel.toLowerCase()}
           onChange={(event) => setInterestRateModel(event.target.value)}
         >
