@@ -458,7 +458,9 @@ const AmountSelect = ({
           // If they want to enable as collateral now, enter the market:
           if (enableAsCollateral) {
             const comptroller = createComptroller(comptrollerAddress, fuse);
-            await comptroller.methods.enterMarkets([asset.cToken]);
+            await comptroller.methods
+              .enterMarkets([asset.cToken])
+              .send({ from: address });
 
             LogRocket.track("Fuse-ToggleCollateral");
           }
