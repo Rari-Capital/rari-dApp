@@ -33,6 +33,31 @@ export interface FusePool {
   isPrivate: boolean;
 }
 
+interface MergedPool {
+  id: number;
+  pool: FusePool;
+  underlyingTokens: string[];
+  underlyingSymbols: string[];
+  suppliedUSD: number;
+  borrowedUSD: number;
+}
+
+const poolSort = (pools: MergedPool[]) => {
+  return pools.sort((a, b) => {
+    if (b.suppliedUSD > a.suppliedUSD) {
+      return 1;
+    }
+
+    if (b.suppliedUSD < a.suppliedUSD) {
+      return -1;
+    }
+
+    // They're equal, let's sort by pool number:
+
+    return b.id > a.id ? 1 : -1;
+  });
+};
+
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();
 
@@ -107,14 +132,7 @@ const PoolList = () => {
         rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
       ]);
 
-      const merged: {
-        id: number;
-        pool: FusePool;
-        underlyingTokens: string[];
-        underlyingSymbols: string[];
-        suppliedUSD: number;
-        borrowedUSD: number;
-      }[] = [];
+      const merged: MergedPool[] = [];
       for (let id = 0; id < ids.length; id++) {
         merged.push({
           // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
@@ -137,11 +155,11 @@ const PoolList = () => {
     }
 
     if (!filter) {
-      return _pools.sort((a, b) => (b.id > a.id ? 1 : -1));
+      return poolSort(_pools);
     }
 
     if (isMyPools || isCreatedPools) {
-      return _pools.sort((a, b) => (b.id > a.id ? 1 : -1));
+      return poolSort(_pools);
     }
 
     const options = {
@@ -150,9 +168,7 @@ const PoolList = () => {
     };
 
     const filtered = new Fuse(_pools, options).search(filter);
-    return filtered
-      .map((item) => item.item)
-      .sort((a, b) => (b.id > a.id ? 1 : -1));
+    return poolSort(filtered.map((item) => item.item));
   }, [_pools, filter, isMyPools, isCreatedPools]);
 
   return (
@@ -175,23 +191,22 @@ const PoolList = () => {
           {t("Pool Assets")}
         </Text>
 
-        <Text fontWeight="bold" width="15%" textAlign="center">
-          {t("Total Supplied")}
-        </Text>
-
         <Row mainAxisAlignment="center" crossAxisAlignment="center" width="15%">
           <Text fontWeight="bold" textAlign="center">
-            {t("Pool Number")}
+            {t("Total Supplied")}
           </Text>
-
           <ChevronDownIcon ml={1} />
         </Row>
+
+        <Text fontWeight="bold" textAlign="center" width="15%">
+          {t("Pool Number")}
+        </Text>
 
         <Text fontWeight="bold" textAlign="center" width="15%">
           {t("Total Borrowed")}
         </Text>
 
-        <Text fontWeight="bold" width="15%" textAlign="center">
+        <Text fontWeight="bold" textAlign="center" width="15%">
           {t("Pool Risk Score")}
         </Text>
       </Row>

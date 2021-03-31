@@ -123,7 +123,6 @@
   "Pool Assets": "合并资产",
   "Pool Number": "池号",
   "Fuse": "Fuse",
-  "Isolated lending pools you can use today that will power the decentralized future of tomorrow.": "您今天可以使用的孤立的货币市场将为明天的去中心化未来提供动力。",
   "Total Supply Balance": "总供应余额",
   "Total Borrow Balance": "总借款余额",
   "Search:": "搜索",
@@ -226,5 +225,6 @@
   "Pool Utilization": "池利用率",
   "Enable As Collateral": "启用作为抵押",
   "Pool #{{poolId}} Info": "池＃{{poolId}}信息",
-  "Metrics": "指标"
+  "Metrics": "指标",
+  "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.": "第一个真正的开放利率协议。 借贷，借贷并创建具有无限灵活性的孤立借贷市场。"
 }

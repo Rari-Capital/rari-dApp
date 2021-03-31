@@ -219,12 +219,12 @@
   "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.": "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels.",
   "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   "Pool Risk Score": "Pool Risk Score",
-  "Isolated lending pools you can use today that will power the decentralized future of tomorrow.": "Isolated lending pools you can use today that will power the decentralized future of tomorrow.",
   "Total Value Locked Across Fuse": "Total Value Locked Across Fuse",
   "Connecting to your wallet...": "Connecting to your wallet...",
   "Pool Utilization": "Pool Utilization",
   "Connect Wallet": "Connect Wallet",
   "Enable As Collateral": "Enable As Collateral",
   "Pool #{{poolId}} Info": "Pool #{{poolId}} Info",
-  "Metrics": "Metrics"
+  "Metrics": "Metrics",
+  "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.": "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility."
 }
