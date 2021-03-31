@@ -294,7 +294,7 @@ const PoolRow = ({
               </SimpleTooltip>
             )}
 
-            <Text mt={2}>{name}</Text>
+            <Text mt={isEmpty ? 0 : 2}>{name}</Text>
           </Column>
 
           <Center height="100%" width="13%">
