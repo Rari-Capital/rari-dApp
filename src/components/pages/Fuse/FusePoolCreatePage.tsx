@@ -213,13 +213,22 @@ const PoolConfiguration = () => {
                 ChainlinkPriceOracle
               </option>
 
-              <option
+              {/* <option
                 className="black-bg-option"
                 value={
                   Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.Keep3rPriceOracle
                 }
               >
                 Keep3rPriceOracle
+              </option> */}
+
+              <option
+                className="black-bg-option"
+                value={
+                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle
+                }
+              >
+                Rari DAO MasterPriceOracle
               </option>
             </Select>
           </OptionRow>
