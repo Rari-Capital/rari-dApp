@@ -569,16 +569,19 @@ const AmountSelect = ({
             height="72px"
             flexShrink={0}
           >
-            <Image
-              width="35px"
-              height="35px"
-              borderRadius="50%"
-              src={
-                tokenData?.logoURL ??
-                "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-              }
-              alt=""
-            />
+            <Box height="35px" width="35px">
+              <Image
+                width="100%"
+                height="100%"
+                borderRadius="50%"
+                src={
+                  tokenData?.logoURL ??
+                  "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                }
+                alt=""
+              />
+            </Box>
+
             <Heading fontSize="27px" ml={3}>
               {asset.underlyingName}
             </Heading>
