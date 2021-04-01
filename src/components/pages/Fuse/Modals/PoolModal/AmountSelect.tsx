@@ -829,6 +829,7 @@ const StatsColumn = ({
             {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
               ? t("Supply APY")
               : t("Borrow APY")}
+            :
           </Text>
           <Text fontWeight="bold">
             {mode === Mode.SUPPLY || mode === Mode.WITHDRAW

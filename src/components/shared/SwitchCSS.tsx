@@ -20,6 +20,7 @@ export const SwitchCSS = ({
     position: static !important;
     height: 0px !important;
     width: 0px !important;
+    display: none !important;
   }
   `}
     </style>

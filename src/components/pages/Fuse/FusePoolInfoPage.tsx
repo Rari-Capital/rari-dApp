@@ -400,7 +400,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   const { t } = useTranslation();
 
-  const [selectedAsset, setSelectedAsset] = useState(assets[1]);
+  const [selectedAsset, setSelectedAsset] = useState(assets[2]);
   const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
   const selectedAssetUtilization =
     // @ts-ignore
@@ -432,12 +432,20 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
       width="100%"
       height="100%"
     >
-      <Heading size="sm" px={4} py={3}>
-        {t("Pool {{num}}'s {{token}} Interest Rate Model", {
-          num: poolId,
-          token: selectedAsset.underlyingSymbol,
-        })}
-      </Heading>
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        height="60px"
+        flexShrink={0}
+      >
+        <Heading size="sm" px={4} py={3}>
+          {t("Pool {{num}}'s {{token}} Interest Rate Model", {
+            num: poolId,
+            token: selectedAsset.underlyingSymbol,
+          })}
+        </Heading>
+      </Row>
+
       <ModalDivider />
 
       <Row

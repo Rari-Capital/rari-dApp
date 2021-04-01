@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { smallUsdFormatter, usdFormatter } from "../../../utils/bigUtils";
+import { smallUsdFormatter } from "../../../utils/bigUtils";
 import { fetchFuseTVL } from "../../../utils/fetchTVL";
 import CaptionedStat from "../../shared/CaptionedStat";
 import DashboardBox from "../../shared/DashboardBox";
@@ -28,6 +28,8 @@ const FuseStatsBar = () => {
 
     return (parseInt(tvlETH.toString()) / 1e18) * ethPrice;
   };
+
+  const { data: fuseTVL } = useQuery("fuseTVL", fetchFuseNumberTVL);
 
   const { data: totalBorrowAndSupply } = useQuery(
     address + " totalBorrowAndSupply",
@@ -53,7 +55,7 @@ const FuseStatsBar = () => {
       isRow={!isMobile}
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "120px"}
+      height={isMobile ? "auto" : "115px"}
     >
       <DashboardBox
         width={isMobile ? "100%" : "100%"}
@@ -65,11 +67,15 @@ const FuseStatsBar = () => {
           crossAxisAlignment={isMobile ? "center" : "flex-start"}
           textAlign={isMobile ? "center" : "left"}
           p={4}
+          fontSize="sm"
         >
-          <Heading size="lg">{t("Fuse")}</Heading>
+          <Heading size="lg" mb="2px">
+            {t("Fuse")}
+          </Heading>
 
           {t(
-            "The first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility."
+            "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.",
+            { tvl: fuseTVL ? smallUsdFormatter(fuseTVL) : "?" }
           )}
         </Column>
       </DashboardBox>
@@ -89,7 +95,7 @@ const FuseStatsBar = () => {
                   ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
                   : "$?"
               }
-              caption={t("Total Supply Balance")}
+              caption={t("Your Supply Balance")}
             />
           </StatBox>
 
@@ -104,14 +110,14 @@ const FuseStatsBar = () => {
                   ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
                   : "$?"
               }
-              caption={t("Total Borrow Balance")}
+              caption={t("Your Borrow Balance")}
             />
           </StatBox>
         </>
       ) : (
-        <StatBox width={isMobile ? "100%" : "480px"}>
+        <StatBox width={isMobile ? "100%" : "496px"}>
           <APYWithRefreshMovingStat
-            formatStat={usdFormatter}
+            formatStat={smallUsdFormatter}
             fetchInterval={40000}
             loadingPlaceholder="$?"
             apyInterval={100}
@@ -120,7 +126,7 @@ const FuseStatsBar = () => {
             apy={0.15}
             statSize="3xl"
             captionSize="xs"
-            caption={t("Total Value Locked Across Fuse")}
+            caption={t("Total Value Supplied Across Fuse")}
             crossAxisAlignment="center"
             captionFirst={false}
           />

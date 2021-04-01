@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Heading,
   Progress,
   Spinner,
@@ -61,12 +62,15 @@ const FusePoolPage = React.memo(() => {
 
         <FuseTabBar />
 
-        {data?.totalBorrowBalanceUSD ? (
-          <CollateralRatioBar
-            assets={data.assets}
-            borrowUSD={data.totalBorrowBalanceUSD}
-          />
-        ) : null}
+        {
+          /* If they have some asset enabled as collateral, show the collateral ratio bar */
+          data && data.assets.some((asset) => asset.membership) ? (
+            <CollateralRatioBar
+              assets={data.assets}
+              borrowUSD={data.totalBorrowBalanceUSD}
+            />
+          ) : null
+        }
 
         <RowOrColumn
           width="100%"
@@ -150,21 +154,29 @@ const CollateralRatioBar = ({
           0%
         </Text>
 
-        <Progress
-          size="xs"
-          width="100%"
-          colorScheme={
-            ratio <= 40
-              ? "whatsapp"
-              : ratio <= 60
-              ? "yellow"
-              : ratio <= 80
-              ? "orange"
-              : "red"
-          }
-          borderRadius="10px"
-          value={ratio}
-        />
+        <SimpleTooltip
+          label={`You're using ${ratio.toFixed(1)}% of your ${smallUsdFormatter(
+            maxBorrow
+          )} borrow limit.`}
+        >
+          <Box width="100%">
+            <Progress
+              size="xs"
+              width="100%"
+              colorScheme={
+                ratio <= 40
+                  ? "whatsapp"
+                  : ratio <= 60
+                  ? "yellow"
+                  : ratio <= 80
+                  ? "orange"
+                  : "red"
+              }
+              borderRadius="10px"
+              value={ratio}
+            />
+          </Box>
+        </SimpleTooltip>
 
         <SimpleTooltip
           label={t(
@@ -575,6 +587,8 @@ const AssetBorrowRow = ({
     (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 7) - 1) *
     100;
 
+  const { t } = useTranslation();
+
   return (
     <>
       <PoolModal
@@ -652,26 +666,34 @@ const AssetBorrowRow = ({
           </Text>
         </Column>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="20%"
+        <SimpleTooltip
+          label={t(
+            "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab."
+          )}
+          placement="top-end"
         >
-          <Text
-            color={tokenData?.color ?? "#FFF"}
-            fontWeight="bold"
-            fontSize="17px"
-          >
-            {shortUsdFormatter(asset.liquidityUSD)}
-          </Text>
+          <Box width="20%">
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-end"
+            >
+              <Text
+                color={tokenData?.color ?? "#FFF"}
+                fontWeight="bold"
+                fontSize="17px"
+              >
+                {shortUsdFormatter(asset.liquidityUSD)}
+              </Text>
 
-          <Text fontSize="sm">
-            {shortUsdFormatter(
-              asset.liquidity / 10 ** asset.underlyingDecimals
-            ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
-          </Text>
-        </Column>
+              <Text fontSize="sm">
+                {shortUsdFormatter(
+                  asset.liquidity / 10 ** asset.underlyingDecimals
+                ).replace("$", "")}{" "}
+                {asset.underlyingSymbol}
+              </Text>
+            </Column>
+          </Box>
+        </SimpleTooltip>
       </Row>
     </>
   );
