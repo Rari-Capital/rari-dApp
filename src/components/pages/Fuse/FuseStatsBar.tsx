@@ -95,7 +95,7 @@ const FuseStatsBar = () => {
                   ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
                   : "$?"
               }
-              caption={t("Total Supply Balance")}
+              caption={t("Your Supply Balance")}
             />
           </StatBox>
 
@@ -110,7 +110,7 @@ const FuseStatsBar = () => {
                   ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
                   : "$?"
               }
-              caption={t("Total Borrow Balance")}
+              caption={t("Your Borrow Balance")}
             />
           </StatBox>
         </>
@@ -126,7 +126,7 @@ const FuseStatsBar = () => {
             apy={0.15}
             statSize="3xl"
             captionSize="xs"
-            caption={t("Total Value Locked Across Fuse")}
+            caption={t("Total Value Supplied Across Fuse")}
             crossAxisAlignment="center"
             captionFirst={false}
           />
