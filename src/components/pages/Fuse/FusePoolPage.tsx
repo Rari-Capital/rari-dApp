@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Heading,
   Progress,
   Spinner,
@@ -575,6 +576,8 @@ const AssetBorrowRow = ({
     (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 7) - 1) *
     100;
 
+  const { t } = useTranslation();
+
   return (
     <>
       <PoolModal
@@ -652,26 +655,34 @@ const AssetBorrowRow = ({
           </Text>
         </Column>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="20%"
+        <SimpleTooltip
+          label={t(
+            "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab."
+          )}
+          placement="top-end"
         >
-          <Text
-            color={tokenData?.color ?? "#FFF"}
-            fontWeight="bold"
-            fontSize="17px"
-          >
-            {shortUsdFormatter(asset.liquidityUSD)}
-          </Text>
+          <Box width="20%">
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-end"
+            >
+              <Text
+                color={tokenData?.color ?? "#FFF"}
+                fontWeight="bold"
+                fontSize="17px"
+              >
+                {shortUsdFormatter(asset.liquidityUSD)}
+              </Text>
 
-          <Text fontSize="sm">
-            {shortUsdFormatter(
-              asset.liquidity / 10 ** asset.underlyingDecimals
-            ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
-          </Text>
-        </Column>
+              <Text fontSize="sm">
+                {shortUsdFormatter(
+                  asset.liquidity / 10 ** asset.underlyingDecimals
+                ).replace("$", "")}{" "}
+                {asset.underlyingSymbol}
+              </Text>
+            </Column>
+          </Box>
+        </SimpleTooltip>
       </Row>
     </>
   );
