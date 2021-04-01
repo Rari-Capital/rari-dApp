@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 import { useRari } from "../../../context/RariContext";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { smallUsdFormatter, usdFormatter } from "../../../utils/bigUtils";
+import { smallUsdFormatter } from "../../../utils/bigUtils";
 import { fetchFuseTVL } from "../../../utils/fetchTVL";
 import CaptionedStat from "../../shared/CaptionedStat";
 import DashboardBox from "../../shared/DashboardBox";
@@ -117,7 +117,7 @@ const FuseStatsBar = () => {
       ) : (
         <StatBox width={isMobile ? "100%" : "496px"}>
           <APYWithRefreshMovingStat
-            formatStat={usdFormatter}
+            formatStat={smallUsdFormatter}
             fetchInterval={40000}
             loadingPlaceholder="$?"
             apyInterval={100}
