@@ -62,12 +62,15 @@ const FusePoolPage = React.memo(() => {
 
         <FuseTabBar />
 
-        {data?.totalBorrowBalanceUSD ? (
-          <CollateralRatioBar
-            assets={data.assets}
-            borrowUSD={data.totalBorrowBalanceUSD}
-          />
-        ) : null}
+        {
+          /* If they have some asset enabled as collateral, show the collateral ratio bar */
+          data && data.assets.some((asset) => asset.membership) ? (
+            <CollateralRatioBar
+              assets={data.assets}
+              borrowUSD={data.totalBorrowBalanceUSD}
+            />
+          ) : null
+        }
 
         <RowOrColumn
           width="100%"
@@ -151,21 +154,29 @@ const CollateralRatioBar = ({
           0%
         </Text>
 
-        <Progress
-          size="xs"
-          width="100%"
-          colorScheme={
-            ratio <= 40
-              ? "whatsapp"
-              : ratio <= 60
-              ? "yellow"
-              : ratio <= 80
-              ? "orange"
-              : "red"
-          }
-          borderRadius="10px"
-          value={ratio}
-        />
+        <SimpleTooltip
+          label={`You're using ${ratio.toFixed(1)}% of your ${smallUsdFormatter(
+            maxBorrow
+          )} borrow limit.`}
+        >
+          <Box width="100%">
+            <Progress
+              size="xs"
+              width="100%"
+              colorScheme={
+                ratio <= 40
+                  ? "whatsapp"
+                  : ratio <= 60
+                  ? "yellow"
+                  : ratio <= 80
+                  ? "orange"
+                  : "red"
+              }
+              borderRadius="10px"
+              value={ratio}
+            />
+          </Box>
+        </SimpleTooltip>
 
         <SimpleTooltip
           label={t(
