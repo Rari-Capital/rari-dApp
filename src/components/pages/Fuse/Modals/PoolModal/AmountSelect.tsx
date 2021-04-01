@@ -10,8 +10,10 @@ import {
   Image,
   Input,
   useToast,
-  IconButton,
   Switch,
+  Tab,
+  TabList,
+  Tabs,
 } from "@chakra-ui/react";
 import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
@@ -30,7 +32,6 @@ import DashboardBox from "../../../../shared/DashboardBox";
 import { ModalDivider } from "../../../../shared/Modal";
 
 import { Mode } from ".";
-import { SettingsIcon } from "@chakra-ui/icons";
 
 import {
   ETH_TOKEN_DATA,
@@ -210,15 +211,16 @@ const AmountSelect = ({
   assets,
   index,
   mode,
-  openOptions,
+  setMode,
+
   comptrollerAddress,
 }: {
   onClose: () => any;
   assets: USDPricedFuseAsset[];
   index: number;
   mode: Mode;
+  setMode: (mode: Mode) => any;
   comptrollerAddress: string;
-  openOptions: () => any;
 }) => {
   const asset = assets[index];
 
@@ -540,10 +542,7 @@ const AmountSelect = ({
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={{
-        md: showEnableAsCollateral ? "590px" : "510px",
-        base: showEnableAsCollateral ? "630px" : "540px",
-      }}
+      height={showEnableAsCollateral ? "565px" : "490px"}
     >
       {userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
         <Column
@@ -564,11 +563,10 @@ const AmountSelect = ({
         <>
           <Row
             width="100%"
-            mainAxisAlignment="space-between"
+            mainAxisAlignment="center"
             crossAxisAlignment="center"
             p={4}
           >
-            <Box width="40px" />
             <Heading fontSize="27px">
               {mode === Mode.SUPPLY
                 ? t("Supply")
@@ -578,53 +576,51 @@ const AmountSelect = ({
                 ? t("Withdraw")
                 : t("Repay")}
             </Heading>
-            <IconButton
-              color="#FFFFFF"
-              variant="ghost"
-              aria-label="Options"
-              icon={<SettingsIcon />}
-              _hover={{
-                transform: "rotate(360deg)",
-                transition: "all 0.7s ease-in-out",
-              }}
-              _active={{}}
-              onClick={openOptions}
-            />
           </Row>
+
           <ModalDivider />
+
           <Column
-            mainAxisAlignment="space-between"
+            mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            p={4}
+            px={4}
+            pb={4}
+            pt={1}
             height="100%"
           >
-            <Text fontWeight="bold" fontSize="sm" textAlign="center">
-              {depositOrWithdrawAlert}
-            </Text>
-            <DashboardBox width="100%" height="70px" mt={4}>
-              <Row
-                p={4}
-                mainAxisAlignment="space-between"
-                crossAxisAlignment="center"
-                expand
-              >
-                <AmountInput
-                  color={tokenData?.color ?? "#FFF"}
-                  displayAmount={userEnteredAmount}
-                  updateAmount={updateAmount}
-                />
-                <TokenNameAndMaxButton
-                  comptrollerAddress={comptrollerAddress}
-                  mode={mode}
-                  logoURL={
-                    tokenData?.logoURL ??
-                    "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-                  }
-                  asset={asset}
-                  updateAmount={updateAmount}
-                />
-              </Row>
-            </DashboardBox>
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              width="100%"
+            >
+              <TabBar color={tokenData?.color} mode={mode} setMode={setMode} />
+
+              <DashboardBox width="100%" height="70px">
+                <Row
+                  p={4}
+                  mainAxisAlignment="space-between"
+                  crossAxisAlignment="center"
+                  expand
+                >
+                  <AmountInput
+                    color={tokenData?.color ?? "#FFF"}
+                    displayAmount={userEnteredAmount}
+                    updateAmount={updateAmount}
+                  />
+                  <TokenNameAndMaxButton
+                    comptrollerAddress={comptrollerAddress}
+                    mode={mode}
+                    logoURL={
+                      tokenData?.logoURL ??
+                      "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                    }
+                    asset={asset}
+                    updateAmount={updateAmount}
+                  />
+                </Row>
+              </DashboardBox>
+            </Column>
+
             <StatsColumn
               amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
               color={tokenData?.color ?? "#FFF"}
@@ -683,6 +679,101 @@ const AmountSelect = ({
 };
 
 export default AmountSelect;
+
+const TabBar = ({
+  color,
+  mode,
+  setMode,
+}: {
+  mode: Mode;
+  setMode: (mode: Mode) => any;
+  color: string | null | undefined;
+}) => {
+  const isSupplySide = mode < 2;
+  const { t } = useTranslation();
+
+  // Woohoo okay so there's some pretty weird shit going on in this component.
+
+  // The AmountSelect component gets passed a `mode` param which is a `Mode` enum. The `Mode` enum has 4 values (SUPPLY, WITHDRAW, BORROW, REPAY).
+  // The `mode` param is used to determine what text gets rendered and what action to take on clicking the confirm button.
+
+  // As part of our simple design for the modal, we only show 2 mode options in the tab bar at a time.
+
+  // When the modal is triggered it is given a `defaultMode` (starting mode). This is passed in by the component which renders the modal.
+  // - If the user starts off in SUPPLY or WITHDRAW, we only want show them the option to switch between SUPPLY and WITHDRAW.
+  // - If the user starts off in BORROW or REPAY, we want to only show them the option to switch between BORROW and REPAY.
+
+  // However since the tab list has only has 2 tabs under it. It accepts an `index` parameter which determines which tab to show as "selected". Since we only show 2 tabs, it can either be 0 or 1.
+  // This means we can't just pass `mode` to `index` because `mode` could be 2 or 3 (for BORROW or REPAY respectively) which would be invalid.
+
+  // To solve this, if the mode is BORROW or REPAY we pass the index as `mode - 2` which transforms the BORROW mode to 0 and the REPAY mode to 1.
+
+  // However, we also need to do the opposite of that logic in `onChange`:
+  // - If a user clicks a tab and the current mode is SUPPLY or WITHDRAW we just pass that index (0 or 1 respectively) to setMode.
+  // - But if a user clicks on a tab and the current mode is BORROW or REPAY, we need to add 2 to the index of the tab so it's the right index in the `Mode` enum.
+  //   - Otherwise whenver you clicked on a tab it would always set the mode to SUPPLY or BORROW when clicking the left or right button respectively.
+
+  // Does that make sense? Everything I described above is basically a way to get around the tab component's understanding that it only has 2 tabs under it to make it fit into our 4 value enum setup.
+  // Still confused? DM me on Twitter (@transmissions11) for help.
+
+  return (
+    <>
+      <style>
+        {`
+            
+            .chakra-tabs__tab {
+              color: ${color ?? "#FFFFFF"} !important;
+
+              border-bottom-width: 1px;
+            }
+
+            .chakra-tabs__tablist {
+              border-bottom: 1px solid;
+              border-color: #272727;
+            }
+            
+        `}
+      </style>
+      <Box px={3} width="100%" mt={1} mb="-1px" zIndex={99999}>
+        <Tabs
+          isFitted
+          width="100%"
+          align="center"
+          index={isSupplySide ? mode : mode - 2}
+          onChange={(index: number) => {
+            if (isSupplySide) {
+              return setMode(index);
+            } else {
+              return setMode(index + 2);
+            }
+          }}
+        >
+          <TabList>
+            {isSupplySide ? (
+              <>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Supply")}
+                </Tab>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Withdraw")}
+                </Tab>
+              </>
+            ) : (
+              <>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Borrow")}
+                </Tab>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Repay")}
+                </Tab>
+              </>
+            )}
+          </TabList>
+        </Tabs>
+      </Box>
+    </>
+  );
+};
 
 const StatsColumn = ({
   color,
@@ -778,7 +869,7 @@ const StatsColumn = ({
     100;
 
   return (
-    <DashboardBox mt={4} width="100%" height="190px">
+    <DashboardBox width="100%" height="190px" mt={4}>
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="flex-start"
@@ -829,7 +920,6 @@ const StatsColumn = ({
             {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
               ? t("Supply APY")
               : t("Borrow APY")}
-            :
           </Text>
           <Text fontWeight="bold">
             {mode === Mode.SUPPLY || mode === Mode.WITHDRAW

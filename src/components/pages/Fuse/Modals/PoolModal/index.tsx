@@ -3,7 +3,7 @@ import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 
 import AmountSelect from "./AmountSelect";
 import { MODAL_PROPS } from "../../../../shared/Modal";
-import OptionsMenu from "./OptionsMenu";
+
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 
 interface Props {
@@ -15,11 +15,6 @@ interface Props {
   comptrollerAddress: string;
 }
 
-enum CurrentScreen {
-  MAIN,
-  OPTIONS,
-}
-
 export enum Mode {
   SUPPLY,
   WITHDRAW,
@@ -28,8 +23,6 @@ export enum Mode {
 }
 
 const DepositModal = (props: Props) => {
-  const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
-
   const [mode, setMode] = useState(props.defaultMode);
 
   useEffect(() => {
@@ -45,22 +38,14 @@ const DepositModal = (props: Props) => {
     >
       <ModalOverlay />
       <ModalContent {...MODAL_PROPS}>
-        {currentScreen === CurrentScreen.MAIN ? (
-          <AmountSelect
-            comptrollerAddress={props.comptrollerAddress}
-            onClose={props.onClose}
-            openOptions={() => setCurrentScreen(CurrentScreen.OPTIONS)}
-            assets={props.assets}
-            index={props.index}
-            mode={mode}
-          />
-        ) : (
-          <OptionsMenu
-            onClose={() => setCurrentScreen(CurrentScreen.MAIN)}
-            onSetMode={setMode}
-            mode={mode}
-          />
-        )}
+        <AmountSelect
+          comptrollerAddress={props.comptrollerAddress}
+          onClose={props.onClose}
+          assets={props.assets}
+          index={props.index}
+          mode={mode}
+          setMode={setMode}
+        />
       </ModalContent>
     </Modal>
   );
