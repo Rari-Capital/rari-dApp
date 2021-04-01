@@ -542,7 +542,7 @@ const AmountSelect = ({
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={showEnableAsCollateral ? "565px" : "490px"}
+      height={showEnableAsCollateral ? "575px" : "500px"}
     >
       {userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
         <Column
@@ -566,15 +566,21 @@ const AmountSelect = ({
             mainAxisAlignment="center"
             crossAxisAlignment="center"
             p={4}
+            height="72px"
+            flexShrink={0}
           >
-            <Heading fontSize="27px">
-              {mode === Mode.SUPPLY
-                ? t("Supply")
-                : mode === Mode.BORROW
-                ? t("Borrow")
-                : mode === Mode.WITHDRAW
-                ? t("Withdraw")
-                : t("Repay")}
+            <Image
+              width="35px"
+              height="35px"
+              borderRadius="50%"
+              src={
+                tokenData?.logoURL ??
+                "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+              }
+              alt=""
+            />
+            <Heading fontSize="27px" ml={3}>
+              {asset.underlyingName}
             </Heading>
           </Row>
 
