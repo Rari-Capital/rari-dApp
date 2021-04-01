@@ -400,7 +400,9 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   const { t } = useTranslation();
 
-  const [selectedAsset, setSelectedAsset] = useState(assets[2]);
+  const [selectedAsset, setSelectedAsset] = useState(
+    assets.length > 3 ? assets[2] : assets[0]
+  );
   const selectedTokenData = useTokenData(selectedAsset.underlyingToken);
   const selectedAssetUtilization =
     // @ts-ignore
