@@ -12,6 +12,9 @@ import {
   useToast,
   IconButton,
   Switch,
+  Tab,
+  TabList,
+  Tabs,
 } from "@chakra-ui/react";
 import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
@@ -540,10 +543,7 @@ const AmountSelect = ({
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={{
-        md: showEnableAsCollateral ? "590px" : "510px",
-        base: showEnableAsCollateral ? "630px" : "540px",
-      }}
+      height={showEnableAsCollateral ? "530px" : "480px"}
     >
       {userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
         <Column
@@ -562,36 +562,6 @@ const AmountSelect = ({
         </Column>
       ) : (
         <>
-          <Row
-            width="100%"
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            p={4}
-          >
-            <Box width="40px" />
-            <Heading fontSize="27px">
-              {mode === Mode.SUPPLY
-                ? t("Supply")
-                : mode === Mode.BORROW
-                ? t("Borrow")
-                : mode === Mode.WITHDRAW
-                ? t("Withdraw")
-                : t("Repay")}
-            </Heading>
-            <IconButton
-              color="#FFFFFF"
-              variant="ghost"
-              aria-label="Options"
-              icon={<SettingsIcon />}
-              _hover={{
-                transform: "rotate(360deg)",
-                transition: "all 0.7s ease-in-out",
-              }}
-              _active={{}}
-              onClick={openOptions}
-            />
-          </Row>
-          <ModalDivider />
           <Column
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
@@ -625,14 +595,56 @@ const AmountSelect = ({
                 />
               </Row>
             </DashboardBox>
-            <StatsColumn
-              amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
-              color={tokenData?.color ?? "#FFF"}
-              assets={assets}
-              index={index}
-              mode={mode}
-              enableAsCollateral={enableAsCollateral}
-            />
+
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              width="100%"
+            >
+              <style>
+                {`
+            
+            .chakra-tabs__tab {
+              color: ${tokenData?.color ?? "#FFFFFF"} !important;
+
+              border-bottom-width: 1px;
+            }
+
+            .chakra-tabs__tablist {
+              border-bottom: 1px solid;
+              border-color: #272727;
+            }
+            
+            `}
+              </style>
+              <Box px={3} width="100%" mt={1} mb="-1px" zIndex={99999}>
+                <Tabs
+                  isFitted
+                  width="100%"
+                  align="center"
+                  index={tabIndex}
+                  onChange={handleTabsChange}
+                >
+                  <TabList>
+                    <Tab fontWeight="bold" _active={{}} mb="-1px">
+                      Supply
+                    </Tab>
+                    <Tab fontWeight="bold" _active={{}} mb="-1px">
+                      Withdraw
+                    </Tab>
+                  </TabList>
+                </Tabs>
+              </Box>
+
+              <StatsColumn
+                amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
+                color={tokenData?.color ?? "#FFF"}
+                assets={assets}
+                index={index}
+                mode={mode}
+                enableAsCollateral={enableAsCollateral}
+              />
+            </Column>
 
             {showEnableAsCollateral ? (
               <DashboardBox p={4} width="100%" mt={4}>
@@ -778,7 +790,7 @@ const StatsColumn = ({
     100;
 
   return (
-    <DashboardBox mt={4} width="100%" height="190px">
+    <DashboardBox width="100%" height="190px">
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="flex-start"
