@@ -55,7 +55,7 @@ const FuseStatsBar = () => {
       isRow={!isMobile}
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "130px"}
+      height={isMobile ? "auto" : "120px"}
     >
       <DashboardBox
         width={isMobile ? "100%" : "100%"}
