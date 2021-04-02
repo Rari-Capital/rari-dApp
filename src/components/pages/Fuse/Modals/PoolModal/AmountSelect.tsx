@@ -582,7 +582,9 @@ const AmountSelect = ({
             </Box>
 
             <Heading fontSize="27px" ml={3}>
-              {asset.underlyingName}
+              {asset.underlyingName.length < 25
+                ? asset.underlyingName
+                : asset.underlyingSymbol}
             </Heading>
           </Row>
 
