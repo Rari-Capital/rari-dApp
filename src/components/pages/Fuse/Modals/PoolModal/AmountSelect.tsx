@@ -857,10 +857,12 @@ const StatsColumn = ({
           totalSupply,
           supplyRatePerBlock: interestRateModel.getSupplyRate(
             fuse.web3.utils.toBN(
-              new BigNumber(assetToBeUpdated.totalBorrow)
-                .dividedBy(totalSupply.toString())
-                .multipliedBy(1e18)
-                .toFixed(0)
+              totalSupply > 0
+                ? new BigNumber(assetToBeUpdated.totalBorrow)
+                    .dividedBy(totalSupply.toString())
+                    .multipliedBy(1e18)
+                    .toFixed(0)
+                : 0
             )
           ),
         };
@@ -882,10 +884,12 @@ const StatsColumn = ({
           totalSupply,
           supplyRatePerBlock: interestRateModel.getSupplyRate(
             fuse.web3.utils.toBN(
-              new BigNumber(assetToBeUpdated.totalBorrow)
-                .dividedBy(totalSupply.toString())
-                .multipliedBy(1e18)
-                .toFixed(0)
+              totalSupply > 0
+                ? new BigNumber(assetToBeUpdated.totalBorrow)
+                    .dividedBy(totalSupply.toString())
+                    .multipliedBy(1e18)
+                    .toFixed(0)
+                : 0
             )
           ),
         };
@@ -907,10 +911,12 @@ const StatsColumn = ({
           totalBorrow,
           borrowRatePerBlock: interestRateModel.getBorrowRate(
             fuse.web3.utils.toBN(
-              new BigNumber(totalBorrow.toString())
-                .dividedBy(assetToBeUpdated.totalSupply)
-                .multipliedBy(1e18)
-                .toFixed(0)
+              assetToBeUpdated.totalSupply > 0
+                ? new BigNumber(totalBorrow.toString())
+                    .dividedBy(assetToBeUpdated.totalSupply)
+                    .multipliedBy(1e18)
+                    .toFixed(0)
+                : 0
             )
           ),
         };
@@ -932,10 +938,12 @@ const StatsColumn = ({
           totalBorrow,
           borrowRatePerBlock: interestRateModel.getBorrowRate(
             fuse.web3.utils.toBN(
-              new BigNumber(totalBorrow.toString())
-                .dividedBy(assetToBeUpdated.totalSupply)
-                .multipliedBy(1e18)
-                .toFixed(0)
+              assetToBeUpdated.totalSupply > 0
+                ? new BigNumber(totalBorrow.toString())
+                    .dividedBy(assetToBeUpdated.totalSupply)
+                    .multipliedBy(1e18)
+                    .toFixed(0)
+                : 0
             )
           ),
         };
