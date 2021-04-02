@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column, Center } from "buttered-chakra";
 
 import LogRocket from "logrocket";
 import {
@@ -10,8 +10,11 @@ import {
   Image,
   Input,
   useToast,
-  IconButton,
   Switch,
+  Tab,
+  TabList,
+  Tabs,
+  Spinner,
 } from "@chakra-ui/react";
 import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
@@ -30,7 +33,6 @@ import DashboardBox from "../../../../shared/DashboardBox";
 import { ModalDivider } from "../../../../shared/Modal";
 
 import { Mode } from ".";
-import { SettingsIcon } from "@chakra-ui/icons";
 
 import {
   ETH_TOKEN_DATA,
@@ -46,6 +48,8 @@ import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
 import { useParams } from "react-router-dom";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 import { SwitchCSS } from "../../../../shared/SwitchCSS";
+
+import { convertMantissaToAPY } from "../../../../../utils/apyUtils";
 
 enum UserAction {
   NO_ACTION,
@@ -89,12 +93,15 @@ export async function testForCTokenErrorAndSend(
     if (response >= 1000) {
       const comptrollerResponse = response - 1000;
 
+      let msg = ComptrollerErrorCodes[comptrollerResponse];
+
+      if (msg === "BORROW_BELOW_MIN") {
+        msg =
+          "As part of our guarded launch, you cannot borrow less than 1 ETH worth of tokens at the moment.";
+      }
+
       // This is a comptroller error:
-      err = new Error(
-        failMessage +
-          " Comptroller Code: " +
-          ComptrollerErrorCodes[comptrollerResponse]
-      );
+      err = new Error(failMessage + " Comptroller Error: " + msg);
     } else {
       // This is a standard token error:
       err = new Error(
@@ -210,15 +217,16 @@ const AmountSelect = ({
   assets,
   index,
   mode,
-  openOptions,
+  setMode,
+
   comptrollerAddress,
 }: {
   onClose: () => any;
   assets: USDPricedFuseAsset[];
   index: number;
   mode: Mode;
+  setMode: (mode: Mode) => any;
   comptrollerAddress: string;
-  openOptions: () => any;
 }) => {
   const asset = assets[index];
 
@@ -273,7 +281,7 @@ const AmountSelect = ({
   };
 
   const { data: amountIsValid } = useQuery(
-    (amount?.toString() ?? "null") + " isValid",
+    (amount?.toString() ?? "null") + " " + mode + " isValid",
     async () => {
       if (amount === null || amount.isZero()) {
         return false;
@@ -296,7 +304,7 @@ const AmountSelect = ({
     }
   );
 
-  let depositOrWithdrawAlert;
+  let depositOrWithdrawAlert = null;
 
   if (amount === null || amount.isZero()) {
     if (mode === Mode.SUPPLY) {
@@ -314,27 +322,33 @@ const AmountSelect = ({
     });
   } else if (!amountIsValid) {
     if (mode === Mode.SUPPLY) {
-      depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
+      depositOrWithdrawAlert = t("You don't have enough {{token}}!", {
         token: asset.underlyingSymbol,
       });
     } else if (mode === Mode.REPAY) {
       depositOrWithdrawAlert = t(
-        "You don't have enough {{token}} or are trying to over-repay!",
+        "You don't have enough {{token}} or are over-repaying!",
         {
           token: asset.underlyingSymbol,
         }
       );
     } else if (mode === Mode.WITHDRAW) {
-      depositOrWithdrawAlert = t(
-        "You cannot withdraw this much; try repaying some debt."
-      );
+      depositOrWithdrawAlert = t("You cannot withdraw this much!");
     } else if (mode === Mode.BORROW) {
-      depositOrWithdrawAlert = t(
-        "You cannot borrow this much; try supplying more collateral."
-      );
+      depositOrWithdrawAlert = t("You cannot borrow this much!");
     }
   } else {
-    depositOrWithdrawAlert = t("Click confirm to continue!");
+    depositOrWithdrawAlert = null;
+  }
+
+  const length = depositOrWithdrawAlert?.length ?? 0;
+  let depositOrWithdrawAlertFontSize;
+  if (length < 40) {
+    depositOrWithdrawAlertFontSize = "xl";
+  } else if (length < 50) {
+    depositOrWithdrawAlertFontSize = "15px";
+  } else if (length < 60) {
+    depositOrWithdrawAlertFontSize = "14px";
   }
 
   const onConfirm = async () => {
@@ -540,10 +554,7 @@ const AmountSelect = ({
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={{
-        md: showEnableAsCollateral ? "590px" : "510px",
-        base: showEnableAsCollateral ? "630px" : "540px",
-      }}
+      height={showEnableAsCollateral ? "575px" : "500px"}
     >
       {userAction === UserAction.WAITING_FOR_TRANSACTIONS ? (
         <Column
@@ -564,67 +575,75 @@ const AmountSelect = ({
         <>
           <Row
             width="100%"
-            mainAxisAlignment="space-between"
+            mainAxisAlignment="center"
             crossAxisAlignment="center"
             p={4}
+            height="72px"
+            flexShrink={0}
           >
-            <Box width="40px" />
-            <Heading fontSize="27px">
-              {mode === Mode.SUPPLY
-                ? t("Supply")
-                : mode === Mode.BORROW
-                ? t("Borrow")
-                : mode === Mode.WITHDRAW
-                ? t("Withdraw")
-                : t("Repay")}
+            <Box height="35px" width="35px">
+              <Image
+                width="100%"
+                height="100%"
+                borderRadius="50%"
+                src={
+                  tokenData?.logoURL ??
+                  "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                }
+                alt=""
+              />
+            </Box>
+
+            <Heading fontSize="27px" ml={3}>
+              {asset.underlyingName.length < 25
+                ? asset.underlyingName
+                : asset.underlyingSymbol}
             </Heading>
-            <IconButton
-              color="#FFFFFF"
-              variant="ghost"
-              aria-label="Options"
-              icon={<SettingsIcon />}
-              _hover={{
-                transform: "rotate(360deg)",
-                transition: "all 0.7s ease-in-out",
-              }}
-              _active={{}}
-              onClick={openOptions}
-            />
           </Row>
+
           <ModalDivider />
+
           <Column
-            mainAxisAlignment="space-between"
+            mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            p={4}
+            px={4}
+            pb={4}
+            pt={1}
             height="100%"
           >
-            <Text fontWeight="bold" fontSize="sm" textAlign="center">
-              {depositOrWithdrawAlert}
-            </Text>
-            <DashboardBox width="100%" height="70px" mt={4}>
-              <Row
-                p={4}
-                mainAxisAlignment="space-between"
-                crossAxisAlignment="center"
-                expand
-              >
-                <AmountInput
-                  color={tokenData?.color ?? "#FFF"}
-                  displayAmount={userEnteredAmount}
-                  updateAmount={updateAmount}
-                />
-                <TokenNameAndMaxButton
-                  comptrollerAddress={comptrollerAddress}
-                  mode={mode}
-                  logoURL={
-                    tokenData?.logoURL ??
-                    "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-                  }
-                  asset={asset}
-                  updateAmount={updateAmount}
-                />
-              </Row>
-            </DashboardBox>
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              width="100%"
+            >
+              <TabBar color={tokenData?.color} mode={mode} setMode={setMode} />
+
+              <DashboardBox width="100%" height="70px">
+                <Row
+                  p={4}
+                  mainAxisAlignment="space-between"
+                  crossAxisAlignment="center"
+                  expand
+                >
+                  <AmountInput
+                    color={tokenData?.color ?? "#FFF"}
+                    displayAmount={userEnteredAmount}
+                    updateAmount={updateAmount}
+                  />
+                  <TokenNameAndMaxButton
+                    comptrollerAddress={comptrollerAddress}
+                    mode={mode}
+                    logoURL={
+                      tokenData?.logoURL ??
+                      "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                    }
+                    asset={asset}
+                    updateAmount={updateAmount}
+                  />
+                </Row>
+              </DashboardBox>
+            </Column>
+
             <StatsColumn
               amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
               color={tokenData?.color ?? "#FFF"}
@@ -661,19 +680,27 @@ const AmountSelect = ({
             <Button
               mt={4}
               fontWeight="bold"
-              fontSize="2xl"
+              fontSize={
+                depositOrWithdrawAlert ? depositOrWithdrawAlertFontSize : "2xl"
+              }
               borderRadius="10px"
               width="100%"
               height="70px"
               bg={tokenData?.color ?? "#FFF"}
               color={tokenData?.overlayTextColor ?? "#000"}
+              // If the size is small, this means the text is large and we don't want the font size scale animation.
+              className={
+                depositOrWithdrawAlertFontSize === "14px" ||
+                depositOrWithdrawAlertFontSize === "15px"
+                  ? "confirm-button-disable-font-size-scale"
+                  : ""
+              }
               _hover={{ transform: "scale(1.02)" }}
               _active={{ transform: "scale(0.95)" }}
               onClick={onConfirm}
-              // isLoading={!poolTokenBalance}
               isDisabled={!amountIsValid}
             >
-              {t("Confirm")}
+              {depositOrWithdrawAlert ?? t("Confirm")}
             </Button>
           </Column>
         </>
@@ -683,6 +710,101 @@ const AmountSelect = ({
 };
 
 export default AmountSelect;
+
+const TabBar = ({
+  color,
+  mode,
+  setMode,
+}: {
+  mode: Mode;
+  setMode: (mode: Mode) => any;
+  color: string | null | undefined;
+}) => {
+  const isSupplySide = mode < 2;
+  const { t } = useTranslation();
+
+  // Woohoo okay so there's some pretty weird shit going on in this component.
+
+  // The AmountSelect component gets passed a `mode` param which is a `Mode` enum. The `Mode` enum has 4 values (SUPPLY, WITHDRAW, BORROW, REPAY).
+  // The `mode` param is used to determine what text gets rendered and what action to take on clicking the confirm button.
+
+  // As part of our simple design for the modal, we only show 2 mode options in the tab bar at a time.
+
+  // When the modal is triggered it is given a `defaultMode` (starting mode). This is passed in by the component which renders the modal.
+  // - If the user starts off in SUPPLY or WITHDRAW, we only want show them the option to switch between SUPPLY and WITHDRAW.
+  // - If the user starts off in BORROW or REPAY, we want to only show them the option to switch between BORROW and REPAY.
+
+  // However since the tab list has only has 2 tabs under it. It accepts an `index` parameter which determines which tab to show as "selected". Since we only show 2 tabs, it can either be 0 or 1.
+  // This means we can't just pass `mode` to `index` because `mode` could be 2 or 3 (for BORROW or REPAY respectively) which would be invalid.
+
+  // To solve this, if the mode is BORROW or REPAY we pass the index as `mode - 2` which transforms the BORROW mode to 0 and the REPAY mode to 1.
+
+  // However, we also need to do the opposite of that logic in `onChange`:
+  // - If a user clicks a tab and the current mode is SUPPLY or WITHDRAW we just pass that index (0 or 1 respectively) to setMode.
+  // - But if a user clicks on a tab and the current mode is BORROW or REPAY, we need to add 2 to the index of the tab so it's the right index in the `Mode` enum.
+  //   - Otherwise whenver you clicked on a tab it would always set the mode to SUPPLY or BORROW when clicking the left or right button respectively.
+
+  // Does that make sense? Everything I described above is basically a way to get around the tab component's understanding that it only has 2 tabs under it to make it fit into our 4 value enum setup.
+  // Still confused? DM me on Twitter (@transmissions11) for help.
+
+  return (
+    <>
+      <style>
+        {`
+            
+            .chakra-tabs__tab {
+              color: ${color ?? "#FFFFFF"} !important;
+
+              border-bottom-width: 1px;
+            }
+
+            .chakra-tabs__tablist {
+              border-bottom: 1px solid;
+              border-color: #272727;
+            }
+            
+        `}
+      </style>
+      <Box px={3} width="100%" mt={1} mb="-1px" zIndex={99999}>
+        <Tabs
+          isFitted
+          width="100%"
+          align="center"
+          index={isSupplySide ? mode : mode - 2}
+          onChange={(index: number) => {
+            if (isSupplySide) {
+              return setMode(index);
+            } else {
+              return setMode(index + 2);
+            }
+          }}
+        >
+          <TabList>
+            {isSupplySide ? (
+              <>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Supply")}
+                </Tab>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Withdraw")}
+                </Tab>
+              </>
+            ) : (
+              <>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Borrow")}
+                </Tab>
+                <Tab fontWeight="bold" _active={{}} mb="-1px">
+                  {t("Repay")}
+                </Tab>
+              </>
+            )}
+          </TabList>
+        </Tabs>
+      </Box>
+    </>
+  );
+};
 
 const StatsColumn = ({
   color,
@@ -701,58 +823,130 @@ const StatsColumn = ({
 }) => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
+  const { rari, fuse } = useRari();
 
   const { data: updatedAssets }: QueryResult<USDPricedFuseAsset[]> = useQuery(
     mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
     async () => {
-      const ethPrice: number = rari.web3.utils.fromWei(
+      const ethPrice: number = fuse.web3.utils.fromWei(
         await rari.getEthUsdPriceBN()
       ) as any;
 
+      const assetToBeUpdated = assets[index];
+
+      const interestRateModel = await fuse.getInterestRateModel(
+        assetToBeUpdated.cToken
+      );
+
+      let updatedAsset: USDPricedFuseAsset;
+      if (mode === Mode.SUPPLY) {
+        const supplyBalance =
+          parseInt(assetToBeUpdated.supplyBalance as any) + amount;
+
+        const totalSupply =
+          parseInt(assetToBeUpdated.totalSupply as any) + amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          supplyBalance,
+          supplyBalanceUSD:
+            ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalSupply,
+          supplyRatePerBlock: interestRateModel.getSupplyRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(assetToBeUpdated.totalBorrow)
+                .dividedBy(totalSupply.toString())
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      } else if (mode === Mode.WITHDRAW) {
+        const supplyBalance =
+          parseInt(assetToBeUpdated.supplyBalance as any) - amount;
+
+        const totalSupply =
+          parseInt(assetToBeUpdated.totalSupply as any) - amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          supplyBalance,
+          supplyBalanceUSD:
+            ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalSupply,
+          supplyRatePerBlock: interestRateModel.getSupplyRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(assetToBeUpdated.totalBorrow)
+                .dividedBy(totalSupply.toString())
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      } else if (mode === Mode.BORROW) {
+        const borrowBalance =
+          parseInt(assetToBeUpdated.borrowBalance as any) + amount;
+
+        const totalBorrow =
+          parseInt(assetToBeUpdated.totalBorrow as any) + amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          borrowBalance,
+          borrowBalanceUSD:
+            ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalBorrow,
+          borrowRatePerBlock: interestRateModel.getBorrowRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(totalBorrow.toString())
+                .dividedBy(assetToBeUpdated.totalSupply)
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      } else if (mode === Mode.REPAY) {
+        const borrowBalance =
+          parseInt(assetToBeUpdated.borrowBalance as any) - amount;
+
+        const totalBorrow =
+          parseInt(assetToBeUpdated.totalBorrow as any) - amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          borrowBalance,
+          borrowBalanceUSD:
+            ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalBorrow,
+          borrowRatePerBlock: interestRateModel.getBorrowRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(totalBorrow.toString())
+                .dividedBy(assetToBeUpdated.totalSupply)
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      }
+
       return assets.map((value, _index) => {
         if (_index === index) {
-          if (mode === Mode.SUPPLY) {
-            const supplyBalance = parseInt(value.supplyBalance as any) + amount;
-
-            return {
-              ...value,
-              supplyBalance,
-              supplyBalanceUSD:
-                ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          } else if (mode === Mode.WITHDRAW) {
-            const supplyBalance = parseInt(value.supplyBalance as any) - amount;
-
-            return {
-              ...value,
-              supplyBalance,
-              supplyBalanceUSD:
-                ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          } else if (mode === Mode.BORROW) {
-            const borrowBalance = parseInt(value.borrowBalance as any) + amount;
-
-            return {
-              ...value,
-              borrowBalance,
-
-              borrowBalanceUSD:
-                ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          } else if (mode === Mode.REPAY) {
-            const borrowBalance = parseInt(value.borrowBalance as any) - amount;
-
-            return {
-              ...value,
-              borrowBalance,
-              borrowBalanceUSD:
-                ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          }
+          return updatedAsset;
+        } else {
+          return value;
         }
-
-        return value;
       });
     }
   );
@@ -770,121 +964,138 @@ const StatsColumn = ({
       : undefined
   );
 
-  const supplyAPY =
-    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
-    100;
-  const borrowAPY =
-    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
-    100;
+  const isSupplyingOrWithdrawing =
+    mode === Mode.SUPPLY || mode === Mode.WITHDRAW;
+
+  const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
+  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
+
+  const updatedSupplyAPY = convertMantissaToAPY(
+    updatedAsset?.supplyRatePerBlock ?? 0,
+    365
+  );
+  const updatedBorrowAPY = convertMantissaToAPY(
+    updatedAsset?.borrowRatePerBlock ?? 0,
+    365
+  );
+
+  // If the difference is greater than a 0.1 percentage point change, alert the user
+  const updatedAPYDiffIsLarge = isSupplyingOrWithdrawing
+    ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
+    : Math.abs(updatedBorrowAPY - borrowAPY) > 0.1;
 
   return (
-    <DashboardBox mt={4} width="100%" height="190px">
-      <Column
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="flex-start"
-        expand
-        py={3}
-        px={4}
-        fontSize="lg"
-      >
-        <Row
+    <DashboardBox width="100%" height="190px" mt={4}>
+      {updatedAsset ? (
+        <Column
           mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          color={color}
+          crossAxisAlignment="flex-start"
+          expand
+          py={3}
+          px={4}
+          fontSize="lg"
         >
-          <Text fontWeight="bold" flexShrink={0}>
-            {t("Supply Balance")}:
-          </Text>
-          <Text
-            fontWeight="bold"
-            flexShrink={0}
-            fontSize={
-              mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
-            }
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            color={color}
           >
-            {smallUsdFormatter(
-              asset.supplyBalance / 10 ** asset.underlyingDecimals
-            ).replace("$", "")}
-            {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
-            updatedAsset ? (
-              <>
-                {" → "}
-                {smallUsdFormatter(
-                  updatedAsset!.supplyBalance /
-                    10 ** updatedAsset!.underlyingDecimals
-                ).replace("$", "")}
-              </>
-            ) : null}{" "}
-            {asset.underlyingSymbol}
-          </Text>
-        </Row>
+            <Text fontWeight="bold" flexShrink={0}>
+              {t("Supply Balance")}:
+            </Text>
+            <Text
+              fontWeight="bold"
+              flexShrink={0}
+              fontSize={isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {smallUsdFormatter(
+                asset.supplyBalance / 10 ** asset.underlyingDecimals
+              ).replace("$", "")}
+              {isSupplyingOrWithdrawing ? (
+                <>
+                  {" → "}
+                  {smallUsdFormatter(
+                    updatedAsset!.supplyBalance /
+                      10 ** updatedAsset!.underlyingDecimals
+                  ).replace("$", "")}
+                </>
+              ) : null}{" "}
+              {asset.underlyingSymbol}
+            </Text>
+          </Row>
 
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold" flexShrink={0}>
-            {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
-              ? t("Supply APY")
-              : t("Borrow APY")}
-            :
-          </Text>
-          <Text fontWeight="bold">
-            {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
-              ? supplyAPY.toFixed(3)
-              : borrowAPY.toFixed(3)}
-            %
-          </Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold" flexShrink={0}>
-            {t("Borrow Limit")}:
-          </Text>
-          <Text
-            fontWeight="bold"
-            fontSize={
-              mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
-            }
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
           >
-            {smallUsdFormatter(borrowLimit)}
+            <Text fontWeight="bold" flexShrink={0}>
+              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APY")}:
+            </Text>
+            <Text
+              fontWeight="bold"
+              fontSize={updatedAPYDiffIsLarge ? "sm" : "lg"}
+            >
+              {isSupplyingOrWithdrawing
+                ? supplyAPY.toFixed(2)
+                : borrowAPY.toFixed(2)}
+              %
+              {updatedAPYDiffIsLarge ? (
+                <>
+                  {" → "}
+                  {isSupplyingOrWithdrawing
+                    ? updatedSupplyAPY.toFixed(2)
+                    : updatedBorrowAPY.toFixed(2)}
+                  %
+                </>
+              ) : null}
+            </Text>
+          </Row>
 
-            {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
-            updatedAsset ? (
-              <>
-                {" → "}
-                {smallUsdFormatter(updatedBorrowLimit)}
-              </>
-            ) : null}
-          </Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold">{t("Debt Balance")}:</Text>
-          <Text
-            fontWeight="bold"
-            fontSize={mode === Mode.REPAY || mode === Mode.BORROW ? "sm" : "lg"}
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
           >
-            {smallUsdFormatter(asset.borrowBalanceUSD)}
-            {(mode === Mode.REPAY || mode === Mode.BORROW) && updatedAsset ? (
-              <>
-                {" → "}
-                {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
-              </>
-            ) : null}
-          </Text>
-        </Row>
-      </Column>
+            <Text fontWeight="bold" flexShrink={0}>
+              {t("Borrow Limit")}:
+            </Text>
+            <Text
+              fontWeight="bold"
+              fontSize={isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {smallUsdFormatter(borrowLimit)}
+              {" → "}
+              {smallUsdFormatter(updatedBorrowLimit)}
+            </Text>
+          </Row>
+
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+          >
+            <Text fontWeight="bold">{t("Debt Balance")}:</Text>
+            <Text
+              fontWeight="bold"
+              fontSize={!isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {smallUsdFormatter(asset.borrowBalanceUSD)}
+              {!isSupplyingOrWithdrawing ? (
+                <>
+                  {" → "}
+                  {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
+                </>
+              ) : null}
+            </Text>
+          </Row>
+        </Column>
+      ) : (
+        <Center expand>
+          <Spinner />
+        </Center>
+      )}
     </DashboardBox>
   );
 };
