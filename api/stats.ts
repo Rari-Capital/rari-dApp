@@ -2,7 +2,10 @@ import { NowRequest, NowResponse } from "@vercel/node";
 
 import Rari from "../src/rari-sdk/index";
 
-import { infuraURL, initFuseWithProviders } from "../src/utils/web3Providers";
+import {
+  turboGethURL,
+  initFuseWithProviders,
+} from "../src/utils/web3Providers";
 
 import { fetchTVL } from "../src/utils/fetchTVL";
 import {
@@ -12,7 +15,7 @@ import {
 } from "../src/utils/fetchPoolAPY";
 import { Pool } from "../src/utils/poolUtils";
 
-const rari = new Rari(infuraURL);
+const rari = new Rari(turboGethURL);
 const fuse = initFuseWithProviders();
 
 export default async (request: NowRequest, response: NowResponse) => {
