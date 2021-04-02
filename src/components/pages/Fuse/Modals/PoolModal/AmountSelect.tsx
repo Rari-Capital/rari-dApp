@@ -301,7 +301,7 @@ const AmountSelect = ({
     }
   );
 
-  let depositOrWithdrawAlert;
+  let depositOrWithdrawAlert = null;
 
   if (amount === null || amount.isZero()) {
     if (mode === Mode.SUPPLY) {
@@ -336,6 +336,16 @@ const AmountSelect = ({
     }
   } else {
     depositOrWithdrawAlert = null;
+  }
+
+  const length = depositOrWithdrawAlert?.length ?? 0;
+  let depositOrWithdrawAlertFontSize;
+  if (length < 40) {
+    depositOrWithdrawAlertFontSize = "xl";
+  } else if (length < 50) {
+    depositOrWithdrawAlertFontSize = "15px";
+  } else if (length < 60) {
+    depositOrWithdrawAlertFontSize = "14px";
   }
 
   const onConfirm = async () => {
@@ -668,25 +678,20 @@ const AmountSelect = ({
               mt={4}
               fontWeight="bold"
               fontSize={
-                depositOrWithdrawAlert
-                  ? (() => {
-                      const length = depositOrWithdrawAlert.length;
-                      if (length < 40) {
-                        return "xl";
-                      } else if (length < 50) {
-                        return "15px";
-                      } else if (length < 60) {
-                        return "14px";
-                      }
-                    })()
-                  : "2xl"
+                depositOrWithdrawAlert ? depositOrWithdrawAlertFontSize : "2xl"
               }
               borderRadius="10px"
               width="100%"
               height="70px"
               bg={tokenData?.color ?? "#FFF"}
               color={tokenData?.overlayTextColor ?? "#000"}
-              className="confirm-button-disable-font-size-scale"
+              // If the size is small, this means the text is large and we don't want the font size scale animation.
+              className={
+                depositOrWithdrawAlertFontSize === "14px" ||
+                depositOrWithdrawAlertFontSize === "15px"
+                  ? "confirm-button-disable-font-size-scale"
+                  : ""
+              }
               _hover={{ transform: "scale(1.02)" }}
               _active={{ transform: "scale(0.95)" }}
               onClick={onConfirm}
