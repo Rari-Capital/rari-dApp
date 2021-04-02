@@ -158,3 +158,8 @@ img:not([src]) {
 .underline-on-hover:hover {
   text-decoration: underline;
 }
+
+.confirm-button-disable-font-size-scale {
+  transition: font-size 0s !important;
+  transition: transform 250ms !important;
+}

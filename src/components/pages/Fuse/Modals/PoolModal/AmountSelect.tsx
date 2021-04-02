@@ -275,7 +275,7 @@ const AmountSelect = ({
   };
 
   const { data: amountIsValid } = useQuery(
-    (amount?.toString() ?? "null") + " isValid",
+    (amount?.toString() ?? "null") + " " + mode + " isValid",
     async () => {
       if (amount === null || amount.isZero()) {
         return false;
@@ -316,27 +316,23 @@ const AmountSelect = ({
     });
   } else if (!amountIsValid) {
     if (mode === Mode.SUPPLY) {
-      depositOrWithdrawAlert = t("You don't have enough {{token}}.", {
+      depositOrWithdrawAlert = t("You don't have enough {{token}}!", {
         token: asset.underlyingSymbol,
       });
     } else if (mode === Mode.REPAY) {
       depositOrWithdrawAlert = t(
-        "You don't have enough {{token}} or are trying to over-repay!",
+        "You don't have enough {{token}} or are over-repaying!",
         {
           token: asset.underlyingSymbol,
         }
       );
     } else if (mode === Mode.WITHDRAW) {
-      depositOrWithdrawAlert = t(
-        "You cannot withdraw this much; try repaying some debt."
-      );
+      depositOrWithdrawAlert = t("You cannot withdraw this much!");
     } else if (mode === Mode.BORROW) {
-      depositOrWithdrawAlert = t(
-        "You cannot borrow this much; try supplying more collateral."
-      );
+      depositOrWithdrawAlert = t("You cannot borrow this much!");
     }
   } else {
-    depositOrWithdrawAlert = t("Click confirm to continue!");
+    depositOrWithdrawAlert = null;
   }
 
   const onConfirm = async () => {
@@ -666,19 +662,32 @@ const AmountSelect = ({
             <Button
               mt={4}
               fontWeight="bold"
-              fontSize="2xl"
+              fontSize={
+                depositOrWithdrawAlert
+                  ? (() => {
+                      const length = depositOrWithdrawAlert.length;
+                      if (length < 40) {
+                        return "xl";
+                      } else if (length < 50) {
+                        return "15px";
+                      } else if (length < 60) {
+                        return "14px";
+                      }
+                    })()
+                  : "2xl"
+              }
               borderRadius="10px"
               width="100%"
               height="70px"
               bg={tokenData?.color ?? "#FFF"}
               color={tokenData?.overlayTextColor ?? "#000"}
+              className="confirm-button-disable-font-size-scale"
               _hover={{ transform: "scale(1.02)" }}
               _active={{ transform: "scale(0.95)" }}
               onClick={onConfirm}
-              // isLoading={!poolTokenBalance}
               isDisabled={!amountIsValid}
             >
-              {t("Confirm")}
+              {depositOrWithdrawAlert ?? t("Confirm")}
             </Button>
           </Column>
         </>
