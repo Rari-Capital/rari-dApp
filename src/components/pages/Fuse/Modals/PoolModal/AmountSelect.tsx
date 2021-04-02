@@ -90,12 +90,15 @@ export async function testForCTokenErrorAndSend(
     if (response >= 1000) {
       const comptrollerResponse = response - 1000;
 
+      let msg = ComptrollerErrorCodes[comptrollerResponse];
+
+      if (msg === "BORROW_BELOW_MIN") {
+        msg =
+          "As part of our guarded launch, you cannot borrow less than 1 ETH worth of tokens at the moment.";
+      }
+
       // This is a comptroller error:
-      err = new Error(
-        failMessage +
-          " Comptroller Code: " +
-          ComptrollerErrorCodes[comptrollerResponse]
-      );
+      err = new Error(failMessage + " Comptroller Error: " + msg);
     } else {
       // This is a standard token error:
       err = new Error(
