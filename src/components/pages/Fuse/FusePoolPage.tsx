@@ -20,6 +20,7 @@ import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
+import { convertMantissaToAPY } from "../../../utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
 import { createComptroller } from "../../../utils/createComptroller";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
@@ -309,12 +310,8 @@ const AssetSupplyRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const supplyAPY =
-    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
-    100;
-  const supplyWPY =
-    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 7) - 1) *
-    100;
+  const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
+  const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
   const queryCache = useQueryCache();
 
@@ -580,12 +577,8 @@ const AssetBorrowRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const borrowAPY =
-    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
-    100;
-  const borrowWPY =
-    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 7) - 1) *
-    100;
+  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
+  const borrowWPY = convertMantissaToAPY(asset.borrowRatePerBlock, 7);
 
   const { t } = useTranslation();
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column, Center } from "buttered-chakra";
 
 import LogRocket from "logrocket";
 import {
@@ -14,6 +14,7 @@ import {
   Tab,
   TabList,
   Tabs,
+  Spinner,
 } from "@chakra-ui/react";
 import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
@@ -47,6 +48,8 @@ import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
 import { useParams } from "react-router-dom";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 import { SwitchCSS } from "../../../../shared/SwitchCSS";
+
+import { convertMantissaToAPY } from "../../../../../utils/apyUtils";
 
 enum UserAction {
   NO_ACTION,
@@ -820,58 +823,130 @@ const StatsColumn = ({
 }) => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
+  const { rari, fuse } = useRari();
 
   const { data: updatedAssets }: QueryResult<USDPricedFuseAsset[]> = useQuery(
     mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
     async () => {
-      const ethPrice: number = rari.web3.utils.fromWei(
+      const ethPrice: number = fuse.web3.utils.fromWei(
         await rari.getEthUsdPriceBN()
       ) as any;
 
+      const assetToBeUpdated = assets[index];
+
+      const interestRateModel = await fuse.getInterestRateModel(
+        assetToBeUpdated.cToken
+      );
+
+      let updatedAsset: USDPricedFuseAsset;
+      if (mode === Mode.SUPPLY) {
+        const supplyBalance =
+          parseInt(assetToBeUpdated.supplyBalance as any) + amount;
+
+        const totalSupply =
+          parseInt(assetToBeUpdated.totalSupply as any) + amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          supplyBalance,
+          supplyBalanceUSD:
+            ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalSupply,
+          supplyRatePerBlock: interestRateModel.getSupplyRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(assetToBeUpdated.totalBorrow)
+                .dividedBy(totalSupply.toString())
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      } else if (mode === Mode.WITHDRAW) {
+        const supplyBalance =
+          parseInt(assetToBeUpdated.supplyBalance as any) - amount;
+
+        const totalSupply =
+          parseInt(assetToBeUpdated.totalSupply as any) - amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          supplyBalance,
+          supplyBalanceUSD:
+            ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalSupply,
+          supplyRatePerBlock: interestRateModel.getSupplyRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(assetToBeUpdated.totalBorrow)
+                .dividedBy(totalSupply.toString())
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      } else if (mode === Mode.BORROW) {
+        const borrowBalance =
+          parseInt(assetToBeUpdated.borrowBalance as any) + amount;
+
+        const totalBorrow =
+          parseInt(assetToBeUpdated.totalBorrow as any) + amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          borrowBalance,
+          borrowBalanceUSD:
+            ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalBorrow,
+          borrowRatePerBlock: interestRateModel.getBorrowRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(totalBorrow.toString())
+                .dividedBy(assetToBeUpdated.totalSupply)
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      } else if (mode === Mode.REPAY) {
+        const borrowBalance =
+          parseInt(assetToBeUpdated.borrowBalance as any) - amount;
+
+        const totalBorrow =
+          parseInt(assetToBeUpdated.totalBorrow as any) - amount;
+
+        updatedAsset = {
+          ...assetToBeUpdated,
+
+          borrowBalance,
+          borrowBalanceUSD:
+            ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+            ethPrice,
+
+          totalBorrow,
+          borrowRatePerBlock: interestRateModel.getBorrowRate(
+            fuse.web3.utils.toBN(
+              new BigNumber(totalBorrow.toString())
+                .dividedBy(assetToBeUpdated.totalSupply)
+                .multipliedBy(1e18)
+                .toFixed(0)
+            )
+          ),
+        };
+      }
+
       return assets.map((value, _index) => {
         if (_index === index) {
-          if (mode === Mode.SUPPLY) {
-            const supplyBalance = parseInt(value.supplyBalance as any) + amount;
-
-            return {
-              ...value,
-              supplyBalance,
-              supplyBalanceUSD:
-                ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          } else if (mode === Mode.WITHDRAW) {
-            const supplyBalance = parseInt(value.supplyBalance as any) - amount;
-
-            return {
-              ...value,
-              supplyBalance,
-              supplyBalanceUSD:
-                ((supplyBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          } else if (mode === Mode.BORROW) {
-            const borrowBalance = parseInt(value.borrowBalance as any) + amount;
-
-            return {
-              ...value,
-              borrowBalance,
-
-              borrowBalanceUSD:
-                ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          } else if (mode === Mode.REPAY) {
-            const borrowBalance = parseInt(value.borrowBalance as any) - amount;
-
-            return {
-              ...value,
-              borrowBalance,
-              borrowBalanceUSD:
-                ((borrowBalance * value.underlyingPrice) / 1e36) * ethPrice,
-            };
-          }
+          return updatedAsset;
+        } else {
+          return value;
         }
-
-        return value;
       });
     }
   );
@@ -889,120 +964,138 @@ const StatsColumn = ({
       : undefined
   );
 
-  const supplyAPY =
-    (Math.pow((asset.supplyRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
-    100;
-  const borrowAPY =
-    (Math.pow((asset.borrowRatePerBlock / 1e18) * (4 * 60 * 24) + 1, 365) - 1) *
-    100;
+  const isSupplyingOrWithdrawing =
+    mode === Mode.SUPPLY || mode === Mode.WITHDRAW;
+
+  const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
+  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
+
+  const updatedSupplyAPY = convertMantissaToAPY(
+    updatedAsset?.supplyRatePerBlock ?? 0,
+    365
+  );
+  const updatedBorrowAPY = convertMantissaToAPY(
+    updatedAsset?.borrowRatePerBlock ?? 0,
+    365
+  );
+
+  // If the difference is greater than a 0.1 percentage point change, alert the user
+  const updatedAPYDiffIsLarge = isSupplyingOrWithdrawing
+    ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
+    : Math.abs(updatedBorrowAPY - borrowAPY) > 0.1;
 
   return (
     <DashboardBox width="100%" height="190px" mt={4}>
-      <Column
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="flex-start"
-        expand
-        py={3}
-        px={4}
-        fontSize="lg"
-      >
-        <Row
+      {updatedAsset ? (
+        <Column
           mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          color={color}
+          crossAxisAlignment="flex-start"
+          expand
+          py={3}
+          px={4}
+          fontSize="lg"
         >
-          <Text fontWeight="bold" flexShrink={0}>
-            {t("Supply Balance")}:
-          </Text>
-          <Text
-            fontWeight="bold"
-            flexShrink={0}
-            fontSize={
-              mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
-            }
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            color={color}
           >
-            {smallUsdFormatter(
-              asset.supplyBalance / 10 ** asset.underlyingDecimals
-            ).replace("$", "")}
-            {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
-            updatedAsset ? (
-              <>
-                {" → "}
-                {smallUsdFormatter(
-                  updatedAsset!.supplyBalance /
-                    10 ** updatedAsset!.underlyingDecimals
-                ).replace("$", "")}
-              </>
-            ) : null}{" "}
-            {asset.underlyingSymbol}
-          </Text>
-        </Row>
+            <Text fontWeight="bold" flexShrink={0}>
+              {t("Supply Balance")}:
+            </Text>
+            <Text
+              fontWeight="bold"
+              flexShrink={0}
+              fontSize={isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {smallUsdFormatter(
+                asset.supplyBalance / 10 ** asset.underlyingDecimals
+              ).replace("$", "")}
+              {isSupplyingOrWithdrawing ? (
+                <>
+                  {" → "}
+                  {smallUsdFormatter(
+                    updatedAsset!.supplyBalance /
+                      10 ** updatedAsset!.underlyingDecimals
+                  ).replace("$", "")}
+                </>
+              ) : null}{" "}
+              {asset.underlyingSymbol}
+            </Text>
+          </Row>
 
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold" flexShrink={0}>
-            {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
-              ? t("Supply APY")
-              : t("Borrow APY")}
-          </Text>
-          <Text fontWeight="bold">
-            {mode === Mode.SUPPLY || mode === Mode.WITHDRAW
-              ? supplyAPY.toFixed(3)
-              : borrowAPY.toFixed(3)}
-            %
-          </Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold" flexShrink={0}>
-            {t("Borrow Limit")}:
-          </Text>
-          <Text
-            fontWeight="bold"
-            fontSize={
-              mode === Mode.SUPPLY || mode === Mode.WITHDRAW ? "sm" : "lg"
-            }
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
           >
-            {smallUsdFormatter(borrowLimit)}
+            <Text fontWeight="bold" flexShrink={0}>
+              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APY")}:
+            </Text>
+            <Text
+              fontWeight="bold"
+              fontSize={updatedAPYDiffIsLarge ? "sm" : "lg"}
+            >
+              {isSupplyingOrWithdrawing
+                ? supplyAPY.toFixed(2)
+                : borrowAPY.toFixed(2)}
+              %
+              {updatedAPYDiffIsLarge ? (
+                <>
+                  {" → "}
+                  {isSupplyingOrWithdrawing
+                    ? updatedSupplyAPY.toFixed(2)
+                    : updatedBorrowAPY.toFixed(2)}
+                  %
+                </>
+              ) : null}
+            </Text>
+          </Row>
 
-            {(mode === Mode.SUPPLY || mode === Mode.WITHDRAW) &&
-            updatedAsset ? (
-              <>
-                {" → "}
-                {smallUsdFormatter(updatedBorrowLimit)}
-              </>
-            ) : null}
-          </Text>
-        </Row>
-
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-        >
-          <Text fontWeight="bold">{t("Debt Balance")}:</Text>
-          <Text
-            fontWeight="bold"
-            fontSize={mode === Mode.REPAY || mode === Mode.BORROW ? "sm" : "lg"}
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
           >
-            {smallUsdFormatter(asset.borrowBalanceUSD)}
-            {(mode === Mode.REPAY || mode === Mode.BORROW) && updatedAsset ? (
-              <>
-                {" → "}
-                {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
-              </>
-            ) : null}
-          </Text>
-        </Row>
-      </Column>
+            <Text fontWeight="bold" flexShrink={0}>
+              {t("Borrow Limit")}:
+            </Text>
+            <Text
+              fontWeight="bold"
+              fontSize={isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {smallUsdFormatter(borrowLimit)}
+              {" → "}
+              {smallUsdFormatter(updatedBorrowLimit)}
+            </Text>
+          </Row>
+
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+          >
+            <Text fontWeight="bold">{t("Debt Balance")}:</Text>
+            <Text
+              fontWeight="bold"
+              fontSize={!isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {smallUsdFormatter(asset.borrowBalanceUSD)}
+              {!isSupplyingOrWithdrawing ? (
+                <>
+                  {" → "}
+                  {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
+                </>
+              ) : null}
+            </Text>
+          </Row>
+        </Column>
+      ) : (
+        <Center expand>
+          <Spinner />
+        </Center>
+      )}
     </DashboardBox>
   );
 };
