@@ -176,9 +176,6 @@
   "Keep this bar from filling up to avoid being liquidated!": "请勿填充此栏，以免被清算！",
   "If your borrow amount reaches this value, you will be liquidated.": "如果您的借贷金额达到此值，您将被清算。",
   "APY/WPY": "APY / WPY",
-  "You don't have enough {{token}} or are trying to over-repay!": "您没有足够的{{token}}或正尝试超额还款！",
-  "You cannot withdraw this much; try repaying some debt.": "您不能撤出那么多钱； 尝试偿还一些债务。",
-  "You cannot borrow this much; try supplying more collateral.": "你不能借这么多钱。 尝试提供更多抵押品",
   "Supply Balance": "供应平衡",
   "Debt Balance": "债务余额",
   "Supply APY": "供应APY",
@@ -224,5 +221,9 @@
   "Pool #{{poolId}} Info": "池＃{{poolId}}信息",
   "Metrics": "指标",
   "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.": "“向Fuse提供了{{tvl}}，这是第一个真正的开放式利率协议。借贷，借贷和创建具有无限灵活性的孤立借贷市场。” 开放利率协议：借贷，借贷并创建具有无限灵活性的孤立借贷市场。",
-  "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab.": "流动性是指该资产可借用（未借入）的数量。 要查看总共提供和借出了多少，请导航至“池信息”选项卡。"
+  "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab.": "流动性是指该资产可借用（未借入）的数量。 要查看总共提供和借出了多少，请导航至“池信息”选项卡。",
+  "You don't have enough {{token}}!": "You don't have enough {{token}}!",
+  "You don't have enough {{token}} or are over-repaying!": "您没有足够的{{token}}或还款过多！",
+  "You cannot withdraw this much!": "您不能撤出这么多钱！",
+  "You cannot borrow this much!": "你不能借这么多钱！"
 }

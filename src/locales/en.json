@@ -176,9 +176,6 @@
   "Keep this bar from filling up to avoid being liquidated!": "Keep this bar from filling up to avoid being liquidated!",
   "If your borrow amount reaches this value, you will be liquidated.": "If your borrow amount reaches this value, you will be liquidated.",
   "APY/WPY": "APY/WPY",
-  "You don't have enough {{token}} or are trying to over-repay!": "You don't have enough {{token}} or are trying to over-repay!",
-  "You cannot withdraw this much; try repaying some debt.": "You cannot withdraw this much; try repaying some debt.",
-  "You cannot borrow this much; try supplying more collateral.": "You cannot borrow this much; try supplying more collateral.",
   "Supply Balance": "Supply Balance",
   "Debt Balance": "Debt Balance",
   "Supply APY": "Supply APY",
@@ -224,5 +221,9 @@
   "Pool #{{poolId}} Info": "Pool #{{poolId}} Info",
   "Metrics": "Metrics",
   "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.": "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.",
-  "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab.": "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab."
+  "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab.": "Liquidity is the amount of this asset that is available to borrow (unborrowed). To see how much has been supplied and borrowed in total, navigate to the Pool Info tab.",
+  "You don't have enough {{token}}!": "You don't have enough {{token}}!",
+  "You don't have enough {{token}} or are over-repaying!": "You don't have enough {{token}} or are over-repaying!",
+  "You cannot withdraw this much!": "You cannot withdraw this much!",
+  "You cannot borrow this much!": "You cannot borrow this much!"
 }
