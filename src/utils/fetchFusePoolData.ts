@@ -50,6 +50,15 @@ export interface USDPricedFuseAsset extends FuseAsset {
   liquidityUSD: number;
 }
 
+export const filterPoolName = (name: string) => {
+  // Manual rename pool 6 until we add func to change pool names.
+  if (name === "Tetranode's Pool") {
+    return "Tetranode's RGT Pool";
+  }
+
+  return filter.clean(name);
+};
+
 export const fetchFusePoolData = async (
   poolId: string,
   address: string,
@@ -65,7 +74,7 @@ export const fetchFusePoolData = async (
     .call({ from: address });
 
   // Remove any profanity from the pool name
-  const name = filter.clean(_unfiliteredName);
+  let name = filterPoolName(_unfiliteredName);
 
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods

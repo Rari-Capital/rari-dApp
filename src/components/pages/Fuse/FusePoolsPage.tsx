@@ -19,8 +19,8 @@ import { useQuery } from "react-query";
 import { useTokenData } from "../../../hooks/useTokenData";
 import Fuse from "fuse.js";
 import {
-  filter as wordFilter,
   filterOnlyObjectProperties,
+  filterPoolName,
 } from "../../../utils/fetchFusePoolData";
 import { letterScore, usePoolRSS } from "../../../hooks/useRSS";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
@@ -225,7 +225,7 @@ const PoolList = () => {
               <PoolRow
                 key={pool.id}
                 poolNumber={pool.id}
-                name={wordFilter.clean(pool.pool.name)}
+                name={filterPoolName(pool.pool.name)}
                 tvl={pool.suppliedUSD}
                 borrowed={pool.borrowedUSD}
                 tokens={pool.underlyingTokens.map((address, index) => ({
