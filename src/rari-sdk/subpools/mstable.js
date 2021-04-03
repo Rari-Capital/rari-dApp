@@ -7,19 +7,13 @@ import Cache from "../cache.js";
 var erc20Abi = require("." + "/../abi/ERC20.json");
 
 const externalContractAddresses = {
-  Masset: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
-  MassetValidationHelper: "0xabcc93c3be238884cc3309c19afd128fafc16911",
+  MusdV3: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5",
 };
 
 var externalAbis = {};
-externalAbis["Masset"] = require("." +
+externalAbis["MusdV3"] = require("." +
   "/mstable/abi/" +
-  "Masset" +
-  ".json");
-
-externalAbis["MassetValidationHelper"] = require("." +
-  "/mstable/abi/" +
-  "MassetValidationHelper" +
+  "MusdV3" +
   ".json");
 
 export default class MStableSubpool {
@@ -84,19 +78,6 @@ export default class MStableSubpool {
         return { mUSD: await self.getMUsdSavingsApy(true) };
       }
     );
-  }
-
-  async getMUsdSwapFeeBN() {
-    var self = this;
-    return await this.cache.getOrUpdate("mUsdSwapFee", async function () {
-      try {
-        return Web3.utils.toBN(
-          await self.externalContracts.Masset.methods.swapFee().call()
-        );
-      } catch (err) {
-        throw new Error("Failed to get mUSD swap fee: " + err);
-      }
-    });
   }
 
   async getMtaUsdPrice() {
