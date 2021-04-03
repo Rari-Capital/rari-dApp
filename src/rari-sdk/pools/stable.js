@@ -1645,7 +1645,7 @@ export default class StablePool {
                 mStableOutputAmountAfterFeesBN = Web3.utils.toBN(
                   await self.pools["mStable"].externalContracts.MusdV3.methods.getRedeemOutput(
                     self.internalTokens[currencyCode].address,
-                    amount
+                    mStableInputAmountBN
                   ).call()
                 );
               } catch (err) {
@@ -1657,7 +1657,7 @@ export default class StablePool {
                 mStableOutputAmountAfterFeesBN = Web3.utils.toBN(
                   await self.pools["mStable"].externalContracts.MusdV3.methods.getMintOutput(
                     self.internalTokens[inputCandidates[i].currencyCode].address,
-                    amount
+                    mStableInputAmountBN
                   ).call()
                 );
               } catch (err) {
@@ -1670,7 +1670,7 @@ export default class StablePool {
                   await self.pools["mStable"].externalContracts.MusdV3.methods.getSwapOutput(
                     self.internalTokens[inputCandidates[i].currencyCode].address,
                     self.internalTokens[currencyCode].address,
-                    amount
+                    mStableInputAmountBN
                   ).call()
                 );
               } catch (err) {
