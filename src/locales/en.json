@@ -9,10 +9,6 @@
   "Pool {{num}} Info": "Pool {{num}} Info",
   "Total Supplied": "Total Supplied",
   "Total Borrowed": "Total Borrowed",
-  "Pool {{num}}'s {{token}} Interest Rate Model": "Pool {{num}}'s {{token}} Interest Rate Model",
-  "Utilization vs APY": "Utilization vs APY",
-  "{{factor}}% Collateral Factor": "{{factor}}% Collateral Factor",
-  "{{factor}}% Reserve Factor": "{{factor}}% Reserve Factor",
   "Current Utilization": "Current Utilization",
   "Asset": "Asset",
   "Balance": "Balance",
@@ -226,5 +222,7 @@
   "You don't have enough {{token}} or are over-repaying!": "You don't have enough {{token}} or are over-repaying!",
   "You cannot withdraw this much!": "You cannot withdraw this much!",
   "You cannot borrow this much!": "You cannot borrow this much!",
-  "Pool Directory": "Pool Directory"
+  "Pool Directory": "Pool Directory",
+  "Pool {{num}}'s {{token}} Stats": "Pool {{num}}'s {{token}} Stats",
+  "Utilization": "Utilization"
 }

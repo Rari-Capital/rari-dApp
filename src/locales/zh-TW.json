@@ -110,10 +110,6 @@
   "Pool {{num}} Info": "池{{num}}信息",
   "Total Supplied": "總供應量",
   "Total Borrowed": "借入總額",
-  "Pool {{num}}'s {{token}} Interest Rate Model": "池{{num}}的{{token}}利率模型",
-  "Utilization vs APY": "利用率與APY",
-  "{{factor}}% Collateral Factor": "{{factor}}％抵押因子",
-  "{{factor}}% Reserve Factor": "{{factor}}％儲備因子",
   "Current Utilization": "電流利用率",
   "Asset": "資產",
   "Balance": "平衡",
@@ -226,5 +222,7 @@
   "You don't have enough {{token}} or are over-repaying!": "您沒有足夠的{{token}}或還款過多！",
   "You cannot withdraw this much!": "您不能撤出這麼多錢！",
   "You cannot borrow this much!": "你不能藉這麼多錢！",
-  "Pool Directory": "池目录"
+  "Pool Directory": "池目录",
+  "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}統計信息",
+  "Utilization": "使用率"
 }

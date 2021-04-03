@@ -14,6 +14,7 @@ import {
   RowOrColumn,
   Center,
   Row,
+  useIsMobile,
 } from "buttered-chakra";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -43,6 +44,7 @@ import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
+import CaptionedStat from "../../shared/CaptionedStat";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -158,7 +160,7 @@ const FusePoolInfoPage = React.memo(() => {
             ml={isMobile ? 0 : 4}
             width={isMobile ? "100%" : "50%"}
             mt={4}
-            height={isMobile ? "300px" : "450px"}
+            height={isMobile ? "500px" : "450px"}
           >
             {data ? (
               data.assets.length > 0 ? (
@@ -392,8 +394,6 @@ const StatRow = ({
 };
 
 const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
-  const isMobile = useIsSemiSmallScreen();
-
   let { poolId } = useParams();
 
   const { fuse } = useRari();
@@ -427,6 +427,8 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
     return convertIRMtoCurve(interestRateModel, fuse);
   });
 
+  const isMobile = useIsMobile();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -435,48 +437,19 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
       height="100%"
     >
       <Row
-        mainAxisAlignment="flex-start"
+        mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         height="60px"
+        width="100%"
+        px={4}
         flexShrink={0}
       >
-        <Heading size="sm" px={4} py={3}>
-          {t("Pool {{num}}'s {{token}} Interest Rate Model", {
+        <Heading size="sm" py={3}>
+          {t("Pool {{num}}'s {{token}} Stats", {
             num: poolId,
             token: selectedAsset.underlyingSymbol,
           })}
         </Heading>
-      </Row>
-
-      <ModalDivider />
-
-      <Row
-        mt={3}
-        px={4}
-        mainAxisAlignment="space-between"
-        crossAxisAlignment="center"
-        width="100%"
-        fontWeight="bold"
-      >
-        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-          <Text>{t("Utilization vs APY")}</Text>
-
-          {isMobile ? null : (
-            <>
-              <Text fontSize="12px" fontWeight="normal" ml={4}>
-                {t("{{factor}}% Collateral Factor", {
-                  factor: selectedAsset.collateralFactor / 1e16,
-                })}
-              </Text>
-
-              <Text fontSize="12px" fontWeight="normal" ml={3}>
-                {t("{{factor}}% Reserve Factor", {
-                  factor: selectedAsset.reserveFactor / 1e16,
-                })}
-              </Text>
-            </>
-          )}
-        </Row>
 
         <Select
           {...DASHBOARD_BOX_PROPS}
@@ -504,14 +477,16 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
         </Select>
       </Row>
 
+      <ModalDivider />
+
       <Box
-        height="100%"
+        height="200px"
         width="100%"
         color="#000000"
         overflow="hidden"
-        pl={2}
-        pr={3}
+        px={3}
         className="hide-bottom-tooltip"
+        flexShrink={0}
       >
         {data ? (
           data.supplierRates === null ? (
@@ -583,6 +558,76 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           </Center>
         )}
       </Box>
+
+      <ModalDivider />
+
+      <Row
+        mainAxisAlignment="space-around"
+        crossAxisAlignment="center"
+        height="100%"
+        width="100%"
+        pt={4}
+        px={4}
+        pb={2}
+      >
+        <CaptionedStat
+          stat={(selectedAsset.collateralFactor / 1e16).toFixed(0) + "%"}
+          statSize="lg"
+          captionSize="xs"
+          caption={t("Collateral Factor")}
+          crossAxisAlignment="center"
+          captionFirst={true}
+        />
+
+        <CaptionedStat
+          stat={(selectedAsset.reserveFactor / 1e16).toFixed(0) + "%"}
+          statSize="lg"
+          captionSize="xs"
+          caption={t("Reserve Factor")}
+          crossAxisAlignment="center"
+          captionFirst={true}
+        />
+      </Row>
+
+      <ModalDivider />
+
+      <Row
+        mainAxisAlignment="space-around"
+        crossAxisAlignment="center"
+        height="100%"
+        width="100%"
+        p={4}
+        mt={3}
+      >
+        <CaptionedStat
+          stat={shortUsdFormatter(selectedAsset.totalSupplyUSD)}
+          statSize="lg"
+          captionSize="xs"
+          caption={t("Total Supplied")}
+          crossAxisAlignment="center"
+          captionFirst={true}
+        />
+
+        {isMobile ? null : (
+          <CaptionedStat
+            stat={(selectedAsset.reserveFactor / 1e16).toFixed(0) + "%"}
+            statSize="lg"
+            captionSize="xs"
+            caption={t("Utilization")}
+            crossAxisAlignment="center"
+            captionFirst={true}
+          />
+        )}
+
+        <CaptionedStat
+          stat={shortUsdFormatter(selectedAsset.totalBorrowUSD)}
+          statSize="lg"
+          captionSize="xs"
+          caption={t("Total Borrowed")}
+          crossAxisAlignment="center"
+          captionFirst={true}
+        />
+      </Row>
     </Column>
   );
 };
