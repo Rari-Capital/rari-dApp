@@ -610,7 +610,12 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
         {isMobile ? null : (
           <CaptionedStat
-            stat={(selectedAsset.reserveFactor / 1e16).toFixed(0) + "%"}
+            stat={
+              (
+                (selectedAsset.totalBorrowUSD / selectedAsset.totalSupplyUSD) *
+                100
+              ).toFixed(0) + "%"
+            }
             statSize="lg"
             captionSize="xs"
             caption={t("Utilization")}
