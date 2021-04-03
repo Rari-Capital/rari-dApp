@@ -127,7 +127,7 @@ const App = React.memo(() => {
       <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
       <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
-      <Route path="/" element={<Navigate to="/fuse" replace={true} />} />
+      <Route path="/" element={<MultiPoolPortal />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
