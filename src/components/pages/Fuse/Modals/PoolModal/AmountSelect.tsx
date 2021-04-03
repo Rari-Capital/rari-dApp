@@ -597,7 +597,7 @@ const AmountSelect = ({
             </Box>
 
             <Heading fontSize="27px" ml={3}>
-              {asset.underlyingName.length < 25
+              {!isMobile && asset.underlyingName.length < 25
                 ? asset.underlyingName
                 : asset.underlyingSymbol}
             </Heading>
