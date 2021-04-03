@@ -225,5 +225,6 @@
   "You don't have enough {{token}}!": "You don't have enough {{token}}!",
   "You don't have enough {{token}} or are over-repaying!": "You don't have enough {{token}} or are over-repaying!",
   "You cannot withdraw this much!": "You cannot withdraw this much!",
-  "You cannot borrow this much!": "You cannot borrow this much!"
+  "You cannot borrow this much!": "You cannot borrow this much!",
+  "Pool Directory": "Pool Directory"
 }

@@ -225,5 +225,6 @@
   "You don't have enough {{token}}!": "您沒有足夠的{{token}}！",
   "You don't have enough {{token}} or are over-repaying!": "您沒有足夠的{{token}}或還款過多！",
   "You cannot withdraw this much!": "您不能撤出這麼多錢！",
-  "You cannot borrow this much!": "你不能藉這麼多錢！"
+  "You cannot borrow this much!": "你不能藉這麼多錢！",
+  "Pool Directory": "池目录"
 }

@@ -1,5 +1,5 @@
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
-import { Center, Column, Row } from "buttered-chakra";
+import { Center, Column, Row, useIsMobile } from "buttered-chakra";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "../../../context/RariContext";
@@ -170,6 +170,8 @@ const PoolList = () => {
     return poolSort(filtered.map((item) => item.item));
   }, [_pools, filter, isMyPools, isCreatedPools]);
 
+  const isMobile = useIsMobile();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -186,24 +188,28 @@ const PoolList = () => {
         pr={1}
       >
         <Text fontWeight="bold" width="40%">
-          {t("Pool Assets")}
+          {!isMobile ? t("Pool Assets") : t("Pool Directory")}
         </Text>
 
-        <Text fontWeight="bold" textAlign="center" width="13%">
-          {t("Pool Number")}
-        </Text>
+        {isMobile ? null : (
+          <>
+            <Text fontWeight="bold" textAlign="center" width="13%">
+              {t("Pool Number")}
+            </Text>
 
-        <Text fontWeight="bold" textAlign="center" width="16%">
-          {t("Total Supplied")}
-        </Text>
+            <Text fontWeight="bold" textAlign="center" width="16%">
+              {t("Total Supplied")}
+            </Text>
 
-        <Text fontWeight="bold" textAlign="center" width="16%">
-          {t("Total Borrowed")}
-        </Text>
+            <Text fontWeight="bold" textAlign="center" width="16%">
+              {t("Total Borrowed")}
+            </Text>
 
-        <Text fontWeight="bold" textAlign="center" width="15%">
-          {t("Pool Risk Score")}
-        </Text>
+            <Text fontWeight="bold" textAlign="center" width="15%">
+              {t("Pool Risk Score")}
+            </Text>
+          </>
+        )}
       </Row>
 
       <ModalDivider />
@@ -259,6 +265,8 @@ const PoolRow = ({
 
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
+  const isMobile = useIsMobile();
+
   return (
     <>
       <Link
@@ -272,14 +280,14 @@ const PoolRow = ({
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          height="90px"
+          height={isMobile ? "120px" : "90px"}
           className="hover-row"
           pl={4}
           pr={1}
         >
           <Column
             pt={2}
-            width="40%"
+            width={isMobile ? "100%" : "40%"}
             height="100%"
             mainAxisAlignment="center"
             crossAxisAlignment="flex-start"
@@ -297,28 +305,30 @@ const PoolRow = ({
             <Text mt={isEmpty ? 0 : 2}>{name}</Text>
           </Column>
 
-          <Center height="100%" width="13%">
-            <b>{poolNumber}</b>
-          </Center>
-
-          <Center height="100%" width="16%">
-            <b>{smallUsdFormatter(tvl)}</b>
-          </Center>
-
-          <Center height="100%" width="16%">
-            <b>{smallUsdFormatter(borrowed)}</b>
-          </Center>
-          <Center height="100%" width="15%">
-            <SimpleTooltip
-              label={
-                "Underlying RSS: " +
-                (rss ? rss.totalScore.toFixed(2) : "?") +
-                "%"
-              }
-            >
-              <b>{rssScore}</b>
-            </SimpleTooltip>
-          </Center>
+          {isMobile ? null : (
+            <>
+              <Center height="100%" width="13%">
+                <b>{poolNumber}</b>
+              </Center>
+              <Center height="100%" width="16%">
+                <b>{smallUsdFormatter(tvl)}</b>
+              </Center>
+              <Center height="100%" width="16%">
+                <b>{smallUsdFormatter(borrowed)}</b>
+              </Center>
+              <Center height="100%" width="15%">
+                <SimpleTooltip
+                  label={
+                    "Underlying RSS: " +
+                    (rss ? rss.totalScore.toFixed(2) : "?") +
+                    "%"
+                  }
+                >
+                  <b>{rssScore}</b>
+                </SimpleTooltip>
+              </Center>
+            </>
+          )}
         </Row>
       </Link>
 
