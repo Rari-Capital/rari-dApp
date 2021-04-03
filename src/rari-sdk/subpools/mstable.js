@@ -20,7 +20,7 @@ export default class MStableSubpool {
   static EXTERNAL_CONTRACT_ADDRESSES = externalContractAddresses;
   static EXTERNAL_CONTRACT_ABIS = externalAbis;
 
-  static SUPPORTED_EXCHANGE_CURRENCIES = ["USDC", "USDT", "TUSD"];
+  static SUPPORTED_EXCHANGE_CURRENCIES = ["sUSD", "USDC", "DAI", "USDT"];
 
   constructor(web3) {
     this.web3 = web3;
