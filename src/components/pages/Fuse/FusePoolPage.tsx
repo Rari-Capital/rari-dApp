@@ -9,7 +9,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn } from "buttered-chakra";
+import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
 import LogRocket from "logrocket";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -209,6 +209,8 @@ const SupplyList = ({
     (asset) => asset.supplyBalanceUSD < 1
   );
 
+  const isMobile = useIsMobile();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -233,15 +235,25 @@ const SupplyList = ({
             {t("Asset")}
           </Text>
 
-          <Text width="27%" fontWeight="bold" textAlign="right">
-            {t("APY/WPY")}
-          </Text>
+          {isMobile ? null : (
+            <Text width="27%" fontWeight="bold" textAlign="right">
+              {t("APY/WPY")}
+            </Text>
+          )}
 
-          <Text width="27%" fontWeight="bold" textAlign="right">
+          <Text
+            width={isMobile ? "40%" : "27%"}
+            fontWeight="bold"
+            textAlign="right"
+          >
             {t("Balance")}
           </Text>
 
-          <Text width="20%" fontWeight="bold" textAlign="right">
+          <Text
+            width={isMobile ? "34%" : "20%"}
+            fontWeight="bold"
+            textAlign="right"
+          >
             {t("Collateral")}
           </Text>
         </Row>
@@ -362,6 +374,8 @@ const AssetSupplyRow = ({
     queryCache.refetchQueries();
   };
 
+  const isMobile = useIsMobile();
+
   return (
     <>
       <PoolModal
@@ -402,28 +416,30 @@ const AssetSupplyRow = ({
           </Text>
         </Row>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="27%"
-          as="button"
-          onClick={openModal}
-        >
-          <Text
-            color={tokenData?.color ?? "#FF"}
-            fontWeight="bold"
-            fontSize="17px"
+        {isMobile ? null : (
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="27%"
+            as="button"
+            onClick={openModal}
           >
-            {supplyAPY.toFixed(3)}%
-          </Text>
+            <Text
+              color={tokenData?.color ?? "#FF"}
+              fontWeight="bold"
+              fontSize="17px"
+            >
+              {supplyAPY.toFixed(3)}%
+            </Text>
 
-          <Text fontSize="sm">{supplyWPY.toFixed(3)}%</Text>
-        </Column>
+            <Text fontSize="sm">{supplyWPY.toFixed(3)}%</Text>
+          </Column>
+        )}
 
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
-          width="27%"
+          width={isMobile ? "40%" : "27%"}
           as="button"
           onClick={openModal}
         >
@@ -444,7 +460,7 @@ const AssetSupplyRow = ({
         </Column>
 
         <Row
-          width="20%"
+          width={isMobile ? "34%" : "20%"}
           mainAxisAlignment="flex-end"
           crossAxisAlignment="center"
         >
@@ -478,6 +494,8 @@ const BorrowList = ({
     (asset) => asset.borrowBalanceUSD < 1
   );
 
+  const isMobile = useIsMobile();
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -502,15 +520,25 @@ const BorrowList = ({
             {t("Asset")}
           </Text>
 
-          <Text width="27%" fontWeight="bold" textAlign="right">
-            {t("APY/WPY")}
-          </Text>
+          {isMobile ? null : (
+            <Text width="27%" fontWeight="bold" textAlign="right">
+              {t("APY/WPY")}
+            </Text>
+          )}
 
-          <Text width="27%" fontWeight="bold" textAlign="right">
+          <Text
+            fontWeight="bold"
+            textAlign="right"
+            width={isMobile ? "40%" : "27%"}
+          >
             {t("Balance")}
           </Text>
 
-          <Text width="20%" fontWeight="bold" textAlign="right">
+          <Text
+            fontWeight="bold"
+            textAlign="right"
+            width={isMobile ? "34%" : "20%"}
+          >
             {t("Liquidity")}
           </Text>
         </Row>
@@ -582,6 +610,8 @@ const AssetBorrowRow = ({
 
   const { t } = useTranslation();
 
+  const isMobile = useIsMobile();
+
   return (
     <>
       <PoolModal
@@ -622,26 +652,28 @@ const AssetBorrowRow = ({
           </Text>
         </Row>
 
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-end"
-          width="27%"
-        >
-          <Text
-            color={tokenData?.color ?? "#FF"}
-            fontWeight="bold"
-            fontSize="17px"
+        {isMobile ? null : (
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-end"
+            width="27%"
           >
-            {borrowAPY.toFixed(3)}%
-          </Text>
+            <Text
+              color={tokenData?.color ?? "#FF"}
+              fontWeight="bold"
+              fontSize="17px"
+            >
+              {borrowAPY.toFixed(3)}%
+            </Text>
 
-          <Text fontSize="sm">{borrowWPY.toFixed(3)}%</Text>
-        </Column>
+            <Text fontSize="sm">{borrowWPY.toFixed(3)}%</Text>
+          </Column>
+        )}
 
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-end"
-          width="27%"
+          width={isMobile ? "40%" : "27%"}
         >
           <Text
             color={tokenData?.color ?? "#FFF"}
@@ -665,7 +697,7 @@ const AssetBorrowRow = ({
           )}
           placement="top-end"
         >
-          <Box width="20%">
+          <Box width={isMobile ? "34%" : "20%"}>
             <Column
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-end"
