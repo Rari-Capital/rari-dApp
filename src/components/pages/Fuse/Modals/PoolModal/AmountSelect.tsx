@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column, Center, useIsMobile } from "buttered-chakra";
 
 import LogRocket from "logrocket";
 import {
@@ -341,14 +341,16 @@ const AmountSelect = ({
     depositOrWithdrawAlert = null;
   }
 
+  const isMobile = useIsMobile();
+
   const length = depositOrWithdrawAlert?.length ?? 0;
   let depositOrWithdrawAlertFontSize;
   if (length < 40) {
-    depositOrWithdrawAlertFontSize = "xl";
+    depositOrWithdrawAlertFontSize = !isMobile ? "xl" : "17px";
   } else if (length < 50) {
-    depositOrWithdrawAlertFontSize = "15px";
+    depositOrWithdrawAlertFontSize = !isMobile ? "15px" : "11px";
   } else if (length < 60) {
-    depositOrWithdrawAlertFontSize = "14px";
+    depositOrWithdrawAlertFontSize = !isMobile ? "14px" : "10px";
   }
 
   const onConfirm = async () => {
@@ -690,6 +692,7 @@ const AmountSelect = ({
               color={tokenData?.overlayTextColor ?? "#000"}
               // If the size is small, this means the text is large and we don't want the font size scale animation.
               className={
+                isMobile ||
                 depositOrWithdrawAlertFontSize === "14px" ||
                 depositOrWithdrawAlertFontSize === "15px"
                   ? "confirm-button-disable-font-size-scale"
