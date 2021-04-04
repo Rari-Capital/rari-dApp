@@ -21,7 +21,7 @@ const poolWarnings = (poolID: string) => {
   if (poolID === "6") {
     return "This pool has a high collateral factor for RGT, meaning if RGT rapidly drops in price DAI depositors could possibly lose their deposits. DAI cannot be used to borrow RGT in this pool so no users will lose their deposits if RGT rapidly increases in price.";
   } else if (poolID === "7") {
-    return "This pool has a high collateral factor for ETH, DAI, USDC and USDT. If ETH price rapidly drops or increases users may lose their deposits.";
+    return "This pool has an extremely high collateral factor for ETH, DAI, USDC and USDT. If ETH price rapidly drops or increases users may lose their deposits.";
   } else {
     return null;
   }
