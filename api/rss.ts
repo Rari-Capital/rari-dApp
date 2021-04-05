@@ -410,6 +410,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         comptroller
       );
 
+      // Ex: 8
       const liquidationIncentive =
         (await comptrollerContract.methods
           .liquidationIncentiveMantissa()
@@ -421,6 +422,9 @@ export default async (request: NowRequest, response: NowResponse) => {
         const rss = assetsRSS[i];
         const asset = assets[i];
 
+        // Ex: 75
+        const collateralFactor = asset.collateralFactor / 1e16;
+
         // If the AMM liquidity is less than 2x the $ amount supplied, fail
         if (rss.liquidityUSD < 2 * asset.totalSupplyUSD) {
           return 0;
@@ -431,9 +435,15 @@ export default async (request: NowRequest, response: NowResponse) => {
           return 0;
         }
 
+        // If the collateral factor and liquidation incentive do not have at least a 5% safety margin, fail
+        // See this tweet for why: https://twitter.com/transmissions11/status/1378862288266960898
+        // Basically if CF and LI add up to be greater than 100 then any liquidation will result in instant insolvency.
+        // Enforcing that they add up to less than or equal to 95 enforces a minimum safety buffer after liquidation
+        if (collateralFactor + liquidationIncentive > 95) {
+          return 0;
+        }
+
         // If the liquidation incentive is less than or equal to 1/10th of the collateral factor, fail
-        // Ex: Incentive is 8%, Factor is 75%
-        const collateralFactor = asset.collateralFactor / 1e16;
         if (liquidationIncentive <= collateralFactor / 10) {
           return 0;
         }
