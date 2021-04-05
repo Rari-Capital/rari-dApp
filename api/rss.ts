@@ -5,7 +5,10 @@ import fetch from "node-fetch";
 
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
-import { initFuseWithProviders } from "../src/utils/web3Providers";
+import {
+  initFuseWithProviders,
+  turboGethURL,
+} from "../src/utils/web3Providers";
 
 function clamp(num, min, max) {
   return num <= min ? min : num >= max ? max : num;
@@ -20,7 +23,7 @@ const weightedCalculation = async (
   return clamp((await calculation()) ?? 0, 0, 1) * weight;
 };
 
-const fuse = initFuseWithProviders();
+const fuse = initFuseWithProviders(turboGethURL);
 
 async function computeAssetRSS(address: string) {
   address = address.toLowerCase();
@@ -382,24 +385,21 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 15);
 
     const upgradeable = await weightedCalculation(async () => {
-      //TODO: USE WHEN FIXED
-      // const {
-      //   0: admin,
-      //   1: upgradeable,
-      // } = await fuse.contracts.FusePoolLens.methods
-      //   .getPoolOwnership(comptroller)
-      //   .call({ gas: 1e18 });
+      const {
+        0: admin,
+        1: upgradeable,
+      } = await fuse.contracts.FusePoolLens.methods
+        .getPoolOwnership(comptroller)
+        .call({ gas: 1e18 });
 
-      // // TODO: Change once multisig: DAO Deployer is safe
-      // if (
-      //   admin.toLowerCase() === "0xb8f02248d53f7edfa38e79263e743e9390f81942"
-      // ) {
-      //   return 1;
-      // }
+      // TODO: Change once multisig: DAO Deployer is safe
+      if (
+        admin.toLowerCase() === "0xb8f02248d53f7edfa38e79263e743e9390f81942"
+      ) {
+        return 1;
+      }
 
-      // return upgradeable ? 0 : 1;
-
-      return 1;
+      return upgradeable ? 0 : 1;
     }, 10);
 
     const mustPass = await weightedCalculation(async () => {
@@ -410,6 +410,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         comptroller
       );
 
+      // Ex: 8
       const liquidationIncentive =
         (await comptrollerContract.methods
           .liquidationIncentiveMantissa()
@@ -421,6 +422,9 @@ export default async (request: NowRequest, response: NowResponse) => {
         const rss = assetsRSS[i];
         const asset = assets[i];
 
+        // Ex: 75
+        const collateralFactor = asset.collateralFactor / 1e16;
+
         // If the AMM liquidity is less than 2x the $ amount supplied, fail
         if (rss.liquidityUSD < 2 * asset.totalSupplyUSD) {
           return 0;
@@ -431,9 +435,20 @@ export default async (request: NowRequest, response: NowResponse) => {
           return 0;
         }
 
+        // If the collateral factor and liquidation incentive do not have at least a 5% safety margin, fail
+        if (collateralFactor + liquidationIncentive > 95) {
+          /* 
+        
+          See this tweet for why: https://twitter.com/transmissions11/status/1378862288266960898
+        
+          TLDR: If CF and LI add up to be greater than 100 then any liquidation will result in instant insolvency. 95 has been determined to be the highest sum that could be considered "safe".
+        
+          */
+
+          return 0;
+        }
+
         // If the liquidation incentive is less than or equal to 1/10th of the collateral factor, fail
-        // Ex: Incentive is 8%, Factor is 75%
-        const collateralFactor = asset.collateralFactor / 1e16;
         if (liquidationIncentive <= collateralFactor / 10) {
           return 0;
         }

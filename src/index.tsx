@@ -74,12 +74,12 @@ ReactDOM.render(
     />
     <ChakraProvider theme={customTheme}>
       <ErrorBoundary FallbackComponent={ErrorPage}>
-        <RariProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <RariProvider>
             <ScrollToTop />
             <App />
-          </BrowserRouter>
-        </RariProvider>
+          </RariProvider>
+        </BrowserRouter>
       </ErrorBoundary>
     </ChakraProvider>
   </>,

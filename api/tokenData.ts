@@ -5,9 +5,9 @@ import Web3 from "web3";
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 
 import { NowRequest, NowResponse } from "@vercel/node";
-import { infuraURL } from "../src/utils/web3Providers";
+import { turboGethURL } from "../src/utils/web3Providers";
 
-const web3 = new Web3(infuraURL);
+const web3 = new Web3(turboGethURL);
 
 export default async (request: NowRequest, response: NowResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");

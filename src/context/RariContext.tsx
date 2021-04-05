@@ -21,6 +21,7 @@ import {
   initFuseWithProviders,
 } from "../utils/web3Providers";
 import { useIsMobile } from "buttered-chakra";
+import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
@@ -136,6 +137,8 @@ export const RariContext = React.createContext<RariContextData | undefined>(
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
+  const location = useLocation();
+
   const [rari, setRari] = useState<Rari>(
     () => new Rari(chooseBestWeb3Provider())
   );
@@ -185,18 +188,24 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       setFuse(fuseInstance);
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
-        console.log("Address array: ", addresses);
         if (addresses.length === 0) {
           console.log("Address array was empty. Reloading!");
           window.location.reload();
         }
 
         const address = addresses[0];
+        const requestedAddress = new URLSearchParams(location.search).get(
+          "address"
+        );
 
-        setAddress(address);
+        console.log("Setting Logrocket user to new address: " + address);
+        LogRocket.identify(address);
+
+        console.log("Requested address: ", requestedAddress);
+        setAddress(requestedAddress ?? address);
       });
     },
-    [setRari, setAddress]
+    [setRari, setAddress, location.search]
   );
 
   const login = useCallback(
@@ -244,13 +253,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       }
     };
   }, [web3ModalProvider, refetchAccountData]);
-
-  useEffect(() => {
-    if (address !== EmptyAddress) {
-      console.log("Setting Logrocket user to new address: " + address);
-      LogRocket.identify(address);
-    }
-  }, [address]);
 
   // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
   const isMobile = useIsMobile();
