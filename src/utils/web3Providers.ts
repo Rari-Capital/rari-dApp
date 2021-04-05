@@ -1,8 +1,8 @@
 import Fuse from "../fuse-sdk/src";
 
-export const infuraURL = `https://mainnet.infura.io/v3/834349d34934494f80797f2f551cb12e`;
-export const turboGethURL = `https://turbogeth.crows.sh`;
-export const alchemyURL = `https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN`;
+export const infuraURL = `http://135.181.216.35:21917`;
+export const turboGethURL = `http://135.181.216.35:21917`;
+export const alchemyURL = `http://135.181.216.35:21917`;
 
 export function chooseBestWeb3Provider() {
   if (typeof window === "undefined") {
