@@ -392,9 +392,9 @@ export default async (request: NowRequest, response: NowResponse) => {
         .getPoolOwnership(comptroller)
         .call({ gas: 1e18 });
 
-      // TODO: Change once multisig: DAO Deployer is safe
+      // Rari Controlled Multisig
       if (
-        admin.toLowerCase() === "0xb8f02248d53f7edfa38e79263e743e9390f81942"
+        admin.toLowerCase() === "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f"
       ) {
         return 1;
       }
