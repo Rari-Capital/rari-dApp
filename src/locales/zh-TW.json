@@ -175,7 +175,6 @@
   "Supply Balance": "供應平衡",
   "Debt Balance": "債務餘額",
   "Supply APY": "供應APY",
-  "Borrow APY": "借用APY",
   "Available Liquidity": "可用的流動性",
   "Upgradeable": "可升級",
   "Admin (copied!)": "管理員（已復制！）",
@@ -224,5 +223,7 @@
   "You cannot borrow this much!": "你不能藉這麼多錢！",
   "Pool Directory": "池目录",
   "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}統計信息",
-  "Utilization": "使用率"
+  "Utilization": "使用率",
+  "APR/WPR": "年利率/年利率",
+  "Borrow APR": "借入年利率"
 }

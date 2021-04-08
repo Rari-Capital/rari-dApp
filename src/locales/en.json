@@ -175,7 +175,7 @@
   "Supply Balance": "Supply Balance",
   "Debt Balance": "Debt Balance",
   "Supply APY": "Supply APY",
-  "Borrow APY": "Borrow APY",
+  "Borrow APR": "Borrow APR",
   "Available Liquidity": "Available Liquidity",
   "Upgradeable": "Upgradeable",
   "Admin (copied!)": "Admin (copied!)",
@@ -224,5 +224,6 @@
   "You cannot borrow this much!": "You cannot borrow this much!",
   "Pool Directory": "Pool Directory",
   "Pool {{num}}'s {{token}} Stats": "Pool {{num}}'s {{token}} Stats",
-  "Utilization": "Utilization"
+  "Utilization": "Utilization",
+  "APR/WPR": "APR/WPR"
 }

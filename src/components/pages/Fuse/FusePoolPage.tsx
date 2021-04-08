@@ -20,7 +20,10 @@ import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useTokenData } from "../../../hooks/useTokenData";
-import { convertMantissaToAPY } from "../../../utils/apyUtils";
+import {
+  convertMantissaToAPR,
+  convertMantissaToAPY,
+} from "../../../utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
 import { createComptroller } from "../../../utils/createComptroller";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
@@ -522,7 +525,7 @@ const BorrowList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APY/WPY")}
+              {t("APR/WPR")}
             </Text>
           )}
 
@@ -605,8 +608,8 @@ const AssetBorrowRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
-  const borrowWPY = convertMantissaToAPY(asset.borrowRatePerBlock, 7);
+  const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
+  const borrowWPR = convertMantissaToAPR(asset.borrowRatePerBlock) / 52;
 
   const { t } = useTranslation();
 
@@ -663,10 +666,10 @@ const AssetBorrowRow = ({
               fontWeight="bold"
               fontSize="17px"
             >
-              {borrowAPY.toFixed(3)}%
+              {borrowAPR.toFixed(3)}%
             </Text>
 
-            <Text fontSize="sm">{borrowWPY.toFixed(3)}%</Text>
+            <Text fontSize="sm">{borrowWPR.toFixed(3)}%</Text>
           </Column>
         )}
 
