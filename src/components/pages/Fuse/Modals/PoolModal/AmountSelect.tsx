@@ -49,7 +49,10 @@ import { useParams } from "react-router-dom";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 import { SwitchCSS } from "../../../../shared/SwitchCSS";
 
-import { convertMantissaToAPY } from "../../../../../utils/apyUtils";
+import {
+  convertMantissaToAPR,
+  convertMantissaToAPY,
+} from "../../../../../utils/apyUtils";
 
 enum UserAction {
   NO_ACTION,
@@ -979,21 +982,20 @@ const StatsColumn = ({
     mode === Mode.SUPPLY || mode === Mode.WITHDRAW;
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
-  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
+  const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
 
   const updatedSupplyAPY = convertMantissaToAPY(
     updatedAsset?.supplyRatePerBlock ?? 0,
     365
   );
-  const updatedBorrowAPY = convertMantissaToAPY(
-    updatedAsset?.borrowRatePerBlock ?? 0,
-    365
+  const updatedBorrowAPR = convertMantissaToAPR(
+    updatedAsset?.borrowRatePerBlock ?? 0
   );
 
   // If the difference is greater than a 0.1 percentage point change, alert the user
   const updatedAPYDiffIsLarge = isSupplyingOrWithdrawing
     ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
-    : Math.abs(updatedBorrowAPY - borrowAPY) > 0.1;
+    : Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
 
   return (
     <DashboardBox width="100%" height="190px" mt={4}>
@@ -1042,7 +1044,7 @@ const StatsColumn = ({
             width="100%"
           >
             <Text fontWeight="bold" flexShrink={0}>
-              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APY")}:
+              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APR")}:
             </Text>
             <Text
               fontWeight="bold"
@@ -1050,14 +1052,14 @@ const StatsColumn = ({
             >
               {isSupplyingOrWithdrawing
                 ? supplyAPY.toFixed(2)
-                : borrowAPY.toFixed(2)}
+                : borrowAPR.toFixed(2)}
               %
               {updatedAPYDiffIsLarge ? (
                 <>
                   {" → "}
                   {isSupplyingOrWithdrawing
                     ? updatedSupplyAPY.toFixed(2)
-                    : updatedBorrowAPY.toFixed(2)}
+                    : updatedBorrowAPR.toFixed(2)}
                   %
                 </>
               ) : null}
