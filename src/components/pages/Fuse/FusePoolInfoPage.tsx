@@ -409,8 +409,9 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
     selectedAsset.totalSupply === "0"
       ? 0
       : parseFloat(
-          (
-            (selectedAsset.totalBorrow / selectedAsset.totalSupply) *
+          // Use Max.min() to cap util at 100%
+          Math.min(
+            (selectedAsset.totalBorrow / selectedAsset.totalSupply) * 100,
             100
           ).toFixed(0)
         );
