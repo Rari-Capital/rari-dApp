@@ -225,5 +225,8 @@
   "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}統計信息",
   "Utilization": "使用率",
   "APR/WPR": "年利率/年利率",
-  "Borrow APR": "借入年利率"
+  "Borrow APR": "借入年利率",
+  "The admin address receives admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset.": "管理員地址會收到在此資產上賺取的管理費，如果他們擁有管理權限，則可以更新該資產的參數。",
+  "Admin": "行政",
+  "Become Admin": "成為管理員"
 }

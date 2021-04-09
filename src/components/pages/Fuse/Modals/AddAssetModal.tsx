@@ -508,7 +508,7 @@ export const AssetSettings = ({
       <ConfigRow height="35px">
         <SimpleTooltip
           label={t(
-            "The admin address recieves admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset."
+            "The admin address receives admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset."
           )}
         >
           <Text fontWeight="bold">

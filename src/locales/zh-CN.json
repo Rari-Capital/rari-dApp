@@ -225,5 +225,8 @@
   "Pool Directory": "池目录",
   "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}统计信息",
   "Utilization": "使用率",
-  "APR/WPR": "年利率/年利率"
+  "APR/WPR": "年利率/年利率",
+  "The admin address receives admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset.": "管理员地址会收到在此资产上赚取的管理费，并且如果他们具有管理权限，则可以更新该资产的参数。",
+  "Admin": "行政",
+  "Become Admin": "成为管理员"
 }

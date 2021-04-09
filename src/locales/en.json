@@ -225,5 +225,8 @@
   "Pool Directory": "Pool Directory",
   "Pool {{num}}'s {{token}} Stats": "Pool {{num}}'s {{token}} Stats",
   "Utilization": "Utilization",
-  "APR/WPR": "APR/WPR"
+  "APR/WPR": "APR/WPR",
+  "The admin address receives admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset.": "The admin address receives admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset.",
+  "Admin": "Admin",
+  "Become Admin": "Become Admin"
 }
