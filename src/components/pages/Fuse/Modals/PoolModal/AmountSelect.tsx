@@ -1079,8 +1079,11 @@ const StatsColumn = ({
               fontSize={isSupplyingOrWithdrawing ? "sm" : "lg"}
             >
               {smallUsdFormatter(borrowLimit)}
-              {" → "}
-              {smallUsdFormatter(updatedBorrowLimit)}
+              {isSupplyingOrWithdrawing ? (
+                <>
+                  {" → "} {smallUsdFormatter(updatedBorrowLimit)}
+                </>
+              ) : null}{" "}
             </Text>
           </Row>
 
