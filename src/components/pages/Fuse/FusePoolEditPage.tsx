@@ -157,7 +157,7 @@ const FusePoolEditPage = React.memo(() => {
         >
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "440px"}
+            height={isMobile ? "auto" : "560px"}
             mt={4}
           >
             {data ? (
@@ -176,7 +176,7 @@ const FusePoolEditPage = React.memo(() => {
             <DashboardBox
               width="100%"
               mt={4}
-              height={isMobile ? "auto" : "440px"}
+              height={isMobile ? "auto" : "560px"}
             >
               {data ? (
                 data.assets.length > 0 ? (
@@ -569,7 +569,7 @@ const AssetConfiguration = ({
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "440px"}
+      height="100%"
       width="100%"
       flexShrink={0}
     >
@@ -658,9 +658,11 @@ const ColoredAssetSettings = ({
 
 export const SaveButton = ({
   onClick,
+  altText,
   ...others
 }: {
   onClick: () => any;
+  altText?: string;
   [key: string]: any;
 }) => {
   const { t } = useTranslation();
@@ -669,14 +671,14 @@ export const SaveButton = ({
     <DashboardBox
       flexShrink={0}
       ml={2}
-      width="60px"
+      px={2}
       height="35px"
       as="button"
       fontWeight="bold"
       onClick={onClick}
       {...others}
     >
-      {t("Save")}
+      <Center expand>{altText ?? t("Save")}</Center>
     </DashboardBox>
   );
 };
