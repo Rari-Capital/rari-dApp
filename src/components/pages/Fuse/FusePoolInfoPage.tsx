@@ -59,6 +59,8 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       liquidationIncentive,
       enforceWhitelist,
       whitelist,
+      adminHasRights,
+      pendingAdmin,
     ] = await Promise.all([
       fuse.contracts.FusePoolLens.methods
         .getPoolOwnership(comptrollerAddress)
@@ -85,6 +87,9 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
           return [];
         }
       })(),
+
+      comptroller.methods.adminHasRights().call(),
+      comptroller.methods.pendingAdmin().call(),
     ]);
 
     return {
@@ -97,6 +102,8 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       oracle,
       closeFactor,
       liquidationIncentive,
+      adminHasRights,
+      pendingAdmin,
     };
   });
 

@@ -80,6 +80,7 @@ export const useCTokenData = (
         interestRateModelAddress,
         admin,
         pendingAdmin,
+        adminHasRights,
         { collateralFactorMantissa },
       ] = await Promise.all([
         cToken.methods.adminFeeMantissa().call(),
@@ -87,6 +88,7 @@ export const useCTokenData = (
         cToken.methods.interestRateModel().call(),
         cToken.methods.admin().call(),
         cToken.methods.pendingAdmin().call(),
+        cToken.methods.adminHasRights().call(),
         comptroller.methods.markets(cTokenAddress).call(),
       ]);
 
@@ -98,6 +100,7 @@ export const useCTokenData = (
         admin,
         pendingAdmin,
         cTokenAddress,
+        adminHasRights,
       };
     } else {
       return null;
@@ -413,6 +416,24 @@ export const AssetSettings = ({
     }
   };
 
+  const revokeRights = async () => {
+    const cToken = createCToken(fuse, cTokenAddress!);
+
+    try {
+      await testForCTokenErrorAndSend(
+        cToken.methods._renounceAdminRights(),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-RevokeRights");
+
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
   return (
     cTokenAddress ? cTokenData?.cTokenAddress === cTokenAddress : true
   ) ? (
@@ -519,19 +540,27 @@ export const AssetSettings = ({
         {cTokenData &&
         admin.toLowerCase() !== cTokenData.admin.toLowerCase() ? (
           <SaveButton ml={3} onClick={updateAdmin} />
-        ) : null}
-
-        {cTokenData &&
-        address.toLowerCase() === cTokenData.pendingAdmin.toLowerCase() ? (
+        ) : cTokenData &&
+          address.toLowerCase() === cTokenData.pendingAdmin.toLowerCase() ? (
           <SaveButton
             ml={3}
             onClick={acceptAdmin}
             fontSize="xs"
             altText={t("Become Admin")}
           />
+        ) : cTokenData &&
+          cTokenData.adminHasRights &&
+          address.toLowerCase() === cTokenData.admin ? (
+          <SaveButton
+            ml={3}
+            onClick={revokeRights}
+            fontSize="xs"
+            altText={t("Revoke Rights")}
+          />
         ) : null}
 
         <Input
+          isDisabled={cTokenData ? !cTokenData.adminHasRights : true}
           ml="auto"
           width="320px"
           height="100%"

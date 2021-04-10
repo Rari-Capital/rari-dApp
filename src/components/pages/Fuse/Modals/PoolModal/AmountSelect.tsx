@@ -44,8 +44,8 @@ import Fuse from "../../../../../fuse-sdk";
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../../../utils/createComptroller";
 import { handleGenericError } from "../../../../../utils/errorHandling";
-import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
-import { useParams } from "react-router-dom";
+// import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
+// import { useParams } from "react-router-dom";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 import { SwitchCSS } from "../../../../shared/SwitchCSS";
 
@@ -236,9 +236,9 @@ const AmountSelect = ({
   const { address, fuse } = useRari();
 
   // ----------------------------------------------------------------
-  // TODO: Remove after guarded launch
-  const { poolId } = useParams();
-  const poolData = useFusePoolData(poolId);
+  // // TODO: Remove after guarded launch
+  // const { poolId } = useParams();
+  // const poolData = useFusePoolData(poolId);
   // ----------------------------------------------------------------
 
   const toast = useToast();

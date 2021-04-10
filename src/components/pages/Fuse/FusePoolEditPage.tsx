@@ -7,6 +7,7 @@ import {
   useDisclosure,
   Spinner,
   useToast,
+  Input,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
 import React, { ReactNode, useEffect, useState } from "react";
@@ -16,7 +17,7 @@ import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox from "../../shared/DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
@@ -28,7 +29,10 @@ import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { CTokenIcon } from "./FusePoolsPage";
-import { createComptroller } from "../../../utils/createComptroller";
+import {
+  createComptroller,
+  createUnitroller,
+} from "../../../utils/createComptroller";
 import { useQueryCache, useQuery } from "react-query";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 
@@ -299,23 +303,60 @@ const PoolConfiguration = ({
     }
   };
 
-  const renounceOwnership = async () => {
-    const unitroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Unitroller.sol:Unitroller"].abi
-      ),
-      comptrollerAddress
-    );
+  const [admin, setAdmin] = useState(address);
+
+  const revokeRights = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
 
     try {
-      // TODO: Revoke admin rights on all the cTokens!
       await testForComptrollerErrorAndSend(
         unitroller.methods._renounceAdminRights(),
         address,
         ""
       );
 
-      LogRocket.track("Fuse-RenounceOwnership");
+      LogRocket.track("Fuse-RevokeRights");
+
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
+  const acceptAdmin = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._acceptAdmin(),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-AcceptAdmin");
+
+      queryCache.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
+  const updateAdmin = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
+
+    if (!fuse.web3.utils.isAddress(admin)) {
+      handleGenericError({ message: "This is not a valid address." }, toast);
+      return;
+    }
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._setPendingAdmin(admin),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-UpdateAdmin");
 
       queryCache.refetchQueries();
     } catch (e) {
@@ -341,6 +382,7 @@ const PoolConfiguration = ({
       setLiquidationIncentive(
         scaleLiquidationIncentive(data.liquidationIncentive)
       );
+      setAdmin(data.admin);
     }
   }, [data]);
 
@@ -475,25 +517,47 @@ const PoolConfiguration = ({
 
             <ModalDivider />
 
-            <ConfigRow>
-              <Text fontWeight="bold">{t("Upgradeable")}:</Text>
+            <ConfigRow height="35px">
+              <Text fontWeight="bold">{t("Admin")}:</Text>
 
-              {data.upgradeable ? (
-                <DashboardBox
-                  height="35px"
-                  ml="auto"
-                  as="button"
-                  onClick={renounceOwnership}
-                >
-                  <Center expand px={2} fontWeight="bold">
-                    {t("Renounce Ownership")}
-                  </Center>
-                </DashboardBox>
-              ) : (
-                <Text ml="auto" fontWeight="bold">
-                  {t("Admin Rights Disabled")}
-                </Text>
-              )}
+              {admin.toLowerCase() !== data.admin.toLowerCase() ? (
+                <SaveButton ml={3} onClick={updateAdmin} />
+              ) : address.toLowerCase() === data.pendingAdmin.toLowerCase() ? (
+                <SaveButton
+                  ml={3}
+                  onClick={acceptAdmin}
+                  fontSize="xs"
+                  altText={t("Become Admin")}
+                />
+              ) : data.adminHasRights &&
+                address.toLowerCase() === data.admin ? (
+                <SaveButton
+                  ml={3}
+                  onClick={revokeRights}
+                  fontSize="xs"
+                  altText={t("Revoke Rights")}
+                />
+              ) : null}
+
+              <Input
+                isDisabled={!data.adminHasRights}
+                ml="auto"
+                width="320px"
+                height="100%"
+                textAlign="center"
+                variant="filled"
+                size="sm"
+                value={data.admin}
+                onChange={(event) => {
+                  const address = event.target.value;
+                  setAdmin(address);
+                }}
+                {...DASHBOARD_BOX_PROPS}
+                _placeholder={{ color: "#e0e0e0" }}
+                _focus={{ bg: "#121212" }}
+                _hover={{ bg: "#282727" }}
+                bg="#282727"
+              />
             </ConfigRow>
 
             <ModalDivider />
@@ -559,8 +623,6 @@ const AssetConfiguration = ({
   poolName: string;
   poolID: string;
 }) => {
-  const isMobile = useIsSemiSmallScreen();
-
   const { t } = useTranslation();
 
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
