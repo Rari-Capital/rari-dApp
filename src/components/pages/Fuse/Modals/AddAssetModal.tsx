@@ -550,7 +550,7 @@ export const AssetSettings = ({
           />
         ) : cTokenData &&
           cTokenData.adminHasRights &&
-          address.toLowerCase() === cTokenData.admin ? (
+          address.toLowerCase() === cTokenData.admin.toLowerCase() ? (
           <SaveButton
             ml={3}
             onClick={revokeRights}
@@ -560,7 +560,7 @@ export const AssetSettings = ({
         ) : null}
 
         <Input
-          isDisabled={cTokenData ? !cTokenData.adminHasRights : true}
+          isDisabled={cTokenData ? !cTokenData.adminHasRights : false}
           ml="auto"
           width="320px"
           height="100%"

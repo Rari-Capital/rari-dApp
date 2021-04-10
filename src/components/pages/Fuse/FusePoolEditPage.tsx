@@ -530,7 +530,7 @@ const PoolConfiguration = ({
                   altText={t("Become Admin")}
                 />
               ) : data.adminHasRights &&
-                address.toLowerCase() === data.admin ? (
+                address.toLowerCase() === data.admin.toLowerCase() ? (
                 <SaveButton
                   ml={3}
                   onClick={revokeRights}
