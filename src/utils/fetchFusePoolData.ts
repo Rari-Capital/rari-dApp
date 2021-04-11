@@ -56,6 +56,10 @@ export const filterPoolName = (name: string) => {
     return "Tetranode's RGT Pool";
   }
 
+  if (name === "Tetranode's ETH Pool") {
+    return "ChainLinkGod's / Tetranode's Up Only Pool";
+  }
+
   return filter.clean(name);
 };
 
