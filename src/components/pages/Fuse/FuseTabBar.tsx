@@ -1,4 +1,4 @@
-import { DeleteIcon, SmallAddIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "buttered-chakra";
 import React from "react";
@@ -7,7 +7,6 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { Link as RouterLink } from "react-router-dom";
-import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 
@@ -16,16 +15,6 @@ const noop = {};
 export function useFilter() {
   return new URLSearchParams(useLocation().search).get("filter");
 }
-
-const poolWarnings = (poolID: string) => {
-  if (poolID === "6") {
-    return "This pool has a high collateral factor for RGT, meaning if RGT rapidly drops in price DAI depositors could possibly lose their deposits. DAI cannot be used to borrow RGT in this pool so no users will lose their deposits if RGT rapidly increases in price.";
-  } else if (poolID === "7") {
-    return "This pool has an extremely high collateral factor for ETH, DAI, USDC and USDT. If ETH price rapidly drops or increases users may lose their deposits.";
-  } else {
-    return null;
-  }
-};
 
 const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();
@@ -145,12 +134,6 @@ const FuseTabBar = () => {
               </Link>
             </DashboardBox>
           </>
-        ) : null}
-
-        {poolId && poolWarnings(poolId) !== null ? (
-          <SimpleTooltip label={poolWarnings(poolId)!}>
-            <WarningTwoIcon ml="auto" boxSize="25px" color="#C34535" mr={1} />
-          </SimpleTooltip>
         ) : null}
 
         {/* <NewPoolButton /> */}
