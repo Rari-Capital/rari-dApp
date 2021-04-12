@@ -394,7 +394,10 @@ export default async (request: NowRequest, response: NowResponse) => {
 
       // Rari Controlled Multisig
       if (
-        admin.toLowerCase() === "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f"
+        admin.toLowerCase() === "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85" ||
+        admin.toLowerCase() === "0x5eA4A9a7592683bF0Bc187d6Da706c6c4770976F" ||
+        admin.toLowerCase() === "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
+        admin.toLowerCase() === "0x521CF3d673f4B2025BE0bDb03D6410b111Cd17D5"
       ) {
         return 1;
       }
