@@ -13,7 +13,7 @@ export default async (request: NowRequest, response: NowResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
 
-  const address = request.query.address as string;
+  const address = web3.utils.toChecksumAddress(request.query.address as string);
 
   const tokenContract = new web3.eth.Contract(ERC20ABI as any, address);
 
@@ -33,7 +33,11 @@ export default async (request: NowRequest, response: NowResponse) => {
     const symbol = await tokenContract.methods.symbol().call();
 
     // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
-    const isBNB = address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52";
+    const isBNB =
+      address ===
+      web3.utils.toChecksumAddress(
+        "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+      );
 
     response.json({
       name,
@@ -56,9 +60,23 @@ export default async (request: NowRequest, response: NowResponse) => {
   } = rawData;
 
   // FTX swapped the name and symbol so we will correct for that.
-  if (address === "0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9") {
+  if (
+    address ===
+    web3.utils.toChecksumAddress("0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9")
+  ) {
     symbol = name;
     name = symbol;
+  }
+
+  let logoURL;
+
+  // Fetch the logo from trustwallet if possible!
+  const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+  const trustWalletLogoResponse = await fetch(trustWalletURL);
+  if (trustWalletLogoResponse.ok) {
+    logoURL = trustWalletURL;
+  } else {
+    logoURL = small;
   }
 
   const basicTokenInfo = {
@@ -87,22 +105,10 @@ export default async (request: NowRequest, response: NowResponse) => {
       ...basicTokenInfo,
       color: "#FFFFFF",
       overlayTextColor: "#000",
-      logoURL:
-        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+      logoURL,
     });
 
     return;
-  }
-
-  let logoURL;
-
-  // Fetch the logo from trustwallet if possible!
-  const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
-  const trustWalletLogoResponse = await fetch(trustWalletURL);
-  if (trustWalletLogoResponse.ok) {
-    logoURL = trustWalletURL;
-  } else {
-    logoURL = small;
   }
 
   response.json({
