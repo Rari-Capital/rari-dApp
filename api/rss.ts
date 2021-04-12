@@ -397,7 +397,8 @@ export default async (request: NowRequest, response: NowResponse) => {
         admin.toLowerCase() === "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85" ||
         admin.toLowerCase() === "0x5eA4A9a7592683bF0Bc187d6Da706c6c4770976F" ||
         admin.toLowerCase() === "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
-        admin.toLowerCase() === "0x521CF3d673f4B2025BE0bDb03D6410b111Cd17D5"
+        (admin.toLowerCase() === "0x7b502F1aA0f48B83cA6349E1F42CAcd8150307a6" && comptroller == "0xd4bDCCa1CA76ceD6FC8BB1bA91C5D7c0Ca4fE567") ||
+        (admin.toLowerCase() === "0x521CF3d673f4B2025BE0bDb03D6410b111Cd17D5" && comptroller == "0x8583FDfF34dDC3744a46eAbc1503769aF0bc6604")
       ) {
         return 1;
       }
