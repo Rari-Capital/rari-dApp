@@ -68,6 +68,17 @@ export default async (request: NowRequest, response: NowResponse) => {
     name = symbol;
   }
 
+  let logoURL;
+
+  // Fetch the logo from trustwallet if possible!
+  const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+  const trustWalletLogoResponse = await fetch(trustWalletURL);
+  if (trustWalletLogoResponse.ok) {
+    logoURL = trustWalletURL;
+  } else {
+    logoURL = small;
+  }
+
   const basicTokenInfo = {
     symbol: symbol.toUpperCase(),
     name,
@@ -94,22 +105,10 @@ export default async (request: NowRequest, response: NowResponse) => {
       ...basicTokenInfo,
       color: "#FFFFFF",
       overlayTextColor: "#000",
-      logoURL:
-        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+      logoURL,
     });
 
     return;
-  }
-
-  let logoURL;
-
-  // Fetch the logo from trustwallet if possible!
-  const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
-  const trustWalletLogoResponse = await fetch(trustWalletURL);
-  if (trustWalletLogoResponse.ok) {
-    logoURL = trustWalletURL;
-  } else {
-    logoURL = small;
   }
 
   response.json({
