@@ -6,7 +6,7 @@ export const alchemyURL = `https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9c
 
 export function chooseBestWeb3Provider() {
   if (typeof window === "undefined") {
-    return infuraURL;
+    return turboGethURL;
   }
 
   if (window.ethereum) {
@@ -14,7 +14,7 @@ export function chooseBestWeb3Provider() {
   } else if (window.web3) {
     return window.web3.currentProvider;
   } else {
-    return infuraURL;
+    return turboGethURL;
   }
 }
 
