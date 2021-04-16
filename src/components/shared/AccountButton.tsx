@@ -136,8 +136,9 @@ const Buttons = ({
           crossAxisAlignment="center"
           px={3}
         >
+          {/* Conditionally display Connect button or Account button */}
           {!isAuthed ? (
-            <Text ml={2} fontWeight="semibold">
+            <Text fontWeight="semibold">
               Connect
             </Text>
           ) : (
