@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
@@ -78,11 +78,20 @@ const Buttons = ({
   openClaimRGTModal: () => any;
   openMoonpayModal: () => any;
 }) => {
-  const { address } = useRari();
+  const { address, isAuthed, login } = useRari();
 
   const { t } = useTranslation();
 
   const isMobile = useIsSmallScreen();
+
+  const handleAccountButtonClick = useCallback(
+    () => {
+      if (isAuthed) {
+        openModal()
+      } else login()
+    },
+    [isAuthed, login, openModal],
+  )
 
   return (
     <>
@@ -119,7 +128,7 @@ const Buttons = ({
         height="40px"
         flexShrink={0}
         width="auto"
-        onClick={openModal}
+        onClick={handleAccountButtonClick}
       >
         <Row
           expand
@@ -127,11 +136,18 @@ const Buttons = ({
           crossAxisAlignment="center"
           px={3}
         >
-          <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
-
-          <Text ml={2} fontWeight="semibold">
-            {shortAddress(address)}
-          </Text>
+          {!isAuthed ? (
+            <Text ml={2} fontWeight="semibold">
+              Connect
+            </Text>
+          ) : (
+            <>
+              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              <Text ml={2} fontWeight="semibold">
+                {shortAddress(address)}
+              </Text>
+            </>
+          )}
         </Row>
       </DashboardBox>
     </>
@@ -151,12 +167,17 @@ export const SettingsModal = ({
 }) => {
   const { t } = useTranslation();
 
-  const { login } = useRari();
+  const { login, logout } = useRari();
 
   const onSwitchWallet = () => {
     onClose();
     setTimeout(() => login(false), 100);
   };
+
+  const handleDisconnectClick = () => {
+    onClose()
+    logout()
+  }
 
   const onClaimRGT = () => {
     onClose();
@@ -218,6 +239,21 @@ export const SettingsModal = ({
             mb={4}
           >
             {t("Switch Wallet")}
+          </Button>
+
+          <Button
+            bg="whatsapp.500"
+            width="100%"
+            height="45px"
+            fontSize="xl"
+            borderRadius="7px"
+            fontWeight="bold"
+            onClick={handleDisconnectClick}
+            _hover={{}}
+            _active={{}}
+            mb={4}
+          >
+            {t("Disconnect")}
           </Button>
 
           <LanguageSelect />

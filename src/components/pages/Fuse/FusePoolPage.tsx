@@ -50,7 +50,6 @@ const FusePoolPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"

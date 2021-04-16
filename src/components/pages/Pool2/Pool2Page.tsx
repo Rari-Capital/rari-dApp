@@ -14,7 +14,6 @@ import { smallUsdFormatter } from "../../../utils/bigUtils";
 import { ClaimRGTModal } from "../../shared/ClaimRGTModal";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
@@ -30,7 +29,6 @@ const Pool2Page = () => {
 
   return (
     <>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"

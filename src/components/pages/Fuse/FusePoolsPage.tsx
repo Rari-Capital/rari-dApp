@@ -8,7 +8,6 @@ import { smallUsdFormatter } from "../../../utils/bigUtils";
 
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
@@ -64,7 +63,6 @@ const FusePoolsPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"
