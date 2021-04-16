@@ -59,7 +59,6 @@ import { useTranslation } from "react-i18next";
 import { PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
-import ForceAuthModal from "../shared/ForceAuthModal";
 
 import { GlowingButton } from "../shared/GlowingButton";
 
@@ -174,7 +173,6 @@ const PoolPortalContent = () => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
 

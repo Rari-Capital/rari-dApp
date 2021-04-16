@@ -258,7 +258,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const isMobile = useIsMobile();
   useEffect(() => {
     if (!isMobile) {
-      login();
+      // login();
     }
   }, [login, isMobile]);
 

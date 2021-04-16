@@ -2,7 +2,6 @@ import React from "react";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import {
   Heading,
@@ -99,7 +98,6 @@ const TranchePage = () => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"

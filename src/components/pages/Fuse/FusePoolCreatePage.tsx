@@ -16,7 +16,6 @@ import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
@@ -42,7 +41,6 @@ const FusePoolCreatePage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"
