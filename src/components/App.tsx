@@ -79,6 +79,14 @@ const Pool2Page = loadable(
   }
 );
 
+const StatsPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Stats"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
+
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -120,6 +128,8 @@ const App = React.memo(() => {
       <Route path="/tranches" element={<TranchesPage />} />
 
       <Route path="/pool2" element={<Pool2Page />} />
+
+      <Route path="/stats" element={<StatsPage />} />
 
       <Route path="/fuse" element={<FusePoolsPage />} />
       <Route path="/fuse/new-pool" element={<FusePoolCreatePage />} />
