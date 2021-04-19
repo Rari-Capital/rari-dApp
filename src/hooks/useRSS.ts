@@ -4,7 +4,15 @@ export const useAssetRSS = (address: string) => {
   const { data } = useQuery(
     address + " rss",
     () => {
-      return fetch("/api/rss?address=" + address)
+      return fetch(
+        // Since running the vercel functions requires a Vercel account and is super slow,
+        // just fetch this data from the live site in development:
+        (process.env.NODE_ENV === "development"
+          ? "https://app.rari.capital"
+          : "") +
+          "/api/rss?address=" +
+          address
+      )
         .then((res) => res.json())
         .catch((e) => {
           console.log("Could not fetch RSS!");
@@ -74,7 +82,15 @@ export const usePoolRSS = (poolId: string | number) => {
   const { data } = useQuery(
     poolId + " rss",
     () => {
-      return fetch("/api/rss?poolID=" + poolId)
+      return fetch(
+        // Since running the vercel functions requires a Vercel account and is super slow,
+        // just fetch this data from the live site in development:
+        (process.env.NODE_ENV === "development"
+          ? "https://app.rari.capital"
+          : "") +
+          "/api/rss?poolID=" +
+          poolId
+      )
         .then((res) => res.json())
         .catch((e) => {
           console.log("Could not fetch RSS!");

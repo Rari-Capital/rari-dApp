@@ -47,9 +47,15 @@ export const useTokenData = (address: string) => {
       if (address !== ETH_TOKEN_DATA.address) {
         try {
           data = {
-            ...(await fetch("/api/tokenData?address=" + address).then((res) =>
-              res.json()
-            )),
+            ...(await fetch(
+              // Since running the vercel functions requires a Vercel account and is super slow,
+              // just fetch this data from the live site in development:
+              (process.env.NODE_ENV === "development"
+                ? "https://app.rari.capital"
+                : "") +
+                "/api/tokenData?address=" +
+                address
+            ).then((res) => res.json())),
             address: address,
           };
         } catch (e) {
