@@ -10,7 +10,11 @@ import {
   Td,
   TableCaption,
 } from '@chakra-ui/react';
-import { usePoolBalance } from 'hooks/usePoolBalance';
+
+// Todo (sharad) - complete these hooks
+import { usePoolBalance, usePoolBalances } from 'hooks/usePoolBalance';
+import { usePoolAPYs } from 'hooks/usePoolAPY';
+import { usePoolInfo, usePoolInfoFromContext, usePoolInfos } from 'hooks/usePoolInfo';
 
 const mockData = [
   {
@@ -40,6 +44,11 @@ const mockData = [
 ]
 
 const Earn = () => {
+  const poolInfos = usePoolInfos()
+  const poolAPYs = usePoolAPYs()
+
+  console.log({poolInfos, poolAPYs})
+
   return (
     <>
       <Table variant="simple">
@@ -55,7 +64,7 @@ const Earn = () => {
         <Tbody>
           {mockData.map(p => {
             return (
-              <Tr>
+              <Tr key={p.poolName}>
                 <Td>{p.poolName}</Td>
                 <Td>{p.apy}</Td>
                 <Td>{p.deposits}</Td>

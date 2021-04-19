@@ -37,3 +37,21 @@ export const usePoolBalance = (pool: Pool) => {
 
   return { balanceData, isPoolBalanceLoading };
 };
+
+// Todo (sharad) - finish
+export const usePoolBalances = () => {
+  const { address, rari } = useRari();
+  const pools = Object.values(Pool)
+
+  const promises =
+    pools.map(async pool => {
+      const poolBalance = await fetchPoolBalance({ pool, rari, address })
+      return poolBalance
+    })
+
+  return Promise.all(promises)
+    .then(res => {
+      console.log('poolbalances', { res })
+      return res
+    })
+}
