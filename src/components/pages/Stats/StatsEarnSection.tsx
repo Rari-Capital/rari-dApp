@@ -10,45 +10,64 @@ import {
   Td,
   TableCaption,
 } from '@chakra-ui/react';
+import { usePoolBalance } from 'hooks/usePoolBalance';
 
-export default () => {
+const mockData = [
+  {
+    poolName: 'Stable',
+    poolAddress: "0x1234",
+    apy: "40%",
+    deposits: 700300,
+    interestEarned: 41300,
+    growth: 5.9
+  },
+  {
+    poolName: 'ETH',
+    poolAddress: "0x12345",
+    apy: "20%",
+    deposits: "200",
+    interestEarned: 41300,
+    growth: 5.9
+  },
+  {
+    poolName: 'Yield',
+    poolAddress: "0x123456",
+    apy: "50%",
+    deposits: 10,
+    interestEarned: 41300,
+    growth: 5.9
+  },
+]
+
+const Earn = () => {
   return (
     <>
-      <Heading>Earn Section baby</Heading>
       <Table variant="simple">
-        <TableCaption>Imperial to metric conversion factors</TableCaption>
-        <Thead>
+        <Thead color="white">
           <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
+            <Th color="white">Pool</Th>
+            <Th color="white">APY</Th>
+            <Th color="white">Deposits</Th>
+            <Th color="white">Interest</Th>
+            <Th color="white">Growth</Th>
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>inches</Td>
-            <Td>millimetres (mm)</Td>
-            <Td isNumeric>25.4</Td>
-          </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td isNumeric>30.48</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
+          {mockData.map(p => {
+            return (
+              <Tr>
+                <Td>{p.poolName}</Td>
+                <Td>{p.apy}</Td>
+                <Td>{p.deposits}</Td>
+                <Td>{p.interestEarned}%</Td>
+                <Td>{p.growth}%</Td>
+              </Tr>
+            )
+          })}
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
-          </Tr>
-        </Tfoot>
       </Table>
     </>
   );
 };
+
+export default Earn
