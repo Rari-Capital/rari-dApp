@@ -29,7 +29,7 @@ import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { CTokenIcon } from "./FusePoolsPage";
 import { createComptroller } from "../../../utils/createComptroller";
-import { useQueryCache, useQuery } from "react-query";
+import { useQueryClient, useQuery } from "react-query";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
@@ -231,7 +231,7 @@ const PoolConfiguration = ({
 
   const { fuse, address } = useRari();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const toast = useToast();
 
   const data = useExtraPoolInfo(comptrollerAddress);
@@ -248,7 +248,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-ChangeWhitelistStatus");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -271,7 +271,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-AddToWhitelist");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -293,7 +293,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-RemoveFromWhitelist");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -317,7 +317,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-RenounceOwnership");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -362,7 +362,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-UpdateCloseFactor");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -387,7 +387,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-UpdateLiquidationIncentive");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }

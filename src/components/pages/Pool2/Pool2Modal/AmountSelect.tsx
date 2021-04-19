@@ -16,7 +16,7 @@ import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
-import { useQuery, useQueryCache } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -51,7 +51,7 @@ enum UserAction {
 const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
   const toast = useToast();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
@@ -145,7 +145,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
         });
       }
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
       await new Promise((resolve) => setTimeout(resolve, 2000));

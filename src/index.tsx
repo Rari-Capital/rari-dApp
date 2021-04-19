@@ -10,6 +10,8 @@ import "./index.css";
 // @ts-ignore
 import PWAPrompt from "react-ios-pwa-prompt";
 
+import { QueryClient, QueryClientProvider } from 'react-query'
+
 import { ChakraProvider, theme } from "@chakra-ui/react";
 
 import ErrorPage from "./components/pages/ErrorPage";
@@ -74,12 +76,14 @@ ReactDOM.render(
     />
     <ChakraProvider theme={customTheme}>
       <ErrorBoundary FallbackComponent={ErrorPage}>
-        <BrowserRouter>
-          <RariProvider>
-            <ScrollToTop />
-            <App />
-          </RariProvider>
-        </BrowserRouter>
+        <QueryClientProvider client={new QueryClient()}>
+          <BrowserRouter>
+            <RariProvider>
+              <ScrollToTop />
+              <App />
+            </RariProvider>
+          </BrowserRouter>
+          </QueryClientProvider>
       </ErrorBoundary>
     </ChakraProvider>
   </>,
