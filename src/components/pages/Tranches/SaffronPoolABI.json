@@ -4,6 +4,7 @@
       { "internalType": "address", "name": "_strategy", "type": "address" },
       { "internalType": "address", "name": "_base_asset", "type": "address" },
       { "internalType": "address", "name": "_SFI_address", "type": "address" },
+      { "internalType": "uint256", "name": "_SFI_ratio", "type": "uint256" },
       { "internalType": "bool", "name": "epoch_cycle_reset", "type": "bool" }
     ],
     "stateMutability": "nonpayable",
@@ -640,6 +641,13 @@
   {
     "inputs": [{ "internalType": "address", "name": "to", "type": "address" }],
     "name": "set_governance",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "to", "type": "address" }],
+    "name": "set_strategy",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
