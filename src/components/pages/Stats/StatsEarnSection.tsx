@@ -12,9 +12,11 @@ import {
 } from '@chakra-ui/react';
 
 // Todo (sharad) - complete these hooks
-import { usePoolBalance, usePoolBalances } from 'hooks/usePoolBalance';
-import { usePoolAPYs } from 'hooks/usePoolAPY';
-import { usePoolInfo, usePoolInfoFromContext, usePoolInfos } from 'hooks/usePoolInfo';
+import { usePoolBalances } from 'hooks/usePoolBalance';
+import { usePoolsAPY } from 'hooks/usePoolAPY';
+import { usePoolInfos } from 'hooks/usePoolInfo';
+import { Pool } from 'utils/poolUtils';
+import { usePoolInterestEarned } from 'hooks/usePoolInterest';
 
 const mockData = [
   {
@@ -44,10 +46,15 @@ const mockData = [
 ]
 
 const Earn = () => {
-  const poolInfos = usePoolInfos()
-  const poolAPYs = usePoolAPYs()
+  const pools = Object.values(Pool)
 
-  console.log({poolInfos, poolAPYs})
+  const poolInfos = usePoolInfos()
+  const poolAPYs = usePoolsAPY(pools)
+  const poolBalances = usePoolBalances(pools)
+  const poolInterestEarned = usePoolInterestEarned()
+
+  console.log({poolInterestEarned})
+
 
   return (
     <>

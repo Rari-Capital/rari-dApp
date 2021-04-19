@@ -1,8 +1,9 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueries } from "react-query";
 import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
 
 import { fetchRGTAPR, fetchPoolAPY } from "../utils/fetchPoolAPY";
+import { useMemo } from "react";
 
 export const useRGTAPR = () => {
   const { rari } = useRari();
@@ -22,23 +23,23 @@ export const usePoolAPY = (pool: Pool) => {
   return poolAPY;
 };
 
-// Todo (sharad) - finish - refactor iterative pool query
-export const usePoolAPYs = () => {
+// Todo (sharad) - better error handling for dynamic queries
+export const usePoolsAPY = (pools: Pool[]) => {
   const { rari } = useRari();
-  const pools = Object.values(Pool)
 
-  // const data = useQueries(
-  //   pools.map(pool => {
-  //     return {
-  //       queryKey: pool + " apy",
-  //       queryFn: () => fetchPoolAPY(rari, pool),
-  //     }
-  //   })
-  // )
+  // Fetch APYs for all pools
+  const poolAPYs = useQueries(
+    pools.map(pool => {
+      return {
+        queryKey: pool + " apy",
+        queryFn: () => fetchPoolAPY(rari, pool),
+      }
+    })
+  )
 
-  // console.log({data})
-  // return data
-
-  return false
-
+  return useMemo(() => {
+    return !poolAPYs.length || !poolAPYs[0]?.isLoading || poolAPYs[0]?.isError
+    ? []
+    : poolAPYs.map((({data} )=> data))
+  }, [poolAPYs])
 }

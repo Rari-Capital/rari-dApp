@@ -1,4 +1,5 @@
-import { useQuery } from "react-query";
+import { useMemo } from "react";
+import { useQuery, useQueries } from "react-query";
 import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
 import Rari from "../rari-sdk/index";
@@ -38,20 +39,22 @@ export const usePoolBalance = (pool: Pool) => {
   return { balanceData, isPoolBalanceLoading };
 };
 
-// Todo (sharad) - finish
-export const usePoolBalances = () => {
-  const { address, rari } = useRari();
-  const pools = Object.values(Pool)
+export const usePoolBalances = (pools: Pool[]) => {
+  const { rari, address } = useRari();
 
-  const promises =
-    pools.map(async pool => {
-      const poolBalance = await fetchPoolBalance({ pool, rari, address })
-      return poolBalance
+  // Fetch APYs for all pools
+  const poolBalances = useQueries(
+    pools.map(pool => {
+      return {
+        queryKey: address + " " + pool + " balance",
+        queryFn: () => fetchPoolBalance({ pool, rari, address }),
+      }
     })
+  )
 
-  return Promise.all(promises)
-    .then(res => {
-      console.log('poolbalances', { res })
-      return res
-    })
+  return useMemo(() =>
+    !poolBalances.length || poolBalances[0]?.isLoading || poolBalances[0]?.isError
+      ? []
+      : poolBalances.map(({ data }) => data)
+    , [poolBalances])
 }

@@ -89,6 +89,8 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />
 
+        <HeaderLink ml={4} name={t("Stats")} route="/stats" />
+
         {/* <HeaderLink
             ml={4}
             name={t("Forums")}
