@@ -58,42 +58,42 @@ const StatsPage = () => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? '100%' : '1000px'}
+        minH="100vh"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
 
-        <RowOrColumn
+        <Column
           width="100%"
-          isRow={!isMobile}
-          mainAxisAlignment="flex-start"
+          mainAxisAlignment="space-around"
           crossAxisAlignment="flex-start"
+          height="100%"
+          flexGrow={1}
         >
           <Column
-            width={isMobile ? '100%' : '75%'}
+            width="100%"
             mainAxisAlignment="center"
             crossAxisAlignment="flex-start"
             mr={4}
+            height="100%"
           >
-            <Heading size="lg">{t('Stats')}</Heading>
             <Heading size="md">
-              {t('Net Worth')}: ${nw}
+              {t('Net Balance')}: ${nw}
             </Heading>
-            <DashboardBox width={isMobile ? '100%' : '100%'}>
-              <SubNav
-                isMobile={isMobile}
-                subNav={subNav}
-                setSubNav={setSubNav}
-              />
-            </DashboardBox>
+            <SubNav
+              isMobile={isMobile}
+              subNav={subNav}
+              setSubNav={setSubNav}
+            />
             {subNav === StatsSubNav.TOTAL && <StatsTotalSection />}
             {subNav === StatsSubNav.FUSE && <StatsFuseSection />}
             {subNav === StatsSubNav.POOL2 && <StatsPool2Section />}
             {subNav === StatsSubNav.EARN && <StatsEarnSection />}
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Column>
-        </RowOrColumn>
+          <CopyrightSpacer forceShow />
+        </Column>
       </Column>
-      <CopyrightSpacer forceShow />
     </>
   );
 };
