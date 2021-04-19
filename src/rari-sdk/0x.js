@@ -11,7 +11,7 @@ export const get0xSwapOrders = function (
   return new Promise(async function (resolve, reject) {
     try {
       var decoded = (await axios.get(
-        "https://api.0x.org/swap/v0/quote?affiliateAddress=0x10dB6Bce3F2AE1589ec91A872213DAE59697967a&sellToken=" +
+        "https://api.0x.org/swap/v0/quote?affiliateAddress=0x10dB6Bce3F2AE1589ec91A872213DAE59697967a&excludedSources=mStable&sellToken=" +
           inputTokenAddress +
           "&buyToken=" +
           outputTokenAddress +
