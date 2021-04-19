@@ -85,7 +85,6 @@ const SubNavItem = ({
       mr={7}
       color={active ? 'green' : 'white'}
       _hover={{
-        // background: 'pink',
         color: !active && 'pink.500',
         cursor: 'pointer',
       }}

@@ -21,3 +21,24 @@ export const usePoolAPY = (pool: Pool) => {
 
   return poolAPY;
 };
+
+// Todo (sharad) - finish - refactor iterative pool query
+export const usePoolAPYs = () => {
+  const { rari } = useRari();
+  const pools = Object.values(Pool)
+
+  // const data = useQueries(
+  //   pools.map(pool => {
+  //     return {
+  //       queryKey: pool + " apy",
+  //       queryFn: () => fetchPoolAPY(rari, pool),
+  //     }
+  //   })
+  // )
+
+  // console.log({data})
+  // return data
+
+  return false
+
+}
