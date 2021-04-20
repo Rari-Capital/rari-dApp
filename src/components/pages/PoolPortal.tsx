@@ -603,7 +603,7 @@ const APYStats = () => {
 
   const { rari } = useRari();
 
-  const { data: apys, isLoading: areAPYsLoading } = useQuery(
+  const { data: apys, isLoading: areAPYsLoading, isError, error } = useQuery(
     pool + " monthly and weekly apys",
     async () => {
       const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
@@ -655,7 +655,16 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
+            {t("This Month")}:
+            <b>
+              {
+                isError
+                  ? "🚫"
+                  : areAPYsLoading
+                    ? "?"
+                    : apys!.month
+              } %
+            </b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
@@ -673,7 +682,16 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
+            {t("This Week")}:
+            <b>
+              {
+                isError
+                  ? "🚫"
+                  : areAPYsLoading
+                    ? "?"
+                    : apys!.week
+              } %
+              </b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
