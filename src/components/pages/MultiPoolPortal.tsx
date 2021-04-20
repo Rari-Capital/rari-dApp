@@ -54,7 +54,7 @@ import {
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
-import { usePoolBalance } from "../../hooks/usePoolBalance";
+import { usePoolBalance, useTotalPoolsBalance } from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { useTVLFetchers } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
@@ -210,27 +210,9 @@ const GovernanceStats = () => {
 const FundStats = () => {
   const { t } = useTranslation();
 
-  const { rari, address, isAuthed } = useRari();
+  const { isAuthed } = useRari();
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
-    address + " allPoolBalance",
-    async () => {
-      const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
-        rari.pools.stable.balances.balanceOf(address),
-        rari.pools.yield.balances.balanceOf(address),
-        rari.pools.ethereum.balances.balanceOf(address),
-        rari.getEthUsdPriceBN(),
-      ]);
-
-      const ethBal = ethBalInETH.mul(
-        ethPriceBN.div(rari.web3.utils.toBN(1e18))
-      );
-
-      return parseFloat(
-        rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
-      );
-    }
-  );
+  const { isLoading: isBalanceLoading, data: balanceData } = useTotalPoolsBalance()
 
   const { getNumberTVL } = useTVLFetchers();
 
