@@ -233,6 +233,7 @@ const FundStats = () => {
 
   const { getNumberTVL } = useTVLFetchers();
 
+  // If loading, stop here
   if (isBalanceLoading) {
     return (
       <Center
@@ -376,7 +377,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const { balanceData, isPoolBalanceLoading } = usePoolBalance(pool);
+  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(pool);
 
   const poolAPY = usePoolAPY(pool);
 
@@ -425,7 +426,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text mt={4} mb={5} fontSize="md" textAlign="center">
-            {isPoolBalanceLoading ? "$?" : balanceData!.formattedBalance}
+            {isPoolBalanceLoading ? "$?" : balanceData?.formattedBalance}
           </Text>
         </SimpleTooltip>
 
@@ -503,6 +504,13 @@ const InterestEarned = () => {
       rari.getEthUsdPriceBN(),
     ]);
 
+    // console.log(
+    //   rari.web3.utils.fromWei(stableInterest), 
+    //   rari.web3.utils.fromWei(yieldInterest), 
+    //   rari.web3.utils.fromWei(ethInterestInETH), 
+    //   rari.web3.utils.fromWei(ethPriceBN), 
+    //   )
+
     const ethInterest = ethInterestInETH.mul(
       ethPriceBN.div(rari.web3.utils.toBN(1e18))
     );
@@ -517,7 +525,7 @@ const InterestEarned = () => {
     };
   });
 
-  const { balanceData: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
+  const { data: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
 
   const isSufferingDivergenceLoss = (() => {
     if (interestEarned && yieldPoolBalance) {

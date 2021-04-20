@@ -29,14 +29,14 @@ export const fetchPoolBalance = async ({
 export const usePoolBalance = (pool: Pool) => {
   const { address, rari } = useRari();
 
-  const { data: balanceData, isLoading: isPoolBalanceLoading } = useQuery(
+  const { data, isLoading, error } = useQuery(
     address + " " + pool + " balance",
     async () => {
       return fetchPoolBalance({ pool, rari, address });
     }
   );
 
-  return { balanceData, isPoolBalanceLoading };
+  return { data, isLoading, error };
 };
 
 export const usePoolBalances = (pools: Pool[]) => {
@@ -53,8 +53,11 @@ export const usePoolBalances = (pools: Pool[]) => {
   )
 
   return useMemo(() =>
-    !poolBalances.length || poolBalances[0]?.isLoading || poolBalances[0]?.isError
+    !poolBalances.length
       ? []
-      : poolBalances.map(({ data }) => data)
+      : poolBalances.map(
+        ({ isLoading, error, data }) =>
+          ({ isLoading, error, data })
+      )
     , [poolBalances])
 }
