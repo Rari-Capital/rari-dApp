@@ -53,8 +53,7 @@ const Earn = () => {
   const poolBalances = usePoolBalances(pools)
   const poolInterestEarned = usePoolInterestEarned()
 
-  console.log({poolInterestEarned})
-
+  console.log({poolAPYs, poolBalances, poolInterestEarned})
 
   return (
     <>
