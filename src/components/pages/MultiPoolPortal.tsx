@@ -368,7 +368,7 @@ const PoolCards = () => {
 const PoolDetailCard = ({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
+  const { rari, isAuthed } = useRari();
 
   const { poolType, poolName, poolLogo } = usePoolInfo(pool);
 
@@ -383,6 +383,21 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
   const poolAPY = usePoolAPY(pool);
 
   const noSlippageCurrencies = useNoSlippageCurrencies(pool);
+
+  if (isPoolBalanceLoading) {
+    return (
+      <Center
+        height={{
+          md: isAuthed ? "235px" : "110px",
+          base: isAuthed ? "330px" : "215px",
+        }}
+      >
+        <Spinner />
+      </Center>
+    );
+  } 
+
+  const formattedBalance = stringUsdFormatter(rari.web3.utils.fromWei(balanceData!));
 
   // const rgtAPR = useRGTAPR();
 
@@ -427,7 +442,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text mt={4} mb={5} fontSize="md" textAlign="center">
-            {isPoolBalanceLoading ? "$?" : balanceData?.formattedBalance}
+            {isPoolBalanceLoading ? "$?" : formattedBalance}
           </Text>
         </SimpleTooltip>
 
@@ -499,7 +514,7 @@ const InterestEarned = () => {
     if (interestEarned && yieldPoolBalance) {
       if (
         interestEarned.yieldPoolInterestEarned.isZero() &&
-        new BigNumber(yieldPoolBalance.bigBalance.toString()).div(1e18).gt(20)
+        new BigNumber(yieldPoolBalance.toString()).div(1e18).gt(20)
       ) {
         return true;
       } else {

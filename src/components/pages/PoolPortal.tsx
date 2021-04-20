@@ -100,7 +100,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = () => {
-  const { isAuthed } = useRari();
+  const { isAuthed, rari } = useRari();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -157,7 +157,7 @@ const PoolPortalContent = () => {
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
-  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(poolType);
+  const { data: poolBalance, isLoading: isPoolBalanceLoading } = usePoolBalance(poolType);
 
   const {
     isOpen: isDepositModalOpen,
@@ -168,8 +168,9 @@ const PoolPortalContent = () => {
   // If loading, stop here 
   if (isPoolBalanceLoading) return <FullPageSpinner />
 
-  const { formattedBalance: myBalance, bigBalance } = balanceData!;
-  const hasNotDeposited = bigBalance.isZero();
+  const myBalance = poolBalance!
+  const hasNotDeposited = myBalance.isZero();
+  const formattedBalance = stringUsdFormatter(rari.web3.utils.fromWei(myBalance));
 
   return (
     <>
@@ -249,7 +250,7 @@ const PoolPortalContent = () => {
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
-                  balance={myBalance}
+                  balance={formattedBalance}
                 />
               </Box>
             </DashboardBox>
@@ -358,7 +359,6 @@ const PoolPortalContent = () => {
 const UserStatsAndChart = ({
   size,
   balance,
-
   hasNotDeposited,
 }: {
   size: number;
