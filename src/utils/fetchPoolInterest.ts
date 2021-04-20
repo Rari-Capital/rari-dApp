@@ -27,11 +27,13 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
   );
 
   return {
-    formattedEarnings: stringUsdFormatter(
+    totalFormattedEarnings: stringUsdFormatter(
       rari.web3.utils.fromWei(
         stableInterest.add(yieldInterest).add(ethInterest)
       )
     ),
     yieldPoolInterestEarned: yieldInterest,
+    stablePoolInterestEarned: stableInterest,
+    ethPoolInterestEarned: ethInterest,
   };
 }
