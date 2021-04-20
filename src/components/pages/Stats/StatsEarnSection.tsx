@@ -49,11 +49,11 @@ const Earn = () => {
   const pools = Object.values(Pool)
 
   const poolInfos = usePoolInfos()
-  const poolAPYs = usePoolsAPY(pools)
+  const poolAPYs = usePoolsAPY(poolInfos)
   const poolBalances = usePoolBalances(pools)
   const poolInterestEarned = usePoolInterestEarned()
 
-  console.log({poolAPYs, poolBalances, poolInterestEarned})
+  console.log({poolInfos, poolAPYs, poolBalances, poolInterestEarned})
 
   return (
     <>

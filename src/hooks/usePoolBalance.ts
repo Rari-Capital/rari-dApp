@@ -5,6 +5,7 @@ import { useRari } from "../context/RariContext";
 import Rari from "../rari-sdk/index";
 import { BN } from "../utils/bigUtils";
 import { getSDKPool } from "../utils/poolUtils";
+import { PoolInterface } from "constants/pools";
 
 export const fetchPoolBalance = async ({
   pool,
@@ -32,12 +33,12 @@ export const usePoolBalance = (pool: Pool) => {
   return { data, isLoading, error };
 };
 
-export const usePoolBalances = (pools: Pool[]) => {
+export const usePoolBalances = (pools: PoolInterface[]) => {
   const { rari, address } = useRari();
 
   // Fetch APYs for all pools
   const poolBalances = useQueries(
-    pools.map(pool => {
+    pools.map(({ type: pool } : { type: Pool }) => {
       return {
         queryKey: address + " " + pool + " balance",
         queryFn: () => fetchPoolBalance({ pool, rari, address }),
@@ -78,6 +79,6 @@ export const useTotalPoolsBalance = () => {
     }
   );
 
-  return { isLoading, data, error}
+  return { isLoading, data, error }
 
 }

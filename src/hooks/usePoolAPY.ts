@@ -4,6 +4,7 @@ import { useRari } from "../context/RariContext";
 
 import { fetchRGTAPR, fetchPoolAPY } from "../utils/fetchPoolAPY";
 import { useMemo } from "react";
+import { PoolInterface } from "constants/pools";
 
 export const useRGTAPR = () => {
   const { rari } = useRari();
@@ -24,14 +25,14 @@ export const usePoolAPY = (pool: Pool) => {
 };
 
 // Fetch APYs for all pools
-export const usePoolsAPY = (pools: Pool[]) => {
+export const usePoolsAPY = (pools: PoolInterface[]) => {
   const { rari } = useRari();
 
   const poolAPYs = useQueries(
-    pools.map(pool => {
+    pools.map(({type: poolType} : { type : Pool}) => {
       return {
-        queryKey: pool + " apy",
-        queryFn: () => fetchPoolAPY(rari, pool),
+        queryKey: poolType + " apy",
+        queryFn: () => fetchPoolAPY(rari, poolType),
       }
     })
   )
