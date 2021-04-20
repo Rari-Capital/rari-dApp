@@ -63,6 +63,7 @@ import BigNumber from "bignumber.js";
 import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
 import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
+import { usePoolInterestEarned } from "hooks/usePoolInterest";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -489,41 +490,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 };
 
 const InterestEarned = () => {
-  const { rari, address } = useRari();
 
-  const { data: interestEarned } = useQuery("interestEarned", async () => {
-    const [
-      stableInterest,
-      yieldInterest,
-      ethInterestInETH,
-      ethPriceBN,
-    ] = await Promise.all([
-      rari.pools.stable.balances.interestAccruedBy(address),
-      rari.pools.yield.balances.interestAccruedBy(address),
-      rari.pools.ethereum.balances.interestAccruedBy(address),
-      rari.getEthUsdPriceBN(),
-    ]);
-
-    // console.log(
-    //   rari.web3.utils.fromWei(stableInterest), 
-    //   rari.web3.utils.fromWei(yieldInterest), 
-    //   rari.web3.utils.fromWei(ethInterestInETH), 
-    //   rari.web3.utils.fromWei(ethPriceBN), 
-    //   )
-
-    const ethInterest = ethInterestInETH.mul(
-      ethPriceBN.div(rari.web3.utils.toBN(1e18))
-    );
-
-    return {
-      formattedEarnings: stringUsdFormatter(
-        rari.web3.utils.fromWei(
-          stableInterest.add(yieldInterest).add(ethInterest)
-        )
-      ),
-      yieldPoolInterestEarned: yieldInterest,
-    };
-  });
+  const interestEarned = usePoolInterestEarned();
 
   const { data: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
 
@@ -545,7 +513,7 @@ const InterestEarned = () => {
   return (
     <Column mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading fontSize="3xl">
-        {interestEarned?.formattedEarnings ?? "$?"}
+        {interestEarned?.totalFormattedEarnings ?? "$?"}
       </Heading>
 
       {isSufferingDivergenceLoss ? (
