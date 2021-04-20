@@ -74,6 +74,7 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
+import { formatBalanceBN } from "utils/format";
 
 import { useAuthedCallback } from '../../hooks/useAuthedCallback'
 
@@ -174,7 +175,7 @@ const PoolPortalContent = () => {
 
   const myBalance = poolBalance!
   const hasNotDeposited = myBalance.isZero();
-  const formattedBalance = stringUsdFormatter(rari.web3.utils.fromWei(myBalance));
+  const formattedBalance = formatBalanceBN(rari, myBalance, poolType === Pool.ETH)
 
   return (
     <>

@@ -16,13 +16,6 @@ export const fetchPoolBalance = async ({
   address: string;
 }): Promise<BN> => {
   const balance = await getSDKPool({ rari, pool }).balances.balanceOf(address);
-
-  // let formattedBalance = stringUsdFormatter(rari.web3.utils.fromWei(balance));
-
-  // if (pool === Pool.ETH) {
-  //   formattedBalance = formattedBalance.replace("$", "") + " ETH";
-  // }
-
   return balance;
 };
 

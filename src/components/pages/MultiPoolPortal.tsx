@@ -63,6 +63,7 @@ import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
 import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
 import { usePoolInterestEarned } from "hooks/usePoolInterest";
+import { formatBalanceBN } from "utils/format";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 const MultiPoolPortal = React.memo(() => {
@@ -380,7 +381,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     );
   } 
 
-  const formattedBalance = stringUsdFormatter(rari.web3.utils.fromWei(balanceData!));
+  const myBalance = balanceData!
+  const formattedBalance = formatBalanceBN(rari, myBalance, pool === Pool.ETH)
 
   // const rgtAPR = useRGTAPR();
 
