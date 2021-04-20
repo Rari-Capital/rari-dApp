@@ -7,6 +7,12 @@ import { BN } from "../utils/bigUtils";
 import { getSDKPool } from "../utils/poolUtils";
 import { PoolInterface } from "constants/pools";
 
+interface UseQueryResponse {
+  data: any,
+  isLoading: boolean,
+  error: any
+}
+
 export const fetchPoolBalance = async ({
   pool,
   rari,
@@ -20,7 +26,7 @@ export const fetchPoolBalance = async ({
   return balance;
 };
 
-export const usePoolBalance = (pool: Pool) => {
+export const usePoolBalance = (pool: Pool): UseQueryResponse => {
   const { address, rari } = useRari();
 
   const { data, isLoading, error } = useQuery(
@@ -33,12 +39,12 @@ export const usePoolBalance = (pool: Pool) => {
   return { data, isLoading, error };
 };
 
-export const usePoolBalances = (pools: PoolInterface[]) => {
+export const usePoolBalances = (pools: PoolInterface[]): UseQueryResponse[] => {
   const { rari, address } = useRari();
 
   // Fetch APYs for all pools
   const poolBalances = useQueries(
-    pools.map(({ type: pool } : { type: Pool }) => {
+    pools.map(({ type: pool }) => {
       return {
         queryKey: address + " " + pool + " balance",
         queryFn: () => fetchPoolBalance({ pool, rari, address }),
@@ -56,7 +62,7 @@ export const usePoolBalances = (pools: PoolInterface[]) => {
     , [poolBalances])
 }
 
-export const useTotalPoolsBalance = () => {
+export const useTotalPoolsBalance = () : UseQueryResponse => {
   const { rari, address, } = useRari();
 
   const { isLoading, data, error } = useQuery(

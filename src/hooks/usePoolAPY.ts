@@ -29,7 +29,7 @@ export const usePoolsAPY = (pools: PoolInterface[]) => {
   const { rari } = useRari();
 
   const poolAPYs = useQueries(
-    pools.map(({type: poolType} : { type : Pool}) => {
+    pools.map(({ type: poolType }) => {
       return {
         queryKey: poolType + " apy",
         queryFn: () => fetchPoolAPY(rari, poolType),

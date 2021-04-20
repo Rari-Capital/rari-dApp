@@ -1,22 +1,15 @@
 import React from 'react';
 import {
-  Heading,
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
 } from '@chakra-ui/react';
 
 // Todo (sharad) - complete these hooks
-import { usePoolBalances } from 'hooks/usePoolBalance';
-import { usePoolsAPY } from 'hooks/usePoolAPY';
-import { usePoolInfos } from 'hooks/usePoolInfo';
-import { Pool } from 'utils/poolUtils';
-import { usePoolInterestEarned } from 'hooks/usePoolInterest';
+import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
 
 const mockData = [
   {
@@ -46,14 +39,9 @@ const mockData = [
 ]
 
 const Earn = () => {
-  const pools = Object.values(Pool)
 
-  const poolInfos = usePoolInfos()
-  const poolAPYs = usePoolsAPY(poolInfos)
-  const poolBalances = usePoolBalances(pools)
-  const poolInterestEarned = usePoolInterestEarned()
-
-  console.log({poolInfos, poolAPYs, poolBalances, poolInterestEarned})
+  const aggregatePoolInfos = useAggregatePoolInfos()
+  console.log({ aggregatePoolInfos })
 
   return (
     <>
@@ -68,14 +56,14 @@ const Earn = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {mockData.map(p => {
+          {aggregatePoolInfos.map(p => {
             return (
-              <Tr key={p.poolName}>
-                <Td>{p.poolName}</Td>
-                <Td>{p.apy}</Td>
-                <Td>{p.deposits}</Td>
-                <Td>{p.interestEarned}%</Td>
-                <Td>{p.growth}%</Td>
+              <Tr key={p.poolInfo.tile}>
+                <Td>{p.poolInfo.title}</Td>
+                <Td>{p.poolAPY}%</Td>
+                <Td>{p.formattedBalance ?? '?'}</Td>
+                <Td>{p.poolInterestEarned}%</Td>
+                <Td>{p.poolGrowth}%</Td>
               </Tr>
             )
           })}
