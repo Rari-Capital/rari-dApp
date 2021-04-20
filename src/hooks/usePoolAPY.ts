@@ -23,11 +23,10 @@ export const usePoolAPY = (pool: Pool) => {
   return poolAPY;
 };
 
-// Todo (sharad) - better error handling for dynamic queries
+// Fetch APYs for all pools
 export const usePoolsAPY = (pools: Pool[]) => {
   const { rari } = useRari();
 
-  // Fetch APYs for all pools
   const poolAPYs = useQueries(
     pools.map(pool => {
       return {

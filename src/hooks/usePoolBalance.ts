@@ -3,7 +3,7 @@ import { useQuery, useQueries } from "react-query";
 import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
 import Rari from "../rari-sdk/index";
-import { stringUsdFormatter } from "../utils/bigUtils";
+import { BN, stringUsdFormatter } from "../utils/bigUtils";
 import { getSDKPool } from "../utils/poolUtils";
 
 export const fetchPoolBalance = async ({
@@ -14,7 +14,7 @@ export const fetchPoolBalance = async ({
   pool: Pool;
   rari: Rari;
   address: string;
-}) => {
+}) : Promise<BN> => {
   const balance = await getSDKPool({ rari, pool }).balances.balanceOf(address);
 
   let formattedBalance = stringUsdFormatter(rari.web3.utils.fromWei(balance));
@@ -23,7 +23,7 @@ export const fetchPoolBalance = async ({
     formattedBalance = formattedBalance.replace("$", "") + " ETH";
   }
 
-  return { formattedBalance, bigBalance: balance };
+  return balance;
 };
 
 export const usePoolBalance = (pool: Pool) => {
