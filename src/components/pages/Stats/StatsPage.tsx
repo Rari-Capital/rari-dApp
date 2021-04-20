@@ -65,7 +65,7 @@ const StatsPage = () => {
 
         <Column
           width="100%"
-          mainAxisAlignment="space-around"
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
           height="100%"
           flexGrow={1}
@@ -74,8 +74,8 @@ const StatsPage = () => {
             width="100%"
             mainAxisAlignment="center"
             crossAxisAlignment="flex-start"
-            mr={4}
             height="100%"
+            mt="auto"
           >
             <Heading size="md">
               {t('Net Balance')}: ${nw}
