@@ -158,7 +158,7 @@ const PoolPortalContent = () => {
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
-  const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
+  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(poolType);
 
   const {
     isOpen: isDepositModalOpen,
@@ -604,7 +604,7 @@ const APYStats = () => {
 
   const { rari } = useRari();
 
-  const { data: apys, isLoading: areAPYsLoading, isError, error } = useQuery(
+  const { data: apys, isLoading: areAPYsLoading, isError } = useQuery(
     pool + " monthly and weekly apys",
     async () => {
       const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
@@ -803,7 +803,14 @@ const MonthlyReturns = () => {
         [yieldPoolName]: parseFloat(yieldPoolAPY!),
       }
       : null;
-  }, [ethPoolAPY, stablePoolAPY, yieldPoolAPY])
+  }, [
+      ethPoolAPY, 
+      stablePoolAPY, 
+      yieldPoolAPY,
+      ethPoolName,
+      stablePoolName,
+      yieldPoolName
+    ])
 
 
   const sortedEntries = returns

@@ -38,8 +38,11 @@ export const usePoolsAPY = (pools: Pool[]) => {
   )
 
   return useMemo(() => {
-    return !poolAPYs.length || !poolAPYs[0]?.isLoading || poolAPYs[0]?.isError
-    ? []
-    : poolAPYs.map((({data} )=> data))
+    return !poolAPYs.length
+      ? []
+      : poolAPYs.map(
+        ({ isLoading, error, data }) =>
+          ({ isLoading, error, data })
+      )
   }, [poolAPYs])
 }
