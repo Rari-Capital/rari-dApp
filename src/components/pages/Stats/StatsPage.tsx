@@ -10,27 +10,30 @@ import {
   Image,
   useDisclosure,
   Box,
+  Spinner
 } from '@chakra-ui/react';
+
 import { MdSwapHoriz } from 'react-icons/md';
 import CopyrightSpacer from 'components/shared/CopyrightSpacer';
 import DashboardBox from 'components/shared/DashboardBox';
 import { Header } from 'components/shared/Header';
 import SubNav from './StatsSubNav';
 
-import StatsTotalSection from './StatsTotalSection';
+import StatsTotalSection from './Totals/StatsTotalSection';
 import StatsFuseSection from './StatsFuseSection';
 import StatsPool2Section from './StatsPool2Section';
 import StatsEarnSection from './StatsEarnSection';
 import StatsTranchesSection from './StatsTranchesSection';
-
 
 // Context
 import { useRari } from 'context/RariContext';
 
 // Hooks
 import { useTranslation } from 'react-i18next';
-import { useQuery } from 'react-query';
 import { useIsSmallScreen } from 'hooks/useIsSmallScreen';
+import { usePoolBalance, useTotalPoolsBalance } from "hooks/usePoolBalance";
+import { shortUsdFormatter } from 'utils/bigUtils';
+
 
 export enum StatsSubNav {
   TOTAL = 'TOTAL',
@@ -46,7 +49,8 @@ const StatsPage = () => {
   const isMobile = useIsSmallScreen();
   const [subNav, setSubNav] = useState(StatsSubNav.TOTAL);
 
-  const nw = 0;
+  const { isLoading: isBalanceLoading, data: balanceData } = useTotalPoolsBalance()
+
 
   return (
     <>
@@ -76,7 +80,7 @@ const StatsPage = () => {
             mt="auto"
           >
             <Heading size="md">
-              {t('Net Balance')}: ${nw}
+              {t('Net Balance')}: {isBalanceLoading ? <Spinner /> : shortUsdFormatter(balanceData)}
             </Heading>
             <SubNav
               isMobile={isMobile}
