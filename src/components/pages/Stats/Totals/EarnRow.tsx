@@ -29,9 +29,9 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
             </Td>
             {/* Todo (sharad) - implement RGT earned in poolInfo */}
             <Td>
-                <Text mb={3}>0 RGT</Text>
-                <Text mb={3}>0 RGT</Text>
-                <Text mb={3}>0 RGT</Text>
+                <Text mb={3}>N/A</Text>
+                <Text mb={3}>N/A</Text>
+                <Text mb={3}>N/A</Text>
             </Td>
             <Td>
                 {poolsInfo.map(({ formattedPoolInterestEarned }) => (
