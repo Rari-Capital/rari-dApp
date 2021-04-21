@@ -9,41 +9,11 @@ import {
   Spinner
 } from '@chakra-ui/react';
 
-// Todo (sharad) - complete these hooks
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
-
-const mockData = [
-  {
-    poolName: 'Stable',
-    poolAddress: "0x1234",
-    apy: "40%",
-    deposits: 700300,
-    interestEarned: 41300,
-    growth: 5.9
-  },
-  {
-    poolName: 'ETH',
-    poolAddress: "0x12345",
-    apy: "20%",
-    deposits: "200",
-    interestEarned: 41300,
-    growth: 5.9
-  },
-  {
-    poolName: 'Yield',
-    poolAddress: "0x123456",
-    apy: "50%",
-    deposits: 10,
-    interestEarned: 41300,
-    growth: 5.9
-  },
-]
 
 const Earn = () => {
 
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
-
-  console.log({ aggregatePoolsInfo, totals })
 
   return (
     <>
@@ -82,7 +52,5 @@ const Earn = () => {
     </>
   );
 };
-
-const LoadableTableData = ({ value }: {value: string}) => {}
 
 export default Earn
