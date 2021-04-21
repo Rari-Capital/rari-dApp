@@ -7,11 +7,11 @@ import { fetchPoolInterestEarned } from "../utils/fetchPoolInterest";
 export const usePoolInterestEarned = () => {
     const { rari, address } = useRari();
 
-    const { data: poolInterestEarned} = useQuery(
+    const { data } = useQuery(
         address + " interest earned",
         () => {
             return fetchPoolInterestEarned(rari, address);
         });
 
-    return poolInterestEarned;
+    return data;
 };
