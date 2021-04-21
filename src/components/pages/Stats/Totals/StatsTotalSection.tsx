@@ -37,17 +37,25 @@ export default () => {
           <Tr>
             <Td>Fuse</Td>
             <Td>
-              <Text>6</Text>
-              <Text>5</Text>
-              <Text>2</Text>
+              <Text mb={2}>6</Text>
+              <Text mb={2}>5</Text>
+              <Text mb={2}>2</Text>
             </Td>
             <Td>
-              <Text>Deposits</Text>
-              <Text>Deposits</Text>
-              <Text>Deposits</Text>
+              <Text mb={2}>N/A</Text>
+              <Text mb={2}>N/A</Text>
+              <Text mb={2}>N/A</Text>
             </Td>
-            <Td>RGT Earned</Td>
-            <Td>Interest Earned</Td>
+            <Td>
+              <Text mb={2}>N/A</Text>
+              <Text mb={2}>N/A</Text>
+              <Text mb={2}>N/A</Text>
+            </Td>
+            <Td>
+              <Text mb={2}>N/A</Text>
+              <Text mb={2}>N/A</Text>
+              <Text mb={2}>N/A</Text>
+            </Td>
           </Tr>
           {/* earn section */}
           <EarnRow poolsInfo={aggregatePoolsInfo} />
@@ -55,13 +63,13 @@ export default () => {
           <Tr>
             <Td>Pool2</Td>
             <Td>
-              <Text>Pool2</Text>
+              <Text>RGT-ETH</Text>
             </Td>
             <Td>
-              <Text>Deposits</Text>
+              <Text>$34,374.21</Text>
             </Td>
-            <Td>RGT Earned</Td>
-            <Td>Interest Earned</Td>
+            <Td>20.34 RGT</Td>
+            <Td>N/A</Td>
           </Tr>
           {/* {aggregatePoolsInfo?.map(p => {
               if (p?.poolBalance && !p.poolBalance.isZero())return (
@@ -79,7 +87,7 @@ export default () => {
             <Td>Total</Td>
             <Td></Td>
             <Td>{totals?.balance}</Td>
-            <Td>0 RGT</Td>
+            <Td>20.34 RGT</Td>
             <Td>{totals?.interestEarned}</Td>
           </Tr>
         </Tbody>
