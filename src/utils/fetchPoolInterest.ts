@@ -32,6 +32,7 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
         stableInterest.add(yieldInterest).add(ethInterest)
       )
     ),
+    totalEarnings: stableInterest.add(yieldInterest).add(ethInterest),
     yieldPoolInterestEarned: yieldInterest,
     stablePoolInterestEarned: stableInterest,
     ethPoolInterestEarned: ethInterest,

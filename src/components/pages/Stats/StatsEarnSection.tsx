@@ -6,6 +6,7 @@ import {
   Tr,
   Th,
   Td,
+  Spinner
 } from '@chakra-ui/react';
 
 // Todo (sharad) - complete these hooks
@@ -40,8 +41,9 @@ const mockData = [
 
 const Earn = () => {
 
-  const aggregatePoolInfos = useAggregatePoolInfos()
-  console.log({ aggregatePoolInfos })
+  const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
+
+  console.log({ aggregatePoolsInfo, totals })
 
   return (
     <>
@@ -56,21 +58,31 @@ const Earn = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {aggregatePoolInfos.map(p => {
-            return (
-              <Tr key={p.poolInfo.tile}>
+          {aggregatePoolsInfo?.map(p => {
+            if (p?.poolBalance && !p.poolBalance.isZero())return (
+              <Tr key={p.poolInfo.title}>
                 <Td>{p.poolInfo.title}</Td>
-                <Td>{p.poolAPY}%</Td>
-                <Td>{p.formattedBalance ?? '?'}</Td>
-                <Td>{p.poolInterestEarned}%</Td>
-                <Td>{p.poolGrowth}%</Td>
+                <Td>{p.poolAPY ?? <Spinner />}%</Td>
+                <Td>{p.formattedPoolBalance ?? <Spinner />}</Td>
+                <Td>{p.formattedPoolInterestEarned ?? <Spinner />}</Td>
+                <Td>{p.formattedPoolGrowth ?? <Spinner />}%</Td>
               </Tr>
             )
           })}
+          {/* Todo (sharad) - implement totals for apy and growth */}
+          <Tr>
+            <Td>Total</Td>
+            <Td>0%</Td>
+            <Td>{totals?.balance }</Td>
+            <Td>{totals?.interestEarned }</Td>
+            <Td>0%</Td>
+          </Tr>
         </Tbody>
       </Table>
     </>
   );
 };
+
+const LoadableTableData = ({ value }: {value: string}) => {}
 
 export default Earn

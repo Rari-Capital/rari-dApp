@@ -7,10 +7,10 @@ import { formatBalanceBN } from "utils/format";
 // Constants
 import { pools, PoolInterface } from "constants/pools";
 import { usePoolsAPY } from "./usePoolAPY";
-import { usePoolBalances } from "./usePoolBalance";
+import { usePoolBalances, useTotalPoolsBalance } from "./usePoolBalance";
 import { usePoolInterestEarned } from "./usePoolInterest";
 import { useRari } from "context/RariContext";
-import { BN } from "utils/bigUtils";
+import { BN, shortUsdFormatter } from "utils/bigUtils";
 
 export const usePoolInfo = (poolType: Pool) => {
   const { t } = useTranslation();
@@ -50,28 +50,81 @@ export const usePoolInfos = (): PoolInterface[] => {
 
 export const useAggregatePoolInfos = () => {
   const { rari } = useRari()
+  const { web3: { utils: { toBN } } } = rari
   const poolInfos = usePoolInfos()
   const poolAPYs = usePoolsAPY(poolInfos)
   const poolBalances = usePoolBalances(poolInfos)
-  const poolInterestEarned = usePoolInterestEarned()
+  const poolsInterestEarned = usePoolInterestEarned()
 
-  return useMemo(
+  // Totals
+  const { data: totalPoolsBalance } = useTotalPoolsBalance()
+
+  const aggregatePoolsInfo = useMemo(
     () =>
-      poolInfos.reduce((memo: any[], poolInfo: PoolInterface, index: number) => {
+      poolInfos.map((poolInfo: PoolInterface, index: number) => {
+
         const poolAPY = poolAPYs[index]?.data ?? null
-        const poolBalanceBN : BN = poolBalances[index]?.data ?? rari.web3.utils.toBN(0)
-        const formattedBalance = formatBalanceBN(rari, poolBalanceBN, poolInfo.type === Pool.ETH)
-        const poolInterestEarned = "25"
-        const poolGrowth = "6.9"
-        // const fbalance = formatBalanceBN(rari, poolBalance, poolInfo.type === Pool.ETH) ?? null
-        memo.push({poolInfo, poolAPY, poolBalanceBN, formattedBalance, poolInterestEarned, poolGrowth})
-        return memo
-      }, []),
+        const poolBalance = poolBalances[index]?.data ?? null
+
+        const formattedPoolBalance: string | null = formatBalanceBN(rari, poolBalance, poolInfo.type === Pool.ETH)
+
+        // Right now we handle interest earned a little differently
+        let poolInterestEarned
+        switch (poolInfo.type) {
+          case Pool.STABLE:
+            poolInterestEarned = poolsInterestEarned?.stablePoolInterestEarned ?? null
+            break;
+          case Pool.YIELD:
+            poolInterestEarned = poolsInterestEarned?.yieldPoolInterestEarned ?? null
+            break;
+          default:
+            poolInterestEarned = poolsInterestEarned?.ethPoolInterestEarned ?? null
+            break;
+        }
+
+        const formattedPoolInterestEarned = formatBalanceBN(rari, poolInterestEarned, poolInfo.type === Pool.ETH)
+
+        // Growth for a pool = % increase between balance & (balance - interest earned)
+        const poolGrowth: BN | null =
+          poolBalance && poolInterestEarned
+            ? !poolBalance.isZero()
+              ? toBN(1).sub((poolBalance.sub(poolInterestEarned)).div(poolBalance))
+              : null
+            : null
+
+        const formattedPoolGrowth = poolGrowth?.toNumber() ?? null
+
+        return {
+          poolInfo,
+          poolAPY,
+          poolBalance,
+          formattedPoolBalance,
+          poolInterestEarned,
+          formattedPoolInterestEarned,
+          poolGrowth,
+          formattedPoolGrowth
+        }
+      }),
     [
       rari,
       poolInfos,
       poolAPYs,
       poolBalances,
-      poolInterestEarned
+      poolsInterestEarned,
+      totalPoolsBalance,
+      toBN
     ])
+
+  const totals = useMemo(() => ({
+    balance: shortUsdFormatter(totalPoolsBalance) ?? null,
+    interestEarned: formatBalanceBN(rari, poolsInterestEarned?.totalEarnings ?? null),
+    apy: "50%",
+    growth: "50%"
+  })
+    , [totalPoolsBalance, poolsInterestEarned, aggregatePoolsInfo])
+
+  // todo - implement totals
+  // const totals = {}
+
+  return ({ totals, aggregatePoolsInfo })
 }
