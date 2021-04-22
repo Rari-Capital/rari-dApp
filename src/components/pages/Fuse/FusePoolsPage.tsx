@@ -2,9 +2,9 @@ import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row, useIsMobile } from "buttered-chakra";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useRari } from "../../../context/RariContext";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "../../../utils/bigUtils";
+import { useRari } from "context/RariContext";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { smallUsdFormatter } from "utils/bigUtils";
 
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
@@ -15,14 +15,14 @@ import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar, { useFilter } from "./FuseTabBar";
 import { useQuery } from "react-query";
-import { useTokenData } from "../../../hooks/useTokenData";
+import { useTokenData } from "hooks/useTokenData";
 import Fuse from "fuse.js";
 import {
   filterOnlyObjectProperties,
   filterPoolName,
-} from "../../../utils/fetchFusePoolData";
-import { letterScore, usePoolRSS } from "../../../hooks/useRSS";
-import { SimpleTooltip } from "../../shared/SimpleTooltip";
+} from "utils/fetchFusePoolData";
+import { letterScore, usePoolRSS } from "hooks/useRSS";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 export interface FusePool {
   name: string;

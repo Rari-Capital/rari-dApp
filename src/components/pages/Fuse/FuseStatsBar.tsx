@@ -2,52 +2,26 @@ import { Heading } from "@chakra-ui/react";
 import { RowOrColumn, Column, Center } from "buttered-chakra";
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "react-query";
-import { useRari } from "../../../context/RariContext";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "../../../utils/bigUtils";
-import { fetchFuseTVL } from "../../../utils/fetchTVL";
-import CaptionedStat from "../../shared/CaptionedStat";
-import DashboardBox from "../../shared/DashboardBox";
+import { useRari } from "context/RariContext";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { smallUsdFormatter } from "utils/bigUtils";
+import CaptionedStat from "components/shared/CaptionedStat";
+import DashboardBox from "components/shared/DashboardBox";
 
-import { APYWithRefreshMovingStat } from "../../shared/MovingStat";
+import { useFuseTVL, fetchFuseNumberTVL } from "hooks/fuse/useFuseTVL";
+import { useFuseTotalBorrowAndSupply } from "hooks/fuse/useFuseTotalBorrowAndSupply";
+
+import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 
 const FuseStatsBar = () => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
 
-  const { address, isAuthed, fuse, rari } = useRari();
+  const { isAuthed, fuse, rari } = useRari();
 
-  const fetchFuseNumberTVL = async () => {
-    const tvlETH = await fetchFuseTVL(fuse);
-
-    const ethPrice: number = rari.web3.utils.fromWei(
-      await rari.getEthUsdPriceBN()
-    ) as any;
-
-    return (parseInt(tvlETH.toString()) / 1e18) * ethPrice;
-  };
-
-  const { data: fuseTVL } = useQuery("fuseTVL", fetchFuseNumberTVL);
-
-  const { data: totalBorrowAndSupply } = useQuery(
-    address + " totalBorrowAndSupply",
-    async () => {
-      const [{ 0: supplyETH, 1: borrowETH }, ethPrice] = await Promise.all([
-        fuse.contracts.FusePoolLens.methods
-          .getUserSummary(address)
-          .call({ gas: 1e18 }),
-
-        rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()) as any,
-      ]);
-
-      return {
-        totalSuppliedUSD: (supplyETH / 1e18) * ethPrice,
-        totalBorrowedUSD: (borrowETH / 1e18) * ethPrice,
-      };
-    }
-  );
+  const { data: fuseTVL } = useFuseTVL()
+  const { data: totalBorrowAndSupply } = useFuseTotalBorrowAndSupply()
 
   return (
     <RowOrColumn
@@ -121,7 +95,7 @@ const FuseStatsBar = () => {
             fetchInterval={40000}
             loadingPlaceholder="$?"
             apyInterval={100}
-            fetch={fetchFuseNumberTVL}
+            fetch={() => fetchFuseNumberTVL(rari, fuse)}
             queryKey={"fuseTVL"}
             apy={0.15}
             statSize="3xl"
