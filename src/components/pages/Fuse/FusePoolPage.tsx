@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -10,34 +11,40 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
-import LogRocket from "logrocket";
-import React, { useEffect } from "react";
+
+// Hooks
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
-import { useRari } from "../../../context/RariContext";
-import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-import { useTokenData } from "../../../hooks/useTokenData";
+import { useRari } from "context/RariContext";
+import { useBorrowLimit } from "hooks/useBorrowLimit";
+import { useFusePoolData } from "hooks/useFusePoolData";
+import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
+import { useTokenData } from "hooks/useTokenData";
+
+// Utils
 import {
   convertMantissaToAPR,
   convertMantissaToAPY,
-} from "../../../utils/apyUtils";
-import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
-import { createComptroller } from "../../../utils/createComptroller";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-import { SimpleTooltip } from "../../shared/SimpleTooltip";
-import { SwitchCSS } from "../../shared/SwitchCSS";
+} from "utils/apyUtils";
+import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
+import { createComptroller } from "utils/createComptroller";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
+
+// Components
+import CopyrightSpacer from "components/shared/CopyrightSpacer";
+import DashboardBox from "components/shared/DashboardBox";
+import ForceAuthModal from "components/shared/ForceAuthModal";
+import { Header } from "components/shared/Header";
+import { ModalDivider } from "components/shared/Modal";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import { SwitchCSS } from "components/shared/SwitchCSS";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
+
+import LogRocket from "logrocket";
 
 const FusePoolPage = React.memo(() => {
   const { isAuthed } = useRari();
