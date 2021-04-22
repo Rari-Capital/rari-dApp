@@ -40,7 +40,7 @@
     "history": "^5.0.0",
     "i18next": "^19.7.0",
     "istanbul-lib-coverage": "^3.0.0",
-    "logrocket": "^1.0.14",
+    "logrocket": "^1.0.15",
     "mathjs": "^9.0.0",
     "node-fetch": "^2.6.1",
     "node-vibrant": "^3.1.6",
