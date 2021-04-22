@@ -30,8 +30,6 @@ export const useFuseTotalBorrowAndSupply = () => {
         async () => fetchFuseTotalBorrowAndSupply({ rari, fuse, address })
     );
 
-    console.log({data})
-
     return { data, isLoading, isError }
 
 }
