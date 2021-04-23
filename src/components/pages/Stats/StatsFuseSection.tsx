@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import {
     Avatar,
@@ -21,12 +21,13 @@ import { useBorrowLimits } from 'hooks/useBorrowLimit';
 import { useAssetsMapWithTokenData } from 'hooks/useAssetsMap';
 
 import {
-    formatAbbreviatedCurrency
+    formatAbbreviatedCurrency,
 } from "utils/format"
 import { USDPricedFuseAsset, USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
 import { TokenData, useTokensData } from 'hooks/useTokenData';
 import { AssetHashWithTokenData, TokensDataHash } from 'utils/tokenUtils';
 import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/apyUtils';
+import { smallUsdFormatter } from 'utils/bigUtils';
 
 export enum AssetContainerType {
     SUPPLY,
@@ -44,6 +45,21 @@ const Earn = () => {
     const assetsArray: USDPricedFuseAsset[][] | null = fusePoolsData?.map((pool) => pool?.assets) ?? null
     const maxBorrows = useBorrowLimits(assetsArray)
     const { tokensDataMap }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray)
+
+
+    const { totalBorrowBalanceUSD } = useMemo(() => {
+        return fusePoolsData?.reduce((a, b) => {
+            return { totalBorrowBalanceUSD: a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD }
+        })
+    }, [fusePoolsData])
+
+    const { totalSupplyBalanceUSD } = useMemo(() => {
+        return fusePoolsData?.reduce((a, b) => {
+            return { totalSupplyBalanceUSD: a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD }
+        })
+    }, [fusePoolsData])
+
+    console.log({ filteredPools, fusePoolsData, totalBorrowBalanceUSD })
 
     return (
         <>
@@ -99,23 +115,23 @@ const Earn = () => {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
                                             (asset.supplyBalanceUSD > 0 || asset.borrowBalanceUSD > 0) &&
                                             <AssetContainer
-                                            asset={asset}
-                                            type={AssetContainerType.RATES}
-                                            tokenData={tokensDataMap[asset.underlyingToken]}
-                                        />
-                                    )}
+                                                asset={asset}
+                                                type={AssetContainerType.RATES}
+                                                tokenData={tokensDataMap[asset.underlyingToken]}
+                                            />
+                                        )}
                                 </Td>
                             </Tr>
                         )
                     }
                     )}
-                    {/* <Tr>
+                    <Tr>
                         <Td>Total</Td>
-                        <Td>0%</Td>
-                        <Td>{totals?.balance}</Td>
-                        <Td>{totals?.interestEarned}</Td>
-                        <Td>0%</Td>
-                    </Tr> */}
+                        <Td></Td>
+                        <Td justifyContent="flex-end">{smallUsdFormatter(totalSupplyBalanceUSD)}</Td>
+                        <Td justifyContent="flex-end">{smallUsdFormatter(totalBorrowBalanceUSD)}</Td>
+                        <Td></Td>
+                    </Tr>
                 </Tbody>
             </Table>
         </>
@@ -126,15 +142,13 @@ const Earn = () => {
 
 const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: { asset: USDPricedFuseAsset, type: string, tokenData: TokenData }) => {
 
-    console.log({ tokenData })
-
     const supplyAmount = ((asset.supplyBalance / (10 ** asset.underlyingDecimals))).toFixed(2) + ` ${asset.underlyingSymbol}`
     const borrowAmount = (asset.borrowBalance / (10 ** asset.underlyingDecimals)).toFixed(2) + ` ${asset.underlyingSymbol}`
     const supplyBalanceUSD = formatAbbreviatedCurrency(asset.supplyBalanceUSD)
     const borrowBalanceUSD = formatAbbreviatedCurrency(asset.borrowBalanceUSD)
 
-    const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(3)
-    const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(3)
+    const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2)
+    const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(2)
 
     return (
 
@@ -149,55 +163,47 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
         >
             <Column
                 mainAxisAlignment="center"
-                crossAxisAlignment= "center"
+                crossAxisAlignment="center"
                 // background="lime"
                 mr={2}
             >
-                {
-                    type !== AssetContainerType.RATES && (
-                        <Avatar
-                        bg="#FFF"
-                        // boxSize="37px"
-                        name={tokenData?.symbol ?? "Loading..."}
-                        src={
-                            tokenData?.logoURL ??
-                            "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-                        }
-                    />
-                    )
-                }
-                { 
-                    type === AssetContainerType.RATES && (
-                        <Text p={1} fontSize="lg" >
-                        {supplyRate}%
-                        </Text>
-                    )
-                }
+                <Avatar
+                    bg="#FFF"
+                    // boxSize="37px"
+                    name={tokenData?.symbol ?? "Loading..."}
+                    src={
+                        tokenData?.logoURL ??
+                        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                    }
+                />
             </Column>
-            { 
-                    type === AssetContainerType.RATES && (
-                        <Text p={1} fontSize="2xl" > / </Text>
-                    )
-                }
             <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="flex-end"
             >
-                { type !== AssetContainerType.RATES && (
-                <>
-                    <Text p={1} fontSize="lg" >
-                        {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
-                    </Text>
-                    <Text p={1} fontSize="sm">
-                        ${type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
-                    </Text>
-                </>
-                )}
-                                { 
-                    type === AssetContainerType.RATES && (
+                {type !== AssetContainerType.RATES && (
+                    <>
                         <Text p={1} fontSize="lg" >
-                        {borrowRate}%
+                            {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
                         </Text>
+                        <Text p={1} fontSize="sm">
+                            ${type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
+                        </Text>
+                    </>
+                )}
+                {
+                    type === AssetContainerType.RATES && (
+                        <Row>
+                            <Text p={1} fontSize="lg" >
+                                {supplyRate}%
+                            </Text>
+                            <Text p={1} fontSize="2xl" >
+                                /
+                            </Text>
+                            <Text p={1} fontSize="lg" >
+                                {borrowRate}%
+                            </Text>
+                        </Row>
                     )
                 }
             </Column>

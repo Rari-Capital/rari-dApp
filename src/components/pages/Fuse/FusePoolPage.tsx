@@ -55,6 +55,8 @@ const FusePoolPage = React.memo(() => {
 
   const data = useFusePoolData(poolId);
 
+  console.log({ data })
+
 
   return (
     <>
@@ -163,7 +165,7 @@ const CollateralRatioBar = ({
         </SimpleTooltip>
 
         <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
-        {ratio.toFixed(1)}%
+          {ratio.toFixed(1)}%
         </Text>
 
         <SimpleTooltip
