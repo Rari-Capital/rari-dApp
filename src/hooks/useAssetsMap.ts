@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 // Utils
-import { createAssetsMap, AssetHash, createTokensDataMap } from 'utils/tokenUtils'
+import { createAssetsMap, AssetHash, createTokensDataMap, TokensDataHash } from 'utils/tokenUtils'
 import { USDPricedFuseAsset, USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
 
 // Hooks
@@ -17,7 +17,7 @@ export const useAssetsMapWithTokenData = (assetsArray: USDPricedFuseAsset[][] | 
     const tokensAddresses: string[] = assetsMap ? Object.keys(assetsMap) : []
     const tokensData = useTokensData(tokensAddresses)
 
-    const tokensDataMap = useMemo(() => tokensData ? createTokensDataMap(tokensData) : null, [tokensData])
+    const tokensDataMap : TokensDataHash = useMemo(() => tokensData ? createTokensDataMap(tokensData) : {}, [tokensData])
 
     const assetsMapWithTokenData: USDPricedFuseAssetWithTokenData[] = useMemo(() => {
         return tokensData?.reduce((arr, tokenData, index) => {
