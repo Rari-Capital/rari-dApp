@@ -27,7 +27,7 @@ import { USDPricedFuseAsset, USDPricedFuseAssetWithTokenData } from "utils/fetch
 import { TokenData, useTokensData } from 'hooks/useTokenData';
 import { AssetHashWithTokenData, TokensDataHash } from 'utils/tokenUtils';
 import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/apyUtils';
-import { smallUsdFormatter } from 'utils/bigUtils';
+import { shortUsdFormatter, smallUsdFormatter } from 'utils/bigUtils';
 
 export enum AssetContainerType {
     SUPPLY,
@@ -48,8 +48,6 @@ const Fuse = () => {
     const maxBorrows = useBorrowLimits(assetsArray)
     const { tokensDataMap }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray)
 
-
-    console.log({filteredPools, fusePoolsData})
 
     const { totalBorrowBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
@@ -148,8 +146,8 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
 
     const supplyAmount = ((asset.supplyBalance / (10 ** asset.underlyingDecimals))).toFixed(2) + ` ${asset.underlyingSymbol}`
     const borrowAmount = (asset.borrowBalance / (10 ** asset.underlyingDecimals)).toFixed(2) + ` ${asset.underlyingSymbol}`
-    const supplyBalanceUSD = formatAbbreviatedCurrency(asset.supplyBalanceUSD)
-    const borrowBalanceUSD = formatAbbreviatedCurrency(asset.borrowBalanceUSD)
+    const supplyBalanceUSD = shortUsdFormatter(asset.supplyBalanceUSD)
+    const borrowBalanceUSD = shortUsdFormatter(asset.borrowBalanceUSD)
 
     const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2)
     const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(2)
@@ -191,7 +189,7 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                             {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
                         </Text>
                         <Text p={1} fontSize="sm">
-                            ${type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
+                            {type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
                         </Text>
                     </>
                 )}

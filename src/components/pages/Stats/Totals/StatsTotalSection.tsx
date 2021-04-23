@@ -11,13 +11,23 @@ import {
   Text
 } from '@chakra-ui/react';
 
-//   Hooks
+// Hooks
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
+import { useFusePools } from 'hooks/fuse/useFusePools';
+import { useFusePoolsData } from 'hooks/useFusePoolData';
+
+// Components
 import EarnRow from './EarnRow';
 import FuseRow from './FuseRow'
 
 export default () => {
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
+
+  const { filteredPools: filteredFusePools } = useFusePools('my-pools')
+  const poolIds: number[] = filteredFusePools?.map(({ id }) => id) ?? []
+  const fusePoolsData: any[] | null = useFusePoolsData(poolIds)
+
+  console.log({fusePoolsData, filteredFusePools})
 
   return (
     <>
@@ -34,7 +44,7 @@ export default () => {
 
         <Tbody>
           {/* Fuse section */}
-      <FuseRow />
+          <FuseRow filteredPoolsData={filteredFusePools} fusePoolsData={fusePoolsData} />
           {/* earn section */}
           <EarnRow poolsInfo={aggregatePoolsInfo} />
           {/* Pool2 Section */}
