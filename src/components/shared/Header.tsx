@@ -136,7 +136,7 @@ export const PoolText = () => {
   const isOnThisRoute = location.pathname.includes("pools");
 
   return (
-    <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{t("Pools")}</Text>
+    <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{t("Pools")}</Text>
   );
 };
 

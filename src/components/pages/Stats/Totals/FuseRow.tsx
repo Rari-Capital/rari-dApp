@@ -12,31 +12,34 @@ import {
     Text
 } from '@chakra-ui/react';
 
-const FuseRow = () => {
+import { shortUsdFormatter, smallStringUsdFormatter } from 'utils/bigUtils';
+
+const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
+
 
     return (
         <Tr>
             <Td>Fuse</Td>
             <Td>
-                {/* {poolsInfo.map(({ poolInfo }) => (
-                    <Text mb={3} key={poolInfo.title}>{poolInfo.title}</Text>
-                ))} */}
+                {filteredPoolsData?.map(({ id }) => (
+                    <Text mb={3} key={id}>{id}</Text>
+                ))}
             </Td>
             <Td >
-                {/* {poolsInfo.map(({ formattedPoolBalance }, i) => (
-                    <Text mb={3} key={i}> {formattedPoolBalance}</Text>
-                ))} */}
+                {filteredPoolsData?.map(({ id, suppliedUSD }) => (
+                    <Text mb={3} key={id}>{smallStringUsdFormatter(suppliedUSD)}</Text>
+                ))}
             </Td>
             {/* Todo (sharad) - implement RGT earned in poolInfo */}
             <Td>
-                <Text mb={3}>N/A</Text>
-                <Text mb={3}>N/A</Text>
-                <Text mb={3}>N/A</Text>
+                {filteredPoolsData?.map(({ id }) => (
+                    <Text mb={3} key={id}>N/A</Text>
+                ))}
             </Td>
             <Td>
-                {/* {poolsInfo.map(({ formattedPoolInterestEarned }, i) => (
-                    <Text mb={3} key={i}>{formattedPoolInterestEarned}</Text>
-                ))} */}
+                {filteredPoolsData?.map(({ id }) => (
+                    <Text mb={3} key={id}>N/A</Text>
+                ))}
             </Td>
         </Tr>
     )
