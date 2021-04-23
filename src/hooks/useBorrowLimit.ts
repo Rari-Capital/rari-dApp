@@ -47,7 +47,5 @@ export const useBorrowLimits = (
 
   }, [assetsArray, options?.ignoreIsEnabledCheckFor])
 
-  console.log({maxBorrows})
-
   return maxBorrows;
 };

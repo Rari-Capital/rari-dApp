@@ -3,6 +3,7 @@ import Rari from "../rari-sdk/index";
 
 // @ts-ignore
 import Filter from "bad-words";
+import { TokenData } from "hooks/useTokenData";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -26,6 +27,7 @@ export interface FuseAsset {
   underlyingToken: string;
   underlyingDecimals: number;
   underlyingPrice: number;
+  underlyingBalance: number;
 
   collateralFactor: number;
   reserveFactor: number;
@@ -48,6 +50,10 @@ export interface USDPricedFuseAsset extends FuseAsset {
   totalBorrowUSD: number;
 
   liquidityUSD: number;
+}
+
+export interface USDPricedFuseAssetWithTokenData extends USDPricedFuseAsset {
+  tokenData: TokenData;
 }
 
 
