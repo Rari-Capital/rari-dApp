@@ -14,7 +14,7 @@ import {
 //   Hooks
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
 import EarnRow from './EarnRow';
-
+import FuseRow from './FuseRow'
 
 export default () => {
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
@@ -34,29 +34,7 @@ export default () => {
 
         <Tbody>
           {/* Fuse section */}
-          <Tr>
-            <Td>Fuse</Td>
-            <Td>
-              <Text mb={2}>6</Text>
-              <Text mb={2}>5</Text>
-              <Text mb={2}>2</Text>
-            </Td>
-            <Td>
-              <Text mb={2}>N/A</Text>
-              <Text mb={2}>N/A</Text>
-              <Text mb={2}>N/A</Text>
-            </Td>
-            <Td>
-              <Text mb={2}>N/A</Text>
-              <Text mb={2}>N/A</Text>
-              <Text mb={2}>N/A</Text>
-            </Td>
-            <Td>
-              <Text mb={2}>N/A</Text>
-              <Text mb={2}>N/A</Text>
-              <Text mb={2}>N/A</Text>
-            </Td>
-          </Tr>
+      <FuseRow />
           {/* earn section */}
           <EarnRow poolsInfo={aggregatePoolsInfo} />
           {/* Pool2 Section */}
