@@ -50,6 +50,19 @@ export interface USDPricedFuseAsset extends FuseAsset {
   liquidityUSD: number;
 }
 
+
+export interface FusePoolData {
+  assets: USDPricedFuseAsset[],
+  comptroller: any,
+  name: any,
+  isPrivate: boolean,
+  totalLiquidityUSD: any,
+  totalSuppliedUSD: any,
+  totalBorrowedUSD: any,
+  totalSupplyBalanceUSD: any,
+  totalBorrowBalanceUSD: any
+}
+
 export const filterPoolName = (name: string) => {
   // Manual rename pool 6 until we add func to change pool names.
   if (name === "Tetranode's Pool") {
@@ -68,7 +81,7 @@ export const fetchFusePoolData = async (
   address: string,
   fuse: Fuse,
   rari?: Rari
-) => {
+) : Promise<FusePoolData> => {
   const {
     comptroller,
     name: _unfiliteredName,
@@ -140,3 +153,4 @@ export const fetchFusePoolData = async (
     totalBorrowBalanceUSD,
   };
 };
+

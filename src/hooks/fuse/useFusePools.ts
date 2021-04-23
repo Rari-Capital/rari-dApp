@@ -100,6 +100,7 @@ const fetchPools = async (
     return merged;
 }
 
+// returns impersonal data about fuse pools ( can filter by your supplied/created pools )
 export const useFusePools = (filter: string | null ) => {
 
     const { fuse, rari, address } = useRari();

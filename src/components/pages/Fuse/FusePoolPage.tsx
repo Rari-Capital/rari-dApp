@@ -55,6 +55,8 @@ const FusePoolPage = React.memo(() => {
 
   const data = useFusePoolData(poolId);
 
+  console.log({ data })
+
   return (
     <>
       <ForceAuthModal />
@@ -162,7 +164,7 @@ const CollateralRatioBar = ({
         </SimpleTooltip>
 
         <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
-          0%
+        {ratio.toFixed(1)}%
         </Text>
 
         <SimpleTooltip
@@ -178,10 +180,10 @@ const CollateralRatioBar = ({
                 ratio <= 40
                   ? "whatsapp"
                   : ratio <= 60
-                  ? "yellow"
-                  : ratio <= 80
-                  ? "orange"
-                  : "red"
+                    ? "yellow"
+                    : ratio <= 80
+                      ? "orange"
+                      : "red"
               }
               borderRadius="10px"
               value={ratio}
