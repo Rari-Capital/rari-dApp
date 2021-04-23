@@ -35,11 +35,13 @@ export enum AssetContainerType {
     RATES
 }
 
-const Earn = () => {
+const Fuse = () => {
 
     // Todo - write useFusePoolsData
     const { filteredPools } = useFusePools('my-pools')
+
     const poolIds: number[] = filteredPools?.map(({ id }) => id) ?? []
+
     const fusePoolsData: any[] | null = useFusePoolsData(poolIds)
 
     const assetsArray: USDPricedFuseAsset[][] | null = fusePoolsData?.map((pool) => pool?.assets) ?? null
@@ -47,16 +49,18 @@ const Earn = () => {
     const { tokensDataMap }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray)
 
 
+    console.log({filteredPools, fusePoolsData})
+
     const { totalBorrowBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
             return { totalBorrowBalanceUSD: a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD }
-        })
+        }) ?? { totalBorrowBalanceUSD: null}
     }, [fusePoolsData])
 
     const { totalSupplyBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
             return { totalSupplyBalanceUSD: a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD }
-        })
+        }) ?? { totalSupplyBalanceUSD: null}
     }, [fusePoolsData])
 
     console.log({ filteredPools, fusePoolsData, totalBorrowBalanceUSD })
@@ -169,7 +173,7 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
             >
                 <Avatar
                     bg="#FFF"
-                    // boxSize="37px"
+                    boxSize="30px"
                     name={tokenData?.symbol ?? "Loading..."}
                     src={
                         tokenData?.logoURL ??
@@ -212,4 +216,4 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
     )
 }
 
-export default Earn
+export default Fuse
