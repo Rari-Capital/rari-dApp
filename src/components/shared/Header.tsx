@@ -183,7 +183,7 @@ export const HeaderLink = ({
       whiteSpace="nowrap"
       className={noUnderline ? "no-underline" : ""}
     >
-      <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
   ) : (
     <Link
@@ -194,7 +194,7 @@ export const HeaderLink = ({
       whiteSpace="nowrap"
       className={noUnderline ? "no-underline" : ""}
     >
-      <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
   );
 };
