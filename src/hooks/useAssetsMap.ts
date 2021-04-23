@@ -32,7 +32,5 @@ export const useAssetsMapWithTokenData = (assetsArray: USDPricedFuseAsset[][] | 
         }, [])
     }, [assetsMap, tokensData])
 
-    console.log(({ assetsMapWithTokenData , tokensDataMap }))
-
     return { assetsMapWithTokenData , tokensDataMap }
 }
