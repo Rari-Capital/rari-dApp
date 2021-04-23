@@ -26,6 +26,13 @@ import {
 import { USDPricedFuseAsset, USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
 import { TokenData, useTokensData } from 'hooks/useTokenData';
 import { AssetHashWithTokenData, TokensDataHash } from 'utils/tokenUtils';
+import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/apyUtils';
+
+export enum AssetContainerType {
+    SUPPLY,
+    BORROW,
+    RATES
+}
 
 const Earn = () => {
 
@@ -69,16 +76,35 @@ const Earn = () => {
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
-                                            (asset.supplyBalanceUSD > 0) && <AssetContainer asset={asset} tokenData={tokensDataMap[asset.underlyingToken]} />)
+                                            (asset.supplyBalanceUSD > 0) &&
+                                            <AssetContainer
+                                                asset={asset}
+                                                tokenData={tokensDataMap[asset.underlyingToken]}
+                                            />)
                                     }
                                 </Td>
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
-                                            (asset.borrowBalanceUSD > 0) && <AssetContainer asset={asset} type="borrow" tokenData={tokensDataMap[asset.underlyingToken]} />)
+                                            (asset.borrowBalanceUSD > 0) &&
+                                            <AssetContainer
+                                                asset={asset}
+                                                type={AssetContainerType.BORROW}
+                                                tokenData={tokensDataMap[asset.underlyingToken]}
+                                            />)
                                     }
                                 </Td>
-                                <Td>{0 ?? <Spinner />}%</Td>
+                                <Td>
+                                    {
+                                        fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
+                                            (asset.supplyBalanceUSD > 0 || asset.borrowBalanceUSD > 0) &&
+                                            <AssetContainer
+                                            asset={asset}
+                                            type={AssetContainerType.RATES}
+                                            tokenData={tokensDataMap[asset.underlyingToken]}
+                                        />
+                                    )}
+                                </Td>
                             </Tr>
                         )
                     }
@@ -96,7 +122,9 @@ const Earn = () => {
     );
 };
 
-const AssetContainer = ({ asset, type = "supply", tokenData }: { asset: USDPricedFuseAsset, type: string, tokenData: TokenData }) => {
+
+
+const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: { asset: USDPricedFuseAsset, type: string, tokenData: TokenData }) => {
 
     console.log({ tokenData })
 
@@ -105,43 +133,73 @@ const AssetContainer = ({ asset, type = "supply", tokenData }: { asset: USDPrice
     const supplyBalanceUSD = formatAbbreviatedCurrency(asset.supplyBalanceUSD)
     const borrowBalanceUSD = formatAbbreviatedCurrency(asset.borrowBalanceUSD)
 
+    const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(3)
+    const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(3)
+
     return (
 
         <Row
-            mainAxisAlignment="space-between"
+            mainAxisAlignment={type === AssetContainerType.RATES ? "flex-start" : "space-between"}
             crossAxisAlignment="center"
             background=""
             mb={3}
             p={2}
-            // background="pink"
+        // background="pink"
 
         >
             <Column
                 mainAxisAlignment="center"
-                crossAxisAlignment="center"
+                crossAxisAlignment= "center"
                 // background="lime"
                 mr={2}
             >
-                <Avatar
-                    bg="#FFF"
-                    // boxSize="37px"
-                    name={tokenData?.symbol ?? "Loading..."}
-                    src={
-                        tokenData?.logoURL ??
-                        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-                    }
-                />
+                {
+                    type !== AssetContainerType.RATES && (
+                        <Avatar
+                        bg="#FFF"
+                        // boxSize="37px"
+                        name={tokenData?.symbol ?? "Loading..."}
+                        src={
+                            tokenData?.logoURL ??
+                            "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                        }
+                    />
+                    )
+                }
+                { 
+                    type === AssetContainerType.RATES && (
+                        <Text p={1} fontSize="lg" >
+                        {supplyRate}%
+                        </Text>
+                    )
+                }
             </Column>
+            { 
+                    type === AssetContainerType.RATES && (
+                        <Text p={1} fontSize="2xl" > / </Text>
+                    )
+                }
             <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="flex-end"
             >
-                <Text p={1} fontSize="lg" >
-                    {type === "borrow" ? borrowAmount : supplyAmount}
-                </Text>
-                <Text p={1} fontSize="sm">
-                    ${type === "borrow" ? borrowBalanceUSD : supplyBalanceUSD}
-                </Text>
+                { type !== AssetContainerType.RATES && (
+                <>
+                    <Text p={1} fontSize="lg" >
+                        {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
+                    </Text>
+                    <Text p={1} fontSize="sm">
+                        ${type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
+                    </Text>
+                </>
+                )}
+                                { 
+                    type === AssetContainerType.RATES && (
+                        <Text p={1} fontSize="lg" >
+                        {borrowRate}%
+                        </Text>
+                    )
+                }
             </Column>
         </Row>
 

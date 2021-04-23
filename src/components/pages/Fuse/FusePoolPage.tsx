@@ -333,8 +333,6 @@ const AssetSupplyRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  console.log({tokenData})
-
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
   const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
