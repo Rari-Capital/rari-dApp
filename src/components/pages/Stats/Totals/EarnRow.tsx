@@ -19,12 +19,12 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
             <Td>Earn</Td>
             <Td>
                 {poolsInfo.map(({ poolInfo }) => (
-                    <Text mb={3}>{poolInfo.title}</Text>
+                    <Text mb={3} key={poolInfo.title}>{poolInfo.title}</Text>
                 ))}
             </Td>
             <Td >
-                {poolsInfo.map(({ formattedPoolBalance }) => (
-                    <Text mb={3}>{formattedPoolBalance}</Text>
+                {poolsInfo.map(({ formattedPoolBalance }, i) => (
+                    <Text mb={3} key={i}> {formattedPoolBalance}</Text>
                 ))}
             </Td>
             {/* Todo (sharad) - implement RGT earned in poolInfo */}
@@ -34,8 +34,8 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
                 <Text mb={3}>N/A</Text>
             </Td>
             <Td>
-                {poolsInfo.map(({ formattedPoolInterestEarned }) => (
-                    <Text mb={3}>{formattedPoolInterestEarned}</Text>
+                {poolsInfo.map(({ formattedPoolInterestEarned }, i) => (
+                    <Text mb={3} key={i}>{formattedPoolInterestEarned}</Text>
                 ))}
             </Td>
         </Tr>
