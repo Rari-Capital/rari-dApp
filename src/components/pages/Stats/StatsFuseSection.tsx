@@ -52,13 +52,13 @@ const Fuse = () => {
     const { totalBorrowBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
             return { totalBorrowBalanceUSD: a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD }
-        }) ?? { totalBorrowBalanceUSD: null}
+        }) ?? { totalBorrowBalanceUSD: null }
     }, [fusePoolsData])
 
     const { totalSupplyBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
             return { totalSupplyBalanceUSD: a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD }
-        }) ?? { totalSupplyBalanceUSD: null}
+        }) ?? { totalSupplyBalanceUSD: null }
     }, [fusePoolsData])
 
     console.log({ filteredPools, fusePoolsData, totalBorrowBalanceUSD })
@@ -154,32 +154,47 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
 
     return (
 
-        <Row
-            mainAxisAlignment={type === AssetContainerType.RATES ? "flex-start" : "space-between"}
-            crossAxisAlignment="center"
-            background=""
-            mb={3}
-            p={2}
-        // background="pink"
-
-        >
+        <>
             <Column
                 mainAxisAlignment="center"
-                crossAxisAlignment="center"
+                crossAxisAlignment="flex-end"
                 // background="lime"
-                mr={2}
             >
-                <Avatar
-                    bg="#FFF"
-                    boxSize="30px"
-                    name={tokenData?.symbol ?? "Loading..."}
-                    src={
-                        tokenData?.logoURL ??
-                        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-                    }
-                />
+                <Row
+                    mainAxisAlignment="flex-end"
+                    crossAxisAlignment="center"
+                    mb={2}
+                    
+                >
+                    <Avatar
+                        bg="#FFF"
+                        boxSize="20px"
+                        name={tokenData?.symbol ?? "Loading..."}
+                        src={
+                            tokenData?.logoURL ??
+                            "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                        }
+                    />
+                    {type !== AssetContainerType.RATES && (
+                        <>
+                            <Text p={1} fontSize="lg" >
+                                {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
+                            </Text>
+                        </>
+                    )}
+                </Row>
+                <Row
+                    mainAxisAlignment="flex-end"
+                    crossAxisAlignment="center"
+                >
+                    {type !== AssetContainerType.RATES && (
+                        <Text p={1} fontSize="sm">
+                            {type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
+                        </Text>
+                    )}
+                </Row>
             </Column>
-            <Column
+            {/* <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="flex-end"
             >
@@ -208,9 +223,8 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                         </Row>
                     )
                 }
-            </Column>
-        </Row>
-
+            </Column> */}
+        </>
     )
 }
 

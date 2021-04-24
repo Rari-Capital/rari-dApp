@@ -34,7 +34,7 @@ import {
   TrancheRating,
   TranchePool,
   trancheRatingIndex,
-} from "../TranchesPage";
+} from "hooks/tranches/useSaffronData";
 
 import { useSaffronData } from 'hooks/tranches/useSaffronData'
 
