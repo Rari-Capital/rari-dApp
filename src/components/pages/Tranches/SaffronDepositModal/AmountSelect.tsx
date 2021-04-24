@@ -33,9 +33,10 @@ import { HashLoader } from "react-spinners";
 import {
   TrancheRating,
   TranchePool,
-  useSaffronData,
   trancheRatingIndex,
 } from "../TranchesPage";
+
+import { useSaffronData } from 'hooks/tranches/useSaffronData'
 
 import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
 import { Token } from "rari-tokens-generator";
