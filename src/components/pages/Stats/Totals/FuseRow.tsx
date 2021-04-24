@@ -10,7 +10,6 @@ import { shortUsdFormatter, smallStringUsdFormatter } from 'utils/bigUtils';
 
 const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
 
-
     return (
         <Tr>
             <Td>Fuse</Td>

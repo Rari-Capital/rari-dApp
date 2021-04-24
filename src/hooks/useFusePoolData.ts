@@ -32,9 +32,6 @@ export const useFusePoolsData = (poolIds: number[]) => {
   )
 
   return useMemo(() => {
-
-
-
     // todo - use type FusePoolData
     const ret : any[] = []
 

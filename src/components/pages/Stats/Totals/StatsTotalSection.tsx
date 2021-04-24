@@ -15,19 +15,32 @@ import {
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
 import { useFusePools } from 'hooks/fuse/useFusePools';
 import { useFusePoolsData } from 'hooks/useFusePoolData';
+import { usePool2APR } from 'hooks/pool2/usePool2APR';
+import { usePool2UnclaimedRGT } from 'hooks/pool2/usePool2UnclaimedRGT';
+import { usePool2Balance } from 'hooks/pool2/usePool2Balance';
 
 // Components
 import EarnRow from './EarnRow';
 import FuseRow from './FuseRow'
+import Pool2Row from './Pool2Row'
 
 export default () => {
+  // Earn
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
+  const hasDepositsInEarn = aggregatePoolsInfo?.some((p) => !p?.poolBalance?.isZero())
 
+  // Fuse
   const { filteredPools: filteredFusePools } = useFusePools('my-pools')
   const poolIds: number[] = filteredFusePools?.map(({ id }) => id) ?? []
   const fusePoolsData: any[] | null = useFusePoolsData(poolIds)
 
-  console.log({fusePoolsData, filteredFusePools})
+  // Pool2
+  const apr = usePool2APR()
+  const earned = usePool2UnclaimedRGT()
+  const balance = usePool2Balance()
+  const hasDepositsInPool2 = !!balance?.SLP
+
+  console.log({ aggregatePoolsInfo, hasDepositsInEarn })
 
   return (
     <>
@@ -44,32 +57,11 @@ export default () => {
 
         <Tbody>
           {/* Fuse section */}
-          <FuseRow filteredPoolsData={filteredFusePools} fusePoolsData={fusePoolsData} />
+          {fusePoolsData && <FuseRow fusePoolsData={fusePoolsData} filteredPoolsData={filteredFusePools} />}
           {/* earn section */}
-          <EarnRow poolsInfo={aggregatePoolsInfo} />
+          {hasDepositsInEarn && <EarnRow poolsInfo={aggregatePoolsInfo} />}
           {/* Pool2 Section */}
-          <Tr>
-            <Td>Pool2</Td>
-            <Td>
-              <Text>RGT-ETH</Text>
-            </Td>
-            <Td>
-              <Text>$34,374.21</Text>
-            </Td>
-            <Td>20.34 RGT</Td>
-            <Td>N/A</Td>
-          </Tr>
-          {/* {aggregatePoolsInfo?.map(p => {
-              if (p?.poolBalance && !p.poolBalance.isZero())return (
-                <Tr key={p.poolInfo.title}>
-                  <Td>{p.poolInfo.title}</Td>
-                  <Td>{p.poolAPY ?? <Spinner />}%</Td>
-                  <Td>{p.formattedPoolBalance ?? <Spinner />}</Td>
-                  <Td>{p.formattedPoolInterestEarned ?? <Spinner />}</Td>
-                  <Td>{p.formattedPoolGrowth ?? <Spinner />}%</Td>
-                </Tr>
-              )
-            })} */}
+          {hasDepositsInPool2 && <Pool2Row apr={apr} earned={earned} balance={balance} />}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr>
             <Td>Total</Td>
