@@ -1,14 +1,8 @@
 
 import React from 'react'
 import {
-    Heading,
-    Table,
-    Thead,
-    Tbody,
     Tr,
-    Th,
     Td,
-    Spinner,
     Text
 } from '@chakra-ui/react';
 
