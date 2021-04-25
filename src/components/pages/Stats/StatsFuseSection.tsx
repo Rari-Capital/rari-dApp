@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-
 import {
     Avatar,
     Box,
@@ -13,6 +12,8 @@ import {
     Spinner
 } from '@chakra-ui/react';
 import { Row, Column } from 'buttered-chakra';
+import { motion } from 'framer-motion'
+
 
 // Hooks
 import { useFusePools } from 'hooks/fuse/useFusePools';
@@ -21,7 +22,7 @@ import { useBorrowLimits } from 'hooks/useBorrowLimit';
 import { useAssetsMapWithTokenData } from 'hooks/useAssetsMap';
 
 
-import { USDPricedFuseAsset} from "utils/fetchFusePoolData";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { TokenData, useTokensData } from 'hooks/useTokenData';
 import { TokensDataHash } from 'utils/tokenUtils';
 import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/apyUtils';
@@ -62,7 +63,13 @@ const Fuse = () => {
     const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [totalSupplyBalanceUSD])
 
     return (
-        <>
+        <motion.div
+            key="fuse"
+            style={{ width: '100%' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+        >
             <Table variant="simple">
                 <Thead color="white">
                     <Tr>
@@ -91,6 +98,7 @@ const Fuse = () => {
                                     {ratio?.toFixed(1) ?? <Spinner />}%
                                 </Td>
                                 {/* Deposits By Asset */}
+                                {/* Lend Balance */}
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
@@ -103,6 +111,7 @@ const Fuse = () => {
                                             </Box>
                                         )}
                                 </Td>
+                                {/* Borrow Balance */}
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
@@ -117,7 +126,8 @@ const Fuse = () => {
 
                                         )}
                                 </Td>
-                                
+
+                                {/* Lend Borrow rates */}
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
@@ -135,16 +145,17 @@ const Fuse = () => {
                         )
                     }
                     )}
+                    {/* Totals */}
                     <Tr>
                         <Td><Text fontWeight={hasDeposits && "bold"}>Total</Text></Td>
                         <Td></Td>
                         <Td textAlign="right"><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totalSupplyBalanceUSD)}</Text></Td>
-                        <Td textAlign="right"><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totalBorrowBalanceUSD)}</Text></Td>
+                        <Td textAlign="right"><Text fontWeight={hasDeposits && "bold"}>-{smallUsdFormatter(totalBorrowBalanceUSD)}</Text></Td>
                         <Td></Td>
                     </Tr>
                 </Tbody>
             </Table>
-        </>
+        </motion.div>
     );
 };
 
@@ -152,13 +163,17 @@ const Fuse = () => {
 
 const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: { asset: USDPricedFuseAsset, type: string, tokenData: TokenData }) => {
 
-    const supplyAmount = ((asset.supplyBalance / (10 ** asset.underlyingDecimals))).toFixed(2) + ` ${asset.underlyingSymbol}`
-    const borrowAmount = (asset.borrowBalance / (10 ** asset.underlyingDecimals)).toFixed(2) + ` ${asset.underlyingSymbol}`
+    const supplyAmount = asset.supplyBalance / (10 ** asset.underlyingDecimals)
+    const borrowAmount = asset.borrowBalance / (10 ** asset.underlyingDecimals)
+    const formattedSupplyAmount = supplyAmount.toFixed(2) + ` ${asset.underlyingSymbol}`
+    const formattedBorrowAmount = borrowAmount.toFixed(2) + ` ${asset.underlyingSymbol}`
     const supplyBalanceUSD = shortUsdFormatter(asset.supplyBalanceUSD)
     const borrowBalanceUSD = shortUsdFormatter(asset.borrowBalanceUSD)
 
     const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2)
     const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(2)
+
+    console.log(asset.underlyingSymbol, {supplyAmount, borrowAmount})
 
     return (
 
@@ -173,11 +188,11 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                     mainAxisAlignment="flex-end"
                     crossAxisAlignment="center"
                     width="90%"
-                    // pl={6}
+                // pl={6}
                 >
                     <Avatar
                         bg="#FFF"
-                        boxSize="20px"
+                        boxSize="30px"
                         name={tokenData?.symbol ?? "Loading..."}
                         my="auto"
                         mr="auto"
@@ -190,7 +205,7 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                     {type !== AssetContainerType.RATES && (
                         <>
                             <Text p={1} fontSize="lg" textAlign="right">
-                                {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
+                                {type === AssetContainerType.BORROW ? formattedBorrowAmount : formattedSupplyAmount}
                             </Text>
                         </>
                     )}
@@ -215,11 +230,16 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                 <Row
                     mainAxisAlignment="flex-end"
                     crossAxisAlignment="center"
-                    width="90%"
+                    width="100%"
                 >
                     {type !== AssetContainerType.RATES && (
                         <Text p={1} fontSize="sm" color="grey">
                             {type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
+                        </Text>
+                    )}
+                    {type === AssetContainerType.RATES && (
+                        <Text p={1} fontSize="sm" color="black">
+                            Shhh
                         </Text>
                     )}
                 </Row>

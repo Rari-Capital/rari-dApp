@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion'
 
 // Components
 import {
   Box,
   Heading,
+  Text,
   Spinner
 } from '@chakra-ui/react';
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { Column, Row } from 'buttered-chakra';
 
 import CopyrightSpacer from 'components/shared/CopyrightSpacer';
@@ -49,6 +52,8 @@ const StatsPage = () => {
 
   const netBalance = useMemo(() => netDeposits - netDebt, [netDeposits, netDebt])
 
+  console.log({ netBalance, netDeposits, netDebt })
+
   return (
     <>
       <ForceAuthModal />
@@ -70,14 +75,25 @@ const StatsPage = () => {
           crossAxisAlignment="flex-start"
           height="100%"
           mt={10}
+          p={15}
         >
-          <Row mb={2} mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <SimpleTooltip placement="right" label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}>
-              <Heading size="lg">
-                {t('Net Balance')}:  {smallUsdFormatter(netBalance) ?? smallUsdFormatter(0)}
-              </Heading>
-            </SimpleTooltip>
+          {/* <SimpleTooltip placement="right" label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}> */}
+          {/* </SimpleTooltip> */}
 
+          <Row mb={2} mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <Heading size="lg">
+              {t('Net Balance')}:
+              </Heading>
+            <Heading ml={2} size='lg' >
+              {smallUsdFormatter(netBalance) ?? smallUsdFormatter(0)}
+            </Heading>
+            <SimpleTooltip 
+            label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}
+            placement="right">
+              <Box ml={4} my="auto" _hover={{ color: "gray", cursor: "auto" }}>
+                <QuestionOutlineIcon color="currentColor" />
+              </Box>
+            </SimpleTooltip>
           </Row>
 
           <SubNav
@@ -85,11 +101,13 @@ const StatsPage = () => {
             subNav={subNav}
             setSubNav={setSubNav}
           />
-          {subNav === StatsSubNav.TOTAL && <StatsTotalSection setNetDebt={setNetDebt} setNetDeposits={setNetDeposits} />}
-          {subNav === StatsSubNav.FUSE && <StatsFuseSection />}
-          {subNav === StatsSubNav.POOL2 && <StatsPool2Section />}
-          {subNav === StatsSubNav.EARN && <StatsEarnSection />}
-          {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
+          <Box width="100%">
+            {subNav === StatsSubNav.TOTAL && <StatsTotalSection setNetDebt={setNetDebt} setNetDeposits={setNetDeposits} />}
+            {subNav === StatsSubNav.FUSE && <StatsFuseSection />}
+            {subNav === StatsSubNav.POOL2 && <StatsPool2Section />}
+            {subNav === StatsSubNav.EARN && <StatsEarnSection />}
+            {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
+          </Box>
         </Column>
         <CopyrightSpacer forceShow />
       </Column>
