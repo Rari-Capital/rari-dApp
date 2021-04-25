@@ -10,6 +10,7 @@ import {
     Td,
     Avatar,
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
 
 // Hooks
@@ -31,10 +32,16 @@ const Earn = () => {
     const balanceRGT = balance?.hasDeposited ? balance.rgt!.toFixed(2) : "0.0000"
     const balanceUSD = balance?.hasDeposited ? smallUsdFormatter(balance.balanceUSD) : "$0"
 
-    const hasDeposits = useMemo(() => earned > 0, [earned])
+    const hasDeposits = useMemo(() => earned! > 0, [earned])
 
     return (
-        <>
+        <motion.div
+            key="pool2"
+            style={{ width: '100%' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+        >
             <Table variant="simple">
                 <Thead color="white">
                     <Tr>
@@ -66,7 +73,7 @@ const Earn = () => {
                                                     src="https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png"
                                                 />
                                             </Box>
-                                            <Box ml={3  }>
+                                            <Box ml={3}>
                                                 RGT-ETH
                                             </Box>
                                         </Row>
@@ -103,7 +110,7 @@ const Earn = () => {
                     </>
                 </Tbody>
             </Table>
-        </>
+        </motion.div>
     );
 };
 

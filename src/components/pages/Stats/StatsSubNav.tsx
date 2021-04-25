@@ -65,12 +65,13 @@ const SubNav = ({
             subNav={StatsSubNav.POOL2}
             active={subNav === StatsSubNav.POOL2}
           />
-          <SubNavItem
+          {/* todo  */}
+          {/* <SubNavItem
             title="Tranches"
             setActive={() => setSubNav(StatsSubNav.TRANCHES)}
             subNav={StatsSubNav.TRANCHES}
             active={subNav === StatsSubNav.TRANCHES}
-          />
+          /> */}
         </Row>
       </Column>
     </>
@@ -115,7 +116,7 @@ const SubNavItem = ({
       height="100%"
       color={active ? 'green' : 'white'}
       _hover={{
-        color: !active && 'pink.500',
+        color: !active && 'grey',
         cursor: 'pointer',
       }}
       onClick={setActive}

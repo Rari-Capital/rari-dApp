@@ -8,6 +8,7 @@ import {
   Td,
   Text
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
 
 // Hooks
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
@@ -64,14 +65,22 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   }, [fusePoolsData])
 
   useEffect(() => {
-    setNetDeposits(totalDepositsUSD)
-    setNetDebt(totalDebtUSD)
+    console.log({totalDepositsUSD, totalDebtUSD})
+
+    if (totalDepositsUSD && !Number.isNaN(totalDepositsUSD)) setNetDeposits(totalDepositsUSD)
+    if (totalDebtUSD && !Number.isNaN(totalDebtUSD)) setNetDebt(totalDebtUSD)
   }, [totalDepositsUSD, totalDebtUSD, setNetDeposits, setNetDebt])
 
-
   return (
-    <>
+    <motion.div
+      key="totals"
+      style={{ width: '100%' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <Table variant="simple">
+
         <Thead color="white">
           <Tr>
             <Th color="white">Product</Th>
@@ -91,15 +100,15 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
           {hasDepositsInPool2 && <Pool2Row apr={apr} earned={earned} balance={balance} />}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr>
-            <Td>Total</Td>
+            <Td fontWeight="bold">Total</Td>
             <Td></Td>
             <Td><Text fontWeight="bold">{smallUsdFormatter(totalDepositsUSD)}</Text></Td>
-            <Td><Text fontWeight="bold">{earned} RGT</Text></Td>
+            <Td><Text fontWeight="bold">{earned?.toFixed(2)} RGT</Text></Td>
             <Td><Text fontWeight="bold">{totals?.interestEarned}</Text></Td>
           </Tr>
         </Tbody>
       </Table>
-    </>
+    </motion.div>
   )
 }
 

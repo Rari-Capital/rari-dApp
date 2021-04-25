@@ -9,6 +9,8 @@ import {
   Td,
   Spinner
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
+
 
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
 import { smallUsdFormatter } from 'utils/bigUtils';
@@ -20,7 +22,13 @@ const Earn = () => {
   const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance])
 
   return (
-    <>
+    <motion.div
+      key="earn"
+      style={{ width: '100%' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <Table variant="simple">
         <Thead color="white">
           <Tr>
@@ -33,7 +41,7 @@ const Earn = () => {
         </Thead>
         <Tbody>
           {aggregatePoolsInfo?.map(p => {
-            if (p?.poolBalance && !p.poolBalance.isZero())return (
+            if (p?.poolBalance && !p.poolBalance.isZero()) return (
               <Tr key={p.poolInfo.title}>
                 <Td>{p.poolInfo.title}</Td>
                 <Td>{p.poolAPY ?? <Spinner />}%</Td>
@@ -47,13 +55,13 @@ const Earn = () => {
           <Tr>
             <Td><Text fontWeight={hasDeposits && "bold"}>Total</Text></Td>
             <Td></Td>
-            <Td><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totals?.balance) }</Text></Td>
-            <Td><Text fontWeight={hasDeposits && "bold"}>{totals?.interestEarned }</Text></Td>
+            <Td><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totals?.balance)}</Text></Td>
+            <Td><Text fontWeight={hasDeposits && "bold"}>{totals?.interestEarned}</Text></Td>
             <Td></Td>
           </Tr>
         </Tbody>
       </Table>
-    </>
+    </motion.div>
   );
 };
 
