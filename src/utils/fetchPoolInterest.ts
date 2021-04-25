@@ -16,6 +16,7 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
   ]);
 
   console.log(
+    'interest',
     rari.web3.utils.fromWei(stableInterest),
     rari.web3.utils.fromWei(yieldInterest),
     rari.web3.utils.fromWei(ethInterestInETH),

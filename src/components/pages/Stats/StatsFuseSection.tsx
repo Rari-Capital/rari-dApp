@@ -74,7 +74,7 @@ const Fuse = () => {
             <Table variant="simple">
                 <Thead color="white">
                     <Tr>
-                        <Th textAlign="right" color="white" fontSize="sm">Pool</Th>
+                        <Th textAlign="center" color="white" fontSize="sm">Pool</Th>
                         <Th textAlign="right" color="white" fontSize="sm">Borrow Limit</Th>
                         <Th textAlign="right" color="white" fontSize="sm">Deposits</Th>
                         <Th textAlign="right" color="white" fontSize="sm">Borrows</Th>
@@ -88,15 +88,19 @@ const Fuse = () => {
 
                         const ratio = fusePoolData?.totalBorrowBalanceUSD && maxBorrow
                             ? (fusePoolData.totalBorrowBalanceUSD / maxBorrow) * 100
-                            : null
+                            : 0
 
                         const isAtRiskOfLiquidation = ratio && ratio > 95
 
                         return (
                             <Tr key={filteredPool.id}>
                                 <Td textAlign="center" fontSize="large">{filteredPool.id}</Td>
+                                {/* Borrow limit */}
                                 <Td textAlign="right" textStyle="bold" color={isAtRiskOfLiquidation && 'red'} fontSize="large">
-                                    {ratio?.toFixed(1) ?? <Spinner />}%
+                                    {!!ratio
+                                        ? `${ratio.toFixed(1)}%`
+                                        : '0%'
+                                    }
                                 </Td>
                                 {/* Deposits By Asset */}
                                 {/* Lend Balance */}
@@ -127,7 +131,6 @@ const Fuse = () => {
 
                                         )}
                                 </Td>
-
                                 {/* Lend Borrow rates */}
                                 <Td>
                                     {
@@ -174,7 +177,7 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
     const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2)
     const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(2)
 
-    console.log(asset.underlyingSymbol, { supplyAmount, borrowAmount })
+    // console.log(asset.underlyingSymbol, { supplyAmount, borrowAmount })
 
     return (
 
@@ -205,11 +208,11 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                     {/* Lend/borrow Supply */}
                     {type !== AssetContainerType.RATES && (
                         <>
-                                <SimpleTooltip label={`${type === AssetContainerType.BORROW ? borrowAmount : supplyAmount} ${asset.underlyingSymbol}`}>
-                                    <Text p={1} fontSize="lg" textAlign="right">
-                                        {type === AssetContainerType.BORROW ? formattedBorrowAmount : formattedSupplyAmount}
-                                    </Text>
-                                </SimpleTooltip>
+                            <SimpleTooltip label={`${type === AssetContainerType.BORROW ? borrowAmount : supplyAmount} ${asset.underlyingSymbol}`}>
+                                <Text p={1} fontSize="lg" textAlign="right">
+                                    {type === AssetContainerType.BORROW ? formattedBorrowAmount : formattedSupplyAmount}
+                                </Text>
+                            </SimpleTooltip>
                         </>
                     )}
                     {/* Lend/borrow rates */}

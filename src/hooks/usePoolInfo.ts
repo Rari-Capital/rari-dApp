@@ -82,6 +82,7 @@ export const useAggregatePoolInfos = () => {
             break;
         }
 
+        
         const formattedPoolInterestEarned = formatBalanceBN(rari, poolInterestEarned, poolInfo.type === Pool.ETH)
 
         // Growth for a pool = % increase between balance & (balance - interest earned)
