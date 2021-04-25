@@ -27,6 +27,7 @@ import { TokenData, useTokensData } from 'hooks/useTokenData';
 import { TokensDataHash } from 'utils/tokenUtils';
 import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/apyUtils';
 import { shortUsdFormatter, smallUsdFormatter } from 'utils/bigUtils';
+import { SimpleTooltip } from 'components/shared/SimpleTooltip';
 
 export enum AssetContainerType {
     SUPPLY,
@@ -173,7 +174,7 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
     const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2)
     const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(2)
 
-    console.log(asset.underlyingSymbol, {supplyAmount, borrowAmount})
+    console.log(asset.underlyingSymbol, { supplyAmount, borrowAmount })
 
     return (
 
@@ -204,9 +205,11 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
                     {/* Lend/borrow Supply */}
                     {type !== AssetContainerType.RATES && (
                         <>
-                            <Text p={1} fontSize="lg" textAlign="right">
-                                {type === AssetContainerType.BORROW ? formattedBorrowAmount : formattedSupplyAmount}
-                            </Text>
+                                <SimpleTooltip label={`${type === AssetContainerType.BORROW ? borrowAmount : supplyAmount} ${asset.underlyingSymbol}`}>
+                                    <Text p={1} fontSize="lg" textAlign="right">
+                                        {type === AssetContainerType.BORROW ? formattedBorrowAmount : formattedSupplyAmount}
+                                    </Text>
+                                </SimpleTooltip>
                         </>
                     )}
                     {/* Lend/borrow rates */}
