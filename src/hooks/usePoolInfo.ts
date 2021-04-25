@@ -116,7 +116,8 @@ export const useAggregatePoolInfos = () => {
     ])
 
   const totals = useMemo(() => ({
-    balance: shortUsdFormatter(totalPoolsBalance) ?? null,
+    balance: totalPoolsBalance ?? null,
+    balanceFormatted: shortUsdFormatter(totalPoolsBalance) ?? null,
     interestEarned: formatBalanceBN(rari, poolsInterestEarned?.totalEarnings ?? null),
     apy: "50%",
     growth: "50%"

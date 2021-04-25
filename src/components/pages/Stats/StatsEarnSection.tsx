@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Table,
+  Text,
   Thead,
   Tbody,
   Tr,
@@ -10,10 +11,13 @@ import {
 } from '@chakra-ui/react';
 
 import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
+import { smallUsdFormatter } from 'utils/bigUtils';
 
 const Earn = () => {
 
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
+
+  const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance])
 
   return (
     <>
@@ -41,11 +45,11 @@ const Earn = () => {
           })}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr>
-            <Td>Total</Td>
-            <Td>0%</Td>
-            <Td>{totals?.balance }</Td>
-            <Td>{totals?.interestEarned }</Td>
-            <Td>0%</Td>
+            <Td><Text fontWeight={hasDeposits && "bold"}>Total</Text></Td>
+            <Td></Td>
+            <Td><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totals?.balance) }</Text></Td>
+            <Td><Text fontWeight={hasDeposits && "bold"}>{totals?.interestEarned }</Text></Td>
+            <Td></Td>
           </Tr>
         </Tbody>
       </Table>

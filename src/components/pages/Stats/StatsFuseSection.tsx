@@ -20,12 +20,10 @@ import { useFusePoolsData } from 'hooks/useFusePoolData';
 import { useBorrowLimits } from 'hooks/useBorrowLimit';
 import { useAssetsMapWithTokenData } from 'hooks/useAssetsMap';
 
-import {
-    formatAbbreviatedCurrency,
-} from "utils/format"
-import { USDPricedFuseAsset, USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
+
+import { USDPricedFuseAsset} from "utils/fetchFusePoolData";
 import { TokenData, useTokensData } from 'hooks/useTokenData';
-import { AssetHashWithTokenData, TokensDataHash } from 'utils/tokenUtils';
+import { TokensDataHash } from 'utils/tokenUtils';
 import { convertMantissaToAPR, convertMantissaToAPY } from 'utils/apyUtils';
 import { shortUsdFormatter, smallUsdFormatter } from 'utils/bigUtils';
 
@@ -61,18 +59,18 @@ const Fuse = () => {
         }) ?? { totalSupplyBalanceUSD: null }
     }, [fusePoolsData])
 
-    console.log({ filteredPools, fusePoolsData, totalBorrowBalanceUSD })
+    const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [totalSupplyBalanceUSD])
 
     return (
         <>
             <Table variant="simple">
                 <Thead color="white">
                     <Tr>
-                        <Th color="white">Pool</Th>
-                        <Th color="white">Borrow Limit</Th>
-                        <Th color="white">Deposits</Th>
-                        <Th color="white">Borrows</Th>
-                        <Th color="white">Lend APY / Borrow APR</Th>
+                        <Th textAlign="right" color="white" fontSize="sm">Pool</Th>
+                        <Th textAlign="right" color="white" fontSize="sm">Borrow Limit</Th>
+                        <Th textAlign="right" color="white" fontSize="sm">Deposits</Th>
+                        <Th textAlign="right" color="white" fontSize="sm">Borrows</Th>
+                        <Th textAlign="right" textAlign="right" color="white" fontSize="sm">Lend APY / Borrow APR</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -88,39 +86,49 @@ const Fuse = () => {
 
                         return (
                             <Tr key={filteredPool.id}>
-                                <Td>{filteredPool.id}</Td>
-                                <Td color={isAtRiskOfLiquidation && 'red'}>{ratio?.toFixed(1) ?? <Spinner />}%</Td>
+                                <Td textAlign="center" fontSize="large">{filteredPool.id}</Td>
+                                <Td textAlign="right" textStyle="bold" color={isAtRiskOfLiquidation && 'red'} fontSize="large">
+                                    {ratio?.toFixed(1) ?? <Spinner />}%
+                                </Td>
                                 {/* Deposits By Asset */}
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
                                             (asset.supplyBalanceUSD > 0) &&
-                                            <AssetContainer
-                                                asset={asset}
-                                                tokenData={tokensDataMap[asset.underlyingToken]}
-                                            />)
-                                    }
+                                            <Box mb={2} >
+                                                <AssetContainer
+                                                    asset={asset}
+                                                    tokenData={tokensDataMap[asset.underlyingToken]}
+                                                />
+                                            </Box>
+                                        )}
                                 </Td>
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
                                             (asset.borrowBalanceUSD > 0) &&
-                                            <AssetContainer
-                                                asset={asset}
-                                                type={AssetContainerType.BORROW}
-                                                tokenData={tokensDataMap[asset.underlyingToken]}
-                                            />)
-                                    }
+                                            <Box mb={2} >
+                                                <AssetContainer
+                                                    asset={asset}
+                                                    type={AssetContainerType.BORROW}
+                                                    tokenData={tokensDataMap[asset.underlyingToken]}
+                                                />
+                                            </Box>
+
+                                        )}
                                 </Td>
+                                
                                 <Td>
                                     {
                                         fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
                                             (asset.supplyBalanceUSD > 0 || asset.borrowBalanceUSD > 0) &&
-                                            <AssetContainer
-                                                asset={asset}
-                                                type={AssetContainerType.RATES}
-                                                tokenData={tokensDataMap[asset.underlyingToken]}
-                                            />
+                                            <Box mb={2}>
+                                                <AssetContainer
+                                                    asset={asset}
+                                                    type={AssetContainerType.RATES}
+                                                    tokenData={tokensDataMap[asset.underlyingToken]}
+                                                />
+                                            </Box>
                                         )}
                                 </Td>
                             </Tr>
@@ -128,10 +136,10 @@ const Fuse = () => {
                     }
                     )}
                     <Tr>
-                        <Td>Total</Td>
+                        <Td><Text fontWeight={hasDeposits && "bold"}>Total</Text></Td>
                         <Td></Td>
-                        <Td justifyContent="flex-end">{smallUsdFormatter(totalSupplyBalanceUSD)}</Td>
-                        <Td justifyContent="flex-end">{smallUsdFormatter(totalBorrowBalanceUSD)}</Td>
+                        <Td textAlign="right"><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totalSupplyBalanceUSD)}</Text></Td>
+                        <Td textAlign="right"><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totalBorrowBalanceUSD)}</Text></Td>
                         <Td></Td>
                     </Tr>
                 </Tbody>
@@ -156,74 +164,66 @@ const AssetContainer = ({ asset, type = AssetContainerType.SUPPLY, tokenData }: 
 
         <>
             <Column
-                mainAxisAlignment="center"
+                mainAxisAlignment={type === AssetContainerType.RATES ? "space-around" : "center"}
                 crossAxisAlignment="flex-end"
-                // background="lime"
+            // background="lime"
             >
+                {/* Icon and Units */}
                 <Row
                     mainAxisAlignment="flex-end"
                     crossAxisAlignment="center"
-                    mb={2}
-                    
+                    width="90%"
+                    // pl={6}
                 >
                     <Avatar
                         bg="#FFF"
                         boxSize="20px"
                         name={tokenData?.symbol ?? "Loading..."}
+                        my="auto"
+                        mr="auto"
                         src={
                             tokenData?.logoURL ??
                             "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
                         }
                     />
+                    {/* Lend/borrow Supply */}
                     {type !== AssetContainerType.RATES && (
                         <>
-                            <Text p={1} fontSize="lg" >
+                            <Text p={1} fontSize="lg" textAlign="right">
                                 {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
                             </Text>
                         </>
                     )}
+                    {/* Lend/borrow rates */}
+                    {
+                        type === AssetContainerType.RATES && (
+                            <Row>
+                                <Text p={1} fontSize="lg" >
+                                    {supplyRate}%
+                            </Text>
+                                <Text p={1} fontSize="2xl"  >
+                                    /
+                            </Text>
+                                <Text p={1} fontSize="lg" >
+                                    {borrowRate}%
+                            </Text>
+                            </Row>
+                        )
+                    }
                 </Row>
+                {/* USD Denomination */}
                 <Row
                     mainAxisAlignment="flex-end"
                     crossAxisAlignment="center"
+                    width="90%"
                 >
                     {type !== AssetContainerType.RATES && (
-                        <Text p={1} fontSize="sm">
+                        <Text p={1} fontSize="sm" color="grey">
                             {type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
                         </Text>
                     )}
                 </Row>
             </Column>
-            {/* <Column
-                mainAxisAlignment="center"
-                crossAxisAlignment="flex-end"
-            >
-                {type !== AssetContainerType.RATES && (
-                    <>
-                        <Text p={1} fontSize="lg" >
-                            {type === AssetContainerType.BORROW ? borrowAmount : supplyAmount}
-                        </Text>
-                        <Text p={1} fontSize="sm">
-                            {type === AssetContainerType.BORROW ? borrowBalanceUSD : supplyBalanceUSD}
-                        </Text>
-                    </>
-                )}
-                {
-                    type === AssetContainerType.RATES && (
-                        <Row>
-                            <Text p={1} fontSize="lg" >
-                                {supplyRate}%
-                            </Text>
-                            <Text p={1} fontSize="2xl" >
-                                /
-                            </Text>
-                            <Text p={1} fontSize="lg" >
-                                {borrowRate}%
-                            </Text>
-                        </Row>
-                    )
-                }
-            </Column> */}
         </>
     )
 }

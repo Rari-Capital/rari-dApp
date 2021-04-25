@@ -1,13 +1,11 @@
-import React from 'react'
+import React, { useMemo, useEffect } from 'react'
 import {
-  Heading,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
-  Spinner,
   Text
 } from '@chakra-ui/react';
 
@@ -23,8 +21,9 @@ import { usePool2Balance } from 'hooks/pool2/usePool2Balance';
 import EarnRow from './EarnRow';
 import FuseRow from './FuseRow'
 import Pool2Row from './Pool2Row'
+import { smallUsdFormatter } from 'utils/bigUtils';
 
-export default () => {
+const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   // Earn
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
   const hasDepositsInEarn = aggregatePoolsInfo?.some((p) => !p?.poolBalance?.isZero())
@@ -40,7 +39,35 @@ export default () => {
   const balance = usePool2Balance()
   const hasDepositsInPool2 = !!balance?.SLP
 
-  console.log({ aggregatePoolsInfo, hasDepositsInEarn })
+
+  // Total Deposits
+  const totalDepositsUSD = useMemo(() => {
+
+    const { totalSupplyBalanceUSD: fuseTotal } = fusePoolsData?.reduce((a, b) => {
+      return { totalSupplyBalanceUSD: a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD }
+    }) ?? { totalSupplyBalanceUSD: 0 }
+
+    const vaultTotal = totals?.balance ?? 0
+
+    const pool2Total = balance?.balanceUSD
+
+    return fuseTotal + vaultTotal + pool2Total
+
+  }, [totals, fusePoolsData, balance])
+
+  // Total debt - todo: refactor into the `useFusePoolsData` hook
+  const totalDebtUSD = useMemo(() => {
+    const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
+      return { totalBorrowBalanceUSD: a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD }
+    }) ?? { totalBorrowBalanceUSD: 0 }
+    return totalBorrowBalanceUSD
+  }, [fusePoolsData])
+
+  useEffect(() => {
+    setNetDeposits(totalDepositsUSD)
+    setNetDebt(totalDebtUSD)
+  }, [totalDepositsUSD, totalDebtUSD, setNetDeposits, setNetDebt])
+
 
   return (
     <>
@@ -66,12 +93,14 @@ export default () => {
           <Tr>
             <Td>Total</Td>
             <Td></Td>
-            <Td>{totals?.balance}</Td>
-            <Td>20.34 RGT</Td>
-            <Td>{totals?.interestEarned}</Td>
+            <Td><Text fontWeight="bold">{smallUsdFormatter(totalDepositsUSD)}</Text></Td>
+            <Td><Text fontWeight="bold">{earned} RGT</Text></Td>
+            <Td><Text fontWeight="bold">{totals?.interestEarned}</Text></Td>
           </Tr>
         </Tbody>
       </Table>
     </>
   )
 }
+
+export default StatsTotalSection
