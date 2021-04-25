@@ -52,7 +52,7 @@ const fetchPools = async (
             rari: Rari,
             fuse: Fuse,
             address: string,
-            filter: string | null 
+            filter: string | null
         }) => {
 
     const isMyPools = filter === "my-pools";
@@ -101,7 +101,7 @@ const fetchPools = async (
 }
 
 // returns impersonal data about fuse pools ( can filter by your supplied/created pools )
-export const useFusePools = (filter: string | null ) => {
+export const useFusePools = (filter: string | null) => {
 
     const { fuse, rari, address } = useRari();
 

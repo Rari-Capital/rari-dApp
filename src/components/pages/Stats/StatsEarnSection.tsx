@@ -21,6 +21,8 @@ const Earn = () => {
 
   const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance])
 
+  console.log({ totals, aggregatePoolsInfo })
+
   return (
     <motion.div
       key="earn"
