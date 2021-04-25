@@ -1,22 +1,15 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 // Components
-import { Center, Column, Row, RowOrColumn } from 'buttered-chakra';
 import {
-  Heading,
-  Link,
-  Text,
-  Icon,
-  Image,
-  useDisclosure,
   Box,
+  Heading,
   Spinner
 } from '@chakra-ui/react';
+import { Column, Row } from 'buttered-chakra';
 
-import { MdSwapHoriz } from 'react-icons/md';
 import CopyrightSpacer from 'components/shared/CopyrightSpacer';
 import ForceAuthModal from 'components/shared/ForceAuthModal';
-import DashboardBox from 'components/shared/DashboardBox';
 import { Header } from 'components/shared/Header';
 import SubNav from './StatsSubNav';
 
@@ -33,7 +26,8 @@ import { useRari } from 'context/RariContext';
 import { useTranslation } from 'react-i18next';
 import { useIsSmallScreen } from 'hooks/useIsSmallScreen';
 import { usePoolBalance, useTotalPoolsBalance } from "hooks/usePoolBalance";
-import { shortUsdFormatter } from 'utils/bigUtils';
+import { shortUsdFormatter, smallUsdFormatter } from 'utils/bigUtils';
+import { SimpleTooltip } from 'components/shared/SimpleTooltip';
 
 
 export enum StatsSubNav {
@@ -50,8 +44,10 @@ const StatsPage = () => {
   const isMobile = useIsSmallScreen();
   const [subNav, setSubNav] = useState(StatsSubNav.TOTAL);
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useTotalPoolsBalance()
+  const [netDeposits, setNetDeposits] = useState(0)
+  const [netDebt, setNetDebt] = useState(0)
 
+  const netBalance = useMemo(() => netDeposits - netDebt, [netDeposits, netDebt])
 
   return (
     <>
@@ -67,36 +63,35 @@ const StatsPage = () => {
       >
         <Header isAuthed={isAuthed} />
 
+
         <Column
           width="100%"
-          mainAxisAlignment="flex-start"
+          mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
           height="100%"
-          flexGrow={1}
+          mt={10}
         >
-          <Column
-            width="100%"
-            mainAxisAlignment="center"
-            crossAxisAlignment="flex-start"
-            height="100%"
-            mt="auto"
-          >
-            <Heading size="md">
-              {t('Net Balance')}: {isBalanceLoading ? <Spinner /> : shortUsdFormatter(balanceData)}
-            </Heading>
-            <SubNav
-              isMobile={isMobile}
-              subNav={subNav}
-              setSubNav={setSubNav}
-            />
-            {subNav === StatsSubNav.TOTAL && <StatsTotalSection />}
-            {subNav === StatsSubNav.FUSE && <StatsFuseSection />}
-            {subNav === StatsSubNav.POOL2 && <StatsPool2Section />}
-            {subNav === StatsSubNav.EARN && <StatsEarnSection />}
-            {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
-          </Column>
-          <CopyrightSpacer forceShow />
+          <Row mb={2} mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <SimpleTooltip placement="right" label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}>
+              <Heading size="lg">
+                {t('Net Balance')}:  {smallUsdFormatter(netBalance) ?? smallUsdFormatter(0)}
+              </Heading>
+            </SimpleTooltip>
+
+          </Row>
+
+          <SubNav
+            isMobile={isMobile}
+            subNav={subNav}
+            setSubNav={setSubNav}
+          />
+          {subNav === StatsSubNav.TOTAL && <StatsTotalSection setNetDebt={setNetDebt} setNetDeposits={setNetDeposits} />}
+          {subNav === StatsSubNav.FUSE && <StatsFuseSection />}
+          {subNav === StatsSubNav.POOL2 && <StatsPool2Section />}
+          {subNav === StatsSubNav.EARN && <StatsEarnSection />}
+          {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
         </Column>
+        <CopyrightSpacer forceShow />
       </Column>
     </>
   );

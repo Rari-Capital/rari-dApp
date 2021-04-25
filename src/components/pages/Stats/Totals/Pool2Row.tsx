@@ -1,22 +1,16 @@
 
 import React from 'react'
 import {
-    Heading,
-    Table,
-    Thead,
-    Tbody,
     Tr,
-    Th,
     Td,
-    Spinner,
-    Text
 } from '@chakra-ui/react';
+import { Pool2LogoSVG } from 'components/shared/Logos';
 
 const EarnRow = ({ apr, earned, balance }: { apr: any, earned: any, balance: any }) => {
 
     return (
         <Tr>
-            <Td>Pool2</Td>
+            <Td><Pool2LogoSVG  width="25px" height="25px"/></Td>
             <Td>
                 RGT-ETH
             </Td>

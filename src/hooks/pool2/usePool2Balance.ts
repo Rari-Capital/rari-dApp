@@ -13,6 +13,9 @@ export const fetchPool2Balance = async ({ rari, fuse, address }: { rari: Rari, f
             )
         );
 
+        const balanceUSDBN = await rari.governance.rgt.sushiSwapDistributions.usdStakingBalanceOf(address)
+        const balanceUSD = parseFloat(balanceUSDBN.toString()) / (10 ** 18)
+
         const {
             eth: _eth,
             rgt: _rgt,
@@ -20,8 +23,10 @@ export const fetchPool2Balance = async ({ rari, fuse, address }: { rari: Rari, f
             address
         );
 
+
         return {
             SLP,
+            balanceUSD,
             hasDeposited: SLP > 0,
             // @ts-ignore
             eth: _eth.toString() / 1e18,
