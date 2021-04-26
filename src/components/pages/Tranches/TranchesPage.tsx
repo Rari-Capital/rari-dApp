@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
+import Footer from "../../shared/Footer";
 import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
@@ -167,7 +167,7 @@ const TranchePage = () => {
 
         </RowOrColumn>
       </Column>
-      <CopyrightSpacer forceShow />
+      <Footer forceShow />
     </>
   );
 };

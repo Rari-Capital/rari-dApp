@@ -21,8 +21,6 @@ import DashboardBox, {
   DASHBOARD_BOX_PROPS,
 } from "../shared/DashboardBox";
 
-import CopyrightSpacer from "../shared/CopyrightSpacer";
-
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -353,7 +351,6 @@ const PoolPortalContent = () => {
           </Column>
         </RowOnDesktopColumnOnMobile>
 
-        <CopyrightSpacer forceShow={isLocked} />
       </Column>
     </>
   );

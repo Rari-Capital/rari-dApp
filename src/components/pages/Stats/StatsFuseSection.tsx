@@ -50,8 +50,6 @@ const Fuse = () => {
     const maxBorrows = useBorrowLimits(assetsArray)
     const { tokensDataMap }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray)
 
-    console.log({fusePoolsData, filteredPools})
-
 
     const { totalBorrowBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
