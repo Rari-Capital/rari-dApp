@@ -33,7 +33,7 @@ const EarnRow = ({ apr, earned, balance }: { apr: any, earned: any, balance: any
             </Td>
                 {/* Todo (sharad) - implement RGT earned in poolInfo */}
                 <Td>
-                    {earned.toFixed(2)} RGT
+                    {earned?.toFixed(2)} RGT
             </Td>
                 <Td>
                     N/A

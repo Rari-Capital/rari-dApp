@@ -24,9 +24,9 @@ const Layout = ({ children }: { children: any }) => {
         // >
         //     <Header isAuthed={isAuthed} />
         <>
-        <Column>
+        <Column height="100%" flex={1}>
                 {children}
-                <Footer forceShow />
+                <Footer />
         </Column>
         </>
 
