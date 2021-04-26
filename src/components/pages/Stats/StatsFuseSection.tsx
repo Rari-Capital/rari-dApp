@@ -50,6 +50,8 @@ const Fuse = () => {
     const maxBorrows = useBorrowLimits(assetsArray)
     const { tokensDataMap }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray)
 
+    console.log({fusePoolsData, filteredPools})
+
 
     const { totalBorrowBalanceUSD } = useMemo(() => {
         return fusePoolsData?.reduce((a, b) => {
@@ -95,59 +97,59 @@ const Fuse = () => {
                         const isAtRiskOfLiquidation = ratio && ratio > 95
 
                         return (
-                                <Tr>
-                                    <Td textAlign="center" fontSize="large">{filteredPool.id}</Td>
-                                    {/* Borrow limit */}
-                                    <Td textAlign="right" textStyle="bold" color={isAtRiskOfLiquidation && 'red'} fontSize="large" fontWeight="bold">
-                                        {!!ratio
-                                            ? `${ratio.toFixed(1)}%`
-                                            : '0%'
-                                        }
-                                    </Td>
-                                    {/* Deposits By Asset */}
-                                    {/* Lend Balance */}
-                                    <Td>
-                                        {
-                                            fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
-                                                (asset.supplyBalanceUSD > 0) &&
-                                                <Box mt={2} >
-                                                    <AssetContainer
-                                                        asset={asset}
-                                                        tokenData={tokensDataMap[asset.underlyingToken]}
-                                                    />
-                                                </Box>
-                                            )}
-                                    </Td>
-                                    {/* Borrow Balance */}
-                                    <Td>
-                                        {
-                                            fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
-                                                (asset.borrowBalanceUSD > 0) &&
-                                                <Box mt={2} >
-                                                    <AssetContainer
-                                                        asset={asset}
-                                                        type={AssetContainerType.BORROW}
-                                                        tokenData={tokensDataMap[asset.underlyingToken]}
-                                                    />
-                                                </Box>
+                            <Tr>
+                                <Td textAlign="center" fontSize="large">{filteredPool.id}</Td>
+                                {/* Borrow limit */}
+                                <Td textAlign="right" textStyle="bold" color={isAtRiskOfLiquidation && 'red'} fontSize="large" fontWeight="bold">
+                                    {!!ratio
+                                        ? `${ratio.toFixed(1)}%`
+                                        : '0%'
+                                    }
+                                </Td>
+                                {/* Deposits By Asset */}
+                                {/* Lend Balance */}
+                                <Td>
+                                    {
+                                        fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
+                                            (asset.supplyBalanceUSD > 0) &&
+                                            <Box mt={2} >
+                                                <AssetContainer
+                                                    asset={asset}
+                                                    tokenData={tokensDataMap[asset.underlyingToken]}
+                                                />
+                                            </Box>
+                                        )}
+                                </Td>
+                                {/* Borrow Balance */}
+                                <Td>
+                                    {
+                                        fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
+                                            (asset.borrowBalanceUSD > 0) &&
+                                            <Box mt={2} >
+                                                <AssetContainer
+                                                    asset={asset}
+                                                    type={AssetContainerType.BORROW}
+                                                    tokenData={tokensDataMap[asset.underlyingToken]}
+                                                />
+                                            </Box>
 
-                                            )}
-                                    </Td>
-                                    {/* Lend Borrow rates */}
-                                    <Td>
-                                        {
-                                            fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
-                                                (asset.supplyBalanceUSD > 0 || asset.borrowBalanceUSD > 0) &&
-                                                <Box mt={4}>
-                                                    <AssetContainer
-                                                        asset={asset}
-                                                        type={AssetContainerType.RATES}
-                                                        tokenData={tokensDataMap[asset.underlyingToken]}
-                                                    />
-                                                </Box>
-                                            )}
-                                    </Td>
-                                </Tr>
+                                        )}
+                                </Td>
+                                {/* Lend Borrow rates */}
+                                <Td>
+                                    {
+                                        fusePoolData?.assets.map((asset: USDPricedFuseAsset) =>
+                                            (asset.supplyBalanceUSD > 0 || asset.borrowBalanceUSD > 0) &&
+                                            <Box mt={4}>
+                                                <AssetContainer
+                                                    asset={asset}
+                                                    type={AssetContainerType.RATES}
+                                                    tokenData={tokensDataMap[asset.underlyingToken]}
+                                                />
+                                            </Box>
+                                        )}
+                                </Td>
+                            </Tr>
                         )
                     }
                     )}

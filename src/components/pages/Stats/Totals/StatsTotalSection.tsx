@@ -17,12 +17,15 @@ import { useFusePoolsData } from 'hooks/useFusePoolData';
 import { usePool2APR } from 'hooks/pool2/usePool2APR';
 import { usePool2UnclaimedRGT } from 'hooks/pool2/usePool2UnclaimedRGT';
 import { usePool2Balance } from 'hooks/pool2/usePool2Balance';
+import { usePrincipal, TranchePool, TrancheRating, useEstimatedSFI, usePrincipalBalance } from 'hooks/tranches/useSaffronData';
+
 
 // Components
 import EarnRow from './EarnRow';
 import FuseRow from './FuseRow'
 import Pool2Row from './Pool2Row'
 import { smallUsdFormatter } from 'utils/bigUtils';
+import TranchesRow from './TranchesRow';
 
 const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   // Earn
@@ -40,7 +43,15 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   const balance = usePool2Balance()
   const hasDepositsInPool2 = !!balance?.SLP
 
+  // Tranches
+  const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S)
+  const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A)
+  const totalPrincipal = usePrincipalBalance()
+  const parsedTotalPrincipal : number = totalPrincipal ? parseFloat(totalPrincipal?.replace(",", "").replace("$", "")) : 0
+  const estimatedSFI = useEstimatedSFI()
+  const hasDepositsInTranches = useMemo(() => parsedTotalPrincipal > 0 ?? false, [totalPrincipal])
 
+  
   // Total Deposits
   const totalDepositsUSD = useMemo(() => {
 
@@ -52,9 +63,14 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
 
     const pool2Total = balance?.balanceUSD
 
-    return fuseTotal + vaultTotal + pool2Total
+    const tranchesTotal = parsedTotalPrincipal
 
-  }, [totals, fusePoolsData, balance])
+    const total = fuseTotal + vaultTotal + pool2Total + tranchesTotal
+
+    console.log({total, fuseTotal, vaultTotal, pool2Total, tranchesTotal, totalPrincipal})
+
+    return total
+  }, [totals, fusePoolsData, balance, parsedTotalPrincipal])
 
   // Total debt - todo: refactor into the `useFusePoolsData` hook
   const totalDebtUSD = useMemo(() => {
@@ -65,8 +81,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   }, [fusePoolsData])
 
   useEffect(() => {
-    console.log({totalDepositsUSD, totalDebtUSD})
-
+    console.log({ totalDepositsUSD, totalDebtUSD })
     if (totalDepositsUSD && !Number.isNaN(totalDepositsUSD)) setNetDeposits(totalDepositsUSD)
     if (totalDebtUSD && !Number.isNaN(totalDebtUSD)) setNetDebt(totalDebtUSD)
   }, [totalDepositsUSD, totalDebtUSD, setNetDeposits, setNetDebt])
@@ -86,7 +101,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
             <Th color="white">Product</Th>
             <Th color="white">Pool</Th>
             <Th color="white">Deposits</Th>
-            <Th color="white">RGT Earned</Th>
+            <Th color="white">RGT {hasDepositsInTranches && `+ SFI `} Earned</Th>
             <Th color="white">Interest Earned</Th>
           </Tr>
         </Thead>
@@ -98,12 +113,14 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
           {hasDepositsInEarn && <EarnRow poolsInfo={aggregatePoolsInfo} />}
           {/* Pool2 Section */}
           {hasDepositsInPool2 && <Pool2Row apr={apr} earned={earned} balance={balance} />}
+          {/* Tranches */}
+          {hasDepositsInTranches && <TranchesRow daiSPrincipal={daiSPrincipal} daiAPrincipal={daiAPrincipal} estimatedSFI={estimatedSFI} />}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr>
             <Td fontWeight="bold">Total</Td>
             <Td></Td>
             <Td><Text fontWeight="bold">{smallUsdFormatter(totalDepositsUSD)}</Text></Td>
-            <Td><Text fontWeight="bold">{earned?.toFixed(2)} RGT</Text></Td>
+            <Td><Text fontWeight="bold">{earned?.toFixed(2)} RGT {hasDepositsInTranches && ` + ${estimatedSFI?.formattedTotalSFIEarned}`}</Text></Td>
             <Td><Text fontWeight="bold">{totals?.interestEarned}</Text></Td>
           </Tr>
         </Tbody>

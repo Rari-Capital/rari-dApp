@@ -6,7 +6,6 @@ import {
     Td,
     Text
 } from '@chakra-ui/react';
-import { motion } from 'framer-motion'
 import { smallStringUsdFormatter } from 'utils/bigUtils';
 import { FuseLogoSVG } from 'components/shared/Logos'
 import { SimpleTooltip } from "components/shared/SimpleTooltip";

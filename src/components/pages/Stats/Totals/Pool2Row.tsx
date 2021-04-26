@@ -1,28 +1,37 @@
 
 import React from 'react'
 import {
+    Box,
     Tr,
     Td,
 } from '@chakra-ui/react';
 import { Pool2LogoSVG } from 'components/shared/Logos';
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
+
 
 const EarnRow = ({ apr, earned, balance }: { apr: any, earned: any, balance: any }) => {
 
     return (
         <Tr>
-            <Td><Pool2LogoSVG  width="25px" height="25px"/></Td>
             <Td>
-                RGT-ETH
+                <SimpleTooltip label="Pool2" placement="right">
+                    <Box width="30px" >
+                        <Pool2LogoSVG width="25px" height="25px" />
+                    </Box>
+                </SimpleTooltip>
             </Td>
-            <Td >
-                {balance?.SLP?.toFixed(2)} RGT-ETH
+                <Td>
+                    RGT-ETH
             </Td>
-            {/* Todo (sharad) - implement RGT earned in poolInfo */}
-            <Td>
-               {earned.toFixed(2)} RGT
+                <Td >
+                    {balance?.SLP?.toFixed(2)} RGT-ETH
             </Td>
-            <Td>
-                N/A
+                {/* Todo (sharad) - implement RGT earned in poolInfo */}
+                <Td>
+                    {earned.toFixed(2)} RGT
+            </Td>
+                <Td>
+                    N/A
             </Td>
         </Tr>
     )
