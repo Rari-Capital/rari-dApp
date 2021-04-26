@@ -18,6 +18,14 @@ export enum TrancheRating {
     A = "A",
 }
 
+
+const ACTIVE_TRANCHES: { pool: TranchePool, ratings: TrancheRating[] }[] = [
+    {
+        pool: TranchePool.DAI,
+        ratings: [TrancheRating.S, TrancheRating.A]
+    }
+]
+
 export const tranchePoolIndex = (tranchePool: TranchePool) => {
     // TODO: CHANGE USDC TO WHATEVER IT BECOMES LATER
     return tranchePool === TranchePool.DAI ? 9 : 0;
@@ -81,6 +89,8 @@ export const usePrincipal = (tranchePool: TranchePool, trancheRating: TrancheRat
                     )
                     .call()
             );
+
+            console.log({ tranchePToken })
 
             return smallUsdFormatter(
                 parseInt(await tranchePToken.methods.balanceOf(address).call()) / 1e18
@@ -149,8 +159,6 @@ export const useEpochEndDate = () => {
 
 
 
-
-
 export const useEstimatedSFI = () => {
 
     const { rari, address } = useRari();
@@ -216,12 +224,52 @@ export const useEstimatedSFI = () => {
                     ? 0
                     : (await dsecAToken.methods.balanceOf(address).call()) / dsecASupply);
 
-            return (
-                smallUsdFormatter(sPoolSFIEarned + aPoolSFIEarned).replace("$", "") +
-                " SFI"
-            );
+            const formatSFI = (num) => smallUsdFormatter(num).replace("$", "") + " SFI"
+
+            return {
+                aPoolSFIEarned,
+                sPoolSFIEarned,
+                totalSFIEarned: aPoolSFIEarned + sPoolSFIEarned,
+                formattedAPoolSFIEarned: formatSFI(aPoolSFIEarned),
+                formattedSPoolSFIEarned: formatSFI(sPoolSFIEarned),
+                formattedTotalSFIEarned: formatSFI(aPoolSFIEarned + sPoolSFIEarned)
+            }
         }
     );
 
     return estimatedSFI
+}
+
+
+export const useMySaffronData = () => {
+    const { saffronData } = useSaffronData()
+
+    const currentPools = saffronData?.pools
+
+    // Filter out the API data by the tranches and ratings Rari supports
+    const supportedPools = currentPools
+        ? ACTIVE_TRANCHES
+            .map(t => {
+                const currentPool = currentPools[tranchePoolIndex(t.pool)]
+                const availableTranches: string[] = Object.keys(currentPool.tranches)
+                //@ts-ignore
+                const supportedTranches = availableTranches.filter(item => t.ratings.includes(TrancheRating[item]));
+
+                const tranches = {}
+                supportedTranches.forEach(key => {
+                    //@ts-ignore
+                    tranches[key] = currentPool.tranches[key]
+                })
+
+                const finalPool = {
+                    ...currentPool,
+                    tranches
+                }
+                return finalPool
+            })
+        : []
+
+
+    return supportedPools
+
 }

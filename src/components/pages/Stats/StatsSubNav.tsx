@@ -65,13 +65,12 @@ const SubNav = ({
             subNav={StatsSubNav.POOL2}
             active={subNav === StatsSubNav.POOL2}
           />
-          {/* todo  */}
-          {/* <SubNavItem
+          <SubNavItem
             title="Tranches"
             setActive={() => setSubNav(StatsSubNav.TRANCHES)}
             subNav={StatsSubNav.TRANCHES}
             active={subNav === StatsSubNav.TRANCHES}
-          /> */}
+          />
         </Row>
       </Column>
     </>

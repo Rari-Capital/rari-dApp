@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'
 
 // Components
 import {
@@ -31,6 +30,7 @@ import { useIsSmallScreen } from 'hooks/useIsSmallScreen';
 import { usePoolBalance, useTotalPoolsBalance } from "hooks/usePoolBalance";
 import { shortUsdFormatter, smallUsdFormatter } from 'utils/bigUtils';
 import { SimpleTooltip } from 'components/shared/SimpleTooltip';
+import { SaffronProvider } from '../Tranches/SaffronContext';
 
 
 export enum StatsSubNav {
@@ -52,10 +52,10 @@ const StatsPage = () => {
 
   const netBalance = useMemo(() => netDeposits - netDebt, [netDeposits, netDebt])
 
-  console.log({ netBalance, netDeposits, netDebt })
+  // console.log({ netBalance, netDeposits, netDebt })
 
   return (
-    <>
+    <SaffronProvider>
       <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
@@ -111,7 +111,7 @@ const StatsPage = () => {
         </Column>
         <CopyrightSpacer forceShow />
       </Column>
-    </>
+    </SaffronProvider>
   );
 };
 

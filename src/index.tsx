@@ -11,6 +11,7 @@ import "./index.css";
 import PWAPrompt from "react-ios-pwa-prompt";
 
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
 
 import { ChakraProvider, theme } from "@chakra-ui/react";
 
@@ -19,8 +20,6 @@ import ErrorPage from "./components/pages/ErrorPage";
 import { RariProvider } from "./context/RariContext";
 
 import "focus-visible";
-
-import { ReactQueryDevtools } from "react-query-devtools";
 
 import "./utils/i18n.ts";
 import { BrowserRouter, useLocation } from "react-router-dom";
@@ -66,7 +65,6 @@ function ScrollToTop() {
 
 ReactDOM.render(
   <>
-    <ReactQueryDevtools initialIsOpen={false} />
     <PWAPrompt
       timesToShow={2}
       permanentlyHideOnDismiss={false}
@@ -77,13 +75,14 @@ ReactDOM.render(
     <ChakraProvider theme={customTheme}>
       <ErrorBoundary FallbackComponent={ErrorPage}>
         <QueryClientProvider client={new QueryClient()}>
+          <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <RariProvider>
               <ScrollToTop />
               <App />
             </RariProvider>
           </BrowserRouter>
-          </QueryClientProvider>
+        </QueryClientProvider>
       </ErrorBoundary>
     </ChakraProvider>
   </>,

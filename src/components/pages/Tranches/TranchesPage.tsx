@@ -77,6 +77,8 @@ const TranchePage = () => {
             crossAxisAlignment="center"
             mr={4}
           >
+
+            {/* Header */}
             <DashboardBox height={isMobile ? "110px" : "95px"} width="100%">
               <Column
                 expand
@@ -109,6 +111,7 @@ const TranchePage = () => {
               </Column>
             </DashboardBox>
 
+            {/* Information ab. Tranche Ratings */}
             <DashboardBox
               mt={4}
               height={isMobile ? "auto" : "200px"}
@@ -117,6 +120,7 @@ const TranchePage = () => {
               <TranchesRatingInfo />
             </DashboardBox>
 
+            {/* Dai Pool */}
             <DashboardBox
               mt={4}
               height={isMobile ? "auto" : "200px"}
@@ -125,6 +129,7 @@ const TranchePage = () => {
               <TranchePoolInfo tranchePool={TranchePool.DAI} />
             </DashboardBox>
 
+            {/* USDC Pool */}
             {isMobile ? null : (
               <DashboardBox
                 mt={4}
@@ -137,6 +142,7 @@ const TranchePage = () => {
             )}
           </Column>
 
+          {/* Other Metrics */}
           <Column
             mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "25%"}
@@ -159,6 +165,7 @@ const TranchePage = () => {
               <SFIDistributions />
             </DashboardBox>
           </Column>
+
         </RowOrColumn>
       </Column>
       <CopyrightSpacer forceShow />
@@ -215,6 +222,8 @@ export const TrancheRatingColumn = ({
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
   const data = useSFIEarnings()
+
+  console.log({data})
 
   return (
     <Column
@@ -428,7 +437,7 @@ export const PrincipalAmount = () => {
       <Heading lineHeight={1.4} fontSize="18px" mt={10}>
         {t("Estimated SFI Earnings")}
       </Heading>
-      <Text>{estimatedSFI ?? "? SFI"}</Text>
+      <Text>{estimatedSFI?.formattedTotalSFIEarned ?? "? SFI"}</Text>
     </Column>
   );
 };
@@ -457,12 +466,7 @@ export const SFIPrice = () => {
 export const SFIDistributions = () => {
   const { t } = useTranslation();
 
-  const { saffronStrategy } = useSaffronData();
-
-  const { rari } = useRari();
-
   const sfiDistributions = useSFIDistributions()
-
 
   // TODO: ADD USDC
   return (
