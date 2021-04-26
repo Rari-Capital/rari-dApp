@@ -116,13 +116,17 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
           {/* Tranches */}
           {hasDepositsInTranches && <TranchesRow daiSPrincipal={daiSPrincipal} daiAPrincipal={daiAPrincipal} estimatedSFI={estimatedSFI} />}
           {/* Todo (sharad) - implement totals for apy and growth */}
-          <Tr>
+          <motion.tr 
+            initial={{ opacity: 0, y: -40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+           >
             <Td fontWeight="bold">Total</Td>
             <Td></Td>
             <Td><Text fontWeight="bold">{smallUsdFormatter(totalDepositsUSD)}</Text></Td>
             <Td><Text fontWeight="bold">{earned?.toFixed(2)} RGT {hasDepositsInTranches && ` + ${estimatedSFI?.formattedTotalSFIEarned}`}</Text></Td>
             <Td><Text fontWeight="bold">{totals?.interestEarned}</Text></Td>
-          </Tr>
+          </motion.tr >
         </Tbody>
       </Table>
     </motion.div>

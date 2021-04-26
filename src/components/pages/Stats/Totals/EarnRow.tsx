@@ -6,13 +6,19 @@ import {
     Td,
     Text
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
+
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { EarnLogoSVGWhite } from 'components/shared/Logos';
 
 const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
 
     return (
-        <Tr>
+    <motion.tr 
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+      >
             <Td>
                 <SimpleTooltip label="Earn" placement="right">
                     <Box width="30px">
@@ -42,7 +48,7 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
                     <Text mb={3} key={i}>{formattedPoolInterestEarned}</Text>
                 ))}
             </Td>
-        </Tr>
+        </motion.tr>
     )
 }
 

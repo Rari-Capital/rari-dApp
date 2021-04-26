@@ -6,6 +6,7 @@ import {
     Td,
     Text
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
 import { Column } from 'buttered-chakra';
 import { TranchesLogoSVGWhite } from 'components/shared/Logos';
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
@@ -14,7 +15,12 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
 
     return (
-        <Tr>
+        <motion.tr 
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+         >
+
             <Td textAlign="center">
                 <SimpleTooltip label="Tranches" placement="right">
                     <Box width="30px" >
@@ -60,7 +66,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
                     </Box>
                 </Column>
             </Td>
-        </Tr>
+        </motion.tr >
 
     )
 }

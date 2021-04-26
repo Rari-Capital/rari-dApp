@@ -23,16 +23,13 @@ const Layout = ({ children }: { children: any }) => {
         //     px={isMobile ? 4 : 0}
         // >
         //     <Header isAuthed={isAuthed} />
-        <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"f
-            flex={1}
-        >
-            <>
+        <>
+        <Column>
                 {children}
                 <Footer forceShow />
-            </>
         </Column>
+        </>
+
 
     )
 }
