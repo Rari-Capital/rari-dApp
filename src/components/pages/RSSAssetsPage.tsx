@@ -25,7 +25,6 @@ import {
 } from "@chakra-ui/react";
 import { useTokenData } from "../../hooks/useTokenData";
 import DashboardBox, { DASHBOARD_BOX_SPACING } from "../shared/DashboardBox";
-import CopyrightSpacer from "../shared/CopyrightSpacer";
 import { useTranslation } from "react-i18next";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -129,7 +128,6 @@ const RSSAssetsPage = React.memo(() => {
                 <TokenRSS key={token.id} address={token.id} />
               ))
             : null}
-          <CopyrightSpacer />
         </SimpleGrid>
       </Column>
     </Column>

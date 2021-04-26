@@ -7,7 +7,7 @@ import {
     Text
 } from '@chakra-ui/react';
 import { Column } from 'buttered-chakra';
-import { TranchesLogoSVG } from 'components/shared/Logos';
+import { TranchesLogoSVGWhite } from 'components/shared/Logos';
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 
@@ -18,7 +18,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
             <Td textAlign="center">
                 <SimpleTooltip label="Tranches" placement="right">
                     <Box width="30px" >
-                        <TranchesLogoSVG width="25px" height="25px" />
+                        <TranchesLogoSVGWhite width="25px" height="25px" />
                     </Box>
                 </SimpleTooltip>
             </Td>

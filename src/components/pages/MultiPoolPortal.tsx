@@ -11,8 +11,6 @@ import DashboardBox from "../shared/DashboardBox";
 
 // import SmallLogo from "../../static/small-logo.png";
 
-import CopyrightSpacer from "../shared/CopyrightSpacer";
-
 import CaptionedStat from "../shared/CaptionedStat";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -114,7 +112,6 @@ const MultiPoolPortal = React.memo(() => {
 
         <PoolCards />
 
-        <CopyrightSpacer forceShow />
       </Column>
     </>
   );

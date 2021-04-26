@@ -7,7 +7,7 @@ import {
     Text
 } from '@chakra-ui/react';
 import { smallStringUsdFormatter } from 'utils/bigUtils';
-import { FuseLogoSVG } from 'components/shared/Logos'
+import { FuseLogoSVGWhite } from 'components/shared/Logos'
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 
@@ -19,7 +19,7 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
                 <Td textAlign="center">
                     <SimpleTooltip label="Fuse" placement="right">
                         <Box width="30px" >
-                            <FuseLogoSVG width="26px" height="26px" />
+                            <FuseLogoSVGWhite width="26px" height="26px" />
                         </Box>
                     </SimpleTooltip>
                 </Td>

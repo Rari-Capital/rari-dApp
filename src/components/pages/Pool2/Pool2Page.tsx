@@ -12,7 +12,6 @@ import { Center, RowOrColumn, Column } from "buttered-chakra";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
-import CopyrightSpacer from "components/shared/CopyrightSpacer";
 import DashboardBox from "components/shared/DashboardBox";
 import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
@@ -171,7 +170,6 @@ const Pool2Page = () => {
           </RowOrColumn>
         </Column>
       </Column>
-      <CopyrightSpacer forceShow={isMobile} />
     </>
   );
 };

@@ -32,7 +32,6 @@ import { createComptroller } from "utils/createComptroller";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Components
-import CopyrightSpacer from "components/shared/CopyrightSpacer";
 import DashboardBox from "components/shared/DashboardBox";
 import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
@@ -126,8 +125,6 @@ const FusePoolPage = React.memo(() => {
           </DashboardBox>
         </RowOrColumn>
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });

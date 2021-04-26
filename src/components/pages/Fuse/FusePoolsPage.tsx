@@ -6,7 +6,6 @@ import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";
 
-import CopyrightSpacer from "components/shared/CopyrightSpacer";
 import DashboardBox from "components/shared/DashboardBox";
 import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
@@ -52,8 +51,6 @@ const FusePoolsPage = React.memo(() => {
           <PoolList />
         </DashboardBox>
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });

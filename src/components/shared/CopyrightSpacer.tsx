@@ -10,7 +10,7 @@ const CopyrightSpacer = ({ forceShow = false }: { forceShow?: boolean }) => {
       textAlign="center"
       width="100%"
       bottom={0}
-      py={8}
+      py={2}
       mt="auto"
     >
       © {new Date().getFullYear()} Rari Capital. All rights reserved.

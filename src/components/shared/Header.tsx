@@ -87,9 +87,9 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-        <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />
+        {/* <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" /> */}
 
-        <HeaderLink ml={4} name={t("Stats")} route="/stats" />
+        <HeaderLink ml={4} name={t("Dashboard")} route="/dashboard" />
 
         {/* <HeaderLink
             ml={4}
@@ -97,11 +97,11 @@ export const Header = ({
             route="https://forums.rari.capital"
           /> */}
 
-        <HeaderLink
+        {/* <HeaderLink
           ml={4}
           name={t("Audit")}
           route="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
-        />
+        /> */}
       </Row>
 
       <AccountButton />

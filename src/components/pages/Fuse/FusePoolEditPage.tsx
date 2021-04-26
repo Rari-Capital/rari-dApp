@@ -15,7 +15,6 @@ import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
@@ -212,7 +211,6 @@ const FusePoolEditPage = React.memo(() => {
         </RowOrColumn>
       </Column>
 
-      <CopyrightSpacer forceShow />
     </>
   );
 });

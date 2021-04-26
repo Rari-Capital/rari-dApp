@@ -9,6 +9,7 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { Heading } from "@chakra-ui/react";
 
 import { Pool } from "../utils/poolUtils";
+import Layout from "./shared/Layout";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -108,7 +109,7 @@ const PageNotFound = React.memo(() => {
 const App = React.memo(() => {
 
   return (
-    
+    <Layout>
       <Routes>
         <Route path="/pools" element={<Outlet />}>
           {Object.values(Pool).map((pool) => {
@@ -132,7 +133,7 @@ const App = React.memo(() => {
 
         <Route path="/pool2" element={<Pool2Page />} />
 
-        <Route path="/stats" element={<StatsPage />} />
+        <Route path="/dashboard" element={<StatsPage />} />
 
         <Route path="/fuse" element={<FusePoolsPage />} />
         <Route path="/fuse/new-pool" element={<FusePoolCreatePage />} />
@@ -144,6 +145,7 @@ const App = React.memo(() => {
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>
+    </Layout>
   );
 });
 

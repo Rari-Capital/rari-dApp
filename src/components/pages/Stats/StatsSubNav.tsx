@@ -9,7 +9,14 @@ import {
 } from '@chakra-ui/react';
 
 // Icons - todo: move to Logos.tsx
-import {FuseLogoSVG, EarnLogoSVG, Pool2LogoSVG, TranchesLogoSVG, StatsLogoSVG} from 'components/shared/Logos'
+import {
+  FuseLogoSVGWhite, 
+  EarnLogoSVGWhite, 
+  Pool2LogoSVGWhite, 
+  TranchesLogoSVGWhite, 
+  StatsLogoSVGWhite,
+  
+} from 'components/shared/Logos'
 
 // Hooks
 import { useTranslation } from 'react-i18next';
@@ -93,19 +100,19 @@ const SubNavItem = ({
   let logo;
   switch (subNav){
     case StatsSubNav.TRANCHES:
-      logo = <TranchesLogoSVG />
+      logo = <TranchesLogoSVGWhite />
       break;
     case StatsSubNav.POOL2:
-      logo = <Pool2LogoSVG/>
+      logo = <Pool2LogoSVGWhite/>
       break;
     case StatsSubNav.EARN:
-      logo = <EarnLogoSVG />
+      logo = <EarnLogoSVGWhite />
       break;
     case StatsSubNav.FUSE:
-      logo = <FuseLogoSVG />
+      logo = <FuseLogoSVGWhite />
       break;
     case StatsSubNav.TOTAL:
-      logo = <StatsLogoSVG />
+      logo = <StatsLogoSVGWhite />
       break;
   }
 

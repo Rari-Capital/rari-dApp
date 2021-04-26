@@ -24,7 +24,6 @@ import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { shortUsdFormatter } from "../../../utils/bigUtils";
 import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
@@ -176,8 +175,6 @@ const FusePoolInfoPage = React.memo(() => {
           </DashboardBox>
         </RowOrColumn>
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });

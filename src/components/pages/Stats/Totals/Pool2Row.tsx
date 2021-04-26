@@ -5,7 +5,7 @@ import {
     Tr,
     Td,
 } from '@chakra-ui/react';
-import { Pool2LogoSVG } from 'components/shared/Logos';
+import { Pool2LogoSVGWhite } from 'components/shared/Logos';
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 
@@ -16,7 +16,7 @@ const EarnRow = ({ apr, earned, balance }: { apr: any, earned: any, balance: any
             <Td>
                 <SimpleTooltip label="Pool2" placement="right">
                     <Box width="30px" >
-                        <Pool2LogoSVG width="25px" height="25px" />
+                        <Pool2LogoSVGWhite width="25px" height="25px" />
                     </Box>
                 </SimpleTooltip>
             </Td>

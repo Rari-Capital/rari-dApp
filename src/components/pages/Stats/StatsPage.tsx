@@ -10,7 +10,6 @@ import {
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { Column, Row } from 'buttered-chakra';
 
-import CopyrightSpacer from 'components/shared/CopyrightSpacer';
 import ForceAuthModal from 'components/shared/ForceAuthModal';
 import { Header } from 'components/shared/Header';
 import SubNav from './StatsSubNav';
@@ -20,6 +19,8 @@ import StatsFuseSection from './StatsFuseSection';
 import StatsPool2Section from './StatsPool2Section';
 import StatsEarnSection from './StatsEarnSection';
 import StatsTranchesSection from './StatsTranchesSection';
+import Footer from 'components/shared/Footer';
+
 
 // Context
 import { useRari } from 'context/RariContext';
@@ -109,7 +110,7 @@ const StatsPage = () => {
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Box>
         </Column>
-        <CopyrightSpacer forceShow />
+        <Footer forceShow />
       </Column>
     </SaffronProvider>
   );

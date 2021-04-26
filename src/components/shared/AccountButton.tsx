@@ -6,6 +6,7 @@ import {
   ModalOverlay,
   ModalContent,
   Button,
+  Link,
   Text,
 } from "@chakra-ui/react";
 
@@ -88,7 +89,7 @@ const Buttons = ({
     <>
       {isMobile ? null : (
         <>
-          <DashboardBox
+          {/* <DashboardBox
             as="button"
             flexShrink={0}
             width="110px"
@@ -97,7 +98,7 @@ const Buttons = ({
             onClick={openMoonpayModal}
           >
             <Center expand>{t("Buy Crypto")}</Center>
-          </DashboardBox>
+          </DashboardBox> */}
 
           <DashboardBox
             ml={4}
@@ -222,9 +223,28 @@ export const SettingsModal = ({
 
           <LanguageSelect />
 
+          <Row mainAxisAlignment="center" crossAxisAlignment="center" mt={4} width="100%">
+            <Link target="_blank" href="https://docs.rari.capital/">
+              <Text mx={2} text="sm" textDecoration="underline">
+                Docs
+            </Text>
+            </Link>
+            <Link target="_blank" href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3">
+              <Text mx={2} text="sm" textDecoration="underline">
+                Notion
+            </Text>
+            </Link>
+            <Link target="_blank" href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7">
+              <Text mx={2} text="sm" textDecoration="underline">
+                Audit
+              </Text>
+            </Link>
+          </Row>
+
           <Text mt={4} fontSize="10px">
             Version {version}
           </Text>
+
         </Column>
       </ModalContent>
     </Modal>
