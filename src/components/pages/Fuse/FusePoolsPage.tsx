@@ -64,6 +64,8 @@ const PoolList = () => {
 
   const { filteredPools } = useFusePools(filter)
 
+  console.log({ filteredPools })
+
   const isMobile = useIsMobile();
 
   return (
