@@ -84,7 +84,6 @@ const StatsPage = () => {
           width="100%"
           mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
-          height="100%"
           mt={10}
           p={15}
         >

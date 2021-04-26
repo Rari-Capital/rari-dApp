@@ -6,14 +6,14 @@ import {
 } from "@chakra-ui/react";
 import { Row, Column } from "buttered-chakra";
 
-const Footer = (props) => {
+const Footer = () => {
     return (
         <>
             <Column py={3} width="100%" flexShrink={0} mt="auto">
                 <Row mainAxisAlignment="center" crossAxisAlignment="center" mt={4} width="100%">
-                    <Link target="_blank" href="https://vote.rari.capital">
+                    <Link target="_blank" href="https://docs.rari.capital/">
                         <Text color="white" mx={2} text="sm" textDecoration="underline">
-                            Vote
+                            Docs
                          </Text>
                     </Link>
                     <Text color="white" text="sm">
@@ -33,7 +33,7 @@ const Footer = (props) => {
                          </Text>
                     </Link>
                 </Row>
-                <CopyrightSpacer {...props} />
+                <CopyrightSpacer forceShow />
             </Column>
         </>
     )

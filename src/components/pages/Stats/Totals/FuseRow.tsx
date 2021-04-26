@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import {
     Box,
     Tr,
@@ -14,6 +14,9 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 
 const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
+
+    const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData])
+    const mb = singleRow ? null : 3
 
     return (
         <motion.tr 
@@ -30,23 +33,23 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
                 </Td>
                 <Td>
                     {filteredPoolsData?.map(({ id }) => (
-                        <Text mb={3} key={id}>{id}</Text>
+                        <Text mb={mb} key={id}>{id}</Text>
                     ))}
                 </Td>
                 <Td >
                     {fusePoolsData?.map(({ comptroller, totalSupplyBalanceUSD }) => (
-                        <Text mb={3} key={comptroller}>{smallStringUsdFormatter(totalSupplyBalanceUSD)}</Text>
+                        <Text mb={mb} key={comptroller}>{smallStringUsdFormatter(totalSupplyBalanceUSD)}</Text>
                     ))}
                 </Td>
                 {/* Todo (sharad) - implement RGT earned in poolInfo */}
                 <Td>
                     {filteredPoolsData?.map(({ id }) => (
-                        <Text mb={3} key={id}>N/A</Text>
+                        <Text mb={mb} key={id}>N/A</Text>
                     ))}
                 </Td>
                 <Td>
                     {filteredPoolsData?.map(({ id }) => (
-                        <Text mb={3} key={id}>N/A</Text>
+                        <Text mb={mb} key={id}>N/A</Text>
                     ))}
                 </Td>
             </motion.tr>
