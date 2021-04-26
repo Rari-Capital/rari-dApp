@@ -9,26 +9,26 @@ import { Row, Column } from "buttered-chakra";
 const Footer = (props) => {
     return (
         <>
-            <Column py={3} width="100%" flexShrink={0}>
+            <Column py={3} width="100%" flexShrink={0} mt="auto">
                 <Row mainAxisAlignment="center" crossAxisAlignment="center" mt={4} width="100%">
                     <Link target="_blank" href="https://vote.rari.capital">
-                        <Text mx={2} text="sm" textDecoration="underline">
+                        <Text color="white" mx={2} text="sm" textDecoration="underline">
                             Vote
                          </Text>
                     </Link>
-                    <Text text="sm">
+                    <Text color="white" text="sm">
                         ·   
                     </Text>
                     <Link target="_blank" href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3">
-                        <Text mx={2} text="sm" textDecoration="underline">
+                        <Text color="white"  mx={2} text="sm" textDecoration="underline">
                             Notion
                         </Text>
                     </Link>
-                    <Text text="sm">
+                    <Text color="white" text="sm">
                         ·
                     </Text>
                     <Link target="_blank" href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7">
-                        <Text mx={2} text="sm" textDecoration="underline">
+                        <Text color="white" mx={2} text="sm" textDecoration="underline">
                             Audit
                          </Text>
                     </Link>

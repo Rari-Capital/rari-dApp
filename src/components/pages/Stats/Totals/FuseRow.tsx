@@ -6,6 +6,7 @@ import {
     Td,
     Text
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
 import { smallStringUsdFormatter } from 'utils/bigUtils';
 import { FuseLogoSVGWhite } from 'components/shared/Logos'
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
@@ -15,7 +16,11 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
 
     return (
-            <Tr>
+        <motion.tr 
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+         >
                 <Td textAlign="center">
                     <SimpleTooltip label="Fuse" placement="right">
                         <Box width="30px" >
@@ -44,7 +49,7 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
                         <Text mb={3} key={id}>N/A</Text>
                     ))}
                 </Td>
-            </Tr>
+            </motion.tr>
     )
 }
 

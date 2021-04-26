@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 // Components
 import {
@@ -9,6 +9,8 @@ import {
 } from '@chakra-ui/react';
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { Column, Row } from 'buttered-chakra';
+import { motion, useAnimation} from 'framer-motion'
+
 
 import ForceAuthModal from 'components/shared/ForceAuthModal';
 import { Header } from 'components/shared/Header';
@@ -51,9 +53,17 @@ const StatsPage = () => {
   const [netDeposits, setNetDeposits] = useState(0)
   const [netDebt, setNetDebt] = useState(0)
 
-  const netBalance = useMemo(() => netDeposits - netDebt, [netDeposits, netDebt])
+  const netBalance = useMemo(() => {
+    return netDeposits - netDebt
+  }, [netDeposits, netDebt])
 
   // console.log({ netBalance, netDeposits, netDebt })
+  const controls = useAnimation()
+  useEffect(()=> {
+    setTimeout(() => {
+      controls.start({opacity: 1, y: 0})
+    }, 200)
+  }, netBalance)
 
   return (
     <SaffronProvider>
@@ -85,9 +95,16 @@ const StatsPage = () => {
             <Heading size="lg">
               {t('Net Balance')}:
               </Heading>
-            <Heading ml={2} size='lg' >
-              {smallUsdFormatter(netBalance) ?? smallUsdFormatter(0)}
-            </Heading>
+              <motion.div
+                initial={{ opacity: 0, y: -40 }}
+                // animate={controls}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 40 }}
+              >
+                <Heading ml={2} size='lg' >
+                  {smallUsdFormatter(netBalance) ?? smallUsdFormatter(0)}
+                </Heading>
+              </motion.div>
             <SimpleTooltip 
             label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}
             placement="right">

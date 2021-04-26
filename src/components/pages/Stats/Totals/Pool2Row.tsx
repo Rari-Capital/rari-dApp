@@ -5,6 +5,7 @@ import {
     Tr,
     Td,
 } from '@chakra-ui/react';
+import { motion } from 'framer-motion'
 import { Pool2LogoSVGWhite } from 'components/shared/Logos';
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
@@ -12,7 +13,11 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 const EarnRow = ({ apr, earned, balance }: { apr: any, earned: any, balance: any }) => {
 
     return (
-        <Tr>
+        <motion.tr 
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 40 }}
+         >
             <Td>
                 <SimpleTooltip label="Pool2" placement="right">
                     <Box width="30px" >
@@ -33,7 +38,7 @@ const EarnRow = ({ apr, earned, balance }: { apr: any, earned: any, balance: any
                 <Td>
                     N/A
             </Td>
-        </Tr>
+        </motion.tr>
     )
 }
 
