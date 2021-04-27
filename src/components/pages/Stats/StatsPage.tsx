@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { Column, Row } from 'buttered-chakra';
-import { motion, useAnimation} from 'framer-motion'
+import { motion} from 'framer-motion'
 
 
 import ForceAuthModal from 'components/shared/ForceAuthModal';
@@ -57,14 +57,6 @@ const StatsPage = () => {
     return netDeposits - netDebt
   }, [netDeposits, netDebt])
 
-  // console.log({ netBalance, netDeposits, netDebt })
-  const controls = useAnimation()
-  useEffect(()=> {
-    setTimeout(() => {
-      controls.start({opacity: 1, y: 0})
-    }, 200)
-  }, netBalance)
-
   return (
     <SaffronProvider>
       <ForceAuthModal />
@@ -74,7 +66,6 @@ const StatsPage = () => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? '100%' : '1000px'}
-        minH="100vh"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
@@ -96,7 +87,6 @@ const StatsPage = () => {
               </Heading>
               <motion.div
                 initial={{ opacity: 0, y: -40 }}
-                // animate={controls}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 40 }}
               >
@@ -126,7 +116,6 @@ const StatsPage = () => {
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Box>
         </Column>
-        <Footer forceShow />
       </Column>
     </SaffronProvider>
   );
