@@ -210,7 +210,6 @@ const FusePoolEditPage = React.memo(() => {
           </Box>
         </RowOrColumn>
       </Column>
-
     </>
   );
 });

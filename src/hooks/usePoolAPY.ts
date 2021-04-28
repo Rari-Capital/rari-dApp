@@ -33,16 +33,17 @@ export const usePoolsAPY = (pools: PoolInterface[]) => {
       return {
         queryKey: poolType + " apy",
         queryFn: () => fetchPoolAPY(rari, poolType),
-      }
+      };
     })
-  )
+  );
 
   return useMemo(() => {
     return !poolAPYs.length
       ? []
-      : poolAPYs.map(
-        ({ isLoading, error, data }) =>
-          ({ isLoading, error, data })
-      )
-  }, [poolAPYs])
-}
+      : poolAPYs.map(({ isLoading, error, data }) => ({
+          isLoading,
+          error,
+          data,
+        }));
+  }, [poolAPYs]);
+};

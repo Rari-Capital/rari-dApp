@@ -1,44 +1,40 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React, { Dispatch, SetStateAction } from "react";
 
 // Components
-import DashboardBox from 'components/shared/DashboardBox';
-import { Center, Column, Row, RowOrColumn } from 'buttered-chakra';
-import {
-  Box,
-  Heading,
-} from '@chakra-ui/react';
+import DashboardBox from "components/shared/DashboardBox";
+import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
+import { Box, Heading } from "@chakra-ui/react";
 
 // Icons - todo: move to Logos.tsx
 import {
-  FuseLogoSVGWhite, 
-  EarnLogoSVGWhite, 
-  Pool2LogoSVGWhite, 
-  TranchesLogoSVGWhite, 
+  FuseLogoSVGWhite,
+  EarnLogoSVGWhite,
+  Pool2LogoSVGWhite,
+  TranchesLogoSVGWhite,
   StatsLogoSVGWhite,
-  
-} from 'components/shared/Logos'
+} from "components/shared/Logos";
 
 // Hooks
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 // Types
-import { StatsSubNav } from './StatsPage'
+import { StatsSubNav } from "./StatsPage";
 
 const SubNav = ({
   isMobile,
   subNav,
-  setSubNav
+  setSubNav,
 }: {
-  isMobile: boolean,
-  subNav: StatsSubNav,
-  setSubNav: Dispatch<SetStateAction<StatsSubNav>>
+  isMobile: boolean;
+  subNav: StatsSubNav;
+  setSubNav: Dispatch<SetStateAction<StatsSubNav>>;
 }) => {
   return (
     <>
       <Column
         expand
         mainAxisAlignment="center"
-        crossAxisAlignment={isMobile ? 'center' : 'flex-start'}
+        crossAxisAlignment={isMobile ? "center" : "flex-start"}
         textAlign="center"
         py={4}
       >
@@ -81,8 +77,8 @@ const SubNav = ({
         </Row>
       </Column>
     </>
-  )
-}
+  );
+};
 
 const SubNavItem = ({
   title,
@@ -92,47 +88,49 @@ const SubNavItem = ({
 }: {
   title: string;
   setActive: () => void;
-  subNav: StatsSubNav
+  subNav: StatsSubNav;
   active: boolean;
 }) => {
   const { t } = useTranslation();
 
   let logo;
-  switch (subNav){
+  switch (subNav) {
     case StatsSubNav.TRANCHES:
-      logo = <TranchesLogoSVGWhite />
+      logo = <TranchesLogoSVGWhite />;
       break;
     case StatsSubNav.POOL2:
-      logo = <Pool2LogoSVGWhite/>
+      logo = <Pool2LogoSVGWhite />;
       break;
     case StatsSubNav.EARN:
-      logo = <EarnLogoSVGWhite />
+      logo = <EarnLogoSVGWhite />;
       break;
     case StatsSubNav.FUSE:
-      logo = <FuseLogoSVGWhite />
+      logo = <FuseLogoSVGWhite />;
       break;
     case StatsSubNav.TOTAL:
-      logo = <StatsLogoSVGWhite />
+      logo = <StatsLogoSVGWhite />;
       break;
   }
 
   return (
-    <Box  
+    <Box
       mr={7}
       height="100%"
-      color={active ? 'green' : 'white'}
+      color={active ? "green" : "white"}
       _hover={{
-        color: !active && 'grey',
-        cursor: 'pointer',
+        color: !active && "grey",
+        cursor: "pointer",
       }}
       onClick={setActive}
     >
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
         {logo}
-        <Heading size="md" ml={1} >{t(title)}</Heading>
+        <Heading size="md" ml={1}>
+          {t(title)}
+        </Heading>
       </Row>
     </Box>
   );
 };
 
-export default SubNav
+export default SubNav;

@@ -52,7 +52,10 @@ import {
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
-import { usePoolBalance, useTotalPoolsBalance } from "../../hooks/usePoolBalance";
+import {
+  usePoolBalance,
+  useTotalPoolsBalance,
+} from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { useTVLFetchers } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
@@ -111,7 +114,6 @@ const MultiPoolPortal = React.memo(() => {
         </DashboardBox>
 
         <PoolCards />
-
       </Column>
     </>
   );
@@ -210,7 +212,10 @@ const FundStats = () => {
 
   const { isAuthed } = useRari();
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useTotalPoolsBalance()
+  const {
+    isLoading: isBalanceLoading,
+    data: balanceData,
+  } = useTotalPoolsBalance();
 
   const { getNumberTVL } = useTVLFetchers();
 
@@ -358,7 +363,9 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(pool);
+  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(
+    pool
+  );
 
   const poolAPY = usePoolAPY(pool);
 
@@ -375,10 +382,10 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
         <Spinner />
       </Center>
     );
-  } 
+  }
 
-  const myBalance = balanceData!
-  const formattedBalance = formatBalanceBN(rari, myBalance, pool === Pool.ETH)
+  const myBalance = balanceData!;
+  const formattedBalance = formatBalanceBN(rari, myBalance, pool === Pool.ETH);
 
   // const rgtAPR = useRGTAPR();
 
@@ -486,7 +493,6 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 };
 
 const InterestEarned = () => {
-
   const interestEarned = usePoolInterestEarned();
 
   const { data: yieldPoolBalance } = usePoolBalance(Pool.YIELD);

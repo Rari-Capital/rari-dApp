@@ -16,9 +16,7 @@ import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar, { useFilter } from "./FuseTabBar";
 import { useTokenData } from "hooks/useTokenData";
 
-import {
-  filterPoolName,
-} from "utils/fetchFusePoolData";
+import { filterPoolName } from "utils/fetchFusePoolData";
 
 import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
@@ -61,7 +59,7 @@ const PoolList = () => {
   const filter = useFilter();
   const { t } = useTranslation();
 
-  const { filteredPools } = useFusePools(filter)
+  const { filteredPools } = useFusePools(filter);
   const isMobile = useIsMobile();
 
   return (

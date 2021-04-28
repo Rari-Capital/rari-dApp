@@ -83,7 +83,6 @@ const StatsPage = loadable(
   }
 );
 
-
 const PageNotFound = React.memo(() => {
   return (
     <Heading
@@ -102,7 +101,6 @@ const PageNotFound = React.memo(() => {
 });
 
 const App = React.memo(() => {
-
   return (
     <Layout>
       <Routes>

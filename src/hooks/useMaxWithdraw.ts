@@ -18,7 +18,7 @@ export const fetchMaxWithdraw = async ({
   symbol: string;
   poolType: Pool;
 }) => {
-  const bigBalance  = await fetchPoolBalance({
+  const bigBalance = await fetchPoolBalance({
     pool: poolType,
     rari,
     address,

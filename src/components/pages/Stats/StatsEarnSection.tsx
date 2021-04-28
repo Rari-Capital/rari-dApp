@@ -38,14 +38,16 @@ const Earn = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {aggregatePoolsInfo?.map(aggPoolInfo => {
+          {aggregatePoolsInfo?.map((aggPoolInfo) => {
             if (aggPoolInfo?.poolBalance && !aggPoolInfo.poolBalance.isZero())
               return (
                 <Tr key={aggPoolInfo.poolInfo.title}>
                   <Td>{aggPoolInfo.poolInfo.title}</Td>
                   <Td>{aggPoolInfo.poolAPY ?? <Spinner />}%</Td>
                   <Td>{aggPoolInfo.formattedPoolBalance ?? <Spinner />}</Td>
-                  <Td>{aggPoolInfo.formattedPoolInterestEarned ?? <Spinner />}</Td>
+                  <Td>
+                    {aggPoolInfo.formattedPoolInterestEarned ?? <Spinner />}
+                  </Td>
                   <Td>{aggPoolInfo.formattedPoolGrowth ?? <Spinner />}%</Td>
                 </Tr>
               );

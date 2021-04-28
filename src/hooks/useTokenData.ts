@@ -38,7 +38,6 @@ export const useTokenDataWithContract = (address: string) => {
   return { tokenData, contract };
 };
 
-
 export const fetchTokenData = async (address: string) => {
   let data;
 
@@ -51,8 +50,8 @@ export const fetchTokenData = async (address: string) => {
           (process.env.NODE_ENV === "development"
             ? "https://app.rari.capital"
             : "") +
-          "/api/tokenData?address=" +
-          address
+            "/api/tokenData?address=" +
+            address
         ).then((res) => res.json())),
         address: address,
       };
@@ -72,41 +71,39 @@ export const fetchTokenData = async (address: string) => {
   }
 
   return data as TokenData;
-}
+};
 
 export const useTokenData = (address: string) => {
   const { data: tokenData } = useQuery(
     address + " tokenData",
     async () => await fetchTokenData(address)
-  )
-  return tokenData
+  );
+  return tokenData;
 };
 
 export const useTokensData = (addresses: string[]) => {
-
   const tokensData = useQueries(
     addresses.map((address: string) => {
       return {
         queryKey: address + " tokenData",
-        queryFn:  async () => await fetchTokenData(address)
-      }
+        queryFn: async () => await fetchTokenData(address),
+      };
     })
-  )
+  );
 
   return useMemo(() => {
+    const ret: any[] = [];
 
-    const ret : any[] = []
-
-    if (!tokensData.length) return null
+    if (!tokensData.length) return null;
 
     // Return null altogether
     tokensData.forEach(({ data }) => {
-      if (!data) return null
-      ret.push(data)
-    })
+      if (!data) return null;
+      ret.push(data);
+    });
 
-    if (!ret.length) return null
+    if (!ret.length) return null;
 
-    return ret
-  }, [tokensData])
-}
+    return ret;
+  }, [tokensData]);
+};

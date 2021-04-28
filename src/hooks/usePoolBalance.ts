@@ -8,9 +8,9 @@ import { getSDKPool } from "../utils/poolUtils";
 import { PoolInterface } from "constants/pools";
 
 interface UseQueryResponse {
-  data: any,
-  isLoading: boolean,
-  error: any
+  data: any;
+  isLoading: boolean;
+  error: any;
 }
 
 export const fetchPoolBalance = async ({
@@ -48,22 +48,25 @@ export const usePoolBalances = (pools: PoolInterface[]): UseQueryResponse[] => {
       return {
         queryKey: address + " " + pool + " balance",
         queryFn: () => fetchPoolBalance({ pool, rari, address }),
-      }
+      };
     })
-  )
+  );
 
-  return useMemo(() =>
-    !poolBalances.length
-      ? []
-      : poolBalances.map(
-        ({ isLoading, error, data }) =>
-          ({ isLoading, error, data })
-      )
-    , [poolBalances])
-}
+  return useMemo(
+    () =>
+      !poolBalances.length
+        ? []
+        : poolBalances.map(({ isLoading, error, data }) => ({
+            isLoading,
+            error,
+            data,
+          })),
+    [poolBalances]
+  );
+};
 
-export const useTotalPoolsBalance = () : UseQueryResponse => {
-  const { rari, address, } = useRari();
+export const useTotalPoolsBalance = (): UseQueryResponse => {
+  const { rari, address } = useRari();
 
   const { isLoading, data, error } = useQuery(
     address + " allPoolBalance",
@@ -85,6 +88,5 @@ export const useTotalPoolsBalance = () : UseQueryResponse => {
     }
   );
 
-  return { isLoading, data, error }
-
-}
+  return { isLoading, data, error };
+};

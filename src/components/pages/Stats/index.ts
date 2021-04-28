@@ -1,2 +1,2 @@
-import StatsPage from './StatsPage'
-export default StatsPage
+import StatsPage from "./StatsPage";
+export default StatsPage;
