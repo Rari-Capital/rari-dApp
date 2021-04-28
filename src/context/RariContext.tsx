@@ -210,11 +210,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(
     async (cacheProvider: boolean = true) => {
-      const provider = await launchModalLazy(t, cacheProvider);
-
-      setWeb3ModalProvider(provider);
-
-      setRariAndAddressFromModal(provider);
+      try {
+        const provider = await launchModalLazy(t, cacheProvider)
+        setWeb3ModalProvider(provider);
+        setRariAndAddressFromModal(provider);
+      } catch (err) {
+        return console.error(err);
+      }
     },
     [setWeb3ModalProvider, setRariAndAddressFromModal, t]
   );
@@ -237,6 +239,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       return null;
     });
 
+    window.localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER")
+
     setAddress(EmptyAddress);
   }, [setWeb3ModalProvider, refetchAccountData]);
 
@@ -258,7 +262,9 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const isMobile = useIsMobile();
   useEffect(() => {
     if (!isMobile) {
-      // login();
+      if (window.localStorage.WEB3_CONNECT_CACHED_PROVIDER){
+        login(); 
+      }
     }
   }, [login, isMobile]);
 

@@ -62,7 +62,7 @@ import BigNumber from "bignumber.js";
 import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
 import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
-import useAuthedCallback from "../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();

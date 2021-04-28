@@ -19,7 +19,7 @@ import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
 import Pool2Modal from "./Pool2Modal";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import useAuthedCallback from "../../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();

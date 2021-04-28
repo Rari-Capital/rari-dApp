@@ -7,11 +7,9 @@ export const useAuthedCallback = (callback : () => any) => {
     if (isAuthed) { 
       return callback()
     } else {
-      return login(false)
+      return login()
     }
   }
 
   return authedCallback
 }
-
-export default useAuthedCallback

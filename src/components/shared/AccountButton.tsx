@@ -27,7 +27,7 @@ import { version } from "../..";
 
 import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
-import useAuthedCallback from "../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -95,7 +95,7 @@ const Buttons = ({
     () => {
       if (isAuthed) {
         openModal()
-      } else login(false)
+      } else login()
     },
     [isAuthed, login, openModal],
   )
@@ -135,7 +135,6 @@ const Buttons = ({
         height="40px"
         flexShrink={0}
         width="auto"
-        // background="whatsapp.500"
         onClick={handleAccountButtonClick}
       >
         <Row
@@ -184,8 +183,8 @@ export const SettingsModal = ({
   };
 
   const handleDisconnectClick = () => {
-    onClose()
-    logout()
+    onClose();
+    logout();
   }
 
   const onClaimRGT = () => {
