@@ -37,7 +37,7 @@ export const AccountButton = React.memo(() => {
     onClose: closeSettingsModal,
   } = useDisclosure();
 
-  const authedOpenSettingsModal = useAuthedCallback(openSettingsModal)
+  const authedOpenSettingsModal = useAuthedCallback(openSettingsModal);
 
   const {
     isOpen: isClaimRGTModalOpen,
@@ -45,7 +45,7 @@ export const AccountButton = React.memo(() => {
     onClose: closeClaimRGTModal,
   } = useDisclosure();
 
-  const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal)
+  const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal);
 
   const {
     isOpen: isMoonpayModalOpen,
@@ -53,7 +53,7 @@ export const AccountButton = React.memo(() => {
     onClose: closeMoonpayModal,
   } = useDisclosure();
 
-  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal)
+  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal);
 
   return (
     <>
@@ -92,21 +92,17 @@ const Buttons = ({
 
   const isMobile = useIsSmallScreen();
 
-  const handleAccountButtonClick = useCallback(
-    () => {
-      if (isAuthed) {
-        openModal()
-      } else login()
-    },
-    [isAuthed, login, openModal],
-  )
+  const handleAccountButtonClick = useCallback(() => {
+    if (isAuthed) {
+      openModal();
+    } else login();
+  }, [isAuthed, login, openModal]);
 
   return (
     <>
       {isMobile ? null : (
         <>
-        {/* Tentative removal from header */}
-          {/* <DashboardBox
+          <DashboardBox
             as="button"
             flexShrink={0}
             width="110px"
@@ -115,7 +111,7 @@ const Buttons = ({
             onClick={openMoonpayModal}
           >
             <Center expand>{t("Buy Crypto")}</Center>
-          </DashboardBox> */}
+          </DashboardBox>
 
           <DashboardBox
             ml={4}
@@ -131,7 +127,6 @@ const Buttons = ({
         </>
       )}
 
-
       {/* Connect + Account button */}
       <DashboardBox
         ml={{ md: 4, base: 0 }}
@@ -139,7 +134,7 @@ const Buttons = ({
         height="40px"
         flexShrink={0}
         flexGrow={0}
-        width="170px"
+        width="140px"
         onClick={handleAccountButtonClick}
       >
         <Row
@@ -149,16 +144,13 @@ const Buttons = ({
           px={3}
         >
           {/* Conditionally display Connect button or Account button */}
-          {!isAuthed 
-          ? (
-            <>
-            {isAttemptingLogin && <Spinner />}
-            <Text fontWeight="semibold">
-              {isAttemptingLogin ? "Connecting..." : "Connect"}
-            </Text>
-            </>
-          ) 
-          : (
+          {!isAuthed ? (
+            isAttemptingLogin ? (
+              <Spinner />
+            ) : (
+              <Text fontWeight="semibold"> Connect </Text>
+            )
+          ) : (
             <>
               <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
               <Text ml={2} fontWeight="semibold">
@@ -195,7 +187,7 @@ export const SettingsModal = ({
   const handleDisconnectClick = () => {
     onClose();
     logout();
-  }
+  };
 
   const onClaimRGT = () => {
     onClose();
