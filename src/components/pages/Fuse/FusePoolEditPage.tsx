@@ -36,6 +36,7 @@ import BigNumber from "bignumber.js";
 import { useTokenData } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
 import { handleGenericError } from "../../../utils/errorHandling";
+import useAuthedCallback from "../../../hooks/useAuthedCallback";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -113,6 +114,8 @@ const FusePoolEditPage = React.memo(() => {
     onClose: closeAddAssetModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openAddAssetModal)
+
   const { t } = useTranslation();
 
   const { poolId } = useParams();
@@ -179,7 +182,7 @@ const FusePoolEditPage = React.memo(() => {
               {data ? (
                 data.assets.length > 0 ? (
                   <AssetConfiguration
-                    openAddAssetModal={openAddAssetModal}
+                    openAddAssetModal={authedOpenModal}
                     assets={data.assets}
                     comptrollerAddress={data.comptroller}
                     poolID={poolId}
@@ -196,7 +199,7 @@ const FusePoolEditPage = React.memo(() => {
 
                     <AddAssetButton
                       comptrollerAddress={data.comptroller}
-                      openAddAssetModal={openAddAssetModal}
+                      openAddAssetModal={authedOpenModal}
                     />
                   </Column>
                 )

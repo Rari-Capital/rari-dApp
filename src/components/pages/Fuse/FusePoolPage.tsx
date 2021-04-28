@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
+import useAuthedCallback from "../../../hooks/useAuthedCallback";
 import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
@@ -318,6 +319,8 @@ const AssetSupplyRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openModal)
+
   const asset = assets[index];
 
   const { fuse, address } = useRari();
@@ -402,7 +405,7 @@ const AssetSupplyRow = ({
           crossAxisAlignment="center"
           width="27%"
           as="button"
-          onClick={openModal}
+          onClick={authedOpenModal}
         >
           <Avatar
             bg="#FFF"
@@ -424,7 +427,7 @@ const AssetSupplyRow = ({
             crossAxisAlignment="flex-end"
             width="27%"
             as="button"
-            onClick={openModal}
+            onClick={authedOpenModal}
           >
             <Text
               color={tokenData?.color ?? "#FF"}
@@ -443,7 +446,7 @@ const AssetSupplyRow = ({
           crossAxisAlignment="flex-end"
           width={isMobile ? "40%" : "27%"}
           as="button"
-          onClick={openModal}
+          onClick={authedOpenModal}
         >
           <Text
             color={tokenData?.color ?? "#FFF"}
@@ -605,6 +608,8 @@ const AssetBorrowRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openModal)
+
   const tokenData = useTokenData(asset.underlyingToken);
 
   const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
@@ -633,7 +638,7 @@ const AssetBorrowRow = ({
         py={1.5}
         className="hover-row"
         as="button"
-        onClick={openModal}
+        onClick={authedOpenModal}
       >
         <Row
           mainAxisAlignment="flex-start"
