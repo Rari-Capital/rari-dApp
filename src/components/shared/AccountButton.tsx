@@ -95,7 +95,7 @@ const Buttons = ({
     () => {
       if (isAuthed) {
         openModal()
-      } else login()
+      } else login(false)
     },
     [isAuthed, login, openModal],
   )
@@ -135,6 +135,7 @@ const Buttons = ({
         height="40px"
         flexShrink={0}
         width="auto"
+        // background="whatsapp.500"
         onClick={handleAccountButtonClick}
       >
         <Row
@@ -220,7 +221,7 @@ export const SettingsModal = ({
           />
 
           <Button
-            bg="red.500"
+            bg="facebook.500"
             width="100%"
             height="45px"
             fontSize="xl"
@@ -235,7 +236,7 @@ export const SettingsModal = ({
           </Button>
 
           <Button
-            bg="whatsapp.500"
+            bg={"whatsapp.500"}
             width="100%"
             height="45px"
             fontSize="xl"
@@ -250,7 +251,7 @@ export const SettingsModal = ({
           </Button>
 
           <Button
-            bg="whatsapp.500"
+            bg="red.500"
             width="100%"
             height="45px"
             fontSize="xl"
