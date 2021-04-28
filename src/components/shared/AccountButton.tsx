@@ -142,13 +142,14 @@ const Buttons = ({
           mainAxisAlignment="space-around"
           crossAxisAlignment="center"
           px={3}
+          py={1}
         >
           {/* Conditionally display Connect button or Account button */}
           {!isAuthed ? (
             isAttemptingLogin ? (
               <Spinner />
             ) : (
-              <Text fontWeight="semibold"> Connect </Text>
+              <Text fontWeight="semibold">Connect</Text>
             )
           ) : (
             <>
