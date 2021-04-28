@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 import {
   Table,
   Text,
@@ -7,26 +7,22 @@ import {
   Tr,
   Th,
   Td,
-  Spinner
-} from '@chakra-ui/react';
-import { motion } from 'framer-motion'
+  Spinner,
+} from "@chakra-ui/react";
+import { motion } from "framer-motion";
 
-
-import { useAggregatePoolInfos } from 'hooks/usePoolInfo';
-import { smallUsdFormatter } from 'utils/bigUtils';
+import { useAggregatePoolInfos } from "hooks/usePoolInfo";
+import { smallUsdFormatter } from "utils/bigUtils";
 
 const Earn = () => {
+  const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
 
-  const { totals, aggregatePoolsInfo } = useAggregatePoolInfos()
-
-  const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance])
-
-  console.log({ totals, aggregatePoolsInfo })
+  const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance]);
 
   return (
     <motion.div
       key="earn"
-      style={{ width: '100%' }}
+      style={{ width: "100%" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -42,23 +38,34 @@ const Earn = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {aggregatePoolsInfo?.map(p => {
-            if (p?.poolBalance && !p.poolBalance.isZero()) return (
-              <Tr key={p.poolInfo.title}>
-                <Td>{p.poolInfo.title}</Td>
-                <Td>{p.poolAPY ?? <Spinner />}%</Td>
-                <Td>{p.formattedPoolBalance ?? <Spinner />}</Td>
-                <Td>{p.formattedPoolInterestEarned ?? <Spinner />}</Td>
-                <Td>{p.formattedPoolGrowth ?? <Spinner />}%</Td>
-              </Tr>
-            )
+          {aggregatePoolsInfo?.map(aggPoolInfo => {
+            if (aggPoolInfo?.poolBalance && !aggPoolInfo.poolBalance.isZero())
+              return (
+                <Tr key={aggPoolInfo.poolInfo.title}>
+                  <Td>{aggPoolInfo.poolInfo.title}</Td>
+                  <Td>{aggPoolInfo.poolAPY ?? <Spinner />}%</Td>
+                  <Td>{aggPoolInfo.formattedPoolBalance ?? <Spinner />}</Td>
+                  <Td>{aggPoolInfo.formattedPoolInterestEarned ?? <Spinner />}</Td>
+                  <Td>{aggPoolInfo.formattedPoolGrowth ?? <Spinner />}%</Td>
+                </Tr>
+              );
           })}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr>
-            <Td><Text fontWeight={hasDeposits && "bold"}>Total</Text></Td>
+            <Td>
+              <Text fontWeight={hasDeposits && "bold"}>Total</Text>
+            </Td>
             <Td></Td>
-            <Td><Text fontWeight={hasDeposits && "bold"}>{smallUsdFormatter(totals?.balance)}</Text></Td>
-            <Td><Text fontWeight={hasDeposits && "bold"}>{totals?.interestEarned}</Text></Td>
+            <Td>
+              <Text fontWeight={hasDeposits && "bold"}>
+                {smallUsdFormatter(totals?.balance)}
+              </Text>
+            </Td>
+            <Td>
+              <Text fontWeight={hasDeposits && "bold"}>
+                {totals?.interestEarned}
+              </Text>
+            </Td>
             <Td></Td>
           </Tr>
         </Tbody>
@@ -67,4 +74,4 @@ const Earn = () => {
   );
 };
 
-export default Earn
+export default Earn;

@@ -1,37 +1,17 @@
-import React from 'react'
+import React from "react";
 
-
-import { Column, Row } from 'buttered-chakra';
-import { Header } from 'components/shared/Header';
-import Footer from './Footer';
-import { useRari } from 'context/RariContext';
-import { useIsSmallScreen } from 'hooks/useIsSmallScreen';
-
+import { Column } from "buttered-chakra";
+import Footer from "./Footer";
 
 const Layout = ({ children }: { children: any }) => {
-    const { isAuthed } = useRari()
-    const isMobile = useIsSmallScreen()
+  return (
+    <>
+      <Column height="100%" flex={1}>
+        {children}
+        <Footer />
+      </Column>
+    </>
+  );
+};
 
-    return (
-        // <Column
-        //     mainAxisAlignment="flex-start"
-        //     crossAxisAlignment="center"
-        //     color="#FFFFFF"
-        //     mx="auto"
-        //     width={isMobile ? '100%' : '1000px'}
-        //     minH="100vh"
-        //     px={isMobile ? 4 : 0}
-        // >
-        //     <Header isAuthed={isAuthed} />
-        <>
-        <Column height="100%" flex={1}>
-                {children}
-                <Footer />
-        </Column>
-        </>
-
-
-    )
-}
-
-export default Layout
+export default Layout;
