@@ -24,10 +24,6 @@ const ForceAuthModal = React.memo(() => {
   return !isAuthed ? <GetOrConnectModal /> : null;
 });
 
-export const AuthModal = React.memo(({ forceAuth = false } : { forceAuth?: boolean} ) => {
-  return forceAuth ? <GetOrConnectModal /> : null;
-});
-
 const GetOrConnectModal = () => {
   const { t } = useTranslation();
 
