@@ -149,7 +149,7 @@ const Buttons = ({
             isAttemptingLogin ? (
               <Spinner />
             ) : (
-              <Text fontWeight="semibold">Connect</Text>
+              <Text fontWeight="semibold">{t("Connect")}</Text>
             )
           ) : (
             <>

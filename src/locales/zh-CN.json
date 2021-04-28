@@ -210,8 +210,6 @@
   "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   "Pool Risk Score": "集合风险评分",
   "Total Value Supplied Across Fuse": "跨保险丝锁定的总价值",
-  "Connecting to your wallet...": "正在连接到您的钱包...",
-  "Connect Wallet": "连接钱包",
   "Pool Utilization": "池利用率",
   "Enable As Collateral": "启用作为抵押",
   "Pool #{{poolId}} Info": "池＃{{poolId}}信息",
@@ -225,5 +223,7 @@
   "Pool Directory": "池目录",
   "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}统计信息",
   "Utilization": "使用率",
-  "APR/WPR": "年利率/年利率"
+  "APR/WPR": "年利率/年利率",
+  "Disconnect": "断开",
+  "Connect": "连接"
 }
