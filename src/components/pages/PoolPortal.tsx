@@ -59,7 +59,6 @@ import { useTranslation } from "react-i18next";
 import { PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
-import ForceAuthModal from "../shared/ForceAuthModal";
 
 import { GlowingButton } from "../shared/GlowingButton";
 
@@ -75,6 +74,8 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
+
+import { useAuthedCallback } from '../../hooks/useAuthedCallback'
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -165,6 +166,8 @@ const PoolPortalContent = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+  
   if (isPoolBalanceLoading) {
     return <FullPageSpinner />;
   }
@@ -174,8 +177,6 @@ const PoolPortalContent = () => {
 
   return (
     <>
-      <ForceAuthModal />
-
       <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
 
       <Column
@@ -225,7 +226,7 @@ const PoolPortalContent = () => {
                   <Text fontSize="xs">{poolCaption}</Text>
                 </Column>
 
-                <DepositButton onClick={openDepositModal} />
+                <DepositButton onClick={authedOpenModal} />
               </RowOnDesktopColumnOnMobile>
             </DashboardBox>
 
@@ -242,7 +243,7 @@ const PoolPortalContent = () => {
                   position="absolute"
                   top="50%"
                   left="50%"
-                  onClick={openDepositModal}
+                  onClick={authedOpenModal}
                 />
               ) : null}
 

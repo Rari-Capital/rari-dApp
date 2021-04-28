@@ -42,7 +42,6 @@ import { useQuery } from "react-query";
 
 import DepositModal from "./RariDepositModal";
 import { Header } from "../shared/Header";
-import ForceAuthModal from "../shared/ForceAuthModal";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import {
   APYMovingStat,
@@ -63,6 +62,7 @@ import BigNumber from "bignumber.js";
 import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
 import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -74,7 +74,6 @@ const MultiPoolPortal = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -376,6 +375,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+
   const { balanceData, isPoolBalanceLoading } = usePoolBalance(pool);
 
   const poolAPY = usePoolAPY(pool);
@@ -469,7 +470,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
             mt={4}
             flexShrink={0}
             as="button"
-            onClick={openDepositModal}
+            onClick={authedOpenModal}
             height="45px"
             ml={2}
             width="45px"

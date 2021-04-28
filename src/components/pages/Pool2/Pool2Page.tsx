@@ -14,12 +14,12 @@ import { smallUsdFormatter } from "../../../utils/bigUtils";
 import { ClaimRGTModal } from "../../shared/ClaimRGTModal";
 import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
 import Pool2Modal from "./Pool2Modal";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -30,7 +30,6 @@ const Pool2Page = () => {
 
   return (
     <>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -290,6 +289,7 @@ const YourBalance = () => {
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
+  const authedOpenModal = useAuthedCallback(openClaimRGTModal)
 
   const isMobile = useIsSmallScreen();
 
@@ -329,7 +329,7 @@ const YourBalance = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
-        onClick={openClaimRGTModal}
+        onClick={authedOpenModal}
       >
         <Center expand>{t("Claim RGT")}</Center>
       </DashboardBox>
@@ -365,6 +365,8 @@ const GeneralInfo = () => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
+  
+  const authedOpenDepositModal = useAuthedCallback(openDepositModal)
 
   return (
     <>
@@ -381,7 +383,7 @@ const GeneralInfo = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
-        onClick={openDepositModal}
+        onClick={authedOpenDepositModal}
       >
         <Center expand>{t("Deposit")}</Center>
       </DashboardBox>

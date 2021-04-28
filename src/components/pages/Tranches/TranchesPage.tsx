@@ -2,7 +2,6 @@ import React from "react";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import {
   Heading,
@@ -27,6 +26,7 @@ import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -99,7 +99,6 @@ const TranchePage = () => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"
@@ -407,6 +406,8 @@ export const TrancheColumn = ({
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+
   return (
     <>
       <DepositModal
@@ -454,7 +455,7 @@ export const TrancheColumn = ({
         </Column>
 
         <DashboardBox
-          onClick={openDepositModal}
+          onClick={authedOpenModal}
           mt={4}
           as="button"
           height="45px"
