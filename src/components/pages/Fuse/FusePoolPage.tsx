@@ -24,10 +24,7 @@ import { useTokenData } from "hooks/useTokenData";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
-import {
-  convertMantissaToAPR,
-  convertMantissaToAPY,
-} from "utils/apyUtils";
+import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { createComptroller } from "utils/createComptroller";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
@@ -55,8 +52,7 @@ const FusePoolPage = React.memo(() => {
 
   const data = useFusePoolData(poolId);
 
-  console.log({ data })
-
+  console.log({ data });
 
   return (
     <>
@@ -178,10 +174,10 @@ const CollateralRatioBar = ({
                 ratio <= 40
                   ? "whatsapp"
                   : ratio <= 60
-                    ? "yellow"
-                    : ratio <= 80
-                      ? "orange"
-                      : "red"
+                  ? "yellow"
+                  : ratio <= 80
+                  ? "orange"
+                  : "red"
               }
               borderRadius="10px"
               value={ratio}

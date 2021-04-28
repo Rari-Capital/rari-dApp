@@ -93,7 +93,6 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Dashboard")} route="/dashboard" />
 
-
         {/* <HeaderLink
             ml={4}
             name={t("Forums")}
@@ -144,8 +143,14 @@ export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
 
         <Portal>
           <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
-            <SubMenuItem name={t("Snapshot")} link="https://vote.rari.capital/" />
-            <SubMenuItem name={t("Forums")} link="https://forums.rari.capital/" />
+            <SubMenuItem
+              name={t("Snapshot")}
+              link="https://vote.rari.capital/"
+            />
+            <SubMenuItem
+              name={t("Forums")}
+              link="https://forums.rari.capital/"
+            />
           </MenuList>
         </Portal>
       </Menu>
@@ -153,25 +158,22 @@ export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
   );
 };
 
-
-
 export const SubMenuText = ({ text }: { text: string }) => {
   const location = useLocation();
   const { t } = useTranslation();
   const isOnThisRoute = location.pathname.includes("pools");
 
   return (
-    <Text fontWeight={isOnThisRoute ? "bold" : "normal"} _hover={{ textDecoration: "underline" }}>{t(text)}</Text>
+    <Text
+      fontWeight={isOnThisRoute ? "bold" : "normal"}
+      _hover={{ textDecoration: "underline" }}
+    >
+      {t(text)}
+    </Text>
   );
 };
 
-export const SubMenuItem = ({
-  name,
-  link
-}: {
-  name: string;
-  link: string;
-}) => {
+export const SubMenuItem = ({ name, link }: { name: string; link: string }) => {
   return (
     <MenuItem _focus={{ bg: "#2b2a2a" }} _hover={{ bg: "#2b2a2a" }}>
       <Box mx="auto">

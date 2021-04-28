@@ -57,7 +57,9 @@ export const useSaffronContracts = () => {
   const context = React.useContext(SaffronContext);
 
   if (context === undefined) {
-    throw new Error(`useSaffronContracts must be used within a SaffronProvider`);
+    throw new Error(
+      `useSaffronContracts must be used within a SaffronProvider`
+    );
   }
 
   return context;

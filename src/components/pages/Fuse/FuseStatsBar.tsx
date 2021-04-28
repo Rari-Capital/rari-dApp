@@ -20,8 +20,8 @@ const FuseStatsBar = () => {
 
   const { isAuthed, fuse, rari } = useRari();
 
-  const { data: fuseTVL } = useFuseTVL()
-  const { data: totalBorrowAndSupply } = useFuseTotalBorrowAndSupply()
+  const { data: fuseTVL } = useFuseTVL();
+  const { data: totalBorrowAndSupply } = useFuseTotalBorrowAndSupply();
 
   return (
     <RowOrColumn

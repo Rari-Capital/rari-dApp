@@ -1,36 +1,55 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 // Utils
-import { createAssetsMap, AssetHash, createTokensDataMap, TokensDataHash } from 'utils/tokenUtils'
-import { USDPricedFuseAsset, USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
+import {
+  createAssetsMap,
+  AssetHash,
+  createTokensDataMap,
+  TokensDataHash,
+} from "utils/tokenUtils";
+import {
+  USDPricedFuseAsset,
+  USDPricedFuseAssetWithTokenData,
+} from "utils/fetchFusePoolData";
 
 // Hooks
-import { useTokensData } from 'hooks/useTokenData';
+import { useTokensData } from "hooks/useTokenData";
 
+export const useAssetsMap = (
+  assetsArray: USDPricedFuseAsset[][] | null
+): AssetHash | null => {
+  return useMemo(() => (assetsArray ? createAssetsMap(assetsArray) : null), [
+    assetsArray,
+  ]);
+};
 
-export const useAssetsMap = (assetsArray: USDPricedFuseAsset[][] | null): AssetHash | null => {
-    return useMemo(() => assetsArray ? createAssetsMap(assetsArray) : null, [assetsArray])
-}
+export const useAssetsMapWithTokenData = (
+  assetsArray: USDPricedFuseAsset[][] | null
+): USDPricedFuseAssetWithTokenData[] => {
+  const assetsMap: AssetHash | null = useAssetsMap(assetsArray);
+  const tokensAddresses: string[] = assetsMap ? Object.keys(assetsMap) : [];
+  const tokensData = useTokensData(tokensAddresses);
 
-export const useAssetsMapWithTokenData = (assetsArray: USDPricedFuseAsset[][] | null): USDPricedFuseAssetWithTokenData[] => {
-    const assetsMap: AssetHash | null = useAssetsMap(assetsArray)
-    const tokensAddresses: string[] = assetsMap ? Object.keys(assetsMap) : []
-    const tokensData = useTokensData(tokensAddresses)
+  const tokensDataMap: TokensDataHash = useMemo(
+    () => (tokensData ? createTokensDataMap(tokensData) : {}),
+    [tokensData]
+  );
 
-    const tokensDataMap : TokensDataHash = useMemo(() => tokensData ? createTokensDataMap(tokensData) : {}, [tokensData])
+  const assetsMapWithTokenData: USDPricedFuseAssetWithTokenData[] = useMemo(() => {
+    return tokensData?.reduce((arr, tokenData, index) => {
+      const asset: USDPricedFuseAsset | null =
+        assetsMap?.[tokenData.address] ?? null;
 
-    const assetsMapWithTokenData: USDPricedFuseAssetWithTokenData[] = useMemo(() => {
-        return tokensData?.reduce((arr, tokenData, index) => {
-            const asset: USDPricedFuseAsset | null = assetsMap?.[tokenData.address] ?? null
+      // If no asset return an empty array
+      if (!asset) {
+        return arr;
+      }
 
-            // If no asset return an empty array
-            if (!asset) { return arr }
+      const newAsset = { ...asset, tokenData };
+      arr.push(newAsset);
+      return arr;
+    }, []);
+  }, [assetsMap, tokensData]);
 
-            const newAsset = { ...asset, tokenData }
-            arr.push(newAsset)
-            return arr
-        }, [])
-    }, [assetsMap, tokensData])
-
-    return { assetsMapWithTokenData , tokensDataMap }
-}
+  return { assetsMapWithTokenData, tokensDataMap };
+};

@@ -83,7 +83,6 @@ const StatsPage = loadable(
   }
 );
 
-
 const PageNotFound = React.memo(() => {
   return (
     <Heading
