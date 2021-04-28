@@ -239,7 +239,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       return null;
     });
 
-    window.localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER")
+    localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER")
 
     setAddress(EmptyAddress);
   }, [setWeb3ModalProvider, refetchAccountData]);
@@ -262,7 +262,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const isMobile = useIsMobile();
   useEffect(() => {
     if (!isMobile) {
-      if (window.localStorage.WEB3_CONNECT_CACHED_PROVIDER){
+      if (localStorage.WEB3_CONNECT_CACHED_PROVIDER){
         login(); 
       }
     }
