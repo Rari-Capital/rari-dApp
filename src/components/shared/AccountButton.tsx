@@ -179,7 +179,7 @@ export const SettingsModal = ({
 
   const onSwitchWallet = () => {
     onClose();
-    setTimeout(() => login(false), 100);
+    setTimeout(() => login(), 100);
   };
 
   const handleDisconnectClick = () => {
