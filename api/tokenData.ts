@@ -70,7 +70,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       // crvLINK-gauges
       response.json({
         name: "linkCRV Gauge Deposit",
-        symbol: "linkCRV[GAUGE]",
+        symbol: "[G]linkCRV",
         decimals,
         color: "#2A5ADA",
         overlayTextColor: "#FFFFFF",

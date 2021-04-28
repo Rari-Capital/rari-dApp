@@ -408,7 +408,7 @@ const AssetSupplyRow = ({
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={tokenData?.symbol ?? "Loading..."}
+            name={asset.underlyingSymbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -458,7 +458,7 @@ const AssetSupplyRow = ({
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
+            {tokenData?.symbol ?? asset.underlyingSymbol}
           </Text>
         </Column>
 
@@ -644,7 +644,7 @@ const AssetBorrowRow = ({
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={tokenData?.symbol ?? "Loading..."}
+            name={asset.underlyingSymbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -690,7 +690,7 @@ const AssetBorrowRow = ({
             {smallUsdFormatter(
               asset.borrowBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
+            {tokenData?.symbol ?? asset.underlyingSymbol}
           </Text>
         </Column>
 
@@ -717,7 +717,7 @@ const AssetBorrowRow = ({
                 {shortUsdFormatter(
                   asset.liquidity / 10 ** asset.underlyingDecimals
                 ).replace("$", "")}{" "}
-                {asset.underlyingSymbol}
+                {tokenData?.symbol}
               </Text>
             </Column>
           </Box>
