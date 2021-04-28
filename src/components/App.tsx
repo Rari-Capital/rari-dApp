@@ -1,13 +1,8 @@
 import React from "react";
-
-import loadable from "@loadable/component";
-
-import FullPageSpinner from "./shared/FullPageSpinner";
-
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-
 import { Heading } from "@chakra-ui/react";
-
+import loadable from "@loadable/component";
+import FullPageSpinner from "./shared/FullPageSpinner";
 import { Pool } from "../utils/poolUtils";
 import Layout from "./shared/Layout";
 

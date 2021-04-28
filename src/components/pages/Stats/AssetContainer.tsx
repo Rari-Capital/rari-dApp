@@ -2,30 +2,15 @@ import React from 'react'
 
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
-import { useTokenData } from "hooks/useTokenData";
+// import { useTokenData } from "hooks/useTokenData";
 
-
-
-const AssetContainer = ({ address, topString, bottomString, symbol }: { asset: USDPricedFuseAsset, logoURL: string }) => {
-
-    const d = useTokenData('0x6b175474e89094c44da98b954eedeac495271d0f')
-
-    console.log({ d })
-
-
-    // const { underlyingSymbol } = asset
-
-    // const supplyAmount = asset.supplyBalance / (10 ** asset.underlyingDecimals)
-    // const borrowAmount = asset.borrowBalance / (10 ** asset.underlyingDecimals)
-    // const formattedSupplyAmount = supplyAmount.toFixed(2) + ` ${asset.underlyingSymbol}`
-    // const formattedBorrowAmount = borrowAmount.toFixed(2) + ` ${asset.underlyingSymbol}`
-    // const supplyBalanceUSD = shortUsdFormatter(asset.supplyBalanceUSD)
-    // const borrowBalanceUSD = shortUsdFormatter(asset.borrowBalanceUSD)
-
-    // const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2)
-    // const supplyRate = convertMantissaToAPY(asset.supplyRatePerBlock, 365).toFixed(2)
-
-    // console.log(asset.underlyingSymbol, { supplyAmount, borrowAmount })
+// TODO - not in use - create generalized component
+// Currently being written in the StatsFuseSection component.
+const AssetContainer = ({ 
+    address, 
+    topString, 
+    bottomString, 
+    symbol }: { asset: USDPricedFuseAsset, logoURL: string }) => {
 
     return (
 
@@ -33,14 +18,12 @@ const AssetContainer = ({ address, topString, bottomString, symbol }: { asset: U
             <Column
                 mainAxisAlignment={'center'}
                 crossAxisAlignment="flex-end"
-            // background="lime"
             >
                 {/* Icon and Units */}
                 <Row
                     mainAxisAlignment="flex-end"
                     crossAxisAlignment="center"
                     width="90%"
-                // pl={6}
                 >
                     <Avatar
                         bg="#FFF"

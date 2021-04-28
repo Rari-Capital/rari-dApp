@@ -156,7 +156,9 @@ const PoolPortalContent = () => {
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
-  const { data: poolBalance, isLoading: isPoolBalanceLoading } = usePoolBalance(poolType);
+  const { data: poolBalance, isLoading: isPoolBalanceLoading } = usePoolBalance(
+    poolType
+  );
 
   const {
     isOpen: isDepositModalOpen,
@@ -164,12 +166,16 @@ const PoolPortalContent = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  // If loading, stop here 
-  if (isPoolBalanceLoading) return <FullPageSpinner />
+  // If loading, stop here
+  if (isPoolBalanceLoading) return <FullPageSpinner />;
 
-  const myBalance = poolBalance!
+  const myBalance = poolBalance!;
   const hasNotDeposited = myBalance.isZero();
-  const formattedBalance = formatBalanceBN(rari, myBalance, poolType === Pool.ETH)
+  const formattedBalance = formatBalanceBN(
+    rari,
+    myBalance,
+    poolType === Pool.ETH
+  );
 
   return (
     <>
@@ -348,7 +354,6 @@ const PoolPortalContent = () => {
             </DashboardBox>
           </Column>
         </RowOnDesktopColumnOnMobile>
-
       </Column>
     </>
   );
@@ -395,10 +400,10 @@ const UserStatsAndChart = ({
         timeRange === "month"
           ? Date.now() - millisecondsPerDay * 30
           : timeRange === "year"
-            ? Date.now() - millisecondsPerDay * 365
-            : timeRange === "week"
-              ? Date.now() - millisecondsPerDay * 7
-              : 0;
+          ? Date.now() - millisecondsPerDay * 365
+          : timeRange === "week"
+          ? Date.now() - millisecondsPerDay * 7
+          : 0;
 
       const interestRaw = await getSDKPool({
         rari,
@@ -428,10 +433,10 @@ const UserStatsAndChart = ({
         timeRange === "month"
           ? latestBlock - blocksPerDay * 30
           : timeRange === "year"
-            ? latestBlock - blocksPerDay * 365
-            : timeRange === "week"
-              ? latestBlock - blocksPerDay * 7
-              : 0;
+          ? latestBlock - blocksPerDay * 365
+          : timeRange === "week"
+          ? latestBlock - blocksPerDay * 7
+          : 0;
 
       const rawData = await getSDKPool({
         rari,
@@ -536,26 +541,26 @@ const UserStatsAndChart = ({
                 name: poolName,
                 data: hasNotDeposited
                   ? [
-                    { x: "10/1/20", y: 1000 },
-                    { x: "10/2/20", y: 1001 },
-                    { x: "10/3/20", y: 1003 },
-                    { x: "10/4/20", y: 1005 },
-                    { x: "10/5/20", y: 1006 },
-                    { x: "10/6/20", y: 1007 },
-                    { x: "10/7/20", y: 1010 },
-                    { x: "10/8/20", y: 1012 },
-                    { x: "10/9/20", y: 1014 },
-                    { x: "10/10/20", y: 1016 },
-                    { x: "10/11/20", y: 1018 },
-                  ]
+                      { x: "10/1/20", y: 1000 },
+                      { x: "10/2/20", y: 1001 },
+                      { x: "10/3/20", y: 1003 },
+                      { x: "10/4/20", y: 1005 },
+                      { x: "10/5/20", y: 1006 },
+                      { x: "10/6/20", y: 1007 },
+                      { x: "10/7/20", y: 1010 },
+                      { x: "10/8/20", y: 1012 },
+                      { x: "10/9/20", y: 1014 },
+                      { x: "10/10/20", y: 1016 },
+                      { x: "10/11/20", y: 1018 },
+                    ]
                   : (chartData ?? []).map((point: any) => {
-                    return {
-                      x: new Date(point.timestamp * 1000).toLocaleDateString(
-                        "en-US"
-                      ),
-                      y: parseFloat(point.balance) / 1e18,
-                    };
-                  }),
+                      return {
+                        x: new Date(point.timestamp * 1000).toLocaleDateString(
+                          "en-US"
+                        ),
+                        y: parseFloat(point.balance) / 1e18,
+                      };
+                    }),
               },
             ]}
           />
@@ -653,15 +658,7 @@ const APYStats = () => {
         >
           <Text fontSize="sm">
             {t("This Month")}:
-            <b>
-              {
-                isError
-                  ? "🚫"
-                  : areAPYsLoading
-                    ? "?"
-                    : apys!.month
-              } %
-            </b>
+            <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
@@ -680,15 +677,7 @@ const APYStats = () => {
         >
           <Text fontSize="sm">
             {t("This Week")}:
-            <b>
-              {
-                isError
-                  ? "🚫"
-                  : areAPYsLoading
-                    ? "?"
-                    : apys!.week
-              } %
-              </b>
+            <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
@@ -791,28 +780,19 @@ const MonthlyReturns = () => {
   const { poolName: stablePoolName } = usePoolInfo(Pool.STABLE);
   const { poolName: yieldPoolName } = usePoolInfo(Pool.YIELD);
 
-  const returns = useMemo(() => {
-    return ethPoolAPY && stablePoolAPY && yieldPoolAPY
+  const returns =
+    ethPoolAPY && stablePoolAPY && yieldPoolAPY
       ? {
-        [ethPoolName]: parseFloat(ethPoolAPY!),
-        [stablePoolName]: parseFloat(stablePoolAPY!),
-        [yieldPoolName]: parseFloat(yieldPoolAPY!),
-      }
+          [ethPoolName]: parseFloat(ethPoolAPY!),
+          [stablePoolName]: parseFloat(stablePoolAPY!),
+          [yieldPoolName]: parseFloat(yieldPoolAPY!),
+        }
       : null;
-  }, [
-      ethPoolAPY, 
-      stablePoolAPY, 
-      yieldPoolAPY,
-      ethPoolName,
-      stablePoolName,
-      yieldPoolName
-    ])
-
 
   const sortedEntries = returns
     ? Object.entries(returns)
-      // Sort descendingly by highest APY
-      .sort((a, b) => b[1] - a[1])
+        // Sort descendingly by highest APY
+        .sort((a, b) => b[1] - a[1])
     : null;
 
   const { t } = useTranslation();
@@ -899,8 +879,8 @@ const TokenAllocation = () => {
 
   const sortedEntries = allocations
     ? Object.entries(allocations)
-      // Sort descendingly by the largest
-      .sort((a, b) => b[1] - a[1])
+        // Sort descendingly by the largest
+        .sort((a, b) => b[1] - a[1])
     : null;
 
   const maxAmount = (() => {
@@ -980,8 +960,8 @@ const RecentTrades = () => {
             poolType === Pool.ETH
               ? "ETH"
               : currencyCodesByHashes[
-              event.returnValues.currencyCode as string
-              ];
+                  event.returnValues.currencyCode as string
+                ];
 
           const pool = getSDKPool({ rari, pool: poolType }).allocations.POOLS[
             event.returnValues.pool

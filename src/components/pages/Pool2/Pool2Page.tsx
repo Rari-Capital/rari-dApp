@@ -16,7 +16,6 @@ import DashboardBox from "components/shared/DashboardBox";
 import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
 
-
 // Hooks
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
@@ -29,7 +28,6 @@ import { useHasSushiswapRewardsStarted } from "hooks/pool2/useSushiswapRewards";
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
-
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -177,8 +175,7 @@ const Pool2Page = () => {
 export const TotalStaked = () => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
-  const totalStaked = usePool2TotalStaked()
+  const totalStaked = usePool2TotalStaked();
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -197,9 +194,7 @@ const endDate = startDate + 9.461e10;
 export const StartAndEnd = () => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
-
-  const hasStarted = useHasSushiswapRewardsStarted()
+  const hasStarted = useHasSushiswapRewardsStarted();
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -238,8 +233,8 @@ const Countdown = ({ endDate }: { endDate: number }) => {
 const YourBalance = () => {
   const { t } = useTranslation();
 
-  const balance = usePool2Balance()
-  const earned = usePool2UnclaimedRGT()
+  const balance = usePool2Balance();
+  const earned = usePool2UnclaimedRGT();
 
   const {
     isOpen: isClaimRGTModalOpen,
@@ -296,9 +291,7 @@ const YourBalance = () => {
 const GeneralInfo = () => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
-
-  const apr = usePool2APR()
+  const apr = usePool2APR();
   const isMobile = useIsSmallScreen();
 
   const {
