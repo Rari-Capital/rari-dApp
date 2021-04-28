@@ -83,8 +83,6 @@ async function computeAssetRSS(address: string) {
       assetVariation,
 
       ethVariation,
-
-      transferList,
     ] = await Promise.all([
       fetch(
         `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
@@ -142,29 +140,6 @@ async function computeAssetRSS(address: string) {
         .then((res) => res.json())
         .then((data) => data.prices.map(([, price]) => price))
         .then((prices) => variance(prices)),
-
-      (async () => {
-        const contract = new fuse.web3.eth.Contract(ERC20ABI as any, address);
-
-        try {
-          const transfers = await contract.getPastEvents("Transfer", {
-            fromBlock: 0,
-            toBlock: await fuse.web3.eth.getBlockNumber(),
-          });
-
-          return transfers;
-        } catch (e) {
-          if (
-            e.message.includes("Log response size exceeded") ||
-            e.message.includes("query returned more than")
-          ) {
-            return new Array(10_000);
-          } else {
-            console.log("Past events error:", e);
-            return [];
-          }
-        }
-      })(),
     ]);
 
     const mcap = await weightedCalculation(async () => {
@@ -236,7 +211,7 @@ async function computeAssetRSS(address: string) {
     }, 3);
 
     const transfers = await weightedCalculation(async () => {
-      return transferList.length >= 500 ? transferList.length / 10_000 : 0;
+      return 1;
     }, 3);
 
     const coingeckoMetadata = await weightedCalculation(async () => {
