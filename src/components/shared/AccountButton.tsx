@@ -7,6 +7,7 @@ import {
   ModalContent,
   Button,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 
 import { Row, Column, Center } from "buttered-chakra";
@@ -85,7 +86,7 @@ const Buttons = ({
   openClaimRGTModal: () => any;
   openMoonpayModal: () => any;
 }) => {
-  const { address, isAuthed, login } = useRari();
+  const { address, isAuthed, login, isAttemptingLogin } = useRari();
 
   const { t } = useTranslation();
 
@@ -104,7 +105,8 @@ const Buttons = ({
     <>
       {isMobile ? null : (
         <>
-          <DashboardBox
+        {/* Tentative removal from header */}
+          {/* <DashboardBox
             as="button"
             flexShrink={0}
             width="110px"
@@ -113,7 +115,7 @@ const Buttons = ({
             onClick={openMoonpayModal}
           >
             <Center expand>{t("Buy Crypto")}</Center>
-          </DashboardBox>
+          </DashboardBox> */}
 
           <DashboardBox
             ml={4}
@@ -129,12 +131,15 @@ const Buttons = ({
         </>
       )}
 
+
+      {/* Connect + Account button */}
       <DashboardBox
         ml={{ md: 4, base: 0 }}
         as="button"
         height="40px"
         flexShrink={0}
-        width="auto"
+        flexGrow={0}
+        width="170px"
         onClick={handleAccountButtonClick}
       >
         <Row
@@ -144,11 +149,16 @@ const Buttons = ({
           px={3}
         >
           {/* Conditionally display Connect button or Account button */}
-          {!isAuthed ? (
+          {!isAuthed 
+          ? (
+            <>
+            {isAttemptingLogin && <Spinner />}
             <Text fontWeight="semibold">
-              Connect
+              {isAttemptingLogin ? "Connecting..." : "Connect"}
             </Text>
-          ) : (
+            </>
+          ) 
+          : (
             <>
               <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
               <Text ml={2} fontWeight="semibold">
