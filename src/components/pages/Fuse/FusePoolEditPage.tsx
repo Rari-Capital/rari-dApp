@@ -36,7 +36,7 @@ import BigNumber from "bignumber.js";
 import { useTokenData } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
 import { handleGenericError } from "../../../utils/errorHandling";
-import useAuthedCallback from "../../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};

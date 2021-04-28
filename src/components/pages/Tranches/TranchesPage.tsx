@@ -26,7 +26,7 @@ import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import useAuthedCallback from "../../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 export enum TranchePool {
   DAI = "DAI",

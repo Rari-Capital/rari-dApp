@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useQueryCache } from "react-query";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
-import useAuthedCallback from "../../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
