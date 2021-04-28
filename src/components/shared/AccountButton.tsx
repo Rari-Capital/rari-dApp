@@ -27,6 +27,7 @@ import { version } from "../..";
 
 import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
+import useAuthedCallback from "../../hooks/useAuthedCallback";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -35,17 +36,23 @@ export const AccountButton = React.memo(() => {
     onClose: closeSettingsModal,
   } = useDisclosure();
 
+  const authedOpenSettingsModal = useAuthedCallback(openSettingsModal)
+
   const {
     isOpen: isClaimRGTModalOpen,
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
 
+  const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal)
+
   const {
     isOpen: isMoonpayModalOpen,
     onOpen: openMoonpayModal,
     onClose: closeMoonpayModal,
   } = useDisclosure();
+
+  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal)
 
   return (
     <>
@@ -61,9 +68,9 @@ export const AccountButton = React.memo(() => {
       />
       <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons
-        openModal={openSettingsModal}
-        openClaimRGTModal={openClaimRGTModal}
-        openMoonpayModal={openMoonpayModal}
+        openModal={authedOpenSettingsModal}
+        openClaimRGTModal={authedOpenClaimRGTModal}
+        openMoonpayModal={authedOpenMoonpayModal}
       />
     </>
   );

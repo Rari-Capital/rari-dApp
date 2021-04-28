@@ -75,6 +75,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
 
+import { useAuthedCallback } from '../../hooks/useAuthedCallback'
+
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
 
@@ -99,7 +101,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = () => {
-  const { isAuthed } = useRari();
+  const { isAuthed, login } = useRari();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -164,6 +166,8 @@ const PoolPortalContent = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+  
   if (isPoolBalanceLoading) {
     return <FullPageSpinner />;
   }
@@ -173,7 +177,6 @@ const PoolPortalContent = () => {
 
   return (
     <>
-
       <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
 
       <Column
@@ -223,7 +226,7 @@ const PoolPortalContent = () => {
                   <Text fontSize="xs">{poolCaption}</Text>
                 </Column>
 
-                <DepositButton onClick={openDepositModal} />
+                <DepositButton onClick={authedOpenModal} />
               </RowOnDesktopColumnOnMobile>
             </DashboardBox>
 
@@ -240,7 +243,7 @@ const PoolPortalContent = () => {
                   position="absolute"
                   top="50%"
                   left="50%"
-                  onClick={openDepositModal}
+                  onClick={authedOpenModal}
                 />
               ) : null}
 

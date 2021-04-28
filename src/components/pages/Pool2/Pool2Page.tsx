@@ -19,6 +19,7 @@ import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import { useQuery } from "react-query";
 import Pool2Modal from "./Pool2Modal";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import useAuthedCallback from "../../../hooks/useAuthedCallback";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -288,6 +289,7 @@ const YourBalance = () => {
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
+  const authedOpenModal = useAuthedCallback(openClaimRGTModal)
 
   const isMobile = useIsSmallScreen();
 
@@ -327,7 +329,7 @@ const YourBalance = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
-        onClick={openClaimRGTModal}
+        onClick={authedOpenModal}
       >
         <Center expand>{t("Claim RGT")}</Center>
       </DashboardBox>

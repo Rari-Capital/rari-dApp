@@ -26,6 +26,7 @@ import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import useAuthedCallback from "../../../hooks/useAuthedCallback";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -405,6 +406,8 @@ export const TrancheColumn = ({
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+
   return (
     <>
       <DepositModal
@@ -452,7 +455,7 @@ export const TrancheColumn = ({
         </Column>
 
         <DashboardBox
-          onClick={openDepositModal}
+          onClick={authedOpenModal}
           mt={4}
           as="button"
           height="45px"
