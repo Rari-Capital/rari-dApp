@@ -126,6 +126,7 @@ export interface RariContextData {
   login: (cacheProvider?: boolean) => Promise<any>;
   logout: () => any;
   address: string;
+  isAttemptingLogin: boolean;
 }
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
@@ -143,6 +144,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     () => new Rari(chooseBestWeb3Provider())
   );
   const [fuse, setFuse] = useState<Fuse>(() => initFuseWithProviders());
+
+  const [isAttemptingLogin, setIsAttemptingLogin] = useState<boolean>(false)
 
   const toast = useToast();
 
@@ -211,14 +214,17 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback(
     async (cacheProvider: boolean = true) => {
       try {
+        setIsAttemptingLogin(true)
         const provider = await launchModalLazy(t, cacheProvider)
         setWeb3ModalProvider(provider);
         setRariAndAddressFromModal(provider);
+        setIsAttemptingLogin(false)
       } catch (err) {
+        setIsAttemptingLogin(false)
         return console.error(err);
       }
     },
-    [setWeb3ModalProvider, setRariAndAddressFromModal, t]
+    [setWeb3ModalProvider, setRariAndAddressFromModal, setIsAttemptingLogin, t]
   );
 
   const refetchAccountData = useCallback(() => {
@@ -277,8 +283,9 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       login,
       logout,
       address,
+      isAttemptingLogin
     }),
-    [rari, web3ModalProvider, login, logout, address, fuse]
+    [rari, web3ModalProvider, login, logout, address, fuse, isAttemptingLogin]
   );
 
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
