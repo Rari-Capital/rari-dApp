@@ -101,7 +101,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = () => {
-  const { isAuthed, login } = useRari();
+  const { isAuthed } = useRari();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
