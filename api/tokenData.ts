@@ -75,7 +75,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         color: "#2A5ADA",
         overlayTextColor: "#FFFFFF",
         logoURL:
-          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvGauge.png",
+          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png",
       });
 
       return;
