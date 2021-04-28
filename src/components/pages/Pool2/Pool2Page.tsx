@@ -365,6 +365,8 @@ const GeneralInfo = () => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
+  
+  const authedOpenDepositModal = useAuthedCallback(openDepositModal)
 
   return (
     <>
@@ -381,7 +383,7 @@ const GeneralInfo = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
-        onClick={openDepositModal}
+        onClick={authedOpenDepositModal}
       >
         <Center expand>{t("Deposit")}</Center>
       </DashboardBox>
