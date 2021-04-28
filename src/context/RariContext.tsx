@@ -145,7 +145,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   );
   const [fuse, setFuse] = useState<Fuse>(() => initFuseWithProviders());
 
-  const [isAttemptingLogin, setIsAttemptingLogin] = useState<boolean>(false)
+  const [isAttemptingLogin, setIsAttemptingLogin] = useState<boolean>(false);
 
   const toast = useToast();
 
@@ -214,13 +214,13 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback(
     async (cacheProvider: boolean = true) => {
       try {
-        setIsAttemptingLogin(true)
-        const provider = await launchModalLazy(t, cacheProvider)
+        setIsAttemptingLogin(true);
+        const provider = await launchModalLazy(t, cacheProvider);
         setWeb3ModalProvider(provider);
         setRariAndAddressFromModal(provider);
-        setIsAttemptingLogin(false)
+        setIsAttemptingLogin(false);
       } catch (err) {
-        setIsAttemptingLogin(false)
+        setIsAttemptingLogin(false);
         return console.error(err);
       }
     },
@@ -245,7 +245,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       return null;
     });
 
-    localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER")
+    localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
 
     setAddress(EmptyAddress);
   }, [setWeb3ModalProvider, refetchAccountData]);
@@ -267,10 +267,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
   const isMobile = useIsMobile();
   useEffect(() => {
-    if (!isMobile) {
-      if (localStorage.WEB3_CONNECT_CACHED_PROVIDER){
-        login(); 
-      }
+    if (localStorage.WEB3_CONNECT_CACHED_PROVIDER) {
+      login();
     }
   }, [login, isMobile]);
 
@@ -283,7 +281,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       login,
       logout,
       address,
-      isAttemptingLogin
+      isAttemptingLogin,
     }),
     [rari, web3ModalProvider, login, logout, address, fuse, isAttemptingLogin]
   );
