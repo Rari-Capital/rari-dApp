@@ -4,7 +4,7 @@ import { useQuery, useQueries, UseQueryResult } from "react-query";
 import { useRari } from "../context/RariContext";
 import { fetchFusePoolData, FusePoolData } from "../utils/fetchFusePoolData";
 
-export const useFusePoolData = (poolId: string) => {
+export const useFusePoolData = (poolId: string) :  FusePoolData | undefined => {
   const { fuse, rari, address } = useRari();
 
   const { data } = useQuery(poolId + " poolData " + address, () => {
@@ -15,7 +15,7 @@ export const useFusePoolData = (poolId: string) => {
 };
 
 // Fetch APYs for all pools
-export const useFusePoolsData = (poolIds: number[]) => {
+export const useFusePoolsData = (poolIds: number[]) : FusePoolData[] | null => {
   const { fuse, rari, address } = useRari();
 
   const poolsData = useQueries(
@@ -35,7 +35,7 @@ export const useFusePoolsData = (poolIds: number[]) => {
 
     if (!poolsData.length) return null;
 
-    // Return null altogehter
+    // Return null altogether
     poolsData.forEach(({ data }) => {
       if (!data) return null;
       ret.push(data);

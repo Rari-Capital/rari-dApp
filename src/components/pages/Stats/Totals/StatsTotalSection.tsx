@@ -74,15 +74,6 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
 
     const total = fuseTotal + vaultTotal + pool2Total + tranchesTotal;
 
-    console.log({
-      total,
-      fuseTotal,
-      vaultTotal,
-      pool2Total,
-      tranchesTotal,
-      totalPrincipal,
-    });
-
     return total;
   }, [totals, fusePoolsData, balance, parsedTotalPrincipal]);
 

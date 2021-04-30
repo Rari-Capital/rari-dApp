@@ -9,10 +9,7 @@ import {
   Tr,
   Th,
   Td,
-  LinkBox,
-  Spinner,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import { Row, Column } from "buttered-chakra";
 import { motion } from "framer-motion";
 
@@ -22,8 +19,8 @@ import { useFusePoolsData } from "hooks/useFusePoolData";
 import { useBorrowLimits } from "hooks/useBorrowLimit";
 import { useAssetsMapWithTokenData } from "hooks/useAssetsMap";
 
-import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
-import { TokenData, useTokensData } from "hooks/useTokenData";
+import { FusePoolData, USDPricedFuseAsset } from "utils/fetchFusePoolData";
+import { TokenData } from "hooks/useTokenData";
 import { TokensDataHash } from "utils/tokenUtils";
 import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
@@ -41,13 +38,13 @@ const Fuse = () => {
 
   const poolIds: number[] = filteredPools?.map(({ id }) => id) ?? [];
 
-  const fusePoolsData: any[] | null = useFusePoolsData(poolIds);
+  const fusePoolsData: FusePoolData[] | null = useFusePoolsData(poolIds);
 
   const assetsArray: USDPricedFuseAsset[][] | null =
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
   const maxBorrows = useBorrowLimits(assetsArray);
   const {
-    tokensDataMap,
+    tokensDataMap
   }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
 
   const { totalBorrowBalanceUSD } =  fusePoolsData?.reduce((a, b) => {
@@ -91,7 +88,7 @@ const Fuse = () => {
             <Th textAlign="right" color="white" fontSize="sm">
               Borrows
             </Th>
-            <Th textAlign="right" textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white" fontSize="sm">
               Lend APY / Borrow APR
             </Th>
           </Tr>

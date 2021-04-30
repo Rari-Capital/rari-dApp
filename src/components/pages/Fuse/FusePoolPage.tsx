@@ -51,8 +51,6 @@ const FusePoolPage = React.memo(() => {
 
   const data = useFusePoolData(poolId);
 
-  console.log({ data });
-
   return (
     <>
       <ForceAuthModal />
