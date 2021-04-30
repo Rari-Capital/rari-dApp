@@ -156,7 +156,7 @@ const CollateralRatioBar = ({
         </SimpleTooltip>
 
         <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
-          {ratio.toFixed(1)}%
+          {smallUsdFormatter(borrowUSD)}
         </Text>
 
         <SimpleTooltip
