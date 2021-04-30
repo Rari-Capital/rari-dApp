@@ -68,9 +68,9 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
 
     const vaultTotal = totals?.balance ?? 0;
 
-    const pool2Total = balance?.balanceUSD;
+    const pool2Total = balance?.balanceUSD ?? 0;
 
-    const tranchesTotal = parsedTotalPrincipal;
+    const tranchesTotal = parsedTotalPrincipal ?? 0;
 
     const total = fuseTotal + vaultTotal + pool2Total + tranchesTotal;
 
