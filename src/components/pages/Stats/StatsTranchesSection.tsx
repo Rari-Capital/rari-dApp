@@ -3,7 +3,6 @@ import { Box, Table, Text, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 // Hooks
-import { useTokenData } from "hooks/useTokenData";
 import { Row } from "buttered-chakra";
 import {
   useMySaffronData,
@@ -14,9 +13,10 @@ import {
   usePrincipalBalance,
 } from "hooks/tranches/useSaffronData";
 import { smallUsdFormatter } from "utils/bigUtils";
+import { useTranslation } from "react-i18next";
 
 const Earn = () => {
-  const dai = useTokenData("0x6b175474e89094c44da98b954eedeac495271d0f");
+  const { t } = useTranslation()
 
   const mySaffronData = useMySaffronData();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
@@ -39,18 +39,18 @@ const Earn = () => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th color="white">Pool</Th>
+            <Th color="white">{t("Pool")}</Th>
             <Th color="white" textAlign="right">
-              APY
+              {t("APY")}
             </Th>
             <Th color="white" textAlign="right">
-              Deposits
+              {t("Deposits")}
             </Th>
             <Th color="white" textAlign="right">
-              Est. SFI Earnings
+              {t("Est. SFI Earnings")}
             </Th>
             <Th color="white" textAlign="right">
-              Growth
+              {t("Growth")}
             </Th>
           </Tr>
         </Thead>
@@ -66,7 +66,7 @@ const Earn = () => {
                       crossAxisAlignment="center"
                     >
                       <Box>
-                        <Text textAlign="right"> DAI-S </Text>
+                        <Text textAlign="right"> {t("DAI-S")} </Text>
                       </Box>
                     </Row>
                   </Td>
@@ -81,7 +81,7 @@ const Earn = () => {
                     </Text>
                   </Td>
                   <Td>
-                    <Text textAlign="right">{daiSPrincipal} DAI</Text>
+                    <Text textAlign="right">{daiSPrincipal} {t("DAI")}</Text>
                   </Td>
                   <Td>
                     {" "}
@@ -90,7 +90,7 @@ const Earn = () => {
                     </Text>{" "}
                   </Td>
                   <Td>
-                    <Text textAlign="right">N/A</Text>
+                    <Text textAlign="right">{t("N/A")}</Text>
                   </Td>
                 </Tr>
                 <Tr>
@@ -100,7 +100,7 @@ const Earn = () => {
                       crossAxisAlignment="center"
                     >
                       <Box>
-                        <Text textAlign="right"> DAI-A </Text>
+                        <Text textAlign="right"> {t("DAI-A")} </Text>
                       </Box>
                     </Row>
                   </Td>
@@ -115,7 +115,7 @@ const Earn = () => {
                     </Text>
                   </Td>
                   <Td>
-                    <Text textAlign="right">{daiAPrincipal} DAI</Text>
+                    <Text textAlign="right">{daiAPrincipal} {t("DAI")}</Text>
                   </Td>
                   <Td>
                     {" "}
@@ -124,7 +124,7 @@ const Earn = () => {
                     </Text>{" "}
                   </Td>
                   <Td>
-                    <Text textAlign="right">N/A</Text>
+                    <Text textAlign="right">{t("N/A")}</Text>
                   </Td>
                 </Tr>
               </>
@@ -132,7 +132,7 @@ const Earn = () => {
             {/* Totals */}
             <Tr>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>Total</Text>
+                <Text fontWeight={hasDeposits && "bold"}>{t("Total")}</Text>
               </Td>
               <Td>
                 <Text
@@ -151,11 +151,10 @@ const Earn = () => {
                 </Text>
               </Td>
               <Td>
-                {" "}
                 <Text
                   fontWeight={hasDeposits && "bold"}
                   textAlign="right"
-                ></Text>
+                />
               </Td>
             </Tr>
           </>

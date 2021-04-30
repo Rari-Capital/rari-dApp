@@ -2,8 +2,6 @@ import React from "react";
 
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
-// import { useTokenData } from "hooks/useTokenData";
-
 // TODO - not in use - create generalized component
 // Currently being written in the StatsFuseSection component.
 const AssetContainer = ({
