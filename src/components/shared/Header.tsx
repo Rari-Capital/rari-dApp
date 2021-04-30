@@ -91,7 +91,9 @@ export const Header = ({
 
         <GovernanceLink ml={4} />
 
-        <HeaderLink ml={4} name={t("Dashboard")} route="/dashboard" />
+        {isAuthed && (
+          <HeaderLink ml={4} name={t("Dashboard")} route="/dashboard" />
+        )}
 
         {/* <HeaderLink
             ml={4}

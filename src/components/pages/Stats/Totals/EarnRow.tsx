@@ -29,7 +29,6 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
       <Td>
         {poolsInfo.map(({ formattedPoolBalance }, i) => (
           <Text mb={3} key={i}>
-            {" "}
             {formattedPoolBalance}
           </Text>
         ))}

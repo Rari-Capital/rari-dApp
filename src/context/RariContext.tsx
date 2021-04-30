@@ -152,6 +152,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       ([netId, chainId]) => {
         console.log("Network ID: " + netId, "Chain ID: " + chainId);
 
+        // Don't show "wrong network" toasts if dev
         if (process.env.NODE_ENV === "development") {
           return;
         }

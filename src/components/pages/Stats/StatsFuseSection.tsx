@@ -50,27 +50,19 @@ const Fuse = () => {
     tokensDataMap,
   }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
 
-  const { totalBorrowBalanceUSD } = useMemo(() => {
-    return (
-      fusePoolsData?.reduce((a, b) => {
+  const { totalBorrowBalanceUSD } =  fusePoolsData?.reduce((a, b) => {
         return {
           totalBorrowBalanceUSD:
             a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
         };
       }) ?? { totalBorrowBalanceUSD: null }
-    );
-  }, [fusePoolsData]);
 
-  const { totalSupplyBalanceUSD } = useMemo(() => {
-    return (
-      fusePoolsData?.reduce((a, b) => {
+  const { totalSupplyBalanceUSD } =  fusePoolsData?.reduce((a, b) => {
         return {
           totalSupplyBalanceUSD:
             a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
         };
       }) ?? { totalSupplyBalanceUSD: null }
-    );
-  }, [fusePoolsData]);
 
   const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [
     totalSupplyBalanceUSD,

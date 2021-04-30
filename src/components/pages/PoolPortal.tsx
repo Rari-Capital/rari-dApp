@@ -169,8 +169,8 @@ const PoolPortalContent = () => {
   // If loading, stop here
   if (isPoolBalanceLoading) return <FullPageSpinner />;
 
-  const myBalance = poolBalance!;
-  const hasNotDeposited = myBalance.isZero();
+  const myBalance : BN = poolBalance ?? rari.web3.utils.toBN(0);
+  const hasNotDeposited : boolean = poolBalance?.isZero() ?? true
   const formattedBalance = formatBalanceBN(
     rari,
     myBalance,
