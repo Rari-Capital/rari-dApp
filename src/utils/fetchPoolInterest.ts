@@ -15,14 +15,6 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
     rari.getEthUsdPriceBN(),
   ]);
 
-  console.log(
-    'interest',
-    rari.web3.utils.fromWei(stableInterest),
-    rari.web3.utils.fromWei(yieldInterest),
-    rari.web3.utils.fromWei(ethInterestInETH),
-    rari.web3.utils.fromWei(ethPriceBN),
-  )
-
   const ethInterest = ethInterestInETH.mul(
     ethPriceBN.div(rari.web3.utils.toBN(1e18))
   );
@@ -37,5 +29,6 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
     yieldPoolInterestEarned: yieldInterest,
     stablePoolInterestEarned: stableInterest,
     ethPoolInterestEarned: ethInterest,
+    ethPoolInterestEarnedInETH: ethInterestInETH 
   };
 }

@@ -71,8 +71,8 @@ export const useAggregatePoolInfos = () => {
   const aggregatePoolsInfo = useMemo(
     () =>
       poolInfos.map((poolInfo: PoolInterface, index: number) => {
-        const poolAPY = poolAPYs[index]?.data ?? null;
-        const poolBalance = poolBalances[index]?.data ?? null;
+        const poolAPY: BN = poolAPYs[index]?.data ?? toBN(0);
+        const poolBalance: BN = poolBalances[index]?.data ?? toBN(0);
 
         const formattedPoolBalance: string | null = formatBalanceBN(
           rari,
@@ -93,7 +93,7 @@ export const useAggregatePoolInfos = () => {
             break;
           default:
             poolInterestEarned =
-              poolsInterestEarned?.ethPoolInterestEarned ?? null;
+              poolsInterestEarned?.ethPoolInterestEarnedInETH ?? null;
             break;
         }
 
@@ -113,7 +113,9 @@ export const useAggregatePoolInfos = () => {
               : null
             : null;
 
-        const formattedPoolGrowth = poolGrowth?.toNumber() ?? null;
+        const formattedPoolGrowth = poolGrowth
+          ? (parseFloat(poolGrowth.toString()) / 1e18).toFixed(2)
+          : null;
 
         return {
           poolInfo,
