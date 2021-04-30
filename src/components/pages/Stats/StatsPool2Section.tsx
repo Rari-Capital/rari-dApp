@@ -46,11 +46,11 @@ const Earn = () => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th color="white">Pool</Th>
-            <Th color="white">APY</Th>
-            <Th color="white">Deposits</Th>
-            <Th color="white">RGT Earned</Th>
-            <Th color="white">Growth</Th>
+            <Th color="white">{t("Pool")}</Th>
+            <Th color="white">{t("APY")}</Th>
+            <Th color="white">{t("Deposits")}</Th>
+            <Th color="white">{t("RGT Earned")}</Th>
+            <Th color="white">{t("Growth")}</Th>
           </Tr>
         </Thead>
         <Tbody>

@@ -77,19 +77,19 @@ const Fuse = () => {
         <Thead color="white">
           <Tr>
             <Th textAlign="center" color="white" fontSize="sm">
-              Pool
+              {t("Pool")}
             </Th>
             <Th textAlign="right" color="white" fontSize="sm">
-              Borrow Limit
+              {t("Borrow Limit")}
             </Th>
             <Th textAlign="right" color="white" fontSize="sm">
-              Deposits
+              {t("Deposits")}
             </Th>
             <Th textAlign="right" color="white" fontSize="sm">
-              Borrows
+              {t("Borrows")}
             </Th>
             <Th textAlign="right" color="white" fontSize="sm">
-              Lend APY / Borrow APR
+              {t("Lend APY") / t("Borrow APR")}
             </Th>
           </Tr>
         </Thead>

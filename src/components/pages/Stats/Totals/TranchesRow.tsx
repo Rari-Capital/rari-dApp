@@ -22,10 +22,10 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
       <Td>
         <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
           <Box mb={3}>
-            <Text> DAI-S </Text>
+            <Text> {t("DAI-S")} </Text>
           </Box>
           <Box mb={3}>
-            <Text> DAI-A </Text>
+            <Text> {t("DAI-A")} </Text>
           </Box>
         </Column>
       </Td>
@@ -45,13 +45,12 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
           <Box mb={3}>
             <Text textAlign="left">
               {" "}
-              {estimatedSFI?.formattedAPoolSFIEarned}{" "}
+              {estimatedSFI?.formattedAPoolSFIEarned}
             </Text>
           </Box>
           <Box mb={3}>
             <Text textAlign="left">
-              {" "}
-              {estimatedSFI?.formattedSPoolSFIEarned}{" "}
+              {estimatedSFI?.formattedSPoolSFIEarned}
             </Text>
           </Box>
         </Column>
@@ -59,7 +58,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
       <Td>
         <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
           <Box mb={3}>
-            <Text> N/A</Text>
+            <Text>{t("N/A")}</Text>
           </Box>
         </Column>
       </Td>

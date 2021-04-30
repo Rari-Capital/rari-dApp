@@ -70,9 +70,6 @@ const StatsPage = () => {
           mt="3rem"
           p={15}
         >
-          {/* <SimpleTooltip placement="right" label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}> */}
-          {/* </SimpleTooltip> */}
-
           <Row
             mb={2}
             mainAxisAlignment="flex-start"
@@ -91,7 +88,7 @@ const StatsPage = () => {
             <SimpleTooltip
               label={`${smallUsdFormatter(
                 netDeposits
-              )} Deposits - ${smallUsdFormatter(netDebt)} Debt`}
+              )} ${t("Deposits")} - ${smallUsdFormatter(netDebt)} ${t("Debt")}`}
               placement="right"
             >
               <Box ml={4} my="auto" _hover={{ color: "gray", cursor: "auto" }}>

@@ -4,10 +4,13 @@ import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";
 import { FuseLogoSVGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import { useTranslation } from "react-i18next";
 
 const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
   const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData]);
   const mb = singleRow ? null : 3;
+
+  const { t } = useTranslation()
 
   return (
     <motion.tr
@@ -40,14 +43,14 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
       <Td>
         {filteredPoolsData?.map(({ id }) => (
           <Text mb={mb} key={id}>
-            N/A
+            {t("N/A")}
           </Text>
         ))}
       </Td>
       <Td>
         {filteredPoolsData?.map(({ id }) => (
           <Text mb={mb} key={id}>
-            N/A
+           {t("N/A")}
           </Text>
         ))}
       </Td>

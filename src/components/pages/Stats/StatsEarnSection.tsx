@@ -13,9 +13,12 @@ import { motion } from "framer-motion";
 
 import { useAggregatePoolInfos } from "hooks/usePoolInfo";
 import { smallUsdFormatter } from "utils/bigUtils";
+import { useTranslation } from "react-i18next";
 
 const Earn = () => {
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
+
+  const { t } = useTranslation()
 
   const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance]);
 
@@ -30,11 +33,11 @@ const Earn = () => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th color="white">Pool</Th>
-            <Th color="white">APY</Th>
-            <Th color="white">Deposits</Th>
-            <Th color="white">Interest</Th>
-            <Th color="white">Growth</Th>
+            <Th color="white">{t("Pool")}</Th>
+            <Th color="white">{t("APY")}</Th>
+            <Th color="white">{t("Deposits")}</Th>
+            <Th color="white">{t("Interest")}</Th>
+            <Th color="white">{t("Growth")}</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -55,7 +58,7 @@ const Earn = () => {
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr>
             <Td>
-              <Text fontWeight={hasDeposits && "bold"}>Total</Text>
+              <Text fontWeight={hasDeposits && "bold"}>{t("Total")}</Text>
             </Td>
             <Td></Td>
             <Td>

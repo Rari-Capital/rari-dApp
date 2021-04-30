@@ -38,6 +38,7 @@ const FusePoolsPage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />

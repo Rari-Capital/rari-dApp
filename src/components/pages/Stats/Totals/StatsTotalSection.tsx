@@ -23,8 +23,12 @@ import FuseRow from "./FuseRow";
 import Pool2Row from "./Pool2Row";
 import { smallUsdFormatter } from "utils/bigUtils";
 import TranchesRow from "./TranchesRow";
+import { FusePoolData } from "utils/fetchFusePoolData";
+import { useTranslation } from "react-i18next";
 
 const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
+  const { t } = useTranslation()
+
   // Earn
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
   const hasDepositsInEarn = aggregatePoolsInfo?.some(
@@ -34,7 +38,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   // Fuse
   const { filteredPools: filteredFusePools } = useFusePools("my-pools");
   const poolIds: number[] = filteredFusePools?.map(({ id }) => id) ?? [];
-  const fusePoolsData: any[] | null = useFusePoolsData(poolIds);
+  const fusePoolsData: FusePoolData[] | null = useFusePoolsData(poolIds);
 
   // Pool2
   const apr = usePool2APR();
@@ -52,7 +56,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   const estimatedSFI = useEstimatedSFI();
   const hasDepositsInTranches = useMemo(
     () => parsedTotalPrincipal > 0 ?? false,
-    [totalPrincipal]
+    [parsedTotalPrincipal]
   );
 
   // Total Deposits
@@ -95,6 +99,8 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
     if (totalDebtUSD && !Number.isNaN(totalDebtUSD)) setNetDebt(totalDebtUSD);
   }, [totalDepositsUSD, totalDebtUSD, setNetDeposits, setNetDebt]);
 
+  const earnedHeaderText = hasDepositsInTranches ? "RGT + SFI Earned" : "RGT Earned"
+
   return (
     <motion.div
       key="totals"
@@ -106,11 +112,11 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th color="white">Product</Th>
-            <Th color="white">Pool</Th>
-            <Th color="white">Deposits</Th>
+            <Th color="white">{t("Product")}</Th>
+            <Th color="white">{t("Pool")}</Th>
+            <Th color="white">{t("Deposits")}</Th>
             <Th color="white">
-              RGT {hasDepositsInTranches && `+ SFI `} Earned
+              {t(earnedHeaderText)}
             </Th>
             <Th color="white">Interest Earned</Th>
           </Tr>
@@ -144,7 +150,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
           >
-            <Td fontWeight="bold">Total</Td>
+            <Td fontWeight="bold">{t("Total")}</Td>
             <Td></Td>
             <Td>
               <Text fontWeight="bold">
@@ -153,7 +159,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
             </Td>
             <Td>
               <Text fontWeight="bold">
-                {earned?.toFixed(2)} RGT{" "}
+                {earned?.toFixed(2)} RGT
                 {hasDepositsInTranches &&
                   ` + ${estimatedSFI?.formattedTotalSFIEarned}`}
               </Text>
