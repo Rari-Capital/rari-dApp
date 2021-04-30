@@ -20,8 +20,12 @@ import { usePool2Balance } from "hooks/pool2/usePool2Balance";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { Row } from "buttered-chakra";
 import { smallUsdFormatter } from "utils/bigUtils";
+import { useTranslation } from "react-i18next";
+
 
 const Earn = () => {
+  const { t } = useTranslation()
+
   const apr = usePool2APR();
   const earned = usePool2UnclaimedRGT();
   const balance = usePool2Balance();

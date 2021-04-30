@@ -26,6 +26,8 @@ import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
+import { useTranslation } from "react-i18next";
+
 export enum AssetContainerType {
   SUPPLY,
   BORROW,
@@ -35,6 +37,8 @@ export enum AssetContainerType {
 const Fuse = () => {
   // Todo - write useFusePoolsData
   const { filteredPools } = useFusePools("my-pools");
+
+  const { t } = useTranslation()
 
   const poolIds: number[] = filteredPools?.map(({ id }) => id) ?? [];
 
@@ -47,19 +51,19 @@ const Fuse = () => {
     tokensDataMap
   }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
 
-  const { totalBorrowBalanceUSD } =  fusePoolsData?.reduce((a, b) => {
-        return {
-          totalBorrowBalanceUSD:
-            a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
-        };
-      }) ?? { totalBorrowBalanceUSD: null }
+  const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
+    return {
+      totalBorrowBalanceUSD:
+        a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
+    };
+  }) ?? { totalBorrowBalanceUSD: null }
 
-  const { totalSupplyBalanceUSD } =  fusePoolsData?.reduce((a, b) => {
-        return {
-          totalSupplyBalanceUSD:
-            a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
-        };
-      }) ?? { totalSupplyBalanceUSD: null }
+  const { totalSupplyBalanceUSD } = fusePoolsData?.reduce((a, b) => {
+    return {
+      totalSupplyBalanceUSD:
+        a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
+    };
+  }) ?? { totalSupplyBalanceUSD: null }
 
   const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [
     totalSupplyBalanceUSD,
@@ -246,11 +250,10 @@ const AssetContainer = ({
           {type !== AssetContainerType.RATES && (
             <>
               <SimpleTooltip
-                label={`${
-                  type === AssetContainerType.BORROW
-                    ? borrowAmount
-                    : supplyAmount
-                } ${asset.underlyingSymbol}`}
+                label={`${type === AssetContainerType.BORROW
+                  ? borrowAmount
+                  : supplyAmount
+                  } ${asset.underlyingSymbol}`}
               >
                 <Text p={1} fontSize="lg" textAlign="right">
                   {type === AssetContainerType.BORROW
