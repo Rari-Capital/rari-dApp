@@ -1,6 +1,4 @@
-import { useMemo } from "react";
-import { useQuery, useQueries } from "react-query";
-import { Pool } from "../utils/poolUtils";
+import { useQuery } from "react-query";
 import { useRari } from "../context/RariContext";
 import { fetchPoolInterestEarned } from "../utils/fetchPoolInterest";
 
