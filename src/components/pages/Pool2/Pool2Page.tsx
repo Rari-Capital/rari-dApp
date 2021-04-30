@@ -28,6 +28,7 @@ import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
+import Footer from "components/shared/Footer";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -44,6 +45,7 @@ const Pool2Page = () => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
@@ -166,6 +168,7 @@ const Pool2Page = () => {
             </Column>
           </RowOrColumn>
         </Column>
+        <Footer />
       </Column>
     </>
   );

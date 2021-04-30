@@ -64,6 +64,7 @@ const StatsPage = () => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
@@ -72,7 +73,7 @@ const StatsPage = () => {
           width="100%"
           mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
-          mt={10}
+          mt="3rem"
           p={15}
         >
           {/* <SimpleTooltip placement="right" label={`${smallUsdFormatter(netDeposits)} Deposits - ${smallUsdFormatter(netDebt)} Debt`}> */}
@@ -119,6 +120,7 @@ const StatsPage = () => {
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Box>
         </Column>
+        <Footer />
       </Column>
     </SaffronProvider>
   );

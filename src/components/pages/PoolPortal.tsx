@@ -73,6 +73,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
 import { formatBalanceBN } from "utils/format";
+import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from '../../hooks/useAuthedCallback'
 
@@ -356,6 +357,7 @@ const PoolPortalContent = () => {
             </DashboardBox>
           </Column>
         </RowOnDesktopColumnOnMobile>
+        <Footer />
       </Column>
     </>
   );
