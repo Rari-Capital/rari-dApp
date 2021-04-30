@@ -66,6 +66,7 @@ import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
 import { usePoolInterestEarned } from "hooks/usePoolInterest";
 import { formatBalanceBN } from "utils/format";
+import Footer from "components/shared/Footer";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -114,6 +115,7 @@ const MultiPoolPortal = React.memo(() => {
         </DashboardBox>
 
         <PoolCards />
+        <Footer />
       </Column>
     </>
   );

@@ -74,6 +74,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
 import { formatBalanceBN } from "utils/format";
+import Footer from "components/shared/Footer";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -354,6 +355,7 @@ const PoolPortalContent = () => {
             </DashboardBox>
           </Column>
         </RowOnDesktopColumnOnMobile>
+        <Footer />
       </Column>
     </>
   );

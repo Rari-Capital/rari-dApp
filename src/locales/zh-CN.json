@@ -225,5 +225,6 @@
   "Pool Directory": "池目录",
   "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}统计信息",
   "Utilization": "使用率",
-  "APR/WPR": "年利率/年利率"
+  "APR/WPR": "年利率/年利率",
+  "Positions": "Positions"
 }

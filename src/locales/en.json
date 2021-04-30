@@ -225,5 +225,6 @@
   "Pool Directory": "Pool Directory",
   "Pool {{num}}'s {{token}} Stats": "Pool {{num}}'s {{token}} Stats",
   "Utilization": "Utilization",
-  "APR/WPR": "APR/WPR"
+  "APR/WPR": "APR/WPR",
+  "Positions": "Positions"
 }

@@ -225,5 +225,6 @@
   "Pool {{num}}'s {{token}} Stats": "池{{num}}的{{token}}統計信息",
   "Utilization": "使用率",
   "APR/WPR": "年利率/年利率",
-  "Borrow APR": "借入年利率"
+  "Borrow APR": "借入年利率",
+  "Positions": "Positions"
 }

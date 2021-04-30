@@ -21,6 +21,7 @@ import { filterPoolName } from "utils/fetchFusePoolData";
 import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
+import Footer from "components/shared/Footer";
 
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -48,6 +49,8 @@ const FusePoolsPage = React.memo(() => {
         <DashboardBox width="100%" mt={4}>
           <PoolList />
         </DashboardBox>
+
+        <Footer/>
       </Column>
     </>
   );
