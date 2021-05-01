@@ -40,7 +40,6 @@ import { useQuery } from "react-query";
 
 import DepositModal from "./RariDepositModal";
 import { Header } from "../shared/Header";
-import ForceAuthModal from "../shared/ForceAuthModal";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import {
   APYMovingStat,
@@ -68,6 +67,8 @@ import { usePoolInterestEarned } from "hooks/usePoolInterest";
 import { formatBalanceBN } from "utils/format";
 import Footer from "components/shared/Footer";
 
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
 
@@ -78,7 +79,6 @@ const MultiPoolPortal = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -365,6 +365,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+
   const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(
     pool
   );
@@ -476,7 +478,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
             mt={4}
             flexShrink={0}
             as="button"
-            onClick={openDepositModal}
+            onClick={authedOpenModal}
             height="45px"
             ml={2}
             width="45px"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
@@ -8,6 +8,7 @@ import {
   Button,
   Link,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 
 import { Row, Column, Center } from "buttered-chakra";
@@ -28,6 +29,7 @@ import { version } from "../..";
 
 import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 export const AccountButton = React.memo(() => {
   const {
@@ -36,17 +38,23 @@ export const AccountButton = React.memo(() => {
     onClose: closeSettingsModal,
   } = useDisclosure();
 
+  const authedOpenSettingsModal = useAuthedCallback(openSettingsModal);
+
   const {
     isOpen: isClaimRGTModalOpen,
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
 
+  const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal);
+
   const {
     isOpen: isMoonpayModalOpen,
     onOpen: openMoonpayModal,
     onClose: closeMoonpayModal,
   } = useDisclosure();
+
+  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal);
 
   return (
     <>
@@ -62,9 +70,9 @@ export const AccountButton = React.memo(() => {
       />
       <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons
-        openModal={openSettingsModal}
-        openClaimRGTModal={openClaimRGTModal}
-        openMoonpayModal={openMoonpayModal}
+        openModal={authedOpenSettingsModal}
+        openClaimRGTModal={authedOpenClaimRGTModal}
+        openMoonpayModal={authedOpenMoonpayModal}
       />
     </>
   );
@@ -79,11 +87,17 @@ const Buttons = ({
   openClaimRGTModal: () => any;
   openMoonpayModal: () => any;
 }) => {
-  const { address } = useRari();
+  const { address, isAuthed, login, isAttemptingLogin } = useRari();
 
   const { t } = useTranslation();
 
   const isMobile = useIsSmallScreen();
+
+  const handleAccountButtonClick = useCallback(() => {
+    if (isAuthed) {
+      openModal();
+    } else login();
+  }, [isAuthed, login, openModal]);
 
   return (
     <>
@@ -114,25 +128,38 @@ const Buttons = ({
         </>
       )}
 
+      {/* Connect + Account button */}
       <DashboardBox
         ml={{ md: 4, base: 0 }}
         as="button"
         height="40px"
         flexShrink={0}
-        width="auto"
-        onClick={openModal}
+        flexGrow={0}
+        width="140px"
+        onClick={handleAccountButtonClick}
       >
         <Row
           expand
           mainAxisAlignment="space-around"
           crossAxisAlignment="center"
           px={3}
+          py={1}
         >
-          <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
-
-          <Text ml={2} fontWeight="semibold">
-            {shortAddress(address)}
-          </Text>
+          {/* Conditionally display Connect button or Account button */}
+          {!isAuthed ? (
+            isAttemptingLogin ? (
+              <Spinner />
+            ) : (
+              <Text fontWeight="semibold">{t("Connect")}</Text>
+            )
+          ) : (
+            <>
+              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              <Text ml={2} fontWeight="semibold">
+                {shortAddress(address)}
+              </Text>
+            </>
+          )}
         </Row>
       </DashboardBox>
     </>
@@ -152,11 +179,16 @@ export const SettingsModal = ({
 }) => {
   const { t } = useTranslation();
 
-  const { login } = useRari();
+  const { login, logout } = useRari();
 
   const onSwitchWallet = () => {
     onClose();
     setTimeout(() => login(false), 100);
+  };
+
+  const handleDisconnectClick = () => {
+    onClose();
+    logout();
   };
 
   const onClaimRGT = () => {
@@ -192,7 +224,7 @@ export const SettingsModal = ({
           />
 
           <Button
-            bg="red.500"
+            bg="facebook.500"
             width="100%"
             height="45px"
             fontSize="xl"
@@ -207,7 +239,7 @@ export const SettingsModal = ({
           </Button>
 
           <Button
-            bg="whatsapp.500"
+            bg={"whatsapp.500"}
             width="100%"
             height="45px"
             fontSize="xl"
@@ -219,6 +251,21 @@ export const SettingsModal = ({
             mb={4}
           >
             {t("Switch Wallet")}
+          </Button>
+
+          <Button
+            bg="red.500"
+            width="100%"
+            height="45px"
+            fontSize="xl"
+            borderRadius="7px"
+            fontWeight="bold"
+            onClick={handleDisconnectClick}
+            _hover={{}}
+            _active={{}}
+            mb={4}
+          >
+            {t("Disconnect")}
           </Button>
 
           <LanguageSelect />

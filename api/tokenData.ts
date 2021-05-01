@@ -32,22 +32,63 @@ export default async (request: NowRequest, response: NowResponse) => {
     const name = await tokenContract.methods.name().call();
     const symbol = await tokenContract.methods.symbol().call();
 
-    // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
-    const isBNB =
-      address ===
-      web3.utils.toChecksumAddress(
-        "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
-      );
+    // BNB
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xB8c77482e45F1F44dE1745F52C74426C631bDD52")
+    ) {
+      // BNB
+      response.json({
+        name,
+        symbol,
+        decimals,
+        color: "#E6B93D",
+        overlayTextColor: "#FFFFFF",
+        logoURL:
+          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png",
+      });
+    } else if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xcee60cFa923170e4f8204AE08B4fA6A3F5656F3a")
+    ) {
+      // crvLINK
+      response.json({
+        name,
+        symbol,
+        decimals,
+        color: "#2A5ADA",
+        overlayTextColor: "#FFFFFF",
+        logoURL:
+          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINK.png",
+      });
+
+      return;
+    } else if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
+    ) {
+      // crvLINK-gauges
+      response.json({
+        name: "linkCRV Gauge Deposit",
+        symbol: "[G]linkCRV",
+        decimals,
+        color: "#2A5ADA",
+        overlayTextColor: "#FFFFFF",
+        logoURL:
+          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png",
+      });
+
+      return;
+    }
 
     response.json({
       name,
       symbol,
       decimals,
-      color: isBNB ? "#E6B93D" : "#FFFFFF",
-      overlayTextColor: isBNB ? "#FFFFFF" : "#000000",
-      logoURL: isBNB
-        ? "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png"
-        : "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+      color: "#FFFFFF",
+      overlayTextColor: "#000000",
+      logoURL:
+        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
     });
 
     return;
@@ -87,7 +128,7 @@ export default async (request: NowRequest, response: NowResponse) => {
 
   let color: Palette;
   try {
-    color = await Vibrant.from(small).getPalette();
+    color = await Vibrant.from(logoURL).getPalette();
   } catch (error) {
     response.json({
       ...basicTokenInfo,

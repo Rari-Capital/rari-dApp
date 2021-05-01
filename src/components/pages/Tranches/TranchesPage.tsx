@@ -2,7 +2,6 @@ import React from "react";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import {
   Heading,
@@ -53,7 +52,6 @@ const TranchePage = () => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"
@@ -331,6 +329,8 @@ export const TrancheColumn = ({
     onClose: closeDepositModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openDepositModal)
+
   return (
     <>
       <DepositModal
@@ -378,7 +378,7 @@ export const TrancheColumn = ({
         </Column>
 
         <DashboardBox
-          onClick={openDepositModal}
+          onClick={authedOpenModal}
           mt={4}
           as="button"
           height="45px"

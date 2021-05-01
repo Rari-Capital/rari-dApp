@@ -209,8 +209,6 @@
   "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX": "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
   "Pool Risk Score": "集合風險評分",
   "Total Value Supplied Across Fuse": "跨保險絲鎖定的總價值",
-  "Connecting to your wallet...": "正在連接到您的錢包...",
-  "Connect Wallet": "連接錢包",
   "Pool Utilization": "池利用率",
   "Enable As Collateral": "啟用作為抵押",
   "Pool #{{poolId}} Info": "池＃{{poolId}}信息",

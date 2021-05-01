@@ -21,6 +21,7 @@ import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
 import { useTokenData } from "hooks/useTokenData";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
 import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
@@ -53,7 +54,6 @@ const FusePoolPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"
@@ -320,6 +320,8 @@ const AssetSupplyRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openModal)
+
   const asset = assets[index];
 
   const { fuse, address } = useRari();
@@ -404,12 +406,12 @@ const AssetSupplyRow = ({
           crossAxisAlignment="center"
           width="27%"
           as="button"
-          onClick={openModal}
+          onClick={authedOpenModal}
         >
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={tokenData?.symbol ?? "Loading..."}
+            name={asset.underlyingSymbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -426,7 +428,7 @@ const AssetSupplyRow = ({
             crossAxisAlignment="flex-end"
             width="27%"
             as="button"
-            onClick={openModal}
+            onClick={authedOpenModal}
           >
             <Text
               color={tokenData?.color ?? "#FF"}
@@ -445,7 +447,7 @@ const AssetSupplyRow = ({
           crossAxisAlignment="flex-end"
           width={isMobile ? "40%" : "27%"}
           as="button"
-          onClick={openModal}
+          onClick={authedOpenModal}
         >
           <Text
             color={tokenData?.color ?? "#FFF"}
@@ -459,7 +461,7 @@ const AssetSupplyRow = ({
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
+            {tokenData?.symbol ?? asset.underlyingSymbol}
           </Text>
         </Column>
 
@@ -607,6 +609,8 @@ const AssetBorrowRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openModal)
+
   const tokenData = useTokenData(asset.underlyingToken);
 
   const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
@@ -635,7 +639,7 @@ const AssetBorrowRow = ({
         py={1.5}
         className="hover-row"
         as="button"
-        onClick={openModal}
+        onClick={authedOpenModal}
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -645,7 +649,7 @@ const AssetBorrowRow = ({
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={tokenData?.symbol ?? "Loading..."}
+            name={asset.underlyingSymbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -691,7 +695,7 @@ const AssetBorrowRow = ({
             {smallUsdFormatter(
               asset.borrowBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {asset.underlyingSymbol}
+            {tokenData?.symbol ?? asset.underlyingSymbol}
           </Text>
         </Column>
 
@@ -718,7 +722,7 @@ const AssetBorrowRow = ({
                 {shortUsdFormatter(
                   asset.liquidity / 10 ** asset.underlyingDecimals
                 ).replace("$", "")}{" "}
-                {asset.underlyingSymbol}
+                {tokenData?.symbol}
               </Text>
             </Column>
           </Box>

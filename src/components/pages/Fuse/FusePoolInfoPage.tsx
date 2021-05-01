@@ -25,7 +25,6 @@ import { shortUsdFormatter } from "../../../utils/bigUtils";
 import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import { Link as RouterLink } from "react-router-dom";
@@ -113,8 +112,6 @@ const FusePoolInfoPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"

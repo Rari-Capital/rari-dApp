@@ -6,10 +6,9 @@ import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";
 
-import DashboardBox from "components/shared/DashboardBox";
-import ForceAuthModal from "components/shared/ForceAuthModal";
-import { Header } from "components/shared/Header";
-import { ModalDivider } from "components/shared/Modal";
+import DashboardBox from "../../shared/DashboardBox";
+import { Header } from "../../shared/Header";
+import { ModalDivider } from "../../shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
@@ -30,7 +29,6 @@ const FusePoolsPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
 
       <Column
         mainAxisAlignment="flex-start"

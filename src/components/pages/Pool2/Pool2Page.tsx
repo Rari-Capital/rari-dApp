@@ -25,6 +25,7 @@ import { usePool2UnclaimedRGT } from "hooks/pool2/usePool2UnclaimedRGT";
 import { usePool2APR } from "hooks/pool2/usePool2APR";
 import { usePool2TotalStaked } from "hooks/pool2/usePool2TotalStaked";
 import { useHasSushiswapRewardsStarted } from "hooks/pool2/useSushiswapRewards";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
@@ -39,7 +40,6 @@ const Pool2Page = () => {
 
   return (
     <>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -244,6 +244,7 @@ const YourBalance = () => {
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
+  const authedOpenModal = useAuthedCallback(openClaimRGTModal)
 
   const isMobile = useIsSmallScreen();
 
@@ -283,7 +284,7 @@ const YourBalance = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
-        onClick={openClaimRGTModal}
+        onClick={authedOpenModal}
       >
         <Center expand>{t("Claim RGT")}</Center>
       </DashboardBox>
@@ -302,6 +303,8 @@ const GeneralInfo = () => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
+  
+  const authedOpenDepositModal = useAuthedCallback(openDepositModal)
 
   return (
     <>
@@ -318,7 +321,7 @@ const GeneralInfo = () => {
         fontSize="xl"
         fontWeight="bold"
         as="button"
-        onClick={openDepositModal}
+        onClick={authedOpenDepositModal}
       >
         <Center expand>{t("Deposit")}</Center>
       </DashboardBox>
