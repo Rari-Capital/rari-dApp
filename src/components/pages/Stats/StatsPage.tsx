@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 
 // Components
 import {
@@ -30,8 +30,7 @@ import { useRari } from "context/RariContext";
 // Hooks
 import { useTranslation } from "react-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { usePoolBalance, useTotalPoolsBalance } from "hooks/usePoolBalance";
-import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
+import { smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 
