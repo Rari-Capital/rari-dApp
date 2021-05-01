@@ -33,6 +33,7 @@ import {
 } from "hooks/tranches/useSaffronData";
 import { useSFIDistributions } from "hooks/tranches/useSFIDistributions";
 import { useSFIEarnings } from "hooks/tranches/useSFIEarnings";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
 import Footer from "components/shared/Footer";
 
 const WrappedTranchePage = React.memo(() => {
@@ -52,7 +53,6 @@ const TranchePage = () => {
 
   return (
     <>
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -329,7 +329,7 @@ export const TrancheColumn = ({
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openDepositModal)
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
   return (
     <>
