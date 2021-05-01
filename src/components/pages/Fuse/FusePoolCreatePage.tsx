@@ -41,7 +41,6 @@ const FusePoolCreatePage = React.memo(() => {
 
   return (
     <>
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"

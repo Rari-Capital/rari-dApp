@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 
-import { useQueryCache } from "react-query";
+import { useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
@@ -155,6 +155,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       ([netId, chainId]) => {
         console.log("Network ID: " + netId, "Chain ID: " + chainId);
 
+        // Don't show "wrong network" toasts if dev
         if (process.env.NODE_ENV === "development") {
           return;
         }
@@ -180,7 +181,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
@@ -228,12 +229,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const refetchAccountData = useCallback(() => {
-    console.log("New account, clearing the queryCache!");
+    console.log("New account, clearing the queryClient!");
 
     setRariAndAddressFromModal(web3ModalProvider);
 
-    queryCache.clear();
-  }, [setRariAndAddressFromModal, web3ModalProvider, queryCache]);
+    queryClient.clear();
+  }, [setRariAndAddressFromModal, web3ModalProvider, queryClient]);
 
   const logout = useCallback(() => {
     setWeb3ModalProvider((past: any) => {
