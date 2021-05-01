@@ -83,9 +83,9 @@ const StatsPage = () => {
               </Heading>
             </motion.div>
             <SimpleTooltip
-              label={`${smallUsdFormatter(
-                netDeposits
-              )} ${t("Deposits")} - ${smallUsdFormatter(netDebt)} ${t("Debt")}`}
+              label={`${smallUsdFormatter(netDeposits)} ${t(
+                "Deposits"
+              )} - ${smallUsdFormatter(netDebt)} ${t("Debt")}`}
               placement="right"
             >
               <Box ml={4} my="auto" _hover={{ color: "gray", cursor: "auto" }}>

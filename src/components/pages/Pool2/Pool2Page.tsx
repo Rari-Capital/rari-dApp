@@ -243,7 +243,7 @@ const YourBalance = () => {
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
-  const authedOpenModal = useAuthedCallback(openClaimRGTModal)
+  const authedOpenModal = useAuthedCallback(openClaimRGTModal);
 
   const isMobile = useIsSmallScreen();
 
@@ -302,8 +302,8 @@ const GeneralInfo = () => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
-  
-  const authedOpenDepositModal = useAuthedCallback(openDepositModal)
+
+  const authedOpenDepositModal = useAuthedCallback(openDepositModal);
 
   return (
     <>

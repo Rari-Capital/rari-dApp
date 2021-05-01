@@ -16,7 +16,7 @@ import { smallUsdFormatter } from "utils/bigUtils";
 import { useTranslation } from "react-i18next";
 
 const Earn = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const mySaffronData = useMySaffronData();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
@@ -81,7 +81,9 @@ const Earn = () => {
                     </Text>
                   </Td>
                   <Td>
-                    <Text textAlign="right">{daiSPrincipal} {t("DAI")}</Text>
+                    <Text textAlign="right">
+                      {daiSPrincipal} {t("DAI")}
+                    </Text>
                   </Td>
                   <Td>
                     {" "}
@@ -115,7 +117,9 @@ const Earn = () => {
                     </Text>
                   </Td>
                   <Td>
-                    <Text textAlign="right">{daiAPrincipal} {t("DAI")}</Text>
+                    <Text textAlign="right">
+                      {daiAPrincipal} {t("DAI")}
+                    </Text>
                   </Td>
                   <Td>
                     {" "}
@@ -151,10 +155,7 @@ const Earn = () => {
                 </Text>
               </Td>
               <Td>
-                <Text
-                  fontWeight={hasDeposits && "bold"}
-                  textAlign="right"
-                />
+                <Text fontWeight={hasDeposits && "bold"} textAlign="right" />
               </Td>
             </Tr>
           </>

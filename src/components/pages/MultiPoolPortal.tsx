@@ -365,7 +365,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openDepositModal)
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
   const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(
     pool

@@ -10,7 +10,7 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
   const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData]);
   const mb = singleRow ? null : 3;
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <motion.tr
@@ -50,7 +50,7 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
       <Td>
         {filteredPoolsData?.map(({ id }) => (
           <Text mb={mb} key={id}>
-           {t("N/A")}
+            {t("N/A")}
           </Text>
         ))}
       </Td>

@@ -113,7 +113,7 @@ const FusePoolEditPage = React.memo(() => {
     onClose: closeAddAssetModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openAddAssetModal)
+  const authedOpenModal = useAuthedCallback(openAddAssetModal);
 
   const { t } = useTranslation();
 
@@ -123,7 +123,6 @@ const FusePoolEditPage = React.memo(() => {
 
   return (
     <>
-
       {data ? (
         <AddAssetModal
           comptrollerAddress={data.comptroller}

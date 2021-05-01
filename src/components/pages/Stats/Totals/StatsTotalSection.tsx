@@ -27,7 +27,7 @@ import { FusePoolData } from "utils/fetchFusePoolData";
 import { useTranslation } from "react-i18next";
 
 const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   // Earn
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
@@ -99,7 +99,9 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
     if (totalDebtUSD && !Number.isNaN(totalDebtUSD)) setNetDebt(totalDebtUSD);
   }, [totalDepositsUSD, totalDebtUSD, setNetDeposits, setNetDebt]);
 
-  const earnedHeaderText = hasDepositsInTranches ? "RGT + SFI Earned" : "RGT Earned"
+  const earnedHeaderText = hasDepositsInTranches
+    ? "RGT + SFI Earned"
+    : "RGT Earned";
 
   return (
     <motion.div
@@ -115,9 +117,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
             <Th color="white">{t("Product")}</Th>
             <Th color="white">{t("Pool")}</Th>
             <Th color="white">{t("Deposits")}</Th>
-            <Th color="white">
-              {t(earnedHeaderText)}
-            </Th>
+            <Th color="white">{t(earnedHeaderText)}</Th>
             <Th color="white">Interest Earned</Th>
           </Tr>
         </Thead>

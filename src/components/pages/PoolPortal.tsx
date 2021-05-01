@@ -75,7 +75,7 @@ import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
 import { formatBalanceBN } from "utils/format";
 import Footer from "components/shared/Footer";
 
-import { useAuthedCallback } from '../../hooks/useAuthedCallback'
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -168,13 +168,13 @@ const PoolPortalContent = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openDepositModal)
-  
+  const authedOpenModal = useAuthedCallback(openDepositModal);
+
   // If loading, stop here
   if (isPoolBalanceLoading) return <FullPageSpinner />;
 
-  const myBalance : BN = poolBalance ?? rari.web3.utils.toBN(0);
-  const hasNotDeposited : boolean = poolBalance?.isZero() ?? true
+  const myBalance: BN = poolBalance ?? rari.web3.utils.toBN(0);
+  const hasNotDeposited: boolean = poolBalance?.isZero() ?? true;
   const formattedBalance = formatBalanceBN(
     rari,
     myBalance,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Tr, Td } from "@chakra-ui/react";
+import { Box, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Pool2LogoSVGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
@@ -14,8 +14,7 @@ const EarnRow = ({
   earned: any;
   balance: any;
 }) => {
-
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <motion.tr
@@ -31,9 +30,13 @@ const EarnRow = ({
         </SimpleTooltip>
       </Td>
       <Td>{t("RGT-ETH")}</Td>
-      <Td>{balance?.SLP?.toFixed(2)} {t("RGT-ETH")}</Td>
+      <Td>
+        {balance?.SLP?.toFixed(2)} {t("RGT-ETH")}
+      </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
-      <Td>{earned?.toFixed(2)} {t("RGT")}</Td>
+      <Td>
+        {earned?.toFixed(2)} {t("RGT")}
+      </Td>
       <Td>{t("N/A")}</Td>
     </motion.tr>
   );

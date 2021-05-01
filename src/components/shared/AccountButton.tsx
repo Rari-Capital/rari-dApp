@@ -286,7 +286,7 @@ export const SettingsModal = ({
               href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3"
             >
               <Text mx={2} text="sm" textDecoration="underline">
-              {t("Notion")}
+                {t("Notion")}
               </Text>
             </Link>
             <Link
@@ -294,13 +294,13 @@ export const SettingsModal = ({
               href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
             >
               <Text mx={2} text="sm" textDecoration="underline">
-              {t("Audit")}
+                {t("Audit")}
               </Text>
             </Link>
           </Row>
 
           <Text mt={4} fontSize="10px">
-          {t("Version")} {version}
+            {t("Version")} {version}
           </Text>
         </Column>
       </ModalContent>

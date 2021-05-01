@@ -56,17 +56,16 @@ export interface USDPricedFuseAssetWithTokenData extends USDPricedFuseAsset {
   tokenData: TokenData;
 }
 
-
 export interface FusePoolData {
-  assets: USDPricedFuseAsset[],
-  comptroller: any,
-  name: any,
-  isPrivate: boolean,
-  totalLiquidityUSD: any,
-  totalSuppliedUSD: any,
-  totalBorrowedUSD: any,
-  totalSupplyBalanceUSD: any,
-  totalBorrowBalanceUSD: any
+  assets: USDPricedFuseAsset[];
+  comptroller: any;
+  name: any;
+  isPrivate: boolean;
+  totalLiquidityUSD: any;
+  totalSuppliedUSD: any;
+  totalBorrowedUSD: any;
+  totalSupplyBalanceUSD: any;
+  totalBorrowBalanceUSD: any;
 }
 
 export const filterPoolName = (name: string) => {
@@ -87,7 +86,7 @@ export const fetchFusePoolData = async (
   address: string,
   fuse: Fuse,
   rari?: Rari
-) : Promise<FusePoolData> => {
+): Promise<FusePoolData> => {
   const {
     comptroller,
     name: _unfiliteredName,
@@ -159,4 +158,3 @@ export const fetchFusePoolData = async (
     totalBorrowBalanceUSD,
   };
 };
-

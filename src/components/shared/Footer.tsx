@@ -5,7 +5,7 @@ import { Row, Column } from "buttered-chakra";
 import { useTranslation } from "react-i18next";
 
 const Footer = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <>
       <Column py={3} width="100%" flexShrink={0} mt="auto">
@@ -17,7 +17,7 @@ const Footer = () => {
         >
           <Link target="_blank" href="https://docs.rari.capital/">
             <Text color="white" mx={2} text="sm" textDecoration="underline">
-            {t("Docs")}
+              {t("Docs")}
             </Text>
           </Link>
           <Text color="white" text="sm">
@@ -28,7 +28,7 @@ const Footer = () => {
             href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3"
           >
             <Text color="white" mx={2} text="sm" textDecoration="underline">
-            {t("Notion")}
+              {t("Notion")}
             </Text>
           </Link>
           <Text color="white" text="sm">
@@ -39,7 +39,7 @@ const Footer = () => {
             href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
           >
             <Text color="white" mx={2} text="sm" textDecoration="underline">
-            {t("Audit")}
+              {t("Audit")}
             </Text>
           </Link>
         </Row>

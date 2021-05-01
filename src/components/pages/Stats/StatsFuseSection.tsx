@@ -38,7 +38,7 @@ const Fuse = () => {
   // Todo - write useFusePoolsData
   const { filteredPools } = useFusePools("my-pools");
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const poolIds: number[] = filteredPools?.map(({ id }) => id) ?? [];
 
@@ -48,22 +48,20 @@ const Fuse = () => {
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
   const maxBorrows = useBorrowLimits(assetsArray);
   const {
-    tokensDataMap
+    tokensDataMap,
   }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
 
   const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
     return {
-      totalBorrowBalanceUSD:
-        a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
+      totalBorrowBalanceUSD: a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
     };
-  }) ?? { totalBorrowBalanceUSD: null }
+  }) ?? { totalBorrowBalanceUSD: null };
 
   const { totalSupplyBalanceUSD } = fusePoolsData?.reduce((a, b) => {
     return {
-      totalSupplyBalanceUSD:
-        a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
+      totalSupplyBalanceUSD: a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
     };
-  }) ?? { totalSupplyBalanceUSD: null }
+  }) ?? { totalSupplyBalanceUSD: null };
 
   const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [
     totalSupplyBalanceUSD,
@@ -250,10 +248,11 @@ const AssetContainer = ({
           {type !== AssetContainerType.RATES && (
             <>
               <SimpleTooltip
-                label={`${type === AssetContainerType.BORROW
-                  ? borrowAmount
-                  : supplyAmount
-                  } ${asset.underlyingSymbol}`}
+                label={`${
+                  type === AssetContainerType.BORROW
+                    ? borrowAmount
+                    : supplyAmount
+                } ${asset.underlyingSymbol}`}
               >
                 <Text p={1} fontSize="lg" textAlign="right">
                   {type === AssetContainerType.BORROW

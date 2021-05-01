@@ -32,24 +32,20 @@ export function getSDKPool({ rari, pool }: { rari: Rari; pool: Pool }) {
 export function poolHasDivergenceRisk(pool: Pool) {
   return pool === Pool.YIELD;
 }
- 
+
 export const getPoolName = (pool: Pool, t: any) =>
   pool === Pool.ETH
     ? t("ETH Pool")
     : pool === Pool.STABLE
-      ? t("Stable Pool")
-      : t("Yield Pool");
+    ? t("Stable Pool")
+    : t("Yield Pool");
 
 export const getPoolCaption = (pool: Pool, t: any) =>
   pool === Pool.ETH
     ? t("Safe returns on ETH")
     : pool === Pool.STABLE
-      ? t("Safe returns on stablecoins")
-      : t("High risk, high reward");
+    ? t("Safe returns on stablecoins")
+    : t("High risk, high reward");
 
 export const getPoolLogo = (pool: Pool, t: any) =>
-  pool === Pool.ETH
-    ? EthIcon
-    : pool === Pool.STABLE
-      ? StableIcon
-      : YieldIcon;
+  pool === Pool.ETH ? EthIcon : pool === Pool.STABLE ? StableIcon : YieldIcon;

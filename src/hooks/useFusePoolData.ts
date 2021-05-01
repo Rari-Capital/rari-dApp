@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { useQuery, useQueries, UseQueryResult } from "react-query";
+import { useQuery, useQueries } from "react-query";
 
 import { useRari } from "../context/RariContext";
 import { fetchFusePoolData, FusePoolData } from "../utils/fetchFusePoolData";
 
-export const useFusePoolData = (poolId: string) :  FusePoolData | undefined => {
+export const useFusePoolData = (poolId: string): FusePoolData | undefined => {
   const { fuse, rari, address } = useRari();
 
   const { data } = useQuery(poolId + " poolData " + address, () => {
@@ -15,7 +15,7 @@ export const useFusePoolData = (poolId: string) :  FusePoolData | undefined => {
 };
 
 // Fetch APYs for all pools
-export const useFusePoolsData = (poolIds: number[]) : FusePoolData[] | null => {
+export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
   const { fuse, rari, address } = useRari();
 
   const poolsData = useQueries(

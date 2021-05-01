@@ -6,10 +6,8 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { EarnLogoSVGWhite } from "components/shared/Logos";
 import { useTranslation } from "react-i18next";
 
-
 const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
-
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <motion.tr
       initial={{ opacity: 0, y: -40 }}

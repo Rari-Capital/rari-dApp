@@ -54,7 +54,6 @@ const FusePoolPage = React.memo(() => {
 
   return (
     <>
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -321,7 +320,7 @@ const AssetSupplyRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openModal)
+  const authedOpenModal = useAuthedCallback(openModal);
 
   const asset = assets[index];
 
@@ -610,7 +609,7 @@ const AssetBorrowRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openModal)
+  const authedOpenModal = useAuthedCallback(openModal);
 
   const tokenData = useTokenData(asset.underlyingToken);
 

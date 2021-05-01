@@ -23,11 +23,10 @@ export const useAssetsMap = (
   ]);
 };
 
-
 type AssetsMapWithTokenDataReturn = {
-  assetsMapWithTokenData:  USDPricedFuseAssetWithTokenData[], // Fuse Asset with additional info about the token appended on
-  tokensDataMap: TokensDataHash  // hashmap of unique assets and their token data
-}
+  assetsMapWithTokenData: USDPricedFuseAssetWithTokenData[]; // Fuse Asset with additional info about the token appended on
+  tokensDataMap: TokensDataHash; // hashmap of unique assets and their token data
+};
 
 export const useAssetsMapWithTokenData = (
   assetsArray: USDPricedFuseAsset[][] | null

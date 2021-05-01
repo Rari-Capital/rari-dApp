@@ -29,7 +29,6 @@ const FusePoolsPage = React.memo(() => {
 
   return (
     <>
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -48,7 +47,7 @@ const FusePoolsPage = React.memo(() => {
           <PoolList />
         </DashboardBox>
 
-        <Footer/>
+        <Footer />
       </Column>
     </>
   );
