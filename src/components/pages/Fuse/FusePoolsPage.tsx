@@ -40,7 +40,6 @@ const FusePoolsPage = React.memo(() => {
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />
