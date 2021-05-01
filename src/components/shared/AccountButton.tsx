@@ -115,7 +115,7 @@ const Buttons = ({
           </DashboardBox> */}
 
           <DashboardBox
-            ml={4}
+            ml={1}
             as="button"
             height="40px"
             flexShrink={0}
