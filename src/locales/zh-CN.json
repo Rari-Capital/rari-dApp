@@ -74,7 +74,6 @@
   "Access": "访问",
   "Forums": "论坛",
   "Do not increase the price of gas more than 1.5x the prefilled amount!": "汽油价格不要超过预充量的1.5倍！",
-  "Pools": "泳池",
   "Audit": "审计",
   "Tranches": "分档",
   "Access Saffron Finance tranches through the Rari Capital interface!": "通过Rari Capital界面访问Saffron Finance付款！",
@@ -233,8 +232,6 @@
   "Borrows": "借来的钱",
   "Lend APY": "年贷款利率",
   "Net Balance": "净余额",
-  "Total Overview": "总体概述",
-  "Earn": "赚",
   "Est. SFI Earnings": "SFI估算收入",
   "DAI-S": "DAI-S",
   "DAI": "DAI",
@@ -244,5 +241,10 @@
   "RGT": "RGT",
   "Docs": "文件资料",
   "Notion": "Notion",
-  "Version": "版本"
+  "Version": "版本",
+  "Debt": "不适用",
+  "Product": "产品",
+  "Connect": "连接",
+  "Disconnect": "断开",
+  "Snapshot": "快照"
 }
