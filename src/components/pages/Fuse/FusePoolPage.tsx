@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -10,34 +11,37 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
-import LogRocket from "logrocket";
-import React, { useEffect } from "react";
+
+// Hooks
 import { useTranslation } from "react-i18next";
-import { useQueryCache } from "react-query";
+import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
-import { useRari } from "../../../context/RariContext";
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
-import { useBorrowLimit } from "../../../hooks/useBorrowLimit";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-import { useTokenData } from "../../../hooks/useTokenData";
-import {
-  convertMantissaToAPR,
-  convertMantissaToAPY,
-} from "../../../utils/apyUtils";
-import { shortUsdFormatter, smallUsdFormatter } from "../../../utils/bigUtils";
-import { createComptroller } from "../../../utils/createComptroller";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-import { SimpleTooltip } from "../../shared/SimpleTooltip";
-import { SwitchCSS } from "../../shared/SwitchCSS";
+import { useRari } from "context/RariContext";
+import { useBorrowLimit } from "hooks/useBorrowLimit";
+import { useFusePoolData } from "hooks/useFusePoolData";
+import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
+import { useTokenData } from "hooks/useTokenData";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+
+// Utils
+import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
+import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
+import { createComptroller } from "utils/createComptroller";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
+
+// Components
+import DashboardBox from "components/shared/DashboardBox";
+import { Header } from "components/shared/Header";
+import { ModalDivider } from "components/shared/Modal";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import { SwitchCSS } from "components/shared/SwitchCSS";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
+
+import LogRocket from "logrocket";
+import Footer from "components/shared/Footer";
 
 const FusePoolPage = React.memo(() => {
   const { isAuthed } = useRari();
@@ -50,7 +54,6 @@ const FusePoolPage = React.memo(() => {
 
   return (
     <>
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -114,9 +117,8 @@ const FusePoolPage = React.memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
+        <Footer />
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });
@@ -154,7 +156,7 @@ const CollateralRatioBar = ({
         </SimpleTooltip>
 
         <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
-          0%
+          {smallUsdFormatter(borrowUSD)}
         </Text>
 
         <SimpleTooltip
@@ -318,7 +320,7 @@ const AssetSupplyRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openModal)
+  const authedOpenModal = useAuthedCallback(openModal);
 
   const asset = assets[index];
 
@@ -329,7 +331,7 @@ const AssetSupplyRow = ({
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
   const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const toast = useToast();
 
@@ -375,7 +377,7 @@ const AssetSupplyRow = ({
 
     LogRocket.track("Fuse-ToggleCollateral");
 
-    queryCache.refetchQueries();
+    queryClient.refetchQueries();
   };
 
   const isMobile = useIsMobile();
@@ -607,7 +609,7 @@ const AssetBorrowRow = ({
     onClose: closeModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openModal)
+  const authedOpenModal = useAuthedCallback(openModal);
 
   const tokenData = useTokenData(asset.underlyingToken);
 

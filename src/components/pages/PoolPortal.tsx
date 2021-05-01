@@ -21,8 +21,6 @@ import DashboardBox, {
   DASHBOARD_BOX_PROPS,
 } from "../shared/DashboardBox";
 
-import CopyrightSpacer from "../shared/CopyrightSpacer";
-
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -74,8 +72,10 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
+import { formatBalanceBN } from "utils/format";
+import Footer from "components/shared/Footer";
 
-import { useAuthedCallback } from '../../hooks/useAuthedCallback'
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -101,7 +101,7 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = () => {
-  const { isAuthed } = useRari();
+  const { isAuthed, rari } = useRari();
 
   const { windowHeight, isLocked } = useLockedViewHeight({
     min: 750,
@@ -158,7 +158,9 @@ const PoolPortalContent = () => {
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
-  const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
+  const { data: poolBalance, isLoading: isPoolBalanceLoading } = usePoolBalance(
+    poolType
+  );
 
   const {
     isOpen: isDepositModalOpen,
@@ -166,14 +168,18 @@ const PoolPortalContent = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openDepositModal)
-  
-  if (isPoolBalanceLoading) {
-    return <FullPageSpinner />;
-  }
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
-  const { formattedBalance: myBalance, bigBalance } = balanceData!;
-  const hasNotDeposited = bigBalance.isZero();
+  // If loading, stop here
+  if (isPoolBalanceLoading) return <FullPageSpinner />;
+
+  const myBalance: BN = poolBalance ?? rari.web3.utils.toBN(0);
+  const hasNotDeposited: boolean = poolBalance?.isZero() ?? true;
+  const formattedBalance = formatBalanceBN(
+    rari,
+    myBalance,
+    poolType === Pool.ETH
+  );
 
   return (
     <>
@@ -251,7 +257,7 @@ const PoolPortalContent = () => {
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
-                  balance={myBalance}
+                  balance={formattedBalance}
                 />
               </Box>
             </DashboardBox>
@@ -350,8 +356,7 @@ const PoolPortalContent = () => {
             </DashboardBox>
           </Column>
         </RowOnDesktopColumnOnMobile>
-
-        <CopyrightSpacer forceShow={isLocked} />
+        <Footer />
       </Column>
     </>
   );
@@ -360,7 +365,6 @@ const PoolPortalContent = () => {
 const UserStatsAndChart = ({
   size,
   balance,
-
   hasNotDeposited,
 }: {
   size: number;
@@ -604,7 +608,7 @@ const APYStats = () => {
 
   const { rari } = useRari();
 
-  const { data: apys, isLoading: areAPYsLoading } = useQuery(
+  const { data: apys, isLoading: areAPYsLoading, isError } = useQuery(
     pool + " monthly and weekly apys",
     async () => {
       const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
@@ -656,7 +660,8 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
+            {t("This Month")}:
+            <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
@@ -674,7 +679,8 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
+            {t("This Week")}:
+            <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">

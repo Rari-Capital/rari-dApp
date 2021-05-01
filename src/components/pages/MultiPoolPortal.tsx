@@ -11,8 +11,6 @@ import DashboardBox from "../shared/DashboardBox";
 
 // import SmallLogo from "../../static/small-logo.png";
 
-import CopyrightSpacer from "../shared/CopyrightSpacer";
-
 import CaptionedStat from "../shared/CaptionedStat";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -53,7 +51,10 @@ import {
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
-import { usePoolBalance } from "../../hooks/usePoolBalance";
+import {
+  usePoolBalance,
+  useTotalPoolsBalance,
+} from "../../hooks/usePoolBalance";
 import PoolsPerformanceChart from "../shared/PoolsPerformance";
 import { useTVLFetchers } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
@@ -62,7 +63,11 @@ import BigNumber from "bignumber.js";
 import { InfoIcon, QuestionIcon } from "@chakra-ui/icons";
 import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
-import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+import { usePoolInterestEarned } from "hooks/usePoolInterest";
+import { formatBalanceBN } from "utils/format";
+import Footer from "components/shared/Footer";
+
+import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
@@ -110,8 +115,7 @@ const MultiPoolPortal = React.memo(() => {
         </DashboardBox>
 
         <PoolCards />
-
-        <CopyrightSpacer forceShow />
+        <Footer />
       </Column>
     </>
   );
@@ -208,30 +212,16 @@ const GovernanceStats = () => {
 const FundStats = () => {
   const { t } = useTranslation();
 
-  const { rari, address, isAuthed } = useRari();
+  const { isAuthed } = useRari();
 
-  const { isLoading: isBalanceLoading, data: balanceData } = useQuery(
-    address + " allPoolBalance",
-    async () => {
-      const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
-        rari.pools.stable.balances.balanceOf(address),
-        rari.pools.yield.balances.balanceOf(address),
-        rari.pools.ethereum.balances.balanceOf(address),
-        rari.getEthUsdPriceBN(),
-      ]);
-
-      const ethBal = ethBalInETH.mul(
-        ethPriceBN.div(rari.web3.utils.toBN(1e18))
-      );
-
-      return parseFloat(
-        rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
-      );
-    }
-  );
+  const {
+    isLoading: isBalanceLoading,
+    data: balanceData,
+  } = useTotalPoolsBalance();
 
   const { getNumberTVL } = useTVLFetchers();
 
+  // If loading, stop here
   if (isBalanceLoading) {
     return (
       <Center
@@ -365,7 +355,7 @@ const PoolCards = () => {
 const PoolDetailCard = ({ pool }: { pool: Pool }) => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
+  const { rari, isAuthed } = useRari();
 
   const { poolType, poolName, poolLogo } = usePoolInfo(pool);
 
@@ -375,13 +365,31 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openDepositModal)
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
-  const { balanceData, isPoolBalanceLoading } = usePoolBalance(pool);
+  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(
+    pool
+  );
 
   const poolAPY = usePoolAPY(pool);
 
   const noSlippageCurrencies = useNoSlippageCurrencies(pool);
+
+  if (isPoolBalanceLoading) {
+    return (
+      <Center
+        height={{
+          md: isAuthed ? "235px" : "110px",
+          base: isAuthed ? "330px" : "215px",
+        }}
+      >
+        <Spinner />
+      </Center>
+    );
+  }
+
+  const myBalance = balanceData!;
+  const formattedBalance = formatBalanceBN(rari, myBalance, pool === Pool.ETH);
 
   // const rgtAPR = useRGTAPR();
 
@@ -426,7 +434,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
         <SimpleTooltip label={t("Your balance in this pool")}>
           <Text mt={4} mb={5} fontSize="md" textAlign="center">
-            {isPoolBalanceLoading ? "$?" : balanceData!.formattedBalance}
+            {isPoolBalanceLoading ? "$?" : formattedBalance}
           </Text>
         </SimpleTooltip>
 
@@ -489,42 +497,15 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 };
 
 const InterestEarned = () => {
-  const { rari, address } = useRari();
+  const interestEarned = usePoolInterestEarned();
 
-  const { data: interestEarned } = useQuery("interestEarned", async () => {
-    const [
-      stableInterest,
-      yieldInterest,
-      ethInterestInETH,
-      ethPriceBN,
-    ] = await Promise.all([
-      rari.pools.stable.balances.interestAccruedBy(address),
-      rari.pools.yield.balances.interestAccruedBy(address),
-      rari.pools.ethereum.balances.interestAccruedBy(address),
-      rari.getEthUsdPriceBN(),
-    ]);
-
-    const ethInterest = ethInterestInETH.mul(
-      ethPriceBN.div(rari.web3.utils.toBN(1e18))
-    );
-
-    return {
-      formattedEarnings: stringUsdFormatter(
-        rari.web3.utils.fromWei(
-          stableInterest.add(yieldInterest).add(ethInterest)
-        )
-      ),
-      yieldPoolInterestEarned: yieldInterest,
-    };
-  });
-
-  const { balanceData: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
+  const { data: yieldPoolBalance } = usePoolBalance(Pool.YIELD);
 
   const isSufferingDivergenceLoss = (() => {
     if (interestEarned && yieldPoolBalance) {
       if (
         interestEarned.yieldPoolInterestEarned.isZero() &&
-        new BigNumber(yieldPoolBalance.bigBalance.toString()).div(1e18).gt(20)
+        new BigNumber(yieldPoolBalance.toString()).div(1e18).gt(20)
       ) {
         return true;
       } else {
@@ -538,7 +519,7 @@ const InterestEarned = () => {
   return (
     <Column mainAxisAlignment="center" crossAxisAlignment="center">
       <Heading fontSize="3xl">
-        {interestEarned?.formattedEarnings ?? "$?"}
+        {interestEarned?.totalFormattedEarnings ?? "$?"}
       </Heading>
 
       {isSufferingDivergenceLoss ? (

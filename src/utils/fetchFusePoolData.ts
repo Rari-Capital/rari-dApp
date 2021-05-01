@@ -3,6 +3,7 @@ import Rari from "../rari-sdk/index";
 
 // @ts-ignore
 import Filter from "bad-words";
+import { TokenData } from "hooks/useTokenData";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -26,6 +27,7 @@ export interface FuseAsset {
   underlyingToken: string;
   underlyingDecimals: number;
   underlyingPrice: number;
+  underlyingBalance: number;
 
   collateralFactor: number;
   reserveFactor: number;
@@ -50,6 +52,22 @@ export interface USDPricedFuseAsset extends FuseAsset {
   liquidityUSD: number;
 }
 
+export interface USDPricedFuseAssetWithTokenData extends USDPricedFuseAsset {
+  tokenData: TokenData;
+}
+
+export interface FusePoolData {
+  assets: USDPricedFuseAsset[];
+  comptroller: any;
+  name: any;
+  isPrivate: boolean;
+  totalLiquidityUSD: any;
+  totalSuppliedUSD: any;
+  totalBorrowedUSD: any;
+  totalSupplyBalanceUSD: any;
+  totalBorrowBalanceUSD: any;
+}
+
 export const filterPoolName = (name: string) => {
   // Manual rename pool 6 until we add func to change pool names.
   if (name === "Tetranode's Pool") {
@@ -68,7 +86,7 @@ export const fetchFusePoolData = async (
   address: string,
   fuse: Fuse,
   rari?: Rari
-) => {
+): Promise<FusePoolData> => {
   const {
     comptroller,
     name: _unfiliteredName,

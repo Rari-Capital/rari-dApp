@@ -32,7 +32,7 @@ import { BN, smallStringUsdFormatter } from "../../../utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
-import { useQueryCache } from "react-query";
+import { useQueryClient } from "react-query";
 
 import {
   getSDKPool,
@@ -188,7 +188,7 @@ const AmountSelect = ({
 
   const toast = useToast();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const onConfirm = async () => {
     try {
@@ -292,7 +292,7 @@ const AmountSelect = ({
         });
       }
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
       await new Promise((resolve) => setTimeout(resolve, 2000));
