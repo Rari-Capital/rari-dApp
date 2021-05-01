@@ -93,7 +93,7 @@ const Fuse = () => {
               {t("Borrows")}
             </Th>
             <Th textAlign="right" color="white" fontSize="sm">
-              {t("Lend APY") / t("Borrow APR")}
+              {`${t("Lend APY")} / ${t("Borrow APR")}`}
             </Th>
           </Tr>
         </Thead>
