@@ -124,7 +124,6 @@
   "Account": "Account",
   "Switch Wallet": "Switch Wallet",
   "Audit": "Audit",
-  "Pools": "Pools",
   "Connect with a browser extension": "Connect with a browser extension",
   "Scan with a wallet to connect": "Scan with a wallet to connect",
   "Connect with your {{provider}} account": "Connect with your {{provider}} account",
@@ -235,8 +234,6 @@
   "Borrows": "Borrows",
   "Lend APY": "Lend APY",
   "Net Balance": "Net Balance",
-  "Total Overview": "Total Overview",
-  "Earn": "Earn",
   "Est. SFI Earnings": "Est. SFI Earnings",
   "DAI-S": "DAI-S",
   "DAI": "DAI",
@@ -246,5 +243,8 @@
   "RGT": "RGT",
   "Docs": "Docs",
   "Notion": "Notion",
-  "Version": "Version"
+  "Version": "Version",
+  "Debt": "Debt",
+  "Product": "Product",
+  "Snapshot": "Snapshot"
 }
