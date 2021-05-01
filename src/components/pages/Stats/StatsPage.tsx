@@ -1,12 +1,11 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 
 // Components
-import { Box, Heading, Text, Spinner } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { Column, Row } from "buttered-chakra";
 import { motion } from "framer-motion";
 
-import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
 import SubNav from "./StatsSubNav";
 
@@ -23,8 +22,7 @@ import { useRari } from "context/RariContext";
 // Hooks
 import { useTranslation } from "react-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { usePoolBalance, useTotalPoolsBalance } from "hooks/usePoolBalance";
-import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
+import { smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 
@@ -51,7 +49,6 @@ const StatsPage = () => {
 
   return (
     <SaffronProvider>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"

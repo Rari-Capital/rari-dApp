@@ -13,7 +13,6 @@ import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
 import DashboardBox from "components/shared/DashboardBox";
-import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
 
 // Hooks

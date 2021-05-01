@@ -31,7 +31,6 @@ import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Components
 import DashboardBox from "components/shared/DashboardBox";
-import ForceAuthModal from "components/shared/ForceAuthModal";
 import { Header } from "components/shared/Header";
 import { ModalDivider } from "components/shared/Modal";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
