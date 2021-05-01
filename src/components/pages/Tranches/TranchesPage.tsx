@@ -53,7 +53,6 @@ const TranchePage = () => {
 
   return (
     <>
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -330,7 +329,7 @@ export const TrancheColumn = ({
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  const authedOpenModal = useAuthedCallback(openDepositModal)
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
   return (
     <>
