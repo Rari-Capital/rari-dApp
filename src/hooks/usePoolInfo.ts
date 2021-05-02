@@ -71,7 +71,7 @@ export const useAggregatePoolInfos = () => {
   const aggregatePoolsInfo = useMemo(
     () =>
       poolInfos.map((poolInfo: PoolInterface, index: number) => {
-        const poolAPY: BN = poolAPYs[index]?.data ?? toBN(0);
+        const poolAPY: BN | null = poolAPYs[index]?.data ?? null;
         const poolBalance: BN = poolBalances[index]?.data ?? toBN(0);
 
         const formattedPoolBalance: string | null = formatBalanceBN(
@@ -104,14 +104,14 @@ export const useAggregatePoolInfos = () => {
         );
 
         // Growth for a pool = % increase between balance & (balance - interest earned)
-        const poolGrowth: BN | null =
+        const poolGrowth: BN =
           poolBalance && poolInterestEarned
             ? !poolBalance.isZero()
               ? toBN(1).sub(
                   poolBalance.sub(poolInterestEarned).div(poolBalance)
                 )
-              : null
-            : null;
+              : toBN(0)
+            : toBN(0);
 
         const formattedPoolGrowth = poolGrowth
           ? (parseFloat(poolGrowth.toString()) / 1e18).toFixed(2)
@@ -119,12 +119,12 @@ export const useAggregatePoolInfos = () => {
 
         return {
           poolInfo,
-          poolAPY,
+          poolAPY:  poolAPY ? parseFloat(poolAPY.toString()) : null,
           poolBalance,
           formattedPoolBalance,
           poolInterestEarned,
           formattedPoolInterestEarned,
-          poolGrowth,
+          poolGrowth: parseFloat(poolGrowth.toString()) / (1e18),
           formattedPoolGrowth,
         };
       }),
