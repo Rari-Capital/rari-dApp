@@ -4,13 +4,28 @@ import React, { Dispatch, SetStateAction } from "react";
 import { Column, Row } from "buttered-chakra";
 import { Box, Heading } from "@chakra-ui/react";
 
-// Icons - todo: move to Logos.tsx
 import {
   FuseLogoSVGWhite,
   EarnLogoSVGWhite,
   Pool2LogoSVGWhite,
   TranchesLogoSVGWhite,
   StatsLogoSVGWhite,
+
+
+  StatsLogoPNGWhite,
+  StatsLogoPNGGreen,
+  FuseLogoPNGWhite,
+  FuseLogoPNGGreen,
+  EarnLogoPNGWhite,
+  EarnLogoPNGGreen,
+  Pool2LogoPNGWhite,
+  Pool2LogoPNGGreen,
+  TranchesLogoPNGWhite,
+  TranchesLogoPNGGreen,
+
+  FuseSmallLogo
+
+
 } from "components/shared/Logos";
 
 // Hooks
@@ -95,19 +110,19 @@ const SubNavItem = ({
   let logo;
   switch (subNav) {
     case StatsSubNav.TRANCHES:
-      logo = <TranchesLogoSVGWhite />;
+      logo = !active ? <TranchesLogoPNGWhite /> : <TranchesLogoPNGGreen />;
       break;
     case StatsSubNav.POOL2:
-      logo = <Pool2LogoSVGWhite />;
+      logo = !active ? <Pool2LogoPNGWhite /> : <Pool2LogoPNGGreen />;
       break;
     case StatsSubNav.EARN:
-      logo = <EarnLogoSVGWhite />;
+      logo = !active ? <EarnLogoPNGWhite /> : <EarnLogoPNGGreen />;
       break;
     case StatsSubNav.FUSE:
-      logo = <FuseLogoSVGWhite />;
+      logo = !active ? <FuseLogoPNGWhite /> : <FuseLogoPNGGreen />;
       break;
     case StatsSubNav.TOTAL:
-      logo = <StatsLogoSVGWhite />;
+      logo = !active ? <StatsLogoPNGWhite /> : <StatsLogoPNGGreen />;
       break;
   }
 
@@ -122,7 +137,7 @@ const SubNavItem = ({
       }}
       onClick={setActive}
     >
-      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+      <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-end">
         {logo}
         <Heading size="md" ml={1}>
           {t(title)}
