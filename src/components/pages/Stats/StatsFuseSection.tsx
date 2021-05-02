@@ -78,19 +78,19 @@ const Fuse = () => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th textAlign="center" color="white" fontSize="sm">
+            <Th textAlign="center" color="white">
               {t("Pool")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {t("Borrow Limit")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {t("Deposits")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {t("Borrows")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {`${t("Lend APY")} / ${t("Borrow APR")}`}
             </Th>
           </Tr>
