@@ -19,7 +19,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
           </Box>
         </SimpleTooltip>
       </Td>
-      <Td>
+      <Td textAlign="right">
         <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
           <Box mb={3}>
             <Text> {t("DAI-S")} </Text>
@@ -29,7 +29,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
           </Box>
         </Column>
       </Td>
-      <Td>
+      <Td textAlign="right">
         <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
           <Box mb={3}>
             <Text textAlign="left"> {daiSPrincipal} DAI </Text>
@@ -40,7 +40,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
         </Column>
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
-      <Td>
+      <Td textAlign="right">
         <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
           <Box mb={3}>
             <Text textAlign="left">
@@ -55,7 +55,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
           </Box>
         </Column>
       </Td>
-      <Td>
+      <Td textAlign="right">
         <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
           <Box mb={3}>
             <Text>{t("N/A")}</Text>
