@@ -5,7 +5,6 @@ import DashboardBox from "components/shared/DashboardBox";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { Box, Heading } from "@chakra-ui/react";
 
-// Icons - todo: move to Logos.tsx
 import {
   StatsLogoPNGWhite,
   StatsLogoPNGGreen,
@@ -101,19 +100,19 @@ const SubNavItem = ({
   let logo;
   switch (subNav) {
     case StatsSubNav.TRANCHES:
-      logo = <TranchesLogoSVGWhite />;
+      logo = !active ? <TranchesLogoPNGWhite /> : <TranchesLogoPNGGreen />;
       break;
     case StatsSubNav.POOL2:
       logo = !active ? <Pool2LogoPNGWhite height="18px" /> : <Pool2LogoPNGGreen height="18px"/>;
       break;
     case StatsSubNav.EARN:
-      logo = <EarnLogoSVGWhite />;
+      logo = !active ? <EarnLogoPNGWhite /> : <EarnLogoPNGGreen />;
       break;
     case StatsSubNav.FUSE:
-      logo = <FuseLogoSVGWhite />;
+      logo = !active ? <FuseLogoPNGWhite /> : <FuseLogoPNGGreen />;
       break;
     case StatsSubNav.TOTAL:
-      logo = <StatsLogoSVGWhite />;
+      logo = !active ? <StatsLogoPNGWhite /> : <StatsLogoPNGGreen />;
       break;
   }
 
