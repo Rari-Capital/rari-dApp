@@ -24,7 +24,6 @@ import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { shortUsdFormatter } from "../../../utils/bigUtils";
 import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
@@ -44,6 +43,7 @@ import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
+import Footer from "components/shared/Footer";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -118,6 +118,7 @@ const FusePoolInfoPage = React.memo(() => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1150px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
@@ -172,9 +173,8 @@ const FusePoolInfoPage = React.memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
+        <Footer />
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });

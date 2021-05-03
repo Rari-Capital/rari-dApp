@@ -62,7 +62,7 @@ const FuseTabBar = () => {
                 width="185px"
                 height="100%"
                 ml={2}
-                placeholder={t("Try searching for SOCKS")}
+                placeholder={t("Try searching for USDC")}
                 variant="filled"
                 size="sm"
                 _placeholder={{ color: "#e0e0e0" }}

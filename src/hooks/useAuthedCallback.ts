@@ -1,15 +1,15 @@
-import { useRari } from "../context/RariContext"
+import { useRari } from "../context/RariContext";
 
-export const useAuthedCallback = (callback : () => any) => {
-  const { login, isAuthed } = useRari()
+export const useAuthedCallback = (callback: () => any) => {
+  const { login, isAuthed } = useRari();
 
   const authedCallback = () => {
-    if (isAuthed) { 
-      return callback()
+    if (isAuthed) {
+      return callback();
     } else {
-      return login()
+      return login();
     }
-  }
+  };
 
-  return authedCallback
-}
+  return authedCallback;
+};

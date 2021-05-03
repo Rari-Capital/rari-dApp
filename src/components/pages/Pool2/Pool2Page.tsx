@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   useInterval,
   useDisclosure,
@@ -6,20 +7,28 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
+
 import { Center, RowOrColumn, Column } from "buttered-chakra";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useRari } from "../../../context/RariContext";
-import { smallUsdFormatter } from "../../../utils/bigUtils";
-import { ClaimRGTModal } from "../../shared/ClaimRGTModal";
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
-import { useQuery } from "react-query";
 import Pool2Modal from "./Pool2Modal";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
+import DashboardBox from "components/shared/DashboardBox";
+import { Header } from "components/shared/Header";
+
+// Hooks
+import { useTranslation } from "react-i18next";
+import { useRari } from "context/RariContext";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { usePool2Balance } from "hooks/pool2/usePool2Balance";
+import { usePool2UnclaimedRGT } from "hooks/pool2/usePool2UnclaimedRGT";
+import { usePool2APR } from "hooks/pool2/usePool2APR";
+import { usePool2TotalStaked } from "hooks/pool2/usePool2TotalStaked";
+import { useHasSushiswapRewardsStarted } from "hooks/pool2/useSushiswapRewards";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+
+// Utils
+import { smallUsdFormatter } from "utils/bigUtils";
+import Footer from "components/shared/Footer";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -36,6 +45,7 @@ const Pool2Page = () => {
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} />
@@ -158,8 +168,8 @@ const Pool2Page = () => {
             </Column>
           </RowOrColumn>
         </Column>
+        <Footer />
       </Column>
-      <CopyrightSpacer forceShow={isMobile} />
     </>
   );
 };
@@ -167,15 +177,7 @@ const Pool2Page = () => {
 export const TotalStaked = () => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
-
-  const { data: totalStaked } = useQuery("pool2TotalStaked", async () => {
-    return parseFloat(
-      rari.web3.utils.fromWei(
-        await rari.governance.rgt.sushiSwapDistributions.totalStakedUsd()
-      )
-    );
-  });
+  const totalStaked = usePool2TotalStaked();
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -194,19 +196,7 @@ const endDate = startDate + 9.461e10;
 export const StartAndEnd = () => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
-
-  const { data: hasStarted } = useQuery(
-    "hasSushiswapRewardsStarted",
-    async () => {
-      const block = await rari.web3.eth.getBlockNumber();
-
-      const startingBlock =
-        rari.governance.rgt.sushiSwapDistributions.DISTRIBUTION_START_BLOCK;
-
-      return block >= startingBlock;
-    }
-  );
+  const hasStarted = useHasSushiswapRewardsStarted();
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -245,51 +235,15 @@ const Countdown = ({ endDate }: { endDate: number }) => {
 const YourBalance = () => {
   const { t } = useTranslation();
 
-  const { rari, address } = useRari();
-
-  const { data: balance } = useQuery(address + " pool2Balance", async () => {
-    const SLP = parseFloat(
-      rari.web3.utils.fromWei(
-        await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
-          address
-        )
-      )
-    );
-
-    const {
-      eth: _eth,
-      rgt: _rgt,
-    } = await rari.governance.rgt.sushiSwapDistributions.stakedReservesOf(
-      address
-    );
-
-    return {
-      SLP,
-      hasDeposited: SLP > 0,
-      // @ts-ignore
-      eth: _eth.toString() / 1e18,
-      // @ts-ignore
-      rgt: _rgt.toString() / 1e18,
-    };
-  });
-
-  const { data: earned } = useQuery(
-    address + " pool2Unclaimed RGT",
-    async () => {
-      return parseFloat(
-        rari.web3.utils.fromWei(
-          await rari.governance.rgt.sushiSwapDistributions.getUnclaimed(address)
-        )
-      );
-    }
-  );
+  const balance = usePool2Balance();
+  const earned = usePool2UnclaimedRGT();
 
   const {
     isOpen: isClaimRGTModalOpen,
     onOpen: openClaimRGTModal,
     onClose: closeClaimRGTModal,
   } = useDisclosure();
-  const authedOpenModal = useAuthedCallback(openClaimRGTModal)
+  const authedOpenModal = useAuthedCallback(openClaimRGTModal);
 
   const isMobile = useIsSmallScreen();
 
@@ -340,24 +294,7 @@ const YourBalance = () => {
 const GeneralInfo = () => {
   const { t } = useTranslation();
 
-  const { rari } = useRari();
-
-  const { data: apr } = useQuery("pool2APR", async () => {
-    const blockNumber = await rari.web3.eth.getBlockNumber();
-    const tvl = await rari.governance.rgt.sushiSwapDistributions.totalStakedUsd();
-
-    return (
-      parseInt(
-        (
-          await rari.governance.rgt.sushiSwapDistributions.getCurrentApr(
-            blockNumber,
-            tvl
-          )
-        ).toString()
-      ) / 1e16
-    ).toFixed(2);
-  });
-
+  const apr = usePool2APR();
   const isMobile = useIsSmallScreen();
 
   const {
@@ -365,8 +302,8 @@ const GeneralInfo = () => {
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
-  
-  const authedOpenDepositModal = useAuthedCallback(openDepositModal)
+
+  const authedOpenDepositModal = useAuthedCallback(openDepositModal);
 
   return (
     <>
