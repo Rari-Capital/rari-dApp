@@ -18,8 +18,6 @@ import { useTranslation } from "react-i18next";
 const Earn = () => {
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
 
-  console.log({totals, aggregatePoolsInfo})
-
   const { t } = useTranslation();
 
   const hasDeposits = useMemo(() => totals.balance > 0, [totals.balance]);
