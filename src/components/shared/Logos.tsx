@@ -202,3 +202,57 @@ export const StatsLogoSVGGreen = ({
 }) => {
   return <StatsSVGGreen width={width} height={height} {...props} />;
 };
+
+export const PNGLogo = ({
+  boxSize = "20px",
+  Logo = FuseLogo,
+}: {
+  boxSize?: string;
+  Logo?: any;
+}) => { 
+  return (
+    <Box boxSize={boxSize} flexShrink={0} mb={1}>
+      <Image boxSize={boxSize} src={Logo} />
+    </Box>
+  );
+};
+
+export const StatsLogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={StatsPNGWhite} />
+);
+
+export const StatsLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={StatsPNGGreen} />
+);
+
+export const EarnLogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={EarnPNGWhite} />
+);
+
+export const EarnLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={EarnPNGGreen} />
+);
+
+export const FuseLogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={FusePNGWhite} />
+);
+
+export const FuseLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={FusePNGGreen} />
+);
+
+export const Pool2LogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={Pool2PNGWhite} />
+);
+
+export const Pool2LogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={Pool2PNGGreen} />
+);
+
+export const TranchesLogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={TranchesPNGWhite} />
+);
+
+export const TranchesLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
+  <PNGLogo boxSize={boxSize} Logo={TranchesPNGGreen} />
+);
