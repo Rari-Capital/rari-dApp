@@ -44,8 +44,6 @@ import Fuse from "../../../../../fuse-sdk";
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../../../utils/createComptroller";
 import { handleGenericError } from "../../../../../utils/errorHandling";
-import { useFusePoolData } from "../../../../../hooks/useFusePoolData";
-import { useParams } from "react-router-dom";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 import { SwitchCSS } from "../../../../shared/SwitchCSS";
 
@@ -235,12 +233,6 @@ const AmountSelect = ({
 
   const { address, fuse } = useRari();
 
-  // ----------------------------------------------------------------
-  // TODO: Remove after guarded launch
-  const { poolId } = useParams();
-  const poolData = useFusePoolData(poolId);
-  // ----------------------------------------------------------------
-
   const toast = useToast();
 
   const queryCache = useQueryCache();
@@ -386,27 +378,6 @@ const AmountSelect = ({
       );
 
       if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
-        // ----------------------------------------------------------------
-        // TODO: Remove after guarded launch: Check that they aren't going above the 1 mil per pool limit
-        if (mode === Mode.SUPPLY) {
-          const ethPrice: number = (await fuse.web3.utils.fromWei(
-            await fuse.getEthUsdPriceBN()
-          )) as any;
-          if (
-            poolData!.totalSupplyBalanceUSD +
-              (parseInt(amountBN.toString()) *
-                asset.underlyingPrice *
-                ethPrice) /
-                1e36 >=
-            1_000_000
-          ) {
-            throw new Error(
-              "As part of our guarded launch, you are not allowed to supply >$1,000,000 to a pool at this time."
-            );
-          }
-        }
-        // ----------------------------------------------------------------
-
         if (!isETH) {
           const token = new fuse.web3.eth.Contract(
             JSON.parse(
