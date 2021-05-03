@@ -168,15 +168,14 @@ export const StatsLogoSVGGreen = ({
 };
 
 export const PNGLogo = ({
-  boxSize = "23px",
+  boxSize = "20px",
   Logo = FuseLogo,
 }: {
   boxSize?: string;
   Logo?: any;
 }) => { 
-  console.log({Logo})
   return (
-    <Box boxSize={boxSize} flexShrink={0} pb={1}>
+    <Box boxSize={boxSize} flexShrink={0} mb={1}>
       <Image boxSize={boxSize} src={Logo} />
     </Box>
   );
