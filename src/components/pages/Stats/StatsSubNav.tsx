@@ -102,7 +102,7 @@ const SubNavItem = ({
       logo = !active ? <TranchesLogoPNGWhite /> : <TranchesLogoPNGGreen />;
       break;
     case StatsSubNav.POOL2:
-      logo = !active ? <Pool2LogoPNGWhite /> : <Pool2LogoPNGGreen />;
+      logo = !active ? <Pool2LogoPNGWhite /> : <Pool2LogoPNGGreen/>;
       break;
     case StatsSubNav.EARN:
       logo = !active ? <EarnLogoPNGWhite /> : <EarnLogoPNGGreen />;
@@ -127,8 +127,8 @@ const SubNavItem = ({
       onClick={setActive}
     >
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-end">
-        {logo}
-        <Heading size="md" ml={1}>
+        <Box>{logo}</Box>
+        <Heading size="md" ml={2}>
           {t(title)}
         </Heading>
       </Row>
