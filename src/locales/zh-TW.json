@@ -134,7 +134,6 @@
   "Supply": "供應",
   "Borrow": "借",
   "Repay": "償還",
-  "Try searching for SOCKS": "嘗試搜索USDC",
   "Buy Crypto": "購買加密",
   "This pool has performance fees. Click to learn more.": "該池收取性能費。 點擊了解更多。",
   "This pool has withdrawal & interest fees. Click to learn more.": "該池有提款和利息費用。 點擊了解更多。",
@@ -246,5 +245,6 @@
   "Product": "產品",
   "Connect": "連接",
   "Disconnect": "斷開",
-  "Snapshot": "亂射"
+  "Snapshot": "亂射",
+  "Try searching for USDC": "嘗試搜索USDC"
 }
