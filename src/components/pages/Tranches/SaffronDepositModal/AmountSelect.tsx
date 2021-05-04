@@ -27,7 +27,7 @@ import { BN } from "../../../../utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
-import { useQuery, useQueryCache } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 import {
@@ -92,7 +92,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
   const toast = useToast();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const { rari, address } = useRari();
 
@@ -287,7 +287,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
         .add_liquidity(amountBN.toString(), trancheRatingIndex(trancheRating))
         .send({ from: address });
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
       await new Promise((resolve) => setTimeout(resolve, 2000));

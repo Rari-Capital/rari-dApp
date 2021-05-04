@@ -13,7 +13,6 @@ import {
 } from '@chakra-ui/react';
 import { MdSwapHoriz } from 'react-icons/md';
 import CopyrightSpacer from 'components/shared/CopyrightSpacer';
-import ForceAuthModal from 'components/shared/ForceAuthModal';
 import DashboardBox from 'components/shared/DashboardBox';
 import { Header } from 'components/shared/Header';
 import SubNav from './StatsSubNav';
@@ -51,7 +50,6 @@ const StatsPage = () => {
 
   return (
     <>
-      <ForceAuthModal />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"

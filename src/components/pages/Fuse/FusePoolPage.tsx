@@ -13,7 +13,7 @@ import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
 import LogRocket from "logrocket";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useQueryCache } from "react-query";
+import { useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
@@ -329,7 +329,7 @@ const AssetSupplyRow = ({
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
   const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const toast = useToast();
 
@@ -375,7 +375,7 @@ const AssetSupplyRow = ({
 
     LogRocket.track("Fuse-ToggleCollateral");
 
-    queryCache.refetchQueries();
+    queryClient.refetchQueries();
   };
 
   const isMobile = useIsMobile();

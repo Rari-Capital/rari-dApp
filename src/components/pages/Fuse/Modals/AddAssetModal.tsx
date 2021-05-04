@@ -39,7 +39,7 @@ import {
   SaveButton,
   testForComptrollerErrorAndSend,
 } from "../FusePoolEditPage";
-import { useQuery, useQueryCache } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
 import BigNumber from "bignumber.js";
@@ -124,7 +124,7 @@ export const AssetSettings = ({
   const { t } = useTranslation();
   const { fuse, address } = useRari();
   const toast = useToast();
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const [isDeploying, setIsDeploying] = useState(false);
 
@@ -236,7 +236,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-DeployAsset");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -290,7 +290,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-UpdateCollateralFactor");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -313,7 +313,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-UpdateReserveFactor");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -337,7 +337,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-UpdateAdminFee");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -355,7 +355,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-UpdateInterestRateModel");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }

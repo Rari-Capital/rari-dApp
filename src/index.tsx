@@ -11,6 +11,7 @@ import "./index.css";
 import PWAPrompt from "react-ios-pwa-prompt";
 
 import { ChakraProvider, theme } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import ErrorPage from "./components/pages/ErrorPage";
 
@@ -74,12 +75,14 @@ ReactDOM.render(
     />
     <ChakraProvider theme={customTheme}>
       <ErrorBoundary FallbackComponent={ErrorPage}>
+      <QueryClientProvider client={new QueryClient()}>
         <BrowserRouter>
           <RariProvider>
             <ScrollToTop />
             <App />
           </RariProvider>
         </BrowserRouter>
+        </QueryClientProvider>
       </ErrorBoundary>
     </ChakraProvider>
   </>,

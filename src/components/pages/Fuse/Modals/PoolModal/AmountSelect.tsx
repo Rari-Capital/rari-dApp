@@ -20,7 +20,7 @@ import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
-import { QueryResult, useQuery, useQueryCache } from "react-query";
+import { QueryResult, useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -235,7 +235,7 @@ const AmountSelect = ({
 
   const toast = useToast();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const tokenData = useTokenData(asset.underlyingToken);
 
@@ -513,7 +513,7 @@ const AmountSelect = ({
         LogRocket.track("Fuse-Withdraw");
       }
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
 
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
