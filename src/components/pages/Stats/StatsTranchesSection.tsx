@@ -73,6 +73,7 @@ const Earn = () => {
                   <Td>
                     <Text textAlign="right">
                       {
+                        /// @ts-ignore
                         mySaffronData?.[0]?.tranches?.[TrancheRating.S]?.[
                           "total-apy"
                         ]
@@ -109,6 +110,7 @@ const Earn = () => {
                   <Td>
                     <Text textAlign="right">
                       {
+                        /// @ts-ignore
                         mySaffronData?.[0]?.tranches?.[TrancheRating.A]?.[
                           "total-apy"
                         ]
@@ -134,28 +136,25 @@ const Earn = () => {
               </>
             )}
             {/* Totals */}
-            <Tr>
+            <Tr fontWeight={hasDeposits ? "bold" : "normal"}>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>{t("Total")}</Text>
+                <Text>{t("Total")}</Text>
               </Td>
               <Td>
-                <Text
-                  fontWeight={hasDeposits && "bold"}
-                  textAlign="right"
-                ></Text>
+                <Text textAlign="right"></Text>
               </Td>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"} textAlign="right">
+                <Text textAlign="right">
                   {smallUsdFormatter(totalPrincipal) ?? 0}
                 </Text>
               </Td>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"} textAlign="right">
+                <Text textAlign="right">
                   {estimatedSFI?.formattedTotalSFIEarned ?? "0 SFI"}
                 </Text>
               </Td>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"} textAlign="right" />
+                <Text textAlign="right" />
               </Td>
             </Tr>
           </>

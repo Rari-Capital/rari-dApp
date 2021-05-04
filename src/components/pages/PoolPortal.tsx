@@ -257,7 +257,7 @@ const PoolPortalContent = () => {
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
-                  balance={formattedBalance}
+                  balance={formattedBalance!}
                 />
               </Box>
             </DashboardBox>
@@ -762,6 +762,7 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
+            // @ts-ignore
             labels: allocations![0],
           }}
           type="pie"

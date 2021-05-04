@@ -47,21 +47,20 @@ const Fuse = () => {
   const assetsArray: USDPricedFuseAsset[][] | null =
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
   const maxBorrows = useBorrowLimits(assetsArray);
+
   const {
     tokensDataMap,
   }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
 
-  const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
-    return {
-      totalBorrowBalanceUSD: a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
-    };
-  }) ?? { totalBorrowBalanceUSD: null };
+  const totalBorrowBalanceUSD =
+    fusePoolsData?.reduce((a, b) => {
+      return a + b.totalBorrowBalanceUSD;
+    }, 0) ?? 0;
 
-  const { totalSupplyBalanceUSD } = fusePoolsData?.reduce((a, b) => {
-    return {
-      totalSupplyBalanceUSD: a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
-    };
-  }) ?? { totalSupplyBalanceUSD: null };
+  const totalSupplyBalanceUSD =
+    fusePoolsData?.reduce((a, b) => {
+      return a + b.totalSupplyBalanceUSD;
+    }, 0) ?? 0;
 
   const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [
     totalSupplyBalanceUSD,
@@ -116,7 +115,7 @@ const Fuse = () => {
                 <Td
                   textAlign="right"
                   textStyle="bold"
-                  color={isAtRiskOfLiquidation && "red"}
+                  color={isAtRiskOfLiquidation ? "red" : "#FFF"}
                   fontSize="large"
                   fontWeight="bold"
                 >
@@ -172,22 +171,18 @@ const Fuse = () => {
             );
           })}
           {/* Totals */}
-          <Tr>
+          <Tr fontWeight={hasDeposits ? "bold" : "normal"}>
             <Td>
-              <Text fontWeight={hasDeposits && "bold"}>Total</Text>
+              <Text>Total</Text>
             </Td>
-            <Td></Td>
+
             <Td textAlign="right">
-              <Text fontWeight={hasDeposits && "bold"}>
-                {smallUsdFormatter(totalSupplyBalanceUSD)}
-              </Text>
+              <Text>{smallUsdFormatter(totalSupplyBalanceUSD)}</Text>
             </Td>
+
             <Td textAlign="right">
-              <Text fontWeight={hasDeposits && "bold"}>
-                -{smallUsdFormatter(totalBorrowBalanceUSD)}
-              </Text>
+              <Text>-{smallUsdFormatter(totalBorrowBalanceUSD)}</Text>
             </Td>
-            <Td></Td>
           </Tr>
         </Tbody>
       </Table>
@@ -201,7 +196,7 @@ const AssetContainer = ({
   tokenData,
 }: {
   asset: USDPricedFuseAsset;
-  type: string;
+  type?: AssetContainerType;
   tokenData: TokenData;
 }) => {
   const supplyAmount = asset.supplyBalance / 10 ** asset.underlyingDecimals;
@@ -264,7 +259,7 @@ const AssetContainer = ({
           )}
           {/* Lend/borrow rates */}
           {type === AssetContainerType.RATES && (
-            <Row>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
               <Text p={1} fontSize="lg">
                 {supplyRate}%
               </Text>

@@ -495,46 +495,48 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
             </Center>
           ) : (
             <Chart
-              options={{
-                ...FuseUtilizationChartOptions,
-                annotations: {
-                  points: [
-                    {
-                      x: selectedAssetUtilization,
-                      y: data.borrowerRates[selectedAssetUtilization].y,
-                      marker: {
-                        size: 6,
-                        fillColor: "#FFF",
-                        strokeColor: "#DDDCDC",
-                      },
-                    },
-                    {
-                      x: selectedAssetUtilization,
-                      y: data.supplierRates[selectedAssetUtilization].y,
-                      marker: {
-                        size: 6,
-                        fillColor: selectedTokenData?.color ?? "#A6A6A6",
-                        strokeColor: "#FFF",
-                      },
-                    },
-                  ],
-                  xaxis: [
-                    {
-                      x: selectedAssetUtilization,
-                      label: {
-                        text: t("Current Utilization"),
-                        orientation: "horizontal",
-                        style: {
-                          background: "#121212",
-                          color: "#FFF",
+              options={
+                {
+                  ...FuseUtilizationChartOptions,
+                  annotations: {
+                    points: [
+                      {
+                        x: selectedAssetUtilization,
+                        y: data.borrowerRates[selectedAssetUtilization].y,
+                        marker: {
+                          size: 6,
+                          fillColor: "#FFF",
+                          strokeColor: "#DDDCDC",
                         },
                       },
-                    },
-                  ],
-                },
+                      {
+                        x: selectedAssetUtilization,
+                        y: data.supplierRates[selectedAssetUtilization].y,
+                        marker: {
+                          size: 6,
+                          fillColor: selectedTokenData?.color ?? "#A6A6A6",
+                          strokeColor: "#FFF",
+                        },
+                      },
+                    ],
+                    xaxis: [
+                      {
+                        x: selectedAssetUtilization,
+                        label: {
+                          text: t("Current Utilization"),
+                          orientation: "horizontal",
+                          style: {
+                            background: "#121212",
+                            color: "#FFF",
+                          },
+                        },
+                      },
+                    ],
+                  },
 
-                colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
-              }}
+                  colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
+                } as any
+              }
               type="line"
               width="100%"
               height="100%"

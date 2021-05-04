@@ -67,6 +67,7 @@
     "web3modal": "^1.9.0"
   },
   "scripts": {
+    "typecheck": "tsc --skipLibCheck -p ./tsconfig.json",
     "postinstall": "rari-tokens-generator ./src/static/compiled/tokens.json",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",

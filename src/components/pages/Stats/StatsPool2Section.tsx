@@ -111,22 +111,26 @@ const Earn = () => {
             {/* Todo (sharad) - implement totals for apy and growth */}
             <Tr>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>Total</Text>
+                <Text fontWeight={hasDeposits ? "bold" : "normal"}>Total</Text>
               </Td>
+
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>
-                  {balanceSLP > 0 ? `${apr}%` : null}
+                <Text fontWeight={hasDeposits ? "bold" : "normal"}>
+                  {parseFloat(balanceSLP) > 0 ? `${apr}%` : null}
                 </Text>
               </Td>
+
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>{balanceUSD}</Text>
+                <Text fontWeight={hasDeposits ? "bold" : "normal"}>
+                  {balanceUSD}
+                </Text>
               </Td>
+
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>
+                <Text fontWeight={hasDeposits ? "bold" : "normal"}>
                   {earned?.toFixed(2)} RGT
                 </Text>
               </Td>
-              <Td></Td>
             </Tr>
           </>
         </Tbody>

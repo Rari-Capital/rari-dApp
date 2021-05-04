@@ -56,22 +56,18 @@ const Earn = () => {
               );
           })}
           {/* Todo (sharad) - implement totals for apy and growth */}
-          <Tr>
+          <Tr fontWeight={hasDeposits ? "bold" : "normal"}>
             <Td>
-              <Text fontWeight={hasDeposits && "bold"}>{t("Total")}</Text>
+              <Text>{t("Total")}</Text>
             </Td>
-            <Td></Td>
+
             <Td>
-              <Text fontWeight={hasDeposits && "bold"}>
-                {smallUsdFormatter(totals?.balance)}
-              </Text>
+              <Text>{smallUsdFormatter(totals?.balance)}</Text>
             </Td>
+
             <Td>
-              <Text fontWeight={hasDeposits && "bold"}>
-                {totals?.interestEarned}
-              </Text>
+              <Text>{totals?.interestEarned}</Text>
             </Td>
-            <Td></Td>
           </Tr>
         </Tbody>
       </Table>
