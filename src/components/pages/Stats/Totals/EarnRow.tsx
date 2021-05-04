@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Tr, Td, Text } from "@chakra-ui/react";
+import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 import { SimpleTooltip } from "components/shared/SimpleTooltip";

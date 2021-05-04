@@ -4,15 +4,12 @@ import React, { useMemo, useState } from "react";
 import {
   Box,
   Heading,
-  Text,
-  Spinner
 } from '@chakra-ui/react';
 import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import { Column, Row } from 'buttered-chakra';
 import { motion} from 'framer-motion'
 
 
-import DashboardBox from 'components/shared/DashboardBox';
 import { Header } from 'components/shared/Header';
 import SubNav from './StatsSubNav';
 

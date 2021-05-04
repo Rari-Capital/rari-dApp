@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useQuery, useQueries, UseQueryResult } from "react-query";
+import { useQuery, useQueries } from "react-query";
 
 import { useRari } from "../context/RariContext";
 import { fetchFusePoolData, FusePoolData } from "../utils/fetchFusePoolData";

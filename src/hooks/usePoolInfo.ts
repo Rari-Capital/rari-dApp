@@ -134,7 +134,6 @@ export const useAggregatePoolInfos = () => {
       poolAPYs,
       poolBalances,
       poolsInterestEarned,
-      totalPoolsBalance,
       toBN,
     ]
   );
@@ -150,7 +149,7 @@ export const useAggregatePoolInfos = () => {
       apy: "50%",
       growth: "50%",
     }),
-    [totalPoolsBalance, poolsInterestEarned, aggregatePoolsInfo]
+    [totalPoolsBalance, poolsInterestEarned, aggregatePoolsInfo, rari]
   );
 
   // todo - implement totals

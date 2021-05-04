@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Tr, Td } from "@chakra-ui/react";
+import { Box, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Pool2LogoSVGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";

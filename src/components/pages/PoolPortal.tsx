@@ -103,7 +103,7 @@ export default PoolPortal;
 const PoolPortalContent = () => {
   const { isAuthed, rari } = useRari();
 
-  const { windowHeight, isLocked } = useLockedViewHeight({
+  const { windowHeight } = useLockedViewHeight({
     min: 750,
     max: 1900,
   });
