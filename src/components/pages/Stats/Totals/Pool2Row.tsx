@@ -5,7 +5,7 @@ import { Pool2LogoSVGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
 
-const EarnRow = ({
+const Pool2Row = ({
   apr,
   earned,
   balance,
@@ -42,4 +42,4 @@ const EarnRow = ({
   );
 };
 
-export default EarnRow;
+export default Pool2Row;
