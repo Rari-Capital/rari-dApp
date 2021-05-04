@@ -119,12 +119,12 @@ export const useAggregatePoolInfos = () => {
 
         return {
           poolInfo,
-          poolAPY:  poolAPY ? parseFloat(poolAPY.toString()) : null,
+          poolAPY: poolAPY ? parseFloat(poolAPY.toString()) : null,
           poolBalance,
           formattedPoolBalance,
           poolInterestEarned,
           formattedPoolInterestEarned,
-          poolGrowth: parseFloat(poolGrowth.toString()) / (1e18),
+          poolGrowth: parseFloat(poolGrowth.toString()) / 1e18,
           formattedPoolGrowth,
         };
       }),

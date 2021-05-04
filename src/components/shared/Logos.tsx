@@ -169,15 +169,18 @@ export const StatsLogoSVGGreen = ({
 
 export const PNGLogo = ({
   boxSize = "23px",
+  height = "23px",
+  width = "23px",
   Logo = FuseLogo,
 }: {
   boxSize?: string;
+  height?: string;
+  width?: string;
   Logo?: any;
-}) => { 
-  console.log({Logo})
+}) => {
   return (
-    <Box boxSize={boxSize} flexShrink={0} pb={1}>
-      <Image boxSize={boxSize} src={Logo} />
+    <Box boxSize={boxSize} flexShrink={0}>
+      <Image boxSize={boxSize} height={height} width={width} src={Logo} />
     </Box>
   );
 };
@@ -207,11 +210,11 @@ export const FuseLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
 );
 
 export const Pool2LogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
-  <PNGLogo boxSize={boxSize} Logo={Pool2PNGWhite} />
+  <PNGLogo boxSize={boxSize} height="21px" Logo={Pool2PNGWhite} />
 );
 
 export const Pool2LogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
-  <PNGLogo boxSize={boxSize} Logo={Pool2PNGGreen} />
+  <PNGLogo boxSize={boxSize} height="21px" Logo={Pool2PNGGreen} />
 );
 
 export const TranchesLogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (

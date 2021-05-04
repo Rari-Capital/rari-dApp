@@ -5,13 +5,6 @@ import { Column, Row } from "buttered-chakra";
 import { Box, Heading } from "@chakra-ui/react";
 
 import {
-  FuseLogoSVGWhite,
-  EarnLogoSVGWhite,
-  Pool2LogoSVGWhite,
-  TranchesLogoSVGWhite,
-  StatsLogoSVGWhite,
-
-
   StatsLogoPNGWhite,
   StatsLogoPNGGreen,
   FuseLogoPNGWhite,
@@ -22,10 +15,6 @@ import {
   Pool2LogoPNGGreen,
   TranchesLogoPNGWhite,
   TranchesLogoPNGGreen,
-
-  FuseSmallLogo
-
-
 } from "components/shared/Logos";
 
 // Hooks
@@ -128,18 +117,19 @@ const SubNavItem = ({
 
   return (
     <Box
-      mr={7}
+      mr={5}
       height="100%"
       color={active ? "#00C628" : "white"}
+      id="POOP"
       _hover={{
         color: !active && "grey",
         cursor: "pointer",
       }}
       onClick={setActive}
     >
-      <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-end">
-        {logo}
-        <Heading size="md" ml={1}>
+      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center"  p={2}>
+        <Box>{logo}</Box>
+        <Heading size="md" ml={2} >
           {t(title)}
         </Heading>
       </Row>
