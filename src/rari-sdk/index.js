@@ -99,6 +99,8 @@ export default class Rari {
       yVault: new YVaultSubpool(this.web3),
       KeeperDAO: new KeeperDAOSubpool(this.web3),
       Alpha: new AlphaSubpool(this.web3),
+      Fuse3: new FuseSubpool(this.web3, { "USDC": "0x94C49563a3950424a2a7790c3eF5458A2A359C7e" }),
+      Fuse7: new FuseSubpool(this.web3, { "USDC": "0x53De5A7B03dc24Ff5d25ccF7Ad337a0425Dfd8D1" }),
     };
 
     this.pools = {
@@ -109,6 +111,8 @@ export default class Rari {
           Compound: subpools["Compound"],
           Aave: subpools["Aave"],
           mStable: subpools["mStable"],
+          Fuse3: subpools["Fuse3"],
+          Fuse7: subpools["Fuse7"],
         },
         this.getAllTokens
       ),

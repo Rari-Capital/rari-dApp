@@ -341,7 +341,12 @@ export default class StablePool {
 
     this.allocations = {
       CURRENCIES: ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD", "mUSD"],
-      POOLS: ["dYdX", "Compound", "Aave", "mStable"],
+      POOLS: (function() {
+        var pools = ["dYdX", "Compound", "Aave", "mStable"];
+        pools[100] = "Fuse3";
+        pools[101] = "Fuse7";
+        return pools;
+      })(),
       POOLS_BY_CURRENCY: {
         DAI: ["dYdX", "Compound", "Aave"],
         USDC: ["dYdX", "Compound", "Aave"],
@@ -436,7 +441,7 @@ export default class StablePool {
         var allocationsByPool = {
           _cash: Web3.utils.toBN(0)
         };
-        for (const poolName of self.allocations.POOLS) allocationsByPool[poolName] = Web3.utils.toBN(0);
+        for (const poolName of self.allocations.POOLS) if (poolName !== undefined) allocationsByPool[poolName] = Web3.utils.toBN(0);
         var allBalances = await self.cache.getOrUpdate(
           "allBalances",
           self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
@@ -521,9 +526,10 @@ export default class StablePool {
         // Get pool APYs
         var poolApyBNs = [];
         for (var i = 0; i < self.allocations.POOLS.length; i++)
-          poolApyBNs[i] = await self.pools[
-            self.allocations.POOLS[i]
-          ].getCurrencyApys();
+          if (self.allocations.POOLS[i] !== undefined)
+            poolApyBNs[i] = await self.pools[
+              self.allocations.POOLS[i]
+            ].getCurrencyApys();
 
         // Get all balances
         var allBalances = await self.cache.getOrUpdate(
