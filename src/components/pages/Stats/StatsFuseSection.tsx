@@ -176,6 +176,8 @@ const Fuse = () => {
               <Text>Total</Text>
             </Td>
 
+            <Td> </Td>
+
             <Td textAlign="right">
               <Text>{smallUsdFormatter(totalSupplyBalanceUSD)}</Text>
             </Td>
@@ -183,6 +185,9 @@ const Fuse = () => {
             <Td textAlign="right">
               <Text>-{smallUsdFormatter(totalBorrowBalanceUSD)}</Text>
             </Td>
+
+            <Td> </Td>
+
           </Tr>
         </Tbody>
       </Table>

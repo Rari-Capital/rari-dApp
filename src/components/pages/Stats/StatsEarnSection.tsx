@@ -61,14 +61,16 @@ const Earn = () => {
             <Td>
               <Text>{t("Total")}</Text>
             </Td>
+            <Td>
+            </Td>
 
             <Td>
               <Text>{smallUsdFormatter(totals?.balance)}</Text>
             </Td>
-
             <Td>
               <Text>{totals?.interestEarned}</Text>
             </Td>
+            <Td> </Td>
           </Tr>
         </Tbody>
       </Table>

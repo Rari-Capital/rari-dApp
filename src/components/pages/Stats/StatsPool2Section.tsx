@@ -131,6 +131,9 @@ const Earn = () => {
                   {earned?.toFixed(2)} RGT
                 </Text>
               </Td>
+              
+              <Td> </Td>
+
             </Tr>
           </>
         </Tbody>
