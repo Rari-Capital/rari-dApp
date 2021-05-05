@@ -1,7 +1,7 @@
 // @ts-ignore
 import React from "react";
 import { Flip } from "react-awesome-reveal";
-import { Box, Image, Icon } from "@chakra-ui/react";
+import { Box, Image } from "@chakra-ui/react";
 
 //PNGS
 import Logo from "../../static/small-logo.png";
