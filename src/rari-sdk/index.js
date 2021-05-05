@@ -10,6 +10,7 @@ import MStableSubpool from "./subpools/mstable.js";
 import YVaultSubpool from "./subpools/yvault.js";
 import KeeperDAOSubpool from "./subpools/keeperdao.js";
 import AlphaSubpool from "./subpools/alpha.js";
+import FuseSubpool from "./subpools/fuse.js";
 
 import StablePool from "./pools/stable.js";
 import YieldPool from "./pools/yield.js";
