@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from "react";
 
 import { Column } from "buttered-chakra";
@@ -6,8 +7,6 @@ import { Column } from "buttered-chakra";
 const Layout = ({ children }: { children: any }) => {
   return (
       <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
         height="100%"
         flex={1}
       >
