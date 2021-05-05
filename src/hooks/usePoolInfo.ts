@@ -16,6 +16,7 @@ import { usePoolBalances, useTotalPoolsBalance } from "./usePoolBalance";
 import { usePoolInterestEarned } from "./usePoolInterest";
 import { useRari } from "context/RariContext";
 import { BN, shortUsdFormatter } from "utils/bigUtils";
+import { PoolInterestEarned } from "utils/fetchPoolInterest";
 
 export const usePoolInfo = (poolType: Pool) => {
   const { t } = useTranslation();
@@ -53,6 +54,30 @@ export const usePoolInfos = (): PoolInterface[] => {
   );
 };
 
+export type AggregatePoolInfo = {
+  poolInfo: PoolInterface
+  poolAPY: number | null
+  poolBalance: BN | null
+  formattedPoolBalance: string | null
+  poolInterestEarned: BN | null 
+  formattedPoolInterestEarned: string | null
+  poolGrowth: number
+  formattedPoolGrowth: string | null
+}
+
+export type PoolTotals = {
+  balance: number
+  balanceFormatted: string
+  interestEarned: string | null
+  apy: string
+  growth: string
+}
+
+export type AggregatePoolsInfoReturn = {
+  aggregatePoolsInfo: AggregatePoolInfo[]
+  totals: PoolTotals
+}
+
 export const useAggregatePoolInfos = () => {
   const { rari } = useRari();
   const {
@@ -63,7 +88,7 @@ export const useAggregatePoolInfos = () => {
   const poolInfos = usePoolInfos();
   const poolAPYs = usePoolsAPY(poolInfos);
   const poolBalances = usePoolBalances(poolInfos);
-  const poolsInterestEarned = usePoolInterestEarned();
+  const poolsInterestEarned : PoolInterestEarned | undefined = usePoolInterestEarned();
 
   // Totals
   const { data: totalPoolsBalance } = useTotalPoolsBalance();
@@ -71,7 +96,8 @@ export const useAggregatePoolInfos = () => {
   const aggregatePoolsInfo = useMemo(
     () =>
       poolInfos.map((poolInfo: PoolInterface, index: number) => {
-        const poolAPY: BN = poolAPYs[index]?.data ?? toBN(0);
+        // @ts-ignore
+        const poolAPY: number | null = poolAPYs[index] ?? null;
         const poolBalance: BN = poolBalances[index]?.data ?? toBN(0);
 
         const formattedPoolBalance: string | null = formatBalanceBN(
@@ -104,27 +130,27 @@ export const useAggregatePoolInfos = () => {
         );
 
         // Growth for a pool = % increase between balance & (balance - interest earned)
-        const poolGrowth: BN | null =
+        const poolGrowth: BN =
           poolBalance && poolInterestEarned
             ? !poolBalance.isZero()
               ? toBN(1).sub(
                   poolBalance.sub(poolInterestEarned).div(poolBalance)
                 )
-              : null
-            : null;
+              : toBN(0)
+            : toBN(0);
 
         const formattedPoolGrowth = poolGrowth
           ? (parseFloat(poolGrowth.toString()) / 1e18).toFixed(2)
           : null;
 
         return {
-          poolInfo,
-          poolAPY,
+          poolInfo, 
+          poolAPY: poolAPY ? parseFloat(poolAPY.toString()) : null,
           poolBalance,
           formattedPoolBalance,
           poolInterestEarned,
           formattedPoolInterestEarned,
-          poolGrowth,
+          poolGrowth: parseFloat(poolGrowth.toString()) / 1e18,
           formattedPoolGrowth,
         };
       }),
@@ -134,7 +160,6 @@ export const useAggregatePoolInfos = () => {
       poolAPYs,
       poolBalances,
       poolsInterestEarned,
-      totalPoolsBalance,
       toBN,
     ]
   );
@@ -150,11 +175,8 @@ export const useAggregatePoolInfos = () => {
       apy: "50%",
       growth: "50%",
     }),
-    [totalPoolsBalance, poolsInterestEarned, aggregatePoolsInfo]
+    [totalPoolsBalance, poolsInterestEarned, rari]
   );
-
-  // todo - implement totals
-  // const totals = {}
 
   return { totals, aggregatePoolsInfo };
 };

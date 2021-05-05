@@ -1,11 +1,24 @@
 import React from "react";
-import { Box, Tr, Td, Text } from "@chakra-ui/react";
+import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Column } from "buttered-chakra";
 import { TranchesLogoSVGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import { useTranslation } from "react-i18next";
+import { UseEstimatedSFIReturn } from 'hooks/tranches/useSaffronData'
 
-const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
+const TranchesRow = ({
+  estimatedSFI,
+  daiSPrincipal,
+  daiAPrincipal,
+}: {
+  estimatedSFI: UseEstimatedSFIReturn | undefined
+  daiSPrincipal: string | undefined;
+  daiAPrincipal: string | undefined;
+}) => {
+
+  const { t } = useTranslation()
+
   return (
     <motion.tr
       initial={{ opacity: 0, y: -40 }}

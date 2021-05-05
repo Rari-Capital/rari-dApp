@@ -1,12 +1,14 @@
 import React, { useMemo } from "react";
-import { Box, Tr, Td, Text } from "@chakra-ui/react";
+import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";
 import { FuseLogoSVGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
+import { MergedPool } from "hooks/fuse/useFusePools";
+import { FusePoolData } from "utils/fetchFusePoolData";
 
-const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
+const FuseRow = ({ filteredPoolsData, fusePoolsData } : { filteredPoolsData: MergedPool[] | undefined, fusePoolsData: FusePoolData[]}) => {
   const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData]);
   const mb = singleRow ? null : 3;
 
@@ -27,14 +29,14 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
       </Td>
       <Td>
         {filteredPoolsData?.map(({ id }) => (
-          <Text mb={mb} key={id}>
+          <Text mb={mb ?? "0"} key={id}>
             {id}
           </Text>
         ))}
       </Td>
       <Td>
         {fusePoolsData?.map(({ comptroller, totalSupplyBalanceUSD }) => (
-          <Text mb={mb} key={comptroller}>
+          <Text mb={mb ?? "0"} key={comptroller}>
             {smallStringUsdFormatter(totalSupplyBalanceUSD)}
           </Text>
         ))}
@@ -42,14 +44,14 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
       <Td>
         {filteredPoolsData?.map(({ id }) => (
-          <Text mb={mb} key={id}>
+          <Text mb={mb ?? "0"} key={id}>
             {t("N/A")}
           </Text>
         ))}
       </Td>
       <Td>
         {filteredPoolsData?.map(({ id }) => (
-          <Text mb={mb} key={id}>
+          <Text mb={mb ?? "0"} key={id}>
             {t("N/A")}
           </Text>
         ))}

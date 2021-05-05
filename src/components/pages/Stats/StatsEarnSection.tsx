@@ -42,7 +42,7 @@ const Earn = () => {
         </Thead>
         <Tbody>
           {aggregatePoolsInfo?.map((aggPoolInfo) => {
-            if (aggPoolInfo?.poolBalance && !aggPoolInfo.poolBalance.isZero())
+            if (aggPoolInfo?.poolBalance && !aggPoolInfo.poolBalance.isZero()) {
               return (
                 <Tr key={aggPoolInfo.poolInfo.title}>
                   <Td>{aggPoolInfo.poolInfo.title}</Td>
@@ -54,6 +54,7 @@ const Earn = () => {
                   <Td>{aggPoolInfo.formattedPoolGrowth ?? <Spinner />}%</Td>
                 </Tr>
               );
+            } else return null;
           })}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr fontWeight={hasDeposits ? "bold" : "normal"}>

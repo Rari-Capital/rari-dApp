@@ -8,7 +8,14 @@ const Footer = () => {
   const { t } = useTranslation();
   return (
     <>
-      <Column py={3} width="100%" flexShrink={0} mt="auto">
+      <Column
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        py={3}
+        width="100%"
+        flexShrink={0}
+        mt="auto"
+      >
         <Row
           mainAxisAlignment="center"
           crossAxisAlignment="center"

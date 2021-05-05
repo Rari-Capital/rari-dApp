@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Tr, Td, Text } from "@chakra-ui/react";
+import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { EarnLogoSVGWhite } from "components/shared/Logos";
 import { useTranslation } from "react-i18next";
+import { PoolInterface } from "constants/pools";
 
 const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
   const { t } = useTranslation();
@@ -22,18 +23,23 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
         </SimpleTooltip>
       </Td>
       <Td>
-        {poolsInfo.map(({ poolInfo }) => (
+        {poolsInfo.map(({ poolInfo }: { poolInfo: PoolInterface }) => (
           <Text mb={3} key={poolInfo.title}>
             {poolInfo.title}
           </Text>
         ))}
       </Td>
       <Td>
-        {poolsInfo.map(({ formattedPoolBalance }, i) => (
-          <Text mb={3} key={i}>
-            {formattedPoolBalance}
-          </Text>
-        ))}
+        {poolsInfo.map(
+          (
+            { formattedPoolBalance }: { formattedPoolBalance: string },
+            i: number
+          ) => (
+            <Text mb={3} key={i}>
+              {formattedPoolBalance}
+            </Text>
+          )
+        )}
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
       <Td>
@@ -42,11 +48,18 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
         <Text mb={3}>{t("N/A")}</Text>
       </Td>
       <Td>
-        {poolsInfo.map(({ formattedPoolInterestEarned }, i) => (
-          <Text mb={3} key={i}>
-            {formattedPoolInterestEarned}
-          </Text>
-        ))}
+        {poolsInfo.map(
+          (
+            {
+              formattedPoolInterestEarned,
+            }: { formattedPoolInterestEarned: string },
+            i: number
+          ) => (
+            <Text mb={3} key={i}>
+              {formattedPoolInterestEarned}
+            </Text>
+          )
+        )}
       </Td>
     </motion.tr>
   );

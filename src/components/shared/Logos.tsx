@@ -83,7 +83,7 @@ export const PoolLogo = ({ boxSize }: { boxSize?: string }) => {
   );
 };
 
-export const RariEarnIcon = (props) => (
+export const RariEarnIcon = (props: any) => (
   <Icon viewBox="0 0 530 530" width="20px" height="20px" {...props}>
     <path
       fill="currentColor"
@@ -92,7 +92,7 @@ export const RariEarnIcon = (props) => (
   </Icon>
 );
 
-export const RariFuseIcon = (props) => (
+export const RariFuseIcon = (props: any) => (
   <Icon viewBox="0 0 530 530" {...props}>
     <path
       fill="currentColor"
@@ -101,7 +101,7 @@ export const RariFuseIcon = (props) => (
   </Icon>
 );
 
-export const RariPool2IconWhite = (props) => (
+export const RariPool2IconWhite = (props: any) => (
   <Icon viewBox="0 0 628 530" {...props}>
     <path
       fill="currentColor"
@@ -114,7 +114,7 @@ export const RariPool2IconWhite = (props) => (
   </Icon>
 );
 
-export const RariStatsIconWhite = (props) => (
+export const RariStatsIconWhite = (props: any) => (
   <Icon viewBox="0 0 450.5 501" {...props}>
     <path
       fill="currentColor"
@@ -123,7 +123,7 @@ export const RariStatsIconWhite = (props) => (
   </Icon>
 );
 
-export const RariTrancheIconWhite = (props) => (
+export const RariTrancheIconWhite = (props: any) => (
   <Icon viewBox="0 0 570 537" {...props}>
     <path fill="currentColor" d="M270 175H300V257H270z" />
     <path fill="currentColor" d="M335.03 171.26H365.03V551.26H335.03z" />

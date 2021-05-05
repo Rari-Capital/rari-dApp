@@ -1,9 +1,12 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, SetStateAction, Dispatch } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 // Hooks
-import { useAggregatePoolInfos } from "hooks/usePoolInfo";
+import {
+  AggregatePoolsInfoReturn,
+  useAggregatePoolInfos,
+} from "hooks/usePoolInfo";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { usePool2APR } from "hooks/pool2/usePool2APR";
@@ -15,6 +18,7 @@ import {
   TrancheRating,
   useEstimatedSFI,
   usePrincipalBalance,
+  UseEstimatedSFIReturn,
 } from "hooks/tranches/useSaffronData";
 
 // Components
@@ -26,11 +30,20 @@ import TranchesRow from "./TranchesRow";
 import { FusePoolData } from "utils/fetchFusePoolData";
 import { useTranslation } from "react-i18next";
 
-const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
+const StatsTotalSection = ({
+  setNetDeposits,
+  setNetDebt,
+}: {
+  setNetDeposits: Dispatch<SetStateAction<number>>;
+  setNetDebt: Dispatch<SetStateAction<number>>;
+}) => {
   const { t } = useTranslation();
 
   // Earn
-  const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
+  const {
+    totals,
+    aggregatePoolsInfo,
+  }: AggregatePoolsInfoReturn = useAggregatePoolInfos();
   const hasDepositsInEarn = aggregatePoolsInfo?.some(
     (p) => !p?.poolBalance?.isZero()
   );
@@ -47,13 +60,19 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   const hasDepositsInPool2 = !!balance?.SLP;
 
   // Tranches
-  const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
-  const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
-  const totalPrincipal = usePrincipalBalance();
+  const daiSPrincipal: string | undefined = usePrincipal(
+    TranchePool.DAI,
+    TrancheRating.S
+  );
+  const daiAPrincipal: string | undefined = usePrincipal(
+    TranchePool.DAI,
+    TrancheRating.A
+  );
+  const totalPrincipal: string | undefined = usePrincipalBalance();
   const parsedTotalPrincipal: number = totalPrincipal
     ? parseFloat(totalPrincipal?.replace(",", "").replace("$", ""))
     : 0;
-  const estimatedSFI = useEstimatedSFI();
+  const estimatedSFI: UseEstimatedSFIReturn | undefined = useEstimatedSFI();
   const hasDepositsInTranches = useMemo(
     () => parsedTotalPrincipal > 0 ?? false,
     [parsedTotalPrincipal]
@@ -62,6 +81,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   // Total Deposits
   const totalDepositsUSD = useMemo(() => {
     const { totalSupplyBalanceUSD: fuseTotal } = fusePoolsData?.reduce(
+      // @ts-ignore
       (a, b) => {
         return {
           totalSupplyBalanceUSD:
@@ -83,6 +103,7 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
 
   // Total debt - todo: refactor into the `useFusePoolsData` hook
   const totalDebtUSD = useMemo(() => {
+    // @ts-ignore
     const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
       return {
         totalBorrowBalanceUSD:

@@ -1,8 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 
 // Components
-import DashboardBox from "components/shared/DashboardBox";
-import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
+import { Column, Row } from "buttered-chakra";
 import { Box, Heading } from "@chakra-ui/react";
 
 // Icons - todo: move to Logos.tsx

@@ -24,7 +24,6 @@ import {
   TranchePool,
   TrancheRating,
   tranchePoolIndex,
-  trancheRatingIndex,
   useEpochEndDate,
   useEstimatedSFI,
   usePrincipal,

@@ -153,7 +153,16 @@ export const useEpochEndDate = () => {
   });
 };
 
-export const useEstimatedSFI = () => {
+export interface UseEstimatedSFIReturn {
+  aPoolSFIEarned: number;
+  sPoolSFIEarned: number;
+  totalSFIEarned: number;
+  formattedAPoolSFIEarned: string;
+  formattedSPoolSFIEarned: string;
+  formattedTotalSFIEarned: string;
+}
+
+export const useEstimatedSFI = (): UseEstimatedSFIReturn | undefined => {
   const { rari, address } = useRari();
   const { saffronPool, saffronStrategy, fetchCurrentEpoch } = useSaffronData();
 
@@ -217,7 +226,7 @@ export const useEstimatedSFI = () => {
           ? 0
           : (await dsecAToken.methods.balanceOf(address).call()) / dsecASupply);
 
-      const formatSFI = (num) =>
+      const formatSFI = (num: number) =>
         smallUsdFormatter(num).replace("$", "") + " SFI";
 
       return {
@@ -244,8 +253,8 @@ export const useMySaffronData = () => {
     ? ACTIVE_TRANCHES.map((t) => {
         const currentPool = currentPools[tranchePoolIndex(t.pool)];
         const availableTranches: string[] = Object.keys(currentPool.tranches);
-        //@ts-ignore
         const supportedTranches = availableTranches.filter((item) =>
+          //@ts-ignore
           t.ratings.includes(TrancheRating[item])
         );
 

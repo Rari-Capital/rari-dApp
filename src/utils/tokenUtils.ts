@@ -41,7 +41,9 @@ export const createTokensDataMap = (
   const _tokensDataMap: TokensDataHash = {};
 
   for (const tokenData of tokensData) {
+    // @ts-ignore
     if (!_tokensDataMap[tokenData!.address]) {
+      // @ts-ignore
       _tokensDataMap[tokenData!.address] = tokenData;
     }
   }
