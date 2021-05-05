@@ -7,11 +7,16 @@ import { Box, Heading } from "@chakra-ui/react";
 
 // Icons - todo: move to Logos.tsx
 import {
-  FuseLogoSVGWhite,
-  EarnLogoSVGWhite,
-  Pool2LogoSVGWhite,
-  TranchesLogoSVGWhite,
-  StatsLogoSVGWhite,
+  StatsLogoPNGWhite,
+  StatsLogoPNGGreen,
+  FuseLogoPNGWhite,
+  FuseLogoPNGGreen,
+  EarnLogoPNGWhite,
+  EarnLogoPNGGreen,
+  Pool2LogoPNGWhite,
+  Pool2LogoPNGGreen,
+  TranchesLogoPNGWhite,
+  TranchesLogoPNGGreen,
 } from "components/shared/Logos";
 
 // Hooks
@@ -116,7 +121,7 @@ const SubNavItem = ({
     <Box
       mr={7}
       height="100%"
-      color={active ? "green" : "white"}
+      color={active ? "#00C628" : "white"}
       _hover={{
         color: !active && "grey",
         cursor: "pointer",
