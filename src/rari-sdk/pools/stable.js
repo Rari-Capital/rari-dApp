@@ -161,9 +161,29 @@ legacyAbis["v2.0.0"]["RariFundProxy"] = require("." +
 legacyAbis["v2.2.0"] = {};
 legacyAbis["v2.2.0"]["RariFundProxy"] = require("." +
   "/stable/abi/legacy/" +
-  "v1.2.0" +
+  "v2.2.0" +
   "/" +
   "RariFundProxy" +
+  ".json");
+
+  // 2.4.0
+
+legacyAbis["v2.4.0"] = {};
+legacyAbis["v2.4.0"]["RariFundProxy"] = require("." +
+  "/stable/abi/legacy/" +
+  "v2.4.0" +
+  "/" +
+  "RariFundProxy" +
+  ".json");
+
+  // 2.5.0
+
+legacyAbis["v2.5.0"] = {};
+legacyAbis["v2.5.0"]["RariFundController"] = require("." +
+  "/stable/abi/legacy/" +
+  "v2.5.0" +
+  "/" +
+  "RariFundController" +
   ".json");
         
 export default class StablePool {
