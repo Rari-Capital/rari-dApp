@@ -10,11 +10,11 @@ import { get0xSwapOrders } from "../0x.js";
 var erc20Abi = require("." + "/../abi/ERC20.json");
 
 const contractAddresses = {
-  RariFundController: "0x369855b051D1b2dBee88a792DCFc08614ff4e262",
+  RariFundController: "0x66f4856f1bbd1eb09e1c8d9d646f5a3a193da569",
   RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
   RariFundToken: "0x016bf078ABcaCB987f0589a6d3BEAdD4316922B0",
   RariFundPriceConsumer: "0xFE98A52bCAcC86432E7aa76376751DcFAB202244",
-  RariFundProxy: "0xe4deE94233dd4d7c2504744eE6d34f3875b3B439"
+  RariFundProxy: "0x4a785fa6fcd2e0845a24847beb7bddd26f996d4d"
 };
 
 var abis = {};
@@ -61,6 +61,12 @@ const legacyContractAddresses = {
   },
   "v2.2.0": {
     RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e"
+  },
+  "v2.4.0": {
+    RariFundProxy: "0xe4deE94233dd4d7c2504744eE6d34f3875b3B439"
+  },
+  "v2.5.0": {
+    RariFundController: "0x369855b051d1b2dbee88a792dcfc08614ff4e262"
   }
 };
 
