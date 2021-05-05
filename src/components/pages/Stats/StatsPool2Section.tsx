@@ -50,10 +50,10 @@ const Earn = () => {
         <Thead color="white">
           <Tr>
             <Th color="white">{t("Pool")}</Th>
-            <Th color="white">{t("APY")}</Th>
-            <Th color="white">{t("Deposits")}</Th>
-            <Th color="white">{t("RGT Earned")}</Th>
-            <Th color="white">{t("Growth")}</Th>
+            <Th color="white" textAlign="right">{t("APY")}</Th>
+            <Th color="white" textAlign="right">{t("Deposits")}</Th>
+            <Th color="white" textAlign="right">{t("RGT Earned")}</Th>
+            <Th color="white" textAlign="right">{t("Growth")}</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -82,8 +82,8 @@ const Earn = () => {
                     <Box ml={3}>RGT-ETH</Box>
                   </Row>
                 </Td>
-                <Td>{apr}%</Td>
-                <Td>
+                <Td textAlign="right">{apr}%</Td>
+                <Td textAlign="right">
                   <Row
                     mainAxisAlignment="flex-start"
                     crossAxisAlignment="center"
@@ -103,8 +103,8 @@ const Earn = () => {
                     </SimpleTooltip>
                   </Row>
                 </Td>
-                <Td>{earned?.toFixed(2)} RGT</Td>
-                <Td>0%</Td>
+                <Td textAlign="right">{earned?.toFixed(2)} RGT</Td>
+                <Td textAlign="right">0%</Td>
               </Tr>
             )}
 
@@ -114,25 +114,25 @@ const Earn = () => {
                 <Text fontWeight={hasDeposits ? "bold" : "normal"}>Total</Text>
               </Td>
 
-              <Td>
+              <Td textAlign="right">
                 <Text fontWeight={hasDeposits ? "bold" : "normal"}>
                   {parseFloat(balanceSLP) > 0 ? `${apr}%` : null}
                 </Text>
               </Td>
 
-              <Td>
+              <Td textAlign="right">
                 <Text fontWeight={hasDeposits ? "bold" : "normal"}>
                   {balanceUSD}
                 </Text>
               </Td>
 
-              <Td>
+              <Td textAlign="right">
                 <Text fontWeight={hasDeposits ? "bold" : "normal"}>
                   {earned?.toFixed(2)} RGT
                 </Text>
               </Td>
               
-              <Td> </Td>
+              <Td textAlign="right"> </Td>
 
             </Tr>
           </>

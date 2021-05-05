@@ -77,19 +77,19 @@ const Fuse = () => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th textAlign="center" color="white" fontSize="sm">
+            <Th textAlign="center" color="white" >
               {t("Pool")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {t("Borrow Limit")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {t("Deposits")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {t("Borrows")}
             </Th>
-            <Th textAlign="right" color="white" fontSize="sm">
+            <Th textAlign="right" color="white">
               {`${t("Lend APY")} / ${t("Borrow APR")}`}
             </Th>
           </Tr>
@@ -123,7 +123,7 @@ const Fuse = () => {
                 </Td>
                 {/* Deposits By Asset */}
                 {/* Lend Balance */}
-                <Td>
+                <Td textAlign="right">
                   {fusePoolData?.assets.map(
                     (asset: USDPricedFuseAsset) =>
                       asset.supplyBalanceUSD > 0 && (
@@ -137,7 +137,7 @@ const Fuse = () => {
                   )}
                 </Td>
                 {/* Borrow Balance */}
-                <Td>
+                <Td textAlign="right">
                   {fusePoolData?.assets.map(
                     (asset: USDPricedFuseAsset) =>
                       asset.borrowBalanceUSD > 0 && (
@@ -152,7 +152,7 @@ const Fuse = () => {
                   )}
                 </Td>
                 {/* Lend Borrow rates */}
-                <Td>
+                <Td textAlign="right">
                   {fusePoolData?.assets.map(
                     (asset: USDPricedFuseAsset) =>
                       (asset.supplyBalanceUSD > 0 ||
@@ -176,7 +176,7 @@ const Fuse = () => {
               <Text>Total</Text>
             </Td>
 
-            <Td> </Td>
+            <Td textAlign="right"></Td>
 
             <Td textAlign="right">
               <Text>{smallUsdFormatter(totalSupplyBalanceUSD)}</Text>
@@ -186,7 +186,7 @@ const Fuse = () => {
               <Text>-{smallUsdFormatter(totalBorrowBalanceUSD)}</Text>
             </Td>
 
-            <Td> </Td>
+            <Td textAlign="right"></Td>
 
           </Tr>
         </Tbody>

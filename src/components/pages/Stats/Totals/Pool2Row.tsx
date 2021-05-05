@@ -29,15 +29,15 @@ const Pool2Row = ({
           </Box>
         </SimpleTooltip>
       </Td>
-      <Td>{t("RGT-ETH")}</Td>
-      <Td>
+      <Td textAlign="right">{t("RGT-ETH")}</Td>
+      <Td textAlign="right">
         {balance?.SLP?.toFixed(2)} {t("RGT-ETH")}
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
-      <Td>
+      <Td textAlign="right">
         {earned?.toFixed(2)} {t("RGT")}
       </Td>
-      <Td>{t("N/A")}</Td>
+      <Td textAlign="right">{t("N/A")}</Td>
     </motion.tr>
   );
 };

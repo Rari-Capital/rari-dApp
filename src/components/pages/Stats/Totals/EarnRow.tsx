@@ -22,14 +22,14 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
           </Box>
         </SimpleTooltip>
       </Td>
-      <Td>
+      <Td textAlign="right">
         {poolsInfo.map(({ poolInfo }: { poolInfo: PoolInterface }) => (
           <Text mb={3} key={poolInfo.title}>
             {poolInfo.title}
           </Text>
         ))}
       </Td>
-      <Td>
+      <Td textAlign="right">
         {poolsInfo.map(
           (
             { formattedPoolBalance }: { formattedPoolBalance: string },
@@ -42,12 +42,12 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
         )}
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
-      <Td>
+      <Td textAlign="right">
         <Text mb={3}>{t("N/A")}</Text>
         <Text mb={3}>{t("N/A")}</Text>
         <Text mb={3}>{t("N/A")}</Text>
       </Td>
-      <Td>
+      <Td textAlign="right">
         {poolsInfo.map(
           (
             {

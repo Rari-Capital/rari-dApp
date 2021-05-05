@@ -27,14 +27,14 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData } : { filteredPoolsData: Mer
           </Box>
         </SimpleTooltip>
       </Td>
-      <Td>
+      <Td textAlign="right">
         {filteredPoolsData?.map(({ id }) => (
           <Text mb={mb ?? "0"} key={id}>
             {id}
           </Text>
         ))}
       </Td>
-      <Td>
+      <Td textAlign="right">
         {fusePoolsData?.map(({ comptroller, totalSupplyBalanceUSD }) => (
           <Text mb={mb ?? "0"} key={comptroller}>
             {smallStringUsdFormatter(totalSupplyBalanceUSD)}
@@ -42,14 +42,14 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData } : { filteredPoolsData: Mer
         ))}
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
-      <Td>
+      <Td textAlign="right">
         {filteredPoolsData?.map(({ id }) => (
           <Text mb={mb ?? "0"} key={id}>
             {t("N/A")}
           </Text>
         ))}
       </Td>
-      <Td>
+      <Td textAlign="right">
         {filteredPoolsData?.map(({ id }) => (
           <Text mb={mb ?? "0"} key={id}>
             {t("N/A")}
