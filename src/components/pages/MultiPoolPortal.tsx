@@ -69,6 +69,7 @@ import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
+
 const MultiPoolPortal = React.memo(() => {
   const { width } = useWindowSize();
 

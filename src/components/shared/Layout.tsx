@@ -5,17 +5,14 @@ import { Column } from "buttered-chakra";
 
 const Layout = ({ children }: { children: any }) => {
   return (
-    <>
       <Column
-        mainAxisAlignment="center"
+        mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         height="100%"
         flex={1}
       >
         {children}
-        {/* <Footer /> */}
       </Column>
-    </>
   );
 };
 
