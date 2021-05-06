@@ -21,32 +21,44 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
           </Box>
         </SimpleTooltip>
       </Td>
-      <Td>
-        {poolsInfo.map(({ poolInfo }) => (
+      <Td textAlign="right">
+        {poolsInfo.map(({ poolInfo }: { poolInfo: PoolInterface }) => (
           <Text mb={3} key={poolInfo.title}>
             {poolInfo.title}
           </Text>
         ))}
       </Td>
-      <Td>
-        {poolsInfo.map(({ formattedPoolBalance }, i) => (
-          <Text mb={3} key={i}>
-            {formattedPoolBalance}
-          </Text>
-        ))}
+      <Td textAlign="right">
+        {poolsInfo.map(
+          (
+            { formattedPoolBalance }: { formattedPoolBalance: string },
+            i: number
+          ) => (
+            <Text mb={3} key={i}>
+              {formattedPoolBalance}
+            </Text>
+          )
+        )}
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
-      <Td>
+      <Td textAlign="right">
         <Text mb={3}>{t("N/A")}</Text>
         <Text mb={3}>{t("N/A")}</Text>
         <Text mb={3}>{t("N/A")}</Text>
       </Td>
-      <Td>
-        {poolsInfo.map(({ formattedPoolInterestEarned }, i) => (
-          <Text mb={3} key={i}>
-            {formattedPoolInterestEarned}
-          </Text>
-        ))}
+      <Td textAlign="right">
+        {poolsInfo.map(
+          (
+            {
+              formattedPoolInterestEarned,
+            }: { formattedPoolInterestEarned: string },
+            i: number
+          ) => (
+            <Text mb={3} key={i}>
+              {formattedPoolInterestEarned}
+            </Text>
+          )
+        )}
       </Td>
     </motion.tr>
   );

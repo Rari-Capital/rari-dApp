@@ -69,6 +69,8 @@ const StatsPage = () => {
         >
           <Row
             mb={2}
+            pr={2}
+            py={1}
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
           >
@@ -88,7 +90,16 @@ const StatsPage = () => {
               )} - ${smallUsdFormatter(netDebt)} ${t("Debt")}`}
               placement="right"
             >
-              <Box ml={4} my="auto" _hover={{ color: "gray", cursor: "auto" }}>
+              <Box
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                ml={4}
+                my="auto"
+                _hover={{ color: "gray", cursor: "auto" }}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
                 <QuestionOutlineIcon color="currentColor" />
               </Box>
             </SimpleTooltip>

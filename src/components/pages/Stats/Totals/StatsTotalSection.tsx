@@ -115,10 +115,10 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
         <Thead color="white">
           <Tr>
             <Th color="white">{t("Product")}</Th>
-            <Th color="white">{t("Pool")}</Th>
-            <Th color="white">{t("Deposits")}</Th>
-            <Th color="white">{t(earnedHeaderText)}</Th>
-            <Th color="white">Interest Earned</Th>
+            <Th color="white" textAlign="right">{t("Pool")}</Th>
+            <Th color="white" textAlign="right">{t("Deposits")}</Th>
+            <Th color="white" textAlign="right">{t(earnedHeaderText)}</Th>
+            <Th color="white" textAlign="right">Interest Earned</Th>
           </Tr>
         </Thead>
 
@@ -151,20 +151,20 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
             exit={{ opacity: 0, y: 40 }}
           >
             <Td fontWeight="bold">{t("Total")}</Td>
-            <Td></Td>
-            <Td>
+            <Td textAlign="right"></Td>
+            <Td textAlign="right">
               <Text fontWeight="bold">
                 {smallUsdFormatter(totalDepositsUSD)}
               </Text>
             </Td>
-            <Td>
+            <Td textAlign="right">
               <Text fontWeight="bold">
                 {earned?.toFixed(2)} RGT
                 {hasDepositsInTranches &&
                   ` + ${estimatedSFI?.formattedTotalSFIEarned}`}
               </Text>
             </Td>
-            <Td>
+            <Td textAlign="right">
               <Text fontWeight="bold">{totals?.interestEarned}</Text>
             </Td>
           </motion.tr>

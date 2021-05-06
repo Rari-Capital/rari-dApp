@@ -5,13 +5,17 @@ import DashboardBox from "components/shared/DashboardBox";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { Box, Heading } from "@chakra-ui/react";
 
-// Icons - todo: move to Logos.tsx
 import {
-  FuseLogoSVGWhite,
-  EarnLogoSVGWhite,
-  Pool2LogoSVGWhite,
-  TranchesLogoSVGWhite,
-  StatsLogoSVGWhite,
+  StatsLogoPNGWhite,
+  StatsLogoPNGGreen,
+  FuseLogoPNGWhite,
+  FuseLogoPNGGreen,
+  EarnLogoPNGWhite,
+  EarnLogoPNGGreen,
+  Pool2LogoPNGWhite,
+  Pool2LogoPNGGreen,
+  TranchesLogoPNGWhite,
+  TranchesLogoPNGGreen,
 } from "components/shared/Logos";
 
 // Hooks
@@ -96,19 +100,19 @@ const SubNavItem = ({
   let logo;
   switch (subNav) {
     case StatsSubNav.TRANCHES:
-      logo = <TranchesLogoSVGWhite />;
+      logo = !active ? <TranchesLogoPNGWhite /> : <TranchesLogoPNGGreen />;
       break;
     case StatsSubNav.POOL2:
-      logo = <Pool2LogoSVGWhite />;
+      logo = !active ? <Pool2LogoPNGWhite height="18px" /> : <Pool2LogoPNGGreen height="18px"/>;
       break;
     case StatsSubNav.EARN:
-      logo = <EarnLogoSVGWhite />;
+      logo = !active ? <EarnLogoPNGWhite /> : <EarnLogoPNGGreen />;
       break;
     case StatsSubNav.FUSE:
-      logo = <FuseLogoSVGWhite />;
+      logo = !active ? <FuseLogoPNGWhite /> : <FuseLogoPNGGreen />;
       break;
     case StatsSubNav.TOTAL:
-      logo = <StatsLogoSVGWhite />;
+      logo = !active ? <StatsLogoPNGWhite /> : <StatsLogoPNGGreen />;
       break;
   }
 
@@ -116,16 +120,16 @@ const SubNavItem = ({
     <Box
       mr={7}
       height="100%"
-      color={active ? "green" : "white"}
+      color={active ? "#00C628" : "white"}
       _hover={{
         color: !active && "grey",
         cursor: "pointer",
       }}
       onClick={setActive}
     >
-      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-        {logo}
-        <Heading size="md" ml={1}>
+      <Row mainAxisAlignment="center" crossAxisAlignment="center">
+        <Box>{logo}</Box>
+        <Heading size="md" ml={2}>
           {t(title)}
         </Heading>
       </Row>
