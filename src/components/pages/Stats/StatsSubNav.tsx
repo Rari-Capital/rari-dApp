@@ -128,7 +128,7 @@ const SubNavItem = ({
       }}
       onClick={setActive}
     >
-      <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-end">
+      <Row mainAxisAlignment="center" crossAxisAlignment="center">
         <Box>{logo}</Box>
         <Heading size="md" ml={2}>
           {t(title)}
