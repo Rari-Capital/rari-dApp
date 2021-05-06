@@ -88,8 +88,6 @@ export const usePrincipal = (
           .call()
       );
 
-      console.log({ tranchePToken });
-
       return smallUsdFormatter(
         parseInt(await tranchePToken.methods.balanceOf(address).call()) / 1e18
       ).replace("$", "");
