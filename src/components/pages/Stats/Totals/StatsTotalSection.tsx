@@ -34,8 +34,8 @@ const StatsTotalSection = ({
   setNetDeposits,
   setNetDebt,
 }: {
-  setNetDeposits: Dispatch<SetStateAction<number>>;
-  setNetDebt: Dispatch<SetStateAction<number>>;
+  setNetDeposits: (input: number) => void;
+  setNetDebt: (input: number) => void;
 }) => {
   const { t } = useTranslation();
 
