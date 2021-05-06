@@ -179,7 +179,7 @@ export const PNGLogo = ({
   height?: string;
 }) => { 
   return (
-    <Box boxSize={boxSize} flexShrink={0} mb={1}>
+    <Box boxSize={boxSize} flexShrink={0} >
       <Image boxSize={boxSize} src={Logo} width={width} height={height} />
     </Box>
   );
