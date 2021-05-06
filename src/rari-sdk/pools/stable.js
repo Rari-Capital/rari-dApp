@@ -14,31 +14,30 @@ const contractAddresses = {
   RariFundManager: "0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a",
   RariFundToken: "0x016bf078ABcaCB987f0589a6d3BEAdD4316922B0",
   RariFundPriceConsumer: "0xFE98A52bCAcC86432E7aa76376751DcFAB202244",
-  RariFundProxy: "0x4a785fa6fcd2e0845a24847beb7bddd26f996d4d"
+  RariFundProxy: "0x4a785fa6fcd2e0845a24847beb7bddd26f996d4d",
 };
 
 var abis = {};
 abis["RariFundController"] = require("." +
-    "/stable/abi/" +
-    "RariFundController" +
-    ".json");
+  "/stable/abi/" +
+  "RariFundController" +
+  ".json");
 abis["RariFundManager"] = require("." +
-    "/stable/abi/" +
-    "RariFundManager" +
-    ".json");
+  "/stable/abi/" +
+  "RariFundManager" +
+  ".json");
 abis["RariFundToken"] = require("." +
-    "/stable/abi/" +
-    "RariFundToken" +
-    ".json");
+  "/stable/abi/" +
+  "RariFundToken" +
+  ".json");
 abis["RariFundPriceConsumer"] = require("." +
-    "/stable/abi/" +
-    "RariFundPriceConsumer" +
-    ".json");
+  "/stable/abi/" +
+  "RariFundPriceConsumer" +
+  ".json");
 abis["RariFundProxy"] = require("." +
-    "/stable/abi/" +
-    "RariFundProxy" +
-    ".json");
-
+  "/stable/abi/" +
+  "RariFundProxy" +
+  ".json");
 
 const legacyContractAddresses = {
   "v1.0.0": {
@@ -60,20 +59,19 @@ const legacyContractAddresses = {
     RariFundProxy: "0xD4be7E211680e12c08bbE9054F0dA0D646c45228",
   },
   "v2.2.0": {
-    RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e"
+    RariFundProxy: "0xB202cAd3965997f2F5E67B349B2C5df036b9792e",
   },
   "v2.4.0": {
-    RariFundProxy: "0xe4deE94233dd4d7c2504744eE6d34f3875b3B439"
+    RariFundProxy: "0xe4deE94233dd4d7c2504744eE6d34f3875b3B439",
   },
   "v2.5.0": {
-    RariFundController: "0x369855b051d1b2dbee88a792dcfc08614ff4e262"
-  }
+    RariFundController: "0x369855b051d1b2dbee88a792dcfc08614ff4e262",
+  },
 };
 
 var legacyAbis = {};
 
-  
-  // 1.0.0
+// 1.0.0
 
 legacyAbis["v1.0.0"] = {};
 
@@ -98,7 +96,7 @@ legacyAbis["v1.0.0"]["RariFundProxy"] = require("." +
   "RariFundProxy" +
   ".json");
 
-  // 1.1.0
+// 1.1.0
 
 legacyAbis["v1.1.0"] = {};
 legacyAbis["v1.1.0"]["RariFundManager"] = require("." +
@@ -122,7 +120,7 @@ legacyAbis["v1.1.0"]["RariFundProxy"] = require("." +
   "RariFundProxy" +
   ".json");
 
-  // 1.2.0
+// 1.2.0
 
 legacyAbis["v1.2.0"] = {};
 legacyAbis["v1.2.0"]["RariFundProxy"] = require("." +
@@ -132,7 +130,7 @@ legacyAbis["v1.2.0"]["RariFundProxy"] = require("." +
   "RariFundProxy" +
   ".json");
 
-  // 2.0.0
+// 2.0.0
 
 legacyAbis["v2.0.0"] = {};
 legacyAbis["v2.0.0"]["RariFundManager"] = require("." +
@@ -156,7 +154,7 @@ legacyAbis["v2.0.0"]["RariFundProxy"] = require("." +
   "RariFundProxy" +
   ".json");
 
-  // 2.2.0
+// 2.2.0
 
 legacyAbis["v2.2.0"] = {};
 legacyAbis["v2.2.0"]["RariFundProxy"] = require("." +
@@ -166,7 +164,7 @@ legacyAbis["v2.2.0"]["RariFundProxy"] = require("." +
   "RariFundProxy" +
   ".json");
 
-  // 2.4.0
+// 2.4.0
 
 legacyAbis["v2.4.0"] = {};
 legacyAbis["v2.4.0"]["RariFundProxy"] = require("." +
@@ -176,7 +174,7 @@ legacyAbis["v2.4.0"]["RariFundProxy"] = require("." +
   "RariFundProxy" +
   ".json");
 
-  // 2.5.0
+// 2.5.0
 
 legacyAbis["v2.5.0"] = {};
 legacyAbis["v2.5.0"]["RariFundController"] = require("." +
@@ -185,7 +183,7 @@ legacyAbis["v2.5.0"]["RariFundController"] = require("." +
   "/" +
   "RariFundController" +
   ".json");
-        
+
 export default class StablePool {
   API_BASE_URL = "https://api.rari.capital/pools/stable/";
   POOL_NAME = "Rari Stable Pool";
@@ -251,7 +249,7 @@ export default class StablePool {
       accountBalanceLimit: 3600,
       coinGeckoList: 3600,
       coinGeckoUsdPrices: 900,
-      acceptedCurrencies: 30
+      acceptedCurrencies: 30,
     });
 
     this.contracts = {};
@@ -367,7 +365,7 @@ export default class StablePool {
 
     this.allocations = {
       CURRENCIES: ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD", "mUSD"],
-      POOLS: (function() {
+      POOLS: (function () {
         var pools = ["dYdX", "Compound", "Aave", "mStable"];
         pools[100] = "Fuse3";
         pools[101] = "Fuse7";
@@ -465,9 +463,11 @@ export default class StablePool {
       },
       getRawPoolAllocations: async function () {
         var allocationsByPool = {
-          _cash: Web3.utils.toBN(0)
+          _cash: Web3.utils.toBN(0),
         };
-        for (const poolName of self.allocations.POOLS) if (poolName !== undefined) allocationsByPool[poolName] = Web3.utils.toBN(0);
+        for (const poolName of self.allocations.POOLS)
+          if (poolName !== undefined)
+            allocationsByPool[poolName] = Web3.utils.toBN(0);
         var allBalances = await self.cache.getOrUpdate(
           "allBalances",
           self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
@@ -606,7 +606,15 @@ export default class StablePool {
 
         var apyBN = Web3.utils.toBN(0);
         for (var i = 0; i < factors.length; i++) {
-          apyBN.iadd(factors[i][0].mul(factors[i][1].gt(Web3.utils.toBN(0)) ? factors[i][1] : Web3.utils.toBN(0)).div(totalBalanceUsdBN));
+          apyBN.iadd(
+            factors[i][0]
+              .mul(
+                factors[i][1].gt(Web3.utils.toBN(0))
+                  ? factors[i][1]
+                  : Web3.utils.toBN(0)
+              )
+              .div(totalBalanceUsdBN)
+          );
         }
 
         return apyBN;
@@ -634,11 +642,13 @@ export default class StablePool {
         const SECONDS_PER_YEAR = 365 * 86400;
         var timeDiff = endTimestamp - startTimestamp;
         return Web3.utils.toBN(
-          Math.trunc(((endRsptExchangeRate.toString() /
-            startRsptExchangeRate.toString()) **
-            (SECONDS_PER_YEAR / timeDiff) -
-            1) *
-            1e18)
+          Math.trunc(
+            ((endRsptExchangeRate.toString() /
+              startRsptExchangeRate.toString()) **
+              (SECONDS_PER_YEAR / timeDiff) -
+              1) *
+              1e18
+          )
         );
       },
       getApyOverBlocks: async function (fromBlock = 0, toBlock = "latest") {
@@ -712,7 +722,12 @@ export default class StablePool {
           .getDefaultAccountBalanceLimit(account)
           .call();
       },
-      validateDeposit: async function (currencyCode, amount, sender, getSlippage) {
+      validateDeposit: async function (
+        currencyCode,
+        amount,
+        sender,
+        getSlippage
+      ) {
         // Input validation
         if (!sender) throw new Error("Sender parameter not set.");
         var allTokens = await self.getAllTokens();
@@ -731,7 +746,10 @@ export default class StablePool {
           );
 
         // Check if currency is directly depositable
-        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
+        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate(
+          "acceptedCurrencies",
+          self.contracts.RariFundManager.methods.getAcceptedCurrencies().call
+        );
         if (
           !directlyDepositableCurrencyCodes ||
           directlyDepositableCurrencyCodes.length == 0
@@ -769,11 +787,17 @@ export default class StablePool {
           var mStableOutputAmountAfterFeeBN = null;
 
           if (
-            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" ||
+            MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+              currencyCode
+            ) >= 0
           ) {
             for (var acceptedCurrency of directlyDepositableCurrencyCodes)
               if (
-                acceptedCurrency === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(acceptedCurrency) >= 0
+                acceptedCurrency === "mUSD" ||
+                MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+                  acceptedCurrency
+                ) >= 0
               ) {
                 if (currencyCode === "mUSD") {
                   try {
@@ -875,7 +899,17 @@ export default class StablePool {
               );
 
             // Return outputAmountUsdBN
-            return [outputAmountUsdBN, null, getSlippage ? await self.deposits.getDepositSlippage(currencyCode, amount, outputAmountUsdBN) : null];
+            return [
+              outputAmountUsdBN,
+              null,
+              getSlippage
+                ? await self.deposits.getDepositSlippage(
+                    currencyCode,
+                    amount,
+                    outputAmountUsdBN
+                  )
+                : null,
+            ];
           } else {
             // Otherwise, use first accepted currency for 0x
             var acceptedCurrency = directlyDepositableCurrencyCodes[0];
@@ -931,7 +965,7 @@ export default class StablePool {
                   currencyCode +
                   " before depositing."
               );
-            
+
             // Multiply protocol fee by 1.5 to account for user upping the gas price
             var protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10);
 
@@ -941,101 +975,215 @@ export default class StablePool {
                 ? accountBalanceBN
                 : Web3.utils.toBN(await self.web3.eth.getBalance(sender));
             if (
-              protocolFeeBN
-                .gt(
-                  currencyCode === "ETH"
-                    ? ethBalanceBN.sub(amount)
-                    : ethBalanceBN
-                )
+              protocolFeeBN.gt(
+                currencyCode === "ETH" ? ethBalanceBN.sub(amount) : ethBalanceBN
+              )
             )
               throw new Error(
                 "ETH balance too low to cover 0x exchange protocol fee."
               );
 
             // Return makerAssetFilledAmountUsdBN and protocolFeeBN
-            return [makerAssetFilledAmountUsdBN, protocolFeeBN, getSlippage ? await self.deposits.getDepositSlippage(currencyCode, amount, makerAssetFilledAmountUsdBN) : null];
+            return [
+              makerAssetFilledAmountUsdBN,
+              protocolFeeBN,
+              getSlippage
+                ? await self.deposits.getDepositSlippage(
+                    currencyCode,
+                    amount,
+                    makerAssetFilledAmountUsdBN
+                  )
+                : null,
+            ];
           }
         }
       },
-      getDepositSlippage: async function(currencyCode, amount, usdAmount) {
+      getDepositSlippage: async function (currencyCode, amount, usdAmount) {
         if (self.POOL_TOKEN_SYMBOL === "RYPT") {
-          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
-          if (directlyDepositableCurrencyCodes && directlyDepositableCurrencyCodes.length > 0 && directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
+          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate(
+            "acceptedCurrencies",
+            self.contracts.RariFundManager.methods.getAcceptedCurrencies().call
+          );
+          if (
+            directlyDepositableCurrencyCodes &&
+            directlyDepositableCurrencyCodes.length > 0 &&
+            directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0
+          ) {
             var allBalances = await self.cache.getOrUpdate(
               "allBalances",
               self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
                 .call
             );
-            return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(self.internalTokens[currencyCode].decimals))).div(amount.mul(
-              Web3.utils.toBN(
-                allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(currencyCode)
-                ]
-              )
-            ).div(Web3.utils.toBN(1e18))));
+            return Web3.utils
+              .toBN(1e18)
+              .sub(
+                usdAmount
+                  .mul(
+                    Web3.utils
+                      .toBN(10)
+                      .pow(
+                        Web3.utils.toBN(
+                          self.internalTokens[currencyCode].decimals
+                        )
+                      )
+                  )
+                  .div(
+                    amount
+                      .mul(
+                        Web3.utils.toBN(
+                          allBalances["4"][
+                            self.allocations.CURRENCIES.indexOf(currencyCode)
+                          ]
+                        )
+                      )
+                      .div(Web3.utils.toBN(1e18))
+                  )
+              );
           }
         } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
-          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e6)).div(amount)).toString();
+          if (currencyCode === "USDC")
+            return Web3.utils
+              .toBN(1e18)
+              .sub(usdAmount.mul(Web3.utils.toBN(1e6)).div(amount))
+              .toString();
         } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
-          if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(usdAmount.mul(Web3.utils.toBN(1e18)).div(amount)).toString();
+          if (currencyCode === "DAI")
+            return Web3.utils
+              .toBN(1e18)
+              .sub(usdAmount.mul(Web3.utils.toBN(1e18)).div(amount))
+              .toString();
         } else {
           throw "Not implemented for " + self.POOL_TOKEN_SYMBOL;
         }
 
         // Get tokens
         var allTokens = await self.getAllTokens();
-        if (currencyCode !== "ETH" && !allTokens[currencyCode]) throw new Error("Invalid currency code!");
+        if (currencyCode !== "ETH" && !allTokens[currencyCode])
+          throw new Error("Invalid currency code!");
 
         // Try cache
-        if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
-          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
-          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+        if (
+          self.cache._raw.coinGeckoUsdPrices &&
+          self.cache._raw.coinGeckoUsdPrices.value &&
+          self.cache._raw.coinGeckoUsdPrices.value["USDC"] &&
+          self.cache._raw.coinGeckoUsdPrices.value[currencyCode] &&
+          new Date().getTime() / 1000 <=
+            self.cache._raw.coinGeckoUsdPrices.lastUpdated +
+              self.cache._raw.coinGeckoUsdPrices.timeout
+        ) {
+          if (self.POOL_TOKEN_SYMBOL === "RSPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["DAI"];
           else usdAmount = parseFloat(usdAmount.toString());
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(usdAmount * (10 ** (currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals) / (parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])))));
+          return Web3.utils
+            .toBN(1e18)
+            .sub(
+              Web3.utils.toBN(
+                Math.trunc(
+                  usdAmount *
+                    (10 **
+                      (currencyCode === "ETH"
+                        ? 18
+                        : allTokens[currencyCode].decimals) /
+                      (parseFloat(amount.toString()) *
+                        self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))
+                )
+              )
+            );
         }
 
         // Build currency code array
         var currencyCodes = [...self.allocations.CURRENCIES];
-        if (currencyCodes.indexOf(currencyCode) < 0) currencyCodes.push(currencyCode);
+        if (currencyCodes.indexOf(currencyCode) < 0)
+          currencyCodes.push(currencyCode);
 
         // Get CoinGecko IDs
-        var decoded = await self.cache.getOrUpdate("coinGeckoList", async function() { return (await axios.get('https://api.coingecko.com/api/v3/coins/list')).data });
-        if (!decoded) throw new Error("Failed to decode coins list from CoinGecko");
+        var decoded = await self.cache.getOrUpdate(
+          "coinGeckoList",
+          async function () {
+            return (
+              await axios.get("https://api.coingecko.com/api/v3/coins/list")
+            ).data;
+          }
+        );
+        if (!decoded)
+          throw new Error("Failed to decode coins list from CoinGecko");
         var currencyCodesByCoinGeckoIds = {};
 
         for (const currencyCode of currencyCodes) {
-          var filtered = decoded.filter(coin => coin.symbol.toLowerCase() === currencyCode.toLowerCase());
-          if (!filtered) throw new Error("Failed to get currency IDs from CoinGecko");
-          for (const coin of filtered) currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
+          var filtered = decoded.filter(
+            (coin) => coin.symbol.toLowerCase() === currencyCode.toLowerCase()
+          );
+          if (!filtered)
+            throw new Error("Failed to get currency IDs from CoinGecko");
+          for (const coin of filtered)
+            currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
         }
 
         // Get prices
-        var decoded = (await axios.get('https://api.coingecko.com/api/v3/simple/price', {
-          params: {
-            vs_currencies: "usd",
-            ids: Object.keys(currencyCodesByCoinGeckoIds).join(','),
-            include_market_cap: true
-          }
-        })).data;
-        if (!decoded) throw new Error("Failed to decode USD exchange rates from CoinGecko");
+        var decoded = (
+          await axios.get("https://api.coingecko.com/api/v3/simple/price", {
+            params: {
+              vs_currencies: "usd",
+              ids: Object.keys(currencyCodesByCoinGeckoIds).join(","),
+              include_market_cap: true,
+            },
+          })
+        ).data;
+        if (!decoded)
+          throw new Error("Failed to decode USD exchange rates from CoinGecko");
         var prices = {};
         var maxMarketCaps = {};
-        
-        for (const key of Object.keys(decoded)) if (prices[currencyCodesByCoinGeckoIds[key]] === undefined || decoded[key].usd_market_cap > maxMarketCaps[currencyCodesByCoinGeckoIds[key]]) {
-          maxMarketCaps[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd_market_cap;
-          prices[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd;
-        }
+
+        for (const key of Object.keys(decoded))
+          if (
+            prices[currencyCodesByCoinGeckoIds[key]] === undefined ||
+            decoded[key].usd_market_cap >
+              maxMarketCaps[currencyCodesByCoinGeckoIds[key]]
+          ) {
+            maxMarketCaps[currencyCodesByCoinGeckoIds[key]] =
+              decoded[key].usd_market_cap;
+            prices[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd;
+          }
 
         // Update cache
         self.cache.update("coinGeckoUsdPrices", prices);
 
         // Return slippage
-        if (self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode]) {
-          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
-          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+        if (
+          self.cache._raw.coinGeckoUsdPrices.value["USDC"] &&
+          self.cache._raw.coinGeckoUsdPrices.value[currencyCode]
+        ) {
+          if (self.POOL_TOKEN_SYMBOL === "RSPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["DAI"];
           else usdAmount = parseFloat(usdAmount.toString());
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(usdAmount * (10 ** (currencyCode === "ETH" ? 18 : allTokens[currencyCode].decimals) / (parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode])))));
-        } else throw new Error("Failed to get currency prices from CoinGecko"); 
+          return Web3.utils
+            .toBN(1e18)
+            .sub(
+              Web3.utils.toBN(
+                Math.trunc(
+                  usdAmount *
+                    (10 **
+                      (currencyCode === "ETH"
+                        ? 18
+                        : allTokens[currencyCode].decimals) /
+                      (parseFloat(amount.toString()) *
+                        self.cache._raw.coinGeckoUsdPrices.value[currencyCode]))
+                )
+              )
+            );
+        } else throw new Error("Failed to get currency prices from CoinGecko");
       },
       deposit: async function (currencyCode, amount, minUsdAmount, options) {
         // Input validation
@@ -1059,7 +1207,10 @@ export default class StablePool {
           );
 
         // Check if currency is directly depositable
-        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
+        var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate(
+          "acceptedCurrencies",
+          self.contracts.RariFundManager.methods.getAcceptedCurrencies().call
+        );
         if (
           !directlyDepositableCurrencyCodes ||
           directlyDepositableCurrencyCodes.length == 0
@@ -1115,7 +1266,10 @@ export default class StablePool {
                   .call()
               );
               if (allowanceBN.lt(amount)) {
-                if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
+                if (
+                  allowanceBN.gt(Web3.utils.toBN(0)) &&
+                  currencyCode === "USDT"
+                )
                   await allTokens[currencyCode].contract.methods
                     .approve(depositContract.options.address, "0")
                     .send(options);
@@ -1153,11 +1307,17 @@ export default class StablePool {
           var mStableOutputAmountAfterFeeBN = null;
 
           if (
-            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" ||
+            MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+              currencyCode
+            ) >= 0
           ) {
             for (var acceptedCurrency of directlyDepositableCurrencyCodes)
               if (
-                acceptedCurrency === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(acceptedCurrency) >= 0
+                acceptedCurrency === "mUSD" ||
+                MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+                  acceptedCurrency
+                ) >= 0
               ) {
                 if (currencyCode === "mUSD") {
                   try {
@@ -1277,22 +1437,17 @@ export default class StablePool {
                   .call()
               );
               if (allowanceBN.lt(amount)) {
-                if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
-                  await self.internalTokens[
-                    currencyCode
-                  ].contract.methods
-                    .approve(
-                      self.contracts.RariFundProxy.options.address,
-                      "0"
-                    )
+                if (
+                  allowanceBN.gt(Web3.utils.toBN(0)) &&
+                  currencyCode === "USDT"
+                )
+                  await self.internalTokens[currencyCode].contract.methods
+                    .approve(self.contracts.RariFundProxy.options.address, "0")
                     .send(options);
                 var approvalReceipt = await self.internalTokens[
                   currencyCode
                 ].contract.methods
-                  .approve(
-                    self.contracts.RariFundProxy.options.address,
-                    amount
-                  )
+                  .approve(self.contracts.RariFundProxy.options.address, amount)
                   .send(options);
               }
             } catch (err) {
@@ -1376,7 +1531,7 @@ export default class StablePool {
                   currencyCode +
                   " before depositing."
               );
-          
+
             // Multiply protocol fee by 1.5 to account for user upping the gas price
             var protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10);
 
@@ -1386,12 +1541,9 @@ export default class StablePool {
                 ? accountBalanceBN
                 : Web3.utils.toBN(await self.web3.eth.getBalance(options.from));
             if (
-              protocolFeeBN
-                .gt(
-                  currencyCode === "ETH"
-                    ? ethBalanceBN.sub(amount)
-                    : ethBalanceBN
-                )
+              protocolFeeBN.gt(
+                currencyCode === "ETH" ? ethBalanceBN.sub(amount) : ethBalanceBN
+              )
             )
               throw new Error(
                 "ETH balance too low to cover 0x exchange protocol fee."
@@ -1417,10 +1569,11 @@ export default class StablePool {
                     .call()
                 );
                 if (allowanceBN.lt(amount)) {
-                  if (allowanceBN.gt(Web3.utils.toBN(0)) && currencyCode === "USDT")
-                    await allTokens[
-                      currencyCode
-                    ].contract.methods
+                  if (
+                    allowanceBN.gt(Web3.utils.toBN(0)) &&
+                    currencyCode === "USDT"
+                  )
+                    await allTokens[currencyCode].contract.methods
                       .approve(
                         self.contracts.RariFundProxy.options.address,
                         "0"
@@ -1718,13 +1871,18 @@ export default class StablePool {
 
         // mStable
         if (
-          currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
+          currencyCode === "mUSD" ||
+          MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >=
+            0
         ) {
           var mStableSwapFeeBN = null;
 
           for (var i = 0; i < inputCandidates.length; i++) {
             if (
-              inputCandidates[i].currencyCode !== "mUSD" && MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) < 0
+              inputCandidates[i].currencyCode !== "mUSD" &&
+              MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+                inputCandidates[i].currencyCode
+              ) < 0
             )
               continue;
 
@@ -1883,7 +2041,10 @@ export default class StablePool {
             }
 
             inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
-            inputCandidates[i].protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
+            inputCandidates[i].protocolFeeBN = Web3.utils
+              .toBN(protocolFee)
+              .muln(15)
+              .divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
             inputCandidates[
               i
             ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
@@ -2044,7 +2205,12 @@ export default class StablePool {
         // Return amountWithdrawnBN and totalProtocolFeeBN
         return [amountWithdrawnBN, totalProtocolFeeBN];
       },
-      validateWithdrawal: async function (currencyCode, amount, sender, getSlippage) {
+      validateWithdrawal: async function (
+        currencyCode,
+        amount,
+        sender,
+        getSlippage
+      ) {
         var allTokens = await self.getAllTokens();
         if (currencyCode !== "ETH" && !allTokens[currencyCode])
           throw new Error("Invalid currency code!");
@@ -2086,11 +2252,17 @@ export default class StablePool {
             );
 
           // Check amountUsdBN against user fund balance
-          var senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+          var senderUsdBalance = Web3.utils.toBN(
+            await self.contracts.RariFundManager.methods
+              .balanceOf(sender)
+              .call()
+          );
 
           if (amountUsdBN.gt(senderUsdBalance))
             throw new Error(
-              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance. Please click the max button and try again (or reload and try again later if the issue persists)."
+              "Requested withdrawal amount is greater than the sender's " +
+                self.POOL_NAME +
+                " balance. Please click the max button and try again (or reload and try again later if the issue persists)."
             );
 
           // Return amountUsdBN
@@ -2148,13 +2320,19 @@ export default class StablePool {
           // mStable
 
           if (
-            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" ||
+            MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+              currencyCode
+            ) >= 0
           ) {
             var mStableSwapFeeBN = null;
 
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
-                inputCandidates[i].currencyCode !== "mUSD" && MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) < 0
+                inputCandidates[i].currencyCode !== "mUSD" &&
+                MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+                  inputCandidates[i].currencyCode
+                ) < 0
               )
                 continue;
 
@@ -2356,7 +2534,10 @@ export default class StablePool {
               }
 
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
-              inputCandidates[i].protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
+              inputCandidates[i].protocolFeeBN = Web3.utils
+                .toBN(protocolFee)
+                .muln(15)
+                .divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
               inputCandidates[
                 i
               ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
@@ -2500,53 +2681,137 @@ export default class StablePool {
           }
 
           // Check amountInputtedUsdBN against user fund balance
-          var senderUsdBalance = Web3.utils.toBN(await self.contracts.RariFundManager.methods.balanceOf(sender).call());
+          var senderUsdBalance = Web3.utils.toBN(
+            await self.contracts.RariFundManager.methods
+              .balanceOf(sender)
+              .call()
+          );
 
           if (amountInputtedUsdBN.gt(senderUsdBalance))
             throw new Error(
-              "Requested withdrawal amount is greater than the sender's " + self.POOL_NAME + " balance. Please click the max button and try again (or reload and try again later if the issue persists)."
+              "Requested withdrawal amount is greater than the sender's " +
+                self.POOL_NAME +
+                " balance. Please click the max button and try again (or reload and try again later if the issue persists)."
             );
 
           // Return amountInputtedUsdBN
-          return [amountInputtedUsdBN, totalProtocolFeeBN, getSlippage ? await self.withdrawals.getWithdrawalSlippage(currencyCode, amount, amountInputtedUsdBN) : null];
+          return [
+            amountInputtedUsdBN,
+            totalProtocolFeeBN,
+            getSlippage
+              ? await self.withdrawals.getWithdrawalSlippage(
+                  currencyCode,
+                  amount,
+                  amountInputtedUsdBN
+                )
+              : null,
+          ];
         }
       },
-      getWithdrawalSlippage: async function(currencyCode, amount, usdAmount) {
+      getWithdrawalSlippage: async function (currencyCode, amount, usdAmount) {
         if (self.POOL_TOKEN_SYMBOL === "RYPT") {
-          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate("acceptedCurrencies", self.contracts.RariFundManager.methods.getAcceptedCurrencies().call);
-          if (directlyDepositableCurrencyCodes && directlyDepositableCurrencyCodes.length > 0 && directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0) {
+          var directlyDepositableCurrencyCodes = await self.cache.getOrUpdate(
+            "acceptedCurrencies",
+            self.contracts.RariFundManager.methods.getAcceptedCurrencies().call
+          );
+          if (
+            directlyDepositableCurrencyCodes &&
+            directlyDepositableCurrencyCodes.length > 0 &&
+            directlyDepositableCurrencyCodes.indexOf(currencyCode) >= 0
+          ) {
             var allBalances = await self.cache.getOrUpdate(
               "allBalances",
               self.contracts.RariFundProxy.methods.getRawFundBalancesAndPrices()
                 .call
             );
-            return Web3.utils.toBN(1e18).sub(amount.mul(
-              Web3.utils.toBN(
-                allBalances["4"][
-                  self.allocations.CURRENCIES.indexOf(currencyCode)
-                ]
-              )
-            ).div(Web3.utils.toBN(1e18)).mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - self.internalTokens[currencyCode].decimals))).div(usdAmount));
+            return Web3.utils.toBN(1e18).sub(
+              amount
+                .mul(
+                  Web3.utils.toBN(
+                    allBalances["4"][
+                      self.allocations.CURRENCIES.indexOf(currencyCode)
+                    ]
+                  )
+                )
+                .div(Web3.utils.toBN(1e18))
+                .mul(
+                  Web3.utils
+                    .toBN(10)
+                    .pow(
+                      Web3.utils.toBN(
+                        36 - self.internalTokens[currencyCode].decimals
+                      )
+                    )
+                )
+                .div(usdAmount)
+            );
           }
         } else if (self.POOL_TOKEN_SYMBOL === "RSPT") {
-          if (currencyCode === "USDC") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - 6))).div(usdAmount)).toString();
-          if (currencyCode === "mUSD") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+          if (currencyCode === "USDC")
+            return Web3.utils
+              .toBN(1e18)
+              .sub(
+                amount
+                  .mul(Web3.utils.toBN(10).pow(Web3.utils.toBN(36 - 6)))
+                  .div(usdAmount)
+              )
+              .toString();
+          if (currencyCode === "mUSD")
+            return Web3.utils
+              .toBN(1e18)
+              .sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount))
+              .toString();
         } else if (self.POOL_TOKEN_SYMBOL === "RDPT") {
-          if (currencyCode === "DAI") return Web3.utils.toBN(1e18).sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount)).toString();
+          if (currencyCode === "DAI")
+            return Web3.utils
+              .toBN(1e18)
+              .sub(amount.mul(Web3.utils.toBN(1e18)).div(usdAmount))
+              .toString();
         } else {
           throw "Not implemented for " + self.POOL_TOKEN_SYMBOL;
         }
 
         // Get tokens
         var allTokens = await self.getAllTokens();
-        if (currencyCode !== "ETH" && !allTokens[currencyCode]) throw new Error("Invalid currency code!");
+        if (currencyCode !== "ETH" && !allTokens[currencyCode])
+          throw new Error("Invalid currency code!");
 
         // Try cache
-        if (self.cache._raw.coinGeckoUsdPrices && self.cache._raw.coinGeckoUsdPrices.value && self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode] && new Date().getTime() / 1000 <= self.cache._raw.coinGeckoUsdPrices.lastUpdated + self.cache._raw.coinGeckoUsdPrices.timeout) {
-          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
-          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+        if (
+          self.cache._raw.coinGeckoUsdPrices &&
+          self.cache._raw.coinGeckoUsdPrices.value &&
+          self.cache._raw.coinGeckoUsdPrices.value["USDC"] &&
+          self.cache._raw.coinGeckoUsdPrices.value[currencyCode] &&
+          new Date().getTime() / 1000 <=
+            self.cache._raw.coinGeckoUsdPrices.lastUpdated +
+              self.cache._raw.coinGeckoUsdPrices.timeout
+        ) {
+          if (self.POOL_TOKEN_SYMBOL === "RSPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["DAI"];
           else usdAmount = parseFloat(usdAmount.toString());
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode] * (10 ** (Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))) / usdAmount)));
+          return Web3.utils
+            .toBN(1e18)
+            .sub(
+              Web3.utils.toBN(
+                Math.trunc(
+                  (parseFloat(amount.toString()) *
+                    self.cache._raw.coinGeckoUsdPrices.value[currencyCode] *
+                    10 **
+                      Web3.utils.toBN(
+                        currencyCode === "ETH"
+                          ? 18
+                          : 36 - allTokens[currencyCode].decimals
+                      )) /
+                    usdAmount
+                )
+              )
+            );
         }
 
         // Build currency code array
@@ -2554,42 +2819,88 @@ export default class StablePool {
         currencyCodes.push(currencyCode);
 
         // Get CoinGecko IDs
-        var decoded = await self.cache.getOrUpdate("coinGeckoList", async function() { return (await axios.get('https://api.coingecko.com/api/v3/coins/list')).data });
-        if (!decoded) throw new Error("Failed to decode coins list from CoinGecko");
+        var decoded = await self.cache.getOrUpdate(
+          "coinGeckoList",
+          async function () {
+            return (
+              await axios.get("https://api.coingecko.com/api/v3/coins/list")
+            ).data;
+          }
+        );
+        if (!decoded)
+          throw new Error("Failed to decode coins list from CoinGecko");
         var currencyCodesByCoinGeckoIds = {};
 
         for (const currencyCode of currencyCodes) {
-          var filtered = decoded.filter(coin => coin.symbol.toLowerCase() === currencyCode.toLowerCase());
-          if (!filtered) throw new Error("Failed to get currency IDs from CoinGecko");
-          for (const coin of filtered) currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
+          var filtered = decoded.filter(
+            (coin) => coin.symbol.toLowerCase() === currencyCode.toLowerCase()
+          );
+          if (!filtered)
+            throw new Error("Failed to get currency IDs from CoinGecko");
+          for (const coin of filtered)
+            currencyCodesByCoinGeckoIds[coin.id] = currencyCode;
         }
 
         // Get prices
-        var decoded = (await axios.get('https://api.coingecko.com/api/v3/simple/price', {
-          params: {
-            vs_currencies: "usd",
-            ids: Object.keys(currencyCodesByCoinGeckoIds).join(','),
-            include_market_cap: true
-          }
-        })).data;
-        if (!decoded) throw new Error("Failed to decode USD exchange rates from CoinGecko");
+        var decoded = (
+          await axios.get("https://api.coingecko.com/api/v3/simple/price", {
+            params: {
+              vs_currencies: "usd",
+              ids: Object.keys(currencyCodesByCoinGeckoIds).join(","),
+              include_market_cap: true,
+            },
+          })
+        ).data;
+        if (!decoded)
+          throw new Error("Failed to decode USD exchange rates from CoinGecko");
         var prices = {};
         var maxMarketCaps = {};
-        
-        for (const key of Object.keys(decoded)) if (prices[currencyCodesByCoinGeckoIds[key]] === undefined || decoded[key].usd_market_cap > maxMarketCaps[currencyCodesByCoinGeckoIds[key]]) {
-          maxMarketCaps[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd_market_cap;
-          prices[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd;
-        }
+
+        for (const key of Object.keys(decoded))
+          if (
+            prices[currencyCodesByCoinGeckoIds[key]] === undefined ||
+            decoded[key].usd_market_cap >
+              maxMarketCaps[currencyCodesByCoinGeckoIds[key]]
+          ) {
+            maxMarketCaps[currencyCodesByCoinGeckoIds[key]] =
+              decoded[key].usd_market_cap;
+            prices[currencyCodesByCoinGeckoIds[key]] = decoded[key].usd;
+          }
 
         // Update cache
         self.cache.update("coinGeckoUsdPrices", prices);
 
         // Return slippage
-        if (self.cache._raw.coinGeckoUsdPrices.value["USDC"] && self.cache._raw.coinGeckoUsdPrices.value[currencyCode]) {
-          if (self.POOL_TOKEN_SYMBOL === "RSPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["USDC"];
-          else if (self.POOL_TOKEN_SYMBOL === "RDPT") usdAmount = parseFloat(usdAmount.toString()) * self.cache._raw.coinGeckoUsdPrices.value["DAI"];
+        if (
+          self.cache._raw.coinGeckoUsdPrices.value["USDC"] &&
+          self.cache._raw.coinGeckoUsdPrices.value[currencyCode]
+        ) {
+          if (self.POOL_TOKEN_SYMBOL === "RSPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["USDC"];
+          else if (self.POOL_TOKEN_SYMBOL === "RDPT")
+            usdAmount =
+              parseFloat(usdAmount.toString()) *
+              self.cache._raw.coinGeckoUsdPrices.value["DAI"];
           else usdAmount = parseFloat(usdAmount.toString());
-          return Web3.utils.toBN(1e18).sub(Web3.utils.toBN(Math.trunc(parseFloat(amount.toString()) * self.cache._raw.coinGeckoUsdPrices.value[currencyCode] * (10 ** (Web3.utils.toBN(currencyCode === "ETH" ? 18 : 36 - allTokens[currencyCode].decimals))) / usdAmount)));
+          return Web3.utils
+            .toBN(1e18)
+            .sub(
+              Web3.utils.toBN(
+                Math.trunc(
+                  (parseFloat(amount.toString()) *
+                    self.cache._raw.coinGeckoUsdPrices.value[currencyCode] *
+                    10 **
+                      Web3.utils.toBN(
+                        currencyCode === "ETH"
+                          ? 18
+                          : 36 - allTokens[currencyCode].decimals
+                      )) /
+                    usdAmount
+                )
+              )
+            );
         } else throw new Error("Failed to get currency prices from CoinGecko");
       },
       withdraw: async function (currencyCode, amount, maxUsdAmount, options) {
@@ -2722,13 +3033,19 @@ export default class StablePool {
 
           // mStable
           if (
-            currencyCode === "mUSD" || MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(currencyCode) >= 0
+            currencyCode === "mUSD" ||
+            MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+              currencyCode
+            ) >= 0
           ) {
             var mStableSwapFeeBN = null;
 
             for (var i = 0; i < inputCandidates.length; i++) {
               if (
-                inputCandidates[i].currencyCode !== "mUSD" && MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(inputCandidates[i].currencyCode) < 0
+                inputCandidates[i].currencyCode !== "mUSD" &&
+                MStableSubpool.SUPPORTED_EXCHANGE_CURRENCIES.indexOf(
+                  inputCandidates[i].currencyCode
+                ) < 0
               )
                 continue;
 
@@ -2954,7 +3271,10 @@ export default class StablePool {
               inputCandidates[i].orders = orders;
               inputCandidates[i].signatures = signatures;
               inputCandidates[i].inputFillAmountBN = inputFilledAmountBN;
-              inputCandidates[i].protocolFeeBN = Web3.utils.toBN(protocolFee).muln(15).divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
+              inputCandidates[i].protocolFeeBN = Web3.utils
+                .toBN(protocolFee)
+                .muln(15)
+                .divn(10); // Multiply protocol fee by 1.5 to account for user upping the gas price
               inputCandidates[
                 i
               ].takerAssetFillAmountBN = takerAssetFilledAmountBN;
@@ -3255,8 +3575,8 @@ export default class StablePool {
         intervalBlocks = 6500
       ) {
         if (!account) throw new Error("No account specified");
-        if (fromBlock === undefined) fromBlock = 'latest';
-        if (toBlock === undefined) toBlock = 'latest';
+        if (fromBlock === undefined) fromBlock = "latest";
+        if (toBlock === undefined) toBlock = "latest";
         if (!intervalBlocks) intervalBlocks = 6500;
 
         try {
@@ -3341,11 +3661,14 @@ export default class StablePool {
           });
         if (toBlock >= 11821040)
           events = events.concat(
-            await self.contracts.RariFundController.getPastEvents("PoolAllocation", {
-              fromBlock: Math.max(fromBlock, 11821040),
-              toBlock,
-              filter,
-            })
+            await self.contracts.RariFundController.getPastEvents(
+              "PoolAllocation",
+              {
+                fromBlock: Math.max(fromBlock, 11821040),
+                toBlock,
+                filter,
+              }
+            )
           );
         return events;
       },
@@ -3361,11 +3684,14 @@ export default class StablePool {
           });
         if (toBlock >= 11821040)
           events = events.concat(
-            await self.contracts.RariFundController.getPastEvents("CurrencyTrade", {
-              fromBlock: Math.max(fromBlock, 11821040),
-              toBlock,
-              filter,
-            })
+            await self.contracts.RariFundController.getPastEvents(
+              "CurrencyTrade",
+              {
+                fromBlock: Math.max(fromBlock, 11821040),
+                toBlock,
+                filter,
+              }
+            )
           );
         return events;
       },

@@ -1,30 +1,34 @@
 const webpack = require("webpack");
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = [
   /* createConfig('commonjs2'), */
-  createConfig('commonjs2', 'node'),
-  createConfig('window')
+  createConfig("commonjs2", "node"),
+  createConfig("window"),
 ];
 
 function createConfig(libraryTarget, target) {
   var config = {
     resolve: {
       fallback: {
-        "os": require.resolve("os-browserify/browser"),
-        "https": require.resolve("https-browserify"),
-        "http": require.resolve("stream-http"),
-        "stream": require.resolve("stream-browserify"),
-        "crypto": require.resolve("crypto-browserify")
-      }
+        os: require.resolve("os-browserify/browser"),
+        https: require.resolve("https-browserify"),
+        http: require.resolve("stream-http"),
+        stream: require.resolve("stream-browserify"),
+        crypto: require.resolve("crypto-browserify"),
+      },
     },
     entry: ["regenerator-runtime/runtime", "./src/index.js"],
     output: {
       path: __dirname,
-      filename: "./dist/fuse." + (target !== undefined ? target + "." : "") + libraryTarget + ".js",
+      filename:
+        "./dist/fuse." +
+        (target !== undefined ? target + "." : "") +
+        libraryTarget +
+        ".js",
       libraryTarget: libraryTarget,
-      libraryExport: 'default',
+      libraryExport: "default",
     },
     optimization: {
       minimize: true,
@@ -32,9 +36,9 @@ function createConfig(libraryTarget, target) {
         new TerserPlugin({
           terserOptions: {
             output: {
-              comments: false
-            }
-          }
+              comments: false,
+            },
+          },
         }),
       ],
     },
@@ -44,23 +48,23 @@ function createConfig(libraryTarget, target) {
           test: /\.js$/,
           exclude: /node_modules/,
           use: {
-            loader: 'babel-loader',
+            loader: "babel-loader",
             options: {
               presets: [
                 [
                   "@babel/preset-env",
                   {
                     useBuiltIns: "entry",
-                    corejs: { version: 3 }
-                  }
-                ]
+                    corejs: { version: 3 },
+                  },
+                ],
               ],
-              plugins: ["@babel/plugin-proposal-class-properties"]
-            }
-          }
-        }
-      ]
-    }
+              plugins: ["@babel/plugin-proposal-class-properties"],
+            },
+          },
+        },
+      ],
+    },
   };
 
   if (libraryTarget === "window") config.output.library = "Fuse";
@@ -70,24 +74,26 @@ function createConfig(libraryTarget, target) {
     config.plugins = [
       new webpack.DefinePlugin({
         btoa: function (string) {
-          return process.browser ? btoa(string) : Buffer.from(string, 'binary').toString('base64');
-        }
+          return process.browser
+            ? btoa(string)
+            : Buffer.from(string, "binary").toString("base64");
+        },
       }),
       new webpack.ProvidePlugin({
-        window: 'global/window',
+        window: "global/window",
       }),
       new webpack.ProvidePlugin({
-        electron: "electron"
-      })
+        electron: "electron",
+      }),
     ];
   } else {
     config.plugins = [
       new webpack.ProvidePlugin({
-        process: target === "node" ? "process" : "process/browser"
+        process: target === "node" ? "process" : "process/browser",
       }),
       new webpack.ProvidePlugin({
-        Buffer: ['buffer', 'Buffer']
-      })
+        Buffer: ["buffer", "Buffer"],
+      }),
     ];
   }
 

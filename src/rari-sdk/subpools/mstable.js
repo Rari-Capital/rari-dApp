@@ -12,10 +12,7 @@ const externalContractAddresses = {
 };
 
 var externalAbis = {};
-externalAbis["Masset"] = require("." +
-  "/mstable/abi/" +
-  "Masset" +
-  ".json");
+externalAbis["Masset"] = require("." + "/mstable/abi/" + "Masset" + ".json");
 
 externalAbis["MassetValidationHelper"] = require("." +
   "/mstable/abi/" +

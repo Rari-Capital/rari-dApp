@@ -259,9 +259,7 @@
   "ast": {
     "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/BalancerLpTokenPriceOracle.sol",
     "exportedSymbols": {
-      "BalancerLpTokenPriceOracle": [
-        7723
-      ]
+      "BalancerLpTokenPriceOracle": [7723]
     },
     "id": 7724,
     "license": null,
@@ -269,11 +267,7 @@
     "nodes": [
       {
         "id": 7354,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
+        "literals": ["solidity", "0.6", ".12"],
         "nodeType": "PragmaDirective",
         "src": "0:23:33"
       },
@@ -405,11 +399,7 @@
             "src": "793:4:33"
           }
         ],
-        "contractDependencies": [
-          5088,
-          5561,
-          6023
-        ],
+        "contractDependencies": [5088, 5561, 6023],
         "contractKind": "contract",
         "documentation": {
           "id": 7363,
@@ -419,12 +409,7 @@
         },
         "fullyImplemented": true,
         "id": 7723,
-        "linearizedBaseContracts": [
-          7723,
-          5561,
-          5088,
-          6023
-        ],
+        "linearizedBaseContracts": [7723, 5561, 5088, 6023],
         "name": "BalancerLpTokenPriceOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -611,18 +596,14 @@
             "visibility": "external"
           },
           {
-            "baseFunctions": [
-              6022
-            ],
+            "baseFunctions": [6022],
             "body": {
               "id": 7422,
               "nodeType": "Block",
               "src": "1624:363:33",
               "statements": [
                 {
-                  "assignments": [
-                    7393
-                  ],
+                  "assignments": [7393],
                   "declarations": [
                     {
                       "constant": false,
@@ -1219,9 +1200,7 @@
               "src": "2294:1367:33",
               "statements": [
                 {
-                  "assignments": [
-                    7432
-                  ],
+                  "assignments": [7432],
                   "declarations": [
                     {
                       "constant": false,
@@ -1429,10 +1408,7 @@
                       "id": 7437,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "2362:7:33",
                       "typeDescriptions": {
@@ -1460,9 +1436,7 @@
                   "src": "2362:78:33"
                 },
                 {
-                  "assignments": [
-                    7450
-                  ],
+                  "assignments": [7450],
                   "declarations": [
                     {
                       "constant": false,
@@ -1555,9 +1529,7 @@
                   "src": "2451:47:33"
                 },
                 {
-                  "assignments": [
-                    7456
-                  ],
+                  "assignments": [7456],
                   "declarations": [
                     {
                       "constant": false,
@@ -1639,9 +1611,7 @@
                   "src": "2509:26:33"
                 },
                 {
-                  "assignments": [
-                    7462
-                  ],
+                  "assignments": [7462],
                   "declarations": [
                     {
                       "constant": false,
@@ -1723,9 +1693,7 @@
                   "src": "2546:26:33"
                 },
                 {
-                  "assignments": [
-                    7468
-                  ],
+                  "assignments": [7468],
                   "declarations": [
                     {
                       "constant": false,
@@ -1880,9 +1848,7 @@
                   "src": "2583:55:33"
                 },
                 {
-                  "assignments": [
-                    7478
-                  ],
+                  "assignments": [7478],
                   "declarations": [
                     {
                       "constant": false,
@@ -2037,9 +2003,7 @@
                   "src": "2649:55:33"
                 },
                 {
-                  "assignments": [
-                    7488
-                  ],
+                  "assignments": [7488],
                   "declarations": [
                     {
                       "constant": false,
@@ -2159,9 +2123,7 @@
                   "src": "2715:53:33"
                 },
                 {
-                  "assignments": [
-                    7496
-                  ],
+                  "assignments": [7496],
                   "declarations": [
                     {
                       "constant": false,
@@ -3457,10 +3419,7 @@
                   }
                 },
                 {
-                  "assignments": [
-                    7580,
-                    7582
-                  ],
+                  "assignments": [7580, 7582],
                   "declarations": [
                     {
                       "constant": false,
@@ -4234,9 +4193,7 @@
               "src": "4338:1088:33",
               "statements": [
                 {
-                  "assignments": [
-                    7642
-                  ],
+                  "assignments": [7642],
                   "declarations": [
                     {
                       "constant": false,
@@ -4339,9 +4296,7 @@
                   "src": "4890:29:33"
                 },
                 {
-                  "assignments": [
-                    7649
-                  ],
+                  "assignments": [7649],
                   "declarations": [
                     {
                       "constant": false,
@@ -4603,9 +4558,7 @@
                     "src": "5258:161:33",
                     "statements": [
                       {
-                        "assignments": [
-                          7693
-                        ],
+                        "assignments": [7693],
                         "declarations": [
                           {
                             "constant": false,
@@ -5026,9 +4979,7 @@
                     "src": "5091:161:33",
                     "statements": [
                       {
-                        "assignments": [
-                          7665
-                        ],
+                        "assignments": [7665],
                         "declarations": [
                           {
                             "constant": false,
@@ -5711,20 +5662,14 @@
     "attributes": {
       "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/BalancerLpTokenPriceOracle.sol",
       "exportedSymbols": {
-        "BalancerLpTokenPriceOracle": [
-          7723
-        ]
+        "BalancerLpTokenPriceOracle": [7723]
       },
       "license": null
     },
     "children": [
       {
         "attributes": {
-          "literals": [
-            "solidity",
-            "0.6",
-            ".12"
-          ]
+          "literals": ["solidity", "0.6", ".12"]
         },
         "id": 7354,
         "name": "PragmaDirective",
@@ -5736,9 +5681,7 @@
           "absolutePath": "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol",
           "file": "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7355,
@@ -5751,9 +5694,7 @@
           "absolutePath": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
           "file": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7356,
@@ -5766,9 +5707,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/PriceOracle.sol",
           "file": "../external/compound/PriceOracle.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7357,
@@ -5781,9 +5720,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CToken.sol",
           "file": "../external/compound/CToken.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7358,
@@ -5796,9 +5733,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CErc20.sol",
           "file": "../external/compound/CErc20.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7359,
@@ -5811,9 +5746,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/balancer/IBalancerPool.sol",
           "file": "../external/balancer/IBalancerPool.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7360,
@@ -5826,9 +5759,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/balancer/BNum.sol",
           "file": "../external/balancer/BNum.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7361,
@@ -5841,9 +5772,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/BasePriceOracle.sol",
           "file": "./BasePriceOracle.sol",
           "scope": 7724,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7362,
@@ -5853,19 +5782,10 @@
       {
         "attributes": {
           "abstract": false,
-          "contractDependencies": [
-            5088,
-            5561,
-            6023
-          ],
+          "contractDependencies": [5088, 5561, 6023],
           "contractKind": "contract",
           "fullyImplemented": true,
-          "linearizedBaseContracts": [
-            7723,
-            5561,
-            5088,
-            6023
-          ],
+          "linearizedBaseContracts": [7723, 5561, 5088, 6023],
           "name": "BalancerLpTokenPriceOracle",
           "scope": 7724
         },
@@ -5953,9 +5873,7 @@
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "price",
               "overrides": null,
               "scope": 7723,
@@ -6058,9 +5976,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -6074,9 +5990,7 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7621,
                               "type": "function (address) view returns (uint256)",
                               "value": "_price"
@@ -6088,9 +6002,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7373,
                               "type": "address",
                               "value": "underlying"
@@ -6121,16 +6033,12 @@
           },
           {
             "attributes": {
-              "baseFunctions": [
-                6022
-              ],
+              "baseFunctions": [6022],
               "functionSelector": "fc57d4df",
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "getUnderlyingPrice",
               "scope": 7723,
               "stateMutability": "view",
@@ -6148,9 +6056,7 @@
               },
               {
                 "attributes": {
-                  "overrides": [
-                    null
-                  ]
+                  "overrides": [null]
                 },
                 "id": 7388,
                 "name": "OverrideSpecifier",
@@ -6232,9 +6138,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "assignments": [
-                        7393
-                      ]
+                      "assignments": [7393]
                     },
                     "children": [
                       {
@@ -6269,17 +6173,13 @@
                       {
                         "attributes": {
                           "argumentTypes": null,
-                          "arguments": [
-                            null
-                          ],
+                          "arguments": [null],
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "address",
                           "type_conversion": false
@@ -6287,9 +6187,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "argumentTypes": [
-                                null
-                              ],
+                              "argumentTypes": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -6307,9 +6205,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "contract CErc20",
                                   "type_conversion": true
@@ -6323,9 +6219,7 @@
                                           "typeString": "address"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 5723,
                                       "type": "type(contract CErc20)",
                                       "value": "CErc20"
@@ -6342,9 +6236,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "address",
                                       "type_conversion": true
@@ -6382,9 +6274,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7386,
                                           "type": "contract CToken",
                                           "value": "cToken"
@@ -6431,9 +6321,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -6464,9 +6352,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -6497,9 +6383,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -6513,9 +6397,7 @@
                                                   "typeString": "address"
                                                 }
                                               ],
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7621,
                                               "type": "function (address) view returns (uint256)",
                                               "value": "_price"
@@ -6527,9 +6409,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7393,
                                               "type": "address",
                                               "value": "underlying"
@@ -6615,9 +6495,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": true
@@ -6655,17 +6533,13 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "arguments": [
-                                        null
-                                      ],
+                                      "arguments": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint8",
                                       "type_conversion": false
@@ -6673,9 +6547,7 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": [
-                                            null
-                                          ],
+                                          "argumentTypes": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -6693,9 +6565,7 @@
                                               "isPure": false,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "contract ERC20Upgradeable",
                                               "type_conversion": true
@@ -6784,9 +6654,7 @@
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "_price",
               "overrides": null,
               "scope": 7723,
@@ -6878,9 +6746,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "assignments": [
-                        7432
-                      ]
+                      "assignments": [7432]
                     },
                     "children": [
                       {
@@ -6921,9 +6787,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "contract IBalancerPool",
                           "type_conversion": true
@@ -6937,9 +6801,7 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 5654,
                               "type": "type(contract IBalancerPool)",
                               "value": "IBalancerPool"
@@ -6951,9 +6813,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7426,
                               "type": "address",
                               "value": "underlying"
@@ -6982,9 +6842,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -7002,10 +6860,7 @@
                                   "typeString": "literal_string \"Balancer pool must have exactly 2 tokens.\""
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
@@ -7032,17 +6887,13 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "arguments": [
-                                    null
-                                  ],
+                                  "arguments": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -7050,9 +6901,7 @@
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": [
-                                        null
-                                      ],
+                                      "argumentTypes": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
@@ -7065,9 +6914,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7432,
                                           "type": "contract IBalancerPool",
                                           "value": "pool"
@@ -7137,9 +6984,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7450
-                      ]
+                      "assignments": [7450]
                     },
                     "children": [
                       {
@@ -7184,17 +7029,13 @@
                       {
                         "attributes": {
                           "argumentTypes": null,
-                          "arguments": [
-                            null
-                          ],
+                          "arguments": [null],
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "address[] memory",
                           "type_conversion": false
@@ -7202,9 +7043,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "argumentTypes": [
-                                null
-                              ],
+                              "argumentTypes": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -7217,9 +7056,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7432,
                                   "type": "contract IBalancerPool",
                                   "value": "pool"
@@ -7245,9 +7082,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7456
-                      ]
+                      "assignments": [7456]
                     },
                     "children": [
                       {
@@ -7292,9 +7127,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7450,
                               "type": "address[] memory",
                               "value": "tokens"
@@ -7332,9 +7165,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7462
-                      ]
+                      "assignments": [7462]
                     },
                     "children": [
                       {
@@ -7379,9 +7210,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7450,
                               "type": "address[] memory",
                               "value": "tokens"
@@ -7419,9 +7248,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7468
-                      ]
+                      "assignments": [7468]
                     },
                     "children": [
                       {
@@ -7460,9 +7287,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -7493,9 +7318,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "contract BasePriceOracle",
                                   "type_conversion": true
@@ -7509,9 +7332,7 @@
                                           "typeString": "address payable"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7738,
                                       "type": "type(contract BasePriceOracle)",
                                       "value": "BasePriceOracle"
@@ -7535,9 +7356,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": -15,
                                           "type": "msg",
                                           "value": "msg"
@@ -7564,9 +7383,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7456,
                               "type": "address",
                               "value": "tokenA"
@@ -7587,9 +7404,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7478
-                      ]
+                      "assignments": [7478]
                     },
                     "children": [
                       {
@@ -7628,9 +7443,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -7661,9 +7474,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "contract BasePriceOracle",
                                   "type_conversion": true
@@ -7677,9 +7488,7 @@
                                           "typeString": "address payable"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7738,
                                       "type": "type(contract BasePriceOracle)",
                                       "value": "BasePriceOracle"
@@ -7703,9 +7512,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": -15,
                                           "type": "msg",
                                           "value": "msg"
@@ -7732,9 +7539,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7462,
                               "type": "address",
                               "value": "tokenB"
@@ -7755,9 +7560,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7488
-                      ]
+                      "assignments": [7488]
                     },
                     "children": [
                       {
@@ -7791,17 +7594,13 @@
                       {
                         "attributes": {
                           "argumentTypes": null,
-                          "arguments": [
-                            null
-                          ],
+                          "arguments": [null],
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint8",
                           "type_conversion": false
@@ -7809,9 +7608,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "argumentTypes": [
-                                null
-                              ],
+                              "argumentTypes": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -7829,9 +7626,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "contract ERC20Upgradeable",
                                   "type_conversion": true
@@ -7845,9 +7640,7 @@
                                           "typeString": "address"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 11533,
                                       "type": "type(contract ERC20Upgradeable)",
                                       "value": "ERC20Upgradeable"
@@ -7859,9 +7652,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7456,
                                       "type": "address",
                                       "value": "tokenA"
@@ -7892,9 +7683,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7496
-                      ]
+                      "assignments": [7496]
                     },
                     "children": [
                       {
@@ -7928,17 +7717,13 @@
                       {
                         "attributes": {
                           "argumentTypes": null,
-                          "arguments": [
-                            null
-                          ],
+                          "arguments": [null],
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint8",
                           "type_conversion": false
@@ -7946,9 +7731,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "argumentTypes": [
-                                null
-                              ],
+                              "argumentTypes": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -7966,9 +7749,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "contract ERC20Upgradeable",
                                   "type_conversion": true
@@ -7982,9 +7763,7 @@
                                           "typeString": "address"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 11533,
                                       "type": "type(contract ERC20Upgradeable)",
                                       "value": "ERC20Upgradeable"
@@ -7996,9 +7775,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7462,
                                       "type": "address",
                                       "value": "tokenB"
@@ -8050,9 +7827,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7488,
                               "type": "uint8",
                               "value": "decimalsA"
@@ -8099,9 +7874,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7468,
                                   "type": "uint256",
                                   "value": "pxA"
@@ -8118,9 +7891,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -8146,9 +7917,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7468,
                                           "type": "uint256",
                                           "value": "pxA"
@@ -8245,9 +8014,7 @@
                                                   "isPure": false,
                                                   "isStructConstructorCall": false,
                                                   "lValueRequested": false,
-                                                  "names": [
-                                                    null
-                                                  ],
+                                                  "names": [null],
                                                   "tryCall": false,
                                                   "type": "uint256",
                                                   "type_conversion": true
@@ -8359,9 +8126,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7488,
                               "type": "uint8",
                               "value": "decimalsA"
@@ -8408,9 +8173,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7468,
                                   "type": "uint256",
                                   "value": "pxA"
@@ -8427,9 +8190,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -8455,9 +8216,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7468,
                                           "type": "uint256",
                                           "value": "pxA"
@@ -8537,9 +8296,7 @@
                                                   "isPure": false,
                                                   "isStructConstructorCall": false,
                                                   "lValueRequested": false,
-                                                  "names": [
-                                                    null
-                                                  ],
+                                                  "names": [null],
                                                   "tryCall": false,
                                                   "type": "uint256",
                                                   "type_conversion": true
@@ -8668,9 +8425,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7496,
                               "type": "uint8",
                               "value": "decimalsB"
@@ -8717,9 +8472,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7478,
                                   "type": "uint256",
                                   "value": "pxB"
@@ -8736,9 +8489,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -8764,9 +8515,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7478,
                                           "type": "uint256",
                                           "value": "pxB"
@@ -8863,9 +8612,7 @@
                                                   "isPure": false,
                                                   "isStructConstructorCall": false,
                                                   "lValueRequested": false,
-                                                  "names": [
-                                                    null
-                                                  ],
+                                                  "names": [null],
                                                   "tryCall": false,
                                                   "type": "uint256",
                                                   "type_conversion": true
@@ -8977,9 +8724,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7496,
                               "type": "uint8",
                               "value": "decimalsB"
@@ -9026,9 +8771,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7478,
                                   "type": "uint256",
                                   "value": "pxB"
@@ -9045,9 +8788,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -9073,9 +8814,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7478,
                                           "type": "uint256",
                                           "value": "pxB"
@@ -9155,9 +8894,7 @@
                                                   "isPure": false,
                                                   "isStructConstructorCall": false,
                                                   "lValueRequested": false,
-                                                  "names": [
-                                                    null
-                                                  ],
+                                                  "names": [null],
                                                   "tryCall": false,
                                                   "type": "uint256",
                                                   "type_conversion": true
@@ -9265,10 +9002,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7580,
-                        7582
-                      ]
+                      "assignments": [7580, 7582]
                     },
                     "children": [
                       {
@@ -9335,9 +9069,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple(uint256,uint256)",
                           "type_conversion": false
@@ -9371,9 +9103,7 @@
                                   "typeString": "uint256"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7722,
                               "type": "function (uint256,uint256,uint256,uint256,uint256,uint256) pure returns (uint256,uint256)",
                               "value": "computeFairReserves"
@@ -9390,9 +9120,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -9418,9 +9146,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7432,
                                       "type": "contract IBalancerPool",
                                       "value": "pool"
@@ -9437,9 +9163,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7456,
                                   "type": "address",
                                   "value": "tokenA"
@@ -9461,9 +9185,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -9489,9 +9211,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7432,
                                       "type": "contract IBalancerPool",
                                       "value": "pool"
@@ -9508,9 +9228,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7462,
                                   "type": "address",
                                   "value": "tokenB"
@@ -9532,9 +9250,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -9560,9 +9276,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7432,
                                       "type": "contract IBalancerPool",
                                       "value": "pool"
@@ -9579,9 +9293,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7456,
                                   "type": "address",
                                   "value": "tokenA"
@@ -9603,9 +9315,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -9631,9 +9341,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7432,
                                       "type": "contract IBalancerPool",
                                       "value": "pool"
@@ -9650,9 +9358,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7462,
                                   "type": "address",
                                   "value": "tokenB"
@@ -9669,9 +9375,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7468,
                               "type": "uint256",
                               "value": "pxA"
@@ -9683,9 +9387,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7478,
                               "type": "uint256",
                               "value": "pxB"
@@ -9717,9 +9419,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -9750,9 +9450,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -9783,9 +9481,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -9830,9 +9526,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7468,
                                               "type": "uint256",
                                               "value": "pxA"
@@ -9859,9 +9553,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -9887,9 +9579,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7582,
                                               "type": "uint256",
                                               "value": "fairResB"
@@ -9906,9 +9596,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7478,
                                           "type": "uint256",
                                           "value": "pxB"
@@ -9935,17 +9623,13 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "arguments": [
-                                null
-                              ],
+                              "arguments": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -9953,9 +9637,7 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": [
-                                    null
-                                  ],
+                                  "argumentTypes": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -9968,9 +9650,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7432,
                                       "type": "contract IBalancerPool",
                                       "value": "pool"
@@ -10014,9 +9694,7 @@
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "computeFairReserves",
               "overrides": null,
               "scope": 7723,
@@ -10275,9 +9953,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "assignments": [
-                        7642
-                      ]
+                      "assignments": [7642]
                     },
                     "children": [
                       {
@@ -10316,9 +9992,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -10336,9 +10010,7 @@
                                   "typeString": "uint256"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 5314,
                               "type": "function (uint256,uint256) pure returns (uint256)",
                               "value": "bdiv"
@@ -10350,9 +10022,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7624,
                               "type": "uint256",
                               "value": "resA"
@@ -10364,9 +10034,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7626,
                               "type": "uint256",
                               "value": "resB"
@@ -10387,9 +10055,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        7649
-                      ]
+                      "assignments": [7649]
                     },
                     "children": [
                       {
@@ -10428,9 +10094,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -10448,9 +10112,7 @@
                                   "typeString": "uint256"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 5314,
                               "type": "function (uint256,uint256) pure returns (uint256)",
                               "value": "bdiv"
@@ -10467,9 +10129,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -10487,9 +10147,7 @@
                                       "typeString": "uint256"
                                     }
                                   ],
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 5254,
                                   "type": "function (uint256,uint256) pure returns (uint256)",
                                   "value": "bmul"
@@ -10501,9 +10159,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7628,
                                   "type": "uint256",
                                   "value": "wA"
@@ -10515,9 +10171,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7634,
                                   "type": "uint256",
                                   "value": "pxB"
@@ -10539,9 +10193,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -10559,9 +10211,7 @@
                                       "typeString": "uint256"
                                     }
                                   ],
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 5254,
                                   "type": "function (uint256,uint256) pure returns (uint256)",
                                   "value": "bmul"
@@ -10573,9 +10223,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7630,
                                   "type": "uint256",
                                   "value": "wB"
@@ -10587,9 +10235,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 7632,
                                   "type": "uint256",
                                   "value": "pxA"
@@ -10633,9 +10279,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7642,
                               "type": "uint256",
                               "value": "r0"
@@ -10647,9 +10291,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 7649,
                               "type": "uint256",
                               "value": "r1"
@@ -10667,9 +10309,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "assignments": [
-                                7665
-                              ]
+                              "assignments": [7665]
                             },
                             "children": [
                               {
@@ -10708,9 +10348,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -10728,9 +10366,7 @@
                                           "typeString": "uint256"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 5314,
                                       "type": "function (uint256,uint256) pure returns (uint256)",
                                       "value": "bdiv"
@@ -10742,9 +10378,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7649,
                                       "type": "uint256",
                                       "value": "r1"
@@ -10756,9 +10390,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7642,
                                       "type": "uint256",
                                       "value": "r0"
@@ -10793,9 +10425,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7637,
                                       "type": "uint256",
                                       "value": "fairResA"
@@ -10812,9 +10442,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -10832,9 +10460,7 @@
                                               "typeString": "uint256"
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 5254,
                                           "type": "function (uint256,uint256) pure returns (uint256)",
                                           "value": "bmul"
@@ -10846,9 +10472,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7624,
                                           "type": "uint256",
                                           "value": "resA"
@@ -10865,9 +10489,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -10885,9 +10507,7 @@
                                                   "typeString": "uint256"
                                                 }
                                               ],
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 5437,
                                               "type": "function (uint256,uint256) pure returns (uint256)",
                                               "value": "bpow"
@@ -10899,9 +10519,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7665,
                                               "type": "uint256",
                                               "value": "ratio"
@@ -10913,9 +10531,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7630,
                                               "type": "uint256",
                                               "value": "wB"
@@ -10960,9 +10576,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7639,
                                       "type": "uint256",
                                       "value": "fairResB"
@@ -10979,9 +10593,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -10999,9 +10611,7 @@
                                               "typeString": "uint256"
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 5314,
                                           "type": "function (uint256,uint256) pure returns (uint256)",
                                           "value": "bdiv"
@@ -11013,9 +10623,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7626,
                                           "type": "uint256",
                                           "value": "resB"
@@ -11032,9 +10640,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -11052,9 +10658,7 @@
                                                   "typeString": "uint256"
                                                 }
                                               ],
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 5437,
                                               "type": "function (uint256,uint256) pure returns (uint256)",
                                               "value": "bpow"
@@ -11066,9 +10670,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7665,
                                               "type": "uint256",
                                               "value": "ratio"
@@ -11080,9 +10682,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7628,
                                               "type": "uint256",
                                               "value": "wA"
@@ -11120,9 +10720,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "assignments": [
-                                7693
-                              ]
+                              "assignments": [7693]
                             },
                             "children": [
                               {
@@ -11161,9 +10759,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -11181,9 +10777,7 @@
                                           "typeString": "uint256"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 5314,
                                       "type": "function (uint256,uint256) pure returns (uint256)",
                                       "value": "bdiv"
@@ -11195,9 +10789,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7642,
                                       "type": "uint256",
                                       "value": "r0"
@@ -11209,9 +10801,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7649,
                                       "type": "uint256",
                                       "value": "r1"
@@ -11246,9 +10836,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7637,
                                       "type": "uint256",
                                       "value": "fairResA"
@@ -11265,9 +10853,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -11285,9 +10871,7 @@
                                               "typeString": "uint256"
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 5314,
                                           "type": "function (uint256,uint256) pure returns (uint256)",
                                           "value": "bdiv"
@@ -11299,9 +10883,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7624,
                                           "type": "uint256",
                                           "value": "resA"
@@ -11318,9 +10900,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -11338,9 +10918,7 @@
                                                   "typeString": "uint256"
                                                 }
                                               ],
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 5437,
                                               "type": "function (uint256,uint256) pure returns (uint256)",
                                               "value": "bpow"
@@ -11352,9 +10930,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7693,
                                               "type": "uint256",
                                               "value": "ratio"
@@ -11366,9 +10942,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7630,
                                               "type": "uint256",
                                               "value": "wB"
@@ -11413,9 +10987,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7639,
                                       "type": "uint256",
                                       "value": "fairResB"
@@ -11432,9 +11004,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -11452,9 +11022,7 @@
                                               "typeString": "uint256"
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 5254,
                                           "type": "function (uint256,uint256) pure returns (uint256)",
                                           "value": "bmul"
@@ -11466,9 +11034,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 7626,
                                           "type": "uint256",
                                           "value": "resB"
@@ -11485,9 +11051,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -11505,9 +11069,7 @@
                                                   "typeString": "uint256"
                                                 }
                                               ],
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 5437,
                                               "type": "function (uint256,uint256) pure returns (uint256)",
                                               "value": "bpow"
@@ -11519,9 +11081,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7693,
                                               "type": "uint256",
                                               "value": "ratio"
@@ -11533,9 +11093,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 7628,
                                               "type": "uint256",
                                               "value": "wA"

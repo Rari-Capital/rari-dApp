@@ -77,7 +77,7 @@ const Fuse = () => {
       <Table variant="simple">
         <Thead color="white">
           <Tr>
-            <Th textAlign="center" color="white" >
+            <Th textAlign="center" color="white">
               {t("Pool")}
             </Th>
             <Th textAlign="right" color="white">
@@ -187,7 +187,6 @@ const Fuse = () => {
             </Td>
 
             <Td textAlign="right"></Td>
-
           </Tr>
         </Tbody>
       </Table>

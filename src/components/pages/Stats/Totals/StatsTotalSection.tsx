@@ -136,10 +136,18 @@ const StatsTotalSection = ({
         <Thead color="white">
           <Tr>
             <Th color="white">{t("Product")}</Th>
-            <Th color="white" textAlign="right">{t("Pool")}</Th>
-            <Th color="white" textAlign="right">{t("Deposits")}</Th>
-            <Th color="white" textAlign="right">{t(earnedHeaderText)}</Th>
-            <Th color="white" textAlign="right">Interest Earned</Th>
+            <Th color="white" textAlign="right">
+              {t("Pool")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Deposits")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t(earnedHeaderText)}
+            </Th>
+            <Th color="white" textAlign="right">
+              Interest Earned
+            </Th>
           </Tr>
         </Thead>
 

@@ -45,9 +45,7 @@
   "ast": {
     "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/AlphaHomoraV1PriceOracle.sol",
     "exportedSymbols": {
-      "AlphaHomoraV1PriceOracle": [
-        7352
-      ]
+      "AlphaHomoraV1PriceOracle": [7352]
     },
     "id": 7353,
     "license": null,
@@ -55,11 +53,7 @@
     "nodes": [
       {
         "id": 7296,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
+        "literals": ["solidity", "0.6", ".12"],
         "nodeType": "PragmaDirective",
         "src": "0:23:32"
       },
@@ -140,9 +134,7 @@
             "src": "556:11:32"
           }
         ],
-        "contractDependencies": [
-          6023
-        ],
+        "contractDependencies": [6023],
         "contractKind": "contract",
         "documentation": {
           "id": 7302,
@@ -152,10 +144,7 @@
         },
         "fullyImplemented": true,
         "id": 7352,
-        "linearizedBaseContracts": [
-          7352,
-          6023
-        ],
+        "linearizedBaseContracts": [7352, 6023],
         "name": "AlphaHomoraV1PriceOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -278,9 +267,7 @@
             "visibility": "public"
           },
           {
-            "baseFunctions": [
-              6022
-            ],
+            "baseFunctions": [6022],
             "body": {
               "id": 7350,
               "nodeType": "Block",
@@ -513,10 +500,7 @@
                       "id": 7322,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "989:7:32",
                       "typeDescriptions": {
@@ -851,20 +835,14 @@
     "attributes": {
       "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/AlphaHomoraV1PriceOracle.sol",
       "exportedSymbols": {
-        "AlphaHomoraV1PriceOracle": [
-          7352
-        ]
+        "AlphaHomoraV1PriceOracle": [7352]
       },
       "license": null
     },
     "children": [
       {
         "attributes": {
-          "literals": [
-            "solidity",
-            "0.6",
-            ".12"
-          ]
+          "literals": ["solidity", "0.6", ".12"]
         },
         "id": 7296,
         "name": "PragmaDirective",
@@ -876,9 +854,7 @@
           "absolutePath": "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol",
           "file": "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol",
           "scope": 7353,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7297,
@@ -891,9 +867,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/PriceOracle.sol",
           "file": "../external/compound/PriceOracle.sol",
           "scope": 7353,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7298,
@@ -906,9 +880,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CToken.sol",
           "file": "../external/compound/CToken.sol",
           "scope": 7353,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7299,
@@ -921,9 +893,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CErc20.sol",
           "file": "../external/compound/CErc20.sol",
           "scope": 7353,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7300,
@@ -936,9 +906,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/alpha/Bank.sol",
           "file": "../external/alpha/Bank.sol",
           "scope": 7353,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 7301,
@@ -948,15 +916,10 @@
       {
         "attributes": {
           "abstract": false,
-          "contractDependencies": [
-            6023
-          ],
+          "contractDependencies": [6023],
           "contractKind": "contract",
           "fullyImplemented": true,
-          "linearizedBaseContracts": [
-            7352,
-            6023
-          ],
+          "linearizedBaseContracts": [7352, 6023],
           "name": "AlphaHomoraV1PriceOracle",
           "scope": 7353
         },
@@ -1050,9 +1013,7 @@
                   "isPure": true,
                   "isStructConstructorCall": false,
                   "lValueRequested": false,
-                  "names": [
-                    null
-                  ],
+                  "names": [null],
                   "tryCall": false,
                   "type": "contract Bank",
                   "type_conversion": true
@@ -1066,9 +1027,7 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "overloadedDeclarations": [
-                        null
-                      ],
+                      "overloadedDeclarations": [null],
                       "referencedDeclaration": 5003,
                       "type": "type(contract Bank)",
                       "value": "Bank"
@@ -1114,16 +1073,12 @@
           },
           {
             "attributes": {
-              "baseFunctions": [
-                6022
-              ],
+              "baseFunctions": [6022],
               "functionSelector": "fc57d4df",
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "getUnderlyingPrice",
               "scope": 7352,
               "stateMutability": "view",
@@ -1141,9 +1096,7 @@
               },
               {
                 "attributes": {
-                  "overrides": [
-                    null
-                  ]
+                  "overrides": [null]
                 },
                 "id": 7318,
                 "name": "OverrideSpecifier",
@@ -1233,9 +1186,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -1249,10 +1200,7 @@
                                   "typeString": "bool"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool) pure",
                               "value": "require"
@@ -1279,17 +1227,13 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "arguments": [
-                                    null
-                                  ],
+                                  "arguments": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "address",
                                   "type_conversion": false
@@ -1297,9 +1241,7 @@
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": [
-                                        null
-                                      ],
+                                      "argumentTypes": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
@@ -1317,9 +1259,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "contract CErc20",
                                           "type_conversion": true
@@ -1333,9 +1273,7 @@
                                                   "typeString": "address"
                                                 }
                                               ],
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 5723,
                                               "type": "type(contract CErc20)",
                                               "value": "CErc20"
@@ -1352,9 +1290,7 @@
                                               "isPure": false,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "address",
                                               "type_conversion": true
@@ -1431,9 +1367,7 @@
                                   "isPure": true,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "address",
                                   "type_conversion": true
@@ -1471,9 +1405,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7313,
                                       "type": "contract Bank",
                                       "value": "IBETH"
@@ -1515,9 +1447,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -1548,9 +1478,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -1576,17 +1504,13 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "arguments": [
-                                            null
-                                          ],
+                                          "arguments": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -1594,9 +1518,7 @@
                                         "children": [
                                           {
                                             "attributes": {
-                                              "argumentTypes": [
-                                                null
-                                              ],
+                                              "argumentTypes": [null],
                                               "isConstant": false,
                                               "isLValue": false,
                                               "isPure": false,
@@ -1665,17 +1587,13 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "arguments": [
-                                null
-                              ],
+                              "arguments": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "uint256",
                               "type_conversion": false
@@ -1683,9 +1601,7 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": [
-                                    null
-                                  ],
+                                  "argumentTypes": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -1698,9 +1614,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7313,
                                       "type": "contract Bank",
                                       "value": "IBETH"

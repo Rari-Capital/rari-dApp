@@ -71,9 +71,7 @@
   "ast": {
     "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/RecursivePriceOracle.sol",
     "exportedSymbols": {
-      "RecursivePriceOracle": [
-        9883
-      ]
+      "RecursivePriceOracle": [9883]
     },
     "id": 9884,
     "license": null,
@@ -81,11 +79,7 @@
     "nodes": [
       {
         "id": 9702,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
+        "literals": ["solidity", "0.6", ".12"],
         "nodeType": "PragmaDirective",
         "src": "312:23:40"
       },
@@ -177,9 +171,7 @@
             "src": "925:11:40"
           }
         ],
-        "contractDependencies": [
-          6023
-        ],
+        "contractDependencies": [6023],
         "contractKind": "contract",
         "documentation": {
           "id": 9709,
@@ -189,10 +181,7 @@
         },
         "fullyImplemented": true,
         "id": 9883,
-        "linearizedBaseContracts": [
-          9883,
-          6023
-        ],
+        "linearizedBaseContracts": [9883, 6023],
         "name": "RecursivePriceOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -421,18 +410,14 @@
             "visibility": "public"
           },
           {
-            "baseFunctions": [
-              6022
-            ],
+            "baseFunctions": [6022],
             "body": {
               "id": 9853,
               "nodeType": "Block",
               "src": "1703:1443:40",
               "statements": [
                 {
-                  "assignments": [
-                    9738
-                  ],
+                  "assignments": [9738],
                   "declarations": [
                     {
                       "constant": false,
@@ -639,9 +624,7 @@
                   "src": "1757:64:40"
                 },
                 {
-                  "assignments": [
-                    9751
-                  ],
+                  "assignments": [9751],
                   "declarations": [
                     {
                       "constant": false,
@@ -1031,13 +1014,7 @@
                         }
                       },
                       {
-                        "assignments": [
-                          null,
-                          9776,
-                          null,
-                          null,
-                          null
-                        ],
+                        "assignments": [null, 9776, null, null, null],
                         "declarations": [
                           null,
                           {
@@ -2709,20 +2686,14 @@
     "attributes": {
       "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/RecursivePriceOracle.sol",
       "exportedSymbols": {
-        "RecursivePriceOracle": [
-          9883
-        ]
+        "RecursivePriceOracle": [9883]
       },
       "license": null
     },
     "children": [
       {
         "attributes": {
-          "literals": [
-            "solidity",
-            "0.6",
-            ".12"
-          ]
+          "literals": ["solidity", "0.6", ".12"]
         },
         "id": 9702,
         "name": "PragmaDirective",
@@ -2734,9 +2705,7 @@
           "absolutePath": "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol",
           "file": "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol",
           "scope": 9884,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9703,
@@ -2749,9 +2718,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/PriceOracle.sol",
           "file": "../external/compound/PriceOracle.sol",
           "scope": 9884,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9704,
@@ -2764,9 +2731,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CToken.sol",
           "file": "../external/compound/CToken.sol",
           "scope": 9884,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9705,
@@ -2779,9 +2744,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CErc20.sol",
           "file": "../external/compound/CErc20.sol",
           "scope": 9884,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9706,
@@ -2794,9 +2757,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/Comptroller.sol",
           "file": "../external/compound/Comptroller.sol",
           "scope": 9884,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9707,
@@ -2809,9 +2770,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/chainlink/AggregatorV3Interface.sol",
           "file": "../external/chainlink/AggregatorV3Interface.sol",
           "scope": 9884,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9708,
@@ -2821,15 +2780,10 @@
       {
         "attributes": {
           "abstract": false,
-          "contractDependencies": [
-            6023
-          ],
+          "contractDependencies": [6023],
           "contractKind": "contract",
           "fullyImplemented": true,
-          "linearizedBaseContracts": [
-            9883,
-            6023
-          ],
+          "linearizedBaseContracts": [9883, 6023],
           "name": "RecursivePriceOracle",
           "scope": 9884
         },
@@ -3031,9 +2985,7 @@
                   "isPure": true,
                   "isStructConstructorCall": false,
                   "lValueRequested": false,
-                  "names": [
-                    null
-                  ],
+                  "names": [null],
                   "tryCall": false,
                   "type": "contract AggregatorV3Interface",
                   "type_conversion": true
@@ -3047,9 +2999,7 @@
                           "typeString": "address payable"
                         }
                       ],
-                      "overloadedDeclarations": [
-                        null
-                      ],
+                      "overloadedDeclarations": [null],
                       "referencedDeclaration": 5700,
                       "type": "type(contract AggregatorV3Interface)",
                       "value": "AggregatorV3Interface"
@@ -3095,16 +3045,12 @@
           },
           {
             "attributes": {
-              "baseFunctions": [
-                6022
-              ],
+              "baseFunctions": [6022],
               "functionSelector": "fc57d4df",
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "getUnderlyingPrice",
               "scope": 9883,
               "stateMutability": "view",
@@ -3122,9 +3068,7 @@
               },
               {
                 "attributes": {
-                  "overrides": [
-                    null
-                  ]
+                  "overrides": [null]
                 },
                 "id": 9733,
                 "name": "OverrideSpecifier",
@@ -3206,9 +3150,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "assignments": [
-                        9738
-                      ]
+                      "assignments": [9738]
                     },
                     "children": [
                       {
@@ -3249,9 +3191,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "contract CToken",
                           "type_conversion": true
@@ -3265,9 +3205,7 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 5866,
                               "type": "type(contract CToken)",
                               "value": "CToken"
@@ -3279,17 +3217,13 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "arguments": [
-                                null
-                              ],
+                              "arguments": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "address",
                               "type_conversion": false
@@ -3297,9 +3231,7 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": [
-                                    null
-                                  ],
+                                  "argumentTypes": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -3317,9 +3249,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "contract CErc20",
                                       "type_conversion": true
@@ -3333,9 +3263,7 @@
                                               "typeString": "address"
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 5723,
                                           "type": "type(contract CErc20)",
                                           "value": "CErc20"
@@ -3352,9 +3280,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "address",
                                           "type_conversion": true
@@ -3392,9 +3318,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9731,
                                               "type": "contract CToken",
                                               "value": "cToken"
@@ -3435,9 +3359,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        9751
-                      ]
+                      "assignments": [9751]
                     },
                     "children": [
                       {
@@ -3478,9 +3400,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "contract Comptroller",
                           "type_conversion": true
@@ -3494,9 +3414,7 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 6011,
                               "type": "type(contract Comptroller)",
                               "value": "Comptroller"
@@ -3508,17 +3426,13 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "arguments": [
-                                null
-                              ],
+                              "arguments": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "address",
                               "type_conversion": false
@@ -3526,9 +3440,7 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": [
-                                    null
-                                  ],
+                                  "argumentTypes": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -3541,9 +3453,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9738,
                                       "type": "contract CToken",
                                       "value": "underlying"
@@ -3600,9 +3510,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "address",
                               "type_conversion": true
@@ -3640,9 +3548,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9751,
                                   "type": "contract Comptroller",
                                   "value": "comptroller"
@@ -3659,9 +3565,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9718,
                               "type": "address",
                               "value": "COMPOUND_COMPTROLLER"
@@ -3690,9 +3594,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "bool",
                                   "type_conversion": false
@@ -3710,9 +3612,7 @@
                                           "typeString": "literal_string \"cETH\""
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9882,
                                       "type": "function (string memory,string memory) pure returns (bool)",
                                       "value": "compareStrings"
@@ -3724,17 +3624,13 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "arguments": [
-                                        null
-                                      ],
+                                      "arguments": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "string memory",
                                       "type_conversion": false
@@ -3742,9 +3638,7 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": [
-                                            null
-                                          ],
+                                          "argumentTypes": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -3757,9 +3651,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9738,
                                               "type": "contract CToken",
                                               "value": "underlying"
@@ -3808,17 +3700,13 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "arguments": [
-                                        null
-                                      ],
+                                      "arguments": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -3826,9 +3714,7 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": [
-                                            null
-                                          ],
+                                          "argumentTypes": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -3841,9 +3727,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9738,
                                               "type": "contract CToken",
                                               "value": "underlying"
@@ -3874,13 +3758,7 @@
                           },
                           {
                             "attributes": {
-                              "assignments": [
-                                null,
-                                9776,
-                                null,
-                                null,
-                                null
-                              ]
+                              "assignments": [null, 9776, null, null, null]
                             },
                             "children": [
                               {
@@ -3914,17 +3792,13 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "arguments": [
-                                    null
-                                  ],
+                                  "arguments": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "tuple(uint80,int256,uint256,uint256,uint80)",
                                   "type_conversion": false
@@ -3932,9 +3806,7 @@
                                 "children": [
                                   {
                                     "attributes": {
-                                      "argumentTypes": [
-                                        null
-                                      ],
+                                      "argumentTypes": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
@@ -3947,9 +3819,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9728,
                                           "type": "contract AggregatorV3Interface",
                                           "value": "ETH_USD_PRICE_FEED"
@@ -3996,9 +3866,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9776,
                                       "type": "int256",
                                       "value": "usdPerEth"
@@ -4074,9 +3942,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -4107,9 +3973,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -4135,17 +3999,13 @@
                                               {
                                                 "attributes": {
                                                   "argumentTypes": null,
-                                                  "arguments": [
-                                                    null
-                                                  ],
+                                                  "arguments": [null],
                                                   "isConstant": false,
                                                   "isLValue": false,
                                                   "isPure": false,
                                                   "isStructConstructorCall": false,
                                                   "lValueRequested": false,
-                                                  "names": [
-                                                    null
-                                                  ],
+                                                  "names": [null],
                                                   "tryCall": false,
                                                   "type": "uint256",
                                                   "type_conversion": false
@@ -4153,9 +4013,7 @@
                                                 "children": [
                                                   {
                                                     "attributes": {
-                                                      "argumentTypes": [
-                                                        null
-                                                      ],
+                                                      "argumentTypes": [null],
                                                       "isConstant": false,
                                                       "isLValue": false,
                                                       "isPure": false,
@@ -4202,9 +4060,7 @@
                                               "isPure": false,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "uint256",
                                               "type_conversion": false
@@ -4230,17 +4086,13 @@
                                                   {
                                                     "attributes": {
                                                       "argumentTypes": null,
-                                                      "arguments": [
-                                                        null
-                                                      ],
+                                                      "arguments": [null],
                                                       "isConstant": false,
                                                       "isLValue": false,
                                                       "isPure": false,
                                                       "isStructConstructorCall": false,
                                                       "lValueRequested": false,
-                                                      "names": [
-                                                        null
-                                                      ],
+                                                      "names": [null],
                                                       "tryCall": false,
                                                       "type": "contract PriceOracle",
                                                       "type_conversion": false
@@ -4326,9 +4178,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -4359,9 +4209,7 @@
                                               "isPure": false,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "uint256",
                                               "type_conversion": true
@@ -4487,9 +4335,7 @@
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "address",
                               "type_conversion": true
@@ -4527,9 +4373,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9751,
                                   "type": "contract Comptroller",
                                   "value": "comptroller"
@@ -4546,9 +4390,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9722,
                               "type": "address",
                               "value": "CREAM_COMPTROLLER"
@@ -4577,9 +4419,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "bool",
                                   "type_conversion": false
@@ -4597,9 +4437,7 @@
                                           "typeString": "literal_string \"cETH\""
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9882,
                                       "type": "function (string memory,string memory) pure returns (bool)",
                                       "value": "compareStrings"
@@ -4611,17 +4449,13 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "arguments": [
-                                        null
-                                      ],
+                                      "arguments": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "string memory",
                                       "type_conversion": false
@@ -4629,9 +4463,7 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": [
-                                            null
-                                          ],
+                                          "argumentTypes": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -4644,9 +4476,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9738,
                                               "type": "contract CToken",
                                               "value": "underlying"
@@ -4695,17 +4525,13 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "arguments": [
-                                        null
-                                      ],
+                                      "arguments": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -4713,9 +4539,7 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": [
-                                            null
-                                          ],
+                                          "argumentTypes": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -4728,9 +4552,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9738,
                                               "type": "contract CToken",
                                               "value": "underlying"
@@ -4772,17 +4594,13 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "arguments": [
-                                null
-                              ],
+                              "arguments": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "bool",
                               "type_conversion": false
@@ -4790,9 +4608,7 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": [
-                                    null
-                                  ],
+                                  "argumentTypes": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -4805,9 +4621,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9738,
                                       "type": "contract CToken",
                                       "value": "underlying"
@@ -4836,17 +4650,13 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "arguments": [
-                                        null
-                                      ],
+                                      "arguments": [null],
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -4854,9 +4664,7 @@
                                     "children": [
                                       {
                                         "attributes": {
-                                          "argumentTypes": [
-                                            null
-                                          ],
+                                          "argumentTypes": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
@@ -4869,9 +4677,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9738,
                                               "type": "contract CToken",
                                               "value": "underlying"
@@ -4923,9 +4729,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -4956,9 +4760,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "uint256",
                                   "type_conversion": false
@@ -4984,17 +4786,13 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "arguments": [
-                                            null
-                                          ],
+                                          "arguments": [null],
                                           "isConstant": false,
                                           "isLValue": false,
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "uint256",
                                           "type_conversion": false
@@ -5002,9 +4800,7 @@
                                         "children": [
                                           {
                                             "attributes": {
-                                              "argumentTypes": [
-                                                null
-                                              ],
+                                              "argumentTypes": [null],
                                               "isConstant": false,
                                               "isLValue": false,
                                               "isPure": false,
@@ -5051,9 +4847,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "uint256",
                                       "type_conversion": false
@@ -5079,17 +4873,13 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "arguments": [
-                                                null
-                                              ],
+                                              "arguments": [null],
                                               "isConstant": false,
                                               "isLValue": false,
                                               "isPure": false,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "contract PriceOracle",
                                               "type_conversion": false
@@ -5097,9 +4887,7 @@
                                             "children": [
                                               {
                                                 "attributes": {
-                                                  "argumentTypes": [
-                                                    null
-                                                  ],
+                                                  "argumentTypes": [null],
                                                   "isConstant": false,
                                                   "isLValue": false,
                                                   "isPure": false,
@@ -5141,9 +4929,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9738,
                                           "type": "contract CToken",
                                           "value": "underlying"
@@ -5209,9 +4995,7 @@
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "compareStrings",
               "overrides": null,
               "scope": 9883,
@@ -5367,9 +5151,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "bytes32",
                                   "type_conversion": false
@@ -5383,9 +5165,7 @@
                                           "typeString": "bytes memory"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": -8,
                                       "type": "function (bytes memory) pure returns (bytes32)",
                                       "value": "keccak256"
@@ -5402,9 +5182,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "bytes memory",
                                       "type_conversion": false
@@ -5430,9 +5208,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": -1,
                                               "type": "abi",
                                               "value": "abi"
@@ -5460,9 +5236,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9857,
                                               "type": "string memory",
                                               "value": "a"
@@ -5494,9 +5268,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "bytes32",
                                   "type_conversion": false
@@ -5510,9 +5282,7 @@
                                           "typeString": "bytes memory"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": -8,
                                       "type": "function (bytes memory) pure returns (bytes32)",
                                       "value": "keccak256"
@@ -5529,9 +5299,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "bytes memory",
                                       "type_conversion": false
@@ -5557,9 +5325,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": -1,
                                               "type": "abi",
                                               "value": "abi"
@@ -5587,9 +5353,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9859,
                                               "type": "string memory",
                                               "value": "b"

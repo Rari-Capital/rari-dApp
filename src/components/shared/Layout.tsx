@@ -6,12 +6,9 @@ import { Column } from "buttered-chakra";
 
 const Layout = ({ children }: { children: any }) => {
   return (
-      <Column
-        height="100%"
-        flex={1}
-      >
-        {children}
-      </Column>
+    <Column height="100%" flex={1}>
+      {children}
+    </Column>
   );
 };
 
