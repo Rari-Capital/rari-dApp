@@ -19,18 +19,6 @@ import Pool2PNGGreen from "static/icons/pool2Green.png";
 import TranchesPNGWhite from "static/icons/tranches.png";
 import TranchesPNGGreen from "static/icons/tranchesGreen.png";
 
-// SVGS
-import { ReactComponent as EarnSVG } from "static/icons/earn.svg";
-import { ReactComponent as FuseSVG } from "static/icons/fuse.svg";
-import { ReactComponent as Pool2SVG } from "static/icons/pool2.svg";
-import { ReactComponent as TrancheSVG } from "static/icons/tranche.svg";
-import { ReactComponent as StatsSVG } from "static/icons/stats.svg";
-import { ReactComponent as EarnSVGGreen } from "static/icons/earnGreen.svg";
-import { ReactComponent as FuseSVGGreen } from "static/icons/fuseGreen.svg";
-import { ReactComponent as Pool2SVGGreen } from "static/icons/pool2Green.svg";
-import { ReactComponent as TrancheSVGGreen } from "static/icons/trancheGreen.svg";
-import { ReactComponent as StatsSVGGreen } from "static/icons/statsGreen.svg";
-
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 
 export const ExtraSmallTransparentLogo = () => {
@@ -93,78 +81,6 @@ export const PoolLogo = ({ boxSize }: { boxSize?: string }) => {
       <Image boxSize={boxSize ?? "37px"} src={poolLogo} />
     </Box>
   );
-};
-
-export const EarnLogoSVGWhite = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <EarnSVG width={width} height={height} {...props} />;
-};
-export const FuseLogoSVGWhite = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <FuseSVG width={width} height={height} {...props} />;
-};
-export const Pool2LogoSVGWhite = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <Pool2SVG width={width} height={height} {...props} />;
-};
-export const TranchesLogoSVGWhite = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <TrancheSVG width={width} height={height} {...props} />;
-};
-export const StatsLogoSVGWhite = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <StatsSVG width={width} height={height} {...props} />;
-};
-
-export const EarnLogoSVGGreen = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <EarnSVGGreen width={width} height={height} {...props} />;
-};
-export const FuseLogoSVGGreen = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <FuseSVGGreen width={width} height={height} {...props} />;
-};
-export const Pool2LogoSVGGreen = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <Pool2SVGGreen width={width} height={height} {...props} />;
-};
-export const TranchesLogoSVGGreen = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <TrancheSVGGreen width={width} height={height} {...props} />;
-};
-export const StatsLogoSVGGreen = ({
-  width = "20px",
-  height = "20px",
-  ...props
-}) => {
-  return <StatsSVGGreen width={width} height={height} {...props} />;
 };
 
 export const PNGLogo = ({

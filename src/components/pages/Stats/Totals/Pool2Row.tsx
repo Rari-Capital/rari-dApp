@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { Pool2LogoSVGWhite } from "components/shared/Logos";
+import { Pool2LogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
 
@@ -25,7 +25,7 @@ const Pool2Row = ({
       <Td>
         <SimpleTooltip label={t("Pool2")} placement="right">
           <Box width="30px">
-            <Pool2LogoSVGWhite width="25px" height="25px" />
+            <Pool2LogoPNGWhite boxSize="25px" />
           </Box>
         </SimpleTooltip>
       </Td>

@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Column } from "buttered-chakra";
-import { TranchesLogoSVGWhite } from "components/shared/Logos";
+import { TranchesLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
 import { UseEstimatedSFIReturn } from 'hooks/tranches/useSaffronData'
@@ -28,7 +28,7 @@ const TranchesRow = ({
       <Td textAlign="center">
         <SimpleTooltip label="Tranches" placement="right">
           <Box width="30px">
-            <TranchesLogoSVGWhite width="25px" height="25px" />
+            <TranchesLogoPNGWhite boxSize="25px" />
           </Box>
         </SimpleTooltip>
       </Td>

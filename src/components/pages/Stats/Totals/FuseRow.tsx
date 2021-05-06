@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";
-import { FuseLogoSVGWhite } from "components/shared/Logos";
+import { FuseLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
 import { MergedPool } from "hooks/fuse/useFusePools";
@@ -23,7 +23,7 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData } : { filteredPoolsData: Mer
       <Td textAlign="center">
         <SimpleTooltip label="Fuse" placement="right">
           <Box width="30px">
-            <FuseLogoSVGWhite width="26px" height="26px" />
+            <FuseLogoPNGWhite boxSize="26px" />
           </Box>
         </SimpleTooltip>
       </Td>

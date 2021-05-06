@@ -3,7 +3,7 @@ import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
-import { EarnLogoSVGWhite } from "components/shared/Logos";
+import { EarnLogoPNGWhite } from "components/shared/Logos";
 import { useTranslation } from "react-i18next";
 import { PoolInterface } from "constants/pools";
 
@@ -18,7 +18,7 @@ const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {
       <Td>
         <SimpleTooltip label="Earn" placement="right">
           <Box width="30px">
-            <EarnLogoSVGWhite width="26px" height="26px" />
+            <EarnLogoPNGWhite boxSize="26px" />
           </Box>
         </SimpleTooltip>
       </Td>
