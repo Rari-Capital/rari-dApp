@@ -1,12 +1,1 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 570 537">
-<defs>
-    <style>.cls-1{fill:none;stroke:#fff;stroke-miterlimit:10;stroke-width:30px;}.cls-2{fill:#fff;}</style>
-</defs>
-<rect class="cls-1" x="205" y="15" width="160" height="160" rx="5"/>
-<rect class="cls-1" x="15" y="362" width="160" height="160" rx="5"/>
-<rect class="cls-1" x="395" y="362" width="160" height="160" rx="5"/>
-<rect class="cls-2" x="270" y="175" width="30" height="82"/>
-<rect class="cls-2" x="335.03" y="171.26" width="30" height="380" transform="translate(-76.26 622.03) rotate(-90)"/>
-<rect class="cls-2" x="460" y="257" width="30" height="102" rx="5"/>
-<rect class="cls-2" x="80" y="257" width="30" height="102" rx="5"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 570 537"><defs><style>.cls-1{fill:none;stroke:#fff;stroke-miterlimit:10;stroke-width:30px}.cls-2{fill:#fff}</style></defs><rect width="160" height="160" x="205" y="15" class="cls-1" rx="5"/><rect width="160" height="160" x="15" y="362" class="cls-1" rx="5"/><rect width="160" height="160" x="395" y="362" class="cls-1" rx="5"/><rect width="30" height="82" x="270" y="175" class="cls-2"/><rect width="30" height="380" x="335.03" y="171.26" class="cls-2" transform="translate(-76.26 622.03) rotate(-90)"/><rect width="30" height="102" x="460" y="257" class="cls-2" rx="5"/><rect width="30" height="102" x="80" y="257" class="cls-2" rx="5"/></svg>
