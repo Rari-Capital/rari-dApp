@@ -80,15 +80,14 @@ const StatsTotalSection = ({
 
   // Total Deposits
   const totalDepositsUSD = useMemo(() => {
-    const { totalSupplyBalanceUSD: fuseTotal } = fusePoolsData?.reduce(
-      // @ts-ignore
+    const { totalSupplyBalanceUSD: fuseTotal } : FusePoolData = fusePoolsData?.reduce(
       (a, b) => {
         return {
           totalSupplyBalanceUSD:
             a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
-        };
+        } as FusePoolData;
       }
-    ) ?? { totalSupplyBalanceUSD: 0 };
+    ) ?? { totalSupplyBalanceUSD: 0 } as FusePoolData;
 
     const vaultTotal = totals?.balance ?? 0;
 
@@ -103,18 +102,18 @@ const StatsTotalSection = ({
 
   // Total debt - todo: refactor into the `useFusePoolsData` hook
   const totalDebtUSD = useMemo(() => {
-    // @ts-ignore
-    const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
-      return {
-        totalBorrowBalanceUSD:
-          a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
-      };
-    }) ?? { totalBorrowBalanceUSD: 0 };
+    const { totalBorrowBalanceUSD }: FusePoolData = fusePoolsData?.reduce(
+      (a, b) => {
+        return {
+          totalBorrowBalanceUSD:
+            a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
+        } as FusePoolData;
+      }
+    ) ?? { totalBorrowBalanceUSD: 0 } as FusePoolData
     return totalBorrowBalanceUSD;
   }, [fusePoolsData]);
 
   useEffect(() => {
-    console.log({ totalDepositsUSD, totalDebtUSD });
     if (totalDepositsUSD && !Number.isNaN(totalDepositsUSD))
       setNetDeposits(totalDepositsUSD);
     if (totalDebtUSD && !Number.isNaN(totalDebtUSD)) setNetDebt(totalDebtUSD);

@@ -32,17 +32,17 @@ const TranchesRow = ({
         </SimpleTooltip>
       </Td>
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
-          <Box mb={3}>
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
+          <Box mb={3} textAlign="right">
             <Text> {t("DAI-S")} </Text>
           </Box>
-          <Box mb={3}>
+          <Box mb={3} textAlign="right">
             <Text> {t("DAI-A")} </Text>
           </Box>
         </Column>
       </Td>
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
           <Box mb={3}>
             <Text textAlign="left"> {daiSPrincipal} DAI </Text>
           </Box>
@@ -53,7 +53,7 @@ const TranchesRow = ({
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
           <Box mb={3}>
             <Text textAlign="left">
               {" "}
@@ -68,7 +68,7 @@ const TranchesRow = ({
         </Column>
       </Td>
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
           <Box mb={3}>
             <Text>{t("N/A")}</Text>
           </Box>

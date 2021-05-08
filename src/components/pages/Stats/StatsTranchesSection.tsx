@@ -11,6 +11,7 @@ import {
   TrancheRating,
   useEstimatedSFI,
   usePrincipalBalance,
+  SaffronTranchePool,
 } from "hooks/tranches/useSaffronData";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,7 @@ import { useTranslation } from "react-i18next";
 const Earn = () => {
   const { t } = useTranslation();
 
-  const mySaffronData = useMySaffronData();
+  const mySaffronData : SaffronTranchePool[] = useMySaffronData();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
   const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
   const estimatedSFI = useEstimatedSFI();
@@ -60,7 +61,7 @@ const Earn = () => {
             {hasDeposits && (
               <>
                 <Tr>
-                  <Td>
+                  <Td textAlign="right">
                     <Row
                       mainAxisAlignment="flex-start"
                       crossAxisAlignment="center"
@@ -70,10 +71,9 @@ const Earn = () => {
                       </Box>
                     </Row>
                   </Td>
-                  <Td>
-                    <Text textAlign="right">
+                  <Td textAlign="right">
+                    <Text>
                       {
-                        /// @ts-ignore
                         mySaffronData?.[0]?.tranches?.[TrancheRating.S]?.[
                           "total-apy"
                         ]
@@ -81,18 +81,17 @@ const Earn = () => {
                       %
                     </Text>
                   </Td>
-                  <Td>
-                    <Text textAlign="right">
+                  <Td textAlign="right">
+                    <Text>
                       {daiSPrincipal} {t("DAI")}
                     </Text>
                   </Td>
-                  <Td>
-                    {" "}
-                    <Text textAlign="right">
+                  <Td textAlign="right">
+                    <Text >
                       {estimatedSFI?.formattedSPoolSFIEarned}
-                    </Text>{" "}
+                    </Text>
                   </Td>
-                  <Td>
+                  <Td textAlign="right">
                     <Text textAlign="right">{t("N/A")}</Text>
                   </Td>
                 </Tr>
@@ -110,7 +109,6 @@ const Earn = () => {
                   <Td>
                     <Text textAlign="right">
                       {
-                        /// @ts-ignore
                         mySaffronData?.[0]?.tranches?.[TrancheRating.A]?.[
                           "total-apy"
                         ]

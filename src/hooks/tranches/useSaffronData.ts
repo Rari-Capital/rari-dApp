@@ -16,19 +16,55 @@ export enum TrancheRating {
   A = "A",
 }
 
-const ACTIVE_TRANCHES: { pool: TranchePool; ratings: TrancheRating[] }[] = [
+// Return data from Saffron API
+type SaffronData = {
+  SFI: { USD: number };
+  pools: SaffronTranchePool[];
+};
+
+export interface SaffronTranchePool {
+  name: string;
+  tranches: SaffronTranches;
+  tvl: number;
+}
+
+type SaffronTranches = {
+  [key in TrancheRating]?: {
+    "total-apy": number;
+    "sfi-apy": number;
+    "dai-apy": number;
+    tvl: number;
+  };
+};
+
+export interface UseEstimatedSFIReturn {
+  aPoolSFIEarned: number;
+  sPoolSFIEarned: number;
+  totalSFIEarned: number;
+  formattedAPoolSFIEarned: string;
+  formattedSPoolSFIEarned: string;
+  formattedTotalSFIEarned: string;
+}
+
+// Constants
+type SupportedTranchePool = {
+  pool: TranchePool;
+  ratings: TrancheRating[];
+};
+
+const SUPPORTED_TRANCHEPOOLS: SupportedTranchePool[] = [
   {
     pool: TranchePool.DAI,
     ratings: [TrancheRating.S, TrancheRating.A],
   },
 ];
 
-export const tranchePoolIndex = (tranchePool: TranchePool) => {
+export const tranchePoolIndex = (tranchePool: TranchePool): number => {
   // TODO: CHANGE USDC TO WHATEVER IT BECOMES LATER
   return tranchePool === TranchePool.DAI ? 9 : 0;
 };
 
-export const trancheRatingIndex = (trancheRating: TrancheRating) => {
+export const trancheRatingIndex = (trancheRating: TrancheRating): number => {
   return trancheRating === TrancheRating.S
     ? 0
     : trancheRating === TrancheRating.AA
@@ -52,13 +88,7 @@ export const useSaffronData = () => {
   };
 
   return {
-    saffronData: data as {
-      SFI: { USD: number };
-      pools: {
-        name: string;
-        tranches: { A: { "total-apy": number }; S: { "total-apy": number } };
-      }[];
-    },
+    saffronData: data as SaffronData,
     fetchCurrentEpoch,
     ...contracts,
   };
@@ -151,15 +181,6 @@ export const useEpochEndDate = () => {
   });
 };
 
-export interface UseEstimatedSFIReturn {
-  aPoolSFIEarned: number;
-  sPoolSFIEarned: number;
-  totalSFIEarned: number;
-  formattedAPoolSFIEarned: string;
-  formattedSPoolSFIEarned: string;
-  formattedTotalSFIEarned: string;
-}
-
 export const useEstimatedSFI = (): UseEstimatedSFIReturn | undefined => {
   const { rari, address } = useRari();
   const { saffronPool, saffronStrategy, fetchCurrentEpoch } = useSaffronData();
@@ -241,33 +262,42 @@ export const useEstimatedSFI = (): UseEstimatedSFIReturn | undefined => {
   return estimatedSFI;
 };
 
-export const useMySaffronData = () => {
+export const useMySaffronData = () : SaffronTranchePool[] => {
   const { saffronData } = useSaffronData();
 
-  const currentPools = saffronData?.pools;
+  const currentPools : SaffronTranchePool[] = saffronData?.pools;
 
-  // Filter out the API data by the tranches and ratings Rari supports
-  const supportedPools = currentPools
-    ? ACTIVE_TRANCHES.map((t) => {
-        const currentPool = currentPools[tranchePoolIndex(t.pool)];
-        const availableTranches: string[] = Object.keys(currentPool.tranches);
-        const supportedTranches = availableTranches.filter((item) =>
-          //@ts-ignore
-          t.ratings.includes(TrancheRating[item])
-        );
+  // Filter out the Saffron API data by the tranches and ratings Rari currently supports
+  const supportedPools : SaffronTranchePool[] = currentPools
+    ? SUPPORTED_TRANCHEPOOLS.map(
+        (supportedTranchePool: SupportedTranchePool) => {
+          // Get the DAI-RARI Pool by filtering API data against pre-defined constants
+          
+          const currentPool: SaffronTranchePool =
+            currentPools[tranchePoolIndex(supportedTranchePool.pool)];
 
-        const tranches = {};
-        supportedTranches.forEach((key) => {
-          //@ts-ignore
-          tranches[key] = currentPool.tranches[key];
-        });
+          // For each supported Saffron Pool, filter for the supported tranches
+          const availableTrancheRatings: string[] = Object.keys(
+            currentPool.tranches
+          );
+          const supportedTranches: string[] = availableTrancheRatings.filter(
+            (item: string) =>
+              supportedTranchePool.ratings.includes((TrancheRating as any)[item])
+          );
 
-        const finalPool = {
-          ...currentPool,
-          tranches,
-        };
-        return finalPool;
-      })
+          const tranches: SaffronTranches = {};
+          supportedTranches.forEach((key: string) => {
+            tranches[key as TrancheRating] = currentPool.tranches[key as TrancheRating];
+          });
+
+          const finalPool: SaffronTranchePool = {
+            ...currentPool,
+            tranches,
+          };
+
+          return finalPool;
+        }
+      )
     : [];
 
   return supportedPools;

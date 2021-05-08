@@ -107,7 +107,7 @@ const Fuse = () => {
             const isAtRiskOfLiquidation = ratio && ratio > 95;
 
             return (
-              <Tr>
+              <Tr key={filteredPool.id}>
                 <Td textAlign="center" fontSize="large">
                   {filteredPool.id}
                 </Td>
