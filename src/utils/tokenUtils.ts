@@ -11,7 +11,7 @@ export const tokens = Tokens as AllTokens;
 export interface AssetHash {
   [address: string]: USDPricedFuseAsset;
 }
-  
+
 export interface AssetHashWithTokenData {
   [address: string]: USDPricedFuseAssetWithTokenData;
 }
@@ -41,7 +41,7 @@ export const createTokensDataMap = (
   const _tokensDataMap: TokensDataHash = {};
 
   for (const tokenData of tokensData) {
-    if (!tokenData.address) continue
+    if (!tokenData.address) continue;
     if (!_tokensDataMap[tokenData.address]) {
       _tokensDataMap[tokenData.address] = tokenData;
     }

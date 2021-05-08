@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 const Earn = () => {
   const { t } = useTranslation();
 
-  const mySaffronData : SaffronTranchePool[] = useMySaffronData();
+  const mySaffronData: SaffronTranchePool[] = useMySaffronData();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
   const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
   const estimatedSFI = useEstimatedSFI();
@@ -87,9 +87,7 @@ const Earn = () => {
                     </Text>
                   </Td>
                   <Td textAlign="right">
-                    <Text >
-                      {estimatedSFI?.formattedSPoolSFIEarned}
-                    </Text>
+                    <Text>{estimatedSFI?.formattedSPoolSFIEarned}</Text>
                   </Td>
                   <Td textAlign="right">
                     <Text textAlign="right">{t("N/A")}</Text>

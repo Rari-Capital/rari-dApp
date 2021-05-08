@@ -262,17 +262,17 @@ export const useEstimatedSFI = (): UseEstimatedSFIReturn | undefined => {
   return estimatedSFI;
 };
 
-export const useMySaffronData = () : SaffronTranchePool[] => {
+export const useMySaffronData = (): SaffronTranchePool[] => {
   const { saffronData } = useSaffronData();
 
-  const currentPools : SaffronTranchePool[] = saffronData?.pools;
+  const currentPools: SaffronTranchePool[] = saffronData?.pools;
 
   // Filter out the Saffron API data by the tranches and ratings Rari currently supports
-  const supportedPools : SaffronTranchePool[] = currentPools
+  const supportedPools: SaffronTranchePool[] = currentPools
     ? SUPPORTED_TRANCHEPOOLS.map(
         (supportedTranchePool: SupportedTranchePool) => {
           // Get the DAI-RARI Pool by filtering API data against pre-defined constants
-          
+
           const currentPool: SaffronTranchePool =
             currentPools[tranchePoolIndex(supportedTranchePool.pool)];
 
@@ -282,12 +282,15 @@ export const useMySaffronData = () : SaffronTranchePool[] => {
           );
           const supportedTranches: string[] = availableTrancheRatings.filter(
             (item: string) =>
-              supportedTranchePool.ratings.includes((TrancheRating as any)[item])
+              supportedTranchePool.ratings.includes(
+                (TrancheRating as any)[item]
+              )
           );
 
           const tranches: SaffronTranches = {};
           supportedTranches.forEach((key: string) => {
-            tranches[key as TrancheRating] = currentPool.tranches[key as TrancheRating];
+            tranches[key as TrancheRating] =
+              currentPool.tranches[key as TrancheRating];
           });
 
           const finalPool: SaffronTranchePool = {
