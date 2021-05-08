@@ -5,19 +5,18 @@ import { Column } from "buttered-chakra";
 import { TranchesLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
-import { UseEstimatedSFIReturn } from 'hooks/tranches/useSaffronData'
+import { UseEstimatedSFIReturn } from "hooks/tranches/useSaffronData";
 
 const TranchesRow = ({
   estimatedSFI,
   daiSPrincipal,
   daiAPrincipal,
 }: {
-  estimatedSFI: UseEstimatedSFIReturn | undefined
+  estimatedSFI: UseEstimatedSFIReturn | undefined;
   daiSPrincipal: string | undefined;
   daiAPrincipal: string | undefined;
 }) => {
-
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <motion.tr

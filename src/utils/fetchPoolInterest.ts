@@ -2,7 +2,6 @@ import Rari from "rari-sdk/index";
 import { stringUsdFormatter, BN } from "utils/bigUtils";
 
 export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
-
   const [
     stableInterest,
     yieldInterest,
@@ -29,16 +28,15 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
     yieldPoolInterestEarned: yieldInterest,
     stablePoolInterestEarned: stableInterest,
     ethPoolInterestEarned: ethInterest,
-    ethPoolInterestEarnedInETH: ethInterestInETH 
+    ethPoolInterestEarnedInETH: ethInterestInETH,
   };
-}
+};
 
 export type PoolInterestEarned = {
-  totalFormattedEarnings: string
-  totalEarnings: BN
-  yieldPoolInterestEarned: BN,
-  stablePoolInterestEarned: BN,
-  ethPoolInterestEarned: BN,
-  ethPoolInterestEarnedInETH: BN
-
-}
+  totalFormattedEarnings: string;
+  totalEarnings: BN;
+  yieldPoolInterestEarned: BN;
+  stablePoolInterestEarned: BN;
+  ethPoolInterestEarned: BN;
+  ethPoolInterestEarnedInETH: BN;
+};

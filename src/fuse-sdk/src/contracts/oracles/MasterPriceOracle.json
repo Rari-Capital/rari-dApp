@@ -172,9 +172,7 @@
   "ast": {
     "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/MasterPriceOracle.sol",
     "exportedSymbols": {
-      "MasterPriceOracle": [
-        10064
-      ]
+      "MasterPriceOracle": [10064]
     },
     "id": 10065,
     "license": null,
@@ -182,11 +180,7 @@
     "nodes": [
       {
         "id": 9771,
-        "literals": [
-          "solidity",
-          "0.6",
-          ".12"
-        ],
+        "literals": ["solidity", "0.6", ".12"],
         "nodeType": "PragmaDirective",
         "src": "312:23:39"
       },
@@ -274,10 +268,7 @@
             "src": "752:15:39"
           }
         ],
-        "contractDependencies": [
-          6023,
-          7814
-        ],
+        "contractDependencies": [6023, 7814],
         "contractKind": "contract",
         "documentation": {
           "id": 9776,
@@ -287,11 +278,7 @@
         },
         "fullyImplemented": true,
         "id": 10064,
-        "linearizedBaseContracts": [
-          10064,
-          7814,
-          6023
-        ],
+        "linearizedBaseContracts": [10064, 7814, 6023],
         "name": "MasterPriceOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
@@ -627,10 +614,7 @@
                       "id": 9805,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "1833:7:39",
                       "typeDescriptions": {
@@ -848,9 +832,7 @@
                   },
                   "id": 9840,
                   "initializationExpression": {
-                    "assignments": [
-                      9820
-                    ],
+                    "assignments": [9820],
                     "declarations": [
                       {
                         "constant": false,
@@ -1407,10 +1389,7 @@
                       "id": 9862,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "2416:7:39",
                       "typeDescriptions": {
@@ -1714,10 +1693,7 @@
                               "id": 9889,
                               "name": "require",
                               "nodeType": "Identifier",
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "src": "2697:7:39",
                               "typeDescriptions": {
@@ -1937,9 +1913,7 @@
                   },
                   "id": 9918,
                   "initializationExpression": {
-                    "assignments": [
-                      9877
-                    ],
+                    "assignments": [9877],
                     "declarations": [
                       {
                         "constant": false,
@@ -2170,9 +2144,7 @@
               "src": "3038:114:39",
               "statements": [
                 {
-                  "assignments": [
-                    9929
-                  ],
+                  "assignments": [9929],
                   "declarations": [
                     {
                       "constant": false,
@@ -2607,10 +2579,7 @@
                       "id": 9952,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "3397:7:39",
                       "typeDescriptions": {
@@ -2665,9 +2634,7 @@
             "visibility": "internal"
           },
           {
-            "baseFunctions": [
-              6022
-            ],
+            "baseFunctions": [6022],
             "body": {
               "id": 10019,
               "nodeType": "Block",
@@ -2751,9 +2718,7 @@
                   }
                 },
                 {
-                  "assignments": [
-                    9978
-                  ],
+                  "assignments": [9978],
                   "declarations": [
                     {
                       "constant": false,
@@ -3259,10 +3224,7 @@
                       "id": 9997,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "4238:7:39",
                       "typeDescriptions": {
@@ -3488,9 +3450,7 @@
             "visibility": "external"
           },
           {
-            "baseFunctions": [
-              7813
-            ],
+            "baseFunctions": [7813],
             "body": {
               "id": 10062,
               "nodeType": "Block",
@@ -3786,10 +3746,7 @@
                       "id": 10035,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "4802:7:39",
                       "typeDescriptions": {
@@ -4109,20 +4066,14 @@
     "attributes": {
       "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/MasterPriceOracle.sol",
       "exportedSymbols": {
-        "MasterPriceOracle": [
-          10064
-        ]
+        "MasterPriceOracle": [10064]
       },
       "license": null
     },
     "children": [
       {
         "attributes": {
-          "literals": [
-            "solidity",
-            "0.6",
-            ".12"
-          ]
+          "literals": ["solidity", "0.6", ".12"]
         },
         "id": 9771,
         "name": "PragmaDirective",
@@ -4134,9 +4085,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/PriceOracle.sol",
           "file": "../external/compound/PriceOracle.sol",
           "scope": 10065,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9772,
@@ -4149,9 +4098,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CToken.sol",
           "file": "../external/compound/CToken.sol",
           "scope": 10065,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9773,
@@ -4164,9 +4111,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/external/compound/CErc20.sol",
           "file": "../external/compound/CErc20.sol",
           "scope": 10065,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9774,
@@ -4179,9 +4124,7 @@
           "absolutePath": "/C/Users/david/Dropbox/Rari/v1/fuse-contracts/contracts/oracles/BasePriceOracle.sol",
           "file": "./BasePriceOracle.sol",
           "scope": 10065,
-          "symbolAliases": [
-            null
-          ],
+          "symbolAliases": [null],
           "unitAlias": ""
         },
         "id": 9775,
@@ -4191,17 +4134,10 @@
       {
         "attributes": {
           "abstract": false,
-          "contractDependencies": [
-            6023,
-            7814
-          ],
+          "contractDependencies": [6023, 7814],
           "contractKind": "contract",
           "fullyImplemented": true,
-          "linearizedBaseContracts": [
-            10064,
-            7814,
-            6023
-          ],
+          "linearizedBaseContracts": [10064, 7814, 6023],
           "name": "MasterPriceOracle",
           "scope": 10065
         },
@@ -4394,9 +4330,7 @@
               "implemented": true,
               "isConstructor": true,
               "kind": "constructor",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "",
               "overrides": null,
               "scope": 10064,
@@ -4560,9 +4494,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 9804,
@@ -4581,9 +4513,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -4601,10 +4531,7 @@
                                   "typeString": "literal_string \"Lengths of both arrays must be equal and greater than 0.\""
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
@@ -4658,9 +4585,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9795,
                                           "type": "address[] memory",
                                           "value": "underlyings"
@@ -4726,9 +4651,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9795,
                                           "type": "address[] memory",
                                           "value": "underlyings"
@@ -4757,9 +4680,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9798,
                                           "type": "contract PriceOracle[] memory",
                                           "value": "_oracles"
@@ -4814,9 +4735,7 @@
                     "children": [
                       {
                         "attributes": {
-                          "assignments": [
-                            9820
-                          ]
+                          "assignments": [9820]
                         },
                         "children": [
                           {
@@ -4887,9 +4806,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9820,
                               "type": "uint256",
                               "value": "i"
@@ -4913,9 +4830,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9795,
                                   "type": "address[] memory",
                                   "value": "underlyings"
@@ -4951,9 +4866,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9820,
                                   "type": "uint256",
                                   "value": "i"
@@ -4998,9 +4911,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9785,
                                       "type": "mapping(address => contract PriceOracle)",
                                       "value": "oracles"
@@ -5022,9 +4933,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9795,
                                           "type": "address[] memory",
                                           "value": "underlyings"
@@ -5036,9 +4945,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9820,
                                           "type": "uint256",
                                           "value": "i"
@@ -5070,9 +4977,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9798,
                                       "type": "contract PriceOracle[] memory",
                                       "value": "_oracles"
@@ -5084,9 +4989,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9820,
                                       "type": "uint256",
                                       "value": "i"
@@ -5131,9 +5034,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9788,
                               "type": "address",
                               "value": "admin"
@@ -5145,9 +5046,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9800,
                               "type": "address",
                               "value": "_admin"
@@ -5182,9 +5081,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9791,
                               "type": "bool",
                               "value": "canAdminOverwrite"
@@ -5196,9 +5093,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9802,
                               "type": "bool",
                               "value": "_canAdminOverwrite"
@@ -5339,9 +5234,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 9861,
@@ -5356,9 +5249,7 @@
                   {
                     "attributes": {
                       "argumentTypes": null,
-                      "overloadedDeclarations": [
-                        null
-                      ],
+                      "overloadedDeclarations": [null],
                       "referencedDeclaration": 9962,
                       "type": "modifier ()",
                       "value": "onlyAdmin"
@@ -5384,9 +5275,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -5404,10 +5293,7 @@
                                   "typeString": "literal_string \"Lengths of both arrays must be equal and greater than 0.\""
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
@@ -5461,9 +5347,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9854,
                                           "type": "address[] calldata",
                                           "value": "underlyings"
@@ -5529,9 +5413,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9854,
                                           "type": "address[] calldata",
                                           "value": "underlyings"
@@ -5560,9 +5442,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9857,
                                           "type": "contract PriceOracle[] calldata",
                                           "value": "_oracles"
@@ -5617,9 +5497,7 @@
                     "children": [
                       {
                         "attributes": {
-                          "assignments": [
-                            9877
-                          ]
+                          "assignments": [9877]
                         },
                         "children": [
                           {
@@ -5690,9 +5568,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9877,
                               "type": "uint256",
                               "value": "i"
@@ -5716,9 +5592,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9854,
                                   "type": "address[] calldata",
                                   "value": "underlyings"
@@ -5754,9 +5628,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9877,
                                   "type": "uint256",
                                   "value": "i"
@@ -5797,9 +5669,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9791,
                                       "type": "bool",
                                       "value": "canAdminOverwrite"
@@ -5823,9 +5693,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "tuple()",
                                       "type_conversion": false
@@ -5843,10 +5711,7 @@
                                               "typeString": "literal_string \"Admin cannot overwrite existing assignments of oracles to underlying tokens.\""
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            -18,
-                                            -18
-                                          ],
+                                          "overloadedDeclarations": [-18, -18],
                                           "referencedDeclaration": -18,
                                           "type": "function (bool,string memory) pure",
                                           "value": "require"
@@ -5878,9 +5743,7 @@
                                               "isPure": false,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "address",
                                               "type_conversion": true
@@ -6000,9 +5863,7 @@
                                               "isPure": true,
                                               "isStructConstructorCall": false,
                                               "lValueRequested": false,
-                                              "names": [
-                                                null
-                                              ],
+                                              "names": [null],
                                               "tryCall": false,
                                               "type": "address payable",
                                               "type_conversion": true
@@ -6122,9 +5983,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9785,
                                           "type": "mapping(address => contract PriceOracle)",
                                           "value": "oracles"
@@ -6146,9 +6005,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9854,
                                               "type": "address[] calldata",
                                               "value": "underlyings"
@@ -6160,9 +6017,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9877,
                                               "type": "uint256",
                                               "value": "i"
@@ -6194,9 +6049,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9857,
                                           "type": "contract PriceOracle[] calldata",
                                           "value": "_oracles"
@@ -6208,9 +6061,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9877,
                                           "type": "uint256",
                                           "value": "i"
@@ -6314,9 +6165,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 9927,
@@ -6331,9 +6180,7 @@
                   {
                     "attributes": {
                       "argumentTypes": null,
-                      "overloadedDeclarations": [
-                        null
-                      ],
+                      "overloadedDeclarations": [null],
                       "referencedDeclaration": 9962,
                       "type": "modifier ()",
                       "value": "onlyAdmin"
@@ -6351,9 +6198,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "assignments": [
-                        9929
-                      ]
+                      "assignments": [9929]
                     },
                     "children": [
                       {
@@ -6388,9 +6233,7 @@
                       {
                         "attributes": {
                           "argumentTypes": null,
-                          "overloadedDeclarations": [
-                            null
-                          ],
+                          "overloadedDeclarations": [null],
                           "referencedDeclaration": 9788,
                           "type": "address",
                           "value": "admin"
@@ -6420,9 +6263,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9788,
                               "type": "address",
                               "value": "admin"
@@ -6434,9 +6275,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9923,
                               "type": "address",
                               "value": "newAdmin"
@@ -6465,9 +6304,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -6485,9 +6322,7 @@
                                   "typeString": "address"
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9949,
                               "type": "function (address,address)",
                               "value": "NewAdmin"
@@ -6499,9 +6334,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9929,
                               "type": "address",
                               "value": "oldAdmin"
@@ -6513,9 +6346,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9923,
                               "type": "address",
                               "value": "newAdmin"
@@ -6648,9 +6479,7 @@
               },
               {
                 "attributes": {
-                  "parameters": [
-                    null
-                  ]
+                  "parameters": [null]
                 },
                 "children": [],
                 "id": 9951,
@@ -6669,9 +6498,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -6689,10 +6516,7 @@
                                   "typeString": "literal_string \"Sender is not the admin.\""
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
@@ -6731,9 +6555,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": -15,
                                       "type": "msg",
                                       "value": "msg"
@@ -6750,9 +6572,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9788,
                                   "type": "address",
                                   "value": "admin"
@@ -6810,16 +6630,12 @@
           },
           {
             "attributes": {
-              "baseFunctions": [
-                6022
-              ],
+              "baseFunctions": [6022],
               "functionSelector": "fc57d4df",
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "getUnderlyingPrice",
               "scope": 10064,
               "stateMutability": "view",
@@ -6837,9 +6653,7 @@
               },
               {
                 "attributes": {
-                  "overrides": [
-                    null
-                  ]
+                  "overrides": [null]
                 },
                 "id": 9967,
                 "name": "OverrideSpecifier",
@@ -6927,17 +6741,13 @@
                       {
                         "attributes": {
                           "argumentTypes": null,
-                          "arguments": [
-                            null
-                          ],
+                          "arguments": [null],
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "bool",
                           "type_conversion": false
@@ -6945,9 +6755,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "argumentTypes": [
-                                null
-                              ],
+                              "argumentTypes": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -6960,9 +6768,7 @@
                               {
                                 "attributes": {
                                   "argumentTypes": null,
-                                  "overloadedDeclarations": [
-                                    null
-                                  ],
+                                  "overloadedDeclarations": [null],
                                   "referencedDeclaration": 9965,
                                   "type": "contract CToken",
                                   "value": "cToken"
@@ -7015,9 +6821,7 @@
                   },
                   {
                     "attributes": {
-                      "assignments": [
-                        9978
-                      ]
+                      "assignments": [9978]
                     },
                     "children": [
                       {
@@ -7057,9 +6861,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "address",
                           "type_conversion": true
@@ -7097,17 +6899,13 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "arguments": [
-                                null
-                              ],
+                              "arguments": [null],
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "isStructConstructorCall": false,
                               "lValueRequested": false,
-                              "names": [
-                                null
-                              ],
+                              "names": [null],
                               "tryCall": false,
                               "type": "address",
                               "type_conversion": false
@@ -7115,9 +6913,7 @@
                             "children": [
                               {
                                 "attributes": {
-                                  "argumentTypes": [
-                                    null
-                                  ],
+                                  "argumentTypes": [null],
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -7135,9 +6931,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "contract CErc20",
                                       "type_conversion": true
@@ -7151,9 +6945,7 @@
                                               "typeString": "address"
                                             }
                                           ],
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 5723,
                                           "type": "type(contract CErc20)",
                                           "value": "CErc20"
@@ -7170,9 +6962,7 @@
                                           "isPure": false,
                                           "isStructConstructorCall": false,
                                           "lValueRequested": false,
-                                          "names": [
-                                            null
-                                          ],
+                                          "names": [null],
                                           "tryCall": false,
                                           "type": "address",
                                           "type_conversion": true
@@ -7210,9 +7000,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9965,
                                               "type": "contract CToken",
                                               "value": "cToken"
@@ -7274,9 +7062,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9978,
                               "type": "address",
                               "value": "underlying"
@@ -7349,9 +7135,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -7369,10 +7153,7 @@
                                   "typeString": "literal_string \"Price oracle not found for this underlying token address.\""
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
@@ -7404,9 +7185,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "address",
                                   "type_conversion": true
@@ -7454,9 +7233,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9785,
                                           "type": "mapping(address => contract PriceOracle)",
                                           "value": "oracles"
@@ -7468,9 +7245,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9978,
                                           "type": "address",
                                           "value": "underlying"
@@ -7497,9 +7272,7 @@
                                   "isPure": true,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "address payable",
                                   "type_conversion": true
@@ -7601,9 +7374,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -7639,9 +7410,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9785,
                                       "type": "mapping(address => contract PriceOracle)",
                                       "value": "oracles"
@@ -7653,9 +7422,7 @@
                                   {
                                     "attributes": {
                                       "argumentTypes": null,
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 9978,
                                       "type": "address",
                                       "value": "underlying"
@@ -7677,9 +7444,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 9965,
                               "type": "contract CToken",
                               "value": "cToken"
@@ -7710,16 +7475,12 @@
           },
           {
             "attributes": {
-              "baseFunctions": [
-                7813
-              ],
+              "baseFunctions": [7813],
               "functionSelector": "aea91078",
               "implemented": true,
               "isConstructor": false,
               "kind": "function",
-              "modifiers": [
-                null
-              ],
+              "modifiers": [null],
               "name": "price",
               "scope": 10064,
               "stateMutability": "view",
@@ -7737,9 +7498,7 @@
               },
               {
                 "attributes": {
-                  "overrides": [
-                    null
-                  ]
+                  "overrides": [null]
                 },
                 "id": 10025,
                 "name": "OverrideSpecifier",
@@ -7841,9 +7600,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 10023,
                               "type": "address",
                               "value": "underlying"
@@ -7916,9 +7673,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "tuple()",
                           "type_conversion": false
@@ -7936,10 +7691,7 @@
                                   "typeString": "literal_string \"Price oracle not found for this underlying token address.\""
                                 }
                               ],
-                              "overloadedDeclarations": [
-                                -18,
-                                -18
-                              ],
+                              "overloadedDeclarations": [-18, -18],
                               "referencedDeclaration": -18,
                               "type": "function (bool,string memory) pure",
                               "value": "require"
@@ -7971,9 +7723,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "address",
                                   "type_conversion": true
@@ -8021,9 +7771,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 9785,
                                           "type": "mapping(address => contract PriceOracle)",
                                           "value": "oracles"
@@ -8035,9 +7783,7 @@
                                       {
                                         "attributes": {
                                           "argumentTypes": null,
-                                          "overloadedDeclarations": [
-                                            null
-                                          ],
+                                          "overloadedDeclarations": [null],
                                           "referencedDeclaration": 10023,
                                           "type": "address",
                                           "value": "underlying"
@@ -8064,9 +7810,7 @@
                                   "isPure": true,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "address payable",
                                   "type_conversion": true
@@ -8168,9 +7912,7 @@
                           "isPure": false,
                           "isStructConstructorCall": false,
                           "lValueRequested": false,
-                          "names": [
-                            null
-                          ],
+                          "names": [null],
                           "tryCall": false,
                           "type": "uint256",
                           "type_conversion": false
@@ -8201,9 +7943,7 @@
                                   "isPure": false,
                                   "isStructConstructorCall": false,
                                   "lValueRequested": false,
-                                  "names": [
-                                    null
-                                  ],
+                                  "names": [null],
                                   "tryCall": false,
                                   "type": "contract BasePriceOracle",
                                   "type_conversion": true
@@ -8217,9 +7957,7 @@
                                           "typeString": "address"
                                         }
                                       ],
-                                      "overloadedDeclarations": [
-                                        null
-                                      ],
+                                      "overloadedDeclarations": [null],
                                       "referencedDeclaration": 7814,
                                       "type": "type(contract BasePriceOracle)",
                                       "value": "BasePriceOracle"
@@ -8236,9 +7974,7 @@
                                       "isPure": false,
                                       "isStructConstructorCall": false,
                                       "lValueRequested": false,
-                                      "names": [
-                                        null
-                                      ],
+                                      "names": [null],
                                       "tryCall": false,
                                       "type": "address",
                                       "type_conversion": true
@@ -8286,9 +8022,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 9785,
                                               "type": "mapping(address => contract PriceOracle)",
                                               "value": "oracles"
@@ -8300,9 +8034,7 @@
                                           {
                                             "attributes": {
                                               "argumentTypes": null,
-                                              "overloadedDeclarations": [
-                                                null
-                                              ],
+                                              "overloadedDeclarations": [null],
                                               "referencedDeclaration": 10023,
                                               "type": "address",
                                               "value": "underlying"
@@ -8334,9 +8066,7 @@
                           {
                             "attributes": {
                               "argumentTypes": null,
-                              "overloadedDeclarations": [
-                                null
-                              ],
+                              "overloadedDeclarations": [null],
                               "referencedDeclaration": 10023,
                               "type": "address",
                               "value": "underlying"

@@ -8,7 +8,13 @@ import { useTranslation } from "react-i18next";
 import { MergedPool } from "hooks/fuse/useFusePools";
 import { FusePoolData } from "utils/fetchFusePoolData";
 
-const FuseRow = ({ filteredPoolsData, fusePoolsData } : { filteredPoolsData: MergedPool[] | undefined, fusePoolsData: FusePoolData[]}) => {
+const FuseRow = ({
+  filteredPoolsData,
+  fusePoolsData,
+}: {
+  filteredPoolsData: MergedPool[] | undefined;
+  fusePoolsData: FusePoolData[];
+}) => {
   const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData]);
   const mb = singleRow ? null : 3;
 

@@ -9,7 +9,7 @@ export default class KeeperDAOSubpool {
   getCurrencyApys() {
     // TODO: KeeperDAO APYs
     return {
-      ETH: Web3.utils.toBN(0)
+      ETH: Web3.utils.toBN(0),
     };
   }
 }

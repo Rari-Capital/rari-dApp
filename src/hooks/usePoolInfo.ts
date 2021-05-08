@@ -55,28 +55,28 @@ export const usePoolInfos = (): PoolInterface[] => {
 };
 
 export type AggregatePoolInfo = {
-  poolInfo: PoolInterface
-  poolAPY: number | null
-  poolBalance: BN | null
-  formattedPoolBalance: string | null
-  poolInterestEarned: BN | null 
-  formattedPoolInterestEarned: string | null
-  poolGrowth: number
-  formattedPoolGrowth: string | null
-}
+  poolInfo: PoolInterface;
+  poolAPY: number | null;
+  poolBalance: BN | null;
+  formattedPoolBalance: string | null;
+  poolInterestEarned: BN | null;
+  formattedPoolInterestEarned: string | null;
+  poolGrowth: number;
+  formattedPoolGrowth: string | null;
+};
 
 export type PoolTotals = {
-  balance: number
-  balanceFormatted: string
-  interestEarned: string | null
-  apy: string
-  growth: string
-}
+  balance: number;
+  balanceFormatted: string;
+  interestEarned: string | null;
+  apy: string;
+  growth: string;
+};
 
 export type AggregatePoolsInfoReturn = {
-  aggregatePoolsInfo: AggregatePoolInfo[]
-  totals: PoolTotals
-}
+  aggregatePoolsInfo: AggregatePoolInfo[];
+  totals: PoolTotals;
+};
 
 export const useAggregatePoolInfos = () => {
   const { rari } = useRari();
@@ -88,7 +88,9 @@ export const useAggregatePoolInfos = () => {
   const poolInfos = usePoolInfos();
   const poolAPYs = usePoolsAPY(poolInfos);
   const poolBalances = usePoolBalances(poolInfos);
-  const poolsInterestEarned : PoolInterestEarned | undefined = usePoolInterestEarned();
+  const poolsInterestEarned:
+    | PoolInterestEarned
+    | undefined = usePoolInterestEarned();
 
   // Totals
   const { data: totalPoolsBalance } = useTotalPoolsBalance();
@@ -144,7 +146,7 @@ export const useAggregatePoolInfos = () => {
           : null;
 
         return {
-          poolInfo, 
+          poolInfo,
           poolAPY: poolAPY ? parseFloat(poolAPY.toString()) : null,
           poolBalance,
           formattedPoolBalance,
@@ -154,14 +156,7 @@ export const useAggregatePoolInfos = () => {
           formattedPoolGrowth,
         };
       }),
-    [
-      rari,
-      poolInfos,
-      poolAPYs,
-      poolBalances,
-      poolsInterestEarned,
-      toBN,
-    ]
+    [rari, poolInfos, poolAPYs, poolBalances, poolsInterestEarned, toBN]
   );
 
   const totals = useMemo(

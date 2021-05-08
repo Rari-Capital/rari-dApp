@@ -10,8 +10,8 @@ import "./index.css";
 // @ts-ignore
 import PWAPrompt from "react-ios-pwa-prompt";
 
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 import { ChakraProvider, theme } from "@chakra-ui/react";
 

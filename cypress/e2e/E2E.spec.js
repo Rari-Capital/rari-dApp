@@ -1,7 +1,7 @@
 // type definitions for Cypress object "cy"
 /// <reference types="cypress" />
 
-describe("E2E", function() {
+describe("E2E", function () {
   before(() => {
     cy.visit("/");
   });
