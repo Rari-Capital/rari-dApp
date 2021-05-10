@@ -516,10 +516,12 @@ export const AssetSettings = ({
       >
         {curves ? (
           <Chart
-            options={{
-              ...FuseIRMDemoChartOptions,
-              colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
-            }}
+            options={
+              {
+                ...FuseIRMDemoChartOptions,
+                colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
+              } as any
+            }
             type="line"
             width="100%"
             height="100%"

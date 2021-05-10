@@ -1,8 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 
 // Components
-import DashboardBox from "components/shared/DashboardBox";
-import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
+import { Column, Row } from "buttered-chakra";
 import { Box, Heading } from "@chakra-ui/react";
 
 import {
@@ -103,7 +102,11 @@ const SubNavItem = ({
       logo = !active ? <TranchesLogoPNGWhite /> : <TranchesLogoPNGGreen />;
       break;
     case StatsSubNav.POOL2:
-      logo = !active ? <Pool2LogoPNGWhite height="18px" /> : <Pool2LogoPNGGreen height="18px"/>;
+      logo = !active ? (
+        <Pool2LogoPNGWhite height="18px" />
+      ) : (
+        <Pool2LogoPNGGreen height="18px" />
+      );
       break;
     case StatsSubNav.EARN:
       logo = !active ? <EarnLogoPNGWhite /> : <EarnLogoPNGGreen />;

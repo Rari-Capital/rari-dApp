@@ -4,8 +4,7 @@ import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 import AmountSelect, { requiresSFIStaking } from "./AmountSelect";
 
 import { MODAL_PROPS } from "../../../shared/Modal";
-import { TranchePool, TrancheRating } from "../TranchesPage";
-
+import { TranchePool, TrancheRating } from "hooks/tranches/useSaffronData";
 interface Props {
   isOpen: boolean;
 

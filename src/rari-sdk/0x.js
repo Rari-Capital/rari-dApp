@@ -10,18 +10,29 @@ export const get0xSwapOrders = function (
 ) {
   return new Promise(async function (resolve, reject) {
     try {
-      var decoded = (await axios.get(
-        "https://api.0x.org/swap/v0/quote?affiliateAddress=0x10dB6Bce3F2AE1589ec91A872213DAE59697967a&excludedSources=mStable&sellToken=" +
-          inputTokenAddress +
-          "&buyToken=" +
-          outputTokenAddress +
-          (maxMakerAssetFillAmountBN !== undefined && maxMakerAssetFillAmountBN !== null
-            ? "&buyAmount=" + maxMakerAssetFillAmountBN.toString()
-            : "&sellAmount=" + maxInputAmountBN.toString())
-      )).data;
+      var decoded = (
+        await axios.get(
+          "https://api.0x.org/swap/v0/quote?affiliateAddress=0x10dB6Bce3F2AE1589ec91A872213DAE59697967a&excludedSources=mStable&sellToken=" +
+            inputTokenAddress +
+            "&buyToken=" +
+            outputTokenAddress +
+            (maxMakerAssetFillAmountBN !== undefined &&
+            maxMakerAssetFillAmountBN !== null
+              ? "&buyAmount=" + maxMakerAssetFillAmountBN.toString()
+              : "&sellAmount=" + maxInputAmountBN.toString())
+        )
+      ).data;
     } catch (error) {
-      if (error.response && error.response.data.validationErrors && error.response.data.validationErrors[0].reason === "INSUFFICIENT_ASSET_LIQUIDITY") return reject("Insufficient liquidity");
-      return reject("Error requesting quote from 0x swap API: " + error.message);
+      if (
+        error.response &&
+        error.response.data.validationErrors &&
+        error.response.data.validationErrors[0].reason ===
+          "INSUFFICIENT_ASSET_LIQUIDITY"
+      )
+        return reject("Insufficient liquidity");
+      return reject(
+        "Error requesting quote from 0x swap API: " + error.message
+      );
     }
 
     if (!decoded) return reject("Failed to decode quote from 0x swap API");
@@ -55,7 +66,10 @@ export const get0xSwapOrders = function (
         decoded.orders[i].makerAssetAmount
       );
 
-      if (maxMakerAssetFillAmountBN !== undefined && maxMakerAssetFillAmountBN !== null) {
+      if (
+        maxMakerAssetFillAmountBN !== undefined &&
+        maxMakerAssetFillAmountBN !== null
+      ) {
         // maxMakerAssetFillAmountBN is specified, so use it
         if (
           maxMakerAssetFillAmountBN
@@ -96,7 +110,9 @@ export const get0xSwapOrders = function (
 
         // If this order input amount is higher than the remaining input, calculate orderTakerAssetFillAmountBN and orderMakerAssetFillAmountBN from the remaining maxInputAmountBN as usual
         if (
-          maxInputAmountBN !== undefined && maxInputAmountBN !== null && orderInputFillAmountBN.gt(maxInputAmountBN.sub(inputFilledAmountBN))
+          maxInputAmountBN !== undefined &&
+          maxInputAmountBN !== null &&
+          orderInputFillAmountBN.gt(maxInputAmountBN.sub(inputFilledAmountBN))
         ) {
           orderInputFillAmountBN = maxInputAmountBN.sub(inputFilledAmountBN);
           orderTakerAssetFillAmountBN = orderInputFillAmountBN
@@ -108,7 +124,11 @@ export const get0xSwapOrders = function (
         }
       } else {
         // maxMakerAssetFillAmountBN is not specified, so use maxInputAmountBN
-        if (maxInputAmountBN !== undefined && maxInputAmountBN !== null && maxInputAmountBN.sub(inputFilledAmountBN).lte(orderInputAmountBN)) {
+        if (
+          maxInputAmountBN !== undefined &&
+          maxInputAmountBN !== null &&
+          maxInputAmountBN.sub(inputFilledAmountBN).lte(orderInputAmountBN)
+        ) {
           // Calculate orderInputFillAmountBN and orderTakerAssetFillAmountBN from the remaining maxInputAmountBN as usual
           var orderInputFillAmountBN = maxInputAmountBN.sub(
             inputFilledAmountBN
@@ -137,8 +157,11 @@ export const get0xSwapOrders = function (
 
       // Check if we have hit maxInputAmountBN or maxTakerAssetFillAmountBN
       if (
-        (maxInputAmountBN !== undefined && maxInputAmountBN !== null && inputFilledAmountBN.gte(maxInputAmountBN)) ||
-        (maxMakerAssetFillAmountBN !== undefined && maxMakerAssetFillAmountBN !== null &&
+        (maxInputAmountBN !== undefined &&
+          maxInputAmountBN !== null &&
+          inputFilledAmountBN.gte(maxInputAmountBN)) ||
+        (maxMakerAssetFillAmountBN !== undefined &&
+          maxMakerAssetFillAmountBN !== null &&
           makerAssetFilledAmountBN.gte(maxMakerAssetFillAmountBN))
       )
         break;

@@ -24,7 +24,6 @@ import {
   TranchePool,
   TrancheRating,
   tranchePoolIndex,
-  trancheRatingIndex,
   useEpochEndDate,
   useEstimatedSFI,
   usePrincipal,
@@ -370,9 +369,9 @@ export const TrancheColumn = ({
               ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
                 "0.45%"
               : saffronData
-              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
+              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches?.[
                   trancheRating
-                ]["total-apy"] + "% APY"
+                ]?.["total-apy"] + "% APY"
               : "?% APY"}
           </Text>
         </Column>

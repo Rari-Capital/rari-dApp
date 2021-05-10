@@ -1,6 +1,7 @@
+import { ApexOptions } from "apexcharts";
 import { smallStringUsdFormatter } from "./bigUtils";
 
-export const LineChartOptions = {
+export const LineChartOptions: ApexOptions = {
   chart: {
     foreColor: "#a19f9f",
     animations: {
@@ -58,7 +59,7 @@ export const LineChartOptions = {
   },
 };
 
-export const PoolReturnChartOptions = {
+export const PoolReturnChartOptions: ApexOptions = {
   ...LineChartOptions,
 
   grid: {
@@ -83,15 +84,16 @@ export const PoolReturnChartOptions = {
 
   yaxis: {
     labels: {
+      // @ts-ignore
       ...LineChartOptions.yaxis.labels,
-      formatter: function (value: string) {
-        return "$" + parseFloat(value).toFixed(2);
+      formatter: function (value: number) {
+        return "$" + parseFloat(value as any).toFixed(2);
       },
     },
   },
 };
 
-export const USDSelfReturnChartOptions = {
+export const USDSelfReturnChartOptions: ApexOptions = {
   ...PoolReturnChartOptions,
   grid: {
     ...PoolReturnChartOptions.grid,
@@ -103,10 +105,11 @@ export const USDSelfReturnChartOptions = {
   },
 };
 
-export const ETHSelfReturnChartOptions = {
+export const ETHSelfReturnChartOptions: ApexOptions = {
   ...USDSelfReturnChartOptions,
   yaxis: {
     labels: {
+      // @ts-ignore
       ...USDSelfReturnChartOptions.yaxis.labels,
       formatter: function (value: string) {
         return smallStringUsdFormatter(value).replace("$", "") + " ETH";
@@ -115,7 +118,7 @@ export const ETHSelfReturnChartOptions = {
   },
 };
 
-export const USDStrategyAllocationChartOptions = {
+export const USDStrategyAllocationChartOptions: ApexOptions = {
   chart: {
     foreColor: "#a19f9f",
     animations: {
@@ -139,6 +142,7 @@ export const USDStrategyAllocationChartOptions = {
 
   yaxis: {
     labels: {
+      // @ts-ignore
       ...LineChartOptions.yaxis.labels,
       formatter: function (value: string) {
         return smallStringUsdFormatter(value);
@@ -172,10 +176,11 @@ export const USDStrategyAllocationChartOptions = {
   colors: ["#282828", "#929292", "#5E5E5E", "#4C4C4C", "#343434"],
 };
 
-export const ETHStrategyAllocationChartOptions = {
+export const ETHStrategyAllocationChartOptions: ApexOptions = {
   ...USDStrategyAllocationChartOptions,
   yaxis: {
     labels: {
+      // @ts-ignore
       ...USDStrategyAllocationChartOptions.yaxis.labels,
       formatter: function (value: string) {
         return smallStringUsdFormatter(value).replace("$", "") + " ETH";
@@ -184,13 +189,13 @@ export const ETHStrategyAllocationChartOptions = {
   },
 };
 
-export const DisableChartInteractions = {
+export const DisableChartInteractions: ApexOptions = {
   tooltip: {
     enabled: false,
   },
 };
 
-export const InterestRateChartOptions = {
+export const InterestRateChartOptions: ApexOptions = {
   ...LineChartOptions,
 
   stroke: {
@@ -215,8 +220,8 @@ export const InterestRateChartOptions = {
 
   tooltip: {
     x: {
-      formatter: function (value: string) {
-        return parseFloat(value).toFixed(2) + "% Utilization";
+      formatter: function (value: number) {
+        return parseFloat(value as any).toFixed(2) + "% Utilization";
       },
     },
   },
@@ -224,9 +229,10 @@ export const InterestRateChartOptions = {
   yaxis: {
     show: false,
     labels: {
+      // @ts-ignore
       ...LineChartOptions.yaxis.labels,
-      formatter: function (value: string) {
-        return parseFloat(value).toFixed(2) + "%";
+      formatter: function (value: number) {
+        return parseFloat(value as any).toFixed(2) + "%";
       },
     },
   },
@@ -240,6 +246,7 @@ export const InterestRateChartOptions = {
     },
     labels: {
       show: false,
+      // @ts-ignore
       ...LineChartOptions.yaxis.labels,
       formatter: function (value: string) {
         return parseFloat(value).toFixed(2) + "%";
@@ -248,7 +255,7 @@ export const InterestRateChartOptions = {
   },
 };
 
-export const FuseUtilizationChartOptions = {
+export const FuseUtilizationChartOptions: ApexOptions = {
   ...InterestRateChartOptions,
 
   grid: {
@@ -256,7 +263,7 @@ export const FuseUtilizationChartOptions = {
   },
 };
 
-export const FuseIRMDemoChartOptions = {
+export const FuseIRMDemoChartOptions: ApexOptions = {
   ...InterestRateChartOptions,
 
   grid: {

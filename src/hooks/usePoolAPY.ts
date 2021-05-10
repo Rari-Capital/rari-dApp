@@ -1,4 +1,4 @@
-import { useQuery, useQueries } from "react-query";
+import { useQuery, useQueries, UseQueryResult } from "react-query";
 import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
 
@@ -28,7 +28,7 @@ export const usePoolAPY = (pool: Pool) => {
 export const usePoolsAPY = (pools: PoolInterface[]) => {
   const { rari } = useRari();
 
-  const poolAPYs = useQueries(
+  const poolAPYs: UseQueryResult[] = useQueries(
     pools.map(({ type: poolType }) => {
       return {
         queryKey: poolType + " apy",
@@ -38,12 +38,6 @@ export const usePoolsAPY = (pools: PoolInterface[]) => {
   );
 
   return useMemo(() => {
-    return !poolAPYs.length
-      ? []
-      : poolAPYs.map(({ isLoading, error, data }) => ({
-          isLoading,
-          error,
-          data,
-        }));
+    return !poolAPYs.length ? [] : poolAPYs.map(({ data: poolAPY }) => poolAPY);
   }, [poolAPYs]);
 };

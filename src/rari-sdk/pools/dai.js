@@ -9,7 +9,7 @@ const contractAddresses = {
   RariFundManager: "0xB465BAF04C087Ce3ed1C266F96CA43f4847D9635",
   RariFundToken: "0x0833cfcb11A5ba89FbAF73a407831c98aD2D7648",
   RariFundPriceConsumer: "0x96ce4C781eDF07F4e3D210c919CA4F9A7ad82a7f",
-  RariFundProxy: "0x3F579F097F2CE8696Ae8C417582CfAFdE9Ec9966"
+  RariFundProxy: "0x3F579F097F2CE8696Ae8C417582CfAFdE9Ec9966",
 };
 
 export default class DaiPool extends StablePool {
@@ -42,7 +42,7 @@ export default class DaiPool extends StablePool {
       dYdX: ["DAI"],
       Compound: ["DAI"],
       Aave: ["DAI"],
-      mStable: ["mUSD"]
+      mStable: ["mUSD"],
     };
 
     delete this.history.getRsptExchangeRateHistory;

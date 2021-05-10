@@ -1,11 +1,23 @@
 import React from "react";
-import { Box, Tr, Td, Text } from "@chakra-ui/react";
+import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Column } from "buttered-chakra";
-import { TranchesLogoSVGWhite } from "components/shared/Logos";
+import { TranchesLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import { useTranslation } from "react-i18next";
+import { UseEstimatedSFIReturn } from "hooks/tranches/useSaffronData";
 
-const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
+const TranchesRow = ({
+  estimatedSFI,
+  daiSPrincipal,
+  daiAPrincipal,
+}: {
+  estimatedSFI: UseEstimatedSFIReturn | undefined;
+  daiSPrincipal: string | undefined;
+  daiAPrincipal: string | undefined;
+}) => {
+  const { t } = useTranslation();
+
   return (
     <motion.tr
       initial={{ opacity: 0, y: -40 }}
@@ -15,22 +27,22 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
       <Td textAlign="center">
         <SimpleTooltip label="Tranches" placement="right">
           <Box width="30px">
-            <TranchesLogoSVGWhite width="25px" height="25px" />
+            <TranchesLogoPNGWhite boxSize="25px" />
           </Box>
         </SimpleTooltip>
       </Td>
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
-          <Box mb={3}>
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
+          <Box mb={3} textAlign="right">
             <Text> {t("DAI-S")} </Text>
           </Box>
-          <Box mb={3}>
+          <Box mb={3} textAlign="right">
             <Text> {t("DAI-A")} </Text>
           </Box>
         </Column>
       </Td>
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
           <Box mb={3}>
             <Text textAlign="left"> {daiSPrincipal} DAI </Text>
           </Box>
@@ -41,7 +53,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
       </Td>
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
           <Box mb={3}>
             <Text textAlign="left">
               {" "}
@@ -56,7 +68,7 @@ const TranchesRow = ({ estimatedSFI, daiSPrincipal, daiAPrincipal }) => {
         </Column>
       </Td>
       <Td textAlign="right">
-        <Column mainAxisAlignment="center" crossAxisAlignment="flex-start">
+        <Column mainAxisAlignment="center" crossAxisAlignment="flex-end">
           <Box mb={3}>
             <Text>{t("N/A")}</Text>
           </Box>

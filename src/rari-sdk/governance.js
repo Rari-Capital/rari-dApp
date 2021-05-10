@@ -403,16 +403,24 @@ export default class Governance {
           );
         },
         usdStakingBalanceOf: async function (account) {
-          return (await self.rgt.sushiSwapDistributions.stakingBalanceOf(account))
+          return (
+            await self.rgt.sushiSwapDistributions.stakingBalanceOf(account)
+          )
             .mul(await self.rgt.sushiSwapDistributions.getLpTokenUsdPrice())
             .div(Web3.utils.toBN(1e18));
         },
         stakedReservesOf: async function (account) {
-          var stakingBalance = await self.rgt.sushiSwapDistributions.stakingBalanceOf(account);
+          var stakingBalance = await self.rgt.sushiSwapDistributions.stakingBalanceOf(
+            account
+          );
           var reservesPerLpToken = await self.rgt.sushiSwapDistributions.getReservesPerLpToken();
           return {
-            rgt: reservesPerLpToken.rgt.mul(stakingBalance).div(Web3.utils.toBN(1e18)),
-            eth: reservesPerLpToken.eth.mul(stakingBalance).div(Web3.utils.toBN(1e18)),
+            rgt: reservesPerLpToken.rgt
+              .mul(stakingBalance)
+              .div(Web3.utils.toBN(1e18)),
+            eth: reservesPerLpToken.eth
+              .mul(stakingBalance)
+              .div(Web3.utils.toBN(1e18)),
           };
         },
         deposit: async function (amount, options) {

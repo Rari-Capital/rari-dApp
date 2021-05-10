@@ -17,7 +17,7 @@ module.exports = {
     ns: ["translation"],
     defaultNs: "translation",
 
-    defaultValue: function(lng, ns, key) {
+    defaultValue: function (lng, ns, key) {
       if (lng === "en") {
         // Return key as the default value for English language
         return key;

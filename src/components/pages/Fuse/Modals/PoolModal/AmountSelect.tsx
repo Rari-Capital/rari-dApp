@@ -20,7 +20,7 @@ import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
-import { QueryResult, useQuery, useQueryClient } from "react-query";
+import { UseQueryResult, useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -802,7 +802,9 @@ const StatsColumn = ({
 
   const { rari, fuse } = useRari();
 
-  const { data: updatedAssets }: QueryResult<USDPricedFuseAsset[]> = useQuery(
+  const {
+    data: updatedAssets,
+  }: UseQueryResult<USDPricedFuseAsset[]> = useQuery(
     mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
     async () => {
       const ethPrice: number = fuse.web3.utils.fromWei(

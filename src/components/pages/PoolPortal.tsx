@@ -103,7 +103,7 @@ export default PoolPortal;
 const PoolPortalContent = () => {
   const { isAuthed, rari } = useRari();
 
-  const { windowHeight, isLocked } = useLockedViewHeight({
+  const { windowHeight } = useLockedViewHeight({
     min: 750,
     max: 1900,
   });
@@ -257,7 +257,7 @@ const PoolPortalContent = () => {
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
-                  balance={formattedBalance}
+                  balance={formattedBalance!}
                 />
               </Box>
             </DashboardBox>
@@ -762,6 +762,7 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
+            // @ts-ignore
             labels: allocations![0],
           }}
           type="pie"

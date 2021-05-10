@@ -11,6 +11,7 @@ import {
   TrancheRating,
   useEstimatedSFI,
   usePrincipalBalance,
+  SaffronTranchePool,
 } from "hooks/tranches/useSaffronData";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,7 @@ import { useTranslation } from "react-i18next";
 const Earn = () => {
   const { t } = useTranslation();
 
-  const mySaffronData = useMySaffronData();
+  const mySaffronData: SaffronTranchePool[] = useMySaffronData();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
   const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
   const estimatedSFI = useEstimatedSFI();
@@ -60,7 +61,7 @@ const Earn = () => {
             {hasDeposits && (
               <>
                 <Tr>
-                  <Td>
+                  <Td textAlign="right">
                     <Row
                       mainAxisAlignment="flex-start"
                       crossAxisAlignment="center"
@@ -70,8 +71,8 @@ const Earn = () => {
                       </Box>
                     </Row>
                   </Td>
-                  <Td>
-                    <Text textAlign="right">
+                  <Td textAlign="right">
+                    <Text>
                       {
                         mySaffronData?.[0]?.tranches?.[TrancheRating.S]?.[
                           "total-apy"
@@ -80,18 +81,15 @@ const Earn = () => {
                       %
                     </Text>
                   </Td>
-                  <Td>
-                    <Text textAlign="right">
+                  <Td textAlign="right">
+                    <Text>
                       {daiSPrincipal} {t("DAI")}
                     </Text>
                   </Td>
-                  <Td>
-                    {" "}
-                    <Text textAlign="right">
-                      {estimatedSFI?.formattedSPoolSFIEarned}
-                    </Text>{" "}
+                  <Td textAlign="right">
+                    <Text>{estimatedSFI?.formattedSPoolSFIEarned}</Text>
                   </Td>
-                  <Td>
+                  <Td textAlign="right">
                     <Text textAlign="right">{t("N/A")}</Text>
                   </Td>
                 </Tr>
@@ -134,28 +132,25 @@ const Earn = () => {
               </>
             )}
             {/* Totals */}
-            <Tr>
+            <Tr fontWeight={hasDeposits ? "bold" : "normal"}>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>{t("Total")}</Text>
+                <Text>{t("Total")}</Text>
               </Td>
               <Td>
-                <Text
-                  fontWeight={hasDeposits && "bold"}
-                  textAlign="right"
-                ></Text>
+                <Text textAlign="right"></Text>
               </Td>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"} textAlign="right">
+                <Text textAlign="right">
                   {smallUsdFormatter(totalPrincipal) ?? 0}
                 </Text>
               </Td>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"} textAlign="right">
+                <Text textAlign="right">
                   {estimatedSFI?.formattedTotalSFIEarned ?? "0 SFI"}
                 </Text>
               </Td>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"} textAlign="right" />
+                <Text textAlign="right" />
               </Td>
             </Tr>
           </>

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Web3 from "web3";
 import axios from "axios";
-import Big from 'big.js';
+import Big from "big.js";
 
 import DydxSubpool from "./subpools/dydx.js";
 import CompoundSubpool from "./subpools/compound.js";
@@ -52,7 +52,17 @@ export default class Rari {
     this.getEthUsdPriceBN = async function () {
       return await self.cache.getOrUpdate("ethUsdPrice", async function () {
         try {
-          return Web3.utils.toBN((new Big((await axios.get("https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum")).data.ethereum.usd)).mul(1e18).toFixed(0));
+          return Web3.utils.toBN(
+            new Big(
+              (
+                await axios.get(
+                  "https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=ethereum"
+                )
+              ).data.ethereum.usd
+            )
+              .mul(1e18)
+              .toFixed(0)
+          );
         } catch (error) {
           throw new Error("Error retrieving data from Coingecko API: " + error);
         }
@@ -100,8 +110,12 @@ export default class Rari {
       yVault: new YVaultSubpool(this.web3),
       KeeperDAO: new KeeperDAOSubpool(this.web3),
       Alpha: new AlphaSubpool(this.web3),
-      Fuse3: new FuseSubpool(this.web3, { "USDC": "0x94C49563a3950424a2a7790c3eF5458A2A359C7e" }),
-      Fuse7: new FuseSubpool(this.web3, { "USDC": "0x53De5A7B03dc24Ff5d25ccF7Ad337a0425Dfd8D1" }),
+      Fuse3: new FuseSubpool(this.web3, {
+        USDC: "0x94C49563a3950424a2a7790c3eF5458A2A359C7e",
+      }),
+      Fuse7: new FuseSubpool(this.web3, {
+        USDC: "0x53De5A7B03dc24Ff5d25ccF7Ad337a0425Dfd8D1",
+      }),
     };
 
     this.pools = {
@@ -149,7 +163,7 @@ export default class Rari {
           mStable: subpools["mStable"],
         },
         this.getAllTokens
-      )
+      ),
     };
 
     this.governance = new Governance(this.web3);

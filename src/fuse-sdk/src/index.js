@@ -67,19 +67,32 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    "SimplePriceOracle": "0x825c814c2e008137a46d355a57d0d89f6eea946ad01f0e8203fd33162e3ed799",
-    "PreferredPriceOracle": "0x3899c6d9b979281ffb059859e0c8c2028662201d3796e0ea10e841e1d68a997f",
-    "ChainlinkPriceOracle": "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
-    "Keep3rPriceOracle": "0x36a0d4743a92d3565f3d2709c41e9983bb263c27c339ddbb8ffa87a939498f7d",
-    "MasterPriceOracle": "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
-    "UniswapAnchoredView": "0x764bdac98ac462a37513087378aef33380ac062baa2f86c2c30e5d6a78fabad0",
-    "UniswapView": "0x817d46149b29738f641c876c56fd7524db4c8d5376f7cc756e94c9e32c29b18b",
-    "UniswapLpTokenPriceOracle": "0xc79e96f40986213d5f9fc403b5f37e00d3b57842ef0fae24c750222c02592f9f",
-    "RecursivePriceOracle": "0x6f5280d0028fff9ae0aaa447c6c36ff3b270d9675b74762ed2caf9ce3371d63e",
-    "YVaultV1PriceOracle": "0xeb5c1b3acb093a4158251f5955540f220c72200ffaf32ce89bfefbce0c0b7f49",
-    "YVaultV2PriceOracle": "0x5a07033c6820e6ecc517dd94d03b5e38bf15334d4b3c0624dcdb810698196608",
-    "AlphaHomoraV1PriceOracle": "0xfbec68bfe8dfa9e8bab8af26ee5ae9adeb2dcbf2c91d11c3dd497b6b6c2deb64",
-    "SynthetixPriceOracle": "0x5c92648ceca2c5698fddc9a35af43275c821961ca9056c50da592566daaebdc6"
+    SimplePriceOracle:
+      "0x825c814c2e008137a46d355a57d0d89f6eea946ad01f0e8203fd33162e3ed799",
+    PreferredPriceOracle:
+      "0x3899c6d9b979281ffb059859e0c8c2028662201d3796e0ea10e841e1d68a997f",
+    ChainlinkPriceOracle:
+      "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
+    Keep3rPriceOracle:
+      "0x36a0d4743a92d3565f3d2709c41e9983bb263c27c339ddbb8ffa87a939498f7d",
+    MasterPriceOracle:
+      "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
+    UniswapAnchoredView:
+      "0x764bdac98ac462a37513087378aef33380ac062baa2f86c2c30e5d6a78fabad0",
+    UniswapView:
+      "0x817d46149b29738f641c876c56fd7524db4c8d5376f7cc756e94c9e32c29b18b",
+    UniswapLpTokenPriceOracle:
+      "0xc79e96f40986213d5f9fc403b5f37e00d3b57842ef0fae24c750222c02592f9f",
+    RecursivePriceOracle:
+      "0x6f5280d0028fff9ae0aaa447c6c36ff3b270d9675b74762ed2caf9ce3371d63e",
+    YVaultV1PriceOracle:
+      "0xeb5c1b3acb093a4158251f5955540f220c72200ffaf32ce89bfefbce0c0b7f49",
+    YVaultV2PriceOracle:
+      "0x5a07033c6820e6ecc517dd94d03b5e38bf15334d4b3c0624dcdb810698196608",
+    AlphaHomoraV1PriceOracle:
+      "0xfbec68bfe8dfa9e8bab8af26ee5ae9adeb2dcbf2c91d11c3dd497b6b6c2deb64",
+    SynthetixPriceOracle:
+      "0x5c92648ceca2c5698fddc9a35af43275c821961ca9056c50da592566daaebdc6",
   };
 
   static ORACLES = [
@@ -99,8 +112,10 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel_ETH: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
-    WhitePaperInterestRateModel_WBTC: "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
+    WhitePaperInterestRateModel_ETH:
+      "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    WhitePaperInterestRateModel_WBTC:
+      "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
     JumpRateModel_DAI: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
     JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
     JumpRateModel_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
@@ -1002,12 +1017,14 @@ export default class Fuse {
         priceOracle
       );
 
-      if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) var chainlinkPriceFeed = true;
-      else try {
-        var chainlinkPriceFeed = await chainlinkPriceOracle.methods
-          .hasPriceFeed(conf.underlying)
-          .call();
-      } catch {}
+      if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase())
+        var chainlinkPriceFeed = true;
+      else
+        try {
+          var chainlinkPriceFeed = await chainlinkPriceOracle.methods
+            .hasPriceFeed(conf.underlying)
+            .call();
+        } catch {}
 
       if (chainlinkPriceFeed === undefined || !chainlinkPriceFeed) {
         // Check for PreferredPriceOracle with underlying ChainlinkPriceOracle with a corresponding feed
@@ -1131,7 +1148,9 @@ export default class Fuse {
             TWAP: 3,
           };
 
-          if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) {
+          if (
+            conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()
+          ) {
             // WETH
             await uniswapOrUniswapAnchoredView.methods
               .add([

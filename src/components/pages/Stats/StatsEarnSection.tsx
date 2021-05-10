@@ -34,29 +34,41 @@ const Earn = () => {
         <Thead color="white">
           <Tr>
             <Th color="white">{t("Pool")}</Th>
-            <Th color="white" textAlign="right">{t("APY")}</Th>
-            <Th color="white" textAlign="right">{t("Deposits")}</Th>
-            <Th color="white" textAlign="right">{t("Interest")}</Th>
-            <Th color="white" textAlign="right">{t("Growth")}</Th>
+            <Th color="white" textAlign="right">
+              {t("APY")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Deposits")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Interest")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Growth")}
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
           {aggregatePoolsInfo?.map((aggPoolInfo) => {
-
-            console.log({aggPoolInfo})
-
-            if (aggPoolInfo?.poolBalance && !aggPoolInfo.poolBalance.isZero())
+            if (aggPoolInfo?.poolBalance && !aggPoolInfo.poolBalance.isZero()) {
               return (
                 <Tr key={aggPoolInfo.poolInfo.title}>
                   <Td>{aggPoolInfo.poolInfo.title}</Td>
-                  <Td textAlign="right">{aggPoolInfo.poolAPY ?? <Spinner />}%</Td>
-                  <Td textAlign="right">{aggPoolInfo.formattedPoolBalance ?? <Spinner />}</Td>
+                  <Td textAlign="right">
+                    {aggPoolInfo.poolAPY ?? <Spinner />}%
+                  </Td>
+                  <Td textAlign="right">
+                    {aggPoolInfo.formattedPoolBalance ?? <Spinner />}
+                  </Td>
                   <Td textAlign="right">
                     {aggPoolInfo.formattedPoolInterestEarned ?? <Spinner />}
                   </Td>
-                  <Td textAlign="right">{aggPoolInfo.formattedPoolGrowth ?? <Spinner />}%</Td>
+                  <Td textAlign="right">
+                    {aggPoolInfo.formattedPoolGrowth ?? <Spinner />}%
+                  </Td>
                 </Tr>
               );
+            } else return null;
           })}
           {/* Todo (sharad) - implement totals for apy and growth */}
           <Tr fontWeight={hasDeposits ? "bold" : "normal"}>

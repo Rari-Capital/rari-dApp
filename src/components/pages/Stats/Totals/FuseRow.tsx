@@ -1,12 +1,20 @@
 import React, { useMemo } from "react";
-import { Box, Tr, Td, Text } from "@chakra-ui/react";
+import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";
-import { FuseLogoSVGWhite } from "components/shared/Logos";
+import { FuseLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";
+import { MergedPool } from "hooks/fuse/useFusePools";
+import { FusePoolData } from "utils/fetchFusePoolData";
 
-const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
+const FuseRow = ({
+  filteredPoolsData,
+  fusePoolsData,
+}: {
+  filteredPoolsData: MergedPool[] | undefined;
+  fusePoolsData: FusePoolData[];
+}) => {
   const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData]);
   const mb = singleRow ? null : 3;
 
@@ -21,20 +29,20 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
       <Td textAlign="center">
         <SimpleTooltip label="Fuse" placement="right">
           <Box width="30px">
-            <FuseLogoSVGWhite width="26px" height="26px" />
+            <FuseLogoPNGWhite boxSize="26px" />
           </Box>
         </SimpleTooltip>
       </Td>
       <Td textAlign="right">
         {filteredPoolsData?.map(({ id }) => (
-          <Text mb={mb} key={id}>
+          <Text mb={mb ?? "0"} key={id}>
             {id}
           </Text>
         ))}
       </Td>
       <Td textAlign="right">
         {fusePoolsData?.map(({ comptroller, totalSupplyBalanceUSD }) => (
-          <Text mb={mb} key={comptroller}>
+          <Text mb={mb ?? "0"} key={comptroller}>
             {smallStringUsdFormatter(totalSupplyBalanceUSD)}
           </Text>
         ))}
@@ -42,14 +50,14 @@ const FuseRow = ({ filteredPoolsData, fusePoolsData }) => {
       {/* Todo (sharad) - implement RGT earned in poolInfo */}
       <Td textAlign="right">
         {filteredPoolsData?.map(({ id }) => (
-          <Text mb={mb} key={id}>
+          <Text mb={mb ?? "0"} key={id}>
             {t("N/A")}
           </Text>
         ))}
       </Td>
       <Td textAlign="right">
         {filteredPoolsData?.map(({ id }) => (
-          <Text mb={mb} key={id}>
+          <Text mb={mb ?? "0"} key={id}>
             {t("N/A")}
           </Text>
         ))}

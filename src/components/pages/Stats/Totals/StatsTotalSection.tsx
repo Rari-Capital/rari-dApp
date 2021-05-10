@@ -3,7 +3,10 @@ import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 // Hooks
-import { useAggregatePoolInfos } from "hooks/usePoolInfo";
+import {
+  AggregatePoolsInfoReturn,
+  useAggregatePoolInfos,
+} from "hooks/usePoolInfo";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { usePool2APR } from "hooks/pool2/usePool2APR";
@@ -15,6 +18,7 @@ import {
   TrancheRating,
   useEstimatedSFI,
   usePrincipalBalance,
+  UseEstimatedSFIReturn,
 } from "hooks/tranches/useSaffronData";
 
 // Components
@@ -26,11 +30,20 @@ import TranchesRow from "./TranchesRow";
 import { FusePoolData } from "utils/fetchFusePoolData";
 import { useTranslation } from "react-i18next";
 
-const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
+const StatsTotalSection = ({
+  setNetDeposits,
+  setNetDebt,
+}: {
+  setNetDeposits: (input: number) => void;
+  setNetDebt: (input: number) => void;
+}) => {
   const { t } = useTranslation();
 
   // Earn
-  const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();
+  const {
+    totals,
+    aggregatePoolsInfo,
+  }: AggregatePoolsInfoReturn = useAggregatePoolInfos();
   const hasDepositsInEarn = aggregatePoolsInfo?.some(
     (p) => !p?.poolBalance?.isZero()
   );
@@ -47,13 +60,19 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
   const hasDepositsInPool2 = !!balance?.SLP;
 
   // Tranches
-  const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
-  const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
-  const totalPrincipal = usePrincipalBalance();
+  const daiSPrincipal: string | undefined = usePrincipal(
+    TranchePool.DAI,
+    TrancheRating.S
+  );
+  const daiAPrincipal: string | undefined = usePrincipal(
+    TranchePool.DAI,
+    TrancheRating.A
+  );
+  const totalPrincipal: string | undefined = usePrincipalBalance();
   const parsedTotalPrincipal: number = totalPrincipal
     ? parseFloat(totalPrincipal?.replace(",", "").replace("$", ""))
     : 0;
-  const estimatedSFI = useEstimatedSFI();
+  const estimatedSFI: UseEstimatedSFIReturn | undefined = useEstimatedSFI();
   const hasDepositsInTranches = useMemo(
     () => parsedTotalPrincipal > 0 ?? false,
     [parsedTotalPrincipal]
@@ -61,14 +80,13 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
 
   // Total Deposits
   const totalDepositsUSD = useMemo(() => {
-    const { totalSupplyBalanceUSD: fuseTotal } = fusePoolsData?.reduce(
-      (a, b) => {
+    const { totalSupplyBalanceUSD: fuseTotal }: FusePoolData =
+      fusePoolsData?.reduce((a, b) => {
         return {
           totalSupplyBalanceUSD:
             a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
-        };
-      }
-    ) ?? { totalSupplyBalanceUSD: 0 };
+        } as FusePoolData;
+      }) ?? ({ totalSupplyBalanceUSD: 0 } as FusePoolData);
 
     const vaultTotal = totals?.balance ?? 0;
 
@@ -83,17 +101,17 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
 
   // Total debt - todo: refactor into the `useFusePoolsData` hook
   const totalDebtUSD = useMemo(() => {
-    const { totalBorrowBalanceUSD } = fusePoolsData?.reduce((a, b) => {
-      return {
-        totalBorrowBalanceUSD:
-          a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
-      };
-    }) ?? { totalBorrowBalanceUSD: 0 };
+    const { totalBorrowBalanceUSD }: FusePoolData =
+      fusePoolsData?.reduce((a, b) => {
+        return {
+          totalBorrowBalanceUSD:
+            a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
+        } as FusePoolData;
+      }) ?? ({ totalBorrowBalanceUSD: 0 } as FusePoolData);
     return totalBorrowBalanceUSD;
   }, [fusePoolsData]);
 
   useEffect(() => {
-    console.log({ totalDepositsUSD, totalDebtUSD });
     if (totalDepositsUSD && !Number.isNaN(totalDepositsUSD))
       setNetDeposits(totalDepositsUSD);
     if (totalDebtUSD && !Number.isNaN(totalDebtUSD)) setNetDebt(totalDebtUSD);
@@ -115,10 +133,18 @@ const StatsTotalSection = ({ setNetDeposits, setNetDebt }) => {
         <Thead color="white">
           <Tr>
             <Th color="white">{t("Product")}</Th>
-            <Th color="white" textAlign="right">{t("Pool")}</Th>
-            <Th color="white" textAlign="right">{t("Deposits")}</Th>
-            <Th color="white" textAlign="right">{t(earnedHeaderText)}</Th>
-            <Th color="white" textAlign="right">Interest Earned</Th>
+            <Th color="white" textAlign="right">
+              {t("Pool")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Deposits")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t(earnedHeaderText)}
+            </Th>
+            <Th color="white" textAlign="right">
+              Interest Earned
+            </Th>
           </Tr>
         </Thead>
 

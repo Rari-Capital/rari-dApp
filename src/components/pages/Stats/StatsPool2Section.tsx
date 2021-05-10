@@ -50,10 +50,18 @@ const Earn = () => {
         <Thead color="white">
           <Tr>
             <Th color="white">{t("Pool")}</Th>
-            <Th color="white" textAlign="right">{t("APY")}</Th>
-            <Th color="white" textAlign="right">{t("Deposits")}</Th>
-            <Th color="white" textAlign="right">{t("RGT Earned")}</Th>
-            <Th color="white" textAlign="right">{t("Growth")}</Th>
+            <Th color="white" textAlign="right">
+              {t("APY")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Deposits")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("RGT Earned")}
+            </Th>
+            <Th color="white" textAlign="right">
+              {t("Growth")}
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -111,7 +119,7 @@ const Earn = () => {
             {/* Todo (sharad) - implement totals for apy and growth */}
             <Tr>
               <Td>
-                <Text fontWeight={hasDeposits && "bold"}>Total</Text>
+                <Text fontWeight={hasDeposits ? "bold" : "normal"}>Total</Text>
               </Td>
 
               <Td textAlign="right">
@@ -131,9 +139,8 @@ const Earn = () => {
                   {earned?.toFixed(2)} RGT
                 </Text>
               </Td>
-              
-              <Td textAlign="right"> </Td>
 
+              <Td textAlign="right"> </Td>
             </Tr>
           </>
         </Tbody>
