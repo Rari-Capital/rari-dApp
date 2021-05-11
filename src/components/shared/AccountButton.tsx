@@ -100,7 +100,7 @@ const Buttons = ({
   }, [isAuthed, login, openModal]);
 
   return (
-    <>
+    <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
           {/* <DashboardBox
@@ -162,7 +162,7 @@ const Buttons = ({
           )}
         </Row>
       </DashboardBox>
-    </>
+    </Row>
   );
 };
 
@@ -222,6 +222,7 @@ export const SettingsModal = ({
             height="51px"
             mb={4}
           />
+          
 
           <Button
             bg="facebook.500"

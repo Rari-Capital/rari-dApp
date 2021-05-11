@@ -5,6 +5,7 @@ import loadable from "@loadable/component";
 import FullPageSpinner from "./shared/FullPageSpinner";
 import { Pool } from "../utils/poolUtils";
 import Layout from "./shared/Layout";
+import Home from "./pages/Home/Home";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -135,6 +136,7 @@ const App = React.memo(() => {
         <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
         <Route path="/" element={<MultiPoolPortal />} />
+        <Route path="/home" element={<Home />} />
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Link,
@@ -8,95 +9,77 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
-import { PixelSize, Row } from "buttered-chakra";
-import React from "react";
-import { AccountButton } from "./AccountButton";
-import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
-import {
-  AnimatedFuseSmallLogo,
-  AnimatedPoolLogo,
-  AnimatedSmallLogo,
-  FuseSmallLogo,
-  PoolLogo,
-} from "./Logos";
-import { Link as RouterLink, useLocation } from "react-router-dom";
 
+import { PixelSize, Row } from "buttered-chakra";
+
+//  Components
+import { AccountButton } from "../AccountButton";
+import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "../DashboardBox";
+import { AnimatedSmallLogo } from "../Logos";
+
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useRari } from "context/RariContext";
+import { HeaderLink } from "./HeaderLink";
+import HeaderSearchbar from "./HeaderSearchbar";
+
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
 );
 
-export const Header = ({
-  isAuthed,
-  isPool,
-  isFuse,
-  padding,
-}: {
-  isAuthed: boolean;
-  isFuse?: boolean;
-  isPool?: boolean;
-  padding?: boolean;
-}) => {
+export const NewHeader = () => {
+  const { isAuthed } = useRari();
   const { t } = useTranslation();
+  const isMobile = useIsSmallScreen()
+
 
   return (
     <Row
       color="#FFFFFF"
-      px={padding ? 4 : 0}
+      px={4}
       height="38px"
       my={4}
-      mainAxisAlignment="space-between"
+      mainAxisAlignment="space-around"
       crossAxisAlignment="center"
       overflowX="visible"
       overflowY="visible"
       width="100%"
     >
-      <RouterLink to="/home">
-      {isAuthed ? (
-        isPool ? (
-          <AnimatedPoolLogo />
-        ) : isFuse ? (
-          <AnimatedFuseSmallLogo />
-        ) : (
-          <AnimatedSmallLogo />
-        )
-      ) : isPool ? (
-        <PoolLogo />
-      ) : isFuse ? (
-        <FuseSmallLogo />
-      ) : (
-        <AnimatedSmallLogo />
-      )}
-      </RouterLink>
+      <AnimatedSmallLogo />
 
       <Row
         mx={4}
         expand
-        mainAxisAlignment={{ md: "space-around", base: "space-between" }}
-        crossAxisAlignment="flex-start"
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
         overflowX="auto"
         overflowY="hidden"
-        transform="translate(0px, 7px)"
+        // transform="translate(0px, 7px)"
+        height="100%"
       >
         <HeaderLink name={t("Overview")} route="/" />
 
-        <PoolsLink ml={4} />
+        <PoolsLink ml={5} />
 
-        <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
+        <HeaderLink ml={5} name={t("Fuse")} route="/fuse" />
 
-        <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
+        <HeaderLink ml={5} name={t("Pool2")} route="/pool2" />
 
-        <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
+        <HeaderLink ml={5} name={t("Tranches")} route="/tranches" />
 
-        {/* <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" /> */}
+        {/* <HeaderLink ml={5} name={t("Vote")} route="https://vote.rari.capital" /> */}
 
-        <GovernanceLink ml={4} />
+        <GovernanceLink ml={5} />
 
         {isAuthed && (
-          <HeaderLink ml={4} name={t("Positions")} route="/positions" />
+          <HeaderLink ml={5} name={t("Positions")} route="/positions" />
         )}
       </Row>
+
+      {!isMobile &&  <HeaderSearchbar />}
 
       <AccountButton />
     </Row>
@@ -175,45 +158,5 @@ export const SubMenuItem = ({ name, link }: { name: string; link: string }) => {
   );
 };
 
-export const HeaderLink = ({
-  name,
-  route,
-  ml,
-  noUnderline,
-}: {
-  name: string;
-  route: string;
-  noUnderline?: boolean;
-  ml?: number | string;
-}) => {
-  const location = useLocation();
 
-  const isExternal = route.startsWith("http");
-
-  const isOnThisRoute =
-    location.pathname === route ||
-    location.pathname.replace(/\/+$/, "") === route;
-
-  return isExternal ? (
-    <Link
-      href={route}
-      isExternal
-      ml={ml ?? 0}
-      whiteSpace="nowrap"
-      className={noUnderline ? "no-underline" : ""}
-    >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
-    </Link>
-  ) : (
-    <Link
-      /* @ts-ignore */
-      as={RouterLink}
-      to={route}
-      ml={ml ?? 0}
-      whiteSpace="nowrap"
-      className={noUnderline ? "no-underline" : ""}
-    >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
-    </Link>
-  );
-};
+export default NewHeader

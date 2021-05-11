@@ -24,7 +24,6 @@ import Footer from "components/shared/Footer";
 
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();
-
   const isMobile = useIsSmallScreen();
 
   return (
