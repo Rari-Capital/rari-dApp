@@ -17,16 +17,16 @@ import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";
 import { Link as RouterLink } from "react-router-dom";
 
-import { FuseLogoPNGWhite } from "components/shared/Logos";
 import { motion } from "framer-motion";
 
 import { smallStringUsdFormatter } from "utils/bigUtils";
 
-import FusePNGWhite from "static/icons/fuse.png";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 import { useTVLFetchers } from "hooks/useTVL";
 import HomeVaultCard from "./HomeVaultCard";
 import Footer from "components/shared/Footer";
+import OpportunityCard from "./OpportunityCard";
+import HomeCarousel from "./HomeCarousel";
 
 const Home = React.memo(() => {
   const { isAuthed } = useRari();
@@ -91,7 +91,7 @@ const Home = React.memo(() => {
           // background="tomato"
           // px="20%"
         >
-          <Marquee pauseOnHover gradient={false}>
+          <Marquee pauseOnHover gradient={false} style={{padding: '10px'}}>
             <HomeFuseCard />
             <HomeFuseCard />
             <HomeFuseCard />
@@ -155,7 +155,7 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           mx="auto"
           my={5}
-          px={{ sm: "0", md: "15%" }}
+          px={{ sm: "5%", md: "15%" }}
           width="100%"
           // background="purple"
         >
@@ -206,7 +206,7 @@ const Home = React.memo(() => {
                 height="100%"
                 flex="1 1 70%"
               >
-                <Heading>Hellow</Heading>
+                <HomeCarousel/>
               </Column>
             </Row>
           </Box>
@@ -231,7 +231,7 @@ const Home = React.memo(() => {
               width="100%"
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
-              px={{ sm: "0", md: "15%" }}
+              px={{ sm: "5%", md: "15%" }}
               mb={5}
             >
               <Heading size="md">Easily Earn </Heading>
@@ -243,7 +243,7 @@ const Home = React.memo(() => {
                 </Link>
               </RouterLink>
             </Row>
-              <Marquee pauseOnHover gradient={false}>
+              <Marquee direction="right" pauseOnHover gradient={false} style={{padding: '10px'}}>
                 <HomeVaultCard bg="blue"/>
                 <HomeVaultCard bg="yellow" />
                 <HomeVaultCard bg="green" />
@@ -260,57 +260,12 @@ const Home = React.memo(() => {
 
 
         <Footer />
-
-
-      </Column>
+        </Column>
     </>
   );
 });
 
 export default Home;
 
-const colors = [
-  "coral",
-  "blue",
-  "purple",
-  "green",
-  "indianred",
-  "brown",
-  "blueviolet",
-  "crimson",
-  "rosybrown",
-];
 
-const OpportunityCard = () => {
-  const color = colors[Math.floor(Math.random() * colors.length)];
-  return (
-    <Link to="/">
-      <LinkBox
-        bg={color}
-        height="100%"
-        width="100%"
-        borderRadius="lg"
-        transition="transform 0.2s ease 0s"
-        p={["5%", "10%", "10%"]}
-        _hover={{
-          transform: "translateY(-5px)",
-        }}
-      >
-        <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            height={"100%"}
-          >
-            <Heading size="xs">Heading</Heading>
-            <Text fontSize="xs">Subtitle</Text>
-            <Text fontSize="xs" mt={2}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            </Text>
-          </Column>
-          <Image src={FusePNGWhite} boxSize="50px" float="left" my="auto" />
-        </Row>
-      </LinkBox>
-    </Link>
-  );
-};
+
