@@ -14,9 +14,17 @@ import {
 const HomeFuseCard = () => {
   return (
     <Link to="/fuse">
-      <Box height="120px" width="200px" background="lime" ml={10} p={5} _hover={{
-          background:'pink'
-      }}>
+      <Box
+        height="100%"
+        width="200px"
+        ml={10}
+        p={5}
+        border="1px solid grey"
+        borderRadius="lg"
+        _hover={{
+          background: "grey",
+        }}
+      >
         <AvatarGroup mt={1} size="xs" max={3}>
           <Avatar
             bg="#FFF"
@@ -38,7 +46,9 @@ const HomeFuseCard = () => {
           />
         </AvatarGroup>
         <Heading size="sm">Title Title Title </Heading>
-        <Text size="sm" color="gray.500" fontWeight="bold">Subtitle</Text>
+        <Text size="sm" color="gray.500" fontWeight="bold">
+          Subtitle
+        </Text>
       </Box>
     </Link>
   );

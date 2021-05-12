@@ -88,15 +88,23 @@ export const PNGLogo = ({
   Logo = FuseLogo,
   width = "20px",
   height = "20px",
+  ...props
 }: {
   boxSize?: string;
   Logo?: any;
   width?: string;
   height?: string;
+  props?: any;
 }) => {
   return (
     <Box boxSize={boxSize} flexShrink={0}>
-      <Image boxSize={boxSize} src={Logo} width={width} height={height} />
+      <Image
+        boxSize={boxSize}
+        src={Logo}
+        width={width}
+        height={height}
+        {...props}
+      />
     </Box>
   );
 };
@@ -117,9 +125,13 @@ export const EarnLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
   <PNGLogo boxSize={boxSize} Logo={EarnPNGGreen} />
 );
 
-export const FuseLogoPNGWhite = ({ boxSize }: { boxSize?: string }) => (
-  <PNGLogo boxSize={boxSize} Logo={FusePNGWhite} />
-);
+export const FuseLogoPNGWhite = ({
+  boxSize,
+  ...props
+}: {
+  boxSize?: string;
+  props?: any;
+}) => <PNGLogo boxSize={boxSize} Logo={FusePNGWhite} {...props} />;
 
 export const FuseLogoPNGGreen = ({ boxSize }: { boxSize?: string }) => (
   <PNGLogo boxSize={boxSize} Logo={FusePNGGreen} />
