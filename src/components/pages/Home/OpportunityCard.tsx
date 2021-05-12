@@ -16,7 +16,7 @@ const OpportunityCard = () => {
     return (
       <Link to="/">
         <LinkBox
-          bg="aqua"
+          bg="purple"
           height="100%"
           width="100%"
           borderRadius="lg"

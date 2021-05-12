@@ -29,7 +29,7 @@ const HomeFuseCard = () => {
           transform: "translateY(-5px)",
         }}
       >
-        <AvatarGroup mt={1} size="xs" max={3}>
+        <AvatarGroup my={1} size="xs" max={3}>
           <Avatar
             bg="#FFF"
             borderWidth="1px"
