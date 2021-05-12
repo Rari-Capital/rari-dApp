@@ -16,14 +16,22 @@ import NewHeader from "components/shared/Header2/NewHeader";
 import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";
 import { Link as RouterLink } from "react-router-dom";
+
 import { FuseLogoPNGWhite } from "components/shared/Logos";
 import { motion } from "framer-motion";
 
+import { smallStringUsdFormatter } from "utils/bigUtils";
+
 import FusePNGWhite from "static/icons/fuse.png";
+import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+import { useTVLFetchers } from "hooks/useTVL";
 
 const Home = React.memo(() => {
   const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
+
+  const { getNumberTVL } = useTVLFetchers();
+
   return (
     <>
       <Column
@@ -105,8 +113,10 @@ const Home = React.memo(() => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           mx="auto"
-          px={{ sm: "0", md: "15%" }}
+          my={10}
+          px={["5%", "15%", "15%"]}
           width="100%"
+          id="poop"
           // background="purple"
         >
           <Column
@@ -114,7 +124,6 @@ const Home = React.memo(() => {
             crossAxisAlignment="flex-start"
             width="100%"
             // bg="pink"
-            p={10}
           >
             <Row
               width="100%"
@@ -132,21 +141,81 @@ const Home = React.memo(() => {
             </Row>
 
             <SimpleGrid
-              columns={{ sm: 2, md: 4 }}
+              columns={{ sm: 2, md: 2, lg: 4 }}
               spacing="32px"
               w="100%"
               mt={5}
             >
-              <OpportunityCard />
-              <OpportunityCard />
-              <OpportunityCard />
-              <OpportunityCard />
-              <OpportunityCard />
-              <OpportunityCard />
-              <OpportunityCard />
-              <OpportunityCard />
+              {Array(isMobile ? 4 : 8)
+                .fill(0)
+                .map((_, i) => (
+                  <OpportunityCard />
+                ))}
             </SimpleGrid>
           </Column>
+        </Row>
+
+        {/* Factoid Carousel */}
+        <Row
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          mx="auto"
+          my={5}
+          px={{ sm: "0", md: "15%" }}
+          width="100%"
+          // background="purple"
+        >
+          <Box
+            background="purple"
+            width="100%"
+            border="1px solid grey"
+            borderRadius="lg"
+            height="200px"
+          >
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              height="100%"
+              width="100%"
+            >
+              <Column
+                mainAxisAlignment="space-around"
+                crossAxisAlignment="flex-start"
+                bg="pink"
+                height="100%"
+                flex="0 1 30%"
+                p={5}
+              >
+                <APYWithRefreshMovingStat
+                  formatStat={smallStringUsdFormatter}
+                  fetchInterval={40000}
+                  loadingPlaceholder="$?"
+                  apyInterval={100}
+                  fetch={getNumberTVL}
+                  queryKey={"totalValueLocked"}
+                  apy={0.15}
+                  statSize="2xl"
+                  captionSize="xs"
+                  caption={"in TVL across all products"}
+                  crossAxisAlignment="flex-start"
+                  captionFirst={false}
+                />
+                <Text fontSize="sm" fontWeight="bold">
+                  Discover infinite possibilities across the Rari Capital
+                  Ecosystem
+                </Text>
+              </Column>
+              <Column
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                bg="blue"
+                height="100%"
+                flex="1 1 70%"
+              >
+                <Heading>Hellow</Heading>
+              </Column>
+            </Row>
+          </Box>
         </Row>
       </Column>
     </>

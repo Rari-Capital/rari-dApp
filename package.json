@@ -97,6 +97,7 @@
   },
   "devDependencies": {
     "@types/react-query": "^1.1.2",
+    "@types/react-slick": "^0.23.4",
     "@vercel/node": "^1.8.3"
   }
 }
