@@ -25,6 +25,8 @@ import { smallStringUsdFormatter } from "utils/bigUtils";
 import FusePNGWhite from "static/icons/fuse.png";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 import { useTVLFetchers } from "hooks/useTVL";
+import HomeVaultCard from "./HomeVaultCard";
+import Footer from "components/shared/Footer";
 
 const Home = React.memo(() => {
   const { isAuthed } = useRari();
@@ -89,22 +91,14 @@ const Home = React.memo(() => {
           // background="tomato"
           // px="20%"
         >
-          <Marquee
-            pauseOnHover
-            gradient={false}
-            style={
-              {
-                // background: "red",
-              }
-            }
-          >
-            <HomeFuseCard></HomeFuseCard>
-            <HomeFuseCard></HomeFuseCard>
-            <HomeFuseCard></HomeFuseCard>
-            <HomeFuseCard></HomeFuseCard>
-            <HomeFuseCard></HomeFuseCard>
-            <HomeFuseCard></HomeFuseCard>
-            <HomeFuseCard></HomeFuseCard>
+          <Marquee pauseOnHover gradient={false}>
+            <HomeFuseCard />
+            <HomeFuseCard />
+            <HomeFuseCard />
+            <HomeFuseCard />
+            <HomeFuseCard />
+            <HomeFuseCard />
+            <HomeFuseCard />
           </Marquee>
         </Row>
 
@@ -166,11 +160,11 @@ const Home = React.memo(() => {
           // background="purple"
         >
           <Box
-            background="purple"
             width="100%"
             border="1px solid grey"
             borderRadius="lg"
             height="200px"
+            // background="purple"
           >
             <Row
               mainAxisAlignment="flex-start"
@@ -181,7 +175,7 @@ const Home = React.memo(() => {
               <Column
                 mainAxisAlignment="space-around"
                 crossAxisAlignment="flex-start"
-                bg="pink"
+                // bg="pink"
                 height="100%"
                 flex="0 1 30%"
                 p={5}
@@ -208,7 +202,7 @@ const Home = React.memo(() => {
               <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="center"
-                bg="blue"
+                // bg="blue"
                 height="100%"
                 flex="1 1 70%"
               >
@@ -217,6 +211,57 @@ const Home = React.memo(() => {
             </Row>
           </Box>
         </Row>
+
+        {/* Easily Earn (Vaults) */}
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          width="100%"
+          height="100%"
+          my={10}
+          // background="tomato"
+        >
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            width="100%"
+            // background="tomato"
+          >
+            <Row
+              width="100%"
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              px={{ sm: "0", md: "15%" }}
+              mb={5}
+            >
+              <Heading size="md">Easily Earn </Heading>
+              <RouterLink to="/">
+                <Link>
+                  <Text size="md" color="grey">
+                    View All
+                  </Text>
+                </Link>
+              </RouterLink>
+            </Row>
+              <Marquee pauseOnHover gradient={false}>
+                <HomeVaultCard bg="blue"/>
+                <HomeVaultCard bg="yellow" />
+                <HomeVaultCard bg="green" />
+                <HomeVaultCard bg="red" />
+                <HomeVaultCard bg="brown" />
+                <HomeVaultCard bg="purple" />
+                <HomeVaultCard bg="orange" />
+                <HomeVaultCard bg="violet" />
+              </Marquee>
+          </Column>
+        </Row>
+
+        {/* Explore Today */}
+
+
+        <Footer />
+
+
       </Column>
     </>
   );
