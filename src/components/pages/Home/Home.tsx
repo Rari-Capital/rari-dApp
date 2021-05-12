@@ -1,6 +1,14 @@
 import React from "react";
 import { Input } from "@chakra-ui/input";
-import { Heading, Text, Link, SimpleGrid, Box, Image, LinkBox } from "@chakra-ui/react";
+import {
+  Heading,
+  Text,
+  Link,
+  SimpleGrid,
+  Box,
+  Image,
+  LinkBox,
+} from "@chakra-ui/react";
 import { Center, Column, Row, useIsMobile } from "buttered-chakra";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -45,12 +53,22 @@ const Home = React.memo(() => {
             padding="20%"
             // background="aqua"
           >
-            <motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: -40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+            >
               <Heading size="2xl" textAlign="center" mb={10}>
                 Easily earn, lend <br /> and borrow
               </Heading>
             </motion.div>
-            <Input placeholder="Search" width="50%" outline="1px solid grey" />
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+            >
+              <Input placeholder="Search" outline="1px solid grey" />
+            </motion.div>
           </Column>
         </Row>
 
@@ -106,7 +124,9 @@ const Home = React.memo(() => {
               <Heading size="md">Explore Opportunities</Heading>
               <RouterLink to="/">
                 <Link>
-                  <Text size="md" color="grey">View All</Text>
+                  <Text size="md" color="grey">
+                    View All
+                  </Text>
                 </Link>
               </RouterLink>
             </Row>
@@ -156,10 +176,10 @@ const OpportunityCard = () => {
         height="100%"
         width="100%"
         borderRadius="lg"
-        transition= "transform 0.2s ease 0s"
+        transition="transform 0.2s ease 0s"
         p={["5%", "10%", "10%"]}
         _hover={{
-          transform: "translateY(-5px)"
+          transform: "translateY(-5px)",
         }}
       >
         <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
@@ -174,7 +194,7 @@ const OpportunityCard = () => {
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
             </Text>
           </Column>
-          <Image src={FusePNGWhite} boxSize="50px" float="left"  my="auto"/>
+          <Image src={FusePNGWhite} boxSize="50px" float="left" my="auto" />
         </Row>
       </LinkBox>
     </Link>
