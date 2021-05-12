@@ -91,7 +91,7 @@ const Home = React.memo(() => {
           // background="tomato"
           // px="20%"
         >
-          <Marquee pauseOnHover gradient={false} style={{padding: '10px'}}>
+          <Marquee gradient={false} style={{padding: '10px'}} >
             <HomeFuseCard />
             <HomeFuseCard />
             <HomeFuseCard />
@@ -108,9 +108,8 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           mx="auto"
           my={10}
-          px={["5%", "15%", "15%"]}
+          px={{ sm: "5%", md: "15%" }}
           width="100%"
-          id="poop"
           // background="purple"
         >
           <Column
@@ -202,9 +201,11 @@ const Home = React.memo(() => {
               <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="center"
-                // bg="blue"
+                bg="blue"
                 height="100%"
                 flex="1 1 70%"
+                width="1px" // weird hack to make the carousel fit. idk why it works
+                // p={20}
               >
                 <HomeCarousel/>
               </Column>
@@ -243,7 +244,7 @@ const Home = React.memo(() => {
                 </Link>
               </RouterLink>
             </Row>
-              <Marquee direction="right" pauseOnHover gradient={false} style={{padding: '10px'}}>
+              <Marquee direction="right" gradient={false} style={{padding: '10px'}}>
                 <HomeVaultCard bg="blue"/>
                 <HomeVaultCard bg="yellow" />
                 <HomeVaultCard bg="green" />

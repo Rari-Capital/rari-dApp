@@ -4,15 +4,20 @@ import { Box, Heading, Text } from "@chakra-ui/layout";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
 import { Column } from "buttered-chakra";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
 const HomeCarousel = () => {
+  const isMobile = useIsSmallScreen();
+
   return (
     <Column
       width="100%"
       height="100%"
       mainAxisAlignment="center"
       crossAxisAlignment="center"
-      p={10}
+      bg="blue"
+      //   padding={3}
+      id="carousel-column"
     >
       <Carousel
         autoPlay
@@ -20,21 +25,22 @@ const HomeCarousel = () => {
         showStatus={false}
         showArrows={false}
         showThumbs={false}
+        showIndicators={isMobile ? false : true}
       >
-        <Box>
-          <Heading size="lg">
+        <Box bg="lime" w="100%">
+          <Heading fontSize={["md", "large"]} textAlign="left">
             The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
             18.5% yield.
           </Heading>
         </Box>
-        <Box>
-          <Heading size="lg">
+        <Box bg="lime" w="100%">
+          <Heading fontSize={["md", "large"]} textAlign="left">
             The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
             18.5% yield.
           </Heading>
         </Box>
-        <Box>
-          <Heading size="lg">
+        <Box bg="lime" w="100%">
+          <Heading fontSize={["md", "lg"]} textAlign="left">
             The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
             18.5% yield.
           </Heading>

@@ -12,24 +12,11 @@ import { Center, Column, Row, useIsMobile } from "buttered-chakra";
 import FusePNGWhite from "static/icons/fuse.png";
 
 
-const colors = [
-    "coral",
-    "blue",
-    "purple",
-    "green",
-    "indianred",
-    "brown",
-    "blueviolet",
-    "crimson",
-    "rosybrown",
-  ];
-
 const OpportunityCard = () => {
-    const color = colors[Math.floor(Math.random() * colors.length)];
     return (
       <Link to="/">
         <LinkBox
-          bg={color}
+          bg="aqua"
           height="100%"
           width="100%"
           borderRadius="lg"

@@ -167,3 +167,45 @@ img:not([src]) {
   transition: font-size 0s !important;
   transition: transform 250ms !important;
 }
+
+
+/* React Responsive Carousel */
+
+.carousel-root {
+  width: 100%;
+  padding: 20px;
+  /* background-color: pink; */
+}
+
+.carousel-slider{
+  width: 100%;
+  height:100%;
+  margin-top: 10em;
+}
+
+.dot {
+  background-color: green;
+}
+
+/* Chakra UI sm breakpoint */
+@media only screen and (min-width: 30em) {
+  .carousel-root {
+    background-color: pink;
+  }
+}
+
+/* Chakra UI md breakpoint */
+@media only screen and (min-width: 48em) {
+  .carousel-root {
+    background-color: purple;
+  }
+}
+
+/* Chakra UI lg breakpoint */
+@media only screen and (min-width: 62em) {
+  .carousel-root {
+    background-color: orange;
+    height: 100%;
+    padding: 20px;
+  }
+}
