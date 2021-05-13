@@ -108,7 +108,7 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           mx="auto"
           my={10}
-          px={{ sm: "5%", md: "15%" }}
+          px={["5%", "15%", "15%", "15%"]}
           width="100%"
           // background="purple"
         >
@@ -154,7 +154,7 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           mx="auto"
           my={5}
-          px={{ sm: "5%", md: "15%" }}
+          px={{ base: "5%", sm: "5%", md: "15%" }}
           width="100%"
           // background="purple"
         >
@@ -201,7 +201,7 @@ const Home = React.memo(() => {
               <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="center"
-                bg="blue"
+                // bg="blue"
                 height="100%"
                 flex="1 1 70%"
                 width="1px" // weird hack to make the carousel fit. idk why it works

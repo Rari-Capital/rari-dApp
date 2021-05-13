@@ -15,7 +15,7 @@ const HomeCarousel = () => {
       height="100%"
       mainAxisAlignment="center"
       crossAxisAlignment="center"
-      bg="blue"
+      // bg="blue"
       //   padding={3}
       id="carousel-column"
     >
@@ -27,19 +27,28 @@ const HomeCarousel = () => {
         showThumbs={false}
         showIndicators={isMobile ? false : true}
       >
-        <Box bg="lime" w="100%">
+        <Box 
+        // bg="lime" 
+        w="100%"
+        >
           <Heading fontSize={["md", "large"]} textAlign="left">
             The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
             18.5% yield.
           </Heading>
         </Box>
-        <Box bg="lime" w="100%">
+        <Box 
+        // bg="lime" 
+        w="100%"
+        >
           <Heading fontSize={["md", "large"]} textAlign="left">
             The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
             18.5% yield.
           </Heading>
         </Box>
-        <Box bg="lime" w="100%">
+        <Box 
+        // bg="lime" 
+        w="100%"
+        >
           <Heading fontSize={["md", "lg"]} textAlign="left">
             The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
             18.5% yield.
