@@ -135,7 +135,7 @@ const Buttons = ({
         height="40px"
         flexShrink={0}
         flexGrow={0}
-        width="135px"
+        width="133px"
         onClick={handleAccountButtonClick}
       >
         <Row
