@@ -119,7 +119,7 @@ const Buttons = ({
             as="button"
             height="40px"
             flexShrink={0}
-            width="98px"
+            width="95px"
             onClick={openClaimRGTModal}
             fontWeight="bold"
           >
@@ -135,7 +135,7 @@ const Buttons = ({
         height="40px"
         flexShrink={0}
         flexGrow={0}
-        width="140px"
+        width="135px"
         onClick={handleAccountButtonClick}
       >
         <Row
