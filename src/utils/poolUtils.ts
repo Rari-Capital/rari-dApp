@@ -4,11 +4,6 @@ import EthereumPool from "../rari-sdk/pools/ethereum";
 import StablePool from "../rari-sdk/pools/stable";
 import YieldPool from "../rari-sdk/pools/yield";
 
-// Icons
-import EthIcon from "../static/ethicon.png";
-import StableIcon from "../static/stableicon.png";
-import YieldIcon from "../static/yieldicon.png";
-
 export enum Pool {
   STABLE = "stable",
   YIELD = "yield",
@@ -46,6 +41,3 @@ export const getPoolCaption = (pool: Pool, t: any) =>
     : pool === Pool.STABLE
     ? t("Safe returns on stablecoins")
     : t("High risk, high reward");
-
-export const getPoolLogo = (pool: Pool, t: any) =>
-  pool === Pool.ETH ? EthIcon : pool === Pool.STABLE ? StableIcon : YieldIcon;

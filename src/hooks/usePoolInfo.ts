@@ -1,12 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { usePoolType } from "context/PoolContext";
-import {
-  Pool,
-  getPoolName,
-  getPoolCaption,
-  getPoolLogo,
-} from "utils/poolUtils";
+import { Pool, getPoolName, getPoolCaption } from "utils/poolUtils";
 import { formatBalanceBN } from "utils/format";
 
 // Constants
@@ -17,6 +12,7 @@ import { usePoolInterestEarned } from "./usePoolInterest";
 import { useRari } from "context/RariContext";
 import { BN, shortUsdFormatter } from "utils/bigUtils";
 import { PoolInterestEarned } from "utils/fetchPoolInterest";
+import { getPoolLogo } from "utils/poolIconUtils";
 
 export const usePoolInfo = (poolType: Pool) => {
   const { t } = useTranslation();
@@ -24,7 +20,7 @@ export const usePoolInfo = (poolType: Pool) => {
   const poolData = useMemo(() => {
     const poolName = getPoolName(poolType, t);
     const poolCaption = getPoolCaption(poolType, t);
-    const poolLogo = getPoolLogo(poolType, t);
+    const poolLogo = getPoolLogo(poolType);
     return { poolCaption, poolName, poolLogo };
   }, [poolType, t]);
 
@@ -88,9 +84,8 @@ export const useAggregatePoolInfos = () => {
   const poolInfos = usePoolInfos();
   const poolAPYs = usePoolsAPY(poolInfos);
   const poolBalances = usePoolBalances(poolInfos);
-  const poolsInterestEarned:
-    | PoolInterestEarned
-    | undefined = usePoolInterestEarned();
+  const poolsInterestEarned: PoolInterestEarned | undefined =
+    usePoolInterestEarned();
 
   // Totals
   const { data: totalPoolsBalance } = useTotalPoolsBalance();
