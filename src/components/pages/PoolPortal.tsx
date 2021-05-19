@@ -122,45 +122,40 @@ const PoolPortalContent = () => {
     ],
   });
 
-  const {
-    spacing: statsSidebarSpacing,
-    childSizes: statsSidebarChildSizes,
-  } = useSpacedLayout({
-    parentHeight: bodySize.asNumber(),
-    spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [
-      new PixelSize(90),
-      new PixelSize(100),
-      new PixelSize(152),
-      new PixelSize(180),
-      new PercentOnDesktopPixelOnMobileSize({
-        percentageSize: 1,
-        pixelSize: 100,
-      }),
-    ],
-  });
+  const { spacing: statsSidebarSpacing, childSizes: statsSidebarChildSizes } =
+    useSpacedLayout({
+      parentHeight: bodySize.asNumber(),
+      spacing: DASHBOARD_BOX_SPACING.asNumber(),
+      childSizes: [
+        new PixelSize(90),
+        new PixelSize(100),
+        new PixelSize(152),
+        new PixelSize(180),
+        new PercentOnDesktopPixelOnMobileSize({
+          percentageSize: 1,
+          pixelSize: 100,
+        }),
+      ],
+    });
 
-  const {
-    spacing: mainSectionSpacing,
-    childSizes: mainSectionChildSizes,
-  } = useSpacedLayout({
-    parentHeight: bodySize.asNumber(),
-    spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [
-      new PixelSize(90),
-      new PercentOnDesktopPixelOnMobileSize({
-        percentageSize: 1,
-        pixelSize: 600,
-      }),
-      new PixelSize(180),
-    ],
-  });
+  const { spacing: mainSectionSpacing, childSizes: mainSectionChildSizes } =
+    useSpacedLayout({
+      parentHeight: bodySize.asNumber(),
+      spacing: DASHBOARD_BOX_SPACING.asNumber(),
+      childSizes: [
+        new PixelSize(90),
+        new PercentOnDesktopPixelOnMobileSize({
+          percentageSize: 1,
+          pixelSize: 600,
+        }),
+        new PixelSize(180),
+      ],
+    });
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
-  const { data: poolBalance, isLoading: isPoolBalanceLoading } = usePoolBalance(
-    poolType
-  );
+  const { data: poolBalance, isLoading: isPoolBalanceLoading } =
+    usePoolBalance(poolType);
 
   const {
     isOpen: isDepositModalOpen,
@@ -608,36 +603,37 @@ const APYStats = () => {
 
   const { rari } = useRari();
 
-  const { data: apys, isLoading: areAPYsLoading, isError } = useQuery(
-    pool + " monthly and weekly apys",
-    async () => {
-      const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
-        getSDKPool({
-          rari,
-          pool,
-        }).apy.getApyOverTime(
-          Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
-        ),
-        getSDKPool({
-          rari,
-          pool,
-        }).apy.getApyOverTime(
-          Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
-        ),
-        fetchRGTAPR(rari),
-      ]);
+  const {
+    data: apys,
+    isLoading: areAPYsLoading,
+    isError,
+  } = useQuery(pool + " monthly and weekly apys", async () => {
+    const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
+      getSDKPool({
+        rari,
+        pool,
+      }).apy.getApyOverTime(
+        Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
+      ),
+      getSDKPool({
+        rari,
+        pool,
+      }).apy.getApyOverTime(
+        Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
+      ),
+      fetchRGTAPR(rari),
+    ]);
 
-      const month = parseFloat(
-        rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(1);
+    const month = parseFloat(
+      rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
+    ).toFixed(1);
 
-      const week = parseFloat(
-        rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(1);
+    const week = parseFloat(
+      rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
+    ).toFixed(1);
 
-      return { month, week, rgtAPR };
-    }
-  );
+    return { month, week, rgtAPR };
+  });
 
   return (
     <Column
@@ -741,6 +737,8 @@ const StrategyAllocation = () => {
       ? ETHStrategyAllocationChartOptions
       : USDStrategyAllocationChartOptions;
 
+  console.log({ allocations });
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -762,8 +760,8 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
-            // @ts-ignore
-            labels: allocations![0],
+            // labels: allocations?.[0].map(String) ?? [],
+            labels: [1,2,3].map(String) ?? [],
           }}
           type="pie"
           width="100%"
