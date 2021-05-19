@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, Text } from "@chakra-ui/layout";
+import { Box, Heading} from "@chakra-ui/layout";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";

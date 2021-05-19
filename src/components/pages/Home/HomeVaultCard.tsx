@@ -1,14 +1,8 @@
-import React, { Props } from "react";
+import React from "react";
 import {
-  AvatarGroup,
-  Avatar,
-  Box,
   Heading,
   Link,
-  Select,
-  Spinner,
   Text,
-  useClipboard,
 } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
 

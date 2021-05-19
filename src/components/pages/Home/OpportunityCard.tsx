@@ -7,7 +7,7 @@ import {
     Image,
     LinkBox,
   } from "@chakra-ui/react";
-import { Center, Column, Row, useIsMobile } from "buttered-chakra";
+import { Column, Row } from "buttered-chakra";
 
 import FusePNGWhite from "static/icons/fuse.png";
 

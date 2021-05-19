@@ -12,7 +12,7 @@ const FuseRow = ({
   filteredPoolsData,
   fusePoolsData,
 }: {
-  filteredPoolsData: MergedPool[] | undefined;
+  filteredPoolsData: MergedPool[] | null;
   fusePoolsData: FusePoolData[];
 }) => {
   const singleRow = useMemo(() => fusePoolsData?.length === 1, [fusePoolsData]);

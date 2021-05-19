@@ -5,13 +5,11 @@ import {
   Box,
   Heading,
   Link,
-  Select,
-  Spinner,
   Text,
-  useClipboard,
 } from "@chakra-ui/react";
+import { FusePoolData, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
-const HomeFuseCard = () => {
+const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
   return (
     <Link to="/fuse">
       <Box
@@ -25,31 +23,24 @@ const HomeFuseCard = () => {
         opacity={0.9}
         _hover={{
           // background: "grey",
-          opacity:1,
+          opacity: 1,
           transform: "translateY(-5px)",
         }}
       >
-        <AvatarGroup my={1} size="xs" max={3}>
-          <Avatar
-            bg="#FFF"
-            borderWidth="1px"
-            name={"Loading..."}
-            src="https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-          />
-          <Avatar
-            bg="#FFF"
-            borderWidth="1px"
-            name={"Loading..."}
-            src="https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-          />
-          <Avatar
-            bg="#FFF"
-            borderWidth="1px"
-            name={"Loading..."}
-            src="https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-          />
+        <AvatarGroup my={1} size="xs" max={0}>
+          {pool.assets.slice(0,2).map((asset : USDPricedFuseAsset, i) => {
+            console.log(i, asset)
+            return (
+              <Avatar
+              bg="#FFF"
+              borderWidth="1px"
+              name={"Loading..."}
+              src="https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+            /> 
+            )
+          })}
         </AvatarGroup>
-        <Heading size="sm">Title Title Title </Heading>
+        <Heading size="sm">{pool.name}</Heading>
         <Text size="sm" color="gray.500" fontWeight="bold">
           Subtitle
         </Text>

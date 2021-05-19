@@ -6,10 +6,8 @@ import {
   Link,
   SimpleGrid,
   Box,
-  Image,
-  LinkBox,
 } from "@chakra-ui/react";
-import { Center, Column, Row, useIsMobile } from "buttered-chakra";
+import {  Column, Row } from "buttered-chakra";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
@@ -28,11 +26,17 @@ import Footer from "components/shared/Footer";
 import OpportunityCard from "./OpportunityCard";
 import HomeCarousel from "./HomeCarousel";
 
+// constants
+import { HOMEPAGE_FUSE_POOLS } from "constants/homepage";
+import { useFusePoolsData } from "hooks/useFusePoolData";
+
 const Home = React.memo(() => {
   const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
 
   const { getNumberTVL } = useTVLFetchers();
+  const pools = useFusePoolsData(HOMEPAGE_FUSE_POOLS)
+  console.log({pools})
 
   return (
     <>
@@ -52,7 +56,6 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           width="100%"
           height="400px"
-          // background="aqua"
           px={{ sm: "0", md: "15%" }}
         >
           <Column
@@ -92,13 +95,7 @@ const Home = React.memo(() => {
           // px="20%"
         >
           <Marquee gradient={false} style={{padding: '10px'}} >
-            <HomeFuseCard />
-            <HomeFuseCard />
-            <HomeFuseCard />
-            <HomeFuseCard />
-            <HomeFuseCard />
-            <HomeFuseCard />
-            <HomeFuseCard />
+            {pools?.map(pool => <HomeFuseCard pool={pool}/> )}
           </Marquee>
         </Row>
 
