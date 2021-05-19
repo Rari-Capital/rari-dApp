@@ -32,7 +32,6 @@ export default async (request: NowRequest, response: NowResponse) => {
     const name = await tokenContract.methods.name().call();
     const symbol = await tokenContract.methods.symbol().call();
 
-    // BNB
     if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xB8c77482e45F1F44dE1745F52C74426C631bDD52")
@@ -79,6 +78,34 @@ export default async (request: NowRequest, response: NowResponse) => {
       });
 
       return;
+    } else if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x986b4AFF588a109c09B50A03f42E4110E29D353F")
+    ) {
+      // yvCurve-sETH
+      response.json({
+        name: "Curve sETH yVault",
+        symbol: "ycrvSETH",
+        decimals,
+        color: "#627EEA",
+        overlayTextColor: "#FFFFFF",
+        logoURL:
+          "https://raw.githack.com/yearn/yearn-assets/master/icons/tokens/0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c/logo-128.png",
+      });
+    } else if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x96Ea6AF74Af09522fCB4c28C269C26F59a31ced6")
+    ) {
+      // yvCurve-LINK
+      response.json({
+        name: "Curve LINK/sLINK yVault",
+        symbol: "ycrvLINK",
+        decimals,
+        color: "#2A5ADA",
+        overlayTextColor: "#FFFFFF",
+        logoURL:
+          "https://raw.githack.com/yearn/yearn-assets/master/icons/tokens/0xcee60cFa923170e4f8204AE08B4fA6A3F5656F3a/logo-128.png",
+      });
     }
 
     response.json({
