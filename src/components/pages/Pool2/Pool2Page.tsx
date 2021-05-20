@@ -6,6 +6,7 @@ import {
   Link,
   Spinner,
   Text,
+  Box,
 } from "@chakra-ui/react";
 
 import { Center, RowOrColumn, Column } from "buttered-chakra";
@@ -157,14 +158,11 @@ const Pool2Page = () => {
                 <TotalStaked />
               </DashboardBox>
 
-              <DashboardBox
-                mt={4}
-                p={4}
-                width="100%"
-                height={isMobile ? "auto" : "50%"}
-              >
-                <StartAndEnd />
-              </DashboardBox>
+              <Box pt={4} width="100%" height={isMobile ? "auto" : "50%"}>
+                <DashboardBox p={4} height="100%">
+                  <StartAndEnd />
+                </DashboardBox>
+              </Box>
             </Column>
           </RowOrColumn>
         </Column>
