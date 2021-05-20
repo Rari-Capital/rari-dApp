@@ -23,7 +23,7 @@ const HomeVaultCard = ({ bg }: { bg?: string }) => {
         opacity={0.9}
         _hover={{
           opacity: 1,
-          transform: "translateY(-5px)",
+          transform: "translateY(-10px)",
         }}
         bg={bg}
       >

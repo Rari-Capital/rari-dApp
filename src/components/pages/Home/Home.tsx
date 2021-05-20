@@ -29,7 +29,10 @@ const Home = React.memo(() => {
   const isMobile = useIsSmallScreen();
 
   const { getNumberTVL } = useTVLFetchers();
-  const pools = useFusePoolsData(HOMEPAGE_FUSE_POOLS)
+
+  const pools = useFusePoolsData(
+    HOMEPAGE_FUSE_POOLS.map(({ id }: { id: number }) => id)
+  );
 
   return (
     <>
@@ -86,8 +89,10 @@ const Home = React.memo(() => {
           height="100%"
           // px="20%"
         >
-          <Marquee gradient={false} style={{padding: '10px'}} >
-            {pools?.map((pool, i )=> <HomeFuseCard pool={pool} key={i}/> )}
+          <Marquee gradient={false} style={{ padding: "10px" }}>
+            {pools?.map((pool, i) => (
+              <HomeFuseCard pool={pool} key={i} />
+            ))}
           </Marquee>
         </Row>
 
@@ -113,11 +118,11 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-                <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
-                  <Text size="md" color="grey">
-                    View All
-                  </Text>
-                </Link>
+              <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
+                <Text size="md" color="grey">
+                  View All
+                </Text>
+              </Link>
             </Row>
 
             <SimpleGrid
