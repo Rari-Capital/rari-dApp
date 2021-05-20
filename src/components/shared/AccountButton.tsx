@@ -119,7 +119,7 @@ const Buttons = ({
             as="button"
             height="40px"
             flexShrink={0}
-            width="98px"
+            width="95px"
             onClick={openClaimRGTModal}
             fontWeight="bold"
           >
@@ -130,12 +130,12 @@ const Buttons = ({
 
       {/* Connect + Account button */}
       <DashboardBox
-        ml={{ md: 4, base: 0 }}
+        ml={isMobile ? 0 : 4}
         as="button"
         height="40px"
         flexShrink={0}
         flexGrow={0}
-        width="140px"
+        width="133px"
         onClick={handleAccountButtonClick}
       >
         <Row
@@ -222,7 +222,6 @@ export const SettingsModal = ({
             height="51px"
             mb={4}
           />
-          
 
           <Button
             bg="facebook.500"

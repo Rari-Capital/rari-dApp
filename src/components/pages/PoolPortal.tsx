@@ -656,7 +656,7 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Month")}:
+            {t("This Month")}:{" "}
             <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
@@ -675,7 +675,7 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Week")}:
+            {t("This Week")}:{" "}
             <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
@@ -728,7 +728,7 @@ const StrategyAllocation = () => {
 
       const values = Object.values(allocations);
 
-      return [keys, values];
+      return [keys, values] as const;
     }
   );
 
@@ -758,7 +758,7 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
-            labels: allocations![0]
+            labels: allocations![0],
           }}
           type="pie"
           width="100%"
