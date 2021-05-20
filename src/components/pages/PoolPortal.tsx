@@ -758,8 +758,7 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
-            // @ts-ignore
-            labels: allocations![0],
+            labels: allocations![0]
           }}
           type="pie"
           width="100%"
