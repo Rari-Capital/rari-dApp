@@ -1,7 +1,3 @@
-#root {
-  height: 100%;
-}
-
 body,
 html {
   margin: 0 !important;
@@ -168,7 +164,6 @@ img:not([src]) {
   transition: transform 250ms !important;
 }
 
-
 /* React Responsive Carousel */
 
 .carousel-root {
@@ -177,13 +172,13 @@ img:not([src]) {
   /* background-color: pink; */
 }
 
-.carousel-slider{
+.carousel-slider {
   width: 100%;
-  height:100%;
-  padding:20px;
+  height: 100%;
+  padding: 20px;
 }
 
-.slider-wrapper{
+.slider-wrapper {
   height: 100%;
   display: flex;
   justify-content: center;
