@@ -737,8 +737,6 @@ const StrategyAllocation = () => {
       ? ETHStrategyAllocationChartOptions
       : USDStrategyAllocationChartOptions;
 
-  console.log({ allocations });
-
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -760,8 +758,7 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
-            // labels: allocations?.[0].map(String) ?? [],
-            labels: [1,2,3].map(String) ?? [],
+            labels: allocations![0]
           }}
           type="pie"
           width="100%"
