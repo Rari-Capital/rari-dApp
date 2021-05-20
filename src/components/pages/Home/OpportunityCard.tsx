@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Link as RouterLink } from "react-router-dom";
 import {
     Heading,
     Text,
@@ -14,7 +14,7 @@ import FusePNGWhite from "static/icons/fuse.png";
 
 const OpportunityCard = () => {
     return (
-      <Link to="/">
+      <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
         <LinkBox
           bg="purple"
           height="100%"

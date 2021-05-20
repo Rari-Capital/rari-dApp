@@ -66,6 +66,7 @@ export interface FusePoolData {
   totalBorrowedUSD: any;
   totalSupplyBalanceUSD: any;
   totalBorrowBalanceUSD: any;
+  id?: number
 }
 
 export const filterPoolName = (name: string) => {

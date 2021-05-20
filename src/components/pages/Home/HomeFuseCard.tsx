@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   AvatarGroup,
   Avatar,
@@ -22,7 +23,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -40 }}
     >
-      <Link to="/fuse">
+      <Link to={`/fuse/pool/${pool.id}`} as={RouterLink} style={{ textDecoration: "none" }}>
         <Box
           height="100%"
           width="200px"

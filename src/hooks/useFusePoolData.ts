@@ -42,9 +42,13 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
 
     if (!poolsData.length) return null;
 
-    poolsData.forEach(({ data }) => {
+    poolsData.forEach(({ data }, i) => {
       if (!data) return null;
-      ret.push(data);
+      const _data = data as FusePoolData
+      ret.push({
+        ..._data,
+        id: poolIds[i]
+      });
     });
 
     if (!ret.length) return null;

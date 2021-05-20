@@ -83,7 +83,7 @@ const Home = React.memo(() => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           width="100%"
-          height="550px"
+          height="100%"
           // px="20%"
         >
           <Marquee gradient={false} style={{padding: '10px'}} >
@@ -113,13 +113,11 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-              <RouterLink to="/">
-                <Link>
+                <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
                   <Text size="md" color="grey">
                     View All
                   </Text>
                 </Link>
-              </RouterLink>
             </Row>
 
             <SimpleGrid

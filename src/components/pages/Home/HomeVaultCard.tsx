@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Heading,
   Link,
@@ -8,7 +9,7 @@ import { Column } from "buttered-chakra";
 
 const HomeVaultCard = ({ bg }: { bg?: string }) => {
   return (
-    <Link to="/fuse">
+    <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
