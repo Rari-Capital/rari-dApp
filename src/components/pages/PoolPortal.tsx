@@ -656,7 +656,7 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Month")}:
+            {t("This Month")}:{" "}
             <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
@@ -675,7 +675,7 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Week")}:
+            {t("This Week")}:{" "}
             <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
