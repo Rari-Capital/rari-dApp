@@ -57,7 +57,7 @@ export interface USDPricedFuseAssetWithTokenData extends USDPricedFuseAsset {
 }
 
 export interface FusePoolData {
-  assets: USDPricedFuseAsset[];
+  assets: USDPricedFuseAssetWithTokenData[] | USDPricedFuseAsset[] ;
   comptroller: any;
   name: any;
   isPrivate: boolean;

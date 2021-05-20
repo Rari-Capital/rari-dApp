@@ -31,12 +31,11 @@ import { HOMEPAGE_FUSE_POOLS } from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 
 const Home = React.memo(() => {
-  const { isAuthed } = useRari();
+  // const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
 
   const { getNumberTVL } = useTVLFetchers();
   const pools = useFusePoolsData(HOMEPAGE_FUSE_POOLS)
-  console.log({pools})
 
   return (
     <>
@@ -90,12 +89,11 @@ const Home = React.memo(() => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           width="100%"
-          height="100%"
-          // background="tomato"
+          height="550px"
           // px="20%"
         >
           <Marquee gradient={false} style={{padding: '10px'}} >
-            {pools?.map(pool => <HomeFuseCard pool={pool}/> )}
+            {pools?.map((pool, i )=> <HomeFuseCard pool={pool} key={i}/> )}
           </Marquee>
         </Row>
 

@@ -1,1 +1,1 @@
-export const HOMEPAGE_FUSE_POOLS: number[]  = [1,2,3,4,5]
+export const HOMEPAGE_FUSE_POOLS: number[]  = [1,2,3,4,1,5]

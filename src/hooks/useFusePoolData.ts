@@ -2,7 +2,13 @@ import { useMemo } from "react";
 import { useQuery, useQueries } from "react-query";
 
 import { useRari } from "../context/RariContext";
-import { fetchFusePoolData, FusePoolData } from "../utils/fetchFusePoolData";
+import {
+  fetchFusePoolData,
+  FusePoolData,
+  USDPricedFuseAsset,
+  USDPricedFuseAssetWithTokenData,
+} from "../utils/fetchFusePoolData";
+import { useAssetsMapWithTokenData } from "./useAssetsMap";
 
 export const useFusePoolData = (poolId: string): FusePoolData | undefined => {
   const { fuse, rari, address } = useRari();
@@ -29,13 +35,13 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
     })
   );
 
-  return useMemo(() => {
+  // Get Fuse Pools Data
+  const fusePoolsData: FusePoolData[] | null = useMemo(() => {
     // todo - use type FusePoolData
     const ret: any[] = [];
 
     if (!poolsData.length) return null;
 
-    // Return null altogether
     poolsData.forEach(({ data }) => {
       if (!data) return null;
       ret.push(data);
@@ -45,4 +51,26 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
 
     return ret;
   }, [poolsData]);
+
+  // Get all the asset arrays for each pool
+  const assetsArray: USDPricedFuseAsset[][] | null =
+    fusePoolsData?.map((pool) => pool?.assets) ?? null;
+
+  // Construct a hashmap of all the unique assets and their respective tokendata
+  const {
+    assetsArrayWithTokenData,
+  }: {
+    assetsArrayWithTokenData: USDPricedFuseAssetWithTokenData[][] | null;
+  } = useAssetsMapWithTokenData(assetsArray);
+
+  return useMemo(() => {
+    if (assetsArrayWithTokenData && fusePoolsData) {
+      return fusePoolsData.map((fusePoolData, i) => ({
+        ...fusePoolData,
+        assets: assetsArrayWithTokenData[i],
+      }));
+    }
+
+    return fusePoolsData;
+  }, [fusePoolsData, assetsArrayWithTokenData]);
 };
