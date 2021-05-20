@@ -728,7 +728,7 @@ const StrategyAllocation = () => {
 
       const values = Object.values(allocations);
 
-      return [keys, values];
+      return [keys, values] as const;
     }
   );
 
@@ -758,7 +758,7 @@ const StrategyAllocation = () => {
         <Chart
           options={{
             ...chartOptions,
-            labels: allocations![0]
+            labels: allocations![0],
           }}
           type="pie"
           width="100%"

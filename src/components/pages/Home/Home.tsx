@@ -1,13 +1,7 @@
 import React from "react";
 import { Input } from "@chakra-ui/input";
-import {
-  Heading,
-  Text,
-  Link,
-  SimpleGrid,
-  Box,
-} from "@chakra-ui/react";
-import {  Column, Row } from "buttered-chakra";
+import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
+import { Column, Row } from "buttered-chakra";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
@@ -35,8 +29,8 @@ const Home = React.memo(() => {
   const isMobile = useIsSmallScreen();
 
   const { getNumberTVL } = useTVLFetchers();
-  const pools = useFusePoolsData(HOMEPAGE_FUSE_POOLS)
-  console.log({pools})
+  const pools = useFusePoolsData(HOMEPAGE_FUSE_POOLS);
+  console.log({ pools });
 
   return (
     <>
@@ -94,8 +88,10 @@ const Home = React.memo(() => {
           // background="tomato"
           // px="20%"
         >
-          <Marquee gradient={false} style={{padding: '10px'}} >
-            {pools?.map(pool => <HomeFuseCard pool={pool}/> )}
+          <Marquee gradient={false} style={{ padding: "10px" }}>
+            {pools?.map((pool) => (
+              <HomeFuseCard pool={pool} />
+            ))}
           </Marquee>
         </Row>
 
@@ -204,7 +200,7 @@ const Home = React.memo(() => {
                 width="1px" // weird hack to make the carousel fit. idk why it works
                 // p={20}
               >
-                <HomeCarousel/>
+                <HomeCarousel />
               </Column>
             </Row>
           </Box>
@@ -241,29 +237,29 @@ const Home = React.memo(() => {
                 </Link>
               </RouterLink>
             </Row>
-              <Marquee direction="right" gradient={false} style={{padding: '10px'}}>
-                <HomeVaultCard bg="blue"/>
-                <HomeVaultCard bg="yellow" />
-                <HomeVaultCard bg="green" />
-                <HomeVaultCard bg="red" />
-                <HomeVaultCard bg="brown" />
-                <HomeVaultCard bg="purple" />
-                <HomeVaultCard bg="orange" />
-                <HomeVaultCard bg="violet" />
-              </Marquee>
+            <Marquee
+              direction="right"
+              gradient={false}
+              style={{ padding: "10px" }}
+            >
+              <HomeVaultCard bg="blue" />
+              <HomeVaultCard bg="yellow" />
+              <HomeVaultCard bg="green" />
+              <HomeVaultCard bg="red" />
+              <HomeVaultCard bg="brown" />
+              <HomeVaultCard bg="purple" />
+              <HomeVaultCard bg="orange" />
+              <HomeVaultCard bg="violet" />
+            </Marquee>
           </Column>
         </Row>
 
         {/* Explore Today */}
 
-
         <Footer />
-        </Column>
+      </Column>
     </>
   );
 });
 
 export default Home;
-
-
-
