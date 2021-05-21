@@ -90,4 +90,32 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     fusePoolId: 3,
     fuseMetric: FusePoolMetric.TotalSuppliedUSD,
   },
+  {
+    type: HomepageOpportunityType.EarnPage,
+    title: "Earn",
+    text: "Sustainable yield made easy",
+    bgColor: "#6041FC",
+    icon: FuseLogo,
+  },
+  {
+    type: HomepageOpportunityType.FusePage,
+    title: "Fuse",
+    text: "The first open interest rate market protocol",
+    bgColor: "#E6303A",
+    icon: FuseLogo,
+  },
+  {
+    type: HomepageOpportunityType.Pool2Page,
+    title: "Pool2",
+    text: "Rewards for Rari Capital LPs",
+    bgColor: "#00BBA8",
+    icon: FuseLogo,
+  },
+  {
+    type: HomepageOpportunityType.TranchesPage,
+    title: "Tranches",
+    text: "Tranche yields across Earn Pools",
+    bgColor: "#F45C30",
+    icon: FuseLogo,
+  },
 ];

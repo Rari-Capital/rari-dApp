@@ -22,6 +22,7 @@ import HomeCarousel from "./HomeCarousel";
 // constants
 import { HOMEPAGE_FUSE_POOLS, HOMEPAGE_OPPORTUNIES } from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
+import { SaffronProvider } from "../Tranches/SaffronContext";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
@@ -34,7 +35,7 @@ const Home = React.memo(() => {
   );
 
   return (
-    <>
+    <SaffronProvider>
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -254,7 +255,7 @@ const Home = React.memo(() => {
 
         <Footer />
       </Column>
-    </>
+    </SaffronProvider>
   );
 });
 

@@ -20,10 +20,10 @@ const OpportunityCard = ({
     <Link to={link} as={RouterLink} style={{ textDecoration: "none" }}>
       <LinkBox
         bg={opportunity.bgColor}
-        height="100%"
+        height="126px"
         width="100%"
         borderRadius="lg"
-        p={["5%", "10%", "10%"]}
+        p={["5%", "5%", "5%"]}
         transition="transform 0.2s ease 0s"
         _hover={{
           transform: "translateY(-5px)",

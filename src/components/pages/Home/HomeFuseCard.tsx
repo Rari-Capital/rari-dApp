@@ -59,6 +59,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
                   borderWidth="1px"
                   name={"Loading..."}
                   src={_asset?.tokenData?.logoURL ?? undefined}
+                  key={_asset.underlyingToken}
                 />
               );
             })}
