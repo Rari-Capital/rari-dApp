@@ -2,7 +2,6 @@ import React from "react";
 import { Input } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
-import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
 import Marquee from "react-fast-marquee";
@@ -21,7 +20,7 @@ import OpportunityCard from "./OpportunityCard";
 import HomeCarousel from "./HomeCarousel";
 
 // constants
-import { HOMEPAGE_FUSE_POOLS } from "constants/homepage";
+import { HOMEPAGE_FUSE_POOLS, HOMEPAGE_OPPORTUNIES } from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 
 const Home = React.memo(() => {
@@ -131,11 +130,9 @@ const Home = React.memo(() => {
               w="100%"
               mt={5}
             >
-              {Array(isMobile ? 4 : 8)
-                .fill(0)
-                .map((_, i) => (
-                  <OpportunityCard />
-                ))}
+              {HOMEPAGE_OPPORTUNIES.map((opportunity, i) => (
+                <OpportunityCard opportunity={opportunity} key={i} />
+              ))}
             </SimpleGrid>
           </Column>
         </Row>

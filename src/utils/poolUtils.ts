@@ -10,7 +10,7 @@ export enum Pool {
   ETH = "eth",
 }
 
-export function getSDKPool({ rari, pool }: { rari: Rari; pool: Pool }) {
+export function getSDKPool({ rari, pool }: { rari: Rari; pool: Pool | undefined }) {
   let sdkPool: StablePool | EthereumPool | YieldPool;
 
   if (pool === Pool.ETH) {
