@@ -73,15 +73,15 @@ export const useOpportunitySubtitle = (opportunity: HomepageOpportunity) => {
       case HomepageOpportunityType.EarnPage:
         // @ts-ignore
         const apys = poolsAPY.filter((obj) => obj).map(parseFloat);
-        console.log({ apys });
+        // console.log({ apys });
         return `${Math.max.apply(null, apys)}% APY`;
 
       case HomepageOpportunityType.FusePage:
-        console.log({ fuseTVL });
+        // console.log({ fuseTVL });
         return fuseTVL ? `${shortUsdFormatter(fuseTVL)} TVL` : "? TVL";
 
       case HomepageOpportunityType.Pool2Page:
-        console.log({ pool2APR });
+        // console.log({ pool2APR });
         return `${pool2APR ?? "?"}% APR`;
 
       case HomepageOpportunityType.TranchesPage:

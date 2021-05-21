@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import {
-  Heading,
-  Link,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, Link, Image, Text } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
 
-const HomeVaultCard = ({ bg }: { bg?: string }) => {
+import { HomepageOpportunity } from "constants/homepage";
+import { useOpportunitySubtitle } from "hooks/homepage/useOpportunitySubtitle";
+import { getOpportunityLink } from "utils/homepage";
+
+const HomeVaultCard = ({
+  opportunity,
+}: {
+  opportunity: HomepageOpportunity;
+}) => {
+  const subheading = useOpportunitySubtitle(opportunity);
+  const link = useMemo(() => getOpportunityLink(opportunity), [opportunity]);
+
   return (
-    <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
+    <Link to={link} as={RouterLink} style={{ textDecoration: "none" }}>
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
@@ -25,12 +32,13 @@ const HomeVaultCard = ({ bg }: { bg?: string }) => {
           opacity: 1,
           transform: "translateY(-10px)",
         }}
-        bg={bg}
+        bg={opportunity.bgColor}
       >
-        <Heading size="sm">Title </Heading>
-        <Text size="sm" color="gray.500" fontWeight="bold">
-          Subtitle
-        </Text>
+        <Heading size="sm">{opportunity.title} </Heading>
+        <Text fontSize="xs">{subheading}</Text>
+        <Box alignSelf="center" mt="auto" mb="auto">
+          <Image src={opportunity.icon} boxSize="70px" float="left" my="auto" />
+        </Box>
       </Column>
     </Link>
   );

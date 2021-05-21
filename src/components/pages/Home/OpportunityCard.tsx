@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Heading, Text, Link, Image, LinkBox } from "@chakra-ui/react";
+import { Box, Heading, Text, Link, Image, LinkBox } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 
 import { HomepageOpportunity } from "constants/homepage";
@@ -12,8 +12,7 @@ const OpportunityCard = ({
 }: {
   opportunity: HomepageOpportunity;
 }) => {
-
-  const subtitle = useOpportunitySubtitle(opportunity);
+  const subheading = useOpportunitySubtitle(opportunity);
   const link = useMemo(() => getOpportunityLink(opportunity), [opportunity]);
 
   return (
@@ -36,12 +35,14 @@ const OpportunityCard = ({
             height={"100%"}
           >
             <Heading size="xs">{opportunity.title}</Heading>
-            <Text fontSize="xs">{subtitle}</Text>
+            <Text fontSize="xs">{subheading}</Text>
             <Text fontSize="xs" mt={2}>
-              {opportunity.text}
+              {opportunity.subtitle}
             </Text>
           </Column>
-          <Image src={opportunity.icon} boxSize="50px" float="left" my="auto" />
+          <Box  my="auto">
+            <Image src={opportunity.icon} boxSize="50px" float="left" />
+          </Box>
         </Row>
       </LinkBox>
     </Link>

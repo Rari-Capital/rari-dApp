@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Input } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
@@ -20,7 +20,11 @@ import OpportunityCard from "./OpportunityCard";
 import HomeCarousel from "./HomeCarousel";
 
 // constants
-import { HOMEPAGE_FUSE_POOLS, HOMEPAGE_OPPORTUNIES } from "constants/homepage";
+import {
+  HOMEPAGE_FUSE_POOLS,
+  HOMEPAGE_OPPORTUNIES,
+  HOMEPAGE_EARN_VAULTS,
+} from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 
@@ -239,14 +243,9 @@ const Home = React.memo(() => {
               gradient={false}
               style={{ padding: "10px" }}
             >
-              <HomeVaultCard bg="blue" />
-              <HomeVaultCard bg="yellow" />
-              <HomeVaultCard bg="green" />
-              <HomeVaultCard bg="red" />
-              <HomeVaultCard bg="brown" />
-              <HomeVaultCard bg="purple" />
-              <HomeVaultCard bg="orange" />
-              <HomeVaultCard bg="violet" />
+              {HOMEPAGE_EARN_VAULTS.map((opportunity) => (
+                <HomeVaultCard opportunity={opportunity} />
+              ))}
             </Marquee>
           </Column>
         </Row>
