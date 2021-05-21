@@ -10,7 +10,7 @@ import {
 } from "../utils/fetchFusePoolData";
 import { useAssetsMapWithTokenData } from "./useAssetsMap";
 
-export const useFusePoolData = (poolId: string): FusePoolData | undefined => {
+export const useFusePoolData = (poolId: string | undefined): FusePoolData | undefined => {
   const { fuse, rari, address } = useRari();
 
   const { data } = useQuery(poolId + " poolData " + address, () => {
@@ -54,7 +54,7 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
     if (!ret.length) return null;
 
     return ret;
-  }, [poolsData]);
+  }, [poolsData, poolIds]);
 
   // Get all the asset arrays for each pool
   const assetsArray: USDPricedFuseAsset[][] | null =

@@ -2,7 +2,6 @@ import React from "react";
 import { Input } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
-import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
 import Marquee from "react-fast-marquee";
@@ -21,18 +20,22 @@ import OpportunityCard from "./OpportunityCard";
 import HomeCarousel from "./HomeCarousel";
 
 // constants
-import { HOMEPAGE_FUSE_POOLS } from "constants/homepage";
+import { HOMEPAGE_FUSE_POOLS, HOMEPAGE_OPPORTUNIES } from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
+import { SaffronProvider } from "../Tranches/SaffronContext";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
 
   const { getNumberTVL } = useTVLFetchers();
-  const pools = useFusePoolsData(HOMEPAGE_FUSE_POOLS)
+
+  const pools = useFusePoolsData(
+    HOMEPAGE_FUSE_POOLS.map(({ id }: { id: number }) => id)
+  );
 
   return (
-    <>
+    <SaffronProvider>
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -86,8 +89,10 @@ const Home = React.memo(() => {
           height="100%"
           // px="20%"
         >
-          <Marquee gradient={false} style={{padding: '10px'}} >
-            {pools?.map((pool, i )=> <HomeFuseCard pool={pool} key={i}/> )}
+          <Marquee gradient={false} style={{ padding: "10px" }}>
+            {pools?.map((pool, i) => (
+              <HomeFuseCard pool={pool} key={i} />
+            ))}
           </Marquee>
         </Row>
 
@@ -113,11 +118,11 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-                <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
-                  <Text size="md" color="grey">
-                    View All
-                  </Text>
-                </Link>
+              <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
+                <Text size="md" color="grey">
+                  View All
+                </Text>
+              </Link>
             </Row>
 
             <SimpleGrid
@@ -126,11 +131,9 @@ const Home = React.memo(() => {
               w="100%"
               mt={5}
             >
-              {Array(isMobile ? 4 : 8)
-                .fill(0)
-                .map((_, i) => (
-                  <OpportunityCard />
-                ))}
+              {HOMEPAGE_OPPORTUNIES.map((opportunity, i) => (
+                <OpportunityCard opportunity={opportunity} key={i} />
+              ))}
             </SimpleGrid>
           </Column>
         </Row>
@@ -252,7 +255,7 @@ const Home = React.memo(() => {
 
         <Footer />
       </Column>
-    </>
+    </SaffronProvider>
   );
 });
 
