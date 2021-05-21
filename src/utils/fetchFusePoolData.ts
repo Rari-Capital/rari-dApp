@@ -69,6 +69,12 @@ export interface FusePoolData {
   id?: number;
 }
 
+export enum FusePoolMetric {
+  TotalLiquidityUSD,
+  TotalSuppliedUSD,
+  TotalBorrowedUSD
+}
+
 export const filterPoolName = (name: string) => {
   // Manual rename pool 6 until we add func to change pool names.
   if (name === "Tetranode's Pool") {

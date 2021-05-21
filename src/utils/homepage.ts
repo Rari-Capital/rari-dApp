@@ -3,7 +3,6 @@ import {
   HomepageOpportunityType,
 } from "constants/homepage";
 
-
 export const getOpportunityLink = (
   opportunity: HomepageOpportunity
 ): string => {

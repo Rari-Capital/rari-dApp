@@ -1,5 +1,6 @@
 // Logos
 import FuseLogo from "static/fuseicon.png";
+import { FusePoolMetric } from "utils/fetchFusePoolData";
 import { Pool } from "utils/poolUtils";
 
 /* Fuse Pools Marquee */
@@ -12,27 +13,22 @@ export interface HomepageFusePool {
 export const HOMEPAGE_FUSE_POOLS: HomepageFusePool[] = [
   {
     id: 1,
-    title: "Poop",
     subtitle: "Pool 1",
   },
   {
     id: 2,
-    title: "Poop",
     subtitle: "Pool 2",
   },
   {
     id: 3,
-    title: "Poop",
     subtitle: "Pool 3",
   },
   {
     id: 4,
-    title: "Poop",
     subtitle: "Pool 4",
   },
   {
     id: 5,
-    title: "Poop",
     subtitle: "Pool 5",
   },
 ];
@@ -53,9 +49,10 @@ export interface HomepageOpportunity {
   text: string;
   icon: string;
   bgColor: string;
-  //Optional params
+  // Optional params
   vaultType?: Pool;
   fusePoolId?: number;
+  fuseMetric?: FusePoolMetric;
 }
 
 export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
@@ -65,7 +62,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     text: "Earn interest on ETH deposits",
     bgColor: "#A5A7ED",
     icon: FuseLogo,
-    vaultType: Pool.ETH
+    vaultType: Pool.ETH,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -73,22 +70,24 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     text: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: FuseLogo,
-    vaultType: Pool.STABLE
+    vaultType: Pool.STABLE,
   },
   {
-    type: HomepageOpportunityType.EarnVault,
-    title: "ETH Pool",
-    text: "Earn interest on ETH deposits",
-    bgColor: "#A5A7ED",
+    type: HomepageOpportunityType.FusePool,
+    title: "Tetranode's Pool",
+    text: "Lend RGT and borrow against it",
+    bgColor: "#00BB28",
     icon: FuseLogo,
-    vaultType: Pool.ETH
+    fusePoolId: 6,
+    fuseMetric: FusePoolMetric.TotalSuppliedUSD,
   },
   {
-    type: HomepageOpportunityType.EarnVault,
-    title: "DAI Pool",
-    text: "Earn interest on DAI deposits",
-    bgColor: "#FFA700",
+    type: HomepageOpportunityType.FusePool,
+    title: "Rari DAO Fuse Pool",
+    text: "Lend and borrow top community assets",
+    bgColor: "#00BEFF",
     icon: FuseLogo,
-    vaultType: Pool.STABLE
+    fusePoolId: 3,
+    fuseMetric: FusePoolMetric.TotalSuppliedUSD,
   },
 ];
