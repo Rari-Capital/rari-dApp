@@ -5,8 +5,6 @@ import Fuse from "fuse-sdk";
 import { fetchFuseTVL } from "utils/fetchTVL";
 
 export const fetchFuseNumberTVL = async (rari: Rari, fuse: Fuse) => {
-  console.log("POOP");
-
   const tvlETH = await fetchFuseTVL(fuse);
 
   const ethPrice: number = rari.web3.utils.fromWei(

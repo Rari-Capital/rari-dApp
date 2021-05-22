@@ -55,7 +55,7 @@ const Home = React.memo(() => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           width="100%"
-          height="400px"
+          height="450px"
           px={{ sm: "0", md: "15%" }}
         >
           <Column

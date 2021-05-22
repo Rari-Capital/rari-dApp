@@ -23,6 +23,26 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
     [pool]
   );
 
+  const assetsSubtitle = useMemo(() => {
+    const NUM = 3;
+
+    const symbols: string[] = [];
+
+    pool.assets.forEach((a, i) => {
+      const asset = a as USDPricedFuseAssetWithTokenData;
+      const { symbol } = asset?.tokenData ?? {};
+      if (i < NUM && symbol) symbols.push(symbol!);
+    });
+
+    let caption;
+    if (symbols.length <= 3) {caption = symbols.join(", ")}
+    else {
+      caption = `${symbols.join(", ")}, and ${pool.assets.length - NUM} others`;
+    }
+
+    return caption;
+  }, [pool]);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 40 }}
@@ -35,8 +55,8 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
         style={{ textDecoration: "none" }}
       >
         <Box
-          height="100%"
-          width="200px"
+          height="125px"
+          width="300px"
           ml={10}
           p={5}
           border="1px solid grey"
@@ -65,8 +85,8 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
             })}
           </AvatarGroup>
           <Heading size="sm">{title ?? pool.name}</Heading>
-          <Text size="sm" color="gray.500" fontWeight="bold">
-            {subtitle}
+          <Text size="xs" color="gray.500" fontWeight="bold">
+            {subtitle ?? assetsSubtitle}
           </Text>
         </Box>
       </Link>

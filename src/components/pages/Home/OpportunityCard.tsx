@@ -26,7 +26,7 @@ const OpportunityCard = ({
         transition="transform 0.2s ease 0s"
         _hover={{
           transform: "translateY(-5px)",
-          boxShadow: ".5px 1px 4px white;"
+          boxShadow: ".5px 1.25px 4px white;"
 
         }}
       >

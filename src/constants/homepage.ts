@@ -7,43 +7,51 @@ import { Pool } from "utils/poolUtils";
 export interface HomepageFusePool {
   id: number;
   title?: string;
-  subtitle: string;
+  subtitle?: string;
 }
 
 export const HOMEPAGE_FUSE_POOLS: HomepageFusePool[] = [
   {
     id: 1,
-    subtitle: "Pool 1",
+    // title: "Pool 1",
+    // subtitle: "Pool 1",
   },
   {
     id: 2,
-    subtitle: "Pool 2",
+    // title: "Pool 2",
+    // subtitle: "Pool 2",
   },
 
   {
     id: 4,
-    subtitle: "Pool 4",
+    // title: "Pool 4",
+    // subtitle: "Pool 4",
   },
   {
     id: 5,
-    subtitle: "Pool 5",
+    // title: "Pool 5",
+    // subtitle: "Pool 5",
   },
   {
     id: 1,
-    subtitle: "Pool 1",
+    // title: "Pool 1",
+    // subtitle: "Pool 1",
   },
   {
     id: 2,
-    subtitle: "Pool 2",
+    // title: "Pool 2",
+    // subtitle: "Pool 2",
   },
 
   {
     id: 4,
-    subtitle: "Pool 4",
+    // title: "Pool 4",
+    // subtitle: "Pool 4",
   },
   {
     id: 5,
-    subtitle: "Pool 5",
+    // title: "Pool 5",
+    // subtitle: "Pool 5",
   },
 ];
 
@@ -185,10 +193,26 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
   },
   {
     type: HomepageOpportunityType.EarnVault,
+    title: "USDC Pool",
+    subtitle: "Earn interest on USDC deposits",
+    bgColor: "#1079FD",
+    icon: FuseLogo,
+    vaultType: Pool.STABLE,
+  },
+  {
+    type: HomepageOpportunityType.EarnVault,
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
     icon: FuseLogo,
     vaultType: Pool.ETH,
+  },
+  {
+    type: HomepageOpportunityType.EarnVault,
+    title: "Yield Pool",
+    subtitle: "Earn interest on Yield deposits",
+    bgColor: "#101111",
+    icon: FuseLogo,
+    vaultType: Pool.YIELD,
   },
 ];
