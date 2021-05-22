@@ -35,7 +35,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
     });
 
     let caption;
-    if (symbols.length <= 3) {caption = symbols.join(", ")}
+    if (pool.assets.length <= 3) {caption = symbols.join(", ")}
     else {
       caption = `${symbols.join(", ")}, and ${pool.assets.length - NUM} others`;
     }
