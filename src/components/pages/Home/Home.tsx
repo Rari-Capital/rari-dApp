@@ -28,6 +28,7 @@ import {
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 import { SearchIcon } from "@chakra-ui/icons";
+import DashboardBox from "components/shared/DashboardBox";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
@@ -80,7 +81,9 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <InputGroup  width="2xl" height="70px">
+              <InputGroup
+                width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
+              >
                 <InputLeftElement
                   pointerEvents="none"
                   children={<SearchIcon color="gray.300" />}
@@ -161,13 +164,7 @@ const Home = React.memo(() => {
           width="100%"
           // background="purple"
         >
-          <Box
-            width="100%"
-            border="1px solid grey"
-            borderRadius="lg"
-            height="200px"
-            // background="purple"
-          >
+          <DashboardBox width="100%" height="200px">
             <Row
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-start"
@@ -179,7 +176,8 @@ const Home = React.memo(() => {
                 crossAxisAlignment="flex-start"
                 // bg="pink"
                 height="100%"
-                flex="0 1 30%"
+                flex="0 0"
+                flexBasis={{base: "0 0 25%", sm: "0 0 25%", md: "0 0 30%", lg: "0 0 30%"}}
                 p={5}
               >
                 <APYWithRefreshMovingStat
@@ -204,16 +202,15 @@ const Home = React.memo(() => {
               <Column
                 mainAxisAlignment="center"
                 crossAxisAlignment="center"
-                // bg="blue"
                 height="100%"
-                flex="1 1 70%"
+                // flex="1 1"
+                flex={{base: "1 1 75%", sm: "1 1 75%", md: "1 1 70%", lg: "1 1 70%"}}
                 width="1px" // weird hack to make the carousel fit. idk why it works
-                // p={20}
               >
-                <HomeCarousel />
+                <HomeCarousel pools={pools} />
               </Column>
             </Row>
-          </Box>
+          </DashboardBox>
         </Row>
 
         {/* Easily Earn (Vaults) */}
@@ -223,7 +220,6 @@ const Home = React.memo(() => {
           width="100%"
           height="100%"
           my={10}
-          // background="tomato"
         >
           <Column
             mainAxisAlignment="flex-start"
@@ -235,7 +231,7 @@ const Home = React.memo(() => {
               width="100%"
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
-              px={{ sm: "5%", md: "15%" }}
+              px={{ base: "5%", sm: "5%", md: "15%" }}
               mb={5}
             >
               <Heading size="md">Easily Earn </Heading>

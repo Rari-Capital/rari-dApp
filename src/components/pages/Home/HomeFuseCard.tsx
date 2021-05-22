@@ -16,6 +16,7 @@ import {
 
 import { motion } from "framer-motion";
 import { HomepageFusePool, HOMEPAGE_FUSE_POOLS } from "constants/homepage";
+import DashboardBox from "components/shared/DashboardBox";
 
 const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
   const { title, subtitle }: HomepageFusePool = useMemo(
@@ -54,20 +55,19 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
         as={RouterLink}
         style={{ textDecoration: "none" }}
       >
-        <Box
+
+        <DashboardBox
           height="125px"
           width="300px"
           ml={10}
           p={5}
-          border="1px solid grey"
-          borderRadius="lg"
           transition="transform 0.2s ease 0s"
           opacity={0.9}
           _hover={{
             // background: "grey",
             opacity: 1,
             transform: "translateY(-7px)",
-            boxShadow: "0px 1px 4px grey;",
+            boxShadow: "0px .2px 4px grey;",
           }}
         >
           <AvatarGroup my={1} size="xs" max={3}>
@@ -88,7 +88,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
           <Text size="xs" color="gray.500" fontWeight="bold">
             {subtitle ?? assetsSubtitle}
           </Text>
-        </Box>
+        </DashboardBox>
       </Link>
     </motion.div>
   );
