@@ -31,6 +31,7 @@ const HomeVaultCard = ({
         _hover={{
           opacity: 1,
           transform: "translateY(-10px)",
+          boxShadow: ".5px 1px 4px grey;"
         }}
         bg={opportunity.bgColor}
       >

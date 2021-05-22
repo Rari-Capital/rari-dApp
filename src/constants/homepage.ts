@@ -19,10 +19,24 @@ export const HOMEPAGE_FUSE_POOLS: HomepageFusePool[] = [
     id: 2,
     subtitle: "Pool 2",
   },
+
   {
-    id: 3,
-    subtitle: "Pool 3",
+    id: 4,
+    subtitle: "Pool 4",
   },
+  {
+    id: 5,
+    subtitle: "Pool 5",
+  },
+  {
+    id: 1,
+    subtitle: "Pool 1",
+  },
+  {
+    id: 2,
+    subtitle: "Pool 2",
+  },
+
   {
     id: 4,
     subtitle: "Pool 4",

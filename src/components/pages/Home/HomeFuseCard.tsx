@@ -18,8 +18,7 @@ import { motion } from "framer-motion";
 import { HomepageFusePool, HOMEPAGE_FUSE_POOLS } from "constants/homepage";
 
 const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
-  
-  const { title, subtitle } : HomepageFusePool = useMemo(
+  const { title, subtitle }: HomepageFusePool = useMemo(
     () => HOMEPAGE_FUSE_POOLS.find((p) => p.id === pool.id)!,
     [pool]
   );
@@ -48,6 +47,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
             // background: "grey",
             opacity: 1,
             transform: "translateY(-7px)",
+            boxShadow: "0px 1px 4px grey;",
           }}
         >
           <AvatarGroup my={1} size="xs" max={3}>
@@ -64,7 +64,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData }) => {
               );
             })}
           </AvatarGroup>
-          <Heading size="sm">{pool.name}</Heading>
+          <Heading size="sm">{title ?? pool.name}</Heading>
           <Text size="sm" color="gray.500" fontWeight="bold">
             {subtitle}
           </Text>

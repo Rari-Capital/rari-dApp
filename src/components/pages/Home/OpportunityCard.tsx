@@ -26,13 +26,20 @@ const OpportunityCard = ({
         transition="transform 0.2s ease 0s"
         _hover={{
           transform: "translateY(-5px)",
+          boxShadow: ".5px 1px 4px white;"
+
         }}
       >
-        <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          h="100%"
+        >
           <Column
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
             height={"100%"}
+            flex="0 0 70%"
           >
             <Heading size="xs">{opportunity.title}</Heading>
             <Text fontSize="xs">{subheading}</Text>
@@ -40,9 +47,14 @@ const OpportunityCard = ({
               {opportunity.subtitle}
             </Text>
           </Column>
-          <Box  my="auto">
-            <Image src={opportunity.icon} boxSize="50px" float="left" />
-          </Box>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            height={"100%"}
+            flex="0 1 30%"
+          >
+            <Image src={opportunity.icon} boxSize="50px" my="auto" mx="auto" />
+          </Column>
         </Row>
       </LinkBox>
     </Link>

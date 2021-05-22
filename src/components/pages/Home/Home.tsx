@@ -72,7 +72,7 @@ const Home = React.memo(() => {
               exit={{ opacity: 0, y: 40 }}
             >
               <Heading size="2xl" textAlign="center" mb={10}>
-                Easily earn, lend <br /> and borrow
+                Easily <span color="#00C628">earn</span>, lend <br /> and borrow
               </Heading>
             </motion.div>
             <motion.div
@@ -122,7 +122,7 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-              <Link to={`/`} as={RouterLink} style={{ textDecoration: "none" }}>
+              <Link to={`/`} as={RouterLink}>
                 <Text size="md" color="grey">
                   View All
                 </Text>
@@ -135,7 +135,9 @@ const Home = React.memo(() => {
               w="100%"
               mt={5}
             >
-              {HOMEPAGE_OPPORTUNIES.map((opportunity, i) => (
+              {HOMEPAGE_OPPORTUNIES
+              .slice(0, isMobile ? 4 : HOMEPAGE_OPPORTUNIES.length)
+              .map((opportunity, i) => (
                 <OpportunityCard opportunity={opportunity} key={i} />
               ))}
             </SimpleGrid>
