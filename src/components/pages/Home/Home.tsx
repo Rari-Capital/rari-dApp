@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Input } from "@chakra-ui/input";
+import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -27,6 +27,7 @@ import {
 } from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
+import { SearchIcon } from "@chakra-ui/icons";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
@@ -55,7 +56,7 @@ const Home = React.memo(() => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           width="100%"
-          height="450px"
+          height="400px"
           px={{ sm: "0", md: "15%" }}
         >
           <Column
@@ -64,7 +65,6 @@ const Home = React.memo(() => {
             mx="auto"
             width="100%"
             padding="20%"
-            // background="aqua"
           >
             <motion.div
               initial={{ opacity: 0, y: -40 }}
@@ -80,7 +80,13 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <Input placeholder="Search" outline="1px solid grey" />
+              <InputGroup  width="2xl" height="70px">
+                <InputLeftElement
+                  pointerEvents="none"
+                  children={<SearchIcon color="gray.300" />}
+                />
+                <Input border="3px solid #80807F" placeholder="Search" />
+              </InputGroup>
             </motion.div>
           </Column>
         </Row>
@@ -135,9 +141,10 @@ const Home = React.memo(() => {
               w="100%"
               mt={5}
             >
-              {HOMEPAGE_OPPORTUNIES
-              .slice(0, isMobile ? 4 : HOMEPAGE_OPPORTUNIES.length)
-              .map((opportunity, i) => (
+              {HOMEPAGE_OPPORTUNIES.slice(
+                0,
+                isMobile ? 4 : HOMEPAGE_OPPORTUNIES.length
+              ).map((opportunity, i) => (
                 <OpportunityCard opportunity={opportunity} key={i} />
               ))}
             </SimpleGrid>
