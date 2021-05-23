@@ -93,7 +93,7 @@ const FuseLiquidationsPage = memo(() => {
         </RowOrColumn>
 
         <DashboardBox width="100%" mt={4}>
-          <PoolList />
+          <LiquidatablePositionsList />
         </DashboardBox>
 
         <Footer />
@@ -113,7 +113,7 @@ export type LiquidatablePositions = {
   poolID: number;
 };
 
-const PoolList = () => {
+const LiquidatablePositionsList = () => {
   const { fuse, rari } = useRari();
   const { t } = useTranslation();
 
@@ -307,7 +307,7 @@ const PoolList = () => {
         {positions ? (
           positions.map((position, index) => {
             return (
-              <UserRow
+              <PositionRow
                 key={position.account + position.poolID}
                 poolNumber={position.poolID}
                 address={position.account}
@@ -330,7 +330,7 @@ const PoolList = () => {
   );
 };
 
-const UserRow = ({
+const PositionRow = ({
   tokens,
   poolNumber,
   borrowLimit,
