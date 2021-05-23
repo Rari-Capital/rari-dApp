@@ -52,23 +52,21 @@ export const Header = ({
       overflowY="visible"
       width="100%"
     >
-      <RouterLink to="/home">
-        {isAuthed ? (
-          isPool ? (
-            <AnimatedPoolLogo />
-          ) : isFuse ? (
-            <AnimatedFuseSmallLogo />
-          ) : (
-            <AnimatedSmallLogo />
-          )
-        ) : isPool ? (
-          <PoolLogo />
+      {isAuthed ? (
+        isPool ? (
+          <AnimatedPoolLogo />
         ) : isFuse ? (
-          <FuseSmallLogo />
+          <AnimatedFuseSmallLogo />
         ) : (
           <AnimatedSmallLogo />
-        )}
-      </RouterLink>
+        )
+      ) : isPool ? (
+        <PoolLogo />
+      ) : isFuse ? (
+        <FuseSmallLogo />
+      ) : (
+        <AnimatedSmallLogo />
+      )}
 
       <Row
         mx={4}
