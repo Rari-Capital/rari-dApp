@@ -246,5 +246,6 @@
   "Borrowed": "借來的",
   "Borrow Ratio": "借貸比率",
   "Limit Used": "限制使用",
-  "Liquidations": "清算"
+  "Liquidations": "清算",
+  "This is how much you have borrowed.": "這就是你借的錢。"
 }

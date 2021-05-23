@@ -155,9 +155,11 @@ const CollateralRatioBar = ({
           </Text>
         </SimpleTooltip>
 
-        <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
-          {smallUsdFormatter(borrowUSD)}
-        </Text>
+        <SimpleTooltip label={t("This is how much you have borrowed.")}>
+          <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
+            {smallUsdFormatter(borrowUSD)}
+          </Text>
+        </SimpleTooltip>
 
         <SimpleTooltip
           label={`You're using ${ratio.toFixed(1)}% of your ${smallUsdFormatter(

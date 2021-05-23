@@ -246,5 +246,6 @@
   "Borrowed": "Borrowed",
   "Borrow Ratio": "Borrow Ratio",
   "Limit Used": "Limit Used",
-  "Liquidations": "Liquidations"
+  "Liquidations": "Liquidations",
+  "This is how much you have borrowed.": "This is how much you have borrowed."
 }
