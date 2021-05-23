@@ -5,7 +5,7 @@ import { Pool } from "utils/poolUtils";
 
 /* Fuse Pools Marquee */
 export interface HomepageFusePool {
-  id: number | null;
+  id: number;
   title?: string | null;
   subtitle?: string | null;
 }

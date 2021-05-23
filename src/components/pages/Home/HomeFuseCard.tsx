@@ -4,13 +4,10 @@ import { Link as RouterLink } from "react-router-dom";
 import {
   AvatarGroup,
   Avatar,
-  Box,
   Heading,
   Link,
-  SkeletonCircle,
   SkeletonText,
   Text,
-  Skeleton,
 } from "@chakra-ui/react";
 import {
   FusePoolData,
@@ -24,7 +21,7 @@ import { Row } from "buttered-chakra";
 
 const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
   const { title, subtitle }: HomepageFusePool = useMemo(() => {
-    if (!pool) return { title: null, subtitle: null, id: null };
+    if (!pool) return { title: null, subtitle: null, id: -1 };
     return HOMEPAGE_FUSE_POOLS.find((p) => p.id === pool.id)!;
   }, [pool]);
 
@@ -76,9 +73,6 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
           boxShadow: "0px .2px 4px grey;",
         }}
       >
-        {/* <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            
-          </Row> */}
           <AvatarGroup my={1} size="xs" max={3}>
             {pool?.assets.slice(0, 3).map((asset) => {
               const _asset = asset as USDPricedFuseAssetWithTokenData;

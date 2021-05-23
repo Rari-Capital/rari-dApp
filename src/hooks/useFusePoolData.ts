@@ -58,7 +58,6 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
     return ret;
   }, [poolsData, poolIds]);
 
-  console.log({ fusePoolsData });
 
   // Get all the asset arrays for each pool
   const assetsArray: USDPricedFuseAsset[][] | null =
