@@ -39,7 +39,7 @@ const poolSort = (pools: MergedPool[]) => {
   });
 };
 
-const fetchPools = async ({
+export const fetchPools = async ({
   rari,
   fuse,
   address,
@@ -96,12 +96,12 @@ const fetchPools = async ({
 };
 
 interface UseFusePoolsReturn {
-  pools: MergedPool[] | undefined,
-  filteredPools: MergedPool[] | null,
+  pools: MergedPool[] | undefined;
+  filteredPools: MergedPool[] | null;
 }
 
 // returns impersonal data about fuse pools ( can filter by your supplied/created pools )
-export const useFusePools = (filter: string | null) : UseFusePoolsReturn => {
+export const useFusePools = (filter: string | null): UseFusePoolsReturn => {
   const { fuse, rari, address } = useRari();
 
   const isMyPools = filter === "my-pools";

@@ -33,13 +33,33 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { CTokenIcon } from "./FusePoolsPage";
 import { useQuery } from "react-query";
 
-export type LiquidatablePositions = {
+export type LiquidatablePosition = {
   account: string;
   totalBorrow: number;
   totalCollateral: number;
   totalSupplied: number;
   health: number;
   assets: FuseAsset[];
+  poolID: number;
+};
+
+export type LiquidationEvent = {
+  borrower: string;
+  cTokenBorrowed: string;
+  cTokenCollateral: string;
+  borrowedTokenAddress: string;
+  suppliedTokenAddress: string;
+  liquidator: string;
+
+  borrowedTokenUnderlyingDecimals: number;
+  borrowedTokenUnderlyingSymbol: number;
+
+  repayAmount: number;
+  seizeTokens: number;
+  blockNumber: number;
+  timestamp: number;
+  transactionHash: string;
+  transactionIndex: number;
   poolID: number;
 };
 
@@ -68,18 +88,14 @@ const FuseLiquidationsPage = memo(() => {
       const comptrollers = response[0];
       const poolUsers = response[1];
 
-      let positions: LiquidatablePositions[] = [];
+      let positions: LiquidatablePosition[] = [];
 
-      // Wait until we fetch all pools before returning.
-      await new Promise((resolvePools) => {
-        let poolsCompleted = 0;
+      let userFetches: Promise<any>[] = [];
 
-        // Loop over each pool to get its users:
-        for (let poolID = 0; poolID < comptrollers.length; poolID++) {
-          const comptroller = comptrollers[poolID];
-          const filteredUsers: LiquidatablePositions[] = poolUsers[
-            poolID
-          ].filter((position: LiquidatablePositions) => {
+      for (let poolID = 0; poolID < comptrollers.length; poolID++) {
+        const comptroller = comptrollers[poolID];
+        const filteredUsers: LiquidatablePosition[] = poolUsers[poolID].filter(
+          (position: LiquidatablePosition) => {
             // Filter out users that are borrowing less than 0.1 ETH
             return (
               position.totalBorrow / 1e18 > 0.1 &&
@@ -98,30 +114,13 @@ const FuseLiquidationsPage = memo(() => {
                 }
               ).length > 1
             );
-          });
-
-          // If this pool has no filteredUsers, consider this pool fetched:
-          if (filteredUsers.length === 0) {
-            // Increment the pools completed counter.
-            poolsCompleted++;
-
-            // If this was the last pool we needed to fetch, we're done!
-            if (poolsCompleted === comptrollers.length) {
-              resolvePools(true);
-            }
           }
+        );
 
-          let usersCompleted = 0;
+        for (let userIndex = 0; userIndex < filteredUsers.length; userIndex++) {
+          const user = filteredUsers[userIndex];
 
-          // Loop over each user:
-          for (
-            let userIndex = 0;
-            userIndex < filteredUsers.length;
-            userIndex++
-          ) {
-            const user = filteredUsers[userIndex];
-
-            // Fetch more details about the user:
+          userFetches.push(
             fuse.contracts.FusePoolLens.methods
               .getPoolUserSummary(comptroller, user.account)
               .call()
@@ -133,30 +132,129 @@ const FuseLiquidationsPage = memo(() => {
                   totalBorrow: (user.totalBorrow / 1e18) * ethPrice,
                   totalSupplied: (userSummary[0] / 1e18) * ethPrice,
                   assets: user.assets.map(filterOnlyObjectProperties),
+
                   poolID,
                 });
-
-                // Increment the users completed counter.
-                usersCompleted++;
-
-                // If this was the last user in the pool we need to fetch, we're done with this pool:
-                if (usersCompleted === filteredUsers.length) {
-                  // Increment the pools completed counter.
-                  poolsCompleted++;
-
-                  // If this was the last pool we needed to fetch, we're done!
-                  if (poolsCompleted === comptrollers.length) {
-                    resolvePools(true);
-                  }
-                }
-              });
-          }
+              })
+          );
         }
-      });
+      }
+
+      await Promise.all(userFetches);
 
       // Sort the positions by borrow balance in descending order.
       return positions.sort((a, b) => b.totalBorrow - a.totalBorrow);
     }
+  );
+
+  const { data: liquidations } = useQuery("liquidations", async () => {
+    const pools = await fuse.contracts.FusePoolDirectory.methods
+      .getAllPools()
+      .call();
+
+    let liquidationEvents: LiquidationEvent[] = [];
+
+    let poolFetches: Promise<any>[] = [];
+
+    for (let poolID = 0; poolID < pools.length; poolID++) {
+      const pool = pools[poolID];
+
+      poolFetches.push(
+        fuse.contracts.FusePoolLens.methods
+          .getPoolAssetsWithData(pool.comptroller)
+          .call()
+          .then(async (assets: FuseAsset[]) => {
+            let eventFetches: Promise<any>[] = [];
+
+            for (const asset of assets) {
+              // If the asset has no borrowers, just skip it.
+              if (parseInt(asset.totalBorrow as any) === 0) {
+                continue;
+              }
+
+              const cToken = new fuse.web3.eth.Contract(
+                JSON.parse(
+                  fuse.compoundContracts[
+                    "contracts/CEtherDelegate.sol:CEtherDelegate"
+                  ].abi
+                ),
+                asset.cToken
+              );
+
+              eventFetches.push(
+                cToken
+                  .getPastEvents("LiquidateBorrow", {
+                    fromBlock: 12060000,
+                    toBlock: "latest",
+                  })
+                  .then(async (events) => {
+                    let promises: Promise<any>[] = [];
+
+                    for (const event of events) {
+                      const suppliedToken = assets.find((a) => {
+                        return (
+                          a.cToken.toLowerCase() ===
+                          event.returnValues.cTokenCollateral.toLowerCase()
+                        );
+                      })!;
+
+                      promises.push(
+                        fuse.web3.eth
+                          .getBlock(event.blockNumber)
+                          .then((blockInfo) => {
+                            liquidationEvents.push({
+                              ...filterOnlyObjectProperties(event.returnValues),
+                              cTokenBorrowed: asset.cToken,
+
+                              borrowedTokenAddress: asset.underlyingToken,
+                              suppliedTokenAddress:
+                                suppliedToken.underlyingToken,
+
+                              borrowedTokenUnderlyingDecimals:
+                                asset.underlyingDecimals,
+                              borrowedTokenUnderlyingSymbol:
+                                asset.underlyingSymbol,
+
+                              poolID,
+
+                              blockNumber: event.blockNumber,
+                              timestamp: blockInfo.timestamp,
+
+                              transactionHash: event.transactionHash,
+                              transactionIndex: event.transactionIndex,
+                            });
+                          })
+                      );
+                    }
+
+                    await Promise.all(promises);
+                  })
+              );
+            }
+
+            await Promise.all(eventFetches);
+          })
+      );
+    }
+
+    await Promise.all(poolFetches);
+
+    return liquidationEvents.sort((a, b) => {
+      if (b.blockNumber != a.blockNumber) {
+        return b.blockNumber - a.blockNumber;
+      } else {
+        return b.transactionIndex - a.transactionIndex;
+      }
+    });
+  });
+
+  const [liquidationsToShow, setLiquidationsToShow] = useState(1);
+  const limitedLiquidations = liquidations?.slice(0, liquidationsToShow);
+
+  const [positionsToShow, setPositionsToShow] = useState(-1);
+  const limitedPositions = positions?.slice(
+    0,
+    positionsToShow == -1 ? positions.length : positionsToShow
   );
 
   return (
@@ -215,10 +313,20 @@ const FuseLiquidationsPage = memo(() => {
         </RowOrColumn>
 
         <DashboardBox width="100%" mt={4}>
+          <LiquidationEventsList
+            liquidations={limitedLiquidations}
+            totalLiquidations={liquidations?.length ?? 0}
+            setLiquidationsToShow={setLiquidationsToShow}
+          />
+        </DashboardBox>
+
+        <DashboardBox width="100%" mt={4}>
           <LiquidatablePositionsList
             setShowAtRiskPositions={setShowAtRiskPositions}
             showAtRiskPositions={showAtRiskPositions}
-            positions={positions}
+            positions={limitedPositions}
+            setPositionsToShow={setPositionsToShow}
+            totalPositions={positions?.length ?? 0}
           />
         </DashboardBox>
 
@@ -230,14 +338,226 @@ const FuseLiquidationsPage = memo(() => {
 
 export default FuseLiquidationsPage;
 
+const LiquidationEventsList = ({
+  liquidations,
+  totalLiquidations,
+  setLiquidationsToShow,
+}: {
+  liquidations?: LiquidationEvent[];
+  totalLiquidations: number;
+  setLiquidationsToShow: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+  const { t } = useTranslation();
+
+  const isMobile = useIsMobile();
+
+  return (
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      expand
+    >
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        height="45px"
+        width="100%"
+        flexShrink={0}
+        pl={4}
+        pr={1}
+      >
+        <Text fontWeight="bold" width={isMobile ? "100%" : "30%"}>
+          {t("Recent Liquidations")}
+        </Text>
+
+        {isMobile ? null : (
+          <>
+            <Text fontWeight="bold" textAlign="center" width="23%">
+              {t("Collateral Seized")}
+            </Text>
+
+            <Text fontWeight="bold" textAlign="center" width="23%">
+              {t("Borrow Repaid")}
+            </Text>
+
+            <Text fontWeight="bold" textAlign="center" width="25%">
+              {t("Timestamp")}
+            </Text>
+          </>
+        )}
+      </Row>
+
+      <ModalDivider />
+
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        width="100%"
+      >
+        {liquidations ? (
+          <>
+            {liquidations.map((liquidation, index) => {
+              return (
+                <LiquidationRow
+                  key={liquidation.transactionHash}
+                  liquidation={liquidation}
+                  noBottomDivider={index === liquidations.length - 1}
+                />
+              );
+            })}
+
+            <RowsControl
+              totalAmount={totalLiquidations}
+              setAmountToShow={setLiquidationsToShow}
+            />
+          </>
+        ) : (
+          <Spinner my={8} />
+        )}
+      </Column>
+    </Column>
+  );
+};
+
+const LiquidationRow = ({
+  noBottomDivider,
+  liquidation,
+}: {
+  noBottomDivider?: boolean;
+  liquidation: LiquidationEvent;
+}) => {
+  const isMobile = useIsMobile();
+
+  const { t } = useTranslation();
+
+  const date = new Date(liquidation.timestamp * 1000);
+  return (
+    <>
+      <Link
+        isExternal
+        width="100%"
+        className="no-underline"
+        href={"https://etherscan.io/tx/" + liquidation.transactionHash}
+      >
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          width="100%"
+          height="100px"
+          className="hover-row"
+          pl={4}
+          pr={1}
+        >
+          <Column
+            width={isMobile ? "100%" : "30%"}
+            height="100%"
+            mainAxisAlignment="center"
+            crossAxisAlignment="flex-start"
+          >
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <Box boxSize="23px">
+                <Jazzicon
+                  diameter={23}
+                  seed={jsNumberForAddress(liquidation.liquidator)}
+                />
+              </Box>
+
+              <Text ml={2} mr={2} fontWeight="bold">
+                <Text as="span" color="#EE1E45">
+                  {" → "}
+                </Text>
+                {t("Liquidated")}
+                <Text as="span" color="#73BF69">
+                  {" → "}
+                </Text>
+              </Text>
+
+              <Box boxSize="23px">
+                <Jazzicon
+                  diameter={23}
+                  seed={jsNumberForAddress(liquidation.borrower)}
+                />
+              </Box>
+
+              <Text ml={3} mr={2} fontWeight="bold">
+                (Pool #{liquidation.poolID})
+              </Text>
+            </Row>
+
+            <Text mt={2} fontSize="11px" color="#EE1E45">
+              {liquidation.liquidator}
+            </Text>
+            <Text mt={1} fontSize="11px" color="#73BF69">
+              {liquidation.borrower}
+            </Text>
+          </Column>
+
+          {isMobile ? null : (
+            <>
+              <Column
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                height="100%"
+                width="23%"
+              >
+                <CTokenIcon
+                  size="md"
+                  mb={2}
+                  address={liquidation.suppliedTokenAddress}
+                />
+              </Column>
+
+              <Column
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                height="100%"
+                width="23%"
+                fontWeight="bold"
+              >
+                <CTokenIcon
+                  size="sm"
+                  mb={2}
+                  address={liquidation.borrowedTokenAddress}
+                />
+                {smallUsdFormatter(
+                  liquidation.repayAmount /
+                    10 ** liquidation.borrowedTokenUnderlyingDecimals
+                ).replace("$", "")}{" "}
+                {liquidation.borrowedTokenUnderlyingSymbol}
+              </Column>
+
+              <Column
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                height="100%"
+                width="25%"
+              >
+                <Text fontWeight="bold">{date.toLocaleTimeString()}</Text>
+
+                <Text mt={1}>{date.toLocaleDateString()}</Text>
+              </Column>
+            </>
+          )}
+        </Row>
+      </Link>
+
+      {noBottomDivider ? null : <ModalDivider />}
+    </>
+  );
+};
+
 const LiquidatablePositionsList = ({
   positions,
+  totalPositions,
+  setPositionsToShow,
   showAtRiskPositions,
   setShowAtRiskPositions,
 }: {
-  positions?: LiquidatablePositions[];
+  positions?: LiquidatablePosition[];
+  totalPositions: number;
+  setPositionsToShow: React.Dispatch<React.SetStateAction<number>>;
   showAtRiskPositions: boolean;
-  setShowAtRiskPositions: (arg: (past: boolean) => boolean) => any;
+  setShowAtRiskPositions: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
 
@@ -331,23 +651,22 @@ const LiquidatablePositionsList = ({
         width="100%"
       >
         {positions ? (
-          positions.map((position, index) => {
-            return (
-              <PositionRow
-                key={position.account + position.poolID}
-                poolNumber={position.poolID}
-                address={position.account}
-                supplied={position.totalSupplied}
-                borrowLimit={position.totalCollateral}
-                borrowed={position.totalBorrow}
-                tokens={position.assets.map((asset) => ({
-                  symbol: asset.underlyingSymbol,
-                  address: asset.underlyingToken,
-                }))}
-                noBottomDivider={index === positions.length - 1}
-              />
-            );
-          })
+          <>
+            {" "}
+            {positions.map((position, index) => {
+              return (
+                <PositionRow
+                  key={position.account + position.poolID}
+                  position={position}
+                  noBottomDivider={index === positions.length - 1}
+                />
+              );
+            })}
+            <RowsControl
+              totalAmount={totalPositions}
+              setAmountToShow={setPositionsToShow}
+            />
+          </>
         ) : (
           <Spinner my={8} />
         )}
@@ -357,26 +676,16 @@ const LiquidatablePositionsList = ({
 };
 
 const PositionRow = ({
-  tokens,
-  poolNumber,
-  borrowLimit,
-  borrowed,
-  supplied,
-  address,
+  position,
   noBottomDivider,
 }: {
-  tokens: { symbol: string; address: string }[];
-  poolNumber: number;
-  borrowLimit: number;
-  borrowed: number;
-  supplied: number;
-  address: string;
+  position: LiquidatablePosition;
   noBottomDivider?: boolean;
 }) => {
   const isMobile = useIsMobile();
 
-  const borrowRatio = (borrowed / supplied) * 100;
-  const limitUsed = (borrowed / borrowLimit) * 100;
+  const borrowRatio = (position.totalBorrow / position.totalSupplied) * 100;
+  const limitUsed = (position.totalBorrow / position.totalCollateral) * 100;
 
   return (
     <>
@@ -385,7 +694,7 @@ const PositionRow = ({
         as={RouterLink}
         width="100%"
         className="no-underline"
-        to={"/fuse/pool/" + poolNumber + `?address=${address}`}
+        to={"/fuse/pool/" + position.poolID + `?address=${position.account}`}
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -397,41 +706,53 @@ const PositionRow = ({
           pr={1}
         >
           <Column
-            pt={2}
+            pt={1}
             width={isMobile ? "100%" : "30%"}
             height="100%"
             mainAxisAlignment="center"
             crossAxisAlignment="flex-start"
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              <Jazzicon
+                diameter={23}
+                seed={jsNumberForAddress(position.account)}
+              />
 
               <Text ml={3} fontWeight="bold">
-                Pool #{poolNumber}
+                Pool #{position.poolID}
               </Text>
 
-              <SimpleTooltip label={tokens.map((t) => t.symbol).join(" / ")}>
+              <SimpleTooltip
+                label={position.assets
+                  .map((t) => t.underlyingSymbol)
+                  .join(" / ")}
+              >
                 <AvatarGroup size="xs" max={30} ml={2} mr={2}>
-                  {tokens.map(({ address }) => {
-                    return <CTokenIcon key={address} address={address} />;
+                  {position.assets.map(({ underlyingToken }) => {
+                    return (
+                      <CTokenIcon
+                        key={underlyingToken}
+                        address={underlyingToken}
+                      />
+                    );
                   })}
                 </AvatarGroup>
               </SimpleTooltip>
             </Row>
 
             <Text mt={2} fontSize="11px">
-              {address}
+              {position.account}
             </Text>
           </Column>
 
           {isMobile ? null : (
             <>
               <Center height="100%" width="14%">
-                <b>{smallUsdFormatter(supplied)}</b>
+                <b>{smallUsdFormatter(position.totalSupplied)}</b>
               </Center>
 
               <Center height="100%" width="14%">
-                <b>{smallUsdFormatter(borrowed)}</b>
+                <b>{smallUsdFormatter(position.totalBorrow)}</b>
               </Center>
               <Center
                 height="100%"
@@ -441,7 +762,7 @@ const PositionRow = ({
                 {borrowRatio.toFixed(2) + "%"}
               </Center>
               <Center height="100%" width="14%">
-                <b>{smallUsdFormatter(borrowLimit)}</b>
+                <b>{smallUsdFormatter(position.totalCollateral)}</b>
               </Center>
               <Center height="100%" width="14%">
                 {limitUsed.toFixed(2) + "%"}
@@ -453,5 +774,72 @@ const PositionRow = ({
 
       {noBottomDivider ? null : <ModalDivider />}
     </>
+  );
+};
+
+const RowsControl = ({
+  setAmountToShow,
+  totalAmount,
+}: {
+  totalAmount: number;
+  setAmountToShow: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Row
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      width="100%"
+      my={4}
+    >
+      <DashboardBox
+        fontWeight="bold"
+        as="button"
+        px={2}
+        py={1}
+        onClick={() =>
+          setAmountToShow((past) =>
+            Math.min(
+              past == 0 ? 1 : past == -1 ? totalAmount : past + 5,
+              totalAmount
+            )
+          )
+        }
+      >
+        {t("View More")}
+      </DashboardBox>
+
+      <DashboardBox
+        fontWeight="bold"
+        as="button"
+        ml={4}
+        px={2}
+        py={1}
+        onClick={() => setAmountToShow((past) => Math.max(past - 5, 0))}
+      >
+        {t("View Less")}
+      </DashboardBox>
+
+      <DashboardBox
+        as="button"
+        ml={4}
+        px={2}
+        py={1}
+        onClick={() => setAmountToShow(totalAmount)}
+      >
+        {t("View All")}
+      </DashboardBox>
+
+      <DashboardBox
+        as="button"
+        ml={4}
+        px={2}
+        py={1}
+        onClick={() => setAmountToShow(0)}
+      >
+        {t("Collapse All")}
+      </DashboardBox>
+    </Row>
   );
 };

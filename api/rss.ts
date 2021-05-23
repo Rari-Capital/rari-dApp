@@ -331,14 +331,13 @@ export default async (request: NowRequest, response: NowResponse) => {
     let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
     let totalRSS = 0;
 
-    // Do all the fetching in parallel and then resolve this promise once they have all fetched.
-    await new Promise((resolve) => {
-      let completed = 0;
+    let promises: Promise<any>[] = [];
 
-      for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i];
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
 
-        console.time(asset.underlyingSymbol);
+      console.time(asset.underlyingSymbol);
+      promises.push(
         fetch(
           `http://${process.env.VERCEL_URL}/api/rss?address=` +
             asset.underlyingToken
@@ -347,16 +346,13 @@ export default async (request: NowRequest, response: NowResponse) => {
           .then((rss) => {
             assetsRSS[i] = rss;
             totalRSS += rss.totalScore;
-            completed++;
 
             console.timeEnd(asset.underlyingSymbol);
+          })
+      );
+    }
 
-            if (completed === assets.length) {
-              resolve(true);
-            }
-          });
-      }
-    });
+    await Promise.all(promises);
 
     const averageRSS = await weightedCalculation(async () => {
       return totalRSS / assets.length / 100;
