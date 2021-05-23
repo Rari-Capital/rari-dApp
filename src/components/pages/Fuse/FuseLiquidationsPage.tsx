@@ -33,77 +33,6 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { CTokenIcon } from "./FusePoolsPage";
 import { useQuery } from "react-query";
 
-const FuseLiquidationsPage = memo(() => {
-  const { isAuthed } = useRari();
-  const isMobile = useIsSmallScreen();
-
-  return (
-    <>
-      <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        color="#FFFFFF"
-        mx="auto"
-        width={isMobile ? "100%" : "1000px"}
-        height="100%"
-        px={isMobile ? 4 : 0}
-      >
-        <Header isAuthed={isAuthed} isFuse />
-        <FuseStatsBar />
-
-        <FuseTabBar />
-
-        <RowOrColumn
-          isRow={!isMobile}
-          mt={4}
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          width="100%"
-          height={isMobile ? "400px" : "200px"}
-        >
-          <DashboardBox
-            height={isMobile ? "70%" : "100%"}
-            width={isMobile ? "100%" : "70%"}
-            overflow="hidden"
-            bg="#141619"
-          >
-            <iframe
-              height="100%"
-              width="100%"
-              src="https://rari.grafana.net/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
-              title="Leverage"
-            />
-          </DashboardBox>
-
-          <DashboardBox
-            height={isMobile ? "30%" : "100%"}
-            width={isMobile ? "100%" : "30%"}
-            mt={isMobile ? 4 : 0}
-            ml={isMobile ? 0 : 4}
-            overflow="hidden"
-            bg="#141619"
-          >
-            <iframe
-              src="https://rari.grafana.net/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=19"
-              height="100%"
-              width="100%"
-              title="Liquidation Count"
-            />
-          </DashboardBox>
-        </RowOrColumn>
-
-        <DashboardBox width="100%" mt={4}>
-          <LiquidatablePositionsList />
-        </DashboardBox>
-
-        <Footer />
-      </Column>
-    </>
-  );
-});
-
-export default FuseLiquidationsPage;
-
 export type LiquidatablePositions = {
   account: string;
   totalBorrow: number;
@@ -113,9 +42,11 @@ export type LiquidatablePositions = {
   poolID: number;
 };
 
-const LiquidatablePositionsList = () => {
+const FuseLiquidationsPage = memo(() => {
+  const { isAuthed } = useRari();
+  const isMobile = useIsSmallScreen();
+
   const { fuse, rari } = useRari();
-  const { t } = useTranslation();
 
   const [showAtRiskPositions, setShowAtRiskPositions] = useState(false);
 
@@ -210,10 +141,110 @@ const LiquidatablePositionsList = () => {
         }
       });
 
-      // Sort the positions by borrow balance in descending order.
-      return positions.sort((a, b) => b.totalBorrow - a.totalBorrow);
+      return (
+        positions
+          // Hide positions that are only one asset.
+          .filter(
+            (p) =>
+              p.assets.filter(
+                // Must be borrowing/supplying more than $1 for this to count as an asset.
+                (a) => {
+                  const price = a.underlyingPrice;
+
+                  return (
+                    ((a.supplyBalance * price) / 1e36) * ethPrice > 1 ||
+                    ((a.borrowBalance * price) / 1e36) * ethPrice > 1
+                  );
+                }
+              ).length > 1
+          )
+          // Sort the positions by borrow balance in descending order.
+          .sort((a, b) => b.totalBorrow - a.totalBorrow)
+      );
     }
   );
+
+  return (
+    <>
+      <Column
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        color="#FFFFFF"
+        mx="auto"
+        width={isMobile ? "100%" : "1000px"}
+        height="100%"
+        px={isMobile ? 4 : 0}
+      >
+        <Header isAuthed={isAuthed} isFuse />
+        <FuseStatsBar />
+
+        <FuseTabBar />
+
+        <RowOrColumn
+          isRow={!isMobile}
+          mt={4}
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          width="100%"
+          height={isMobile ? "400px" : "200px"}
+        >
+          <DashboardBox
+            height={isMobile ? "70%" : "100%"}
+            width={isMobile ? "100%" : "70%"}
+            overflow="hidden"
+            bg="#141619"
+          >
+            <iframe
+              height="100%"
+              width="100%"
+              src="https://rari.grafana.net/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
+              title="Leverage"
+            />
+          </DashboardBox>
+
+          <DashboardBox
+            height={isMobile ? "30%" : "100%"}
+            width={isMobile ? "100%" : "30%"}
+            mt={isMobile ? 4 : 0}
+            ml={isMobile ? 0 : 4}
+            overflow="hidden"
+            bg="#141619"
+          >
+            <iframe
+              src="https://rari.grafana.net/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=19"
+              height="100%"
+              width="100%"
+              title="Liquidation Count"
+            />
+          </DashboardBox>
+        </RowOrColumn>
+
+        <DashboardBox width="100%" mt={4}>
+          <LiquidatablePositionsList
+            setShowAtRiskPositions={setShowAtRiskPositions}
+            showAtRiskPositions={showAtRiskPositions}
+            positions={positions}
+          />
+        </DashboardBox>
+
+        <Footer />
+      </Column>
+    </>
+  );
+});
+
+export default FuseLiquidationsPage;
+
+const LiquidatablePositionsList = ({
+  positions,
+  showAtRiskPositions,
+  setShowAtRiskPositions,
+}: {
+  positions?: LiquidatablePositions[];
+  showAtRiskPositions: boolean;
+  setShowAtRiskPositions: (arg: (past: boolean) => boolean) => any;
+}) => {
+  const { t } = useTranslation();
 
   const isMobile = useIsMobile();
 
