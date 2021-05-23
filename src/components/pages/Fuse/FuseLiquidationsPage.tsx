@@ -349,6 +349,9 @@ const PositionRow = ({
 }) => {
   const isMobile = useIsMobile();
 
+  const borrowRatio = (borrowed / supplied) * 100;
+  const limitUsed = (borrowed / borrowLimit) * 100;
+
   return (
     <>
       <Link
@@ -404,14 +407,18 @@ const PositionRow = ({
               <Center height="100%" width="14%">
                 <b>{smallUsdFormatter(borrowed)}</b>
               </Center>
-              <Center height="100%" width="14%">
-                {((borrowed / supplied) * 100).toFixed(2) + "%"}
+              <Center
+                height="100%"
+                width="14%"
+                color={borrowRatio > 100 ? "#EE1E45" : "#73BF69"}
+              >
+                {borrowRatio.toFixed(2) + "%"}
               </Center>
               <Center height="100%" width="14%">
-                <b> {smallUsdFormatter(borrowLimit)}</b>
+                <b>{smallUsdFormatter(borrowLimit)}</b>
               </Center>
               <Center height="100%" width="14%">
-                {((borrowed / borrowLimit) * 100).toFixed(2) + "%"}
+                {limitUsed.toFixed(2) + "%"}
               </Center>
             </>
           )}
