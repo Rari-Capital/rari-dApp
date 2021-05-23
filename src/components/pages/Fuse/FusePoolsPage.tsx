@@ -76,7 +76,7 @@ const PoolList = () => {
         pl={4}
         pr={1}
       >
-        <Text fontWeight="bold" width="40%">
+        <Text fontWeight="bold" width={isMobile ? "100%" : "40%"}>
           {!isMobile ? t("Pool Assets") : t("Pool Directory")}
         </Text>
 
@@ -169,7 +169,7 @@ const PoolRow = ({
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          height={isMobile ? "120px" : "90px"}
+          height="90px"
           className="hover-row"
           pl={4}
           pr={1}

@@ -94,6 +94,7 @@ const FuseTabBar = () => {
           route="https://rari.grafana.net/goto/61kctV_Gk"
           text={t("Metrics")}
         />
+        <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
 
         {poolId ? (
           <>

@@ -120,6 +120,7 @@ const Buttons = ({
             height="40px"
             flexShrink={0}
             width="95px"
+            fontSize="15px"
             onClick={openClaimRGTModal}
             fontWeight="bold"
           >
