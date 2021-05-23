@@ -28,9 +28,6 @@ import LogRocket from "logrocket";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { persistQueryClient } from "react-query/persistQueryClient-experimental";
-import { createLocalStoragePersistor } from "react-query/createLocalStoragePersistor-experimental";
-
 import { version } from "../package.json";
 export { version };
 
@@ -66,20 +63,7 @@ function ScrollToTop() {
   return null;
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-    },
-  },
-});
-
-const localStoragePersistor = createLocalStoragePersistor();
-
-persistQueryClient({
-  queryClient,
-  persistor: localStoragePersistor,
-});
+const queryClient = new QueryClient();
 
 ReactDOM.render(
   <>
