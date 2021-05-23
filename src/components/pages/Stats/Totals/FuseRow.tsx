@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";

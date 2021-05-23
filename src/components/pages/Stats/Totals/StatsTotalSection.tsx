@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
@@ -40,10 +40,8 @@ const StatsTotalSection = ({
   const { t } = useTranslation();
 
   // Earn
-  const {
-    totals,
-    aggregatePoolsInfo,
-  }: AggregatePoolsInfoReturn = useAggregatePoolInfos();
+  const { totals, aggregatePoolsInfo }: AggregatePoolsInfoReturn =
+    useAggregatePoolInfos();
   const hasDepositsInEarn = aggregatePoolsInfo?.some(
     (p) => !p?.poolBalance?.isZero()
   );

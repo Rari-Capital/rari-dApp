@@ -1,5 +1,4 @@
 /* istanbul ignore file */
-import React from "react";
 
 import { Code, Box, Heading, Text, Link } from "@chakra-ui/react";
 

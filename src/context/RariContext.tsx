@@ -131,9 +131,8 @@ export interface RariContextData {
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const RariContext = React.createContext<RariContextData | undefined>(
-  undefined
-);
+export const RariContext =
+  React.createContext<RariContextData | undefined>(undefined);
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();

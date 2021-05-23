@@ -1,11 +1,10 @@
-import React from "react";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { Heading } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import FullPageSpinner from "./shared/FullPageSpinner";
 import { Pool } from "../utils/poolUtils";
 import Layout from "./shared/Layout";
-import Home from "./pages/Home/Home";
+import React from "react";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -63,13 +62,6 @@ const FusePoolCreatePage = loadable(
   }
 );
 
-const RSSAssetsPage = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/RSSAssetsPage"),
-  {
-    fallback: <FullPageSpinner />,
-  }
-);
-
 const Pool2Page = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/Pool2/Pool2Page"),
   {
@@ -119,10 +111,6 @@ const App = React.memo(() => {
           <Route path="/" element={<Navigate to="/" replace={true} />} />
         </Route>
 
-        <Route path="/rss" element={<Outlet />}>
-          <Route path="/assets" element={<RSSAssetsPage />} />
-        </Route>
-
         <Route path="/tranches" element={<TranchesPage />} />
 
         <Route path="/pool2" element={<Pool2Page />} />
@@ -136,7 +124,6 @@ const App = React.memo(() => {
         <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
         <Route path="/" element={<MultiPoolPortal />} />
-        <Route path="/home" element={<Home />} />
 
         <Route path="*" element={<PageNotFound />} />
       </Routes>

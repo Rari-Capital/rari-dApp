@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Box,
   Text,
@@ -24,7 +23,6 @@ import HeaderSearchbar from "./HeaderSearchbar";
 
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
-
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
 );
@@ -32,8 +30,7 @@ export const HeaderHeightWithTopPadding = new PixelSize(
 export const NewHeader = () => {
   const { isAuthed } = useRari();
   const { t } = useTranslation();
-  const isMobile = useIsSmallScreen()
-
+  const isMobile = useIsSmallScreen();
 
   return (
     <Row
@@ -80,7 +77,7 @@ export const NewHeader = () => {
         )}
       </Row>
 
-      {!isMobile &&  <HeaderSearchbar />}
+      {!isMobile && <HeaderSearchbar />}
 
       <AccountButton />
     </Row>
@@ -159,5 +156,4 @@ export const SubMenuItem = ({ name, link }: { name: string; link: string }) => {
   );
 };
 
-
-export default NewHeader
+export default NewHeader;

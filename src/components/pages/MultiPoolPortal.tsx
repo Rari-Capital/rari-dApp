@@ -165,10 +165,11 @@ const GovernanceStats = () => {
   );
 
   const { data: rgtSupply } = useQuery("rgtSupply", async () => {
-    //@ts-ignore
-    const rawSupply = await rari.governance.contracts.RariGovernanceToken.methods
-      .totalSupply()
-      .call();
+    const rawSupply =
+      //@ts-ignore
+      await rari.governance.contracts.RariGovernanceToken.methods
+        .totalSupply()
+        .call();
 
     return smallStringUsdFormatter((parseFloat(rawSupply) / 1e18).toFixed(0))
       .replace("$", "")
@@ -214,10 +215,8 @@ const FundStats = () => {
 
   const { isAuthed } = useRari();
 
-  const {
-    isLoading: isBalanceLoading,
-    data: balanceData,
-  } = useTotalPoolsBalance();
+  const { isLoading: isBalanceLoading, data: balanceData } =
+    useTotalPoolsBalance();
 
   const { getNumberTVL } = useTVLFetchers();
 
@@ -367,9 +366,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
   const authedOpenModal = useAuthedCallback(openDepositModal);
 
-  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(
-    pool
-  );
+  const { data: balanceData, isLoading: isPoolBalanceLoading } =
+    usePoolBalance(pool);
 
   const poolAPY = usePoolAPY(pool);
 

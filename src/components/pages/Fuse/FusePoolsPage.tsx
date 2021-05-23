@@ -1,4 +1,3 @@
-import React from "react";
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row, useIsMobile } from "buttered-chakra";
 import { useTranslation } from "react-i18next";
@@ -21,6 +20,7 @@ import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
+import React from "react";
 
 const FusePoolsPage = React.memo(() => {
   const { isAuthed } = useRari();

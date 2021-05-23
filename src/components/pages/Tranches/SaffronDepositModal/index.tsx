@@ -1,4 +1,3 @@
-import React from "react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 
 import AmountSelect, { requiresSFIStaking } from "./AmountSelect";

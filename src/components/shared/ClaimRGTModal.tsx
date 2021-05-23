@@ -15,7 +15,7 @@ import {
 import BigNumber from "bignumber.js";
 import { Column, Row } from "buttered-chakra";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
 

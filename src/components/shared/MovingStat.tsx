@@ -75,10 +75,10 @@ export const APYMovingStat = React.memo(
 
     const [currentStat, setCurrentStat] = useState(startingAmount);
 
-    const formattedStat = useMemo(() => formatStat(currentStat), [
-      formatStat,
-      currentStat,
-    ]);
+    const formattedStat = useMemo(
+      () => formatStat(currentStat),
+      [formatStat, currentStat]
+    );
 
     useInterval(() => {
       setCurrentStat((past) => past + past * increasePerInterval);
@@ -120,10 +120,10 @@ export const APYWithRefreshMovingStat = React.memo(
 
     const [currentStat, setCurrentStat] = useState(0);
 
-    const formattedStat = useMemo(() => formatStat(currentStat), [
-      formatStat,
-      currentStat,
-    ]);
+    const formattedStat = useMemo(
+      () => formatStat(currentStat),
+      [formatStat, currentStat]
+    );
 
     useInterval(() => {
       setCurrentStat((past) => past + past * increasePerInterval);

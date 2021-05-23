@@ -1,6 +1,6 @@
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { SearchIcon } from "@chakra-ui/icons";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box } from "@chakra-ui/react";
 
 const HeaderSearchbar = (props: any) => {
