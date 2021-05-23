@@ -38,6 +38,7 @@ export type LiquidatablePositions = {
   totalBorrow: number;
   totalCollateral: number;
   totalSupplied: number;
+  health: number;
   assets: FuseAsset[];
   poolID: number;
 };
@@ -78,12 +79,24 @@ const FuseLiquidationsPage = memo(() => {
           const comptroller = comptrollers[poolID];
           const filteredUsers: LiquidatablePositions[] = poolUsers[
             poolID
-          ].filter((user: any) => {
+          ].filter((position: LiquidatablePositions) => {
             // Filter out users that are borrowing less than 0.1 ETH
             return (
-              user.totalBorrow / 1e18 > 0.1 &&
+              position.totalBorrow / 1e18 > 0.1 &&
               // If we want to show at risk positions, don't show liquidatable ones.
-              (showAtRiskPositions ? user.health / 1e18 > 1 : true)
+              (showAtRiskPositions ? position.health / 1e18 > 1 : true) &&
+              // Hide positions that are only one asset.
+              position.assets.filter(
+                // Must be borrowing/supplying more than $1 for this to count as an asset.
+                (a) => {
+                  const price = a.underlyingPrice;
+
+                  return (
+                    ((a.supplyBalance * price) / 1e36) * ethPrice > 1 ||
+                    ((a.borrowBalance * price) / 1e36) * ethPrice > 1
+                  );
+                }
+              ).length > 1
             );
           });
 
@@ -141,26 +154,8 @@ const FuseLiquidationsPage = memo(() => {
         }
       });
 
-      return (
-        positions
-          // Hide positions that are only one asset.
-          .filter(
-            (p) =>
-              p.assets.filter(
-                // Must be borrowing/supplying more than $1 for this to count as an asset.
-                (a) => {
-                  const price = a.underlyingPrice;
-
-                  return (
-                    ((a.supplyBalance * price) / 1e36) * ethPrice > 1 ||
-                    ((a.borrowBalance * price) / 1e36) * ethPrice > 1
-                  );
-                }
-              ).length > 1
-          )
-          // Sort the positions by borrow balance in descending order.
-          .sort((a, b) => b.totalBorrow - a.totalBorrow)
-      );
+      // Sort the positions by borrow balance in descending order.
+      return positions.sort((a, b) => b.totalBorrow - a.totalBorrow);
     }
   );
 
