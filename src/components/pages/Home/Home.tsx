@@ -223,7 +223,7 @@ const Home = React.memo(() => {
                 width="1px" // weird hack to make the carousel fit. idk why it works
                 py={5}
               >
-                <HomeCarousel pools={pools} />
+                <HomeCarousel />
               </Column>
             </Row>
           </DashboardBox>

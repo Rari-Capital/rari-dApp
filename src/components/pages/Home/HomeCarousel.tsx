@@ -5,10 +5,22 @@ import { Carousel } from "react-responsive-carousel";
 import { Column } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { FusePoolData } from "utils/fetchFusePoolData";
+import {
+  useFuseDataForAsset,
+  useFuseDataForAssets,
+} from "hooks/fuse/useFuseDataForAsset";
+import {
+  shortUsdFormatter,
+  smallStringUsdFormatter,
+  smallUsdFormatter,
+} from "utils/bigUtils";
 
-const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null }) => {
+const ASSETS = ["DAI", "ETH", "RGT"];
+
+const HomeCarousel = () => {
   const isMobile = useIsSmallScreen();
 
+  const pools = useFuseDataForAssets(ASSETS);
 
   return (
     <Column
@@ -28,42 +40,28 @@ const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null }) => {
         showThumbs={false}
         showIndicators={isMobile ? false : true}
       >
-        <Box
-          // bg="lime"
-          w="100%"
-        >
-          <Heading
-            fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
-            textAlign="left"
-          >
-            The Rari Capital Ecosystem currently has{" "}
-            <InlineStyledText text="1 Bajilion dollars" /> earning{" "}
-            <InlineStyledText text="18.5%" /> yield.
-          </Heading>
-        </Box>
-        <Box
-          // bg="lime"
-          w="100%"
-        >
-          <Heading
-            fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
-            textAlign="left"
-          >
-            The Rari Capital Ecosystem currently has{" "}
-            <InlineStyledText text="1 Bajilion dollars" /> earning{" "}
-            <InlineStyledText text="18.5%" /> yield.
-          </Heading>
-        </Box>
-        <Box w="100%">
-          <Heading
-            fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
-            textAlign="left"
-          >
-            The Rari Capital Ecosystem currently has{" "}
-            <InlineStyledText text="1 Bajilion dollars" /> earning{" "}
-            <InlineStyledText text="18.5%" /> yield.
-          </Heading>
-        </Box>
+        {pools.map((pool, i) => {
+          return (
+            <Box w="100%">
+              <Heading
+                fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
+                textAlign="left"
+              >
+                The Rari Capital Ecosystem currently has{" "}
+                <InlineStyledText
+                  text={`${shortUsdFormatter(pool.totalSuppliedUSD)} ${
+                    ASSETS[i]
+                  }`}
+                />{" "}
+                earning{" "}
+                <InlineStyledText
+                  text={`${pool.highestSupplyAPY.toFixed(2)}%`}
+                />{" "}
+                yield.
+              </Heading>
+            </Box>
+          );
+        })}
       </Carousel>
     </Column>
   );

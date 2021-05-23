@@ -95,7 +95,7 @@ const fetchPools = async ({
   return merged;
 };
 
-interface UseFusePoolsReturn {
+export interface UseFusePoolsReturn {
   pools: MergedPool[] | undefined,
   filteredPools: MergedPool[] | null,
 }

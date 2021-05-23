@@ -73,6 +73,12 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
           boxShadow: "0px .2px 4px grey;",
         }}
       >
+        <SkeletonText
+          isLoaded={!!pool && !!pool.assets.length}
+          height="10px"
+          noOfLines={2}
+          spacing="5"
+        >
           <AvatarGroup my={1} size="xs" max={3}>
             {pool?.assets.slice(0, 3).map((asset) => {
               const _asset = asset as USDPricedFuseAssetWithTokenData;
@@ -87,7 +93,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
               );
             })}
           </AvatarGroup>
-        <SkeletonText isLoaded={!!pool} height="10px" noOfLines={2} spacing="5">
+
           <Heading size="sm">{title ?? pool?.name}</Heading>
           <Text size="xs" color="gray.500" fontWeight="bold">
             {subtitle ?? assetsSubtitle}
