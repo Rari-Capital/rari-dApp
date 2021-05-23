@@ -1,7 +1,6 @@
 import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "buttered-chakra";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
@@ -95,6 +94,7 @@ const FuseTabBar = () => {
           route="https://rari.grafana.net/goto/61kctV_Gk"
           text={t("Metrics")}
         />
+        <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
 
         {poolId ? (
           <>

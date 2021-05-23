@@ -9,7 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "buttered-chakra";
-import React, { ReactNode, useState } from "react";
+import { memo, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useRari } from "../../../context/RariContext";
@@ -34,7 +34,7 @@ import LogRocket from "logrocket";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-const FusePoolCreatePage = React.memo(() => {
+const FusePoolCreatePage = memo(() => {
   const isMobile = useIsSemiSmallScreen();
 
   const { isAuthed } = useRari();

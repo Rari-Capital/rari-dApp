@@ -1,4 +1,3 @@
-import React from "react";
 import { DASHBOARD_BOX_PROPS } from "./DashboardBox";
 import { Box, Heading, CloseButton } from "@chakra-ui/react";
 import { Row } from "buttered-chakra";

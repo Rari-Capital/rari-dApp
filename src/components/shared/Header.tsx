@@ -9,7 +9,7 @@ import {
   Portal,
 } from "@chakra-ui/react";
 import { PixelSize, Row } from "buttered-chakra";
-import React from "react";
+
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import {
@@ -53,21 +53,21 @@ export const Header = ({
       width="100%"
     >
       <RouterLink to="/home">
-      {isAuthed ? (
-        isPool ? (
-          <AnimatedPoolLogo />
+        {isAuthed ? (
+          isPool ? (
+            <AnimatedPoolLogo />
+          ) : isFuse ? (
+            <AnimatedFuseSmallLogo />
+          ) : (
+            <AnimatedSmallLogo />
+          )
+        ) : isPool ? (
+          <PoolLogo />
         ) : isFuse ? (
-          <AnimatedFuseSmallLogo />
+          <FuseSmallLogo />
         ) : (
           <AnimatedSmallLogo />
-        )
-      ) : isPool ? (
-        <PoolLogo />
-      ) : isFuse ? (
-        <FuseSmallLogo />
-      ) : (
-        <AnimatedSmallLogo />
-      )}
+        )}
       </RouterLink>
 
       <Row

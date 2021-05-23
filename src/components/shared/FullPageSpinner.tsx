@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Spinner, Text } from "@chakra-ui/react";
 
 const FullPageSpinner = () => {

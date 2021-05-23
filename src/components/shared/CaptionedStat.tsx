@@ -1,4 +1,3 @@
-import React from "react";
 import { Heading, Text } from "@chakra-ui/react";
 import { CrossAxisAlignment, Column } from "buttered-chakra";
 import { useMaybeResponsiveProp } from "../../hooks/useMaybeResponsiveProp";

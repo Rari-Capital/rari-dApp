@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Row, Column } from "buttered-chakra";
 
 import {
@@ -275,9 +275,10 @@ const TokenNameAndMaxButton = ({
 
       maxBN = balance;
     } else {
-      const deposited = await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
-        address
-      );
+      const deposited =
+        await rari.governance.rgt.sushiSwapDistributions.stakingBalanceOf(
+          address
+        );
 
       maxBN = deposited;
     }

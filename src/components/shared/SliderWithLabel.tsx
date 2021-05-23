@@ -6,7 +6,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Row } from "buttered-chakra";
-import React from "react";
 
 export const SliderWithLabel = ({
   value,

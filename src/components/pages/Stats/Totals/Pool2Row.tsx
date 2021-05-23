@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Pool2LogoPNGWhite } from "components/shared/Logos";

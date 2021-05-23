@@ -1,4 +1,3 @@
-import React from "react";
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
@@ -17,6 +16,7 @@ import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
+import { memo } from "react";
 
 // Hooks
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -35,7 +35,7 @@ import { useSFIEarnings } from "hooks/tranches/useSFIEarnings";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 import Footer from "components/shared/Footer";
 
-const WrappedTranchePage = React.memo(() => {
+const WrappedTranchePage = memo(() => {
   return (
     <SaffronProvider>
       <TranchePage />

@@ -1,5 +1,5 @@
 import { Tooltip } from "@chakra-ui/react";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export const SimpleTooltip = ({
   label,

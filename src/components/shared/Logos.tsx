@@ -1,5 +1,5 @@
 // @ts-ignore
-import React from "react";
+
 import { Flip } from "react-awesome-reveal";
 import { Box, Image } from "@chakra-ui/react";
 
