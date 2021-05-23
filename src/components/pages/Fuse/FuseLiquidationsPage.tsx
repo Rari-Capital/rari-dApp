@@ -149,7 +149,11 @@ const PoolList = () => {
             poolID
           ].filter((user: any) => {
             // Filter out users that are borrowing less than 0.1 ETH
-            return user.totalBorrow / 1e18 > 0.1;
+            return (
+              user.totalBorrow / 1e18 > 0.1 &&
+              // If we want to show at risk positions, don't show liquidatable ones.
+              (showAtRiskPositions ? user.health / 1e18 > 1 : true)
+            );
           });
 
           // If this pool has no filteredUsers, consider this pool fetched:
