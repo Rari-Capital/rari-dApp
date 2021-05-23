@@ -1,6 +1,11 @@
 import React, { useMemo } from "react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
+import {
+  Heading,
+  Text,
+  Link,
+  SimpleGrid,
+} from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
@@ -73,7 +78,11 @@ const Home = React.memo(() => {
               exit={{ opacity: 0, y: 40 }}
             >
               <Heading size="2xl" textAlign="center" mb={10}>
-                Easily <span color="#00C628">earn</span>, lend <br /> and borrow
+                Easily{" "}
+                <Text as="span" color="#00C628">
+                  earn
+                </Text>
+                , lend <br /> and borrow
               </Heading>
             </motion.div>
             <motion.div
@@ -81,9 +90,7 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <InputGroup
-                width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
-              >
+              <InputGroup width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}>
                 <InputLeftElement
                   pointerEvents="none"
                   children={<SearchIcon color="gray.300" />}
@@ -103,8 +110,11 @@ const Home = React.memo(() => {
           // px="20%"
         >
           <Marquee gradient={false} style={{ padding: "10px" }}>
-            {pools?.map((pool, i) => (
-              <HomeFuseCard pool={pool} key={i} />
+            {HOMEPAGE_FUSE_POOLS.map((constantPool, i) => (
+              <HomeFuseCard
+                pool={pools?.find((p) => p.id === constantPool.id)}
+                key={i}
+              />
             ))}
           </Marquee>
         </Row>
@@ -177,7 +187,12 @@ const Home = React.memo(() => {
                 // bg="pink"
                 height="100%"
                 flex="0 0"
-                flexBasis={{base: "0 0 25%", sm: "0 0 25%", md: "0 0 30%", lg: "0 0 30%"}}
+                flexBasis={{
+                  base: "0 0 25%",
+                  sm: "0 0 25%",
+                  md: "0 0 30%",
+                  lg: "0 0 40%",
+                }}
                 p={5}
               >
                 <APYWithRefreshMovingStat
@@ -204,8 +219,14 @@ const Home = React.memo(() => {
                 crossAxisAlignment="center"
                 height="100%"
                 // flex="1 1"
-                flex={{base: "1 1 75%", sm: "1 1 75%", md: "1 1 70%", lg: "1 1 70%"}}
+                flex={{
+                  base: "1 1 75%",
+                  sm: "1 1 75%",
+                  md: "1 1 70%",
+                  lg: "1 1 60%",
+                }}
                 width="1px" // weird hack to make the carousel fit. idk why it works
+                py={5}
               >
                 <HomeCarousel pools={pools} />
               </Column>

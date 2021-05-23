@@ -17,7 +17,9 @@ import {
   useMySaffronData,
 } from "hooks/tranches/useSaffronData";
 
-export const useOpportunitySubtitle = (opportunity: HomepageOpportunity) => {
+export const useOpportunitySubtitle = (
+  opportunity: HomepageOpportunity
+): string | null => {
   // Earn
   const earnPoolAPY = usePoolAPY(opportunity.vaultType);
   const poolInfos = usePoolInfos();
@@ -48,41 +50,41 @@ export const useOpportunitySubtitle = (opportunity: HomepageOpportunity) => {
   const returnedSubtitle = useMemo(() => {
     switch (opportunity.type) {
       case HomepageOpportunityType.EarnVault:
-        return `${earnPoolAPY}% APY`;
+        return earnPoolAPY ? `${earnPoolAPY}% APY` : null;
 
       case HomepageOpportunityType.FusePool:
         switch (opportunity.fuseMetric) {
           case FusePoolMetric.TotalBorrowedUSD:
-            return `${shortUsdFormatter(
-              fusePoolData?.totalBorrowedUSD
-            )} borrowed`;
+            return fusePoolData?.totalBorrowedUSD
+              ? `${shortUsdFormatter(fusePoolData?.totalBorrowedUSD)} borrowed`
+              : null;
           case FusePoolMetric.TotalSuppliedUSD:
-            return `${shortUsdFormatter(
-              fusePoolData?.totalSuppliedUSD
-            )} supplied`;
+            return fusePoolData?.totalSuppliedUSD
+              ? `${shortUsdFormatter(fusePoolData?.totalSuppliedUSD)} supplied`
+              : null;
           case FusePoolMetric.TotalLiquidityUSD:
-            return `${shortUsdFormatter(
-              fusePoolData?.totalLiquidityUSD
-            )} liquidity`;
+            return fusePoolData?.totalLiquidityUSD
+              ? `${shortUsdFormatter(
+                  fusePoolData?.totalLiquidityUSD
+                )} liquidity`
+              : null;
           default:
-            return `${shortUsdFormatter(
-              fusePoolData?.totalSuppliedUSD
-            )} supplied`;
+            return fusePoolData?.totalSuppliedUSD
+              ? `${shortUsdFormatter(fusePoolData?.totalSuppliedUSD)} supplied`
+              : null;
         }
 
       case HomepageOpportunityType.EarnPage:
         // @ts-ignore
         const apys = poolsAPY.filter((obj) => obj).map(parseFloat);
-        // console.log({ apys });
-        return `${Math.max.apply(null, apys)}% APY`;
+        const maxAPY = !!apys.length ? Math.max.apply(null, apys) : null;
+        return maxAPY ? `${maxAPY}% APY` : null;
 
       case HomepageOpportunityType.FusePage:
-        // console.log({ fuseTVL });
-        return fuseTVL ? `${shortUsdFormatter(fuseTVL)} TVL` : "? TVL";
+        return fuseTVL ? `${shortUsdFormatter(fuseTVL)} TVL` : null;
 
       case HomepageOpportunityType.Pool2Page:
-        // console.log({ pool2APR });
-        return `${pool2APR ?? "?"}% APR`;
+        return pool2APR ? `${pool2APR}% APR` : null;
 
       case HomepageOpportunityType.TranchesPage:
         return `${trancheAPYs.map((apy) => `${apy}%`).join(" - ")} APY`;

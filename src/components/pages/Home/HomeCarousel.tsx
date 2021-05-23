@@ -1,5 +1,4 @@
-import React from "react";
-import { Box, Heading } from "@chakra-ui/layout";
+import { Box, Heading, Text } from "@chakra-ui/layout";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
@@ -7,8 +6,9 @@ import { Column } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { FusePoolData } from "utils/fetchFusePoolData";
 
-const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null  }) => {
+const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null }) => {
   const isMobile = useIsSmallScreen();
+
 
   return (
     <Column
@@ -33,11 +33,12 @@ const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null  }) => {
           w="100%"
         >
           <Heading
-            fontSize={{ base: "sm", sm: "md", md: "lg" }}
+            fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
             textAlign="left"
           >
-            The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
-            18.5% yield.
+            The Rari Capital Ecosystem currently has{" "}
+            <InlineStyledText text="1 Bajilion dollars" /> earning{" "}
+            <InlineStyledText text="18.5%" /> yield.
           </Heading>
         </Box>
         <Box
@@ -45,20 +46,22 @@ const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null  }) => {
           w="100%"
         >
           <Heading
-            fontSize={{ base: "sm", sm: "md", md: "lg" }}
+            fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
             textAlign="left"
           >
-            The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
-            18.5% yield.
+            The Rari Capital Ecosystem currently has{" "}
+            <InlineStyledText text="1 Bajilion dollars" /> earning{" "}
+            <InlineStyledText text="18.5%" /> yield.
           </Heading>
         </Box>
         <Box w="100%">
           <Heading
-            fontSize={{ base: "sm", sm: "md", md: "lg" }}
+            fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
             textAlign="left"
           >
-            The Rari Capital Ecosystem currently has 1 Bajilion dollars earning
-            18.5% yield.
+            The Rari Capital Ecosystem currently has{" "}
+            <InlineStyledText text="1 Bajilion dollars" /> earning{" "}
+            <InlineStyledText text="18.5%" /> yield.
           </Heading>
         </Box>
       </Carousel>
@@ -67,3 +70,16 @@ const HomeCarousel = ({ pools }: { pools: FusePoolData[] | null  }) => {
 };
 
 export default HomeCarousel;
+
+const InlineStyledText = ({ text }: { text: string }) => (
+  <Text
+    as="span"
+    sx={{
+      textDecorationColor: "#00C628",
+      // textDecoration: "underline",
+      color: "#00C628",
+    }}
+  >
+    {text}
+  </Text>
+);

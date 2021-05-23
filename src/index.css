@@ -211,3 +211,8 @@ img:not([src]) {
     padding: 20px;
   }
 }
+
+
+li .dot .selected {
+  background: green !important;
+}

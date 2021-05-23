@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Heading, Link, Image, Text } from "@chakra-ui/react";
+import { Box, Heading, Link, Image, Text, Skeleton } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
 
 import { HomepageOpportunity } from "constants/homepage";
@@ -16,7 +16,7 @@ const HomeVaultCard = ({
   const link = useMemo(() => getOpportunityLink(opportunity), [opportunity]);
 
   return (
-    <Link to={link} as={RouterLink} style={{ textDecoration: "none" }}>
+    <Box to={link} as={RouterLink} style={{ textDecoration: "none" }}>
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
@@ -31,17 +31,19 @@ const HomeVaultCard = ({
         _hover={{
           opacity: 1,
           transform: "translateY(-10px)",
-          boxShadow: ".5px 1px 4px grey;"
+          boxShadow: ".5px 1px 4px grey;",
         }}
         bg={opportunity.bgColor}
       >
         <Heading size="sm">{opportunity.title} </Heading>
-        <Text fontSize="xs">{subheading}</Text>
+        <Skeleton isLoaded={!!subheading} height="10px">
+          <Text fontSize="xs">{`${subheading}`}</Text>
+        </Skeleton>
         <Box alignSelf="center" mt="auto" mb="auto">
           <Image src={opportunity.icon} boxSize="70px" float="left" my="auto" />
         </Box>
       </Column>
-    </Link>
+    </Box>
   );
 };
 

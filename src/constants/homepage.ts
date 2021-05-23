@@ -5,9 +5,9 @@ import { Pool } from "utils/poolUtils";
 
 /* Fuse Pools Marquee */
 export interface HomepageFusePool {
-  id: number;
-  title?: string;
-  subtitle?: string;
+  id: number | null;
+  title?: string | null;
+  subtitle?: string | null;
 }
 
 export const HOMEPAGE_FUSE_POOLS: HomepageFusePool[] = [
