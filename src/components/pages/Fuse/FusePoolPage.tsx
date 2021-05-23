@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { memo, useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -43,7 +43,7 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
 
-const FusePoolPage = React.memo(() => {
+const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
@@ -31,7 +31,7 @@ import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
-export const AccountButton = React.memo(() => {
+export const AccountButton = memo(() => {
   const {
     isOpen: isSettingsModalOpen,
     onOpen: openSettingsModal,

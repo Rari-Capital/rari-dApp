@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { memo, ReactNode } from "react";
 
 import {
   Center,
@@ -69,7 +69,7 @@ import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
-const MultiPoolPortal = React.memo(() => {
+const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
 
   const { isAuthed } = useRari();
@@ -591,7 +591,7 @@ export const NewsAndTwitterLink = () => {
   );
 };
 
-const NewsMarquee = React.memo(() => {
+const NewsMarquee = memo(() => {
   const news = [
     "The first Fuse pools deployed by the Rari Capital DAO are now open for deposits/borrows in the Fuse tab!",
     "You can now earn rewards for pooling ETH and RGT on Sushiswap in the Pool2 tab.",

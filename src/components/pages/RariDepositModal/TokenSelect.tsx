@@ -1,4 +1,4 @@
-import React, { useState, CSSProperties, useCallback, useMemo } from "react";
+import { memo, useState, CSSProperties, useCallback, useMemo } from "react";
 import {
   Input,
   Image,
@@ -140,7 +140,7 @@ const TokenSelect = ({
 
 export default TokenSelect;
 
-const TokenRow = React.memo(
+const TokenRow = memo(
   ({
     data: { tokenKeys, onClick, mode },
     index,
@@ -204,7 +204,7 @@ const TokenRow = React.memo(
   areEqual
 );
 
-const TokenList = React.memo(
+const TokenList = memo(
   ({
     tokenKeys,
     onClick,

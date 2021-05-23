@@ -16,7 +16,7 @@ import {
   Row,
   useIsMobile,
 } from "buttered-chakra";
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
@@ -102,7 +102,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
   return data;
 };
 
-const FusePoolInfoPage = React.memo(() => {
+const FusePoolInfoPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();

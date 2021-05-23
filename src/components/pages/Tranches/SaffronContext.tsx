@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { createContext, memo, useContext, useState, useEffect } from "react";
 import { useRari } from "../../../context/RariContext";
 import { Contract } from "web3-eth-contract";
 import SaffronPoolABI from "./SaffronPoolABI.json";
@@ -11,9 +11,9 @@ interface SaffronContextType {
 }
 
 export const SaffronContext =
-  React.createContext<SaffronContextType | undefined>(undefined);
+  createContext<SaffronContextType | undefined>(undefined);
 
-export const SaffronProvider = React.memo(({ children }) => {
+export const SaffronProvider = memo(({ children }) => {
   const { rari } = useRari();
 
   const [saffronStrategy, setSaffronStrategy] = useState(() => {
@@ -51,7 +51,7 @@ export const SaffronProvider = React.memo(({ children }) => {
 });
 
 export const useSaffronContracts = () => {
-  const context = React.useContext(SaffronContext);
+  const context = useContext(SaffronContext);
 
   if (context === undefined) {
     throw new Error(

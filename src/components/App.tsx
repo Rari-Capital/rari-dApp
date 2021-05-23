@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 import FullPageSpinner from "./shared/FullPageSpinner";
 import { Pool } from "../utils/poolUtils";
 import Layout from "./shared/Layout";
-import React from "react";
+import { memo } from "react";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -76,7 +76,7 @@ const StatsPage = loadable(
   }
 );
 
-const PageNotFound = React.memo(() => {
+const PageNotFound = memo(() => {
   return (
     <Heading
       color="#FFF"
@@ -93,7 +93,7 @@ const PageNotFound = React.memo(() => {
   );
 });
 
-const App = React.memo(() => {
+const App = memo(() => {
   return (
     <Layout>
       <Routes>

@@ -20,9 +20,9 @@ import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
-import React from "react";
+import { memo } from "react";
 
-const FusePoolsPage = React.memo(() => {
+const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import * as React from "react";
 import { useQuery } from "react-query";
 import CaptionedStat, { CaptionedStatProps } from "./CaptionedStat";
 

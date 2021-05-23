@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import {
   Box,
   Text,
@@ -90,7 +90,7 @@ const currencyCodesByHashes: { [key: string]: string } = {
   "0x33d80a03b5585b94e68b56bdea4f57fd2e459401902cb2f61772e1b630afb4b2": "mUSD",
 };
 
-const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
+const PoolPortal = memo(({ pool }: { pool: Pool }) => {
   return (
     <PoolTypeProvider pool={pool}>
       <PoolPortalContent />
