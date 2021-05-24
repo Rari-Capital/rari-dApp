@@ -4,16 +4,8 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a lo
 import { Carousel } from "react-responsive-carousel";
 import { Column } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { FusePoolData } from "utils/fetchFusePoolData";
-import {
-  useFuseDataForAsset,
-  useFuseDataForAssets,
-} from "hooks/fuse/useFuseDataForAsset";
-import {
-  shortUsdFormatter,
-  smallStringUsdFormatter,
-  smallUsdFormatter,
-} from "utils/bigUtils";
+import { useFuseDataForAssets } from "hooks/fuse/useFuseDataForAsset";
+import { smallStringUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 
 const ASSETS = ["DAI", "ETH", "RGT"];
 
@@ -42,14 +34,14 @@ const HomeCarousel = () => {
       >
         {pools.map((pool, i) => {
           return (
-            <Box w="100%">
+            <Box w="100%" h="100%">
               <Heading
-                fontSize={{ base: "sm", sm: "md", md: "lg", lg: "lg" }}
-                textAlign="left"
+                fontSize={{ base: "md", sm: "lg", md: "lg", lg: "xl" }}
+                textAlign={isMobile ? "left" : "center"}
               >
                 The Rari Capital Ecosystem currently has{" "}
                 <InlineStyledText
-                  text={`${shortUsdFormatter(pool.totalSuppliedUSD)} ${
+                  text={`${smallStringUsdFormatter(pool.totalSuppliedUSD)} ${
                     ASSETS[i]
                   }`}
                 />{" "}

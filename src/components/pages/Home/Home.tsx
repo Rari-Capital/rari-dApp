@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
@@ -85,12 +85,25 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <InputGroup width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}>
+              <InputGroup
+                width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
+                h="55px"
+                // pl={2}
+              >
                 <InputLeftElement
                   pointerEvents="none"
-                  children={<SearchIcon color="gray.300" />}
+                  height="100%"
+                  children={<SearchIcon color="gray.300" boxSize={5} />}
+                  ml={1}
                 />
-                <Input border="3px solid #80807F" placeholder="Search" />
+
+                <Input
+                  border="3px solid red"
+                  borderColor="grey"
+                  height="100%"
+                  placeholder="Search by token, pool or product..."
+                  _placeholder={{ color: "grey.500", fontWeight: "bold" }}
+                />
               </InputGroup>
             </motion.div>
           </Column>
@@ -179,14 +192,13 @@ const Home = React.memo(() => {
               <Column
                 mainAxisAlignment="space-around"
                 crossAxisAlignment="flex-start"
-                // bg="pink"
                 height="100%"
-                flex="0 0"
+                flex="0 1"
                 flexBasis={{
-                  base: "0 0 25%",
-                  sm: "0 0 25%",
-                  md: "0 0 30%",
-                  lg: "0 0 40%",
+                  base: "25%",
+                  sm: "25%",
+                  md: "30%",
+                  lg: "40%",
                 }}
                 p={5}
               >
@@ -204,7 +216,7 @@ const Home = React.memo(() => {
                   crossAxisAlignment="flex-start"
                   captionFirst={false}
                 />
-                <Text fontSize="sm" fontWeight="bold">
+                <Text fontSize={isMobile ? "sm" : "md"} fontWeight="bold">
                   Discover infinite possibilities across the Rari Capital
                   Ecosystem
                 </Text>
@@ -213,15 +225,15 @@ const Home = React.memo(() => {
                 mainAxisAlignment="center"
                 crossAxisAlignment="center"
                 height="100%"
-                // flex="1 1"
-                flex={{
-                  base: "1 1 75%",
-                  sm: "1 1 75%",
-                  md: "1 1 70%",
-                  lg: "1 1 60%",
+                flex="1 1"
+                flexBasis={{
+                  base: "75%",
+                  sm: "75%",
+                  md: "70%",
+                  lg: "60%",
                 }}
                 width="1px" // weird hack to make the carousel fit. idk why it works
-                py={5}
+                py={{ base: 0, sm: 0, md: 0, lg: 5 }}
               >
                 <HomeCarousel />
               </Column>

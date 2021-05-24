@@ -15,8 +15,9 @@ const HeaderSearchbar = (props: any) => {
         <Input
           variant="filled"
           value={val}
-          placeholder="Search by token, pool or product..."
           onChange={({ target: { value } }) => setVal(value)}
+          placeholder="Search by token, pool or product..."
+          _placeholder={{ color: "grey.500", fontWeight: "bold" }}
         />
       </InputGroup>
     </Box>

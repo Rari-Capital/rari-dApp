@@ -48,9 +48,9 @@ const OpportunityCard = ({
           height={"100%"}
           flex="0 0 70%"
         >
-          <Heading size="xs">{opportunity.title}</Heading>
+          <Heading size="sm">{opportunity.title}</Heading>
           <Skeleton isLoaded={!!subheading} height="10px" my={1}>
-            <Text fontSize="xs">{`${subheading}`}</Text>
+            <Text fontSize="xs" fontWeight="bold">{`${subheading}`}</Text>
           </Skeleton>
           <Text fontSize="xs" mt={2}>
             {opportunity.subtitle}
