@@ -16,14 +16,15 @@ import Rari from "../rari-sdk/index";
 
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
+
 import Fuse from "../fuse-sdk/src";
 import {
   chooseBestWeb3Provider,
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "buttered-chakra";
-import { useLocation } from "react-router-dom";
+
+import { useRouter } from "next/router";
 
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
@@ -139,7 +140,7 @@ export const RariContext =
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
-  const location = useLocation();
+  const router = useRouter();
 
   const [rari, setRari] = useState<Rari>(
     () => new Rari(chooseBestWeb3Provider())
@@ -195,13 +196,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         if (addresses.length === 0) {
           console.log("Address array was empty. Reloading!");
-          window.location.reload();
+          router.reload();
         }
 
         const address = addresses[0];
-        const requestedAddress = new URLSearchParams(location.search).get(
-          "address"
-        );
+        const requestedAddress = router.query.address;
 
         console.log("Setting Logrocket user to new address: " + address);
         LogRocket.identify(address);
@@ -210,7 +209,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         setAddress(requestedAddress ?? address);
       });
     },
-    [setRari, setAddress, location.search]
+    [setRari, setAddress, router.query.address]
   );
 
   const login = useCallback(
@@ -265,14 +264,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       }
     };
   }, [web3ModalProvider, refetchAccountData]);
-
-  // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
-  const isMobile = useIsMobile();
-  useEffect(() => {
-    if (localStorage.WEB3_CONNECT_CACHED_PROVIDER) {
-      login();
-    }
-  }, [login, isMobile]);
 
   const value = useMemo(
     () => ({
