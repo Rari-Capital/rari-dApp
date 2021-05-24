@@ -14,7 +14,7 @@ export const useRGTAPR = () => {
   return rgtAPR;
 };
 
-export const usePoolAPY = (pool: Pool) => {
+export const usePoolAPY = (pool: Pool | undefined) => {
   const { rari } = useRari();
 
   const { data: poolAPY } = useQuery(pool + " apy", () => {

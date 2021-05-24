@@ -24,7 +24,7 @@ export default class Fuse {
   static FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS =
     "0x835482FE0532f169024d5E9410199369aAD5C77E";
   static FUSE_SAFE_LIQUIDATOR_CONTRACT_ADDRESS =
-    "0xCc29FE6A0e090D464Abb616E1AE4cEeA415c140E";
+    "0x41C7F2D48bde2397dFf43DadA367d2BD3527452F";
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS =
     "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85";
   static FUSE_POOL_LENS_CONTRACT_ADDRESS =
@@ -45,16 +45,24 @@ export default class Fuse {
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
-    UniswapView: "", // TODO: Set correct mainnet address after deployment
-    Keep3rPriceOracle: "0xb90de476d438b37a4a143bf729a9b2237e544af6",
-    Keep3rSushiSwapPriceOracle: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0",
+    ChainlinkPriceOracleV2: "0xb0602af43Ca042550ca9DA3c33bA3aC375d20Df4",
+    UniswapView: "", // NOT IN USE
+    Keep3rPriceOracle_Uniswap: "0xb90de476d438b37a4a143bf729a9b2237e544af6", // NO LONGER IN USE
+    Keep3rPriceOracle_SushiSwap: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0", // NO LONGER IN USE
+    Keep3rV2PriceOracle_Uniswap: "0xd6a8cac634e59c00a3d4163f839d068458e39869", // NO LONGER IN USE
+    UniswapTwapPriceOracle_Uniswap: "0xCd8f1c72Ff98bFE3B307869dDf66f5124D57D3a9",
+    UniswapTwapPriceOracle_SushiSwap: "0xfD4B4552c26CeBC54cD80B1BDABEE2AC3E7eB324",
     UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
     AlphaHomoraV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    AlphaHomoraV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
     SynthetixPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    BalancerLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     MasterPriceOracle: "0x1887118E49e0F4A78Bd71B792a49dE03504A764D",
+    CurveLpTokenPriceOracle: "0x43c534203339bbf15f62b8dde91e7d14195e7a60",
+    CurveLiquidityGaugeV2PriceOracle: "0xd9eefdb09d75ca848433079ea72ef609a1c1ea21",
   };
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";

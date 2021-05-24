@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
 import { PixelMeasurement } from "buttered-chakra";
 

@@ -1,5 +1,4 @@
 //@ts-nocheck
-import React from "react";
 
 import { Column } from "buttered-chakra";
 // import Footer from "./Footer";

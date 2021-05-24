@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Avatar,
   Box,
@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { useBorrowLimits } from "hooks/useBorrowLimit";
-import { useAssetsMapWithTokenData } from "hooks/useAssetsMap";
+import { useAssetsArrayWithTokenData } from "hooks/useAssetsMap";
 
 import { FusePoolData, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { TokenData } from "hooks/useTokenData";
@@ -48,9 +48,8 @@ const Fuse = () => {
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
   const maxBorrows = useBorrowLimits(assetsArray);
 
-  const {
-    tokensDataMap,
-  }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
+  const { tokensDataMap }: { tokensDataMap: TokensDataHash } =
+    useAssetsArrayWithTokenData(assetsArray);
 
   const totalBorrowBalanceUSD =
     fusePoolsData?.reduce((a, b) => {
@@ -62,9 +61,10 @@ const Fuse = () => {
       return a + b.totalSupplyBalanceUSD;
     }, 0) ?? 0;
 
-  const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [
-    totalSupplyBalanceUSD,
-  ]);
+  const hasDeposits = useMemo(
+    () => totalSupplyBalanceUSD > 0,
+    [totalSupplyBalanceUSD]
+  );
 
   return (
     <motion.div

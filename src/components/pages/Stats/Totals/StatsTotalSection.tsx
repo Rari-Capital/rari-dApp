@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
@@ -40,10 +40,8 @@ const StatsTotalSection = ({
   const { t } = useTranslation();
 
   // Earn
-  const {
-    totals,
-    aggregatePoolsInfo,
-  }: AggregatePoolsInfoReturn = useAggregatePoolInfos();
+  const { totals, aggregatePoolsInfo }: AggregatePoolsInfoReturn =
+    useAggregatePoolInfos();
   const hasDepositsInEarn = aggregatePoolsInfo?.some(
     (p) => !p?.poolBalance?.isZero()
   );
@@ -81,12 +79,15 @@ const StatsTotalSection = ({
   // Total Deposits
   const totalDepositsUSD = useMemo(() => {
     const { totalSupplyBalanceUSD: fuseTotal }: FusePoolData =
-      fusePoolsData?.reduce((a, b) => {
-        return {
-          totalSupplyBalanceUSD:
-            a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
-        } as FusePoolData;
-      }) ?? ({ totalSupplyBalanceUSD: 0 } as FusePoolData);
+      fusePoolsData?.reduce(
+        (a, b) => {
+          return {
+            totalSupplyBalanceUSD:
+              a.totalSupplyBalanceUSD + b.totalSupplyBalanceUSD,
+          } as FusePoolData;
+        },
+        { totalSupplyBalanceUSD: 0 } as FusePoolData
+      ) ?? ({ totalSupplyBalanceUSD: 0 } as FusePoolData);
 
     const vaultTotal = totals?.balance ?? 0;
 
@@ -102,12 +103,15 @@ const StatsTotalSection = ({
   // Total debt - todo: refactor into the `useFusePoolsData` hook
   const totalDebtUSD = useMemo(() => {
     const { totalBorrowBalanceUSD }: FusePoolData =
-      fusePoolsData?.reduce((a, b) => {
-        return {
-          totalBorrowBalanceUSD:
-            a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
-        } as FusePoolData;
-      }) ?? ({ totalBorrowBalanceUSD: 0 } as FusePoolData);
+      fusePoolsData?.reduce(
+        (a, b) => {
+          return {
+            totalBorrowBalanceUSD:
+              a.totalBorrowBalanceUSD + b.totalBorrowBalanceUSD,
+          } as FusePoolData;
+        },
+        { totalBorrowBalanceUSD: 0 } as FusePoolData
+      ) ?? ({ totalBorrowBalanceUSD: 0 } as FusePoolData);
     return totalBorrowBalanceUSD;
   }, [fusePoolsData]);
 
