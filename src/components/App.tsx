@@ -90,6 +90,13 @@ const HomePage = loadable(
   }
 );
 
+const TokenDetailsPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Tokens/TokenDetails"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = memo(() => {
   return (
     <Heading
@@ -139,6 +146,8 @@ const App = memo(() => {
         <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
         <Route path="/home" element={<HomePage />} />
+
+        <Route path="/token/:symbol" element={<TokenDetailsPage />} />
 
         <Route path="/" element={<MultiPoolPortal />} />
 

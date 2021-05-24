@@ -14,10 +14,8 @@ import {
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
 
-import { motion } from "framer-motion";
 import { HomepageFusePool, HOMEPAGE_FUSE_POOLS } from "constants/homepage";
 import DashboardBox from "components/shared/DashboardBox";
-import { Row } from "buttered-chakra";
 
 const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
   const { title, subtitle }: HomepageFusePool = useMemo(() => {

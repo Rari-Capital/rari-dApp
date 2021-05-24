@@ -1,4 +1,3 @@
-import { pools } from "constants/pools";
 import { useMemo } from "react";
 import { convertMantissaToAPY } from "utils/apyUtils";
 import { USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
@@ -10,7 +9,7 @@ interface AssetInFuse {
   highestSupplyAPY: number;
 }
 
-export const useFuseDataForAsset = (assetSymbol: String): AssetInFuse => {
+export const useFuseDataForAsset = (assetSymbol: String) => {
   const allPools = useAllFusePools();
 
   const poolsWithThisAsset = useMemo(
@@ -24,7 +23,7 @@ export const useFuseDataForAsset = (assetSymbol: String): AssetInFuse => {
     [assetSymbol, allPools]
   );
 
-  const stuff = useMemo(() => {
+  const totals = useMemo(() => {
     let totalBorrowedUSD = 0;
     let totalSuppliedUSD = 0;
     let highestSupplyAPY = 0;
@@ -46,7 +45,7 @@ export const useFuseDataForAsset = (assetSymbol: String): AssetInFuse => {
     return { totalBorrowedUSD, totalSuppliedUSD, highestSupplyAPY };
   }, [assetSymbol, poolsWithThisAsset]);
 
-  return stuff;
+  return { totals, poolsWithThisAsset };
 };
 
 export const useFuseDataForAssets = (assetSymbols: String[]) => {
@@ -65,7 +64,7 @@ export const useFuseDataForAssets = (assetSymbols: String[]) => {
     [assetSymbols, allPools]
   );
 
-  const stuff: AssetInFuse[] = useMemo(
+  const totals: AssetInFuse[] = useMemo(
     () =>
       assetSymbols.map((assetSymbol) => {
         let totalBorrowedUSD = 0;
@@ -94,5 +93,5 @@ export const useFuseDataForAssets = (assetSymbols: String[]) => {
     [assetSymbols, poolsWithThisAsset]
   );
 
-  return stuff;
+  return { totals, poolsWithThisAsset };
 };

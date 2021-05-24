@@ -1,12 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Box, Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
+import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";
 import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
@@ -33,12 +33,19 @@ import DashboardBox from "components/shared/DashboardBox";
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
+  const navigate = useNavigate();
+
+  const [val, setVal] = useState("");
 
   const { getNumberTVL } = useTVLFetchers();
 
   const pools = useFusePoolsData(
     HOMEPAGE_FUSE_POOLS.map(({ id }: { id: number }) => id)
   );
+
+  const handleSubmit = () => {
+    navigate(`/token/${val}`);
+  };
 
   return (
     <SaffronProvider>
@@ -85,26 +92,30 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <InputGroup
-                width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
-                h="55px"
-                // pl={2}
-              >
-                <InputLeftElement
-                  pointerEvents="none"
-                  height="100%"
-                  children={<SearchIcon color="gray.300" boxSize={5} />}
-                  ml={1}
-                />
+              <form onSubmit={handleSubmit}>
+                <InputGroup
+                  width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
+                  h="55px"
+                  // pl={2}
+                >
+                  <InputLeftElement
+                    pointerEvents="none"
+                    height="100%"
+                    children={<SearchIcon color="gray.300" boxSize={5} />}
+                    ml={1}
+                  />
 
-                <Input
-                  border="3px solid red"
-                  borderColor="grey"
-                  height="100%"
-                  placeholder="Search by token, pool or product..."
-                  _placeholder={{ color: "grey.500", fontWeight: "bold" }}
-                />
-              </InputGroup>
+                  <Input
+                    border="3px solid red"
+                    borderColor="grey"
+                    height="100%"
+                    placeholder="Search by token, pool or product..."
+                    _placeholder={{ color: "grey.500", fontWeight: "bold" }}
+                    onChange={({ target: { value } }) => setVal(value)}
+                    value={val}
+                  />
+                </InputGroup>
+              </form>
             </motion.div>
           </Column>
         </Row>

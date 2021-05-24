@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Heading, Link, Image, Text, Skeleton } from "@chakra-ui/react";
+import { Box, Heading, Image, Text, Skeleton } from "@chakra-ui/react";
 import { Column } from "buttered-chakra";
 
 import { HomepageOpportunity } from "constants/homepage";

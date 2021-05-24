@@ -1,12 +1,19 @@
+import { useState } from "react";
 import {
   Box,
+  Heading,
   Text,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   Portal,
+  Icon,
+  Stack,
+  StackDivider,
+  Link,
 } from "@chakra-ui/react";
+import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 import { PixelSize, Row } from "buttered-chakra";
 
@@ -31,6 +38,8 @@ export const NewHeader = () => {
   const { isAuthed } = useRari();
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
+
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <Row
@@ -58,29 +67,120 @@ export const NewHeader = () => {
         // transform="translate(0px, 7px)"
         height="100%"
       >
-        <HeaderLink name={t("Overview")} route="/" />
+        {isMobile ? null : (
+          <>
+            <HeaderLink name={t("Overview")} route="/" />
 
-        <PoolsLink ml={5} />
+            <PoolsLink ml={5} />
 
-        <HeaderLink ml={5} name={t("Fuse")} route="/fuse" />
+            <HeaderLink ml={5} name={t("Fuse")} route="/fuse" />
 
-        <HeaderLink ml={5} name={t("Pool2")} route="/pool2" />
+            <HeaderLink ml={5} name={t("Pool2")} route="/pool2" />
 
-        <HeaderLink ml={5} name={t("Tranches")} route="/tranches" />
+            <HeaderLink ml={5} name={t("Tranches")} route="/tranches" />
 
-        {/* <HeaderLink ml={5} name={t("Vote")} route="https://vote.rari.capital" /> */}
+            {/* <HeaderLink ml={5} name={t("Vote")} route="https://vote.rari.capital" /> */}
 
-        <GovernanceLink ml={5} />
+            <GovernanceLink ml={5} />
 
-        {isAuthed && (
-          <HeaderLink ml={5} name={t("Positions")} route="/positions" />
+            {isAuthed && (
+              <HeaderLink ml={5} name={t("Positions")} route="/positions" />
+            )}
+          </>
         )}
       </Row>
 
       {!isMobile && <HeaderSearchbar />}
 
-      <AccountButton />
+      {!isMobile ? (
+        <AccountButton />
+      ) : (
+        <Box
+          _hover={{
+            color: "grey",
+            cursor: "pointer",
+          }}
+          onClick={() => setExpanded(true)}
+        >
+          <Icon aria-label="Menu" icon={<HamburgerIcon />} boxSize="35px" />
+        </Box>
+      )}
+
+      {expanded && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          height="100vh"
+          width="100vw"
+          bg="black"
+          zIndex={100}
+          id="MENU"
+        >
+          <Stack>
+            <StackDivider />
+            <Row
+              mainAxisAlignment="flex-end"
+              crossAxisAlignment="center"
+              px={2}
+              my={4}
+            >
+              <Box
+                height="100%"
+                mr={4}
+                my={4}
+                opacity={0.75}
+                sx={{
+                  webkitTransition: "-webkit-transform .8s ease-in-out",
+                  transition: `transform 6s ease-in`,
+                }}
+                _hover={{
+                  opacity: 1,
+                  transform: "rotate(3600deg)",
+                  transition: "transform 30s ease-in",
+                  willChange: "transform",
+                  color: "grey",
+                  cursor: "pointer",
+                }}
+                onClick={() => setExpanded(false)}
+              >
+                <Icon aria-label="Menu" icon={<CloseIcon />} boxSize="35px" />
+              </Box>
+            </Row>
+            <StackDivider />
+            <DropDownItem text="Overview" link="/" />
+            <DropDownItem text="Pools" link="/" />
+            <DropDownItem text="Fuse" link="/fuse" />
+            <DropDownItem text="Pool2" link="/pool2" />
+            <DropDownItem text="Tranches" link="/tranches" />
+            <DropDownItem text="Positions" link="/positions" />
+            <DropDownItem text="Governance" link="/" />
+          </Stack>
+        </Box>
+      )}
     </Row>
+  );
+};
+
+export const DropDownItem = ({
+  text,
+  link,
+}: {
+  text: string;
+  link: string;
+}) => {
+  return (
+    <Box
+      px={4}
+      py={3}
+      fontSize={[5, 3]}
+      fontFamily="heading"
+      _hover={{ cursor: "pointer", bg: "grey" }}
+    >
+      <Link as={RouterLink} to={link}>
+        <Heading>{text}</Heading>
+      </Link>
+    </Box>
   );
 };
 

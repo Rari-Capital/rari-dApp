@@ -5,14 +5,14 @@ import { Carousel } from "react-responsive-carousel";
 import { Column } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFuseDataForAssets } from "hooks/fuse/useFuseDataForAsset";
-import { smallStringUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
+import { smallStringUsdFormatter } from "utils/bigUtils";
 
 const ASSETS = ["DAI", "ETH", "RGT"];
 
 const HomeCarousel = () => {
   const isMobile = useIsSmallScreen();
 
-  const pools = useFuseDataForAssets(ASSETS);
+  const { totals: pools } = useFuseDataForAssets(ASSETS);
 
   return (
     <Column
