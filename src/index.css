@@ -207,7 +207,6 @@ img:not([src]) {
   .carousel-root {
     /* background-color: orange; */
     height: 100%;
-    padding: 20px;
   }
 }
 

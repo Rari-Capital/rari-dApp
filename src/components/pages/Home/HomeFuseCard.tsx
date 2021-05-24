@@ -92,7 +92,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
             })}
           </AvatarGroup>
 
-          <Heading size="sm">{title ?? pool?.name}</Heading>
+          <Heading size="sm" mt={2}>{title ?? pool?.name}</Heading>
           <Text size="xs" color="gray.500" fontWeight="bold">
             {subtitle ?? assetsSubtitle}
           </Text>

@@ -29,8 +29,8 @@ type AssetsMapWithTokenDataReturn = {
   tokensDataMap: TokensDataHash; // hashmap of unique assets and their token data
 };
 
-// This returns a Hashmap
-export const useAssetsMapWithTokenData = (
+// This returns a Hashmap and the original array with tokenData inserted
+export const useAssetsArrayWithTokenData = (
   assetsArray: USDPricedFuseAsset[][] | null
 ): AssetsMapWithTokenDataReturn => {
   const assetsMap: AssetHash | null = useAssetsMap(assetsArray);

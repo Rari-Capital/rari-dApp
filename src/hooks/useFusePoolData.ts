@@ -8,7 +8,7 @@ import {
   USDPricedFuseAsset,
   USDPricedFuseAssetWithTokenData,
 } from "../utils/fetchFusePoolData";
-import { useAssetsMapWithTokenData } from "./useAssetsMap";
+import { useAssetsArrayWithTokenData } from "./useAssetsMap";
 
 export const useFusePoolData = (
   poolId: string | undefined
@@ -68,7 +68,7 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
     assetsArrayWithTokenData,
   }: {
     assetsArrayWithTokenData: USDPricedFuseAssetWithTokenData[][] | null;
-  } = useAssetsMapWithTokenData(assetsArray);
+  } = useAssetsArrayWithTokenData(assetsArray);
 
   return useMemo(() => {
     if (assetsArrayWithTokenData && fusePoolsData) {

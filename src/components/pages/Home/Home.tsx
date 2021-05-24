@@ -101,18 +101,20 @@ const Home = React.memo(() => {
                   <InputLeftElement
                     pointerEvents="none"
                     height="100%"
+                    color="grey"
                     children={<SearchIcon color="gray.300" boxSize={5} />}
                     ml={1}
                   />
 
                   <Input
-                    border="3px solid red"
+                    border="3px solid"
                     borderColor="grey"
                     height="100%"
                     placeholder="Search by token, pool or product..."
-                    _placeholder={{ color: "grey.500", fontWeight: "bold" }}
+                    _placeholder={{ color: "grey", fontWeight: "bold" }}
                     onChange={({ target: { value } }) => setVal(value)}
                     value={val}
+                    color="grey"
                   />
                 </InputGroup>
               </form>

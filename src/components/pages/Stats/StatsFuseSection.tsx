@@ -17,7 +17,7 @@ import { motion } from "framer-motion";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { useBorrowLimits } from "hooks/useBorrowLimit";
-import { useAssetsMapWithTokenData } from "hooks/useAssetsMap";
+import { useAssetsArrayWithTokenData } from "hooks/useAssetsMap";
 
 import { FusePoolData, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { TokenData } from "hooks/useTokenData";
@@ -49,7 +49,7 @@ const Fuse = () => {
   const maxBorrows = useBorrowLimits(assetsArray);
 
   const { tokensDataMap }: { tokensDataMap: TokensDataHash } =
-    useAssetsMapWithTokenData(assetsArray);
+    useAssetsArrayWithTokenData(assetsArray);
 
   const totalBorrowBalanceUSD =
     fusePoolsData?.reduce((a, b) => {
