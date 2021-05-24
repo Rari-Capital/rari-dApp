@@ -102,7 +102,7 @@ export const NewHeader = () => {
           }}
           onClick={() => setExpanded(true)}
         >
-          <Icon aria-label="Menu" icon={<HamburgerIcon />} boxSize="25px" />
+          <Icon aria-label="Menu" icon={<HamburgerIcon />} boxSize="35px" />
         </Box>
       )}
 
@@ -119,10 +119,16 @@ export const NewHeader = () => {
         >
           <Stack>
             <StackDivider />
-            <Row mainAxisAlignment="flex-end" crossAxisAlignment="center">
+            <Row
+              mainAxisAlignment="flex-end"
+              crossAxisAlignment="center"
+              px={2}
+              my={4}
+            >
               <Box
                 height="100%"
-                mr={3}
+                mr={4}
+                my={4}
                 opacity={0.75}
                 sx={{
                   webkitTransition: "-webkit-transform .8s ease-in-out",
@@ -138,17 +144,17 @@ export const NewHeader = () => {
                 }}
                 onClick={() => setExpanded(false)}
               >
-                <Icon aria-label="Menu" icon={<CloseIcon />} boxSize="40px" />
+                <Icon aria-label="Menu" icon={<CloseIcon />} boxSize="35px" />
               </Box>
             </Row>
             <StackDivider />
             <DropDownItem text="Overview" link="/" />
-            <DropDownItem text="Pools" link="/"  />
-            <DropDownItem text="Fuse"  link="/fuse" />
-            <DropDownItem text="Pool2" link="/pool2"  />
-            <DropDownItem text="Tranches" link="/tranches"  />
-            <DropDownItem text="Positions" link="/positions"  />
-            <DropDownItem text="Governance"  link="/" />
+            <DropDownItem text="Pools" link="/" />
+            <DropDownItem text="Fuse" link="/fuse" />
+            <DropDownItem text="Pool2" link="/pool2" />
+            <DropDownItem text="Tranches" link="/tranches" />
+            <DropDownItem text="Positions" link="/positions" />
+            <DropDownItem text="Governance" link="/" />
           </Stack>
         </Box>
       )}
