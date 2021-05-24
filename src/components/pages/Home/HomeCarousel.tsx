@@ -12,7 +12,7 @@ const ASSETS = ["DAI", "ETH", "RGT"];
 const HomeCarousel = () => {
   const isMobile = useIsSmallScreen();
 
-  const pools = useFuseDataForAssets(ASSETS);
+  const { totals: pools } = useFuseDataForAssets(ASSETS);
 
   return (
     <Column

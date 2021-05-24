@@ -133,7 +133,7 @@ const PoolList = () => {
   );
 };
 
-const PoolRow = ({
+export const PoolRow = ({
   tokens,
   poolNumber,
   tvl,

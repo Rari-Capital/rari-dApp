@@ -49,3 +49,22 @@ export const createTokensDataMap = (
 
   return _tokensDataMap;
 };
+
+type CoingeckoPriceData = [number, number];
+
+export function getMinMaxOf2DIndex(arr: any[][], idx: number) {
+  return {
+    min: Math.min.apply(
+      null,
+      arr.map(function (e) {
+        return e[idx];
+      })
+    ),
+    max: Math.max.apply(
+      null,
+      arr.map(function (e) {
+        return e[idx];
+      })
+    ),
+  };
+}
