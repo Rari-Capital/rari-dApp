@@ -792,6 +792,7 @@ const RowsControl = ({
       crossAxisAlignment="center"
       width="100%"
       my={4}
+      px={4}
     >
       <DashboardBox
         fontWeight="bold"

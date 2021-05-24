@@ -10,6 +10,7 @@ html {
   height: 100% !important;
 
   background-color: #000000 !important;
+  overflow-x: hidden;
 }
 
 * {
