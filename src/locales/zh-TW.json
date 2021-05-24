@@ -247,5 +247,14 @@
   "Borrow Ratio": "借貸比率",
   "Limit Used": "限制使用",
   "Liquidations": "清算",
-  "This is how much you have borrowed.": "這就是你借的錢。"
+  "This is how much you have borrowed.": "這就是你借的錢。",
+  "Recent Liquidations": "最近的清算",
+  "Collateral Seized": "抵押品被扣押",
+  "Borrow Repaid": "借還還款",
+  "Timestamp": "時間戳記",
+  "Liquidated": "已清算",
+  "View More": "查看更多",
+  "View Less": "查看較少",
+  "View All": "查看全部",
+  "Collapse All": "全部收縮"
 }

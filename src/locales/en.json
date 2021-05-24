@@ -247,5 +247,14 @@
   "Borrow Ratio": "Borrow Ratio",
   "Limit Used": "Limit Used",
   "Liquidations": "Liquidations",
-  "This is how much you have borrowed.": "This is how much you have borrowed."
+  "This is how much you have borrowed.": "This is how much you have borrowed.",
+  "Recent Liquidations": "Recent Liquidations",
+  "Collateral Seized": "Collateral Seized",
+  "Borrow Repaid": "Borrow Repaid",
+  "Timestamp": "Timestamp",
+  "Liquidated": "Liquidated",
+  "View More": "View More",
+  "View Less": "View Less",
+  "View All": "View All",
+  "Collapse All": "Collapse All"
 }
