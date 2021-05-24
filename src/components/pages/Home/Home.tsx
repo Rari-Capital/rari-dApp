@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Box, Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
+import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import NewHeader from "components/shared/Header2/NewHeader";

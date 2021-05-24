@@ -1,4 +1,3 @@
-import { pools } from "constants/pools";
 import { useMemo } from "react";
 import { convertMantissaToAPY } from "utils/apyUtils";
 import { USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";

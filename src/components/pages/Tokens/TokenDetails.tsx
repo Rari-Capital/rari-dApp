@@ -3,10 +3,8 @@ import { Column, Row, RowOrColumn } from "buttered-chakra";
 import DashboardBox from "components/shared/DashboardBox";
 import NewHeader from "components/shared/Header2/NewHeader";
 import useTokenDataBySymbol from "hooks/tokens/useTokenDataBySymbol";
-import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
@@ -16,8 +14,6 @@ import { smallUsdFormatter } from "utils/bigUtils";
 
 const TokenDetails = () => {
   const { symbol } = useParams();
-  const { isAuthed } = useRari();
-  const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
 
   const tokenSymbol = useMemo(() => symbol.toUpperCase(), [symbol]);
