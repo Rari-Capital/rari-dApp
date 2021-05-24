@@ -1,7 +1,8 @@
-import { Box, Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
+import { Box, Heading, Text, Link, SimpleGrid, Image } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "buttered-chakra";
 import DashboardBox from "components/shared/DashboardBox";
 import NewHeader from "components/shared/Header2/NewHeader";
+import useTokenDataBySymbol from "hooks/tokens/useTokenDataBySymbol";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useMemo } from "react";
@@ -14,7 +15,9 @@ const TokenDetails = () => {
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
 
-  const tokenSymbol = useMemo(() => symbol.toUpperCase(), []);
+  const tokenSymbol = useMemo(() => symbol.toUpperCase(), [symbol]);
+
+  const { tokenData, tokenMarketData } = useTokenDataBySymbol(tokenSymbol);
 
   return (
     <Column
@@ -30,13 +33,13 @@ const TokenDetails = () => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
         w="100%"
-        px={10}
+        px={isMobile ? 3 : 10}
         mt={10}
       >
         <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          bg="aqua"
+          //   bg="aqua"
           w="100%"
         >
           <Row
@@ -47,17 +50,42 @@ const TokenDetails = () => {
             p={3}
             flexBasis={!isMobile ? "65%" : "100%"}
           >
-            <Heading>{tokenSymbol}</Heading>
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <Heading size="sm" mr={3}>
-                1
+              <Image
+                src={
+                  tokenData?.logoURL ??
+                  "https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png"
+                }
+                boxSize="50"
+              />
+              <Heading ml={4} size={isMobile ? "md" : "lg"}>
+                {tokenData?.name} ({tokenData?.symbol}){" "}
               </Heading>
-              <Heading size="sm" mr={3}>
-                2
-              </Heading>
-              <Heading size="sm" mr={3}>
-                3
-              </Heading>
+            </Row>
+
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center"  ml=    {5}>
+              <Box size="sm" mr={3}>
+                <Image
+                  src={
+                    "https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png"
+                  }
+                  boxSize="20px"
+                />
+              </Box>
+              <Box size="sm" mr={3}>
+                <Image
+                  src={
+                    "https://etherscan.io/images/brandassets/etherscan-logo-circle.jpg"
+                  }
+                  boxSize="20px"
+                />
+              </Box>
+              <Box size="sm" mr={3}>
+                <Image
+                  src={"https://cryptologos.cc/logos/uniswap-uni-logo.png"}
+                  boxSize="20px"
+                />
+              </Box>
             </Row>
           </Row>
           {!isMobile && <Box w="100%" flexBasis={"35%"} />}
@@ -128,6 +156,7 @@ const TokenDetails = () => {
             w={"100%"}
             h={"100%"}
             flexBasis={"35%"}
+            mt={isMobile ? 5 : 0}
           >
             <DashboardBox height="100%" w="100%" h="100%" mr={10} mt={0}>
               <Heading>Earn stuff</Heading>
