@@ -43,7 +43,6 @@ import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
-import Footer from "components/shared/Footer";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -173,7 +172,6 @@ const FusePoolInfoPage = memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
-        <Footer />
       </Column>
     </>
   );

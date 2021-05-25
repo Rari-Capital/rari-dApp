@@ -14,7 +14,6 @@ import StatsFuseSection from "./StatsFuseSection";
 import StatsPool2Section from "./StatsPool2Section";
 import StatsEarnSection from "./StatsEarnSection";
 import StatsTranchesSection from "./StatsTranchesSection";
-import Footer from "components/shared/Footer";
 
 // Context
 import { useRari } from "context/RariContext";
@@ -119,7 +118,6 @@ const StatsPage = () => {
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Box>
         </Column>
-        <Footer />
       </Column>
     </SaffronProvider>
   );

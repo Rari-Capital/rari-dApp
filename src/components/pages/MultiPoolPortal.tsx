@@ -65,7 +65,6 @@ import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
 import { usePoolInterestEarned } from "hooks/usePoolInterest";
 import { formatBalanceBN } from "utils/format";
-import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
@@ -115,7 +114,6 @@ const MultiPoolPortal = memo(() => {
         </DashboardBox>
 
         <PoolCards />
-        <Footer />
       </Column>
     </>
   );

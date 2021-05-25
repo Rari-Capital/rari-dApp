@@ -15,7 +15,6 @@ import { smallStringUsdFormatter } from "utils/bigUtils";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 import { useTVLFetchers } from "hooks/useTVL";
 import HomeVaultCard from "./HomeVaultCard";
-import Footer from "components/shared/Footer";
 import OpportunityCard from "./OpportunityCard";
 import HomeCarousel from "./HomeCarousel";
 
@@ -297,8 +296,6 @@ const Home = React.memo(() => {
         </Row>
 
         {/* Explore Today */}
-
-        <Footer />
       </Column>
     </SaffronProvider>
   );

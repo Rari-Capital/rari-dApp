@@ -3,7 +3,7 @@ import { Heading } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import FullPageSpinner from "./shared/FullPageSpinner";
 import { Pool } from "../utils/poolUtils";
-import Layout from "./shared/Layout";
+import Layout from "./shared/Layout/Layout";
 import { memo } from "react";
 
 const MultiPoolPortal = loadable(

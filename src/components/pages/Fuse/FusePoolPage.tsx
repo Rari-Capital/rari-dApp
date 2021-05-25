@@ -41,7 +41,6 @@ import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
-import Footer from "components/shared/Footer";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
@@ -117,7 +116,6 @@ const FusePoolPage = memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
-        <Footer />
       </Column>
     </>
   );

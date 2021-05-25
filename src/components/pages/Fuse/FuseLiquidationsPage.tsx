@@ -25,7 +25,6 @@ import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
 
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-import Footer from "components/shared/Footer";
 import { memo, useState } from "react";
 
 // @ts-ignore
@@ -96,7 +95,6 @@ const FuseLiquidationsPage = memo(() => {
           <LiquidatablePositionsList />
         </DashboardBox>
 
-        <Footer />
       </Column>
     </>
   );

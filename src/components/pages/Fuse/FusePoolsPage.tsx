@@ -19,7 +19,6 @@ import { filterPoolName } from "utils/fetchFusePoolData";
 import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
-import Footer from "components/shared/Footer";
 import { memo } from "react";
 
 const FusePoolsPage = memo(() => {
@@ -46,7 +45,6 @@ const FusePoolsPage = memo(() => {
           <PoolList />
         </DashboardBox>
 
-        <Footer />
       </Column>
     </>
   );

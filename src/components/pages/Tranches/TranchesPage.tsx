@@ -33,7 +33,6 @@ import {
 import { useSFIDistributions } from "hooks/tranches/useSFIDistributions";
 import { useSFIEarnings } from "hooks/tranches/useSFIEarnings";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
-import Footer from "components/shared/Footer";
 
 const WrappedTranchePage = memo(() => {
   return (
@@ -162,7 +161,6 @@ const TranchePage = () => {
             </DashboardBox>
           </Column>
         </RowOrColumn>
-        <Footer />
       </Column>
     </>
   );
