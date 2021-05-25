@@ -1,10 +1,10 @@
 import { NextPage } from "next";
-import Home from "components/pages/Home/Home";
+import MultiPoolPortal from "components/pages/MultiPoolPortal";
 
 const IndexPage: NextPage = () => {
   return (
     <>
-      <Home />
+      <MultiPoolPortal />
     </>
   );
 };

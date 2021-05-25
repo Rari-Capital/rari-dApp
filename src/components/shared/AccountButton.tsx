@@ -25,7 +25,7 @@ import { LanguageSelect } from "./TranslateButton";
 
 import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
-import { version } from "../..";
+// import version from "utils/version";
 
 import MoonpayModal from "components/pages/MoonpayModal";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -302,7 +302,8 @@ export const SettingsModal = ({
           </Row>
 
           <Text mt={4} fontSize="10px">
-            {t("Version")} {version}
+            {t("Version")} 
+            {/* {version} */}
           </Text>
         </Column>
       </ModalContent>

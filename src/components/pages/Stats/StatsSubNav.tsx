@@ -103,9 +103,9 @@ const SubNavItem = ({
       break;
     case StatsSubNav.POOL2:
       logo = !active ? (
-        <Pool2LogoPNGWhite height="18px" />
+        <Pool2LogoPNGWhite height={18} />
       ) : (
-        <Pool2LogoPNGGreen height="18px" />
+        <Pool2LogoPNGGreen height={18} />
       );
       break;
     case StatsSubNav.EARN:

@@ -21,6 +21,24 @@ const AuthMiddleware = dynamic(() => import("components/Auth"), {
   ssr: false,
 });
 
+// Utils
+// import LogRocket from "logrocket";
+
+// // Version
+// import { version } from "../../package.json";
+
+// if (process.env.NODE_ENV === "production") {
+//   console.log("Connecting to LogRocket...");
+//   LogRocket.init("eczu2e/rari-capital", {
+//     console: {
+//       shouldAggregateConsoleErrors: true,
+//     },
+//     release: version,
+//   });
+// }
+
+// console.log("Version " + version);
+
 const customTheme = {
   ...theme,
   fonts: {

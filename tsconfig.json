@@ -1,4 +1,4 @@
-{
+{ 
   "compilerOptions": {
     "target": "es5",
     "lib": [
@@ -22,9 +22,13 @@
     "baseUrl": "src"
   },
   "include": [
-    "src"
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src",
   ],
   "exclude": [
+    "api",
     "node_modules"
   ]
 }

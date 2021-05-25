@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { HeaderLink } from "./HeaderLink";
 import HeaderSearchbar from "./HeaderSearchbar";
+import AppLink from "../AppLink";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -39,7 +40,10 @@ export const NewHeader = () => {
       zIndex={3}
       // bg="pink"
     >
-      <AnimatedSmallLogo />
+      <AppLink href="/">
+        <AnimatedSmallLogo />
+      </AppLink>
+
       <Row
         mx={4}
         expand
@@ -50,7 +54,7 @@ export const NewHeader = () => {
         // transform="translate(0px, 7px)"
         height="100%"
       >
-        <HeaderLink name={t("Overview")} route="/" />
+        <HeaderLink name={t("Overview")} route="/overview" />
         <HeaderLink name={t("Pools")} route="/" ml={5} />
         <HeaderLink name={t("Fuse")} route="/" ml={5} />
         <HeaderLink name={t("Pool2")} route="/" ml={5} />

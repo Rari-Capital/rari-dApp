@@ -1,7 +1,6 @@
 import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "buttered-chakra";
 import DashboardBox from "components/shared/DashboardBox";
-import NewHeader from "components/shared/Header2/NewHeader";
 import useTokenDataBySymbol from "hooks/tokens/useTokenDataBySymbol";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useMemo } from "react";
@@ -40,7 +39,6 @@ const TokenDetails = () => {
       width="100%"
     >
       {/* Header */}
-      <NewHeader />
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"

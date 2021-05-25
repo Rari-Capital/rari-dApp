@@ -1,4 +1,6 @@
 import { memo, ReactNode } from "react";
+// Next
+import dynamic from "next/dynamic";
 
 import {
   Center,
@@ -9,8 +11,9 @@ import {
 } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
 
-import CaptionedStat from "../shared/CaptionedStat";
-import { Link as RouterLink } from "react-router-dom";
+const CaptionedStat = dynamic(() => import("components/shared/CaptionedStat"), {
+  ssr: false,
+});
 
 import { FaTwitter } from "react-icons/fa";
 import {
@@ -43,16 +46,24 @@ import {
   APYWithRefreshMovingStat,
   RefetchMovingStat,
 } from "../shared/MovingStat";
+
 import {
   smallStringUsdFormatter,
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
+
 import {
   usePoolBalance,
   useTotalPoolsBalance,
 } from "../../hooks/usePoolBalance";
-import PoolsPerformanceChart from "../shared/PoolsPerformance";
+
+// import PoolsPerformanceChart from "../shared/PoolsPerformance";
+const PoolsPerformanceChart = dynamic(
+  () => import("components/shared/PoolsPerformance"),
+  { ssr: false }
+);
+
 import { useTVLFetchers } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
 
@@ -64,9 +75,12 @@ import { usePoolInterestEarned } from "hooks/usePoolInterest";
 import { formatBalanceBN } from "utils/format";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
+import AppLink from "components/shared/AppLink";
 
 const MultiPoolPortal = memo(() => {
-  const { width } = useWindowSize();
+  // todo - fix this
+  // const { width } = useWindowSize();
+  const width = 1000;
 
   const { isAuthed } = useRari();
 
@@ -83,7 +97,6 @@ const MultiPoolPortal = memo(() => {
         width={columnWidth}
         px={columnWidth === "100%" ? 4 : 0}
       >
-
         <FundStats />
 
         <DashboardBox mt={4} width="100%" height="100px">
@@ -447,12 +460,10 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
           width="100%"
           mt="auto"
         >
-          <Link
-            /* @ts-ignore */
-            as={RouterLink}
+          <AppLink
             width="100%"
             className="no-underline"
-            to={"/pools/" + pool.toString()}
+            href={"/pools/" + pool.toString()}
           >
             <DashboardBox
               mt={4}
@@ -464,7 +475,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
             >
               <Center expand>{t("Access")}</Center>
             </DashboardBox>
-          </Link>
+          </AppLink>
 
           <DashboardBox
             mt={4}

@@ -1,7 +1,9 @@
 // Next
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 import React, { useState } from "react";
+
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
@@ -15,7 +17,7 @@ import { smallStringUsdFormatter } from "utils/bigUtils";
 
 // import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 
-const APYWithRefreshMovingStat = dynamic(
+const APYWithRefreshMovingStat = dynamic<APYWithRefreshMovingProps>(
   () =>
     import("components/shared/MovingStat").then(
       (mod) => mod.APYWithRefreshMovingStat
@@ -38,8 +40,8 @@ import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 import { SearchIcon } from "@chakra-ui/icons";
 import DashboardBox from "components/shared/DashboardBox";
-import { useRouter } from "next/router";
 import AppLink from "components/shared/AppLink";
+import { APYWithRefreshMovingProps } from "components/shared/MovingStat";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
@@ -68,8 +70,6 @@ const Home = React.memo(() => {
         mx="auto"
         width="100%"
       >
-        {/* Header
-        <NewHeader /> */}
 
         {/* Hero */}
         <Row
