@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Heading,
@@ -12,6 +11,7 @@ import { Column, Row } from "buttered-chakra";
 import { HomepageOpportunity } from "constants/homepage";
 import { useOpportunitySubtitle } from "hooks/homepage/useOpportunitySubtitle";
 import { getOpportunityLink } from "utils/homepage";
+import AppLink from "components/shared/AppLink";
 
 const OpportunityCard = ({
   opportunity,
@@ -22,10 +22,11 @@ const OpportunityCard = ({
   const link = useMemo(() => getOpportunityLink(opportunity), [opportunity]);
 
   return (
+    <AppLink
+    href={link}
+    style={{ textDecoration: "none" }}
+  >
     <Box
-      to={link}
-      as={RouterLink}
-      style={{ textDecoration: "none" }}
       bg={opportunity.bgColor}
       height="130px"
       width="100%"
@@ -66,6 +67,7 @@ const OpportunityCard = ({
         </Column>
       </Row>
     </Box>
+    </AppLink>
   );
 };
 

@@ -1,18 +1,27 @@
+// Next
+import dynamic from "next/dynamic";
+
 import React, { useState } from "react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "buttered-chakra";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import NewHeader from "components/shared/Header2/NewHeader";
 import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
 import { smallStringUsdFormatter } from "utils/bigUtils";
 
-import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+// import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+const APYWithRefreshMovingStat = dynamic(
+  () =>
+    import("components/shared/MovingStat").then(
+      (mod) => mod.APYWithRefreshMovingStat
+    ),
+  { ssr: false }
+);
+
 import { useTVLFetchers } from "hooks/useTVL";
 import HomeVaultCard from "./HomeVaultCard";
 import OpportunityCard from "./OpportunityCard";
@@ -28,11 +37,14 @@ import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 import { SearchIcon } from "@chakra-ui/icons";
 import DashboardBox from "components/shared/DashboardBox";
+import { useRouter } from "next/router";
+import AppLink from "components/shared/AppLink";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
-  const navigate = useNavigate();
+
+  const router = useRouter();
 
   const [val, setVal] = useState("");
 
@@ -43,7 +55,7 @@ const Home = React.memo(() => {
   );
 
   const handleSubmit = () => {
-    navigate(`/token/${val}`);
+    router.push(`/token/${val}`);
   };
 
   return (
@@ -55,8 +67,8 @@ const Home = React.memo(() => {
         mx="auto"
         width="100%"
       >
-        {/* Header */}
-        <NewHeader />
+        {/* Header
+        <NewHeader /> */}
 
         {/* Hero */}
         <Row
@@ -161,11 +173,11 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-              <Link to={`/`} as={RouterLink}>
+              <AppLink href="/">
                 <Text size="md" color="grey">
                   View All
                 </Text>
-              </Link>
+              </AppLink>
             </Row>
 
             <SimpleGrid
@@ -275,13 +287,11 @@ const Home = React.memo(() => {
               mb={5}
             >
               <Heading size="md">Easily Earn </Heading>
-              <RouterLink to="/">
-                <Link>
-                  <Text size="md" color="grey">
-                    View All
-                  </Text>
-                </Link>
-              </RouterLink>
+              <AppLink href="/">
+                <Text size="md" color="grey">
+                  View All
+                </Text>
+              </AppLink>
             </Row>
             <Marquee
               direction="right"

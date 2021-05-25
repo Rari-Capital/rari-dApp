@@ -1,5 +1,4 @@
 // Logos
-import FuseLogo from "static/fuseicon.png";
 import { FusePoolMetric } from "utils/fetchFusePoolData";
 import { Pool } from "utils/poolUtils";
 
@@ -148,7 +147,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "USDC Pool",
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.STABLE,
   },
   {
@@ -156,7 +155,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.ETH,
   },
   {
@@ -164,7 +163,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "Yield Pool",
     subtitle: "Earn interest on YIEYieldLD deposits",
     bgColor: "#101111",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.YIELD,
   },
   {
@@ -172,7 +171,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "USDC Pool",
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.STABLE,
   },
   {
@@ -180,7 +179,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.ETH,
   },
   {
@@ -188,7 +187,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "Yield Pool",
     subtitle: "Earn interest on Yield deposits",
     bgColor: "#101111",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.YIELD,
   },
   {
@@ -196,7 +195,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "USDC Pool",
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.STABLE,
   },
   {
@@ -204,7 +203,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.ETH,
   },
   {
@@ -212,7 +211,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "Yield Pool",
     subtitle: "Earn interest on Yield deposits",
     bgColor: "#101111",
-    icon: '/static/fuseicon.png',
+    icon: 'static/fuseicon.png',
     vaultType: Pool.YIELD,
   },
 ];

@@ -16,6 +16,7 @@ import {
 
 import { HomepageFusePool, HOMEPAGE_FUSE_POOLS } from "constants/homepage";
 import DashboardBox from "components/shared/DashboardBox";
+import AppLink from "components/shared/AppLink";
 
 const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
   const { title, subtitle }: HomepageFusePool = useMemo(() => {
@@ -52,9 +53,8 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
     //   animate={{ opacity: 1, x: 0 }}
     //   exit={{ opacity: 0, x: -40 }}
     // >
-    <Link
-      to={`/fuse/pool/${pool?.id}`}
-      as={RouterLink}
+    <AppLink
+      href={`/fuse/pool/${pool?.id}`}
       style={{ textDecoration: "none" }}
     >
       <DashboardBox
@@ -98,7 +98,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
           </Text>
         </SkeletonText>
       </DashboardBox>
-    </Link>
+    </AppLink>
     // </motion.div>
   );
 };
