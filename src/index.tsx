@@ -64,22 +64,22 @@
 
 // const queryClient = new QueryClient();
 
-// // ReactDOM.render(
-// //   <>
+// ReactDOM.render(
+//   <>
 
-// //     <ChakraProvider theme={customTheme}>
-// //       <ErrorBoundary FallbackComponent={ErrorPage}>
-// //         <QueryClientProvider client={queryClient}>
-// //           <ReactQueryDevtools initialIsOpen={false} />
-// //           <BrowserRouter>
-// //             <RariProvider>
-// //               <ScrollToTop />
-// //               <App />
-// //             </RariProvider>
-// //           </BrowserRouter>
-// //         </QueryClientProvider>
-// //       </ErrorBoundary>
-// //     </ChakraProvider>
-// //   </>,
-// //   document.getElementById("root")
-// // );
+//     <ChakraProvider theme={customTheme}>
+//       <ErrorBoundary FallbackComponent={ErrorPage}>
+//         <QueryClientProvider client={queryClient}>
+//           <ReactQueryDevtools initialIsOpen={false} />
+//           <BrowserRouter>
+//             <RariProvider>
+//               <ScrollToTop />
+//               <App />
+//             </RariProvider>
+//           </BrowserRouter>
+//         </QueryClientProvider>
+//       </ErrorBoundary>
+//     </ChakraProvider>
+//   </>,
+//   document.getElementById("root")
+// );
