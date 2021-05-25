@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 // Next
 import { AppProps } from "next/app";
 import dynamic from "next/dynamic";
@@ -9,9 +11,10 @@ import { ReactQueryDevtools } from "react-query/devtools";
 
 // Providers
 import { RariProvider } from "context/RariContext";
+import Layout from "components/shared/Layout/Layout";
 
 // Styles
-// import "../index.css";
+import "../index.css";
 
 // Components
 const AuthMiddleware = dynamic(() => import("components/Auth"), {
@@ -30,13 +33,20 @@ const customTheme = {
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
+
+  useEffect(() => {
+    console.log("render")
+  }, [])
+
   return (
     <ChakraProvider theme={customTheme}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <RariProvider>
-          <AuthMiddleware />
-          <Component {...pageProps} />
+          <Layout>
+            <AuthMiddleware />
+            <Component {...pageProps} />
+          </Layout>
         </RariProvider>
       </QueryClientProvider>
     </ChakraProvider>

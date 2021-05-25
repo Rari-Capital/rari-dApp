@@ -200,7 +200,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         }
 
         const address = addresses[0];
-        const requestedAddress = router.query.address;
+        const requestedAddress = router.query.address as string;
 
         console.log("Setting Logrocket user to new address: " + address);
         LogRocket.identify(address);
