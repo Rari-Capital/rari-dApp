@@ -1,12 +1,15 @@
 //@ts-nocheck
 
 import { Column } from "buttered-chakra";
-// import Footer from "./Footer";
+import NewHeader from "../Header2/NewHeader2";
+import Footer from "./Footer";
 
-const Layout = ({ children }: { children: any }) => {
+const Layout = ({ children }) => {
   return (
     <Column height="100%" flex={1}>
+      <NewHeader />
       {children}
+      <Footer />
     </Column>
   );
 };

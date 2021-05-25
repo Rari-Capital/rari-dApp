@@ -1,4 +1,4 @@
-import CopyrightSpacer from "./CopyrightSpacer";
+import CopyrightSpacer from "../CopyrightSpacer";
 import { Link, Text } from "@chakra-ui/react";
 import { Row, Column } from "buttered-chakra";
 import { useTranslation } from "react-i18next";

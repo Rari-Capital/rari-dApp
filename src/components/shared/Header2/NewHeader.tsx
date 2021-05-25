@@ -23,7 +23,6 @@ import { AccountButton } from "../AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "../DashboardBox";
 import { AnimatedSmallLogo } from "../Logos";
 
-import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { HeaderLink } from "./HeaderLink";

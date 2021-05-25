@@ -4,6 +4,7 @@ import {
     Link,
     Text,
   } from "@chakra-ui/react";
+import AppLink from "../AppLink";
 
 
 export const HeaderLink = ({
@@ -17,7 +18,6 @@ export const HeaderLink = ({
     noUnderline?: boolean;
     ml?: number | string;
   }) => {
-    const location = useLocation();
   
     const isExternal = route.startsWith("http");
   
@@ -26,7 +26,7 @@ export const HeaderLink = ({
       location.pathname.replace(/\/+$/, "") === route;
   
     return isExternal ? (
-      <Link
+      <AppLink
         href={route}
         isExternal
         ml={ml ?? 0}
@@ -34,18 +34,17 @@ export const HeaderLink = ({
         className={noUnderline ? "no-underline" : ""}
       >
         <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
-      </Link>
+      </AppLink>
     ) : (
-      <Link
+      <AppLink
         /* @ts-ignore */
-        as={RouterLink}
         to={route}
         ml={ml ?? 0}
         whiteSpace="nowrap"
         className={noUnderline ? "no-underline" : ""}
       >
         <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
-      </Link>
+      </AppLink>
     );
   };
   
