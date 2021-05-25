@@ -10,7 +10,7 @@ export interface PoolInterface {
   name: string;
   title: string;
   caption: string;
-  logo: any;
+  logo: string;
 }
 
 export const pools: PoolInterface[] = [
@@ -19,20 +19,20 @@ export const pools: PoolInterface[] = [
     title: "Stable",
     name: "Stable Pool",
     caption: "Safe returns on stablecoins",
-    logo: StableIcon,
+    logo: '/static/stableicon.png'
   },
   {
     type: Pool.YIELD,
     title: "Yield",
     name: "Yield Pool",
     caption: "High risk, high reward",
-    logo: YieldIcon,
+    logo:  'static/yieldicon.png'
   },
   {
     type: Pool.ETH,
     title: "ETH",
     name: "ETH Pool",
     caption: "Safe returns on ETH",
-    logo: EthIcon,
+    logo: '/static/ethicon.png'
   },
 ];

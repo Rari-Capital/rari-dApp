@@ -16,7 +16,6 @@ import {
   Tabs,
   Spinner,
 } from "@chakra-ui/react";
-import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
@@ -1151,7 +1150,7 @@ const TokenNameAndMaxButton = ({
             width="100%"
             height="100%"
             borderRadius="50%"
-            backgroundImage={`url(${SmallWhiteCircle})`}
+            backgroundImage={`url(/static/small-white-circle.png)`}
             src={logoURL}
             alt=""
           />

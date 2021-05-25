@@ -14,8 +14,6 @@ import {
 } from "@chakra-ui/react";
 import { useRari } from "../../context/RariContext";
 
-// import SmallRGTLogo from "../../static/small-logo.png";
-
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
   DASHBOARD_BOX_PROPS,

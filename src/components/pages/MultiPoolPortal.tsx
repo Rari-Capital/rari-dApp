@@ -9,8 +9,6 @@ import {
 } from "buttered-chakra";
 import DashboardBox from "../shared/DashboardBox";
 
-// import SmallLogo from "../../static/small-logo.png";
-
 import CaptionedStat from "../shared/CaptionedStat";
 import { Link as RouterLink } from "react-router-dom";
 

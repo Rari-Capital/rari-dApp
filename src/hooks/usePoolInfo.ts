@@ -32,6 +32,7 @@ export const usePoolInfo = (poolType: Pool) => {
 
 export const usePoolInfoFromContext = () => {
   const poolType = usePoolType();
+  console.log({ poolType });
   return usePoolInfo(poolType);
 };
 

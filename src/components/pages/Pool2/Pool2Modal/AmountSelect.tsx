@@ -12,7 +12,6 @@ import {
   useToast,
   IconButton,
 } from "@chakra-ui/react";
-import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
@@ -320,7 +319,7 @@ const TokenNameAndMaxButton = ({
             width="100%"
             height="100%"
             borderRadius="50%"
-            backgroundImage={`url(${SmallWhiteCircle})`}
+            backgroundImage={`url(/static/small-white-circle.png)`}
             src={
               "https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
             }

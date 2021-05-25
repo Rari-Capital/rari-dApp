@@ -7,11 +7,14 @@ import { DASHBOARD_BOX_SPACING } from "../DashboardBox";
 import { Heading } from "@chakra-ui/layout";
 import { AccountButton } from "../AccountButton";
 
+import { AnimatedSmallLogo } from "components/shared/Logos";
+
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
 );
 
 export const NewHeader = () => {
+
   return (
     <Row
       color="#FFFFFF"
@@ -26,7 +29,9 @@ export const NewHeader = () => {
       zIndex={3}
       // bg="pink"
     >
+      <AnimatedSmallLogo />
       <Heading>RARI</Heading>
+      {/* <AccountButton /> */}
     </Row>
   );
 };

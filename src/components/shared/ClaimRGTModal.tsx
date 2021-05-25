@@ -124,18 +124,18 @@ export const ClaimRGTModal = ({
   // });
 
   // If user presses meta key or control key + slash they will toggle the private allocation claim mode.
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.code === "Slash") {
-        e.preventDefault();
-        setMode("private");
-      }
-    };
+  // useEffect(() => {
+  //   const handler = (e: KeyboardEvent) => {
+  //     if ((e.metaKey || e.ctrlKey) && e.code === "Slash") {
+  //       e.preventDefault();
+  //       setMode("private");
+  //     }
+  //   };
 
-    document.addEventListener("keydown", handler);
+  //   document.addEventListener("keydown", handler);
 
-    return () => document.removeEventListener("keydown", handler);
-  }, []);
+  //   return () => document.removeEventListener("keydown", handler);
+  // }, []);
 
   return (
     <Modal

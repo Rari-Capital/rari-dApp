@@ -13,7 +13,6 @@ import { Fade } from "react-awesome-reveal";
 import { Row, Column } from "buttered-chakra";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 
-import BigWhiteCircle from "../../../static/big-white-circle.png";
 import {
   FixedSizeList as List,
   areEqual,
@@ -175,7 +174,7 @@ const TokenRow = memo(
               width="100%"
               height="100%"
               borderRadius="50%"
-              backgroundImage={`url(${BigWhiteCircle})`}
+              backgroundImage={`url(/static/big-white-circle.png)`}
               src={token.logoURL}
               alt=""
             />

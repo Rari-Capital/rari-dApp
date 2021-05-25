@@ -26,7 +26,6 @@ import {
   TokenData,
   useTokenData,
 } from "../../../../hooks/useTokenData";
-import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 import { useRari } from "../../../../context/RariContext";
 import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
 import { SliderWithLabel } from "../../../shared/SliderWithLabel";
@@ -623,7 +622,7 @@ const AddAssetModal = ({
                   src={tokenData.logoURL}
                   boxSize="50px"
                   borderRadius="50%"
-                  backgroundImage={`url(${SmallWhiteCircle})`}
+                  backgroundImage={`url(/static/small-white-circle.png)`}
                   backgroundSize="100% auto"
                 />
               ) : null}

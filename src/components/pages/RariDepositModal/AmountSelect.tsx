@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Row, Column, Center } from "buttered-chakra";
-import SmallWhiteCircle from "../../../static/small-white-circle.png";
 
 import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
 import {
@@ -516,7 +515,7 @@ const TokenNameAndMaxButton = ({
             width="100%"
             height="100%"
             borderRadius="50%"
-            backgroundImage={`url(${SmallWhiteCircle})`}
+            backgroundImage={`url(/static/small-white-circle.png)`}
             src={token.logoURL}
             alt=""
           />
