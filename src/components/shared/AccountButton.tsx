@@ -1,5 +1,5 @@
 import { memo, useCallback } from "react";
-import { useRari } from "../../context/RariContext";
+import { useRari } from "context/RariContext";
 import {
   useDisclosure,
   Modal,
@@ -27,9 +27,9 @@ import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
-import MoonpayModal from "../pages/MoonpayModal";
-import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
-import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+import MoonpayModal from "components/pages/MoonpayModal";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 export const AccountButton = memo(() => {
   const {
@@ -91,7 +91,8 @@ const Buttons = ({
 
   const { t } = useTranslation();
 
-  const isMobile = useIsSmallScreen();
+  // const isMobile = useIsSmallScreen();
+  const isMobile = false;
 
   const handleAccountButtonClick = useCallback(() => {
     if (isAuthed) {

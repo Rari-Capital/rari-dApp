@@ -24,6 +24,7 @@ import {
   initFuseWithProviders,
 } from "../utils/web3Providers";
 
+// Next
 import { useRouter } from "next/router";
 
 async function launchModalLazy(
