@@ -25,7 +25,6 @@ import { shortUsdFormatter } from "../../../utils/bigUtils";
 import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -120,8 +119,6 @@ const FusePoolInfoPage = memo(() => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />

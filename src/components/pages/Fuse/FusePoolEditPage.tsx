@@ -16,7 +16,6 @@ import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
 import FuseStatsBar from "./FuseStatsBar";
@@ -142,8 +141,6 @@ const FusePoolEditPage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />

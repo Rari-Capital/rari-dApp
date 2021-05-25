@@ -1,7 +1,6 @@
 import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import {
   Heading,
   Link,
@@ -59,7 +58,6 @@ const TranchePage = () => {
         width={isMobile ? "100%" : "1000px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
 
         <RowOrColumn
           width="100%"

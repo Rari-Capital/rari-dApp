@@ -13,9 +13,8 @@ import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";
 
-import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
+import DashboardBox from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
@@ -47,7 +46,6 @@ const FuseLiquidationsPage = memo(() => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -94,7 +92,6 @@ const FuseLiquidationsPage = memo(() => {
         <DashboardBox width="100%" mt={4}>
           <LiquidatablePositionsList />
         </DashboardBox>
-
       </Column>
     </>
   );

@@ -6,7 +6,6 @@ import { QuestionOutlineIcon } from "@chakra-ui/icons";
 import { Column, Row } from "buttered-chakra";
 import { motion } from "framer-motion";
 
-import { Header } from "components/shared/Header";
 import SubNav from "./StatsSubNav";
 
 import StatsTotalSection from "./Totals/StatsTotalSection";
@@ -57,8 +56,6 @@ const StatsPage = () => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
-
         <Column
           width="100%"
           mainAxisAlignment="center"

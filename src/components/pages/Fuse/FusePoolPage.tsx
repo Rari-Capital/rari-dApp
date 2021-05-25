@@ -31,7 +31,6 @@ import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Components
 import DashboardBox from "components/shared/DashboardBox";
-import { Header } from "components/shared/Header";
 import { ModalDivider } from "components/shared/Modal";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { SwitchCSS } from "components/shared/SwitchCSS";
@@ -61,7 +60,6 @@ const FusePoolPage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
 
         <FuseStatsBar />
 

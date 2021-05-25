@@ -6,7 +6,6 @@ import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";
 
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
@@ -36,7 +35,6 @@ const FusePoolsPage = memo(() => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
         <FuseStatsBar />
 
         <FuseTabBar />

@@ -14,7 +14,6 @@ import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
 import DashboardBox from "components/shared/DashboardBox";
-import { Header } from "components/shared/Header";
 
 // Hooks
 import { useTranslation } from "react-i18next";
@@ -48,7 +47,6 @@ const Pool2Page = () => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
 
         <Column
           width="100%"

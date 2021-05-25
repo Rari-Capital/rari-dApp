@@ -54,7 +54,6 @@ import { useTranslation } from "react-i18next";
 
 import { PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
-import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
 
 import { GlowingButton } from "../shared/GlowingButton";
 
@@ -111,7 +110,7 @@ const PoolPortalContent = () => {
     parentHeight: windowHeight.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
-      HeaderHeightWithTopPadding,
+      // HeaderHeightWithTopPadding,
       new PercentageSize(1),
       // We have a 0 sized child here because it will now lower the size of the "100%" child
       // by accouting for padding below it, which is 15.
@@ -182,7 +181,6 @@ const PoolPortalContent = () => {
         crossAxisAlignment="flex-start"
         color="#FFFFFF"
       >
-        <Header isPool padding isAuthed={isAuthed} />
         <RowOnDesktopColumnOnMobile
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"

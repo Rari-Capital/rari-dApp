@@ -37,7 +37,6 @@ import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
 
 import DepositModal from "./RariDepositModal";
-import { Header } from "../shared/Header";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import {
   APYMovingStat,
@@ -84,7 +83,6 @@ const MultiPoolPortal = memo(() => {
         width={columnWidth}
         px={columnWidth === "100%" ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
 
         <FundStats />
 
