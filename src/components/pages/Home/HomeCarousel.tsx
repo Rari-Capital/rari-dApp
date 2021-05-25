@@ -34,7 +34,7 @@ const HomeCarousel = () => {
       >
         {pools.map((pool, i) => {
           return (
-            <Box w="100%" h="100%">
+            <Box w="100%" h="100%" key={i}>
               <Heading
                 fontSize={{ base: "md", sm: "lg", md: "lg", lg: "xl" }}
                 textAlign={isMobile ? "left" : "center"}

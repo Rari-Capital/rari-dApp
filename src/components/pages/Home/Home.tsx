@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";
 
 // import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+
 const APYWithRefreshMovingStat = dynamic(
   () =>
     import("components/shared/MovingStat").then(
@@ -298,8 +299,8 @@ const Home = React.memo(() => {
               gradient={false}
               style={{ padding: "10px" }}
             >
-              {HOMEPAGE_EARN_VAULTS.map((opportunity) => (
-                <HomeVaultCard opportunity={opportunity} />
+              {HOMEPAGE_EARN_VAULTS.map((opportunity, i) => (
+                <HomeVaultCard opportunity={opportunity} key={i} />
               ))}
             </Marquee>
           </Column>

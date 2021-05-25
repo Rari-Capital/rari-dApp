@@ -37,7 +37,7 @@ export const NewHeader = () => {
       overflowY="visible"
       width="100%"
       zIndex={3}
-      bg="pink"
+      // bg="pink"
     >
       <AnimatedSmallLogo />
       <Row
