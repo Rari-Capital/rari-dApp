@@ -240,7 +240,7 @@ const FuseLiquidationsPage = memo(() => {
     await Promise.all(poolFetches);
 
     return liquidationEvents.sort((a, b) => {
-      if (b.blockNumber != a.blockNumber) {
+      if (b.blockNumber !== a.blockNumber) {
         return b.blockNumber - a.blockNumber;
       } else {
         return b.transactionIndex - a.transactionIndex;
@@ -254,7 +254,7 @@ const FuseLiquidationsPage = memo(() => {
   const [positionsToShow, setPositionsToShow] = useState(-1);
   const limitedPositions = positions?.slice(
     0,
-    positionsToShow == -1 ? positions.length : positionsToShow
+    positionsToShow === -1 ? positions.length : positionsToShow
   );
 
   return (
@@ -802,7 +802,7 @@ const RowsControl = ({
         onClick={() =>
           setAmountToShow((past) =>
             Math.min(
-              past == 0 ? 1 : past == -1 ? totalAmount : past + 5,
+              past === 0 ? 1 : past === -1 ? totalAmount : past + 5,
               totalAmount
             )
           )
