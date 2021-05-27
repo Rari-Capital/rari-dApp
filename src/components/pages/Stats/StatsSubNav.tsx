@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 // Components
-import { Column, Row } from "utils/buttered-chakra";
+import { Column, Row } from "utils/chakraUtils";
 import { Box, Heading } from "@chakra-ui/react";
 
 import {

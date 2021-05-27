@@ -1,6 +1,6 @@
 import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { Column } from "utils/buttered-chakra";
+import { Column } from "utils/chakraUtils";
 import { TranchesLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useTranslation } from "react-i18next";

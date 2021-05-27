@@ -8,7 +8,7 @@ import {
   Portal,
 } from "@chakra-ui/react";
 
-import { PixelSize, Row } from "utils/buttered-chakra";
+import { PixelSize, Row } from "utils/chakraUtils";
 
 //  Components
 import { AccountButton } from "../AccountButton";

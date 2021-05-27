@@ -8,7 +8,7 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row } from "utils/buttered-chakra";
+import { Column, Center, Row } from "utils/chakraUtils";
 import { memo, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 

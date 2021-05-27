@@ -1,6 +1,6 @@
 import { DASHBOARD_BOX_PROPS } from "./DashboardBox";
 import { Box, Heading, CloseButton } from "@chakra-ui/react";
-import { Row } from "utils/buttered-chakra";
+import { Row } from "utils/chakraUtils";
 
 export const MODAL_PROPS = {
   width: { md: "450px", base: "92%" },

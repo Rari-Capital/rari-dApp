@@ -8,7 +8,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { Column, RowOrColumn, Center, Row } from "utils/buttered-chakra";
+import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
 import { memo, ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";

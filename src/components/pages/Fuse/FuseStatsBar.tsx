@@ -1,5 +1,5 @@
 import { Heading } from "@chakra-ui/react";
-import { RowOrColumn, Column, Center } from "utils/buttered-chakra";
+import { RowOrColumn, Column, Center } from "utils/chakraUtils";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
