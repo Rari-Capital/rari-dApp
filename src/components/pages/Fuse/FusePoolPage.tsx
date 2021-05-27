@@ -15,7 +15,6 @@ import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils
 // Hooks
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
-import { useParams } from "react-router-dom";
 import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
@@ -40,15 +39,17 @@ import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
+import { useRouter } from "next/router";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
+  const router = useRouter()
 
-  let { poolId } = useParams();
+  let { poolId } = router.query;
 
-  const data = useFusePoolData(poolId);
+  const data = useFusePoolData(poolId as string | undefined);
 
   return (
     <>

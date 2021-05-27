@@ -1,3 +1,6 @@
+import dynamic from "next/dynamic"
+
+
 import {
   AvatarGroup,
   Box,
@@ -8,6 +11,7 @@ import {
   Text,
   useClipboard,
 } from "@chakra-ui/react";
+
 import {
   Column,
   RowOnDesktopColumnOnMobile,
@@ -16,11 +20,16 @@ import {
   Row,
   useIsMobile,
 } from "utils/chakraUtils";
+
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+
+// Hooks
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
+
+// Utils
 import { shortUsdFormatter } from "../../../utils/bigUtils";
 import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
@@ -28,7 +37,9 @@ import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import { ModalDivider } from "../../shared/Modal";
 import { Link as RouterLink } from "react-router-dom";
 
-import Chart from "react-apexcharts";
+
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false})
+// import Chart from "react-apexcharts";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";

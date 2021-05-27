@@ -1,4 +1,4 @@
-import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
+import { Avatar, AvatarGroup, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";

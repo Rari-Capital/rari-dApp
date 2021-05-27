@@ -20,7 +20,6 @@ const FuseTabBar = () => {
 
   const filter = useFilter();
   const router = useRouter();
-
   const { poolId } = router.query;
 
   return (
@@ -36,7 +35,7 @@ const FuseTabBar = () => {
           <DashboardBox height="35px">
             <Row
               pl={2}
-              expand
+              // expand
               crossAxisAlignment="center"
               mainAxisAlignment="flex-start"
               fontWeight="bold"
@@ -143,6 +142,7 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
       href={route}
       ml={isMobile ? 0 : 4}
       mt={isMobile ? 4 : 0}
+      shallow
     >
       <DashboardBox
         height="35px"
@@ -182,7 +182,6 @@ const TabExternalLink = ({ route, text }: { route: string; text: string }) => {
 const NewPoolButton = () => {
   const isMobile = useIsSmallScreen();
   const { t } = useTranslation();
-
   const router = useRouter();
 
   return (

@@ -2,12 +2,17 @@
 import {
   AvatarGroup,
   Box,
-  Link,
   Spinner,
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { Center, Column, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
+import {
+  Center,
+  Column,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -30,6 +35,7 @@ import { memo, useState } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { CTokenIcon } from "./FusePoolsPage";
 import { useQuery } from "react-query";
+import AppLink from "components/shared/AppLink";
 
 const FuseLiquidationsPage = memo(() => {
   const { isAuthed } = useRari();
@@ -346,12 +352,10 @@ const PositionRow = ({
 
   return (
     <>
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
+      <AppLink
         width="100%"
         className="no-underline"
-        to={"/fuse/pool/" + poolNumber + `?address=${address}`}
+        href={"/fuse/pool/" + poolNumber + `?address=${address}`}
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -411,7 +415,7 @@ const PositionRow = ({
             </>
           )}
         </Row>
-      </Link>
+      </AppLink>
 
       {noBottomDivider ? null : <ModalDivider />}
     </>
