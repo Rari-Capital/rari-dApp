@@ -36,7 +36,7 @@ import {
   ResponsivePixelSize,
   PixelSize,
   PercentOnDesktopPixelOnMobileSize,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 
 import {
   USDSelfReturnChartOptions,

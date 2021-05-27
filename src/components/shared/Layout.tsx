@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-import { Column } from "buttered-chakra";
+import { Column } from "utils/chakraUtils";
 // import Footer from "./Footer";
 
 const Layout = ({ children }: { children: any }) => {
