@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import MultiPoolPortal from "components/pages/MultiPoolPortal";
 
-const IndexPage: NextPage = () => {
+const OverviewPage: NextPage = () => {
   return (
     <>
       <MultiPoolPortal />
@@ -9,4 +9,4 @@ const IndexPage: NextPage = () => {
   );
 };
 
-export default IndexPage;
+export default OverviewPage;
