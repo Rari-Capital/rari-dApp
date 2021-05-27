@@ -76,10 +76,14 @@ import { formatBalanceBN } from "utils/format";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 import AppLink from "components/shared/AppLink";
+import { useRouter } from "next/router";
 
 const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
   const { isAuthed } = useRari();
+
+  const router = useRouter();
+  // console.log({ router }, router.query.filter );
 
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";

@@ -2,30 +2,26 @@ import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { Link as RouterLink } from "react-router-dom";
+import { useFilter } from "hooks/useFilter";
+import { useRouter } from "next/router";
+import AppLink from "components/shared/AppLink";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 
 const noop = {};
-
-export function useFilter() {
-  return new URLSearchParams(useLocation().search).get("filter");
-}
 
 const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
 
-  let { poolId } = useParams();
-
-  let navigate = useNavigate();
-
   const filter = useFilter();
-  const location = useLocation();
+  const router = useRouter();
+
+  const { poolId } = router.query;
 
   return (
     <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "65px"}>
@@ -53,9 +49,9 @@ const FuseTabBar = () => {
                   const value = encodeURIComponent(event.target.value);
 
                   if (value) {
-                    navigate("?filter=" + value);
+                    router.push("?filter=" + value);
                   } else {
-                    navigate("");
+                    router.push("");
                   }
                 }}
                 width="185px"
@@ -99,39 +95,32 @@ const FuseTabBar = () => {
         {poolId ? (
           <>
             <DashboardBox
-              {...(!location.pathname.includes("info") ? activeStyle : {})}
+              {...(!router.pathname.includes("info") ? activeStyle : {})}
               ml={isMobile ? 0 : 4}
               mt={isMobile ? 4 : 0}
               height="35px"
             >
-              <Link
-                /* @ts-ignore */
-                as={RouterLink}
-                to={`/fuse/pool/${poolId}`}
-                className="no-underline"
-              >
+              <AppLink href={`/fuse/pool/${poolId}`} className="no-underline">
                 <Center expand px={2} fontWeight="bold">
                   {t("Pool #{{poolId}}", { poolId })}
                 </Center>
-              </Link>
+              </AppLink>
             </DashboardBox>
 
             <DashboardBox
-              {...(location.pathname.includes("info") ? activeStyle : {})}
+              {...(router.pathname.includes("info") ? activeStyle : {})}
               ml={isMobile ? 0 : 4}
               mt={isMobile ? 4 : 0}
               height="35px"
             >
-              <Link
-                /* @ts-ignore */
-                as={RouterLink}
-                to={`/fuse/pool/${poolId}/info`}
+              <AppLink
+                href={`/fuse/pool/${poolId}/info`}
                 className="no-underline"
               >
                 <Center expand px={2} fontWeight="bold">
                   {t("Pool #{{poolId}} Info", { poolId })}
                 </Center>
-              </Link>
+              </AppLink>
             </DashboardBox>
           </>
         ) : null}
@@ -145,29 +134,28 @@ const FuseTabBar = () => {
 const TabLink = ({ route, text }: { route: string; text: string }) => {
   const isMobile = useIsSmallScreen();
 
-  const location = useLocation();
+  const router = useRouter();
+  console.log({ router });
 
   return (
-    <Link
-      /* @ts-ignore */
-      as={RouterLink}
+    <AppLink
       className="no-underline"
-      to={route}
+      href={route}
       ml={isMobile ? 0 : 4}
       mt={isMobile ? 4 : 0}
     >
       <DashboardBox
         height="35px"
-        {...(route ===
-        location.pathname.replace(/\/+$/, "") + window.location.search
-          ? activeStyle
-          : noop)}
+        // {...(route ===
+        // router.pathname.replace(/\/+$/, "") + window.location.search
+        //   ? activeStyle
+        //   : noop)}
       >
         <Center expand px={2} fontWeight="bold">
           {text}
         </Center>
       </DashboardBox>
-    </Link>
+    </AppLink>
   );
 };
 
@@ -195,28 +183,23 @@ const NewPoolButton = () => {
   const isMobile = useIsSmallScreen();
   const { t } = useTranslation();
 
-  const location = useLocation();
+  const router = useRouter();
 
   return (
     <DashboardBox
       mt={isMobile ? 4 : 0}
       ml={isMobile ? 0 : "auto"}
       height="35px"
-      {...("/fuse/new-pool" ===
-      location.pathname.replace(/\/+$/, "") + window.location.search
-        ? activeStyle
-        : noop)}
+      // {...("/fuse/new-pool" ===
+      // router.pathname.replace(/\/+$/, "") + window.location.search
+      //   ? activeStyle
+      //   : noop)}
     >
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
-        to={`/fuse/new-pool`}
-        className="no-underline"
-      >
+      <AppLink href={`/fuse/new-pool`} className="no-underline">
         <Center expand pl={2} pr={3} fontWeight="bold">
           <SmallAddIcon mr={1} /> {t("New Pool")}
         </Center>
-      </Link>
+      </AppLink>
     </DashboardBox>
   );
 };

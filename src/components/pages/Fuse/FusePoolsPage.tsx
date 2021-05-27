@@ -8,9 +8,8 @@ import { smallUsdFormatter } from "utils/bigUtils";
 import DashboardBox from "../../shared/DashboardBox";
 import { ModalDivider } from "../../shared/Modal";
 
-import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar, { useFilter } from "./FuseTabBar";
+import FuseTabBar from "./FuseTabBar";
 import { useTokenData } from "hooks/useTokenData";
 
 import { filterPoolName } from "utils/fetchFusePoolData";
@@ -19,6 +18,8 @@ import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import { memo } from "react";
+import AppLink from "components/shared/AppLink";
+import { useFilter } from "hooks/useFilter";
 
 const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();
@@ -42,7 +43,6 @@ const FusePoolsPage = memo(() => {
         <DashboardBox width="100%" mt={4}>
           <PoolList />
         </DashboardBox>
-
       </Column>
     </>
   );
@@ -154,12 +154,10 @@ export const PoolRow = ({
 
   return (
     <>
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
-        width="100%"
+      <AppLink
+        href={"/fuse/pool/" + poolNumber}
         className="no-underline"
-        to={"/fuse/pool/" + poolNumber}
+        width="100%"
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -215,7 +213,7 @@ export const PoolRow = ({
             </>
           )}
         </Row>
-      </Link>
+      </AppLink>
 
       {noBottomDivider ? null : <ModalDivider />}
     </>
