@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "utils/buttered-chakra";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 import {

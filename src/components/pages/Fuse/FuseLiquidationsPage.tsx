@@ -7,7 +7,7 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { Center, Column, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
+import { Center, Column, Row, RowOrColumn, useIsMobile } from "utils/buttered-chakra";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";

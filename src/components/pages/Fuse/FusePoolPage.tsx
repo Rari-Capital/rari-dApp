@@ -10,7 +10,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
+import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/buttered-chakra";
 
 // Hooks
 import { useTranslation } from "react-i18next";

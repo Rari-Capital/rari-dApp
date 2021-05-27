@@ -1,4 +1,4 @@
-import { useIsMobile } from "buttered-chakra";
+import { useIsMobile } from "utils/buttered-chakra";
 
 export function useMaybeResponsiveProp<T, A>(
   data: { md: T; base: A } | string

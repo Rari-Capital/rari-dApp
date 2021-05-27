@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "utils/buttered-chakra";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 
 import BigWhiteCircle from "../../../static/big-white-circle.png";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column, Center, useIsMobile } from "buttered-chakra";
+import { Row, Column, Center, useIsMobile } from "utils/buttered-chakra";
 
 import LogRocket from "logrocket";
 import {

@@ -18,7 +18,7 @@ import { usePool2APR } from "hooks/pool2/usePool2APR";
 import { usePool2UnclaimedRGT } from "hooks/pool2/usePool2UnclaimedRGT";
 import { usePool2Balance } from "hooks/pool2/usePool2Balance";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
-import { Row } from "buttered-chakra";
+import { Row } from "utils/buttered-chakra";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { useTranslation } from "react-i18next";
 

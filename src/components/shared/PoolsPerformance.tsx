@@ -6,7 +6,7 @@ import {
   PercentageSize,
   Row,
   Center,
-} from "buttered-chakra";
+} from "utils/buttered-chakra";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PoolReturnChartOptions } from "../../utils/chartOptions";

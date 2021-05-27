@@ -22,7 +22,7 @@ import {
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "buttered-chakra";
+import { useIsMobile } from "utils/buttered-chakra";
 import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
