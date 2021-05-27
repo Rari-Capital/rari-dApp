@@ -10,7 +10,7 @@ import {
   Th,
   Td,
 } from "@chakra-ui/react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "utils/chakraUtils";
 import { motion } from "framer-motion";
 
 // Hooks

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Box, Heading, Image, Text, Skeleton } from "@chakra-ui/react";
-import { Column } from "buttered-chakra";
+import { Column } from "utils/chakraUtils";
 
 import { HomepageOpportunity } from "constants/homepage";
 import { useOpportunitySubtitle } from "hooks/homepage/useOpportunitySubtitle";

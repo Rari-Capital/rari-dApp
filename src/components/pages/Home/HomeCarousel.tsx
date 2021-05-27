@@ -2,7 +2,7 @@ import { Box, Heading, Text } from "@chakra-ui/layout";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
-import { Column } from "buttered-chakra";
+import { Column } from "utils/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFuseDataForAssets } from "hooks/fuse/useFuseDataForAsset";
 import { smallStringUsdFormatter } from "utils/bigUtils";

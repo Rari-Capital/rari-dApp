@@ -8,7 +8,7 @@ import {
   Row,
   RowOnDesktopColumnOnMobile,
   useWindowSize,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 import DashboardBox from "../shared/DashboardBox";
 
 const CaptionedStat = dynamic(() => import("components/shared/CaptionedStat"), {
@@ -78,10 +78,7 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 import AppLink from "components/shared/AppLink";
 
 const MultiPoolPortal = memo(() => {
-  // todo - fix this
-  // const { width } = useWindowSize();
-  const width = 1000;
-
+  const { width } = useWindowSize();
   const { isAuthed } = useRari();
 
   // Determine the column width based on the width of the window.

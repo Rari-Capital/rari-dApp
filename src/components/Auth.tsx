@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-// import { useIsMobile } from "buttered-chakra";
+// import { useIsMobile } from "utils/chakraUtils";
 import { useRari } from "context/RariContext";
 
 // Automatically open the web3modal if not on mobile (or just login if they have already used the site)

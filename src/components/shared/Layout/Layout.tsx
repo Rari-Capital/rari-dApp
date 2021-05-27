@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-import { Column } from "buttered-chakra";
+import { Column } from "utils/chakraUtils";
 import NewHeader from "../Header2/NewHeader2";
 import Footer from "./Footer";
 

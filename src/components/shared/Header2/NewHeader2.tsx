@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-import { PixelSize, Row } from "buttered-chakra";
+import { PixelSize, Row } from "utils/chakraUtils";
 
 //  Components
 import { DASHBOARD_BOX_SPACING } from "../DashboardBox";
 import { Heading } from "@chakra-ui/layout";
 import { AccountButton } from "../AccountButton";
 
-import { AnimatedSmallLogo } from "components/shared/Logos";
+import { SmallLogo } from "components/shared/Logos";
 import { useRari } from "context/RariContext";
 import { useTranslation } from "react-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -41,7 +41,7 @@ export const NewHeader = () => {
       // bg="pink"
     >
       <AppLink href="/">
-        <AnimatedSmallLogo />
+        <SmallLogo />
       </AppLink>
 
       <Row

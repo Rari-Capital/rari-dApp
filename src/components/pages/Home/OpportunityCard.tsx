@@ -6,7 +6,7 @@ import {
   Image,
   Skeleton,
 } from "@chakra-ui/react";
-import { Column, Row } from "buttered-chakra";
+import { Column, Row } from "utils/chakraUtils";
 
 import { HomepageOpportunity } from "constants/homepage";
 import { useOpportunitySubtitle } from "hooks/homepage/useOpportunitySubtitle";

@@ -13,7 +13,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
-import { Column, Row } from "buttered-chakra";
+import { Column, Row } from "utils/chakraUtils";
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

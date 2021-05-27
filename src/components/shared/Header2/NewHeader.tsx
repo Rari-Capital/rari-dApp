@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
-import { PixelSize, Row } from "buttered-chakra";
+import { PixelSize, Row } from "utils/chakraUtils";
 
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 

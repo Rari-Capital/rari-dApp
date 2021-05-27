@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column, Center } from "utils/chakraUtils";
 
 import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
 import {

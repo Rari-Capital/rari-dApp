@@ -1,5 +1,5 @@
 import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
-import { Column, Row, RowOrColumn } from "buttered-chakra";
+import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
 import useTokenDataBySymbol from "hooks/tokens/useTokenDataBySymbol";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";

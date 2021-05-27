@@ -6,7 +6,7 @@ import React, { useState } from "react";
 
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
-import { Column, Row } from "buttered-chakra";
+import { Column, Row } from "utils/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";

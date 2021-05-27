@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "utils/chakraUtils";
 
 import {
   Heading,
