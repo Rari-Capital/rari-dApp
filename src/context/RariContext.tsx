@@ -142,6 +142,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
 
   const router = useRouter();
+  const { address: requestedAddress } = router.query
+  console.log({requestedAddress})
 
   const [rari, setRari] = useState<Rari>(
     () => new Rari(chooseBestWeb3Provider())
@@ -188,6 +190,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
+      console.log("1", { requestedAddress })
+
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = initFuseWithProviders(modalProvider);
 
@@ -203,6 +207,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         const address = addresses[0];
         const requestedAddress = router.query.address as string;
 
+        console.log({address, requestedAddress, router})
+
         console.log("Setting Logrocket user to new address: " + address);
         LogRocket.identify(address);
 
@@ -210,7 +216,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         setAddress(requestedAddress ?? address);
       });
     },
-    [setRari, setAddress, router.query.address]
+    [setRari, setAddress, requestedAddress]
   );
 
   const login = useCallback(

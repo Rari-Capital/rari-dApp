@@ -134,7 +134,6 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
   const isMobile = useIsSmallScreen();
 
   const router = useRouter();
-  console.log({ router });
 
   return (
     <AppLink

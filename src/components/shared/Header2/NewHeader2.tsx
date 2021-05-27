@@ -59,7 +59,7 @@ export const NewHeader = () => {
         <HeaderLink name={t("Fuse")} route="/fuse" ml={5} />
         <HeaderLink name={t("Pool2")} route="/pool2" ml={5} />
         <HeaderLink name={t("Tranches")} route="/tranches" ml={5} />
-        {isAuthed && <HeaderLink ml={5} name={t("Positions")} route="/" />}
+        {isAuthed && <HeaderLink ml={5} name={t("Positions")} route="/positions" />}
       </Row>
 
       <HeaderSearchbar />
