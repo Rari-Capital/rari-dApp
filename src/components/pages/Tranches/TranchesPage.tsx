@@ -1,4 +1,4 @@
-import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
+import { Center, Column, Row, RowOrColumn } from "utils/chakraUtils";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
 import { Header } from "../../shared/Header";

@@ -6,7 +6,7 @@ import {
   Row,
   RowOnDesktopColumnOnMobile,
   useWindowSize,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 import DashboardBox from "../shared/DashboardBox";
 
 // import SmallLogo from "../../static/small-logo.png";
