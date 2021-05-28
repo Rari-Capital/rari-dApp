@@ -58,7 +58,6 @@ import {
   useTotalPoolsBalance,
 } from "../../hooks/usePoolBalance";
 
-// import PoolsPerformanceChart from "../shared/PoolsPerformance";
 const PoolsPerformanceChart = dynamic(
   () => import("components/shared/PoolsPerformance"),
   { ssr: false }

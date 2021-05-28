@@ -1,3 +1,5 @@
+import dynamic from "next/dynamic";
+
 import {
   Heading,
   Modal,
@@ -18,36 +20,39 @@ import { useTranslation } from "react-i18next";
 
 import DashboardBox, {
   DASHBOARD_BOX_PROPS,
-} from "../../../shared/DashboardBox";
-import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
+} from "../../../../shared/DashboardBox";
+import { ModalDivider, MODAL_PROPS } from "../../../../shared/Modal";
 
 import {
   ETH_TOKEN_DATA,
   TokenData,
   useTokenData,
-} from "../../../../hooks/useTokenData";
-import { useRari } from "../../../../context/RariContext";
-import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
-import { SliderWithLabel } from "../../../shared/SliderWithLabel";
-import { convertIRMtoCurve } from "../FusePoolInfoPage";
+} from "../../../../../hooks/useTokenData";
+import { useRari } from "../../../../../context/RariContext";
+import { FuseIRMDemoChartOptions } from "../../../../../utils/chartOptions";
+import { SliderWithLabel } from "../../../../shared/SliderWithLabel";
+import { convertIRMtoCurve } from "../../FusePoolInfoPage";
 
-import Fuse from "../../../../fuse-sdk";
-import Chart from "react-apexcharts";
+import Fuse from "../../../../../fuse-sdk/src";
 import {
   ConfigRow,
   SaveButton,
   testForComptrollerErrorAndSend,
-} from "../FusePoolEditPage";
+} from "../../FusePoolEditPage";
 import { useQuery, useQueryClient } from "react-query";
 import { QuestionIcon } from "@chakra-ui/icons";
-import { SimpleTooltip } from "../../../shared/SimpleTooltip";
+import { SimpleTooltip } from "../../../../shared/SimpleTooltip";
 import BigNumber from "bignumber.js";
-import { createComptroller } from "../../../../utils/createComptroller";
-import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
+import { createComptroller } from "../../../../../utils/createComptroller";
+import { testForCTokenErrorAndSend } from "../PoolModal/AmountSelect";
 
-import { handleGenericError } from "../../../../utils/errorHandling";
-import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
+import { handleGenericError } from "../../../../../utils/errorHandling";
+import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 import LogRocket from "logrocket";
+
+const AddAssetChart = dynamic(() => import("./AddAssetChart"), {
+  ssr: false,
+});
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -514,27 +519,7 @@ export const AssetSettings = ({
         flexShrink={0}
       >
         {curves ? (
-          <Chart
-            options={
-              {
-                ...FuseIRMDemoChartOptions,
-                colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
-              } as any
-            }
-            type="line"
-            width="100%"
-            height="100%"
-            series={[
-              {
-                name: "Borrow Rate",
-                data: curves.borrowerRates,
-              },
-              {
-                name: "Deposit Rate",
-                data: curves.supplierRates,
-              },
-            ]}
-          />
+          <AddAssetChart tokenData={tokenData} curves={curves} />
         ) : curves === undefined ? (
           <Center expand color="#FFF">
             <Spinner />

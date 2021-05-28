@@ -1,27 +1,27 @@
+// Next
+import dynamic from "next/dynamic";
 import { memo, useState } from "react";
+
 import {
   Box,
   Text,
   Heading,
   Spinner,
   Divider,
-  Select,
   useDisclosure,
   theme,
   BoxProps,
   // Image,
   Link,
 } from "@chakra-ui/react";
-import { useRari } from "../../context/RariContext";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
+// Components
 import DashboardBox, {
   DASHBOARD_BOX_SPACING,
   DASHBOARD_BOX_PROPS,
-} from "../shared/DashboardBox";
-
-import Chart from "react-apexcharts";
-
-import FullPageSpinner from "../shared/FullPageSpinner";
+} from "components/shared/DashboardBox";
+import FullPageSpinner from "components/shared/FullPageSpinner";
 
 import {
   Column,
@@ -31,47 +31,41 @@ import {
   useSpacedLayout,
   RowOnDesktopColumnOnMobile,
   PercentageSize,
-  ResponsivePixelSize,
   PixelSize,
   PercentOnDesktopPixelOnMobileSize,
 } from "utils/chakraUtils";
 
-import {
-  USDSelfReturnChartOptions,
-  ETHSelfReturnChartOptions,
-  USDStrategyAllocationChartOptions,
-  ETHStrategyAllocationChartOptions,
-  DisableChartInteractions,
-} from "../../utils/chartOptions";
-import CaptionedStat from "../shared/CaptionedStat";
-
-import ProgressBar from "../shared/ProgressBar";
-
-import DepositModal from "./RariDepositModal";
-import { useQuery } from "react-query";
-
-import { useTranslation } from "react-i18next";
-
-import { PoolTypeProvider, usePoolType } from "../../context/PoolContext";
-import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
-
-import { GlowingButton } from "../shared/GlowingButton";
-
-import { usePoolBalance } from "../../hooks/usePoolBalance";
-import {
-  BN,
-  smallStringUsdFormatter,
-  stringUsdFormatter,
-} from "../../utils/bigUtils";
+import ProgressBar from "components/shared/ProgressBar";
+import { GlowingButton } from "components/shared/GlowingButton";
+import DepositModal from "../RariDepositModal";
 // import { SimpleTooltip } from "../shared/SimpleTooltip";
-import { getSDKPool, Pool } from "../../utils/poolUtils";
-import { usePoolAPY } from "../../hooks/usePoolAPY";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { tokens } from "../../utils/tokenUtils";
-import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
-import { formatBalanceBN } from "utils/format";
 
-import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+const UserStatsAndChart = dynamic(() => import("./UserStatsAndChart"), {
+  ssr: false,
+});
+const StrategyAllocation = dynamic(() => import("./StrategyAllocation"), {
+  ssr: false,
+});
+// import UserStatsAndChart from "./UserStatsAndChart";
+// import StrategyAllocation from "./StrategyAllocation";
+
+// Hooks
+import { useQuery } from "react-query";
+import { useRari } from "context/RariContext";
+import { useTranslation } from "react-i18next";
+import { usePoolInfo, usePoolInfoFromContext } from "hooks/usePoolInfo";
+import { usePoolBalance } from "hooks/usePoolBalance";
+import { usePoolAPY } from "hooks/usePoolAPY";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import { PoolTypeProvider, usePoolType } from "context/PoolContext";
+
+// Utils
+import { BN, smallStringUsdFormatter } from "utils/bigUtils";
+import { getSDKPool, Pool } from "utils/poolUtils";
+import { tokens } from "utils/tokenUtils";
+import { fetchRGTAPR } from "utils/fetchPoolAPY";
+import { formatBalanceBN } from "utils/format";
+import { HeaderHeightWithTopPadding } from "components/shared/Header2/NewHeader2";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -104,13 +98,14 @@ const PoolPortalContent = () => {
     max: 1900,
   });
 
+  // Idk what this is
   const {
     childSizes: [, bodySize],
   } = useSpacedLayout({
     parentHeight: windowHeight.asNumber(),
     spacing: DASHBOARD_BOX_SPACING.asNumber(),
     childSizes: [
-      // HeaderHeightWithTopPadding,
+      HeaderHeightWithTopPadding,
       new PercentageSize(1),
       // We have a 0 sized child here because it will now lower the size of the "100%" child
       // by accouting for padding below it, which is 15.
@@ -118,6 +113,7 @@ const PoolPortalContent = () => {
     ],
   });
 
+  // Sidebar
   const { spacing: statsSidebarSpacing, childSizes: statsSidebarChildSizes } =
     useSpacedLayout({
       parentHeight: bodySize.asNumber(),
@@ -134,6 +130,7 @@ const PoolPortalContent = () => {
       ],
     });
 
+  // Main section
   const { spacing: mainSectionSpacing, childSizes: mainSectionChildSizes } =
     useSpacedLayout({
       parentHeight: bodySize.asNumber(),
@@ -186,7 +183,10 @@ const PoolPortalContent = () => {
           crossAxisAlignment="center"
           width="100%"
           px={4}
-          height={{ md: bodySize.asPxString(), base: "auto" }}
+          height={{
+            md: bodySize.asPxString(),
+            base: "auto",
+          }}
         >
           <Column
             mainAxisAlignment="flex-start"
@@ -194,6 +194,7 @@ const PoolPortalContent = () => {
             height={{ md: "100%", base: "auto" }}
             width={{ md: "100%", base: "100%" }}
           >
+            {/* Text data about the Pool */}
             <DashboardBox
               width="100%"
               mb={mainSectionSpacing.asPxString()}
@@ -226,6 +227,7 @@ const PoolPortalContent = () => {
               </RowOnDesktopColumnOnMobile>
             </DashboardBox>
 
+            {/* Chart */}
             <DashboardBox
               width="100%"
               mb={mainSectionSpacing.asPxString()}
@@ -243,7 +245,11 @@ const PoolPortalContent = () => {
                 />
               ) : null}
 
-              <Box opacity={hasNotDeposited ? 0.2 : 1} height="100%">
+              <Box 
+              opacity={hasNotDeposited ? 0.2 : 1} 
+              height="100%" 
+
+              >
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
@@ -252,6 +258,7 @@ const PoolPortalContent = () => {
               </Box>
             </DashboardBox>
 
+            {/* Recent Trades and Allocation */}
             <RowOnDesktopColumnOnMobile
               mainAxisAlignment="flex-start"
               crossAxisAlignment="center"
@@ -347,217 +354,6 @@ const PoolPortalContent = () => {
           </Column>
         </RowOnDesktopColumnOnMobile>
       </Column>
-    </>
-  );
-};
-
-const UserStatsAndChart = ({
-  size,
-  balance,
-  hasNotDeposited,
-}: {
-  size: number;
-  balance: string;
-  hasNotDeposited: boolean;
-}) => {
-  const { address, rari } = useRari();
-
-  const { poolType, poolName } = usePoolInfoFromContext();
-
-  const [timeRange, setTimeRange] = useState("max");
-
-  const {
-    childSizes: [topPadding, statsSize, chartSize],
-  } = useSpacedLayout({
-    parentHeight: size,
-    spacing: 0,
-    childSizes: [
-      // Add this to account for 5px top padding
-      new PixelSize(5),
-      new ResponsivePixelSize({ desktop: 75, mobile: 230 }),
-      new PercentageSize(1),
-      // Add this to account for 5px bottom padding
-      new PixelSize(5),
-    ],
-  });
-
-  const { data: interestEarned, isLoading: isInterestEarnedLoading } = useQuery(
-    address + " " + poolType + " interestAccrued " + timeRange,
-    async () => {
-      if (hasNotDeposited) {
-        return "0";
-      }
-
-      const startingBlock =
-        timeRange === "month"
-          ? Date.now() - millisecondsPerDay * 30
-          : timeRange === "year"
-          ? Date.now() - millisecondsPerDay * 365
-          : timeRange === "week"
-          ? Date.now() - millisecondsPerDay * 7
-          : 0;
-
-      const interestRaw = await getSDKPool({
-        rari,
-        pool: poolType,
-      }).balances.interestAccruedBy(address, Math.floor(startingBlock / 1000));
-
-      const formattedInterest = stringUsdFormatter(
-        rari.web3.utils.fromWei(interestRaw)
-      );
-
-      return poolType === Pool.ETH
-        ? formattedInterest.replace("$", "") + " ETH"
-        : formattedInterest;
-    }
-  );
-
-  const { data: chartData, isLoading: isChartDataLoading } = useQuery(
-    address + " " + poolType + " " + timeRange + " balanceHistory",
-    async () => {
-      if (hasNotDeposited) {
-        return [];
-      }
-
-      const latestBlock = await rari.web3.eth.getBlockNumber();
-
-      const blockStart =
-        timeRange === "month"
-          ? latestBlock - blocksPerDay * 30
-          : timeRange === "year"
-          ? latestBlock - blocksPerDay * 365
-          : timeRange === "week"
-          ? latestBlock - blocksPerDay * 7
-          : 0;
-
-      const rawData = await getSDKPool({
-        rari,
-        pool: poolType,
-      }).history.getBalanceHistoryOf(address, blockStart);
-
-      return rawData;
-    }
-  );
-
-  const poolAPY = usePoolAPY(poolType);
-
-  const { t } = useTranslation();
-
-  const chartOptions =
-    poolType === Pool.ETH
-      ? ETHSelfReturnChartOptions
-      : USDSelfReturnChartOptions;
-
-  return (
-    <>
-      <RowOnDesktopColumnOnMobile
-        mainAxisAlignment={{ md: "space-between", base: "space-around" }}
-        crossAxisAlignment="center"
-        px={4}
-        mt={{ md: topPadding.asPxString(), base: 0 }}
-        height={statsSize.asPxString()}
-        width="100%"
-      >
-        {hasNotDeposited ? (
-          <CaptionedStat
-            crossAxisAlignment={{ md: "flex-start", base: "center" }}
-            caption={t("Currently earning")}
-            captionSize="xs"
-            stat={(poolAPY ?? "?") + "% APY"}
-            statSize="4xl"
-          />
-        ) : (
-          <>
-            <CaptionedStat
-              crossAxisAlignment={{ md: "flex-start", base: "center" }}
-              caption={t("Account Balance")}
-              captionSize="xs"
-              stat={balance}
-              statSize="3xl"
-            />
-
-            <CaptionedStat
-              crossAxisAlignment={{ md: "flex-start", base: "center" }}
-              caption={t("Interest Earned")}
-              captionSize="xs"
-              stat={isInterestEarnedLoading ? "$?" : interestEarned!}
-              statSize="3xl"
-            />
-          </>
-        )}
-
-        <Select
-          {...DASHBOARD_BOX_PROPS}
-          borderRadius="7px"
-          fontWeight="bold"
-          width={{ md: "130px", base: "100%" }}
-          _focus={{ outline: "none" }}
-          isDisabled={hasNotDeposited}
-          value={timeRange}
-          onChange={(event) => {
-            setTimeRange(event.target.value);
-          }}
-        >
-          <option className="black-bg-option" value="week">
-            {t("Week")}
-          </option>
-          <option className="black-bg-option" value="month">
-            {t("Month")}
-          </option>
-          <option className="black-bg-option" value="year">
-            {t("Year")}
-          </option>
-          <option className="black-bg-option" value="max">
-            {t("Max")}
-          </option>
-        </Select>
-      </RowOnDesktopColumnOnMobile>
-
-      <Box height={chartSize.asPxString()} color="#000000" overflow="hidden">
-        {isChartDataLoading && !hasNotDeposited ? (
-          <Center expand>
-            <Spinner color="#FFF" />
-          </Center>
-        ) : (
-          <Chart
-            options={
-              hasNotDeposited
-                ? { ...chartOptions, ...DisableChartInteractions }
-                : chartOptions
-            }
-            type="line"
-            width="100%"
-            height="100%"
-            series={[
-              {
-                name: poolName,
-                data: hasNotDeposited
-                  ? [
-                      { x: "10/1/20", y: 1000 },
-                      { x: "10/2/20", y: 1001 },
-                      { x: "10/3/20", y: 1003 },
-                      { x: "10/4/20", y: 1005 },
-                      { x: "10/5/20", y: 1006 },
-                      { x: "10/6/20", y: 1007 },
-                      { x: "10/7/20", y: 1010 },
-                      { x: "10/8/20", y: 1012 },
-                      { x: "10/9/20", y: 1014 },
-                      { x: "10/10/20", y: 1016 },
-                      { x: "10/11/20", y: 1018 },
-                    ]
-                  : (chartData ?? []).map((point: any) => {
-                      return {
-                        x: new Date(point.timestamp * 1000).toLocaleDateString(
-                          "en-US"
-                        ),
-                        y: parseFloat(point.balance) / 1e18,
-                      };
-                    }),
-              },
-            ]}
-          />
-        )}
-      </Box>
     </>
   );
 };
@@ -683,83 +479,6 @@ const APYStats = () => {
           </Text> */}
         </Row>
       </Column>
-    </Column>
-  );
-};
-
-const StrategyAllocation = () => {
-  const { t } = useTranslation();
-
-  const { rari } = useRari();
-
-  const poolType = usePoolType();
-
-  const { data: allocations, isLoading: isAllocationsLoading } = useQuery(
-    poolType + "allocations",
-    async () => {
-      const rawAllocations: { [key: string]: BN } = await getSDKPool({
-        rari,
-        pool: poolType,
-      }).allocations.getRawPoolAllocations();
-
-      let allocations: { [key: string]: number } = {};
-
-      for (const [token, amount] of Object.entries(rawAllocations)) {
-        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount));
-
-        if (parsedAmount < 5) {
-          continue;
-        }
-
-        if (token === "_cash") {
-          allocations["Not Deposited"] = parsedAmount;
-        } else {
-          allocations[token] = parsedAmount;
-        }
-      }
-
-      const keys = Object.keys(allocations);
-
-      const values = Object.values(allocations);
-
-      return [keys, values] as const;
-    }
-  );
-
-  const chartOptions =
-    poolType === Pool.ETH
-      ? ETHStrategyAllocationChartOptions
-      : USDStrategyAllocationChartOptions;
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment={{
-        md: "flex-start",
-        base: "center",
-      }}
-      expand
-    >
-      <Heading lineHeight={1} size="sm" mb={1}>
-        {t("Strategy Allocation")}
-      </Heading>
-
-      {isAllocationsLoading ? (
-        <Center expand>
-          <Spinner />
-        </Center>
-      ) : (
-        <Chart
-          options={{
-            ...chartOptions,
-            labels: allocations![0],
-          }}
-          type="pie"
-          width="100%"
-          height="110px"
-          series={allocations![1]}
-        />
-      )}
     </Column>
   );
 };
