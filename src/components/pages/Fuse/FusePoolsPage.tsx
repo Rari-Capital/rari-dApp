@@ -116,7 +116,7 @@ const PoolList = () => {
                 tokens={pool.underlyingTokens.map((address, index) => ({
                   symbol: pool.underlyingSymbols[index],
                   address,
-                }))}
+                }))}  
                 noBottomDivider={index === filteredPools.length - 1}
               />
             );

@@ -11,7 +11,6 @@ import {
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
 import { memo, ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
@@ -35,6 +34,7 @@ import { useTokenData } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
 import { handleGenericError } from "../../../utils/errorHandling";
 import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import { useRouter } from "next/router";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -116,7 +116,8 @@ const FusePoolEditPage = memo(() => {
 
   const { t } = useTranslation();
 
-  const { poolId } = useParams();
+  const router = useRouter()
+  const poolId = router.query.poolId as string
 
   const data = useFusePoolData(poolId);
 
@@ -221,7 +222,8 @@ const PoolConfiguration = ({
   comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
-  const { poolId } = useParams();
+  const router = useRouter()
+  const poolId = router.query.poolId as string
 
   const { fuse, address } = useRari();
 

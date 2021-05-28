@@ -4,10 +4,11 @@ import { RowOrColumn, Row, Center } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
-import { Link as RouterLink } from "react-router-dom";
 import { useFilter } from "hooks/useFilter";
 import { useRouter } from "next/router";
 import AppLink from "components/shared/AppLink";
+import { useEffect, useState } from "react";
+import { stringUsdFormatter } from "utils/bigUtils";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 
@@ -18,9 +19,20 @@ const FuseTabBar = () => {
 
   const { t } = useTranslation();
 
-  const filter = useFilter();
   const router = useRouter();
+  const filter = useFilter();
   const { poolId } = router.query;
+
+  const [val, setVal] = useState("");
+
+  useEffect(() => {
+    if (val) {
+      console.log({ val });
+      router.push(`/fuse?filter=${val}`, undefined, { shallow: true });
+    } else {
+      router.push(`/fuse`, undefined, { shallow: true });
+    }
+  }, [val]);
 
   return (
     <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "65px"}>
@@ -35,7 +47,7 @@ const FuseTabBar = () => {
           <DashboardBox height="35px">
             <Row
               pl={2}
-              // expand
+              expand
               crossAxisAlignment="center"
               mainAxisAlignment="flex-start"
               fontWeight="bold"
@@ -43,15 +55,10 @@ const FuseTabBar = () => {
               <Text flexShrink={0}>{t("Search:")}</Text>
 
               <Input
-                value={filter ?? ""}
-                onChange={(event) => {
-                  const value = encodeURIComponent(event.target.value);
-
-                  if (value) {
-                    router.push("?filter=" + value);
-                  } else {
-                    router.push("");
-                  }
+                // value={filter ?? ""}
+                value={val}
+                onChange={({ target: { value } }) => {
+                  setVal(value);
                 }}
                 width="185px"
                 height="100%"
@@ -68,16 +75,10 @@ const FuseTabBar = () => {
             </Row>
           </DashboardBox>
           {filter ? (
-            <DashboardBox bg="#282727" ml={-1}>
-              <Link
-                /* @ts-ignore */
-                as={RouterLink}
-                to=""
-              >
-                <Center expand pr={2} fontWeight="bold">
-                  <DeleteIcon mb="2px" />
-                </Center>
-              </Link>
+            <DashboardBox bg="#282727" ml={-1} _hover={{ cursor: "pointer" }} onClick={() => setVal('')}>
+              <Center expand pr={2} fontWeight="bold">
+                <DeleteIcon mb="2px" />
+              </Center>
             </DashboardBox>
           ) : null}
         </ButtonGroup>

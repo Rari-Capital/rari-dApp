@@ -23,13 +23,13 @@ import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
 import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 import { handleGenericError } from "../../../utils/errorHandling";
 import LogRocket from "logrocket";
+import { useRouter } from "next/router";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -64,7 +64,7 @@ const PoolConfiguration = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { fuse, address } = useRari();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [oracle, setOracle] = useState("");
@@ -158,7 +158,7 @@ const PoolConfiguration = () => {
       LogRocket.track("Fuse-CreatePool");
 
       let id = event.returnValues.index;
-      navigate(`/fuse/pool/${id}/edit`);
+      router.push(`/fuse/pool/${id}/edit`);
     } catch (e) {
       handleGenericError(e, toast);
     }

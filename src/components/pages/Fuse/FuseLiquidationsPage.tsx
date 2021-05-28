@@ -6,6 +6,7 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
+
 import {
   Center,
   Column,
@@ -21,7 +22,6 @@ import { smallUsdFormatter } from "utils/bigUtils";
 import DashboardBox from "components/shared/DashboardBox";
 import { ModalDivider } from "components/shared/Modal";
 
-import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 

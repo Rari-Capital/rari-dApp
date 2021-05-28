@@ -18,8 +18,6 @@ import { CloseIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 import { PixelSize, Row } from "utils/chakraUtils";
 
-import { Link as RouterLink, useLocation } from 'react-router-dom'
-
 //  Components
 import { AccountButton } from "../AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "../DashboardBox";
@@ -31,6 +29,7 @@ import { HeaderLink } from "./HeaderLink";
 import HeaderSearchbar from "./HeaderSearchbar";
 
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import AppLink from "../AppLink";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -179,9 +178,9 @@ export const DropDownItem = ({
       fontFamily="heading"
       _hover={{ cursor: "pointer", bg: "grey" }}
     >
-      <Link as={RouterLink} to={link}>
+      <AppLink href={link}>
         <Heading>{text}</Heading>
-      </Link>
+      </AppLink>
     </Box>
   );
 };

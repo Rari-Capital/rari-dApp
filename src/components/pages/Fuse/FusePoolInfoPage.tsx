@@ -22,7 +22,6 @@ import {
 
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 
 // Hooks
 import { useRari } from "../../../context/RariContext";
@@ -34,7 +33,6 @@ import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import { ModalDivider } from "../../shared/Modal";
-import { Link as RouterLink } from "react-router-dom";
 
 const AssetChart = dynamic(() => import("./AssetChart"), { ssr: false });
 
@@ -50,6 +48,8 @@ import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
+import { useRouter } from "next/router";
+import AppLink from "components/shared/AppLink";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -113,7 +113,10 @@ const FusePoolInfoPage = memo(() => {
 
   const isMobile = useIsSemiSmallScreen();
   const { t } = useTranslation();
-  let { poolId } = useParams();
+
+  const router = useRouter();
+  const poolId = router.query.poolId as string;
+
   const data = useFusePoolData(poolId);
 
   return (
@@ -199,12 +202,12 @@ const OracleAndInterestRates = ({
   totalLiquidityUSD: number;
   comptrollerAddress: string;
 }) => {
-  let { poolId } = useParams();
+  const router = useRouter();
+  const poolId = router.query.poolId as string;
 
   const { t } = useTranslation();
 
   const data = useExtraPoolInfo(comptrollerAddress);
-
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
   return (
@@ -240,19 +243,13 @@ const OracleAndInterestRates = ({
         </Link>
 
         {data?.isPowerfulAdmin ? (
-          <Link
-            /* @ts-ignore */
-            as={RouterLink}
-            className="no-underline"
-            to="../edit"
-            ml={2}
-          >
+          <AppLink className="no-underline" href="../edit" ml={2}>
             <DashboardBox height="35px">
               <Center expand px={2} fontWeight="bold">
                 {t("Edit")}
               </Center>
             </DashboardBox>
-          </Link>
+          </AppLink>
         ) : null}
       </Row>
 
@@ -394,7 +391,8 @@ const StatRow = ({
 };
 
 const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
-  let { poolId } = useParams();
+  const router = useRouter();
+  const poolId = router.query.poolId as string;
 
   const { fuse } = useRari();
 
