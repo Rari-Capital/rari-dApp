@@ -236,12 +236,12 @@ async function computeAssetRSS(address: string) {
 
       totalScore:
         mcap +
-        volatility +
-        liquidity +
-        swapCount +
-        coingeckoMetadata +
-        exchanges +
-        transfers,
+          volatility +
+          liquidity +
+          swapCount +
+          coingeckoMetadata +
+          exchanges +
+          transfers || 0,
     };
   } catch (e) {
     console.log(e);
@@ -449,12 +449,12 @@ export default async (request: NowRequest, response: NowResponse) => {
 
       totalScore:
         liquidity +
-        collateralFactor +
-        reserveFactor +
-        utilization +
-        averageRSS +
-        upgradeable +
-        mustPass,
+          collateralFactor +
+          reserveFactor +
+          utilization +
+          averageRSS +
+          upgradeable +
+          mustPass || 0,
 
       lastUpdated,
     });
