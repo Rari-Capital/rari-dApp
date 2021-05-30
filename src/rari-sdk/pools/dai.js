@@ -43,6 +43,8 @@ export default class DaiPool extends StablePool {
   POOL_TOKEN_SYMBOL = "RDPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;
+  static LEGACY_CONTRACT_ADDRESSES = legacyContractAddresses;
+  static LEGACY_CONTRACT_ABIS = legacyAbis;
 
   constructor(web3, subpools, getAllTokens) {
     super(web3, subpools, getAllTokens);
@@ -54,6 +56,18 @@ export default class DaiPool extends StablePool {
         contractAddresses[contractName]
       );
     // this.gsnContracts = { RariFundProxy: new web3Gsn.eth.Contract(abis.RariFundProxy, contractAddresses.RariFundProxy) };
+    this.legacyContracts = {};
+
+    for (const version of Object.keys(legacyContractAddresses)) {
+      if (!this.legacyContracts[version]) this.legacyContracts[version] = {};
+      for (const contractName of Object.keys(legacyContractAddresses[version]))
+        this.legacyContracts[version][
+          contractName
+        ] = new this.web3.eth.Contract(
+          legacyAbis[version][contractName],
+          legacyContractAddresses[version][contractName]
+        );
+    }
 
     this.rdpt = this.rspt;
     delete this.rspt;
