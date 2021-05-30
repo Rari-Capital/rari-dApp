@@ -1,6 +1,5 @@
-import React from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
-import { PixelMeasurement } from "buttered-chakra";
+import { PixelMeasurement } from "utils/chakraUtils";
 
 export const DASHBOARD_BOX_SPACING = new PixelMeasurement(15);
 

@@ -8,8 +8,8 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
-import { PixelSize, Row } from "buttered-chakra";
-import React from "react";
+import { PixelSize, Row } from "utils/chakraUtils";
+
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import {

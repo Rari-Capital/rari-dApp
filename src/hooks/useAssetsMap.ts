@@ -18,16 +18,18 @@ import { useTokensData } from "hooks/useTokenData";
 export const useAssetsMap = (
   assetsArray: USDPricedFuseAsset[][] | null
 ): AssetHash | null => {
-  return useMemo(() => (assetsArray ? createAssetsMap(assetsArray) : null), [
-    assetsArray,
-  ]);
+  return useMemo(
+    () => (assetsArray ? createAssetsMap(assetsArray) : null),
+    [assetsArray]
+  );
 };
 
 type AssetsMapWithTokenDataReturn = {
-  assetsMapWithTokenData: USDPricedFuseAssetWithTokenData[]; // Fuse Asset with additional info about the token appended on
+  assetsArrayWithTokenData: USDPricedFuseAssetWithTokenData[][] | null; // Fuse Asset with additional info about the token appended on
   tokensDataMap: TokensDataHash; // hashmap of unique assets and their token data
 };
 
+// This returns a Hashmap
 export const useAssetsMapWithTokenData = (
   assetsArray: USDPricedFuseAsset[][] | null
 ): AssetsMapWithTokenDataReturn => {
@@ -40,21 +42,18 @@ export const useAssetsMapWithTokenData = (
     [tokensData]
   );
 
-  const assetsMapWithTokenData: USDPricedFuseAssetWithTokenData[] = useMemo(() => {
-    return tokensData?.reduce((arr, tokenData, index) => {
-      const asset: USDPricedFuseAsset | null =
-        assetsMap?.[tokenData.address] ?? null;
+  // Returns the original 2D assets Array but with tokenData filled in 
+  const assetsArrayWithTokenData: USDPricedFuseAssetWithTokenData[][] | null =
+    useMemo(
+      () =>
+        assetsArray?.map((assets: USDPricedFuseAsset[]) =>
+          assets.map((asset: USDPricedFuseAsset) => ({
+            ...asset,
+            tokenData: tokensDataMap[asset.underlyingToken],
+          }))
+        ) ?? null,
+      [tokensDataMap, assetsArray]
+    );
 
-      // If no asset return an empty array
-      if (!asset) {
-        return arr;
-      }
-
-      const newAsset = { ...asset, tokenData };
-      arr.push(newAsset);
-      return arr;
-    }, []);
-  }, [assetsMap, tokensData]);
-
-  return { assetsMapWithTokenData, tokensDataMap };
+  return { assetsArrayWithTokenData, tokensDataMap };
 };

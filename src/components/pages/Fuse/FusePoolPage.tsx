@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { memo, useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -10,7 +10,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
+import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
 
 // Hooks
 import { useTranslation } from "react-i18next";
@@ -43,7 +43,7 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
 
-const FusePoolPage = React.memo(() => {
+const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
@@ -155,9 +155,11 @@ const CollateralRatioBar = ({
           </Text>
         </SimpleTooltip>
 
-        <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
-          {smallUsdFormatter(borrowUSD)}
-        </Text>
+        <SimpleTooltip label={t("This is how much you have borrowed.")}>
+          <Text flexShrink={0} mt="2px" mr={3} fontSize="10px">
+            {smallUsdFormatter(borrowUSD)}
+          </Text>
+        </SimpleTooltip>
 
         <SimpleTooltip
           label={`You're using ${ratio.toFixed(1)}% of your ${smallUsdFormatter(

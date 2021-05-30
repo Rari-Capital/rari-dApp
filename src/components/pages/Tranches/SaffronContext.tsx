@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from "react";
+import { createContext, memo, useContext, useState, useEffect } from "react";
 import { useRari } from "../../../context/RariContext";
 import { Contract } from "web3-eth-contract";
 import SaffronPoolABI from "./SaffronPoolABI.json";
 import SaffronStrategyABI from "./SaffronStrategyABI.json";
+import { SaffronStrategyAddress, SaffronPoolAddress } from "constants/saffron";
 
 interface SaffronContextType {
   saffronStrategy: Contract;
   saffronPool: Contract;
 }
 
-export const SaffronContext = React.createContext<
-  SaffronContextType | undefined
->(undefined);
+export const SaffronContext =
+  createContext<SaffronContextType | undefined>(undefined);
 
-const SaffronStrategyAddress = "0xC86cbC4EF53e4Cb049913Eafe703F26546b2bFAA";
-const SaffronPoolAddress = "0x493533C0bcCcf46ff2A998dC2A8173eaf64798B2";
-
-export const SaffronProvider = React.memo(({ children }) => {
+export const SaffronProvider = memo(({ children }) => {
   const { rari } = useRari();
 
   const [saffronStrategy, setSaffronStrategy] = useState(() => {
@@ -54,7 +51,7 @@ export const SaffronProvider = React.memo(({ children }) => {
 });
 
 export const useSaffronContracts = () => {
-  const context = React.useContext(SaffronContext);
+  const context = useContext(SaffronContext);
 
   if (context === undefined) {
     throw new Error(

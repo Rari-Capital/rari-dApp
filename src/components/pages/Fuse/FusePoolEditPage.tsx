@@ -8,8 +8,8 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
-import React, { ReactNode, useEffect, useState } from "react";
+import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
+import { memo, ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
@@ -102,7 +102,7 @@ export async function testForComptrollerErrorAndSend(
   return txObject.send({ from: caller });
 }
 
-const FusePoolEditPage = React.memo(() => {
+const FusePoolEditPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();

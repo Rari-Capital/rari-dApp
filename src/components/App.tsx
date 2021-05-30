@@ -1,10 +1,10 @@
-import React from "react";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { Heading } from "@chakra-ui/react";
 import loadable from "@loadable/component";
 import FullPageSpinner from "./shared/FullPageSpinner";
 import { Pool } from "../utils/poolUtils";
 import Layout from "./shared/Layout";
+import { memo } from "react";
 
 const MultiPoolPortal = loadable(
   () => import(/* webpackPrefetch: true */ "./pages/MultiPoolPortal"),
@@ -62,8 +62,8 @@ const FusePoolCreatePage = loadable(
   }
 );
 
-const RSSAssetsPage = loadable(
-  () => import(/* webpackPrefetch: true */ "./pages/RSSAssetsPage"),
+const FuseLiquidationsPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Fuse/FuseLiquidationsPage"),
   {
     fallback: <FullPageSpinner />,
   }
@@ -83,7 +83,7 @@ const StatsPage = loadable(
   }
 );
 
-const PageNotFound = React.memo(() => {
+const PageNotFound = memo(() => {
   return (
     <Heading
       color="#FFF"
@@ -100,7 +100,7 @@ const PageNotFound = React.memo(() => {
   );
 });
 
-const App = React.memo(() => {
+const App = memo(() => {
   return (
     <Layout>
       <Routes>
@@ -118,10 +118,6 @@ const App = React.memo(() => {
           <Route path="/" element={<Navigate to="/" replace={true} />} />
         </Route>
 
-        <Route path="/rss" element={<Outlet />}>
-          <Route path="/assets" element={<RSSAssetsPage />} />
-        </Route>
-
         <Route path="/tranches" element={<TranchesPage />} />
 
         <Route path="/pool2" element={<Pool2Page />} />
@@ -129,6 +125,7 @@ const App = React.memo(() => {
         <Route path="/positions" element={<StatsPage />} />
 
         <Route path="/fuse" element={<FusePoolsPage />} />
+        <Route path="/fuse/liquidations" element={<FuseLiquidationsPage />} />
         <Route path="/fuse/new-pool" element={<FusePoolCreatePage />} />
         <Route path="/fuse/pool/:poolId" element={<FusePoolPage />} />
         <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />

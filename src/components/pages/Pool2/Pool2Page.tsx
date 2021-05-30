@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   useInterval,
   useDisclosure,
@@ -6,9 +6,10 @@ import {
   Link,
   Spinner,
   Text,
+  Box,
 } from "@chakra-ui/react";
 
-import { Center, RowOrColumn, Column } from "buttered-chakra";
+import { Center, RowOrColumn, Column } from "utils/chakraUtils";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
@@ -157,14 +158,11 @@ const Pool2Page = () => {
                 <TotalStaked />
               </DashboardBox>
 
-              <DashboardBox
-                mt={4}
-                p={4}
-                width="100%"
-                height={isMobile ? "auto" : "50%"}
-              >
-                <StartAndEnd />
-              </DashboardBox>
+              <Box pt={4} width="100%" height={isMobile ? "auto" : "50%"}>
+                <DashboardBox p={4} height="100%">
+                  <StartAndEnd />
+                </DashboardBox>
+              </Box>
             </Column>
           </RowOrColumn>
         </Column>

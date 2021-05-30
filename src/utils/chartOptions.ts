@@ -86,8 +86,8 @@ export const PoolReturnChartOptions: ApexOptions = {
     labels: {
       // @ts-ignore
       ...LineChartOptions.yaxis.labels,
-      formatter: function (value: number) {
-        return "$" + parseFloat(value as any).toFixed(2);
+      formatter: function (value: string) {
+        return "$" + parseFloat(value).toFixed(2);
       },
     },
   },
@@ -231,8 +231,8 @@ export const InterestRateChartOptions: ApexOptions = {
     labels: {
       // @ts-ignore
       ...LineChartOptions.yaxis.labels,
-      formatter: function (value: number) {
-        return parseFloat(value as any).toFixed(2) + "%";
+      formatter: function (value: string) {
+        return parseFloat(value).toFixed(2) + "%";
       },
     },
   },

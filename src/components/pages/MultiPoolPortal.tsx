@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { memo, ReactNode } from "react";
 
 import {
   Center,
@@ -6,7 +6,7 @@ import {
   Row,
   RowOnDesktopColumnOnMobile,
   useWindowSize,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 import DashboardBox from "../shared/DashboardBox";
 
 // import SmallLogo from "../../static/small-logo.png";
@@ -69,7 +69,7 @@ import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
-const MultiPoolPortal = React.memo(() => {
+const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
 
   const { isAuthed } = useRari();
@@ -165,10 +165,11 @@ const GovernanceStats = () => {
   );
 
   const { data: rgtSupply } = useQuery("rgtSupply", async () => {
-    //@ts-ignore
-    const rawSupply = await rari.governance.contracts.RariGovernanceToken.methods
-      .totalSupply()
-      .call();
+    const rawSupply =
+      //@ts-ignore
+      await rari.governance.contracts.RariGovernanceToken.methods
+        .totalSupply()
+        .call();
 
     return smallStringUsdFormatter((parseFloat(rawSupply) / 1e18).toFixed(0))
       .replace("$", "")
@@ -214,10 +215,8 @@ const FundStats = () => {
 
   const { isAuthed } = useRari();
 
-  const {
-    isLoading: isBalanceLoading,
-    data: balanceData,
-  } = useTotalPoolsBalance();
+  const { isLoading: isBalanceLoading, data: balanceData } =
+    useTotalPoolsBalance();
 
   const { getNumberTVL } = useTVLFetchers();
 
@@ -367,9 +366,8 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
 
   const authedOpenModal = useAuthedCallback(openDepositModal);
 
-  const { data: balanceData, isLoading: isPoolBalanceLoading } = usePoolBalance(
-    pool
-  );
+  const { data: balanceData, isLoading: isPoolBalanceLoading } =
+    usePoolBalance(pool);
 
   const poolAPY = usePoolAPY(pool);
 
@@ -593,7 +591,7 @@ export const NewsAndTwitterLink = () => {
   );
 };
 
-const NewsMarquee = React.memo(() => {
+const NewsMarquee = memo(() => {
   const news = [
     "The first Fuse pools deployed by the Rari Capital DAO are now open for deposits/borrows in the Fuse tab!",
     "You can now earn rewards for pooling ETH and RGT on Sushiswap in the Pool2 tab.",

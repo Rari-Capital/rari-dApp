@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ReactDOM from "react-dom";
 
 import App from "./components/App";
@@ -63,6 +63,8 @@ function ScrollToTop() {
   return null;
 }
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
   <>
     <PWAPrompt
@@ -74,7 +76,7 @@ ReactDOM.render(
     />
     <ChakraProvider theme={customTheme}>
       <ErrorBoundary FallbackComponent={ErrorPage}>
-        <QueryClientProvider client={new QueryClient()}>
+        <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <RariProvider>

@@ -1,6 +1,6 @@
 import { Heading } from "@chakra-ui/react";
-import { RowOrColumn, Column, Center } from "buttered-chakra";
-import React, { ReactNode } from "react";
+import { RowOrColumn, Column, Center } from "utils/chakraUtils";
+import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";

@@ -236,12 +236,12 @@ async function computeAssetRSS(address: string) {
 
       totalScore:
         mcap +
-        volatility +
-        liquidity +
-        swapCount +
-        coingeckoMetadata +
-        exchanges +
-        transfers,
+          volatility +
+          liquidity +
+          swapCount +
+          coingeckoMetadata +
+          exchanges +
+          transfers || 0,
     };
   } catch (e) {
     console.log(e);
@@ -277,11 +277,12 @@ export default async (request: NowRequest, response: NowResponse) => {
     response.json({ ...(await computeAssetRSS(address)), lastUpdated });
   } else if (poolID) {
     console.time("poolData");
-    const { assets, totalLiquidityUSD, comptroller } = await fetchFusePoolData(
+    const { assets, totalLiquidityUSD, comptroller } = (await fetchFusePoolData(
       poolID,
       "0x0000000000000000000000000000000000000000",
       fuse
-    );
+    ))!;
+
     console.timeEnd("poolData");
 
     const liquidity = await weightedCalculation(async () => {
@@ -289,6 +290,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 25);
 
     const collateralFactor = await weightedCalculation(async () => {
+      // @ts-ignore
       const avgCollatFactor = assets.reduce(
         (a, b, _, { length }) => a + b.collateralFactor / 1e16 / length,
         0
@@ -299,6 +301,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 10);
 
     const reserveFactor = await weightedCalculation(async () => {
+      // @ts-ignore
       const avgReserveFactor = assets.reduce(
         (a, b, _, { length }) => a + b.reserveFactor / 1e16 / length,
         0
@@ -328,14 +331,13 @@ export default async (request: NowRequest, response: NowResponse) => {
     let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
     let totalRSS = 0;
 
-    // Do all the fetching in parallel and then resolve this promise once they have all fetched.
-    await new Promise((resolve) => {
-      let completed = 0;
+    let promises: Promise<any>[] = [];
 
-      for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i];
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
 
-        console.time(asset.underlyingSymbol);
+      console.time(asset.underlyingSymbol);
+      promises.push(
         fetch(
           `http://${process.env.VERCEL_URL}/api/rss?address=` +
             asset.underlyingToken
@@ -344,28 +346,23 @@ export default async (request: NowRequest, response: NowResponse) => {
           .then((rss) => {
             assetsRSS[i] = rss;
             totalRSS += rss.totalScore;
-            completed++;
 
             console.timeEnd(asset.underlyingSymbol);
+          })
+      );
+    }
 
-            if (completed === assets.length) {
-              resolve(true);
-            }
-          });
-      }
-    });
+    await Promise.all(promises);
 
     const averageRSS = await weightedCalculation(async () => {
       return totalRSS / assets.length / 100;
     }, 15);
 
     const upgradeable = await weightedCalculation(async () => {
-      const {
-        0: admin,
-        1: upgradeable,
-      } = await fuse.contracts.FusePoolLens.methods
-        .getPoolOwnership(comptroller)
-        .call({ gas: 1e18 });
+      const { 0: admin, 1: upgradeable } =
+        await fuse.contracts.FusePoolLens.methods
+          .getPoolOwnership(comptroller)
+          .call({ gas: 1e18 });
 
       // Rari Controlled Multisig
       if (
@@ -452,12 +449,12 @@ export default async (request: NowRequest, response: NowResponse) => {
 
       totalScore:
         liquidity +
-        collateralFactor +
-        reserveFactor +
-        utilization +
-        averageRSS +
-        upgradeable +
-        mustPass,
+          collateralFactor +
+          reserveFactor +
+          utilization +
+          averageRSS +
+          upgradeable +
+          mustPass || 0,
 
       lastUpdated,
     });

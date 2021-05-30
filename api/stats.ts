@@ -39,10 +39,10 @@ export default async (request: NowRequest, response: NowResponse) => {
     fetchRGTAPR(rari),
   ]);
 
-  const stablePoolAPY = parseFloat(rawStablePoolAPY);
-  const yieldPoolAPY = parseFloat(rawYieldPoolAPY);
-  const ethPoolAPY = parseFloat(rawEthPoolAPY);
-  const daiPoolAPY = parseFloat(rawDaiPoolAPY);
+  const stablePoolAPY = parseFloat(rawStablePoolAPY!);
+  const yieldPoolAPY = parseFloat(rawYieldPoolAPY!);
+  const ethPoolAPY = parseFloat(rawEthPoolAPY!);
+  const daiPoolAPY = parseFloat(rawDaiPoolAPY!);
 
   const rgtAPR = parseFloat(rawRgtAPR);
 

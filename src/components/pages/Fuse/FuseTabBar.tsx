@@ -1,7 +1,6 @@
 import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
-import { RowOrColumn, Row, Center } from "buttered-chakra";
-import React from "react";
+import { RowOrColumn, Row, Center, useWindowSize } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
@@ -16,8 +15,13 @@ export function useFilter() {
   return new URLSearchParams(useLocation().search).get("filter");
 }
 
+function useIsMediumScreen() {
+  const { width } = useWindowSize();
+  return width < 1150;
+}
 const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();
+  const isMediumScreen = useIsMediumScreen();
 
   const { t } = useTranslation();
 
@@ -95,6 +99,11 @@ const FuseTabBar = () => {
           route="https://rari.grafana.net/goto/61kctV_Gk"
           text={t("Metrics")}
         />
+
+        {/* Show the liquidations link if is on mobile, large screen or not on a pool page. We do this to prevent the buttons from overflowing the tab bar on medium screens. */}
+        {isMobile || !isMediumScreen || !poolId ? (
+          <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
+        ) : null}
 
         {poolId ? (
           <>

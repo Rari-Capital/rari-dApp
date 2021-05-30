@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Row, Column, Center, useIsMobile } from "buttered-chakra";
+import { useState } from "react";
+import { Row, Column, Center, useIsMobile } from "utils/chakraUtils";
 
 import LogRocket from "logrocket";
 import {
@@ -802,141 +802,140 @@ const StatsColumn = ({
 
   const { rari, fuse } = useRari();
 
-  const {
-    data: updatedAssets,
-  }: UseQueryResult<USDPricedFuseAsset[]> = useQuery(
-    mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
-    async () => {
-      const ethPrice: number = fuse.web3.utils.fromWei(
-        await rari.getEthUsdPriceBN()
-      ) as any;
+  const { data: updatedAssets }: UseQueryResult<USDPricedFuseAsset[]> =
+    useQuery(
+      mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
+      async () => {
+        const ethPrice: number = fuse.web3.utils.fromWei(
+          await rari.getEthUsdPriceBN()
+        ) as any;
 
-      const assetToBeUpdated = assets[index];
+        const assetToBeUpdated = assets[index];
 
-      const interestRateModel = await fuse.getInterestRateModel(
-        assetToBeUpdated.cToken
-      );
+        const interestRateModel = await fuse.getInterestRateModel(
+          assetToBeUpdated.cToken
+        );
 
-      let updatedAsset: USDPricedFuseAsset;
-      if (mode === Mode.SUPPLY) {
-        const supplyBalance =
-          parseInt(assetToBeUpdated.supplyBalance as any) + amount;
+        let updatedAsset: USDPricedFuseAsset;
+        if (mode === Mode.SUPPLY) {
+          const supplyBalance =
+            parseInt(assetToBeUpdated.supplyBalance as any) + amount;
 
-        const totalSupply =
-          parseInt(assetToBeUpdated.totalSupply as any) + amount;
+          const totalSupply =
+            parseInt(assetToBeUpdated.totalSupply as any) + amount;
 
-        updatedAsset = {
-          ...assetToBeUpdated,
+          updatedAsset = {
+            ...assetToBeUpdated,
 
-          supplyBalance,
-          supplyBalanceUSD:
-            ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-            ethPrice,
+            supplyBalance,
+            supplyBalanceUSD:
+              ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+              ethPrice,
 
-          totalSupply,
-          supplyRatePerBlock: interestRateModel.getSupplyRate(
-            fuse.web3.utils.toBN(
-              totalSupply > 0
-                ? new BigNumber(assetToBeUpdated.totalBorrow)
-                    .dividedBy(totalSupply.toString())
-                    .multipliedBy(1e18)
-                    .toFixed(0)
-                : 0
-            )
-          ),
-        };
-      } else if (mode === Mode.WITHDRAW) {
-        const supplyBalance =
-          parseInt(assetToBeUpdated.supplyBalance as any) - amount;
+            totalSupply,
+            supplyRatePerBlock: interestRateModel.getSupplyRate(
+              fuse.web3.utils.toBN(
+                totalSupply > 0
+                  ? new BigNumber(assetToBeUpdated.totalBorrow)
+                      .dividedBy(totalSupply.toString())
+                      .multipliedBy(1e18)
+                      .toFixed(0)
+                  : 0
+              )
+            ),
+          };
+        } else if (mode === Mode.WITHDRAW) {
+          const supplyBalance =
+            parseInt(assetToBeUpdated.supplyBalance as any) - amount;
 
-        const totalSupply =
-          parseInt(assetToBeUpdated.totalSupply as any) - amount;
+          const totalSupply =
+            parseInt(assetToBeUpdated.totalSupply as any) - amount;
 
-        updatedAsset = {
-          ...assetToBeUpdated,
+          updatedAsset = {
+            ...assetToBeUpdated,
 
-          supplyBalance,
-          supplyBalanceUSD:
-            ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-            ethPrice,
+            supplyBalance,
+            supplyBalanceUSD:
+              ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+              ethPrice,
 
-          totalSupply,
-          supplyRatePerBlock: interestRateModel.getSupplyRate(
-            fuse.web3.utils.toBN(
-              totalSupply > 0
-                ? new BigNumber(assetToBeUpdated.totalBorrow)
-                    .dividedBy(totalSupply.toString())
-                    .multipliedBy(1e18)
-                    .toFixed(0)
-                : 0
-            )
-          ),
-        };
-      } else if (mode === Mode.BORROW) {
-        const borrowBalance =
-          parseInt(assetToBeUpdated.borrowBalance as any) + amount;
+            totalSupply,
+            supplyRatePerBlock: interestRateModel.getSupplyRate(
+              fuse.web3.utils.toBN(
+                totalSupply > 0
+                  ? new BigNumber(assetToBeUpdated.totalBorrow)
+                      .dividedBy(totalSupply.toString())
+                      .multipliedBy(1e18)
+                      .toFixed(0)
+                  : 0
+              )
+            ),
+          };
+        } else if (mode === Mode.BORROW) {
+          const borrowBalance =
+            parseInt(assetToBeUpdated.borrowBalance as any) + amount;
 
-        const totalBorrow =
-          parseInt(assetToBeUpdated.totalBorrow as any) + amount;
+          const totalBorrow =
+            parseInt(assetToBeUpdated.totalBorrow as any) + amount;
 
-        updatedAsset = {
-          ...assetToBeUpdated,
+          updatedAsset = {
+            ...assetToBeUpdated,
 
-          borrowBalance,
-          borrowBalanceUSD:
-            ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-            ethPrice,
+            borrowBalance,
+            borrowBalanceUSD:
+              ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+              ethPrice,
 
-          totalBorrow,
-          borrowRatePerBlock: interestRateModel.getBorrowRate(
-            fuse.web3.utils.toBN(
-              assetToBeUpdated.totalSupply > 0
-                ? new BigNumber(totalBorrow.toString())
-                    .dividedBy(assetToBeUpdated.totalSupply)
-                    .multipliedBy(1e18)
-                    .toFixed(0)
-                : 0
-            )
-          ),
-        };
-      } else if (mode === Mode.REPAY) {
-        const borrowBalance =
-          parseInt(assetToBeUpdated.borrowBalance as any) - amount;
+            totalBorrow,
+            borrowRatePerBlock: interestRateModel.getBorrowRate(
+              fuse.web3.utils.toBN(
+                assetToBeUpdated.totalSupply > 0
+                  ? new BigNumber(totalBorrow.toString())
+                      .dividedBy(assetToBeUpdated.totalSupply)
+                      .multipliedBy(1e18)
+                      .toFixed(0)
+                  : 0
+              )
+            ),
+          };
+        } else if (mode === Mode.REPAY) {
+          const borrowBalance =
+            parseInt(assetToBeUpdated.borrowBalance as any) - amount;
 
-        const totalBorrow =
-          parseInt(assetToBeUpdated.totalBorrow as any) - amount;
+          const totalBorrow =
+            parseInt(assetToBeUpdated.totalBorrow as any) - amount;
 
-        updatedAsset = {
-          ...assetToBeUpdated,
+          updatedAsset = {
+            ...assetToBeUpdated,
 
-          borrowBalance,
-          borrowBalanceUSD:
-            ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-            ethPrice,
+            borrowBalance,
+            borrowBalanceUSD:
+              ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
+              ethPrice,
 
-          totalBorrow,
-          borrowRatePerBlock: interestRateModel.getBorrowRate(
-            fuse.web3.utils.toBN(
-              assetToBeUpdated.totalSupply > 0
-                ? new BigNumber(totalBorrow.toString())
-                    .dividedBy(assetToBeUpdated.totalSupply)
-                    .multipliedBy(1e18)
-                    .toFixed(0)
-                : 0
-            )
-          ),
-        };
-      }
-
-      return assets.map((value, _index) => {
-        if (_index === index) {
-          return updatedAsset;
-        } else {
-          return value;
+            totalBorrow,
+            borrowRatePerBlock: interestRateModel.getBorrowRate(
+              fuse.web3.utils.toBN(
+                assetToBeUpdated.totalSupply > 0
+                  ? new BigNumber(totalBorrow.toString())
+                      .dividedBy(assetToBeUpdated.totalSupply)
+                      .multipliedBy(1e18)
+                      .toFixed(0)
+                  : 0
+              )
+            ),
+          };
         }
-      });
-    }
-  );
+
+        return assets.map((value, _index) => {
+          if (_index === index) {
+            return updatedAsset;
+          } else {
+            return value;
+          }
+        });
+      }
+    );
 
   const asset = assets[index];
   const updatedAsset = updatedAssets ? updatedAssets[index] : null;

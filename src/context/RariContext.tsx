@@ -1,4 +1,6 @@
-import React, {
+import {
+  createContext,
+  useContext,
   useState,
   useCallback,
   useEffect,
@@ -20,7 +22,7 @@ import {
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "buttered-chakra";
+import { useIsMobile } from "utils/chakraUtils";
 import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
@@ -131,9 +133,8 @@ export interface RariContextData {
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const RariContext = React.createContext<RariContextData | undefined>(
-  undefined
-);
+export const RariContext =
+  createContext<RariContextData | undefined>(undefined);
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
@@ -291,7 +292,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export function useRari() {
-  const context = React.useContext(RariContext);
+  const context = useContext(RariContext);
 
   if (context === undefined) {
     throw new Error(`useRari must be used within a RariProvider`);

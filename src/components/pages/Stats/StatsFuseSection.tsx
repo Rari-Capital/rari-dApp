@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Avatar,
   Box,
@@ -10,7 +10,7 @@ import {
   Th,
   Td,
 } from "@chakra-ui/react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "utils/chakraUtils";
 import { motion } from "framer-motion";
 
 // Hooks
@@ -48,9 +48,8 @@ const Fuse = () => {
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
   const maxBorrows = useBorrowLimits(assetsArray);
 
-  const {
-    tokensDataMap,
-  }: { tokensDataMap: TokensDataHash } = useAssetsMapWithTokenData(assetsArray);
+  const { tokensDataMap }: { tokensDataMap: TokensDataHash } =
+    useAssetsMapWithTokenData(assetsArray);
 
   const totalBorrowBalanceUSD =
     fusePoolsData?.reduce((a, b) => {
@@ -62,9 +61,10 @@ const Fuse = () => {
       return a + b.totalSupplyBalanceUSD;
     }, 0) ?? 0;
 
-  const hasDeposits = useMemo(() => totalSupplyBalanceUSD > 0, [
-    totalSupplyBalanceUSD,
-  ]);
+  const hasDeposits = useMemo(
+    () => totalSupplyBalanceUSD > 0,
+    [totalSupplyBalanceUSD]
+  );
 
   return (
     <motion.div

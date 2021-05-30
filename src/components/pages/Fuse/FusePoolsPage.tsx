@@ -1,6 +1,5 @@
-import React from "react";
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
-import { Center, Column, Row, useIsMobile } from "buttered-chakra";
+import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -21,10 +20,10 @@ import { letterScore, usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
+import { memo } from "react";
 
-const FusePoolsPage = React.memo(() => {
+const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();
-
   const isMobile = useIsSmallScreen();
 
   return (
@@ -77,7 +76,7 @@ const PoolList = () => {
         pl={4}
         pr={1}
       >
-        <Text fontWeight="bold" width="40%">
+        <Text fontWeight="bold" width={isMobile ? "100%" : "40%"}>
           {!isMobile ? t("Pool Assets") : t("Pool Directory")}
         </Text>
 
@@ -170,7 +169,7 @@ const PoolRow = ({
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          height={isMobile ? "120px" : "90px"}
+          height="90px"
           className="hover-row"
           pl={4}
           pr={1}

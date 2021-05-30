@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 // Components
 import { Box, Heading } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { Column, Row } from "buttered-chakra";
+import { Column, Row } from "utils/chakraUtils";
 import { motion } from "framer-motion";
 
 import { Header } from "components/shared/Header";

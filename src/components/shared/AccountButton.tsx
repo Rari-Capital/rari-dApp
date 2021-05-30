@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
@@ -11,7 +11,7 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column, Center } from "utils/chakraUtils";
 import DashboardBox from "./DashboardBox";
 
 // @ts-ignore
@@ -31,7 +31,7 @@ import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
-export const AccountButton = React.memo(() => {
+export const AccountButton = memo(() => {
   const {
     isOpen: isSettingsModalOpen,
     onOpen: openSettingsModal,
@@ -100,7 +100,7 @@ const Buttons = ({
   }, [isAuthed, login, openModal]);
 
   return (
-    <>
+    <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
           {/* <DashboardBox
@@ -120,6 +120,7 @@ const Buttons = ({
             height="40px"
             flexShrink={0}
             width="95px"
+            fontSize="15px"
             onClick={openClaimRGTModal}
             fontWeight="bold"
           >
@@ -130,7 +131,7 @@ const Buttons = ({
 
       {/* Connect + Account button */}
       <DashboardBox
-        ml={{ md: 4, base: 0 }}
+        ml={isMobile ? 0 : 4}
         as="button"
         height="40px"
         flexShrink={0}
@@ -162,7 +163,7 @@ const Buttons = ({
           )}
         </Row>
       </DashboardBox>
-    </>
+    </Row>
   );
 };
 

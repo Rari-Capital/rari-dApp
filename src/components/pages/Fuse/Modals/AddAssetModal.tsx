@@ -12,8 +12,8 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center } from "buttered-chakra";
-import React, { useEffect, useState } from "react";
+import { Column, Center } from "utils/chakraUtils";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import DashboardBox, {

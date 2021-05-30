@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Box, Table, Text, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 // Hooks
-import { Row } from "buttered-chakra";
+import { Row } from "utils/chakraUtils";
 import {
   useMySaffronData,
   usePrincipal,
