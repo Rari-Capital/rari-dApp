@@ -28,8 +28,6 @@
   "ETH Pool": "ETH池",
   "Stable Pool": "稳定池",
   "Yield Pool": "收益池",
-  "Safe returns on ETH": "ETH的安全收益",
-  "Safe returns on stablecoins": "稳定币安全",
   "High risk, high reward": "高风险，高回报",
   "Total Value Locked": "总价值锁定",
   "Your balance in this pool": "您在此池中的余额",
@@ -256,5 +254,10 @@
   "View More": "查看更多",
   "View Less": "查看较少",
   "View All": "查看全部",
-  "Collapse All": "全部收缩"
+  "Collapse All": "全部收缩",
+  "USDC Pool": "USDC池",
+  "DAI Pool": "DAI池",
+  "Safe returns on USDC": "USDC的安全收益",
+  "Safe returns on DAI": "DAI的安全收益",
+  "Returns on ETH": "ETH回报"
 }
