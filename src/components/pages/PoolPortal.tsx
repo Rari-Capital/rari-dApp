@@ -773,12 +773,12 @@ const StrategyAllocation = () => {
 
 const MonthlyReturns = () => {
   const ethPoolAPY = usePoolAPY(Pool.ETH);
-  const stablePoolAPY = usePoolAPY(Pool.STABLE);
+  const stablePoolAPY = usePoolAPY(Pool.USDC);
   const daiPoolAPY = usePoolAPY(Pool.DAI);
   const yieldPoolAPY = usePoolAPY(Pool.YIELD);
 
   const { poolName: ethPoolName } = usePoolInfo(Pool.ETH);
-  const { poolName: stablePoolName } = usePoolInfo(Pool.STABLE);
+  const { poolName: stablePoolName } = usePoolInfo(Pool.USDC);
   const { poolName: daiPoolName } = usePoolInfo(Pool.DAI);
   const { poolName: yieldPoolName } = usePoolInfo(Pool.YIELD);
 
