@@ -41,7 +41,7 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
   const { t } = useTranslation();
 
   const ethAPY = usePoolAPY(Pool.ETH);
-  const stableAPY = usePoolAPY(Pool.STABLE);
+  const stableAPY = usePoolAPY(Pool.USDC);
   const yieldAPY = usePoolAPY(Pool.YIELD);
 
   const points = useMemo(() => {

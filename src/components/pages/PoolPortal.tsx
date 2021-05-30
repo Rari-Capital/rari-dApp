@@ -607,6 +607,7 @@ const APYStats = () => {
     data: apys,
     isLoading: areAPYsLoading,
     isError,
+    error
   } = useQuery(pool + " monthly and weekly apys", async () => {
     const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
       getSDKPool({
@@ -622,7 +623,7 @@ const APYStats = () => {
         Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
       ),
       fetchRGTAPR(rari),
-    ]);
+    ])
 
     const month = parseFloat(
       rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
@@ -772,19 +773,22 @@ const StrategyAllocation = () => {
 
 const MonthlyReturns = () => {
   const ethPoolAPY = usePoolAPY(Pool.ETH);
-  const stablePoolAPY = usePoolAPY(Pool.STABLE);
+  const stablePoolAPY = usePoolAPY(Pool.USDC);
+  const daiPoolAPY = usePoolAPY(Pool.DAI);
   const yieldPoolAPY = usePoolAPY(Pool.YIELD);
 
   const { poolName: ethPoolName } = usePoolInfo(Pool.ETH);
-  const { poolName: stablePoolName } = usePoolInfo(Pool.STABLE);
+  const { poolName: stablePoolName } = usePoolInfo(Pool.USDC);
+  const { poolName: daiPoolName } = usePoolInfo(Pool.DAI);
   const { poolName: yieldPoolName } = usePoolInfo(Pool.YIELD);
 
   const returns =
-    ethPoolAPY && stablePoolAPY && yieldPoolAPY
+    ethPoolAPY && stablePoolAPY && yieldPoolAPY && daiPoolAPY
       ? {
           [ethPoolName]: parseFloat(ethPoolAPY!),
           [stablePoolName]: parseFloat(stablePoolAPY!),
           [yieldPoolName]: parseFloat(yieldPoolAPY!),
+          [daiPoolName]: parseFloat(daiPoolAPY!),
         }
       : null;
 

@@ -15,7 +15,7 @@ export interface PoolInterface {
 
 export const pools: PoolInterface[] = [
   {
-    type: Pool.STABLE,
+    type: Pool.USDC,
     title: "Stable",
     name: "Stable Pool",
     caption: "Safe returns on stablecoins",
