@@ -92,7 +92,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: FuseLogo,
-    vaultType: Pool.STABLE,
+    vaultType: Pool.DAI,
   },
   {
     type: HomepageOpportunityType.FusePool,
@@ -149,12 +149,12 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
     icon: FuseLogo,
-    vaultType: Pool.STABLE,
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.EarnVault,
     title: "ETH Pool",
-    subtitle: "Earn interest on DAI deposits",
+    subtitle: "Earn interest on ETH Deposits",
     bgColor: "#A5A7ED",
     icon: FuseLogo,
     vaultType: Pool.ETH,
@@ -173,7 +173,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
     icon: FuseLogo,
-    vaultType: Pool.STABLE,
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -197,7 +197,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
     icon: FuseLogo,
-    vaultType: Pool.STABLE,
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.EarnVault,

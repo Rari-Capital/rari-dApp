@@ -5,9 +5,14 @@ import YieldIcon from "../static/yieldicon.png";
 import { Pool } from "./poolUtils";
 
 export const getPoolLogo = (pool: Pool) => {
-  return pool === Pool.ETH
-    ? EthIcon
-    : pool === Pool.STABLE
-    ? StableIcon
-    : YieldIcon;
+  switch (pool) {
+    case Pool.USDC:
+      return StableIcon;
+    case Pool.DAI:
+      return StableIcon;
+    case Pool.ETH:
+      return EthIcon;
+    default:
+      return YieldIcon;
+  }
 };

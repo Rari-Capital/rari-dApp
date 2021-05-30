@@ -106,7 +106,7 @@ export const useAggregatePoolInfos = () => {
         // Right now we handle interest earned a little differently
         let poolInterestEarned;
         switch (poolInfo.type) {
-          case Pool.STABLE:
+          case Pool.USDC:
             poolInterestEarned =
               poolsInterestEarned?.stablePoolInterestEarned ?? null;
             break;

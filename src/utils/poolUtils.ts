@@ -6,7 +6,6 @@ import YieldPool from "../rari-sdk/pools/yield";
 import DaiPool from "../rari-sdk/pools/dai";
 
 export enum Pool {
-  STABLE = "stable",
   USDC = "usdc",
   DAI = "dai",
   YIELD = "yield",
@@ -23,9 +22,6 @@ export const getSDKPool = ({
   let sdkPool: StablePool | EthereumPool | YieldPool | DaiPool;
 
   switch (pool) {
-    case Pool.STABLE:
-      sdkPool = rari.pools.stable;
-      break;
     case Pool.USDC:
       sdkPool = rari.pools.stable;
       break;
@@ -52,8 +48,6 @@ export function poolHasDivergenceRisk(pool: Pool) {
 
 export const getPoolName = (pool: Pool, t: any) => {
   switch (pool) {
-    case Pool.STABLE:
-      return t("Stable Pool");
     case Pool.USDC:
       return t("USDC Pool");
     case Pool.DAI:
@@ -69,8 +63,6 @@ export const getPoolName = (pool: Pool, t: any) => {
 
 export const getPoolCaption = (pool: Pool, t: any) => {
   switch (pool) {
-    case Pool.STABLE:
-      return t("Safe returns on USDC");
     case Pool.USDC:
       return t("Safe returns on USDC");
     case Pool.DAI:
