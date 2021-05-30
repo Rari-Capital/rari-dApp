@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import AppLink from "components/shared/AppLink";
 import { useEffect, useState } from "react";
 import { stringUsdFormatter } from "utils/bigUtils";
+import { useRari } from "context/RariContext";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 
@@ -24,13 +25,12 @@ const FuseTabBar = () => {
   const { poolId } = router.query;
 
   const [val, setVal] = useState("");
+  const { isAuthed } = useRari();
 
   useEffect(() => {
-    if (val) {
-      console.log({ val });
-      router.push(`/fuse?filter=${val}`, undefined, { shallow: true });
-    } else {
-      router.push(`/fuse`, undefined, { shallow: true });
+    if (router.pathname === "/fuse") {
+      const route = val ? `/fuse?filter=${val}` : '/fuse'
+      router.push(route, undefined, { shallow: true });
     }
   }, [val]);
 
@@ -75,7 +75,12 @@ const FuseTabBar = () => {
             </Row>
           </DashboardBox>
           {filter ? (
-            <DashboardBox bg="#282727" ml={-1} _hover={{ cursor: "pointer" }} onClick={() => setVal('')}>
+            <DashboardBox
+              bg="#282727"
+              ml={-1}
+              _hover={{ cursor: "pointer" }}
+              onClick={() => setVal("")}
+            >
               <Center expand pr={2} fontWeight="bold">
                 <DeleteIcon mb="2px" />
               </Center>
@@ -83,19 +88,26 @@ const FuseTabBar = () => {
           ) : null}
         </ButtonGroup>
 
-        <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
         <TabLink route="/fuse" text={t("All Pools")} />
-        <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
+        {isAuthed && (
+          <>
+            <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
+            <TabLink
+              route="/fuse?filter=created-pools"
+              text={t("Created Pools")}
+            />
+          </>
+        )}
+        <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
         <TabExternalLink
           route="https://rari.grafana.net/goto/61kctV_Gk"
           text={t("Metrics")}
         />
-        <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
 
         {poolId ? (
           <>
             <DashboardBox
-              {...(!router.pathname.includes("info") ? activeStyle : {})}
+              {...(!router.asPath.includes("info") ? activeStyle : {})}
               ml={isMobile ? 0 : 4}
               mt={isMobile ? 4 : 0}
               height="35px"
@@ -133,8 +145,9 @@ const FuseTabBar = () => {
 
 const TabLink = ({ route, text }: { route: string; text: string }) => {
   const isMobile = useIsSmallScreen();
-
   const router = useRouter();
+
+  console.log({ route, router }, router.asPath);
 
   return (
     <AppLink
@@ -146,10 +159,7 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
     >
       <DashboardBox
         height="35px"
-        // {...(route ===
-        // router.pathname.replace(/\/+$/, "") + window.location.search
-        //   ? activeStyle
-        //   : noop)}
+        {...(route === router.asPath.replace(/\/+$/, "") ? activeStyle : noop)}
       >
         <Center expand px={2} fontWeight="bold">
           {text}
