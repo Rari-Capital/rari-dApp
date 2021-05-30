@@ -56,8 +56,6 @@
   "ETH Pool": "ETH Pool",
   "Stable Pool": "Stable Pool",
   "Yield Pool": "Yield Pool",
-  "Safe returns on ETH": "Safe returns on ETH",
-  "Safe returns on stablecoins": "Safe returns on stablecoins",
   "High risk, high reward": "High risk, high reward",
   "Extra yield from $RGT": "Extra yield from $RGT",
   "Claim RGT": "Claim RGT",
@@ -256,5 +254,10 @@
   "View More": "View More",
   "View Less": "View Less",
   "View All": "View All",
-  "Collapse All": "Collapse All"
+  "Collapse All": "Collapse All",
+  "USDC Pool": "USDC Pool",
+  "DAI Pool": "DAI Pool",
+  "Safe returns on USDC": "Safe returns on USDC",
+  "Safe returns on DAI": "Safe returns on DAI",
+  "Returns on ETH": "Returns on ETH"
 }

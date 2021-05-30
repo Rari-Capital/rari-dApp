@@ -112,7 +112,8 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
 
         <Portal>
           <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
-            <SubMenuItem name={t("Stable Pool")} link="/pools/stable" />
+            <SubMenuItem name={t("USDC Pool")} link="/pools/usdc" />
+            <SubMenuItem name={t("DAI Pool")} link="/pools/dai" />
             <SubMenuItem name={t("Yield Pool")} link="/pools/yield" />
             <SubMenuItem name={t("ETH Pool")} link="/pools/eth" />
           </MenuList>
@@ -128,7 +129,7 @@ export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
         <MenuButton>
-          <SubMenuText text="Governance" />
+          <SubMenuText text="Governance" nope />
         </MenuButton>
 
         <Portal>
@@ -148,14 +149,14 @@ export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
   );
 };
 
-export const SubMenuText = ({ text }: { text: string }) => {
+export const SubMenuText = ({ text, nope = false }: { text: string, nope?: boolean }) => {
   const location = useLocation();
   const { t } = useTranslation();
   const isOnThisRoute = location.pathname.includes("pools");
 
   return (
     <Text
-      fontWeight={isOnThisRoute ? "bold" : "normal"}
+      fontWeight={(isOnThisRoute && !nope) ? "bold" : "normal"}
       _hover={{ textDecoration: "underline" }}
     >
       {t(text)}
