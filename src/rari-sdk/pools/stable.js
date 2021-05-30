@@ -373,7 +373,7 @@ export default class StablePool {
       })(),
       POOLS_BY_CURRENCY: {
         DAI: ["dYdX", "Compound", "Aave"],
-        USDC: ["dYdX", "Compound", "Aave"],
+        USDC: ["dYdX", "Compound", "Aave", "Fuse3", "Fuse7"],
         USDT: ["Compound", "Aave"],
         TUSD: ["Aave"],
         BUSD: ["Aave"],
@@ -385,6 +385,8 @@ export default class StablePool {
         Compound: ["DAI", "USDC", "USDT"],
         Aave: ["DAI", "USDC", "USDT", "TUSD", "BUSD", "sUSD"],
         mStable: ["mUSD"],
+        Fuse3: ["USDC"],
+        Fuse7: ["USDC"],
       },
       getRawCurrencyAllocations: async function () {
         var allocationsByCurrency = {
