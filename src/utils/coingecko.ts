@@ -18,6 +18,5 @@ export const fetchTokenMarketInfo = async (
   const { data } = await axios.get(
     `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart?vs_currency=${VS_CURRENCY}&days=${days}`
   );
-  console.log({ data });
   return data;
 };
