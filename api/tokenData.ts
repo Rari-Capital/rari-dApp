@@ -112,6 +112,22 @@ export default async (request: NowRequest, response: NowResponse) => {
       });
 
       return;
+    } else if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xD81b1A8B1AD00Baa2D6609E0BAE28A38713872f7")
+    ) {
+      // PcUSDC
+      response.json({
+        name: "PoolTogether USDC Ticket",
+        symbol: "PcUSDC",
+        decimals,
+        color: "#4C249F",
+        overlayTextColor: "#FFFFFF",
+        logoURL:
+          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/ptUSDC.png",
+      });
+
+      return;
     }
 
     response.json({
