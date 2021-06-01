@@ -359,27 +359,37 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 15);
 
     const upgradeable = await weightedCalculation(async () => {
-      const { 0: admin, 1: upgradeable } =
-        await fuse.contracts.FusePoolLens.methods
-          .getPoolOwnership(comptroller)
-          .call({ gas: 1e18 });
+      try {
+        const { 0: admin, 1: upgradeable } =
+          await fuse.contracts.FusePoolLens.methods
+            .getPoolOwnership(comptroller)
+            .call({ gas: 1e18 });
 
-      // Rari Controlled Multisig
-      if (
-        admin.toLowerCase() === "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85" ||
-        admin.toLowerCase() === "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f" ||
-        admin.toLowerCase() === "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
-        (admin.toLowerCase() === "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6" &&
-          comptroller.toLowerCase() ==
-            "0xd4bdcca1ca76ced6fc8bb1ba91c5d7c0ca4fe567") ||
-        (admin.toLowerCase() === "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" &&
-          comptroller.toLowerCase() ==
-            "0x8583fdff34ddc3744a46eabc1503769af0bc6604")
-      ) {
-        return 1;
+        // Rari Controlled Multisig
+        if (
+          admin.toLowerCase() ===
+            "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85" ||
+          admin.toLowerCase() ===
+            "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f" ||
+          admin.toLowerCase() ===
+            "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
+          (admin.toLowerCase() ===
+            "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6" &&
+            comptroller.toLowerCase() ==
+              "0xd4bdcca1ca76ced6fc8bb1ba91c5d7c0ca4fe567") ||
+          (admin.toLowerCase() ===
+            "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" &&
+            comptroller.toLowerCase() ==
+              "0x8583fdff34ddc3744a46eabc1503769af0bc6604")
+        ) {
+          return 1;
+        }
+
+        return upgradeable ? 0 : 1;
+      } catch (e) {
+        // Assume upgradeable.
+        return 0;
       }
-
-      return upgradeable ? 0 : 1;
     }, 10);
 
     const mustPass = await weightedCalculation(async () => {
