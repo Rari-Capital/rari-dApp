@@ -159,6 +159,7 @@ export default class Rari {
           Aave: subpools["Aave"],
           mStable: subpools["mStable"],
           Fuse6: subpools["Fuse6"],
+          Fuse7: subpools["Fuse7"]
         },
         this.getAllTokens
       ),
