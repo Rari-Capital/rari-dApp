@@ -147,15 +147,12 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
   const isMobile = useIsSmallScreen();
   const router = useRouter();
 
-  console.log({ route, router }, router.asPath);
-
   return (
     <AppLink
       className="no-underline"
       href={route}
       ml={isMobile ? 0 : 4}
       mt={isMobile ? 4 : 0}
-      shallow
     >
       <DashboardBox
         height="35px"
