@@ -75,10 +75,11 @@ export default class DaiPool extends StablePool {
     this.allocations.POOLS = (function() {
       var pools = ["dYdX", "Compound", "Aave", "mStable"];
       pools[100] = "Fuse6";
+      pools[101] = "Fuse7";
       return pools;
     })();
     this.allocations.POOLS_BY_CURRENCY = {
-      DAI: ["dYdX", "Compound", "Aave", "Fuse6"],
+      DAI: ["dYdX", "Compound", "Aave", "Fuse6", "Fuse7"],
       mUSD: ["mStable"],
     };
     this.allocations.CURRENCIES_BY_POOL = {
@@ -86,7 +87,8 @@ export default class DaiPool extends StablePool {
       Compound: ["DAI"],
       Aave: ["DAI"],
       mStable: ["mUSD"],
-      Fuse6: ["DAI"]
+      Fuse6: ["DAI"],
+      Fuse7: ["DAI"],
     };
 
     delete this.history.getRsptExchangeRateHistory;
