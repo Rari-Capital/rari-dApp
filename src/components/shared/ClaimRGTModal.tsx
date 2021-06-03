@@ -16,7 +16,7 @@ import BigNumber from "bignumber.js";
 import { Column, Row } from "utils/chakraUtils";
 
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useQuery } from "react-query";
 
 import { useRari } from "../../context/RariContext";

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { EarnLogoPNGWhite } from "components/shared/Logos";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { PoolInterface } from "constants/pools";
 
 const EarnRow = ({ poolsInfo }: { poolsInfo: any }) => {

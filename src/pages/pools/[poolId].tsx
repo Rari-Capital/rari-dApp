@@ -1,5 +1,8 @@
-import { NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router"
+
+// Components
 import PoolPortal from "components/pages/PoolPortal";
 import { Pool } from "utils/poolUtils";
 
@@ -20,3 +23,20 @@ const PoolPage: NextPage = () => {
 }
 
 export default PoolPage
+
+
+export const getStaticPaths = async () => {
+    return {
+        paths: [],
+        fallback: 'blocking',
+    }
+}
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+    return {
+      props: {
+        ...(await serverSideTranslations(locale!)),
+        // Will be passed to the page component as props
+      },
+    };
+  };

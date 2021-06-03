@@ -19,7 +19,7 @@ import { useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useRari } from "../../../../context/RariContext";
 import {
   fetchTokenBalance,

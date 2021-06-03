@@ -9,7 +9,7 @@ import { AccountButton } from "../AccountButton";
 
 import { SmallLogo } from "components/shared/Logos";
 import { useRari } from "context/RariContext";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { HeaderLink } from "./HeaderLink";
 import HeaderSearchbar from "./HeaderSearchbar";

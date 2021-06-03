@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 
 import { useAggregatePoolInfos } from "hooks/usePoolInfo";
 import { smallUsdFormatter } from "utils/bigUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 const Earn = () => {
   const { totals, aggregatePoolsInfo } = useAggregatePoolInfos();

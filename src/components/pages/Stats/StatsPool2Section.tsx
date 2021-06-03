@@ -20,7 +20,7 @@ import { usePool2Balance } from "hooks/pool2/usePool2Balance";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { Row } from "utils/chakraUtils";
 import { smallUsdFormatter } from "utils/bigUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 const Earn = () => {
   const { t } = useTranslation();

@@ -19,7 +19,7 @@ import {
   ListItemKeySelector,
 } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 import { usdFormatter } from "../../../utils/bigUtils";
 import { usePoolType } from "../../../context/PoolContext";

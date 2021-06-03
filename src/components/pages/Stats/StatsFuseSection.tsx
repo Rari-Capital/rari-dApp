@@ -26,7 +26,7 @@ import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 export enum AssetContainerType {
   SUPPLY,

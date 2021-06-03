@@ -2,7 +2,7 @@ import { Box, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Pool2LogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 const Pool2Row = ({
   apr,

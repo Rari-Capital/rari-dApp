@@ -1,4 +1,7 @@
-import { NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+// Components
 import PositionsPage from "components/pages/Stats/StatsPage";
 
 const Positions: NextPage = () => {
@@ -10,3 +13,12 @@ const Positions: NextPage = () => {
 };
 
 export default Positions;
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale!)),
+      // Will be passed to the page component as props
+    },
+  };
+};

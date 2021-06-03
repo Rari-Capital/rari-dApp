@@ -18,7 +18,7 @@ import StatsTranchesSection from "./StatsTranchesSection";
 import { useRari } from "context/RariContext";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";

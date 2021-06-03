@@ -1,6 +1,6 @@
 import { Select, SelectProps } from "@chakra-ui/react";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 export const LanguageSelect = (extraProps: SelectProps) => {
   const { i18n } = useTranslation();

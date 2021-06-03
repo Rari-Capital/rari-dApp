@@ -13,7 +13,7 @@ import {
 import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useQueryClient } from "react-query";
 import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";

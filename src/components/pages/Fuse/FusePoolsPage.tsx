@@ -1,6 +1,6 @@
 import { Avatar, AvatarGroup, Spinner, Text } from "@chakra-ui/react";
 import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";

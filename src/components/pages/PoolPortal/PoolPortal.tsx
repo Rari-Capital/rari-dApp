@@ -52,7 +52,7 @@ const StrategyAllocation = dynamic(() => import("./StrategyAllocation"), {
 // Hooks
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { usePoolInfo, usePoolInfoFromContext } from "hooks/usePoolInfo";
 import { usePoolBalance } from "hooks/usePoolBalance";
 import { usePoolAPY } from "hooks/usePoolAPY";

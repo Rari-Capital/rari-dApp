@@ -33,7 +33,7 @@ import Marquee from "react-double-marquee";
 import { useRari } from "../../context/RariContext";
 
 import { MdSwapHoriz } from "react-icons/md";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 import { PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";

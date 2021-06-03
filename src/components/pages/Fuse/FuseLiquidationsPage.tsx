@@ -14,7 +14,7 @@ import {
   RowOrColumn,
   useIsMobile,
 } from "utils/chakraUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";

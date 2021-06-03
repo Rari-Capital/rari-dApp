@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { ChakraProvider, theme } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { appWithTranslation } from 'next-i18next'
 
 // Providers
 import { RariProvider } from "context/RariContext";
@@ -71,4 +72,5 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default appWithTranslation(MyApp)
+

@@ -2,7 +2,7 @@
 
 import { Code, Box, Heading, Text, Link } from "@chakra-ui/react";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { FallbackProps } from "react-error-boundary";

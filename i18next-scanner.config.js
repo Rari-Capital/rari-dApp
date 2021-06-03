@@ -27,8 +27,8 @@ module.exports = {
     },
 
     resource: {
-      loadPath: "./src/locales/{{lng}}.json",
-      savePath: "./src/locales/{{lng}}.json",
+      loadPath: "./public/locales/{{lng}}/common.json",
+      savePath: "./public/locales/{{lng}}/common.json",
     },
 
     nsSeparator: false,

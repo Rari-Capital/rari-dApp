@@ -1,7 +1,7 @@
 import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import { RowOrColumn, Row, Center } from "utils/chakraUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { useFilter } from "hooks/useFilter";
@@ -52,7 +52,7 @@ const FuseTabBar = () => {
               mainAxisAlignment="flex-start"
               fontWeight="bold"
             >
-              <Text flexShrink={0}>{t("Search:")}</Text>
+              <Text flexShrink={0}>{t("Search")}</Text>
 
               <Input
                 // value={filter ?? ""}

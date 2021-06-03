@@ -18,7 +18,7 @@ import {
   fetchTokenBalance,
 } from "../../../../hooks/useTokenBalance";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { ModalDivider } from "../../../shared/Modal";
 import { useRari } from "../../../../context/RariContext";
 

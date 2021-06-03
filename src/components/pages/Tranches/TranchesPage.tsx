@@ -9,7 +9,7 @@ import {
   Image,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { MdSwapHoriz } from "react-icons/md";
 import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider } from "./SaffronContext";

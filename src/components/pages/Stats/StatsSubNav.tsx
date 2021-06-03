@@ -18,7 +18,7 @@ import {
 } from "components/shared/Logos";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 // Types
 import { StatsSubNav } from "./StatsPage";

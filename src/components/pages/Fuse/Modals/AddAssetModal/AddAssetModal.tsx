@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { Column, Center } from "utils/chakraUtils";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 import DashboardBox, {
   DASHBOARD_BOX_PROPS,
