@@ -98,7 +98,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       return;
     } else if (
       web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0x96Ea6AF74Af09522fCB4c28C269C26F59a31ced6")
+      web3.utils.toChecksumAddress("0xf2db9a7c0ACd427A680D640F02d90f6186E71725")
     ) {
       // yvCurve-LINK
       response.json({
