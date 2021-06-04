@@ -304,8 +304,8 @@ export const RowOrColumn = ({
  */
 export const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
-    width: 1000,  // assume desktop until client-side render
-    height: 1000,
+    width: 100,  // assume desktop until client-side render
+    height: 100,
   });
 
   useEffect(() => {

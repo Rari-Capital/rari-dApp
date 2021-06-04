@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 import {
   AvatarGroup,
@@ -20,36 +21,32 @@ import {
   useIsMobile,
 } from "utils/chakraUtils";
 
+const AssetChart = dynamic(() => import("./AssetChart"), { ssr: false });
+import { CTokenIcon } from "./FusePoolsPage";
+import FuseStatsBar from "./FuseStatsBar";
+import FuseTabBar from "./FuseTabBar";
+import CaptionedStat from "components/shared/CaptionedStat";
+import AppLink from "components/shared/AppLink";
+import DashboardBox, { DASHBOARD_BOX_PROPS } from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
+
+
+// Hooks
+import { useQuery } from "react-query";
+import { useFusePoolData } from "hooks/useFusePoolData";
+import { useTokenData } from "hooks/useTokenData";
+import { useRari } from "context/RariContext";
+import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-// Hooks
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-
 // Utils
-import { shortUsdFormatter } from "../../../utils/bigUtils";
-import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
-
-import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import { ModalDivider } from "../../shared/Modal";
-
-const AssetChart = dynamic(() => import("./AssetChart"), { ssr: false });
-
-import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
-import { useQuery } from "react-query";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
-
-import { useTokenData } from "../../../hooks/useTokenData";
-import { CTokenIcon } from "./FusePoolsPage";
-import { shortAddress } from "../../../utils/shortAddress";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller } from "../../../utils/createComptroller";
-import Fuse from "../../../fuse-sdk";
-import CaptionedStat from "../../shared/CaptionedStat";
-import { useRouter } from "next/router";
-import AppLink from "components/shared/AppLink";
+import Fuse from "fuse-sdk";
+import { shortAddress } from "utils/shortAddress";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
+import { createComptroller } from "utils/createComptroller";
+import { shortUsdFormatter } from "utils/bigUtils";
+import { FuseUtilizationChartOptions } from "utils/chartOptions";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
