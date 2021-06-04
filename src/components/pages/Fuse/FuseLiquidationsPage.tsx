@@ -7,7 +7,13 @@ import {
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { Center, Column, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
+import {
+  Center,
+  Column,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -158,6 +164,8 @@ const FuseLiquidationsPage = memo(() => {
 
     for (let poolID = 0; poolID < pools.length; poolID++) {
       const pool = pools[poolID];
+
+      console.log(pool.comptroller, poolID);
 
       poolFetches.push(
         fuse.contracts.FusePoolLens.methods
