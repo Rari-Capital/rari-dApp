@@ -16,13 +16,13 @@ export const ETH_TOKEN_DATA = {
 };
 
 export interface TokenData {
-  name: string | null;
-  symbol: string | null;
-  address: string | null;
-  decimals: number | null;
-  color: string | null;
-  overlayTextColor: string | null;
-  logoURL: string | null;
+  name: string ;
+  symbol: string;
+  address: string;
+  decimals: number;
+  color: string;
+  overlayTextColor: string;
+  logoURL: string;
 }
 
 export const useTokenDataWithContract = (address: string) => {

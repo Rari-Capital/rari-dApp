@@ -1,7 +1,7 @@
 import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
-import useTokenDataBySymbol from "hooks/tokens/useTokenDataBySymbol";
+import { useAllTokenData } from "hooks/tokens/useTokenDataBySymbol";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useMemo } from "react";
 import { useParams } from "react-router";
@@ -10,17 +10,15 @@ import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { PoolRow } from "components/pages/Fuse/FusePoolsPage";
 import { getMinMaxOf2DIndex } from "utils/tokenUtils";
 import { smallUsdFormatter } from "utils/bigUtils";
+import { TokenData } from "hooks/useTokenData";
 
-const TokenDetails = () => {
-  const { symbol } = useParams();
+const TokenDetails = ({token}: {token: TokenData}) => {
   const isMobile = useIsSmallScreen();
 
-  const tokenSymbol = useMemo(() => symbol.toUpperCase(), [symbol]);
-
   const { tokenData, tokenMarketData, fuseDataForAsset } =
-    useTokenDataBySymbol(tokenSymbol);
+    useAllTokenData(token);
 
-  const minMax = useMemo(() => {
+  const minMax = useMemo(() => {  
     if (tokenMarketData) {
       const { prices } = tokenMarketData;
       const stuff = getMinMaxOf2DIndex(prices, 1);
