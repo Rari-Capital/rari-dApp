@@ -7,7 +7,7 @@ import { useRari } from "../context/RariContext";
 export const ETH_TOKEN_DATA = {
   symbol: "ETH",
   address: "0x0000000000000000000000000000000000000000",
-  name: "Ethereum Network Token",
+  name: "Ethereum",
   decimals: 18,
   color: "#627EEA",
   overlayTextColor: "#fff",

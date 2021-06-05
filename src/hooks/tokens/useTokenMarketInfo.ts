@@ -1,12 +1,13 @@
+import { useMemo } from "react";
 import { useQuery } from "react-query";
-import { fetchTokenMarketInfo } from "utils/coingecko";
+import { fetchAllTokenMarketInfo } from "utils/coingecko";
 
 const useTokenMarketInfo = (address: string) => {
   const { data } = useQuery(
     `${address} market info`,
-    async () => await fetchTokenMarketInfo(address)
+    async () => await fetchAllTokenMarketInfo(address)
   );
-  return data;
+  return useMemo(() => data, [data])
 };
 
 export default useTokenMarketInfo;

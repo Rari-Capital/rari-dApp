@@ -5,7 +5,10 @@ import {
   useTokenData,
   useTokenDataWithContract,
 } from "hooks/useTokenData";
+import { null } from "mathjs";
+import { useMemo } from "react";
 import tokens from "static/compiled/tokens.json";
+import { AllTokenMarketInfo } from "utils/coingecko";
 import useTokenMarketInfo from "./useTokenMarketInfo";
 
 export const useTokenDataBySymbol = (tokenSymbol: string) => {
@@ -33,6 +36,8 @@ export const useTokenDataByAddress = (tokenAddress: string) => {
   const tokenDataWithContract = useTokenDataWithContract(tokenAddress);
   const tokenMarketData = useTokenMarketInfo(tokenAddress);
 
+
+
   return { tokenData, tokenDataWithContract, tokenMarketData };
 };
 
@@ -42,10 +47,25 @@ export const useAllTokenData = (token : TokenData) => {
   
   const tokenData = useTokenData(address);
   const tokenDataWithContract = useTokenDataWithContract(address);
-  const tokenMarketData = useTokenMarketInfo(address);
+
+  // @ts-ignore todo - fix
+  const { granularTokenMarketInfo, aggregateTokenMarketInfo } : AllTokenMarketInfo | undefined = useTokenMarketInfo(address) ?? {}
   const fuseDataForAsset = useFuseDataForAsset(symbol);
 
-  return { tokenData, tokenDataWithContract, tokenMarketData, fuseDataForAsset };
+
+  return useMemo(() => ({
+    tokenData, 
+    tokenDataWithContract, 
+    granularTokenMarketInfo, 
+    aggregateTokenMarketInfo, 
+    fuseDataForAsset
+  }), [
+    tokenData, 
+    tokenDataWithContract, 
+    granularTokenMarketInfo, 
+    aggregateTokenMarketInfo, 
+    fuseDataForAsset
+  ])
 
 }
 
