@@ -5,7 +5,6 @@ import {
   useTokenData,
   useTokenDataWithContract,
 } from "hooks/useTokenData";
-import { null } from "mathjs";
 import { useMemo } from "react";
 import tokens from "static/compiled/tokens.json";
 import { AllTokenMarketInfo } from "utils/coingecko";
@@ -35,8 +34,6 @@ export const useTokenDataByAddress = (tokenAddress: string) => {
   const tokenData = useTokenData(tokenAddress);
   const tokenDataWithContract = useTokenDataWithContract(tokenAddress);
   const tokenMarketData = useTokenMarketInfo(tokenAddress);
-
-
 
   return { tokenData, tokenDataWithContract, tokenMarketData };
 };
