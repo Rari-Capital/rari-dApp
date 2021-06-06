@@ -1,19 +1,27 @@
+import dynamic from "next/dynamic";
+
 import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
 import { useAllTokenData } from "hooks/tokens/useTokenDataBySymbol";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { useMemo } from "react";
-import { useParams } from "react-router";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 import { PoolRow } from "components/pages/Fuse/FusePoolsPage";
-import { getMinMaxOf2DIndex } from "utils/tokenUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { TokenData } from "hooks/useTokenData";
+import { useEffect, useMemo, useState } from "react";
+import { unixToDate } from "utils/date";
+
+const LineChart = dynamic(() => import("components/charts/LineChart"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
 
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
+
+  const [priceHover, setPriceHover] = useState<number | undefined>(undefined);
 
   const {
     tokenData,
@@ -24,6 +32,22 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
 
   const { poolsWithThisAsset } = fuseDataForAsset;
 
+  const formattedChartData = useMemo(() => {
+    console.log({ granularTokenMarketInfo });
+    return granularTokenMarketInfo
+      ? granularTokenMarketInfo.prices.map(([unixTime, priceUSD]) => ({
+          time: unixTime,
+          value: priceUSD,
+        }))
+      : [];
+  }, [granularTokenMarketInfo]);
+
+  useEffect(() => {
+    if (!priceHover && aggregateTokenMarketInfo) {
+      setPriceHover(aggregateTokenMarketInfo.market_data.current_price.usd);
+    }
+  }, [priceHover, aggregateTokenMarketInfo]);
+  aggregateTokenMarketInfo?.market_data?.current_price?.usd ?? 0;
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -42,7 +66,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
         crossAxisAlignment="flex-start"
         isRow={!isMobile}
         width="100%"
-        bg="red"
+        // bg="red"
       >
         {/* Column 1 */}
         <Column
@@ -52,133 +76,173 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           crossAxisAlignment="flex-start"
           p={2}
           flexBasis={"65%"}
-          bg="pink"
         >
           {/* Chart */}
           <DashboardBox
-            position="relative"
             w="100%"
-            h="400px"
+            h="450px"
             // bg="blue"
             my={3}
           >
-            <Row
+            <Column
               mainAxisAlignment="space-between"
               crossAxisAlignment="flex-start"
-              position="absolute"
-              top={0}
-              left={0}
               w="100%"
-              h="20%"
-              p={4}
-              //  bg="lime"
+              h="100%"
+              // bg="pink"
             >
               {/* Price and % change */}
-              <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-                <Box>
-                  <Heading>
-                    {smallUsdFormatter(
-                      aggregateTokenMarketInfo?.market_data?.current_price
-                        ?.usd ?? 0
-                    )}
+              <Row
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="flex-start"
+                w="100%"
+                h="20%"
+                p={4}
+                //  bg="lime"
+              >
+                <Row
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                >
+                  <Box>
+                    <Heading>
+                      {priceHover ? smallUsdFormatter(priceHover) : "-"}
+                    </Heading>
+                  </Box>
+                  <Box ml={3} alignSelf="flex-start">
+                    <Heading
+                      size="xs"
+                      color={
+                        aggregateTokenMarketInfo
+                          ? aggregateTokenMarketInfo.market_data
+                              .price_change_percentage_24h! > 0
+                            ? "green"
+                            : "red"
+                          : ""
+                      }
+                    >
+                      {aggregateTokenMarketInfo &&
+                      priceHover ===
+                        aggregateTokenMarketInfo?.market_data?.current_price
+                          ?.usd
+                        ? `${aggregateTokenMarketInfo?.market_data?.price_change_percentage_24h?.toFixed(
+                            2
+                          )}%` ?? null
+                        : null}
+                    </Heading>
+                  </Box>
+                </Row>
+
+                <Row
+                  mainAxisAlignment="flex-end"
+                  crossAxisAlignment="flex-start"
+                  bg=""
+                >
+                  <Heading size="xs" ml={2}>
+                    1D
                   </Heading>
-                </Box>
-                <Box ml={3} alignSelf="flex-start">
-                <Heading 
-                size="xs"
-                color={ 
-                  aggregateTokenMarketInfo
-                    ? aggregateTokenMarketInfo.market_data.price_change_percentage_24h! > 0
-                      ? 'green'
-                      : 'red'
-                    : ''
-                }
-                > 
-                    {
-                      aggregateTokenMarketInfo?.market_data?.price_change_percentage_24h?.toFixed(2)
-                      ?? 0
-                    }%
+                  <Heading size="xs" ml={2}>
+                    1W
                   </Heading>
-                </Box>
+                  <Heading size="xs" ml={2}>
+                    1M
+                  </Heading>
+                  <Heading size="xs" ml={2}>
+                    1Y
+                  </Heading>
+                </Row>
               </Row>
 
-              <Row mainAxisAlignment="flex-end" crossAxisAlignment="flex-start" bg="">
-                    <Heading size="xs"  ml={2}>1D</Heading>
-                    <Heading size="xs"  ml={2}>1W</Heading>
-                    <Heading size="xs"  ml={2}>1M</Heading>
-                    <Heading size="xs"  ml={2}>1Y</Heading>
+              {/* Chart */}
+              <Box
+                flex="1 0"
+                // bg="aqua"
+                h="100%"
+                w="100%"
+              >
+                <LineChart
+                  data={formattedChartData}
+                  // height={220}
+                  // minHeight={332}
+                  color={"pink"}
+                  value={priceHover}
+                  // label={leftLabel}
+                  setValue={setPriceHover}
+                  // setLabel={setLeftLabel}
+                />
+              </Box>
+
+              {/* Numeric data */}
+              <Row
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                w="100%"
+                h="20%"
+                p={4}
+              >
+                <Column
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                  mr={10}
+                >
+                  <Heading size="sm">Market Cap</Heading>
+                  <Text>
+                    {shortUsdFormatter(
+                      aggregateTokenMarketInfo?.market_data?.market_cap?.usd ??
+                        0
+                    )}
+                  </Text>
+                </Column>
+                <Column
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                  mr={10}
+                >
+                  <Heading size="sm">Volume(24h)</Heading>
+                  <Text>
+                    {shortUsdFormatter(
+                      aggregateTokenMarketInfo?.market_data?.total_volume
+                        ?.usd ?? 0
+                    )}
+                  </Text>
+                </Column>
+                <Column
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                  mr={10}
+                >
+                  <Heading size="sm">24hr high</Heading>
+                  <Text>
+                    {smallUsdFormatter(
+                      aggregateTokenMarketInfo?.market_data?.high_24h?.usd ?? 0
+                    )}
+                  </Text>
+                </Column>
+                <Column
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                >
+                  <Heading size="sm">24hr low</Heading>
+                  <Text>
+                    {smallUsdFormatter(
+                      aggregateTokenMarketInfo?.market_data?.low_24h?.usd ?? 0
+                    )}
+                  </Text>
+                </Column>
+                <Column
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                >
+                  <Heading size="sm">Circulating Supply</Heading>
+                  <Text>
+                    {shortUsdFormatter(
+                      aggregateTokenMarketInfo?.market_data
+                        ?.circulating_supply ?? 0
+                    )}
+                  </Text>
+                </Column>
               </Row>
-            </Row>
-            <Row
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
-              position="absolute"
-              bottom={0}
-              left={0}
-              w="100%"
-              p={4}
-            >
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-                mr={10}
-              >
-                <Heading size="sm">Market Cap</Heading>
-                <Text>
-                  {shortUsdFormatter(
-                    aggregateTokenMarketInfo?.market_data?.market_cap?.usd ?? 0
-                  )}
-                </Text>
-              </Column>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-                mr={10}
-              >
-                <Heading size="sm">Volume(24h)</Heading>
-                <Text>
-                  {shortUsdFormatter(
-                    aggregateTokenMarketInfo?.market_data?.total_volume?.usd ??
-                      0
-                  )}
-                </Text>
-              </Column>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-                mr={10}
-              >
-                <Heading size="sm">24hr high</Heading>
-                <Text>
-                  {smallUsdFormatter(
-                    aggregateTokenMarketInfo?.market_data?.high_24h?.usd ?? 0
-                  )}
-                </Text>
-              </Column>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-              >
-                <Heading size="sm">24hr low</Heading>
-                <Text>
-                  {smallUsdFormatter(
-                    aggregateTokenMarketInfo?.market_data?.low_24h?.usd ?? 0
-                  )}
-                </Text>
-              </Column>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-              >
-                <Heading size="sm">Circulating Supply</Heading>
-                <Text>
-                  {shortUsdFormatter(
-                    aggregateTokenMarketInfo?.market_data?.circulating_supply ??
-                      0
-                  )}
-                </Text>
-              </Column>
-            </Row>
+            </Column>
           </DashboardBox>
 
           {/* Fuse Pools */}
@@ -268,7 +332,7 @@ const Header = ({
     <Row
       mainAxisAlignment="flex-start"
       crossAxisAlignment="center"
-      bg="aqua"
+      // bg="aqua"
       w="100%"
       h="100%"
     >

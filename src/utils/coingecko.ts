@@ -43,7 +43,7 @@ export interface AllTokenMarketInfo {
 
 export const fetchAllTokenMarketInfo = async (
   address: string,
-  days: number = 1
+  days: number = 7
 ) => {
   try {
     const [granularTokenMarketInfo, aggregateTokenMarketInfo] : [GranularTokenMarketInfo, AggregateTokenMarketInfo]= await Promise.all([

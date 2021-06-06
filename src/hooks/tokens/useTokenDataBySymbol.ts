@@ -17,7 +17,6 @@ export const useTokenDataBySymbol = (tokenSymbol: string) => {
   if (tokenSymbol === "ETH") {
     token = ETH_TOKEN_DATA;
   }
-
   const { address } = token;
 
   const tokenData = useTokenData(address);
