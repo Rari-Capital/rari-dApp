@@ -165,7 +165,6 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
                   // height={220}
                   // minHeight={332}
                   color={"pink"}
-                  value={priceHover}
                   // label={leftLabel}
                   setValue={setPriceHover}
                   // setLabel={setLeftLabel}
