@@ -8,9 +8,9 @@ import {
 import { useMemo } from "react";
 import tokens from "static/compiled/tokens.json";
 import { AllTokenMarketInfo } from "utils/coingecko";
-import useTokenMarketInfo from "./useTokenMarketInfo";
+import useTokenMarketInfo, { MarketInterval } from "./useTokenMarketInfo";
 
-export const useTokenDataBySymbol = (tokenSymbol: string) => {
+export const useTokenDataBySymbol = (tokenSymbol: string, days?: MarketInterval) => {
   // Find token in static file by its symbol
   // @ts-ignore
   let token: any = tokens[tokenSymbol] ?? null;
@@ -21,7 +21,7 @@ export const useTokenDataBySymbol = (tokenSymbol: string) => {
 
   const tokenData = useTokenData(address);
   const tokenDataWithContract = useTokenDataWithContract(address);
-  const tokenMarketData = useTokenMarketInfo(address);
+  const tokenMarketData = useTokenMarketInfo(address, days);
   const fuseDataForAsset = useFuseDataForAsset(tokenSymbol);
 
   return useMemo(() => {
@@ -30,11 +30,11 @@ export const useTokenDataBySymbol = (tokenSymbol: string) => {
 };
 
 
-export const useTokenDataByAddress = (tokenAddress: string) => {
+export const useTokenDataByAddress = (tokenAddress: string, days?: MarketInterval) => {
 
   const tokenData = useTokenData(tokenAddress);
   const tokenDataWithContract = useTokenDataWithContract(tokenAddress);
-  const tokenMarketData = useTokenMarketInfo(tokenAddress);
+  const tokenMarketData = useTokenMarketInfo(tokenAddress, days);
 
   return useMemo(() => {
     return { tokenData, tokenDataWithContract, tokenMarketData };
@@ -43,14 +43,14 @@ export const useTokenDataByAddress = (tokenAddress: string) => {
 };
 
 
-export const useAllTokenData = (token : TokenData) => {
+export const useAllTokenData = (token : TokenData, days?: MarketInterval) => {
   const { address, symbol } = token
   
   const tokenData = useTokenData(address);
   const tokenDataWithContract = useTokenDataWithContract(address);
 
   // @ts-ignore todo - fix
-  const { granularTokenMarketInfo, aggregateTokenMarketInfo } : AllTokenMarketInfo | undefined = useTokenMarketInfo(address) ?? {}
+  const { granularTokenMarketInfo, aggregateTokenMarketInfo } : AllTokenMarketInfo | undefined = useTokenMarketInfo(address, days) ?? {}
   const fuseDataForAsset = useFuseDataForAsset(symbol);
 
 

@@ -12,6 +12,7 @@ import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { TokenData } from "hooks/useTokenData";
 import { useEffect, useMemo, useState } from "react";
 import { unixToDate } from "utils/date";
+import { MarketInterval } from "hooks/tokens/useTokenMarketInfo";
 
 // import LineChart from "components/charts/LineChart/alt"
 
@@ -24,13 +25,16 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
 
   const [priceHover, setPriceHover] = useState<number | undefined>(undefined);
+  const [marketInterval, setMarketInterval] = useState<MarketInterval>(
+    MarketInterval.DAY
+  );
 
   const {
     tokenData,
     granularTokenMarketInfo,
     aggregateTokenMarketInfo,
     fuseDataForAsset,
-  } = useAllTokenData(token);
+  } = useAllTokenData(token, marketInterval);
 
   const { poolsWithThisAsset } = fuseDataForAsset;
 
@@ -139,16 +143,52 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
                   crossAxisAlignment="flex-start"
                   bg=""
                 >
-                  <Heading size="xs" ml={2}>
+                  <Heading
+                    size="xs"
+                    ml={2}
+                    color={marketInterval === MarketInterval.DAY ? "green" : ""}
+                    _hover={{
+                      cursor: "pointer",
+                      color: "green",
+                    }}
+                    onClick={() => setMarketInterval(MarketInterval.DAY)}
+                  >
                     1D
                   </Heading>
-                  <Heading size="xs" ml={2}>
+                  <Heading
+                    size="xs"
+                    ml={2}
+                    color={marketInterval === MarketInterval.WEEK ? "green" : ""}
+                    _hover={{
+                      cursor: "pointer",
+                      color: "green",
+                    }}
+                    onClick={() => setMarketInterval(MarketInterval.WEEK)}
+                  >
                     1W
                   </Heading>
-                  <Heading size="xs" ml={2}>
+                  <Heading
+                    size="xs"
+                    ml={2}
+                    color={marketInterval === MarketInterval.MONTH ? "green" : ""}
+                    _hover={{
+                      cursor: "pointer",
+                      color: "green",
+                    }}
+                    onClick={() => setMarketInterval(MarketInterval.MONTH)}
+                  >
                     1M
                   </Heading>
-                  <Heading size="xs" ml={2}>
+                  <Heading
+                    size="xs"
+                    ml={2}
+                    color={marketInterval === MarketInterval.YEAR ? "green" : ""}
+                    _hover={{
+                      cursor: "pointer",
+                      color: "green",
+                    }}
+                    onClick={() => setMarketInterval(MarketInterval.YEAR)}
+                  >
                     1Y
                   </Heading>
                 </Row>
@@ -165,7 +205,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
                   data={formattedChartData}
                   // height={220}
                   // minHeight={332}
-                  color={tokenData?.color ?? 'white'}
+                  color={tokenData?.color ?? "white"}
                   // label={leftLabel}
                   setValue={setPriceHover}
                   value={priceHover}
