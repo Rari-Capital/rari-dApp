@@ -1,14 +1,16 @@
+// Components
 import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
+import AppLink from "components/shared/AppLink";
+import DashboardBox from "components/shared/DashboardBox";
 import { RowOrColumn, Row, Center } from "utils/chakraUtils";
+
+// Hooks
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import DashboardBox from "../../shared/DashboardBox";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFilter } from "hooks/useFilter";
 import { useRouter } from "next/router";
-import AppLink from "components/shared/AppLink";
-import { useEffect, useState } from "react";
-import { stringUsdFormatter } from "utils/bigUtils";
 import { useRari } from "context/RariContext";
 
 const activeStyle = { bg: "#FFF", color: "#000" };

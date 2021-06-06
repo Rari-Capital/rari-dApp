@@ -150,7 +150,7 @@ const PoolConfiguration = () => {
           toBlock: "latest",
         })
       ).filter(
-        (event) =>
+        (event: any) =>
           event.returnValues.pool.comptroller.toLowerCase() ===
           poolAddress.toLowerCase()
       )[0];

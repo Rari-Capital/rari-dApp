@@ -7,12 +7,11 @@ import { useAllTokenData } from "hooks/tokens/useTokenDataBySymbol";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
-import { PoolRow } from "components/pages/Fuse/FusePoolsPage";
+import { PoolRow } from "components/pages/Fuse/FusePoolsPage/PoolRow";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { TokenData } from "hooks/useTokenData";
 import { useEffect, useMemo, useState } from "react";
 import { unixToDate } from "utils/date";
-
 
 // import LineChart from "components/charts/LineChart/alt"
 

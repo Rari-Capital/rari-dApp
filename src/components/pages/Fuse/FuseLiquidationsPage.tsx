@@ -1,4 +1,7 @@
 /* eslint-disable no-loop-func */
+import { memo, useState } from "react";
+
+// Components
 import {
   AvatarGroup,
   Box,
@@ -7,6 +10,23 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import DashboardBox from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import FuseStatsBar from "./FuseStatsBar";
+import FuseTabBar from "./FuseTabBar";
+import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
+import AppLink from "components/shared/AppLink";
+
+// Hooks
+import { useTranslation } from "react-i18next";
+import { useRari } from "context/RariContext";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { useQuery } from "react-query";
+
+// Utils
+import { smallUsdFormatter } from "utils/bigUtils";
+import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
 import {
   Center,
   Column,
@@ -14,28 +34,9 @@ import {
   RowOrColumn,
   useIsMobile,
 } from "utils/chakraUtils";
-import { useTranslation } from "react-i18next";
-import { useRari } from "context/RariContext";
-import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "utils/bigUtils";
-
-import DashboardBox from "components/shared/DashboardBox";
-import { ModalDivider } from "components/shared/Modal";
-
-import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
-
-import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
-
-import { SimpleTooltip } from "components/shared/SimpleTooltip";
-
-import { memo, useState } from "react";
-
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { CTokenIcon } from "./FusePoolsPage";
-import { useQuery } from "react-query";
-import AppLink from "components/shared/AppLink";
+
 
 const FuseLiquidationsPage = memo(() => {
   const { isAuthed } = useRari();

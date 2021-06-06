@@ -22,7 +22,7 @@ import {
 } from "utils/chakraUtils";
 
 const AssetChart = dynamic(() => import("./AssetChart"), { ssr: false });
-import { CTokenIcon } from "./FusePoolsPage";
+import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import CaptionedStat from "components/shared/CaptionedStat";

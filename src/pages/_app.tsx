@@ -59,13 +59,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={customTheme}>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
+         <ReactQueryDevtools initialIsOpen={false} />
         <RariProvider>
           <Layout>
             <AuthMiddleware />
             <Component {...pageProps} />
           </Layout>
-        </RariProvider>
+        </RariProvider> 
       </QueryClientProvider>
     </ChakraProvider>
   );

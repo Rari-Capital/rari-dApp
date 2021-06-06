@@ -1,16 +1,20 @@
-import { Heading } from "@chakra-ui/react";
-import { RowOrColumn, Column, Center } from "utils/chakraUtils";
 import { ReactNode } from "react";
+
+// Hooks
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "utils/bigUtils";
-import CaptionedStat from "components/shared/CaptionedStat";
-import DashboardBox from "components/shared/DashboardBox";
-
 import { useFuseTVL, fetchFuseNumberTVL } from "hooks/fuse/useFuseTVL";
 import { useFuseTotalBorrowAndSupply } from "hooks/fuse/useFuseTotalBorrowAndSupply";
 
+// Utils
+import { smallUsdFormatter } from "utils/bigUtils";
+import { RowOrColumn, Column, Center } from "utils/chakraUtils";
+
+// Components
+import { Heading } from "@chakra-ui/react";
+import CaptionedStat from "components/shared/CaptionedStat";
+import DashboardBox from "components/shared/DashboardBox";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 
 const FuseStatsBar = () => {
