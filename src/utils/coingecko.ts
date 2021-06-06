@@ -52,7 +52,6 @@ export const fetchAllTokenMarketInfo = async (
     ])
     return { granularTokenMarketInfo, aggregateTokenMarketInfo}
   } catch (err) {
-    console.error(err)
     return {
       granularTokenMarketInfo: null, 
       aggregateTokenMarketInfo: null
