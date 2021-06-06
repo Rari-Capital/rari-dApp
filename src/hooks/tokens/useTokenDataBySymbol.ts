@@ -24,7 +24,9 @@ export const useTokenDataBySymbol = (tokenSymbol: string) => {
   const tokenMarketData = useTokenMarketInfo(address);
   const fuseDataForAsset = useFuseDataForAsset(tokenSymbol);
 
-  return { tokenData, tokenDataWithContract, tokenMarketData, fuseDataForAsset };
+  return useMemo(() => {
+    return { tokenData, tokenDataWithContract, tokenMarketData, fuseDataForAsset };
+  }, [tokenData, tokenDataWithContract, tokenMarketData, fuseDataForAsset])
 };
 
 
@@ -34,7 +36,10 @@ export const useTokenDataByAddress = (tokenAddress: string) => {
   const tokenDataWithContract = useTokenDataWithContract(tokenAddress);
   const tokenMarketData = useTokenMarketInfo(tokenAddress);
 
-  return { tokenData, tokenDataWithContract, tokenMarketData };
+  return useMemo(() => {
+    return { tokenData, tokenDataWithContract, tokenMarketData };
+  }, [tokenData, tokenDataWithContract, tokenMarketData])
+
 };
 
 

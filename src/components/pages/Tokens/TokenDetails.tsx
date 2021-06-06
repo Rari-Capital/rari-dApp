@@ -13,7 +13,10 @@ import { TokenData } from "hooks/useTokenData";
 import { useEffect, useMemo, useState } from "react";
 import { unixToDate } from "utils/date";
 
-const LineChart = dynamic(() => import("components/charts/LineChart"), {
+
+// import LineChart from "components/charts/LineChart/alt"
+
+const LineChart = dynamic(() => import("components/charts/LineChart/alt"), {
   ssr: false,
   loading: () => <Spinner />,
 });
@@ -33,7 +36,6 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
   const { poolsWithThisAsset } = fuseDataForAsset;
 
   const formattedChartData = useMemo(() => {
-    console.log({ granularTokenMarketInfo });
     return granularTokenMarketInfo
       ? granularTokenMarketInfo.prices.map(([unixTime, priceUSD]) => ({
           time: unixTime,
@@ -47,7 +49,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
       setPriceHover(aggregateTokenMarketInfo.market_data.current_price.usd);
     }
   }, [priceHover, aggregateTokenMarketInfo]);
-  aggregateTokenMarketInfo?.market_data?.current_price?.usd ?? 0;
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -167,6 +169,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
                   color={"pink"}
                   // label={leftLabel}
                   setValue={setPriceHover}
+                  value={priceHover}
                   // setLabel={setLeftLabel}
                 />
               </Box>
