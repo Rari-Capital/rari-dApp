@@ -220,6 +220,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
                 w="100%"
                 h="20%"
                 p={4}
+                overflowX="scroll"
               >
                 <Column
                   mainAxisAlignment="flex-start"
