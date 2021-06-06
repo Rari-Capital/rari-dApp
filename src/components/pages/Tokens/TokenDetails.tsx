@@ -165,7 +165,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
                   data={formattedChartData}
                   // height={220}
                   // minHeight={332}
-                  color={"pink"}
+                  color={tokenData?.color ?? 'white'}
                   // label={leftLabel}
                   setValue={setPriceHover}
                   value={priceHover}
