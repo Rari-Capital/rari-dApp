@@ -8,7 +8,9 @@ export default function usePrevious<T>(value: T) {
 
   // Store current value in ref
   useEffect(() => {
-    ref.current = value
+    if (!!value) {
+      ref.current = value
+    }
   }, [value]) // Only re-run if value changes
 
   // Return previous value (happens before update in useEffect above)

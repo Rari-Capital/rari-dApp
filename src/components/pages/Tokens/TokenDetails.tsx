@@ -3,55 +3,22 @@ import dynamic from "next/dynamic";
 import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
-import { useAllTokenData } from "hooks/tokens/useTokenDataBySymbol";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 import { PoolRow } from "components/pages/Fuse/FusePoolsPage/PoolRow";
-import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { TokenData } from "hooks/useTokenData";
-import { useEffect, useMemo, useState } from "react";
-import { unixToDate } from "utils/date";
-import { MarketInterval } from "hooks/tokens/useTokenMarketInfo";
+import { useFuseDataForAsset } from "hooks/fuse/useFuseDataForAsset";
+import MarketChart from "components/modules/MarketChart";
 
-// import LineChart from "components/charts/LineChart/alt"
-
-const LineChart = dynamic(() => import("components/charts/LineChart/alt"), {
-  ssr: false,
-  loading: () => <Spinner />,
-});
-
-const TokenDetails = ({ token }: { token: TokenData }) => {
+const TokenDetails = ({ token }: {
+   token: TokenData,
+  [x:string]: any
+  }) => {
   const isMobile = useIsSmallScreen();
 
-  const [priceHover, setPriceHover] = useState<number | undefined>(undefined);
-  const [marketInterval, setMarketInterval] = useState<MarketInterval>(
-    MarketInterval.DAY
-  );
-
-  const {
-    tokenData,
-    granularTokenMarketInfo,
-    aggregateTokenMarketInfo,
-    fuseDataForAsset,
-  } = useAllTokenData(token, marketInterval);
-
-  const { poolsWithThisAsset } = fuseDataForAsset;
-
-  const formattedChartData = useMemo(() => {
-    return granularTokenMarketInfo
-      ? granularTokenMarketInfo.prices.map(([unixTime, priceUSD]) => ({
-          time: unixTime,
-          value: priceUSD,
-        }))
-      : [];
-  }, [granularTokenMarketInfo]);
-
-  useEffect(() => {
-    if (!priceHover && aggregateTokenMarketInfo) {
-      setPriceHover(aggregateTokenMarketInfo.market_data.current_price.usd);
-    }
-  }, [priceHover, aggregateTokenMarketInfo]);
+  const fuseDataForAsset = useFuseDataForAsset(token.symbol);
+  const { poolsWithThisAsset } = fuseDataForAsset;  
 
   return (
     <Column
@@ -83,209 +50,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           flexBasis={"65%"}
         >
           {/* Chart */}
-          <DashboardBox
-            w="100%"
-            h="450px"
-            // bg="blue"
-            my={3}
-          >
-            <Column
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="flex-start"
-              w="100%"
-              h="100%"
-              // bg="pink"
-            >
-              {/* Price and % change */}
-              <Row
-                mainAxisAlignment="space-between"
-                crossAxisAlignment="flex-start"
-                w="100%"
-                h="20%"
-                p={4}
-                //  bg="lime"
-              >
-                <Row
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                >
-                  <Box>
-                    <Heading>
-                      {priceHover ? smallUsdFormatter(priceHover) : "-"}
-                    </Heading>
-                  </Box>
-                  <Box ml={3} alignSelf="flex-start">
-                    <Heading
-                      size="xs"
-                      color={
-                        aggregateTokenMarketInfo
-                          ? aggregateTokenMarketInfo.market_data
-                              .price_change_percentage_24h! > 0
-                            ? "green"
-                            : "red"
-                          : ""
-                      }
-                    >
-                      {aggregateTokenMarketInfo &&
-                      priceHover ===
-                        aggregateTokenMarketInfo?.market_data?.current_price
-                          ?.usd
-                        ? `${aggregateTokenMarketInfo?.market_data?.price_change_percentage_24h?.toFixed(
-                            2
-                          )}%` ?? null
-                        : null}
-                    </Heading>
-                  </Box>
-                </Row>
-
-                <Row
-                  mainAxisAlignment="flex-end"
-                  crossAxisAlignment="flex-start"
-                  bg=""
-                >
-                  <Heading
-                    size="xs"
-                    ml={2}
-                    color={marketInterval === MarketInterval.DAY ? "green" : ""}
-                    _hover={{
-                      cursor: "pointer",
-                      color: "green",
-                    }}
-                    onClick={() => setMarketInterval(MarketInterval.DAY)}
-                  >
-                    1D
-                  </Heading>
-                  <Heading
-                    size="xs"
-                    ml={2}
-                    color={marketInterval === MarketInterval.WEEK ? "green" : ""}
-                    _hover={{
-                      cursor: "pointer",
-                      color: "green",
-                    }}
-                    onClick={() => setMarketInterval(MarketInterval.WEEK)}
-                  >
-                    1W
-                  </Heading>
-                  <Heading
-                    size="xs"
-                    ml={2}
-                    color={marketInterval === MarketInterval.MONTH ? "green" : ""}
-                    _hover={{
-                      cursor: "pointer",
-                      color: "green",
-                    }}
-                    onClick={() => setMarketInterval(MarketInterval.MONTH)}
-                  >
-                    1M
-                  </Heading>
-                  <Heading
-                    size="xs"
-                    ml={2}
-                    color={marketInterval === MarketInterval.YEAR ? "green" : ""}
-                    _hover={{
-                      cursor: "pointer",
-                      color: "green",
-                    }}
-                    onClick={() => setMarketInterval(MarketInterval.YEAR)}
-                  >
-                    1Y
-                  </Heading>
-                </Row>
-              </Row>
-
-              {/* Chart */}
-              <Box
-                flex="1 0"
-                // bg="aqua"
-                h="100%"
-                w="100%"
-              >
-                <LineChart
-                  data={formattedChartData}
-                  // height={220}
-                  // minHeight={332}
-                  color={tokenData?.color ?? "white"}
-                  // label={leftLabel}
-                  setValue={setPriceHover}
-                  value={priceHover}
-                  // setLabel={setLeftLabel}
-                />
-              </Box>
-
-              {/* Numeric data */}
-              <Row
-                mainAxisAlignment="space-between"
-                crossAxisAlignment="center"
-                w="100%"
-                h="20%"
-                p={4}
-                overflowX="scroll"
-              >
-                <Column
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                  mr={10}
-                >
-                  <Heading size="sm">Market Cap</Heading>
-                  <Text>
-                    {shortUsdFormatter(
-                      aggregateTokenMarketInfo?.market_data?.market_cap?.usd ??
-                        0
-                    )}
-                  </Text>
-                </Column>
-                <Column
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                  mr={10}
-                >
-                  <Heading size="sm">Volume(24h)</Heading>
-                  <Text>
-                    {shortUsdFormatter(
-                      aggregateTokenMarketInfo?.market_data?.total_volume
-                        ?.usd ?? 0
-                    )}
-                  </Text>
-                </Column>
-                <Column
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                  mr={10}
-                >
-                  <Heading size="sm">24hr high</Heading>
-                  <Text>
-                    {smallUsdFormatter(
-                      aggregateTokenMarketInfo?.market_data?.high_24h?.usd ?? 0
-                    )}
-                  </Text>
-                </Column>
-                <Column
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                >
-                  <Heading size="sm">24hr low</Heading>
-                  <Text>
-                    {smallUsdFormatter(
-                      aggregateTokenMarketInfo?.market_data?.low_24h?.usd ?? 0
-                    )}
-                  </Text>
-                </Column>
-                <Column
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="flex-start"
-                >
-                  <Heading size="sm">Circulating Supply</Heading>
-                  <Text>
-                    {shortUsdFormatter(
-                      aggregateTokenMarketInfo?.market_data
-                        ?.circulating_supply ?? 0
-                    )}
-                  </Text>
-                </Column>
-              </Row>
-            </Column>
-          </DashboardBox>
+          <MarketChart token={token} mb={5}/>
 
           {/* Fuse Pools */}
           <DashboardBox
@@ -294,7 +59,6 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
             mr={5}
             mt={0}
             overflowY="scroll"
-            //   bg="purple"
           >
             <Heading>Fuse Pools</Heading>
             <Column
@@ -338,10 +102,10 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           crossAxisAlignment="flex-start"
           w={"100%"}
           h={"100%"}
-          // bg={"aquamarine"}
           flexBasis={"35%"}
           mt={isMobile ? 5 : 0}
           p={2}
+          // bg="coral"
         >
           {/* Foursq */}
           <DashboardBox height="100%" w="100%">

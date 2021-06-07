@@ -17,7 +17,8 @@ const useTokenMarketInfo = (
     `${address} market info for ${days} days`,
     async () => await fetchAllTokenMarketInfo(address, days)
   );
-  return data
+  
+  return useMemo(() =>  data, [data])
 };
 
 export default useTokenMarketInfo;
