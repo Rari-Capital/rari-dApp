@@ -4,19 +4,16 @@ import { ModalDivider } from "components/shared/Modal";
 import PoolRow from "./PoolRow";
 
 // Hooks
-import { useFusePools } from "hooks/fuse/useFusePools";
-import { useFilter } from "hooks/useFilter";
+import { MergedPool } from "hooks/fuse/useFusePools";
 import { useTranslation } from "react-i18next";
 
 // Utils
 import { Column, Row, useIsMobile } from "utils/chakraUtils";
 import { filterPoolName } from "utils/fetchFusePoolData";
 
-export const PoolList = () => {
-  const filter = useFilter();
+export const PoolList = ({ pools }: { pools: MergedPool[] | null }) => {
   const { t } = useTranslation();
 
-  const { filteredPools } = useFusePools(filter);
   const isMobile = useIsMobile();
 
   return (
@@ -66,8 +63,8 @@ export const PoolList = () => {
         crossAxisAlignment="center"
         width="100%"
       >
-        {filteredPools ? (
-          filteredPools.map((pool, index) => {
+        {pools ? (
+          pools.map((pool, index) => {
             return (
               <PoolRow
                 key={pool.id}
@@ -78,8 +75,8 @@ export const PoolList = () => {
                 tokens={pool.underlyingTokens.map((address, index) => ({
                   symbol: pool.underlyingSymbols[index],
                   address,
-                }))}  
-                noBottomDivider={index === filteredPools.length - 1}
+                }))}
+                noBottomDivider={index === pools.length - 1}
               />
             );
           })
@@ -90,5 +87,3 @@ export const PoolList = () => {
     </Column>
   );
 };
-
-

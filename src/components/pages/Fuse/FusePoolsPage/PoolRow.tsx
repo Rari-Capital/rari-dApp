@@ -9,7 +9,7 @@ import { letterScore, usePoolRSS } from "hooks/useRSS";
 
 // Utils
 import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
-import { smallUsdFormatter } from "utils/bigUtils";
+import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { CTokenIcon } from "./CTokenIcon";
 
 export const PoolRow = ({
@@ -19,6 +19,8 @@ export const PoolRow = ({
   borrowed,
   name,
   noBottomDivider,
+  smaller,
+  ...rowProps
 }: {
   tokens: { symbol: string; address: string }[];
   poolNumber: number;
@@ -26,6 +28,8 @@ export const PoolRow = ({
   borrowed: number;
   name: string;
   noBottomDivider?: boolean;
+  smaller?: boolean;
+  [x:string]: any
 }) => {
   const isEmpty = tokens.length === 0;
 
@@ -50,6 +54,7 @@ export const PoolRow = ({
           className="hover-row"
           pl={4}
           pr={1}
+          {...rowProps}
         >
           <Column
             pt={2}
@@ -77,10 +82,10 @@ export const PoolRow = ({
                 <b>{poolNumber}</b>
               </Center>
               <Center height="100%" width="16%">
-                <b>{smallUsdFormatter(tvl)}</b>
+                <b>{smaller ? shortUsdFormatter(tvl) : smallUsdFormatter(tvl)}</b>
               </Center>
               <Center height="100%" width="16%">
-                <b>{smallUsdFormatter(borrowed)}</b>
+                <b>{smaller ? shortUsdFormatter(borrowed) : smallUsdFormatter(borrowed)}</b>
               </Center>
               <Center height="100%" width="15%">
                 <SimpleTooltip

@@ -19,7 +19,10 @@ import useTokenMarketInfo, {
 } from "hooks/tokens/useTokenMarketInfo";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
-const MarketChart = ({ token, ...boxProps }: { token: TokenData }) => {
+const MarketChart = ({ token, ...boxProps }: { 
+  token: TokenData,
+  [x:string]: any
+ }) => {
   const isMobile = useIsSmallScreen();
 
   const [priceHover, setPriceHover] = useState<number | undefined>(undefined);

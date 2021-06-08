@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { convertMantissaToAPY } from "utils/apyUtils";
-import { USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
+import { FusePoolData, USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
 import useAllFusePools from "./useAllFusePools";
 
 interface AssetInFuse {
@@ -12,7 +12,7 @@ interface AssetInFuse {
 export const useFuseDataForAsset = (assetSymbol: String) => {
   const allPools = useAllFusePools();
 
-  const poolsWithThisAsset = useMemo(
+  const poolsWithThisAsset: FusePoolData[] | undefined = useMemo(
     () =>
       allPools?.filter((pool) =>
         pool.assets.find((asset) => {

@@ -12,10 +12,14 @@ import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 // Utils
 import { Column } from "utils/chakraUtils";
 import { PoolList } from "./PoolList";
+import { useFilter } from "hooks/useFilter";
+import { useFusePools } from "hooks/fuse/useFusePools";
 
 const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
+  const filter = useFilter();
+  const { filteredPools } = useFusePools(filter);
 
   return (
     <>
@@ -32,8 +36,8 @@ const FusePoolsPage = memo(() => {
 
         <FuseTabBar />
 
-        <DashboardBox width="100%" mt={4} bg="blue">
-          <PoolList />
+        <DashboardBox width="100%" mt={4}>
+          <PoolList pools={filteredPools}/>
         </DashboardBox>
       </Column>
     </>

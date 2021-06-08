@@ -1,24 +1,14 @@
-import dynamic from "next/dynamic";
-
-import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
+import { Box, Heading, Link, Image, } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
-import { PoolRow } from "components/pages/Fuse/FusePoolsPage/PoolRow";
 import { TokenData } from "hooks/useTokenData";
-import { useFuseDataForAsset } from "hooks/fuse/useFuseDataForAsset";
 import MarketChart from "components/modules/MarketChart";
+import AssetOpportunities from "components/modules/AssetOpportunities";
 
-const TokenDetails = ({ token }: {
-   token: TokenData,
-  [x:string]: any
-  }) => {
+const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
-
-  const fuseDataForAsset = useFuseDataForAsset(token.symbol);
-  const { poolsWithThisAsset } = fuseDataForAsset;  
 
   return (
     <Column
@@ -50,42 +40,12 @@ const TokenDetails = ({ token }: {
           flexBasis={"65%"}
         >
           {/* Chart */}
-          <MarketChart token={token} mb={5}/>
+          <MarketChart token={token} mb={5} />
 
           {/* Fuse Pools */}
-          <DashboardBox
-            height="400px"
-            w="100%"
-            mr={5}
-            mt={0}
-            overflowY="scroll"
-          >
-            <Heading>Fuse Pools</Heading>
-            <Column
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              width="100%"
-            >
-              {poolsWithThisAsset?.map((pool, index) => {
-                return (
-                  <PoolRow
-                    key={pool.id}
-                    poolNumber={pool.id!}
-                    name={filterPoolName(pool.name)}
-                    tvl={pool.totalSuppliedUSD}
-                    borrowed={pool.totalBorrowedUSD}
-                    tokens={pool.assets.map((asset: USDPricedFuseAsset) => ({
-                      symbol: asset.underlyingSymbol,
-                      address: asset.underlyingToken,
-                    }))}
-                    noBottomDivider={index === poolsWithThisAsset.length - 1}
-                  />
-                );
-              }) ?? <Spinner />}
-            </Column>
-          </DashboardBox>
+         <AssetOpportunities token={token} />
 
-          {/* Tx Hist */}
+          {/* Tx Hist
           <DashboardBox
             w="100%"
             // h="400px"
@@ -93,7 +53,7 @@ const TokenDetails = ({ token }: {
             mt={5}
           >
             <Heading>Tx History</Heading>
-          </DashboardBox>
+          </DashboardBox> */}
         </Column>
 
         {/*  Col 2 - 4sq, Trending, Ad, history */}
