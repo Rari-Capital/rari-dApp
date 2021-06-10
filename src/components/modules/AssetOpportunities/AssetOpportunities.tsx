@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Column, Row } from "utils/chakraUtils";
 import FuseOpportunities from "./FuseOpportunities";
 import TrancheOpportunities from "./TrancheOpportunities";
+import EarnOpportunities from "./EarnOpportunities";
 
 export enum OpportunityNav {
   FUSE = "Fuse",
@@ -47,6 +48,7 @@ const AssetOpportunities = ({
         {nav === OpportunityNav.TRANCHES && (
           <TrancheOpportunities token={token} />
         )}
+        {nav === OpportunityNav.EARN && <EarnOpportunities token={token} />}
       </Column>
     </DashboardBox>
   );
@@ -54,20 +56,17 @@ const AssetOpportunities = ({
 export default AssetOpportunities;
 
 const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
-
   // Filter out Nav Items for Opportunities based on the asset
-  const navItems : OpportunityNav[] = useMemo(
-    () => {
+  const navItems: OpportunityNav[] = useMemo(() => {
+    // Only DAI has tranches
+    if (token.symbol !== "DAI") {
+      return Object.values(OpportunityNav).filter(
+        (nav) => nav !== OpportunityNav.TRANCHES
+      );
+    }
 
-      // Only DAI has tranches
-      if (token.symbol !== "DAI") {
-        return Object.values(OpportunityNav).filter(nav => nav !== OpportunityNav.TRANCHES)
-      }
-
-      return Object.values(OpportunityNav)
-    },
-    [token, OpportunityNav]
-  );
+    return Object.values(OpportunityNav);
+  }, [token, OpportunityNav]);
 
   return (
     <Tabs
@@ -81,7 +80,11 @@ const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
       <TabList borderRadius="2xl" bg="#252626" display="flex">
         <Row mainAxisAlignment="center" crossAxisAlignment="center">
           {navItems.map((nav) => (
-            <Tab  key={nav} borderRadius="2xl" _hover={{ textStyle: "underline" }}>
+            <Tab
+              key={nav}
+              borderRadius="2xl"
+              _hover={{ textStyle: "underline" }}
+            >
               <Text
                 fontSize="xs"
                 color="white"
