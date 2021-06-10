@@ -5,15 +5,17 @@ import { ReactNodeArray } from "react";
 const AppLink: any = ({
   children,
   href,
+  as,
   ...linkProps
 }: {
   children: ReactNodeArray;
   href: string;
-  linkProps: any
+  as: any;
+  linkProps: any,
 }) => {
   return (
     <NextLink href={href} passHref>
-      <Link {...linkProps}>{children}</Link>
+      <Link as={as} {...linkProps}>{children}</Link>
     </NextLink>
   );
 };

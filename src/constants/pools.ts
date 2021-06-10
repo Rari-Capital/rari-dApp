@@ -1,9 +1,6 @@
 import { Pool } from "utils/poolUtils";
 
 // Icons
-import EthIcon from "static/ethicon.png";
-import StableIcon from "static/stableicon.png";
-import YieldIcon from "static/yieldicon.png";
 
 export interface PoolInterface {
   type: Pool;
@@ -26,7 +23,7 @@ export const pools: PoolInterface[] = [
     title: "Yield",
     name: "Yield Pool",
     caption: "High risk, high reward",
-    logo:  'static/yieldicon.png'
+    logo:  '/static/yieldicon.png'
   },
   {
     type: Pool.ETH,

@@ -74,7 +74,7 @@ export type AggregatePoolsInfoReturn = {
   totals: PoolTotals;
 };
 
-export const useAggregatePoolInfos = () => {
+export const useAggregatePoolInfos = () : AggregatePoolsInfoReturn => {
   const { rari } = useRari();
   const {
     web3: {
