@@ -1,4 +1,4 @@
-import { Box, Text } from "@chakra-ui/layout";
+import { Box, Divider, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { PoolList } from "components/pages/Fuse/FusePoolsPage/PoolList";
 import PoolRow from "components/pages/Fuse/FusePoolsPage/PoolRow";
@@ -27,6 +27,8 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
         pr={1}
         position="sticky"
         top={-1}
+        bg="#121212"
+        zIndex={9}
       >
         <Text fontWeight="bold" width={isMobile ? "100%" : "40%"}>
           {!isMobile ? t("Pool Assets") : t("Pool Directory")}

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 // Hooks
 import { Row } from "utils/chakraUtils";
 import {
-  useMySaffronData,
+  useRariSupportedTranches,
   usePrincipal,
   TranchePool,
   TrancheRating,
@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 const Earn = () => {
   const { t } = useTranslation();
 
-  const mySaffronData: SaffronTranchePool[] = useMySaffronData();
+  const mySaffronData: SaffronTranchePool[] = useRariSupportedTranches();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
   const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
   const estimatedSFI = useEstimatedSFI();
