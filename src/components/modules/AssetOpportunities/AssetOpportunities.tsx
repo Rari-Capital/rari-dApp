@@ -1,12 +1,23 @@
+import dynamic from "next/dynamic";
+
+// Components
 import { Divider, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
 import DashboardBox from "components/shared/DashboardBox";
+const FuseOpportunities = dynamic(() => import("./FuseOpportunities"))
+const TrancheOpportunities = dynamic(() => import("./TrancheOpportunities"))
+const EarnOpportunities = dynamic(() => import("./EarnOpportunities"))
+
+// Hooks
 import { TokenData } from "hooks/useTokenData";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+
+// Utils
 import { Column, Row } from "utils/chakraUtils";
-import FuseOpportunities from "./FuseOpportunities";
-import TrancheOpportunities from "./TrancheOpportunities";
-import EarnOpportunities from "./EarnOpportunities";
+
+// import FuseOpportunities from "./FuseOpportunities";
+// import TrancheOpportunities from "./TrancheOpportunities";
+// import EarnOpportunities from "./EarnOpportunities";
 
 export enum OpportunityNav {
   FUSE = "Fuse",
@@ -32,7 +43,7 @@ const AssetOpportunities = ({
         w="100%"
         p={5}
       >
-        <Heading>Opportunities</Heading>
+        <Heading> Opportunities</Heading>
         <NavBar setNav={setNav} token={token} />
       </Column>
       <Divider />
@@ -71,7 +82,7 @@ const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
   return (
     <Tabs
       variant="soft-rounded"
-      colorScheme="green"
+      colorScheme="nav"
       isFitted
       my={4}
       onChange={(i: number) => setNav(navItems[i])}
@@ -80,15 +91,11 @@ const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
       <TabList borderRadius="2xl" bg="#252626" display="flex">
         <Row mainAxisAlignment="center" crossAxisAlignment="center">
           {navItems.map((nav) => (
-            <Tab
-              key={nav}
-              borderRadius="2xl"
-              _hover={{ textStyle: "underline" }}
-            >
+            <Tab key={nav} borderRadius="2xl" _hover={{ color: "green.200" }}>
               <Text
                 fontSize="xs"
                 color="white"
-                _hover={{ textStyle: "underline" }}
+                _hover={{ color: "green.200" }}
               >
                 {nav}
               </Text>
