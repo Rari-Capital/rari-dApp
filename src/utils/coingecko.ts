@@ -63,10 +63,10 @@ export const fetchAllTokenMarketInfo = async (
   }
 };
 
-const fetchGranularTokenMarketInfo = async (
+export const fetchGranularTokenMarketInfo = async (
   address: string,
   days: number = 1
-) => {
+): Promise<GranularTokenMarketInfo> => {
   const url: string =
     address === ETH_TOKEN_DATA.address
       ? `https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=${VS_CURRENCY}&days=${days}`
@@ -77,7 +77,9 @@ const fetchGranularTokenMarketInfo = async (
   return data;
 };
 
-const fetchAggregateTokenMarketInfo = async (address: string) => {
+export const fetchAggregateTokenMarketInfo = async (
+  address: string
+): Promise<AggregateTokenMarketInfo> => {
   const url: string =
     address === ETH_TOKEN_DATA.address
       ? `https://api.coingecko.com/api/v3/coins/ethereum`

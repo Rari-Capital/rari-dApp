@@ -19,7 +19,6 @@ export const fetchTokenBalance = async (
     stringBalance = await web3.eth.getBalance(address);
   } else {
     const contract = new web3.eth.Contract(ERC20ABI as any, tokenAddress);
-
     stringBalance = await contract.methods.balanceOf(address).call();
   }
 
@@ -29,7 +28,9 @@ export const fetchTokenBalance = async (
 export function useTokenBalance(tokenAddress: string) {
   const { rari, address } = useRari();
 
-  return useQuery(tokenAddress + " balanceOf " + address, () =>
+  const { data, isLoading } =  useQuery(tokenAddress + " balanceOf " + address, () =>
     fetchTokenBalance(tokenAddress, rari.web3, address)
   );
+
+  return { data, isLoading}
 }

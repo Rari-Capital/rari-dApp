@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery } from "react-query";
-import { fetchAllTokenMarketInfo } from "utils/coingecko";
+import { fetchAllTokenMarketInfo, fetchAggregateTokenMarketInfo } from "utils/coingecko";
 
 export enum MarketInterval {
   DAY = 1,
@@ -9,7 +9,7 @@ export enum MarketInterval {
   YEAR = 356,
 }
 
-const useTokenMarketInfo = (
+export const useTokenMarketInfo = (
   address: string,
   days: MarketInterval = MarketInterval.DAY
 ) => {
@@ -17,8 +17,17 @@ const useTokenMarketInfo = (
     `${address} market info for ${days} days`,
     async () => await fetchAllTokenMarketInfo(address, days)
   );
-  
-  return useMemo(() =>  data, [data])
+
+  return useMemo(() => data, [data]);
+};
+
+export const useTokenMarketAggregateInfo = (address: string) => {
+  const { data } = useQuery(
+    `${address} token aggregate info`,
+    async () => await fetchAggregateTokenMarketInfo(address)
+  );
+
+  return useMemo(() => data, [data]);
 };
 
 export default useTokenMarketInfo;

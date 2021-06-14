@@ -8,6 +8,9 @@ import MarketChart from "components/modules/MarketChart";
 import AssetOpportunities from "components/modules/AssetOpportunities";
 import Foursquare from "components/modules/Foursquare";
 import TrendingOpportunities from "components/modules/TrendingOpportunities";
+import AssetBalance from "components/modules/AssetBalance";
+import { useTokenBalance } from "hooks/useTokenBalance";
+import { useMemo } from "react";
 
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
@@ -44,6 +47,8 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           {/* Chart */}
           <MarketChart token={token} mb={5} />
 
+          <AssetBalance token={token} mb={5} />
+
           {/* Fuse Pools */}
           <AssetOpportunities token={token} />
 
@@ -71,7 +76,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           {/* Foursq */}
           {/* <Foursquare token={token} /> */}
 
-    <TrendingOpportunities token={token}/>
+          <TrendingOpportunities token={token} />
           <DashboardBox height="100%" w="100%" h="100%" mt={5}>
             <Heading>Fuse stuff</Heading>
           </DashboardBox>
