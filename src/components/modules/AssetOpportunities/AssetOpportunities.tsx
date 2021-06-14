@@ -4,9 +4,7 @@ import dynamic from "next/dynamic";
 import { Divider, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
 import DashboardBox from "components/shared/DashboardBox";
-const FuseOpportunities = dynamic(() => import("./FuseOpportunities"))
-const TrancheOpportunities = dynamic(() => import("./TrancheOpportunities"))
-const EarnOpportunities = dynamic(() => import("./EarnOpportunities"))
+
 
 // Hooks
 import { TokenData } from "hooks/useTokenData";
@@ -15,9 +13,9 @@ import { useMemo, useState } from "react";
 // Utils
 import { Column, Row } from "utils/chakraUtils";
 
-// import FuseOpportunities from "./FuseOpportunities";
-// import TrancheOpportunities from "./TrancheOpportunities";
-// import EarnOpportunities from "./EarnOpportunities";
+import FuseOpportunities from "./FuseOpportunities";
+import TrancheOpportunities from "./TrancheOpportunities";
+import EarnOpportunities from "./EarnOpportunities";
 
 export enum OpportunityNav {
   FUSE = "Fuse",

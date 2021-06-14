@@ -73,7 +73,7 @@ export const fetchTokenData = async (address: string) => {
   return data as TokenData;
 };
 
-export const useTokenData = (address: string) => {
+export const useTokenData = (address: string) : TokenData | undefined => {
   const { data: tokenData } = useQuery(
     address + " tokenData",
     async () => await fetchTokenData(address)
@@ -81,7 +81,7 @@ export const useTokenData = (address: string) => {
   return tokenData;
 };
 
-export const useTokensData = (addresses: string[]) => {
+export const useTokensData = (addresses: string[]) : TokenData[] | null => {
   const tokensData = useQueries(
     addresses.map((address: string) => {
       return {

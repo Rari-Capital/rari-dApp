@@ -17,6 +17,7 @@ export const useTokenDataBySymbol = (tokenSymbol: string, days?: MarketInterval)
   if (tokenSymbol === "ETH") {
     token = ETH_TOKEN_DATA;
   }
+  
   const { address } = token;
 
   const tokenData = useTokenData(address);

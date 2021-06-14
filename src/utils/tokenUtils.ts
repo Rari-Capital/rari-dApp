@@ -36,11 +36,13 @@ export const createAssetsMap = (assetsArray: USDPricedFuseAsset[][]) => {
 };
 
 export const createTokensDataMap = (
-  tokensData: TokenData[]
+  tokensData: TokenData[] | null
 ): TokensDataHash => {
+
+  const _tokensData = tokensData ?? []
   const _tokensDataMap: TokensDataHash = {};
 
-  for (const tokenData of tokensData) {
+  for (const tokenData of _tokensData) {
     if (!tokenData.address) continue;
     if (!_tokensDataMap[tokenData.address]) {
       _tokensDataMap[tokenData.address] = tokenData;

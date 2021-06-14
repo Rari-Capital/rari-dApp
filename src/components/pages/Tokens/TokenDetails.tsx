@@ -1,4 +1,4 @@
-import { Box, Heading, Link, Image, } from "@chakra-ui/react";
+import { Box, Heading, Link, Image } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -6,6 +6,8 @@ import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { TokenData } from "hooks/useTokenData";
 import MarketChart from "components/modules/MarketChart";
 import AssetOpportunities from "components/modules/AssetOpportunities";
+import Foursquare from "components/modules/Foursquare";
+import TrendingOpportunities from "components/modules/TrendingOpportunities";
 
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
@@ -37,13 +39,13 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
           p={2}
-          flexBasis={"65%"}
+          flexBasis={"60%"}
         >
           {/* Chart */}
           <MarketChart token={token} mb={5} />
 
           {/* Fuse Pools */}
-         <AssetOpportunities token={token} />
+          <AssetOpportunities token={token} />
 
           {/* Tx Hist
           <DashboardBox
@@ -62,20 +64,14 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           crossAxisAlignment="flex-start"
           w={"100%"}
           h={"100%"}
-          flexBasis={"35%"}
+          flexBasis={"40%"}
           mt={isMobile ? 5 : 0}
           p={2}
-          // bg="coral"
         >
           {/* Foursq */}
-          <DashboardBox height="100%" w="100%">
-            <Heading>Foursquare</Heading>
-          </DashboardBox>
+          {/* <Foursquare token={token} /> */}
 
-          <DashboardBox height="100%" w="100%" h="100%" mt={0}>
-            <Heading>Earn stuff</Heading>
-          </DashboardBox>
-
+    <TrendingOpportunities token={token}/>
           <DashboardBox height="100%" w="100%" h="100%" mt={5}>
             <Heading>Fuse stuff</Heading>
           </DashboardBox>
