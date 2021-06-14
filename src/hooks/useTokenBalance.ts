@@ -28,9 +28,55 @@ export const fetchTokenBalance = async (
 export function useTokenBalance(tokenAddress: string) {
   const { rari, address } = useRari();
 
-  const { data, isLoading } =  useQuery(tokenAddress + " balanceOf " + address, () =>
-    fetchTokenBalance(tokenAddress, rari.web3, address)
+  const { data, isLoading } = useQuery(
+    tokenAddress + " balanceOf " + address,
+    () => fetchTokenBalance(tokenAddress, rari.web3, address)
   );
 
-  return { data, isLoading}
+  return { data, isLoading };
 }
+
+export function useTokenBalances(tokenAddresses: string[]) {
+  const { rari, address } = useRari();
+
+  const balances = useQueries(
+    tokenAddresses.map((tokenAddress: string) => {
+      return {
+        queryKey: tokenAddress + " balance",
+        queryFn: () => {
+          return fetchTokenBalance(tokenAddress, rari.web3, address);
+        },
+      };
+    })
+  );
+
+  console.log({ balances });
+
+  return balances;
+}
+
+const AssetOpportunities = {
+  DAI_ADDR: {
+    fuse: [
+      {
+        poolId: 6,
+        borrowAPR: 12,
+        lendAPR: 3,
+      },
+      {
+        poolId: 2,
+        borrowAPR: 25,
+        lendAPR: 20,
+      },
+    ],
+    vaults: [
+      {
+        vaultId: "DAI",
+        APR: 12
+      }
+    ],
+    tranches: [...trancheData],
+    tanks: [...tanksData]
+  },
+  WBTC_ADDR: { ...wbtcData}
+};
