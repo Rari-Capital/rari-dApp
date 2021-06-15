@@ -86,7 +86,6 @@ const AssetOpportunities = ({
               layout
               onClick={() => setNav(FoursquareNav.TRADE)}
               _hover={{ cursor: "pointer" }}
-              bg="pink"
             />
           </SimpleGrid>
         </MotionBox>
