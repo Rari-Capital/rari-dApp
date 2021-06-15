@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQueries, useQuery } from "react-query";
 
 import { useRari } from "../context/RariContext";
 import ERC20ABI from "../rari-sdk/abi/ERC20.json";
@@ -50,33 +50,6 @@ export function useTokenBalances(tokenAddresses: string[]) {
     })
   );
 
-  console.log({ balances });
 
   return balances;
 }
-
-const AssetOpportunities = {
-  DAI_ADDR: {
-    fuse: [
-      {
-        poolId: 6,
-        borrowAPR: 12,
-        lendAPR: 3,
-      },
-      {
-        poolId: 2,
-        borrowAPR: 25,
-        lendAPR: 20,
-      },
-    ],
-    vaults: [
-      {
-        vaultId: "DAI",
-        APR: 12
-      }
-    ],
-    tranches: [...trancheData],
-    tanks: [...tanksData]
-  },
-  WBTC_ADDR: { ...wbtcData}
-};

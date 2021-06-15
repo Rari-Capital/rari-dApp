@@ -1,5 +1,5 @@
 // Components
-import { Heading } from "@chakra-ui/layout";
+import { Heading, Text } from "@chakra-ui/layout";
 import DashboardBox from "components/shared/DashboardBox";
 import { useTokenMarketAggregateInfo } from "hooks/tokens/useTokenMarketInfo";
 import { useTokenBalance } from "hooks/useTokenBalance";
@@ -50,9 +50,19 @@ const AssetOpportunities = ({
         p={5}
       >
         <Heading fontSize="lg">{token.symbol} Balance:</Heading>
-        <Heading fontSize="xl" mt={2}>
-          {balance} {token.symbol} <span color="grey">{usdBalance}</span>{" "}
-        </Heading>
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+          width="100%"
+          mt={2}
+        >
+          <Text fontSize="xl" fontWeight="bold">
+            {balance} {token.symbol}
+          </Text>
+          <Text fontSize="xl" fontWeight="bold" color="grey" ml={2}>
+            {usdBalance}
+          </Text>
+        </Row>
       </Column>
     </DashboardBox>
   );

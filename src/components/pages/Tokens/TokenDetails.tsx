@@ -9,8 +9,7 @@ import AssetOpportunities from "components/modules/AssetOpportunities";
 import Foursquare from "components/modules/Foursquare";
 import TrendingOpportunities from "components/modules/TrendingOpportunities";
 import AssetBalance from "components/modules/AssetBalance";
-import { useTokenBalance } from "hooks/useTokenBalance";
-import { useMemo } from "react";
+import InternalAd from "components/modules/InternalAd";
 
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
@@ -42,7 +41,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
           p={2}
-          flexBasis={"60%"}
+          flexBasis={"65%"}
         >
           {/* Chart */}
           <MarketChart token={token} mb={5} />
@@ -69,17 +68,19 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           crossAxisAlignment="flex-start"
           w={"100%"}
           h={"100%"}
-          flexBasis={"40%"}
+          flexBasis={"35%"}
           mt={isMobile ? 5 : 0}
           p={2}
         >
           {/* Foursq */}
           {/* <Foursquare token={token} /> */}
 
-          <TrendingOpportunities token={token} />
-          <DashboardBox height="100%" w="100%" h="100%" mt={5}>
+          <TrendingOpportunities token={token} mb={5} />
+
+          <InternalAd />
+          {/* <DashboardBox height="100%" w="100%" h="100%" mt={5}>
             <Heading>Fuse stuff</Heading>
-          </DashboardBox>
+          </DashboardBox> */}
         </Column>
       </RowOrColumn>
     </Column>

@@ -63,7 +63,7 @@ const OpportunityCard = ({
           height={"100%"}
           flex="0 1 30%"
         >
-          <Image src={opportunity.icon} boxSize="50px" my="auto" mx="auto" />
+          <Image src={opportunity.icon} boxSize="60px" my="auto" mx="auto" />
         </Column>
       </Row>
     </Box>

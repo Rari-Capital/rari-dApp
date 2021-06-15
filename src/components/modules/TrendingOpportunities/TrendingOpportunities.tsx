@@ -24,10 +24,9 @@ const TrendingOpportunities = ({
         crossAxisAlignment="flex-start"
         h="100%"
         w="100%"
-        p={3}
-        py={5}
+        py={3}
         px={5}
-        pb={3}
+        pt={1}
       >
         <Row
           mainAxisAlignment="space-between"
@@ -73,7 +72,7 @@ const TrendingBox = ({
   }, [trendingOpportunity]);
 
   return (
-    <AppLink w="100%" h="100%" href="/pools/stable">
+    <AppLink w="100%" h="100%" href="/pools/stable" style={{ textDecoration: 'none' }}>
       <Column
         mainAxisAlignment="space-around"
         crossAxisAlignment="flex-start"
@@ -82,7 +81,7 @@ const TrendingBox = ({
         w="100%"
         h="100%"
         borderRadius="md"
-        _hover={{ bg: "grey", cursor: "pointer" }}
+        _hover={{ bg: "#272727", cursor: "pointer" }}
       >
         <Avatar
           bg="#FFF"
