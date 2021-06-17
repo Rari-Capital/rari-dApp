@@ -72,17 +72,20 @@ export interface FusePoolData {
 export enum FusePoolMetric {
   TotalLiquidityUSD,
   TotalSuppliedUSD,
-  TotalBorrowedUSD
+  TotalBorrowedUSD,
 }
 
 export const filterPoolName = (name: string) => {
-  // Manual rename pool 6 until we add func to change pool names.
   if (name === "Tetranode's Pool") {
     return "Tetranode's RGT Pool";
   }
 
   if (name === "Tetranode's ETH Pool") {
     return "ChainLinkGod's / Tetranode's Up Only Pool";
+  }
+
+  if (name === "Yearn's Yield") {
+    return "Yearn Soup Pot of Yield";
   }
 
   return filter.clean(name);

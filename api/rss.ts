@@ -307,7 +307,7 @@ export default async (request: NowRequest, response: NowResponse) => {
         0
       );
 
-      return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 22;
+      return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 13;
     }, 10);
 
     const utilization = await weightedCalculation(async () => {
