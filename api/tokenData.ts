@@ -129,7 +129,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       image: { small },
     } = rawData;
 
-    symbol = _symbol;
+    symbol = _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
     name = _name;
 
     // Fetch the logo from trustwallet if possible!
