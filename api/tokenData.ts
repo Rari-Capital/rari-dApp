@@ -147,8 +147,8 @@ export default async (request: NowRequest, response: NowResponse) => {
     address ===
     web3.utils.toChecksumAddress("0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9")
   ) {
-    symbol = name;
-    name = symbol;
+    symbol = "FTT";
+    name = "FTX Token";
   }
 
   const basicTokenInfo = {
