@@ -32,7 +32,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     rawRgtAPR,
   ] = await Promise.all([
     perPoolTVL(rari, fuse),
-    fetchPoolAPY(rari, Pool.STABLE),
+    fetchPoolAPY(rari, Pool.USDC),
     fetchPoolAPY(rari, Pool.YIELD),
     fetchPoolAPY(rari, Pool.ETH),
     fetchDAIPoolAPY(rari),
