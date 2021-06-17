@@ -107,6 +107,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
     const yearnLogoResponse = await fetch(yearnLogoURL);
     if (yearnLogoResponse.ok) {
+      symbol = symbol.replace("Curve-", "");
       logoURL = yearnLogoURL;
     } else {
       response.json({
