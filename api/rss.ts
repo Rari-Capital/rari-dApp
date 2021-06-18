@@ -1,108 +1,217 @@
-import { NowRequest, NowResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
-import { variance, median } from "mathjs";
+import { variance, max } from "mathjs";
 import fetch from "node-fetch";
 
-import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
-import {
-  initFuseWithProviders,
-  turboGethURL,
-} from "../src/utils/web3Providers";
+import { resultSet, rssAsset, score } from "../src/utils/rssUtils";
+import { initFuseWithProviders, turboGethURL } from "../src/utils/web3Providers";
 
-function clamp(num, min, max) {
-  return num <= min ? min : num >= max ? max : num;
-}
-
-type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-
-const weightedCalculation = async (
-  calculation: () => Promise<number>,
-  weight: number
-) => {
-  return clamp((await calculation()) ?? 0, 0, 1) * weight;
-};
+import backtest from "./backtest/historical";
+import { sushiswap, testSushi } from "./backtest/sushiswap"; // sushiswap data
+import { uniswap,   testUni   } from './backtest/uniswap';   // uniswap data
 
 const fuse = initFuseWithProviders(turboGethURL);
 
-async function computeAssetRSS(address: string) {
-  address = address.toLowerCase();
+const scorePool = async (assets: rssAsset[], comptroller: any) => {
 
-  // MAX SCORE FOR ETH
-  if (address === "0x0000000000000000000000000000000000000000") {
-    return {
-      liquidityUSD: 4_000_000_000,
+  const set = await Promise.all(assets.map(async (asset): Promise<score> => {
+    console.log(asset.underlyingName, asset.underlyingToken);
 
-      mcap: 33,
-      volatility: 20,
-      liquidity: 32,
-      swapCount: 7,
-      coingeckoMetadata: 2,
-      exchanges: 3,
-      transfers: 3,
+    // MAX SCORE FOR ETH
+    if (asset.underlyingToken === "0x0000000000000000000000000000000000000000") {
+      return {
+        g: 0,
+        h: 0,
+        c: 0,
+        v: 0,
+        l: 0
+      } as score;
+    }
 
-      totalScore: 100,
-    };
+    if (asset.underlyingToken === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52") {
+      return {
+        g: 0,
+        h: 0,
+        c: 0,
+        v: 0,
+        l: 0
+      } as score;
+    }
+
+    const assetData = await fetchAssetData(asset.underlyingToken);
+    const score = await scoreAsset(asset, assetData);
+
+    console.log(asset.underlyingName, " has been scored:", score);
+
+    return score;
+  }))
+
+  return set;
+}
+
+const scoreAsset = async (asset: rssAsset, assetData: any) => {
+
+  const comptrollerContract = new fuse.web3.eth.Contract(
+    JSON.parse(
+      fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
+    ),
+    asset.comptroller
+  );
+
+  const liquidationIncentive = ((await comptrollerContract.methods.liquidationIncentiveMantissa().call()) / 1e18) - 1;
+
+  const calcHistorical = async () => {
+    let h = 0;
+
+    const collateralFactor = asset.collateralFactor / 1e18;
+    const slippage = collateralFactor / 2;
+
+    const historical = await backtest(asset.underlyingToken, {liquidationIncentive, slippage}) as resultSet;
+
+    if (historical) {
+      if (collateralFactor < 1 - liquidationIncentive - historical.TOKEN0DOWN) {
+        h++;
+      }
+    } else {
+      console.log('historical test failed');
+    }
+
+    return h;
   }
 
-  // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
-  if (address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52") {
-    return {
-      liquidityUSD: 0,
+  const calcCrash = () => {
+    let c = 0;
 
-      mcap: 33,
-      volatility: 20,
-      liquidity: 0,
-      swapCount: 7,
-      coingeckoMetadata: 0,
-      exchanges: 3,
-      transfers: 3,
+    const market_cap = assetData.asset_market_cap;
 
-      totalScore: 66,
-    };
+    if (market_cap < .03 * assetData.fully_diluted_value) c++;
+    if (assetData.twitter_followers === 0 || assetData.twitter_followers < 50) c++;
+
+    let reputableExchanges: any[] = [];
+    for (const exchange of assetData.tickers) {
+      const name = exchange.market.identifier;
+      if (
+        !reputableExchanges.includes(name) &&
+        name !== "uniswap" &&
+        exchange.trust_score === "green"
+      ) {
+        reputableExchanges.push(name);
+      }
+    }
+
+    if (reputableExchanges.length < 3) c++;
+
+    return c;
   }
+
+  const calcVolatility = () => {
+    let v1: number, v2: number;
+
+    const market_cap = assetData.asset_market_cap;
+
+    if (market_cap < 1e8) v1 = 2;
+    else if (market_cap < 6e8) v1 = 1;
+    else v1 = 0;
+
+    const peak = assetData.ethVariation * 3;
+    const volatility = 1 - assetData.assetVariation / peak;
+    const collateralFactor = asset.collateralFactor / 1e18;
+    const slippage = collateralFactor / 2;
+
+    if ((volatility < .1) && (2 * volatility < (1 - collateralFactor - liquidationIncentive) && (2 * volatility < liquidationIncentive - (asset.liquidityUSD * slippage)))) {
+      v2 = 1;
+    } else v2 = 0;
+
+    const v = v1 + v2;
+    return v;
+  }
+
+  const calcLiquidity = () => {
+    let l1: number, l2: number;
+
+    const collateralFactor = asset.collateralFactor / 1e18;
+    const slippage = collateralFactor / 2;
+
+    if (asset.liquidityUSD * slippage < 2e5) l1 = 2;
+    else if (asset.liquidityUSD * slippage < 1e6) l1 = 1;
+    else l1 = 0;
+
+    // need to add lp tokens being pulled
+    if (assetData.ethplorer.holdersCount < 1e3) l2 = 1;
+    else l2 = 0;
+
+    const l = l1 + l2;
+    return l;
+  }
+
+  const [
+    historical,
+    crash,
+    volatility,
+    liquidity,
+  ] = await Promise.all([
+    await calcHistorical(),
+    calcCrash(),
+    calcVolatility(),
+    calcLiquidity(),
+  ])
+
+  let score: score = {
+    // add historical when done
+    h: historical,
+    c: crash,
+    v: volatility,
+    l: liquidity,
+    g: max([historical, crash, volatility, liquidity])
+  }
+  return score
+}
+
+const fetchAssetData = async (address: string) => {
 
   try {
-    // Fetch all the data in parallel
     const [
       {
         market_data: {
           market_cap: { usd: asset_market_cap },
           current_price: { usd: price_usd },
+          fully_diluted_valuation: { usd: fully_diluted_value }
         },
         tickers,
         community_data: { twitter_followers },
       },
 
       uniData,
-
       sushiData,
-
-      defiCoins,
-
       assetVariation,
+      ethplorer
 
-      ethVariation,
     ] = await Promise.all([
+
+      // object data
       fetch(
         `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
       ).then((res) => res.json()),
 
+      // uniswap
       fetch("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", {
         method: "post",
 
         body: JSON.stringify({
           query: `{
-  token(id: "${address}") {
-    totalLiquidity
-    txCount
-  }
-}`,
+            token(id: "${address}") {
+              totalLiquidity
+              txCount
+            }
+          }`,
         }),
 
         headers: { "Content-Type": "application/json" },
-      }).then((res) => res.json()),
+      })
+        .then((res) => res.json()),
 
+      // sushi swap
       fetch(
         "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
         {
@@ -110,160 +219,54 @@ async function computeAssetRSS(address: string) {
 
           body: JSON.stringify({
             query: `{
-            token(id: "${address}") {
-              totalLiquidity
-              txCount
-            }
-          }`,
+              token(id: "${address}") {
+                totalLiquidity
+                txCount
+              }
+            }`,
           }),
 
           headers: { "Content-Type": "application/json" },
         }
-      ).then((res) => res.json()),
-
-      fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=decentralized_finance_defi&order=market_cap_desc&per_page=10&page=1&sparkline=false`
       )
-        .then((res) => res.json())
-        .then((array) => array.slice(0, 30)),
+        .then((res) => res.json()),
 
+      // asset variance (30 day)
       fetch(
-        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=30`
+        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=1`
       )
         .then((res) => res.json())
         .then((data) => data.prices.map(([, price]) => price))
         .then((prices) => variance(prices)),
 
       fetch(
-        `https://api.coingecko.com/api/v3/coins/ethereum/market_chart/?vs_currency=usd&days=30`
+        `https://api.ethplorer.io/getTokenInfo/${address}?apiKey=freekey`
       )
         .then((res) => res.json())
-        .then((data) => data.prices.map(([, price]) => price))
-        .then((prices) => variance(prices)),
     ]);
 
-    const mcap = await weightedCalculation(async () => {
-      const medianDefiCoinMcap = median(
-        defiCoins.map((coin) => coin.market_cap)
-      );
-
-      // Make exception for WETH
-      if (address === "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2") {
-        return 1;
-      }
-
-      if (asset_market_cap < 1_000_000) {
-        return 0;
-      } else {
-        return asset_market_cap / medianDefiCoinMcap;
-      }
-    }, 33);
-
-    let liquidityUSD = 0;
-
-    const liquidity = await weightedCalculation(async () => {
-      const uniLiquidity = parseFloat(
-        uniData.data.token?.totalLiquidity ?? "0"
-      );
-      const sushiLiquidity = parseFloat(
-        sushiData.data.token?.totalLiquidity ?? "0"
-      );
-
-      const totalLiquidity = uniLiquidity + sushiLiquidity * price_usd;
-
-      liquidityUSD = totalLiquidity;
-
-      return totalLiquidity / 220_000_000;
-    }, 32);
-
-    const volatility = await weightedCalculation(async () => {
-      const peak = ethVariation * 3;
-
-      return 1 - assetVariation / peak;
-    }, 20);
-
-    const swapCount = await weightedCalculation(async () => {
-      const uniTxCount = parseFloat(uniData.data.token?.txCount ?? "0");
-
-      const sushiTxCount = parseFloat(sushiData.data.token?.txCount ?? "0");
-
-      const totalTxCount = uniTxCount + sushiTxCount;
-
-      return totalTxCount >= 10_000 ? 1 : 0;
-    }, 7);
-
-    const exchanges = await weightedCalculation(async () => {
-      let reputableExchanges: any[] = [];
-
-      for (const exchange of tickers) {
-        const name = exchange.market.identifier;
-
-        if (
-          !reputableExchanges.includes(name) &&
-          name !== "uniswap" &&
-          exchange.trust_score === "green"
-        ) {
-          reputableExchanges.push(name);
-        }
-      }
-
-      return reputableExchanges.length >= 3 ? 1 : 0;
-    }, 3);
-
-    const transfers = await weightedCalculation(async () => {
-      return 1;
-    }, 3);
-
-    const coingeckoMetadata = await weightedCalculation(async () => {
-      // USDC needs an exception because Circle twitter is not listed on Coingecko.
-      if (address === "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48") {
-        return 1;
-      }
-
-      return twitter_followers >= 1000 ? 1 : 0;
-    }, 2);
-
     return {
-      liquidityUSD,
-
-      mcap,
-      volatility,
-      liquidity,
-      swapCount,
-      coingeckoMetadata,
-      exchanges,
-      transfers,
-
-      totalScore:
-        mcap +
-          volatility +
-          liquidity +
-          swapCount +
-          coingeckoMetadata +
-          exchanges +
-          transfers || 0,
+      asset_market_cap,
+      fully_diluted_value,
+      price_usd,
+      tickers,
+      twitter_followers,
+      uniData,
+      sushiData,
+      assetVariation,
+      ethplorer
     };
+
   } catch (e) {
+    console.log("error on token:", address);
     console.log(e);
-
-    return {
-      liquidityUSD: 0,
-
-      mcap: 0,
-      volatility: 0,
-      liquidity: 0,
-      swapCount: 0,
-      coingeckoMetadata: 0,
-      exchanges: 0,
-      transfers: 0,
-
-      totalScore: 0,
-    };
+    return false;
   }
 }
 
-export default async (request: NowRequest, response: NowResponse) => {
-  const { address, poolID } = request.query as { [key: string]: string };
+// eslint-disable-next-line import/no-anonymous-default-export
+export default async (request: VercelRequest, response: VercelResponse) => {
+  const { poolID } = request.query as { [key: string]: string };
 
   response.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -271,13 +274,9 @@ export default async (request: NowRequest, response: NowResponse) => {
     timeZone: "America/Los_Angeles",
   });
 
-  if (address) {
-    response.setHeader("Cache-Control", "s-maxage=3600");
-
-    response.json({ ...(await computeAssetRSS(address)), lastUpdated });
-  } else if (poolID) {
+  if (poolID) {
     console.time("poolData");
-    const { assets, totalLiquidityUSD, comptroller } = (await fetchFusePoolData(
+    const { assets, comptroller } = (await fetchFusePoolData(
       poolID,
       "0x0000000000000000000000000000000000000000",
       fuse
@@ -285,191 +284,64 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     console.timeEnd("poolData");
 
-    const liquidity = await weightedCalculation(async () => {
-      return totalLiquidityUSD > 50_000 ? totalLiquidityUSD / 2_000_000 : 0;
-    }, 25);
+    const rssAssets: rssAsset[] = assets.map((asset: any) => {
+      asset.scores = false;
+      asset.comptroller = comptroller;
 
-    const collateralFactor = await weightedCalculation(async () => {
-      // @ts-ignore
-      const avgCollatFactor = assets.reduce(
-        (a, b, _, { length }) => a + b.collateralFactor / 1e16 / length,
-        0
-      );
-
-      // Returns a percentage in the range of 45% -> 90% (where 90% is 0% and 45% is 100%)
-      return -1 * (1 / 45) * avgCollatFactor + 2;
-    }, 10);
-
-    const reserveFactor = await weightedCalculation(async () => {
-      // @ts-ignore
-      const avgReserveFactor = assets.reduce(
-        (a, b, _, { length }) => a + b.reserveFactor / 1e16 / length,
-        0
-      );
-
-      return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 13;
-    }, 10);
-
-    const utilization = await weightedCalculation(async () => {
-      for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i];
-
-        // If this asset has more than 75% utilization, fail
-        if (
-          // @ts-ignore
-          asset.totalSupply === "0"
-            ? false
-            : asset.totalBorrow / asset.totalSupply >= 0.75
-        ) {
-          return 0;
-        }
+      // curve pool tokens are not listed on exchange
+      if (asset.underlyingName.includes('Curve')) {
+        asset.underlyingToken = '0xD533a949740bb3306d119CC777fa900bA034cd52';
       }
 
-      return 1;
-    }, 10);
+      return asset;
+    })
 
-    let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
-    let totalRSS = 0;
+    // // // DEBUGGG
+    // let asset = rssAssets[0];
 
-    let promises: Promise<any>[] = [];
+    // const config = {
+    //     period: 68, // around 15 mins of blocktime
+    //     no_segments: 500, // keep divisible of 100 for batching
+    //     end: 12635203
+    //   }
+    // let historical = await backtest(asset.underlyingToken, config);
 
-    for (let i = 0; i < assets.length; i++) {
-      const asset = assets[i];
+    // console.log(historical);
 
-      console.time(asset.underlyingSymbol);
-      promises.push(
-        fetch(
-          `http://${process.env.VERCEL_URL}/api/rss?address=` +
-            asset.underlyingToken
-        )
-          .then((res) => res.json())
-          .then((rss) => {
-            assetsRSS[i] = rss;
-            totalRSS += rss.totalScore;
+    // main thread
+    await new Promise(async (resolve) => {
 
-            console.timeEnd(asset.underlyingSymbol);
-          })
-      );
-    }
+      let scores: score[] = await scorePool(rssAssets, comptroller);
+ 
+      resolve(scores);
 
-    await Promise.all(promises);
+    }).then((pool) => {
 
-    const averageRSS = await weightedCalculation(async () => {
-      return totalRSS / assets.length / 100;
-    }, 15);
+      const poolScore = calculatePoolScore(pool as score[])
 
-    const upgradeable = await weightedCalculation(async () => {
-      try {
-        const { 0: admin, 1: upgradeable } =
-          await fuse.contracts.FusePoolLens.methods
-            .getPoolOwnership(comptroller)
-            .call({ gas: 1e18 });
+      response.setHeader("Cache-Control", "s-maxage=3600");
+      response.json({
 
-        // Rari Multisig(s)
-        if (
-          admin.toLowerCase() ===
-            "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85" ||
-          admin.toLowerCase() ===
-            "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f" ||
-          admin.toLowerCase() ===
-            "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
-          admin.toLowerCase() ===
-            "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6" ||
-          admin.toLowerCase() ===
-            "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" ||
-          admin.toLowerCase() ===
-            "0x49529a7ccbd9f8cabbfa36c65feb39ae08bdea0f" ||
-          admin.toLowerCase() === "0x639572471f2f318464dc01066a56867130e45e25"
-        ) {
-          return 1;
-        }
-
-        return upgradeable ? 0 : 1;
-      } catch (e) {
-        // Assume upgradeable.
-        return 0;
-      }
-    }, 10);
-
-    const mustPass = await weightedCalculation(async () => {
-      const comptrollerContract = new fuse.web3.eth.Contract(
-        JSON.parse(
-          fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-        ),
-        comptroller
-      );
-
-      // Ex: 8
-      const liquidationIncentive =
-        (await comptrollerContract.methods
-          .liquidationIncentiveMantissa()
-          .call()) /
-          1e16 -
-        100;
-
-      for (let i = 0; i < assetsRSS.length; i++) {
-        const rss = assetsRSS[i];
-        const asset = assets[i];
-
-        // Ex: 75
-        const collateralFactor = asset.collateralFactor / 1e16;
-
-        // If the AMM liquidity is less than 2x the $ amount supplied, fail
-        if (rss.liquidityUSD < 2 * asset.totalSupplyUSD) {
-          return 0;
-        }
-
-        // If any of the RSS asset scores are less than 60, fail
-        if (rss.totalScore < 60) {
-          return 0;
-        }
-
-        // If the collateral factor and liquidation incentive do not have at least a 5% safety margin, fail
-        if (collateralFactor + liquidationIncentive > 95) {
-          /* 
-        
-          See this tweet for why: https://twitter.com/transmissions11/status/1378862288266960898
-        
-          TLDR: If CF and LI add up to be greater than 100 then any liquidation will result in instant insolvency. 95 has been determined to be the highest sum that could be considered "safe".
-        
-          */
-
-          return 0;
-        }
-
-        // If the liquidation incentive is less than or equal to 1/10th of the collateral factor, fail
-        if (liquidationIncentive <= collateralFactor / 10) {
-          return 0;
-        }
-      }
-
-      return 1;
-    }, 20);
-
-    response.setHeader("Cache-Control", "s-maxage=3600");
-    response.json({
-      liquidity,
-      collateralFactor,
-      reserveFactor,
-      utilization,
-      averageRSS,
-      upgradeable,
-      mustPass,
-
-      totalScore:
-        liquidity +
-          collateralFactor +
-          reserveFactor +
-          utilization +
-          averageRSS +
-          upgradeable +
-          mustPass || 0,
-
-      lastUpdated,
-    });
+        poolScore,
+        pool,
+        lastUpdated,
+      });
+    })
 
     console.log("done!");
   } else {
-    response.status(404).send("Specify address or poolID!");
+    response.status(404).send("Specify poolID!");
   }
 };
+
+
+// quick max() from score array
+const calculatePoolScore = (scores: score[]) => {
+  let points: number[] = [];
+  for (let i = 0; i < scores.length; i++) {
+    points.push(scores[i].g);
+  }
+  if (points.length === scores.length) {
+    return max(points);
+  }
+}
