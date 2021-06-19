@@ -84,6 +84,10 @@ export const filterPoolName = (name: string) => {
     return "ChainLinkGod's / Tetranode's Up Only Pool";
   }
 
+  if (name === "Tetranode's Flavor of the Month") {
+    return "Official Tribe/Fei Pool";
+  }
+
   if (name === "Yearn's Yield") {
     return "Yearn Soup Pot of Yield";
   }
