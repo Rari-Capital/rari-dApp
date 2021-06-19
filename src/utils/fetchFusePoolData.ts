@@ -85,7 +85,7 @@ export const filterPoolName = (name: string) => {
   }
 
   if (name === "Tetranode's Flavor of the Month") {
-    return "Official Tribe/Fei Pool";
+    return "FeiRari (Fei DAO Pool)";
   }
 
   if (name === "Yearn's Yield") {
