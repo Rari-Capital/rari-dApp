@@ -130,7 +130,7 @@ const PoolPortalContent = () => {
         new PixelSize(90),
         new PixelSize(100),
         new PixelSize(152),
-        new PixelSize(180),
+        new PixelSize(230),
         new PercentOnDesktopPixelOnMobileSize({
           percentageSize: 1,
           pixelSize: 100,
@@ -607,7 +607,7 @@ const APYStats = () => {
     data: apys,
     isLoading: areAPYsLoading,
     isError,
-    error
+    error,
   } = useQuery(pool + " monthly and weekly apys", async () => {
     const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
       getSDKPool({
@@ -623,7 +623,7 @@ const APYStats = () => {
         Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
       ),
       fetchRGTAPR(rari),
-    ])
+    ]);
 
     const month = parseFloat(
       rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
