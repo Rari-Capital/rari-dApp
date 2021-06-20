@@ -88,6 +88,10 @@ export const filterPoolName = (name: string) => {
     return "FeiRari (Fei DAO Pool)";
   }
 
+  if (name === "WOO pool") {
+    return "Warlord's WOO Pool"
+  }
+
   if (name === "Yearn's Yield") {
     return "Yearn Soup Pot of Yield";
   }
