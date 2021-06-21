@@ -53,6 +53,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0")
     ) {
+      name = "Wrapped Staked Ether";
       logoURL =
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
     }
