@@ -43,7 +43,7 @@ const PositionsTableContext = createContext<PositionsTableOptions>(
   PositionsTableOptions.Lending
 );
 
-const StatsPositionsSection = () => {
+export default function StatsPositionsSection() {
   // name of table in view (current)
   const [tableName, setTableName] = useState<PositionsTableOptions>(
     PositionsTableOptions.Lending
@@ -99,18 +99,16 @@ const StatsPositionsSection = () => {
       </Column>
     </PositionsTableContext.Provider>
   );
-};
-
-export default StatsPositionsSection;
+}
 
 // TODO (Zane): change "any" type to something else?
-const MultiPicker = ({
+function MultiPicker({
   options,
   onChange,
 }: {
   options: any;
   onChange: (state: string) => any;
-}) => {
+}) {
   // start with first option as default
   const [selectedKey, setSelectedKey] = useState<string>(
     Object.keys(options)[0]
@@ -133,7 +131,7 @@ const MultiPicker = ({
       ))}
     </ButtonGroup>
   );
-};
+}
 
 function MultiPickerButton({
   children,
