@@ -3,7 +3,6 @@ import {
   useEffect,
   useState,
   createContext,
-  memo,
   MouseEventHandler,
   ReactNode,
 } from "react";
@@ -24,11 +23,11 @@ import { motion } from "framer-motion";
 import { Column } from "utils/chakraUtils";
 
 // Hooks
-import { useRari } from "context/RariContext";
+// import { useRari } from "context/RariContext";
 
 // Util
-import { tokens } from "utils/tokenUtils";
-import { getTokensBalance } from "@mycrypto/eth-scan";
+// import { tokens } from "utils/tokenUtils";
+// import { getTokensBalance } from "@mycrypto/eth-scan";
 
 type Asset = {
   name: string;
@@ -50,21 +49,7 @@ const StatsPositionsSection = () => {
     PositionsTableOptions.Lending
   );
 
-  const { address, rari } = useRari();
-
-  useEffect(() => {
-    console.log("GETTING BALANCE...");
-    getTokensBalance(
-      rari.web3.eth,
-      address,
-      Object.keys(tokens).map((symbol) => tokens[symbol].address)
-    )
-      .then((e) => console.log("Balance gotten:", e))
-      .catch((e) => {
-        console.log("ERROR!");
-        console.log(e);
-      });
-  }, []);
+  // const { address, rari } = useRari();
 
   return (
     <PositionsTableContext.Provider value={tableName}>
@@ -150,16 +135,16 @@ const MultiPicker = ({
   );
 };
 
-const MultiPickerButton = memo(
-  ({
-    children,
-    selected,
-    onClick,
-  }: {
-    children: ReactNode;
-    selected: boolean;
-    onClick?: MouseEventHandler<HTMLButtonElement>;
-  }) => (
+function MultiPickerButton({
+  children,
+  selected,
+  onClick,
+}: {
+  children: ReactNode;
+  selected: boolean;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+}) {
+  return (
     <Button
       colorScheme="black"
       variant={selected ? "solid" : "ghost"}
@@ -169,63 +154,63 @@ const MultiPickerButton = memo(
     >
       {children}
     </Button>
-  )
-);
+  );
+}
 
-const PositionsTableRow = memo(({ asset }: { asset: Asset }) => (
-  <MotionTr
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-  >
-    <Td fontWeight="bold">
-      {asset.name} ({asset.symbol})
-    </Td>
-    {/*  */}
-    <Td textAlign="center">
-      <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
-    </Td>
-    <Td textAlign="center">
-      <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
-    </Td>
-    <Td textAlign="center">
-      <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
-    </Td>
-    <Td textAlign="center">
-      <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
-    </Td>
-  </MotionTr>
-));
+function PositionsTableRow({ asset }: { asset: Asset }) {
+  return (
+    <MotionTr
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <Td fontWeight="bold">
+        {asset.name} ({asset.symbol})
+      </Td>
+      {/*  */}
+      <Td textAlign="center">
+        <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
+      </Td>
+      <Td textAlign="center">
+        <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
+      </Td>
+      <Td textAlign="center">
+        <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
+      </Td>
+      <Td textAlign="center">
+        <AnimatedPercentage lendingRate={0.0342} borrowingRate={0.0666} />
+      </Td>
+    </MotionTr>
+  );
+}
 
-const AnimatedPercentage = memo(
-  ({
-    lendingRate,
-    borrowingRate,
-  }: {
-    lendingRate: number;
-    borrowingRate: number;
-  }) => {
-    const selectedTable = useContext(PositionsTableContext);
+function AnimatedPercentage({
+  lendingRate,
+  borrowingRate,
+}: {
+  lendingRate: number;
+  borrowingRate: number;
+}) {
+  const selectedTable = useContext(PositionsTableContext);
 
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 10 }}
-        transition={{ ease: "easeOut", duration: 0.25 }}
-        style={{ position: "relative" }}
-        // had to add key prop for framer-motion to animate
-        key={selectedTable}
-      >
-        {formatPercentage(
-          selectedTable === PositionsTableOptions.Lending
-            ? lendingRate
-            : borrowingRate
-        )}
-      </motion.div>
-    );
-  }
-);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ ease: "easeOut", duration: 0.25 }}
+      style={{ position: "relative" }}
+      // had to add key prop for framer-motion to animate
+      key={selectedTable}
+    >
+      {formatPercentage(
+        selectedTable === PositionsTableOptions.Lending
+          ? lendingRate
+          : borrowingRate
+      )}
+    </motion.div>
+  );
+}
 
 // format percentage using user locale
 const formatPercentage = (rate: number) =>
