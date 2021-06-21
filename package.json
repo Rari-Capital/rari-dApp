@@ -11,6 +11,7 @@
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
     "@loadable/component": "^5.13.2",
+    "@mycrypto/eth-scan": "^3.4.4",
     "@portis/web3": "^2.0.0-beta.59",
     "@testing-library/cypress": "^7.0.1",
     "@testing-library/jest-dom": "^5.11.2",
