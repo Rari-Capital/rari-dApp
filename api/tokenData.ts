@@ -30,97 +30,41 @@ export default async (request: NowRequest, response: NowResponse) => {
 
   let name: string;
   let symbol: string;
-  let logoURL: string;
+  let logoURL: string | undefined;
 
   if (rawData.error) {
     name = await tokenContract.methods.name().call();
     symbol = await tokenContract.methods.symbol().call();
 
-    // Edge cases
+    //////////////////
+    // Edge cases: //
+    /////////////////
     if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0xB8c77482e45F1F44dE1745F52C74426C631bDD52")
-    ) {
-      // BNB
-      response.json({
-        name,
-        symbol,
-        decimals,
-        color: "#E6B93D",
-        overlayTextColor: "#FFFFFF",
-        logoURL:
-          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png",
-      });
-
-      return;
-    } else if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
     ) {
-      // crvLINK-gauges
-      response.json({
-        name: "linkCRV Gauge Deposit",
-        symbol: "[G]linkCRV",
-        decimals,
-        color: "#2A5ADA",
-        overlayTextColor: "#FFFFFF",
-        logoURL:
-          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png",
-      });
-
-      return;
-    } else if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0xD81b1A8B1AD00Baa2D6609E0BAE28A38713872f7")
-    ) {
-      // PcUSDC
-      response.json({
-        name: "PoolTogether USDC Ticket",
-        symbol: "PcUSDC",
-        decimals,
-        color: "#4C249F",
-        overlayTextColor: "#FFFFFF",
-        logoURL:
-          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/ptUSDC.png",
-      });
-
-      return;
-    } else if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0xD81b1A8B1AD00Baa2D6609E0BAE28A38713872f7")
-    ) {
-      // PcUSDC
-      response.json({
-        name: "PoolTogether USDC Ticket",
-        symbol: "PcUSDC",
-        decimals,
-        color: "#4C249F",
-        overlayTextColor: "#FFFFFF",
-        logoURL:
-          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/ptUSDC.png",
-      });
-
-      return;
+      name = "linkCRV Gauge Deposit";
+      symbol = "[G]linkCRV";
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png";
     }
 
-    // Fetch the logo from yearn if possible!
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0")
+    ) {
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
+    }
+
+    // Fetch the logo from yearn if possible:
     const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
     const yearnLogoResponse = await fetch(yearnLogoURL);
     if (yearnLogoResponse.ok) {
+      // A lot of the yearn tokens are curve tokens with long names,
+      // so we flatten them here and just remove the Curve part
       symbol = symbol.replace("Curve-", "");
       logoURL = yearnLogoURL;
-    } else {
-      response.json({
-        name,
-        symbol,
-        decimals,
-        color: "#FFFFFF",
-        overlayTextColor: "#000000",
-        logoURL:
-          "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
-      });
-
-      return;
     }
   } else {
     let {
@@ -132,7 +76,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     symbol = _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
     name = _name;
 
-    // Fetch the logo from trustwallet if possible!
+    // Prefer the logo from trustwallet if possible!
     const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
     const trustWalletLogoResponse = await fetch(trustWalletURL);
     if (trustWalletLogoResponse.ok) {
@@ -142,11 +86,11 @@ export default async (request: NowRequest, response: NowResponse) => {
     }
   }
 
-  // FTX swapped the name and symbol so we will correct for that.
   if (
     address ===
     web3.utils.toChecksumAddress("0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9")
   ) {
+    // FTX swapped the name and symbol so we will correct for that.
     symbol = "FTT";
     name = "FTX Token";
   }
@@ -159,6 +103,12 @@ export default async (request: NowRequest, response: NowResponse) => {
 
   let color: Palette;
   try {
+    if (logoURL == undefined) {
+      // If we have no logo no need to try to get the color
+      // just go to the catch block and return the default logo.
+      throw "Go to the catch block";
+    }
+
     color = await Vibrant.from(logoURL).getPalette();
   } catch (error) {
     response.json({
