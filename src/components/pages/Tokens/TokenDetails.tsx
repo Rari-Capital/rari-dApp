@@ -10,6 +10,7 @@ import Foursquare from "components/modules/Foursquare";
 import TrendingOpportunities from "components/modules/TrendingOpportunities";
 import AssetBalance from "components/modules/AssetBalance";
 import InternalAd from "components/modules/InternalAd";
+import AssetHistory from "components/modules/AssetHistory";
 
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
@@ -73,11 +74,14 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           p={2}
         >
           {/* Foursq */}
-          {/* <Foursquare token={token} /> */}
+          {/* <Foursquare token={token}  mb={5}/> */}
 
           <TrendingOpportunities token={token} mb={5} />
 
-          <InternalAd />
+          <InternalAd mb={5} />
+
+          <AssetHistory token={token} />
+
           {/* <DashboardBox height="100%" w="100%" h="100%" mt={5}>
             <Heading>Fuse stuff</Heading>
           </DashboardBox> */}

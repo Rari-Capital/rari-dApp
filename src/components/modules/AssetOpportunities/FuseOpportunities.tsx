@@ -1,4 +1,4 @@
-import { Box, Divider, Text } from "@chakra-ui/layout";
+import { Box, Center, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { PoolList } from "components/pages/Fuse/FusePoolsPage/PoolList";
 import PoolRow from "components/pages/Fuse/FusePoolsPage/PoolRow";
@@ -12,8 +12,8 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
   const fuseDataForAsset = useFuseDataForAsset(token.symbol);
   const { poolsWithThisAsset } = fuseDataForAsset;
 
-  const isMobile = useIsMobile()
-  const { t } = useTranslation()
+  const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   return (
     <Box h="100%" w="100%">
@@ -54,23 +54,29 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
           </>
         )}
       </Row>
-      {poolsWithThisAsset?.map((pool, index) => {
-        return (
-          <PoolRow
-            key={pool.id}
-            poolNumber={pool.id!}
-            name={filterPoolName(pool.name)}
-            tvl={pool.totalSuppliedUSD}
-            borrowed={pool.totalBorrowedUSD}
-            tokens={pool.assets.map((asset: USDPricedFuseAsset) => ({
-              symbol: asset.underlyingSymbol,
-              address: asset.underlyingToken,
-            }))}
-            noBottomDivider={index === poolsWithThisAsset.length - 1}
-            smaller={true}
-          />
-        );
-      }) ?? <Spinner />}
+      {poolsWithThisAsset?.length ? (
+        poolsWithThisAsset.map((pool, index) => {
+          return (
+            <PoolRow
+              key={pool.id}
+              poolNumber={pool.id!}
+              name={filterPoolName(pool.name)}
+              tvl={pool.totalSuppliedUSD}
+              borrowed={pool.totalBorrowedUSD}
+              tokens={pool.assets.map((asset: USDPricedFuseAsset) => ({
+                symbol: asset.underlyingSymbol,
+                address: asset.underlyingToken,
+              }))}
+              noBottomDivider={index === poolsWithThisAsset.length - 1}
+              smaller={true}
+            />
+          );
+        })
+      ) : (
+        <Center h="100%">
+          <Spinner />
+        </Center>
+      )}
     </Box>
   );
 };

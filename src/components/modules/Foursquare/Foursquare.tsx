@@ -31,32 +31,52 @@ const AssetOpportunities = ({
 
   const isSelected = useCallback(
     (thisNav: FoursquareNav) => {
-      return thisNav === nav;
+      return !!hasSelection && thisNav === nav;
     },
     [nav]
   );
 
   return (
-    <DashboardBox height="100%" w="100%" {...boxProps} bg="">
-      <AnimatePresence>
-        <MotionBox
-          h="100%"
-          w="100%"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <SimpleGrid columns={2} spacing={0} h="100%" w="100%">
+    <DashboardBox height="300px" w="100%" {...boxProps} bg="">
+      <Box h="100%" w="100%">
+        <SimpleGrid columns={2} spacing={0} h="100%" w="100%">
+          <AnimateSharedLayout>
             <MotionBox
               bg={nav === FoursquareNav.EARN ? "pink" : ""}
               h="100%"
               w="100%"
               borderBottom="1px solid #272727"
               borderRight="1px solid #272727"
-              onClick={() => setNav(FoursquareNav.EARN)}
-              _hover={{ cursor: "pointer" }}
+              onClick={() =>
+                hasSelection ? setNav(null) : setNav(FoursquareNav.EARN)
+              }
+              _hover={{ cursor: "pointer", bg: "#272727" }}
               layout
-            />
+              // layoutId="swag"
+            >
+              <AnimatePresence>
+                {nav === FoursquareNav.EARN && (
+                  <MotionBox
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <Heading>Hello</Heading>
+                  </MotionBox>
+                )}
+              </AnimatePresence>{" "}
+              <AnimatePresence>
+                {nav === null && (
+                  <MotionBox
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <Heading>Earn</Heading>
+                  </MotionBox>
+                )}
+              </AnimatePresence>
+            </MotionBox>
             <MotionBox
               bg={nav === FoursquareNav.FUSE ? "pink" : ""}
               h={isSelected(FoursquareNav.FUSE) ? "100%" : "0%"}
@@ -64,9 +84,13 @@ const AssetOpportunities = ({
               borderBottom="1px solid #272727"
               borderLeft="1px solid #272727"
               onClick={() => setNav(FoursquareNav.FUSE)}
-              _hover={{ cursor: "pointer" }}
+              _hover={{ cursor: "pointer", bg: "#272727" }}
               layout
-            />
+              // layoutId="swag"
+            >
+              {" "}
+              Fuse{" "}
+            </MotionBox>
             <MotionBox
               bg={nav === FoursquareNav.INSTALEV ? "pink" : ""}
               h="100%"
@@ -74,9 +98,13 @@ const AssetOpportunities = ({
               borderTop="1px solid #272727"
               borderRight="1px solid #272727"
               onClick={() => setNav(FoursquareNav.INSTALEV)}
-              _hover={{ cursor: "pointer" }}
+              _hover={{ cursor: "pointer", bg: "#272727" }}
               layout
-            />
+              // layoutId="swag"
+            >
+              {" "}
+              INSTALEV{" "}
+            </MotionBox>
             <MotionBox
               bg={nav === FoursquareNav.TRADE ? "pink" : ""}
               h="100%"
@@ -85,28 +113,15 @@ const AssetOpportunities = ({
               borderLeft="1px solid #272727"
               layout
               onClick={() => setNav(FoursquareNav.TRADE)}
-              _hover={{ cursor: "pointer" }}
-            />
-          </SimpleGrid>
-        </MotionBox>
-      </AnimatePresence>
+              _hover={{ cursor: "pointer", bg: "#272727" }}
+              // layoutId="swag"
+            >
+              TRADE
+            </MotionBox>
+          </AnimateSharedLayout>
+        </SimpleGrid>
+      </Box>
     </DashboardBox>
   );
 };
 export default AssetOpportunities;
-
-// const FourSquareBox = ({ thisNav, nav, setNav} : { thisNav: FoursquareNav, nav: FoursquareNav, setNav: () =>}) => {
-
-//     return (
-//         <MotionBox
-//               bg={nav === FoursquareNav.TRADE ? "pink" : ""}
-//               h="100%"
-//               w="100%"
-//               borderTop="1px solid #272727"
-//               borderLeft="1px solid #272727"
-//               layout
-//               onClick={() => setNav(FoursquareNav.TRADE)}
-//               _hover={{cursor: 'pointer'}}
-//             />
-//     )
-// }
