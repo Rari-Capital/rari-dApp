@@ -10,7 +10,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
+import {
+  Column,
+  Center,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 
 // Hooks
 import { useTranslation } from "react-i18next";
@@ -561,6 +567,11 @@ const BorrowList = ({
         {assets.length > 0 ? (
           <>
             {borrowedAssets.map((asset, index) => {
+              // Don't show paused assets.
+              if (asset.isPaused) {
+                return null;
+              }
+
               return (
                 <AssetBorrowRow
                   comptrollerAddress={comptrollerAddress}
@@ -574,6 +585,11 @@ const BorrowList = ({
             {borrowedAssets.length > 0 ? <ModalDivider my={2} /> : null}
 
             {nonBorrowedAssets.map((asset, index) => {
+              // Don't show paused assets.
+              if (asset.isPaused) {
+                return null;
+              }
+
               return (
                 <AssetBorrowRow
                   comptrollerAddress={comptrollerAddress}

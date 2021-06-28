@@ -4,6 +4,8 @@ import Rari from "../rari-sdk/index";
 // @ts-ignore
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
+import { createComptroller } from "./createComptroller";
+import { compact } from "cypress/types/lodash";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -50,6 +52,8 @@ export interface USDPricedFuseAsset extends FuseAsset {
   totalBorrowUSD: number;
 
   liquidityUSD: number;
+
+  isPaused: boolean;
 }
 
 export interface USDPricedFuseAssetWithTokenData extends USDPricedFuseAsset {
@@ -89,7 +93,7 @@ export const filterPoolName = (name: string) => {
   }
 
   if (name === "WOO pool") {
-    return "Warlord's WOO Pool"
+    return "Warlord's WOO Pool";
   }
 
   if (name === "Yearn's Yield") {
@@ -137,8 +141,20 @@ export const fetchFusePoolData = async (
     await (rari ?? fuse).getEthUsdPriceBN()
   ) as any;
 
+  let promises = [];
+
   for (let i = 0; i < assets.length; i++) {
+    const comptrollerContract = createComptroller(comptroller, fuse);
+
     let asset = assets[i];
+
+    promises.push(
+      comptrollerContract.methods
+        .borrowGuardianPaused(asset.cToken)
+        .call()
+        // TODO: THIS WILL BE BUILT INTO THE LENS
+        .then((isPaused: boolean) => (asset.isPaused = isPaused))
+    );
 
     asset.supplyBalanceUSD =
       ((asset.supplyBalance * asset.underlyingPrice) / 1e36) * ethPrice;
@@ -162,6 +178,8 @@ export const fetchFusePoolData = async (
 
     totalLiquidityUSD += asset.liquidityUSD;
   }
+
+  await Promise.all(promises);
 
   return {
     assets: assets.sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1)),
