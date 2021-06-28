@@ -443,7 +443,10 @@ const AssetSupplyRow = ({
               fontWeight="bold"
               fontSize="17px"
             >
-              {supplyAPY.toFixed(3)}%
+              {asset.underlyingSymbol === "sOHM"
+                ? "35630.8%" // TODO: Temp until calc is fixed on lens.
+                : supplyAPY.toFixed(3)}
+              %
             </Text>
 
             <Text fontSize="sm">{supplyWPY.toFixed(3)}%</Text>
