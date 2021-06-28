@@ -58,6 +58,14 @@ export default async (request: NowRequest, response: NowResponse) => {
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
     }
 
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
+    ) {
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/sOHM.png";
+    }
+
     // Fetch the logo from yearn if possible:
     const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
     const yearnLogoResponse = await fetch(yearnLogoURL);
