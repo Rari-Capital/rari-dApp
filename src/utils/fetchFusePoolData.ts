@@ -5,7 +5,6 @@ import Rari from "../rari-sdk/index";
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
 import { createComptroller } from "./createComptroller";
-import { compact } from "cypress/types/lodash";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
