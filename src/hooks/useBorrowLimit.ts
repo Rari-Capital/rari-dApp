@@ -3,7 +3,7 @@ import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 export const useBorrowLimit = (
   assets: USDPricedFuseAsset[],
-  options?: { ignoreIsEnabledCheckFor: string }
+  options?: { ignoreIsEnabledCheckFor?: string }
 ) => {
   const maxBorrow = useMemo(() => {
     let maxBorrow = 0;
@@ -25,7 +25,7 @@ export const useBorrowLimit = (
 
 export const useBorrowLimits = (
   assetsArray: USDPricedFuseAsset[][] | null,
-  options?: { ignoreIsEnabledCheckFor: string }
+  options?: { ignoreIsEnabledCheckFor?: string }
 ) => {
   const maxBorrows = useMemo(() => {
     return assetsArray?.map((assets) => {

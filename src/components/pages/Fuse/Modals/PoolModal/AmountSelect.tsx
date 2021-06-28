@@ -19,7 +19,7 @@ import {
 
 import BigNumber from "bignumber.js";
 
-import { UseQueryResult, useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
@@ -50,6 +50,7 @@ import {
   convertMantissaToAPR,
   convertMantissaToAPY,
 } from "../../../../../utils/apyUtils";
+import useUpdatedUserAssets from "hooks/fuse/useUpdatedUserAssets";
 
 enum UserAction {
   NO_ACTION,
@@ -77,139 +78,13 @@ export enum CTokenErrorCodes {
   UTILIZATION_ABOVE_MAX,
 }
 
-export async function testForCTokenErrorAndSend(
-  txObject: any,
-  caller: string,
-  failMessage: string
-) {
-  let response = await txObject.call({ from: caller });
-
-  // For some reason `response` will be `["0"]` if no error but otherwise it will return a string of a number.
-  if (response[0] !== "0") {
-    response = parseInt(response);
-
-    let err;
-
-    if (response >= 1000) {
-      const comptrollerResponse = response - 1000;
-
-      let msg = ComptrollerErrorCodes[comptrollerResponse];
-
-      if (msg === "BORROW_BELOW_MIN") {
-        msg =
-          "As part of our guarded launch, you cannot borrow less than 1 ETH worth of tokens at the moment.";
-      }
-
-      // This is a comptroller error:
-      err = new Error(failMessage + " Comptroller Error: " + msg);
-    } else {
-      // This is a standard token error:
-      err = new Error(
-        failMessage + " CToken Code: " + CTokenErrorCodes[response]
-      );
-    }
-
-    LogRocket.captureException(err);
-    throw err;
-  }
-
-  return txObject.send({ from: caller });
-}
-
-const fetchGasForCall = async (
-  call: any,
-  amountBN: BN,
-  fuse: Fuse,
-  address: string
-) => {
-  const estimatedGas = fuse.web3.utils.toBN(
-    (
-      (await call.estimateGas({
-        from: address,
-        // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
-        value: amountBN.div(fuse.web3.utils.toBN(2)),
-      })) *
-      // 50% more gas for limit:
-      1.5
-    ).toFixed(0)
-  );
-
-  // Ex: 100 (in GWEI)
-  const { standard } = await fetch("https://gasprice.poa.network").then((res) =>
-    res.json()
-  );
-
-  const gasPrice = fuse.web3.utils.toBN(
-    // @ts-ignore For some reason it's returning a string not a BN
-    fuse.web3.utils.toWei(standard.toString(), "gwei")
-  );
-
-  const gasWEI = estimatedGas.mul(gasPrice);
-
-  return { gasWEI, gasPrice, estimatedGas };
-};
-
-async function fetchMaxAmount(
-  mode: Mode,
-  fuse: Fuse,
-  address: string,
-  asset: USDPricedFuseAsset,
-  comptrollerAddress: string
-) {
-  if (mode === Mode.SUPPLY) {
-    const balance = await fetchTokenBalance(
-      asset.underlyingToken,
-      fuse.web3,
-      address
-    );
-
-    return balance;
-  }
-
-  if (mode === Mode.REPAY) {
-    const balance = await fetchTokenBalance(
-      asset.underlyingToken,
-      fuse.web3,
-      address
-    );
-    const debt = fuse.web3.utils.toBN(asset.borrowBalance);
-
-    if (balance.gt(debt)) {
-      return debt;
-    } else {
-      return balance;
-    }
-  }
-
-  if (mode === Mode.BORROW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxBorrow } = await comptroller.methods
-      .getMaxBorrow(address, asset.cToken)
-      .call();
-
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(
-        new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
-      );
-    } else {
-      throw new Error("Could not fetch your max borrow amount! Code: " + err);
-    }
-  }
-
-  if (mode === Mode.WITHDRAW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxRedeem } = await comptroller.methods
-      .getMaxRedeem(address, asset.cToken)
-      .call();
-
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(maxRedeem);
-    } else {
-      throw new Error("Could not fetch your max withdraw amount! Code: " + err);
-    }
-  }
+interface Props {
+  onClose: () => any;
+  assets: USDPricedFuseAsset[];
+  index: number;
+  mode: Mode;
+  setMode: (mode: Mode) => any;
+  comptrollerAddress: string;
 }
 
 const AmountSelect = ({
@@ -218,16 +93,8 @@ const AmountSelect = ({
   index,
   mode,
   setMode,
-
   comptrollerAddress,
-}: {
-  onClose: () => any;
-  assets: USDPricedFuseAsset[];
-  index: number;
-  mode: Mode;
-  setMode: (mode: Mode) => any;
-  comptrollerAddress: string;
-}) => {
+}: Props) => {
   const asset = assets[index];
 
   const { address, fuse } = useRari();
@@ -799,155 +666,24 @@ const StatsColumn = ({
 }) => {
   const { t } = useTranslation();
 
-  const { rari, fuse } = useRari();
 
-  const { data: updatedAssets }: UseQueryResult<USDPricedFuseAsset[]> =
-    useQuery(
-      mode + " " + index + " " + JSON.stringify(assets) + " " + amount,
-      async () => {
-        const ethPrice: number = fuse.web3.utils.fromWei(
-          await rari.getEthUsdPriceBN()
-        ) as any;
+  // Get the new representation of a user's USDPricedFuseAssets after proposing a supply amount.
+  const updatedAssets: USDPricedFuseAsset[] | undefined = useUpdatedUserAssets({
+    mode,
+    assets,
+    index,
+    amount,
+  });
 
-        const assetToBeUpdated = assets[index];
-
-        const interestRateModel = await fuse.getInterestRateModel(
-          assetToBeUpdated.cToken
-        );
-
-        let updatedAsset: USDPricedFuseAsset;
-        if (mode === Mode.SUPPLY) {
-          const supplyBalance =
-            parseInt(assetToBeUpdated.supplyBalance as any) + amount;
-
-          const totalSupply =
-            parseInt(assetToBeUpdated.totalSupply as any) + amount;
-
-          updatedAsset = {
-            ...assetToBeUpdated,
-
-            supplyBalance,
-            supplyBalanceUSD:
-              ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-              ethPrice,
-
-            totalSupply,
-            supplyRatePerBlock: interestRateModel.getSupplyRate(
-              fuse.web3.utils.toBN(
-                totalSupply > 0
-                  ? new BigNumber(assetToBeUpdated.totalBorrow)
-                      .dividedBy(totalSupply.toString())
-                      .multipliedBy(1e18)
-                      .toFixed(0)
-                  : 0
-              )
-            ),
-          };
-        } else if (mode === Mode.WITHDRAW) {
-          const supplyBalance =
-            parseInt(assetToBeUpdated.supplyBalance as any) - amount;
-
-          const totalSupply =
-            parseInt(assetToBeUpdated.totalSupply as any) - amount;
-
-          updatedAsset = {
-            ...assetToBeUpdated,
-
-            supplyBalance,
-            supplyBalanceUSD:
-              ((supplyBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-              ethPrice,
-
-            totalSupply,
-            supplyRatePerBlock: interestRateModel.getSupplyRate(
-              fuse.web3.utils.toBN(
-                totalSupply > 0
-                  ? new BigNumber(assetToBeUpdated.totalBorrow)
-                      .dividedBy(totalSupply.toString())
-                      .multipliedBy(1e18)
-                      .toFixed(0)
-                  : 0
-              )
-            ),
-          };
-        } else if (mode === Mode.BORROW) {
-          const borrowBalance =
-            parseInt(assetToBeUpdated.borrowBalance as any) + amount;
-
-          const totalBorrow =
-            parseInt(assetToBeUpdated.totalBorrow as any) + amount;
-
-          updatedAsset = {
-            ...assetToBeUpdated,
-
-            borrowBalance,
-            borrowBalanceUSD:
-              ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-              ethPrice,
-
-            totalBorrow,
-            borrowRatePerBlock: interestRateModel.getBorrowRate(
-              fuse.web3.utils.toBN(
-                assetToBeUpdated.totalSupply > 0
-                  ? new BigNumber(totalBorrow.toString())
-                      .dividedBy(assetToBeUpdated.totalSupply)
-                      .multipliedBy(1e18)
-                      .toFixed(0)
-                  : 0
-              )
-            ),
-          };
-        } else if (mode === Mode.REPAY) {
-          const borrowBalance =
-            parseInt(assetToBeUpdated.borrowBalance as any) - amount;
-
-          const totalBorrow =
-            parseInt(assetToBeUpdated.totalBorrow as any) - amount;
-
-          updatedAsset = {
-            ...assetToBeUpdated,
-
-            borrowBalance,
-            borrowBalanceUSD:
-              ((borrowBalance * assetToBeUpdated.underlyingPrice) / 1e36) *
-              ethPrice,
-
-            totalBorrow,
-            borrowRatePerBlock: interestRateModel.getBorrowRate(
-              fuse.web3.utils.toBN(
-                assetToBeUpdated.totalSupply > 0
-                  ? new BigNumber(totalBorrow.toString())
-                      .dividedBy(assetToBeUpdated.totalSupply)
-                      .multipliedBy(1e18)
-                      .toFixed(0)
-                  : 0
-              )
-            ),
-          };
-        }
-
-        return assets.map((value, _index) => {
-          if (_index === index) {
-            return updatedAsset;
-          } else {
-            return value;
-          }
-        });
-      }
-    );
-
+  // Define the old and new asset (same asset different numerical values)
   const asset = assets[index];
   const updatedAsset = updatedAssets ? updatedAssets[index] : null;
 
+  // Calculate Old and new Borrow Limits
   const borrowLimit = useBorrowLimit(assets);
-  const updatedBorrowLimit = useBorrowLimit(
-    updatedAssets ?? [],
-    enableAsCollateral
-      ? {
-          ignoreIsEnabledCheckFor: asset.cToken,
-        }
-      : undefined
-  );
+  const updatedBorrowLimit = useBorrowLimit(updatedAssets ?? [], {
+    ignoreIsEnabledCheckFor: enableAsCollateral ? asset.cToken : undefined,
+  });
 
   const isSupplyingOrWithdrawing =
     mode === Mode.SUPPLY || mode === Mode.WITHDRAW;
@@ -1206,3 +942,138 @@ const AmountInput = ({
     />
   );
 };
+
+export async function testForCTokenErrorAndSend(
+  txObject: any,
+  caller: string,
+  failMessage: string
+) {
+  let response = await txObject.call({ from: caller });
+
+  // For some reason `response` will be `["0"]` if no error but otherwise it will return a string of a number.
+  if (response[0] !== "0") {
+    response = parseInt(response);
+
+    let err;
+
+    if (response >= 1000) {
+      const comptrollerResponse = response - 1000;
+
+      let msg = ComptrollerErrorCodes[comptrollerResponse];
+
+      if (msg === "BORROW_BELOW_MIN") {
+        msg =
+          "As part of our guarded launch, you cannot borrow less than 1 ETH worth of tokens at the moment.";
+      }
+
+      // This is a comptroller error:
+      err = new Error(failMessage + " Comptroller Error: " + msg);
+    } else {
+      // This is a standard token error:
+      err = new Error(
+        failMessage + " CToken Code: " + CTokenErrorCodes[response]
+      );
+    }
+
+    LogRocket.captureException(err);
+    throw err;
+  }
+
+  return txObject.send({ from: caller });
+}
+
+const fetchGasForCall = async (
+  call: any,
+  amountBN: BN,
+  fuse: Fuse,
+  address: string
+) => {
+  const estimatedGas = fuse.web3.utils.toBN(
+    (
+      (await call.estimateGas({
+        from: address,
+        // Cut amountBN in half in case it screws up the gas estimation by causing a fail in the event that it accounts for gasPrice > 0 which means there will not be enough ETH (after paying gas)
+        value: amountBN.div(fuse.web3.utils.toBN(2)),
+      })) *
+      // 50% more gas for limit:
+      1.5
+    ).toFixed(0)
+  );
+
+  // Ex: 100 (in GWEI)
+  const { standard } = await fetch("https://gasprice.poa.network").then((res) =>
+    res.json()
+  );
+
+  const gasPrice = fuse.web3.utils.toBN(
+    // @ts-ignore For some reason it's returning a string not a BN
+    fuse.web3.utils.toWei(standard.toString(), "gwei")
+  );
+
+  const gasWEI = estimatedGas.mul(gasPrice);
+
+  return { gasWEI, gasPrice, estimatedGas };
+};
+
+async function fetchMaxAmount(
+  mode: Mode,
+  fuse: Fuse,
+  address: string,
+  asset: USDPricedFuseAsset,
+  comptrollerAddress: string
+) {
+  if (mode === Mode.SUPPLY) {
+    const balance = await fetchTokenBalance(
+      asset.underlyingToken,
+      fuse.web3,
+      address
+    );
+
+    return balance;
+  }
+
+  if (mode === Mode.REPAY) {
+    const balance = await fetchTokenBalance(
+      asset.underlyingToken,
+      fuse.web3,
+      address
+    );
+    const debt = fuse.web3.utils.toBN(asset.borrowBalance);
+
+    if (balance.gt(debt)) {
+      return debt;
+    } else {
+      return balance;
+    }
+  }
+
+  if (mode === Mode.BORROW) {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const { 0: err, 1: maxBorrow } = await comptroller.methods
+      .getMaxBorrow(address, asset.cToken)
+      .call();
+
+    if (err !== 0) {
+      return fuse.web3.utils.toBN(
+        new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
+      );
+    } else {
+      throw new Error("Could not fetch your max borrow amount! Code: " + err);
+    }
+  }
+
+  if (mode === Mode.WITHDRAW) {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const { 0: err, 1: maxRedeem } = await comptroller.methods
+      .getMaxRedeem(address, asset.cToken)
+      .call();
+
+    if (err !== 0) {
+      return fuse.web3.utils.toBN(maxRedeem);
+    } else {
+      throw new Error("Could not fetch your max withdraw amount! Code: " + err);
+    }
+  }
+}

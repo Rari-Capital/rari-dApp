@@ -38,7 +38,7 @@ export const useTokenDataWithContract = (address: string) => {
   return { tokenData, contract };
 };
 
-export const fetchTokenData = async (address: string) => {
+export const fetchTokenData = async (address: string) : Promise<TokenData> => {
   let data;
 
   if (address !== ETH_TOKEN_DATA.address) {

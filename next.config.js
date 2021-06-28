@@ -1,3 +1,6 @@
 module.exports = {
-    /* config options here */
-  }
+  /* config options here */
+  images: {
+    domains: ["raw.githubusercontent.com"],
+  },
+};

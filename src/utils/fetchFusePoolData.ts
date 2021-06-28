@@ -66,7 +66,7 @@ export interface FusePoolData {
   totalBorrowedUSD: any;
   totalSupplyBalanceUSD: any;
   totalBorrowBalanceUSD: any;
-  id?: number;
+  id: number;
 }
 
 export enum FusePoolMetric {

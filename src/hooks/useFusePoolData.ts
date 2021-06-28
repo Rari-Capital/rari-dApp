@@ -42,8 +42,6 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
     // todo - use type FusePoolData
     const ret: any[] = [];
 
-    // if (!poolsData.length) return null;
-
     poolsData.forEach(({ data }, i) => {
       if (!data) return null;
       const _data = data as FusePoolData;
@@ -53,11 +51,8 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
       });
     });
 
-    // if (!ret.length) return null;
-
     return ret;
   }, [poolsData, poolIds]);
-
 
   // Get all the asset arrays for each pool
   const assetsArray: USDPricedFuseAsset[][] | null =
