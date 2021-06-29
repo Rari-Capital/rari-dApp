@@ -369,11 +369,17 @@ export default class StablePool {
         var pools = ["dYdX", "Compound", "Aave", "mStable"];
         pools[100] = "Fuse3";
         pools[101] = "Fuse7";
+        pools[102] = "Fuse13";
+        pools[103] = "Fuse14";
+        pools[104] = "Fuse15";
+        pools[105] = "Fuse16";
+        pools[106] = "Fuse11";
+        pools[107] = "Fuse2";
         return pools;
       })(),
       POOLS_BY_CURRENCY: {
         DAI: ["dYdX", "Compound", "Aave"],
-        USDC: ["dYdX", "Compound", "Aave", "Fuse3", "Fuse7"],
+        USDC: ["dYdX", "Compound", "Aave", "Fuse3", "Fuse7", "Fuse13", "Fuse14", "Fuse15", "Fuse16", "Fuse11", "Fuse2"],
         USDT: ["Compound", "Aave"],
         TUSD: ["Aave"],
         BUSD: ["Aave"],
@@ -387,6 +393,12 @@ export default class StablePool {
         mStable: ["mUSD"],
         Fuse3: ["USDC"],
         Fuse7: ["USDC"],
+        Fuse13: ["USDC"],
+        Fuse14: ["USDC"],
+        Fuse15: ["USDC"],
+        Fuse16: ["USDC"],
+        Fuse11: ["USDC"],
+        Fuse2: ["USDC"],
       },
       getRawCurrencyAllocations: async function () {
         var allocationsByCurrency = {
@@ -551,14 +563,6 @@ export default class StablePool {
         var factors = [];
         var totalBalanceUsdBN = Web3.utils.toBN(0);
 
-        // Get pool APYs
-        var poolApyBNs = [];
-        for (var i = 0; i < self.allocations.POOLS.length; i++)
-          if (self.allocations.POOLS[i] !== undefined)
-            poolApyBNs[i] = await self.pools[
-              self.allocations.POOLS[i]
-            ].getCurrencyApys();
-
         // Get all balances
         var allBalances = await self.cache.getOrUpdate(
           "allBalances",
@@ -594,7 +598,10 @@ export default class StablePool {
                 )
               );
 
-            factors.push([poolBalanceUsdBN, poolApyBNs[pool][currencyCode]]);
+            var poolApyBN = poolBalanceUsdBN.gt(Web3.utils.toBN(0)) ? (await self.pools[
+              self.allocations.POOLS[pool]
+            ].getCurrencyApys())[currencyCode] : Web3.utils.toBN(0);
+            factors.push([poolBalanceUsdBN, poolApyBN]);
             totalBalanceUsdBN = totalBalanceUsdBN.add(poolBalanceUsdBN);
           }
         }

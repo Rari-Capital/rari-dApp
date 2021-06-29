@@ -110,9 +110,15 @@ export default class Rari {
       yVault: new YVaultSubpool(this.web3),
       KeeperDAO: new KeeperDAOSubpool(this.web3),
       Alpha: new AlphaSubpool(this.web3),
+      Fuse2: new FuseSubpool(this.web3, { "USDC": "0x69aEd4932B3aB019609dc567809FA6953a7E0858" }),
       Fuse3: new FuseSubpool(this.web3, { "USDC": "0x94C49563a3950424a2a7790c3eF5458A2A359C7e" }),
       Fuse6: new FuseSubpool(this.web3, { "DAI": "0x989273ec41274C4227bCB878C2c26fdd3afbE70d" }),
       Fuse7: new FuseSubpool(this.web3, { "USDC": "0x53De5A7B03dc24Ff5d25ccF7Ad337a0425Dfd8D1", "DAI": "0x7322B10Db09687fe8889aD8e87f333f95104839F" }),
+      Fuse11: new FuseSubpool(this.web3, { "USDC": "0x241056eb034BEA7482290f4a9E3e4dd7269D4329" }),
+      Fuse13: new FuseSubpool(this.web3, { "USDC": "0x3b624de26A6CeBa421f9857127e37A5EFD8ecaab" }),
+      Fuse14: new FuseSubpool(this.web3, { "USDC": "0x6447026FE96363669B5be2EE135843a5e4d15B50" }),
+      Fuse15: new FuseSubpool(this.web3, { "USDC": "0x5F9FaeD5599D86D2e6F8d982189d560C067897a0" }),
+      Fuse16: new FuseSubpool(this.web3, { "USDC": "0x7bA788fa2773fb157EfAfAd046FE5E0e6120DEd5" }),
     };
 
     this.pools = {
@@ -123,8 +129,14 @@ export default class Rari {
           Compound: subpools["Compound"],
           Aave: subpools["Aave"],
           mStable: subpools["mStable"],
+          Fuse2: subpools["Fuse2"],
           Fuse3: subpools["Fuse3"],
           Fuse7: subpools["Fuse7"],
+          Fuse11: subpools["Fuse11"],
+          Fuse13: subpools["Fuse13"],
+          Fuse14: subpools["Fuse14"],
+          Fuse15: subpools["Fuse15"],
+          Fuse16: subpools["Fuse16"],
         },
         this.getAllTokens
       ),
