@@ -206,7 +206,7 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
 
   //   console.log({ updatedAssetsLend, updatedAssetsLendAndBorrow });
 
-  return updatedAssetsLendAndBorrow;
+  return updatedAssetsLend;
 };
 
 // const useAmountIsValid = ({

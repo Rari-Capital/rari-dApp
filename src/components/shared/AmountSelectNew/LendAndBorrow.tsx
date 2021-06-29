@@ -1,9 +1,11 @@
 import { Box, Heading, Text } from "@chakra-ui/layout";
+import { Button } from "@chakra-ui/react";
 import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
 import { TokenData } from "hooks/useTokenData";
 import { useCallback, useMemo, useState } from "react";
-import { Center, Column, Row } from "utils/chakraUtils";
+import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
 import {
+  FusePoolData,
   USDPricedFuseAsset,
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
@@ -29,6 +31,9 @@ const LendAndBorrow = ({
   token?: TokenData;
   setUserAction: (action: AmountSelectUserAction) => void;
 }) => {
+
+  const isMobile = useIsMobile()
+
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
   const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
   const assetWithTokenData: USDPricedFuseAssetWithTokenData = useMemo(
@@ -93,6 +98,15 @@ const LendAndBorrow = ({
     [assetWithTokenData]
   );
 
+  if (!bestPool || !bestPool.assets.length)
+    return (
+      <Box h="200px" w="100%">
+        <Center h="100%" w="100%">
+          <Spinner />
+        </Center>
+      </Box>
+    );
+
   return (
     <Box h="100%" w="100%" color={token?.color ?? "white"}>
       {/* Lend */}
@@ -112,7 +126,7 @@ const LendAndBorrow = ({
         crossAxisAlignment="flex-start"
         mt={3}
       >
-        <Heading size="md" mb={4}>
+        <Heading size="md" mb={4} color="white" pl={3}>
           Borrow{" "}
         </Heading>
         <FuseAmountInput
@@ -125,17 +139,43 @@ const LendAndBorrow = ({
       </Column>
 
       {/* Stats */}
-      {bestPool && bestPool.assets.length && (
-        <StatsColumn
-          color={token?.color}
-          mode={AmountSelectMode.LENDANDBORROW}
-          assets={bestPool.assets}
-          assetIndex={poolAssetIndex!}
-          lendAmount={parseInt(lendAmountBN?.toFixed(0) ?? "0") ?? 0}
-          borrowAmount={parseInt(borrowAmountBN?.toFixed(0) ?? "0") ?? 0}
-          enableAsCollateral={true}
-        />
-      )}
+      <StatsColumn
+        color={token?.color}
+        mode={AmountSelectMode.LENDANDBORROW}
+        pool={bestPool}
+        assets={bestPool.assets}
+        assetIndex={poolAssetIndex!}
+        lendAmount={parseInt(lendAmountBN?.toFixed(0) ?? "0") ?? 0}
+        borrowAmount={parseInt(borrowAmountBN?.toFixed(0) ?? "0") ?? 0}
+        enableAsCollateral={true}
+      />
+
+{/* Submit Button - todo */}
+        <Button
+              mt={4}
+              fontWeight="bold"
+            //   fontSize={
+            //     depositOrWithdrawAlert ? depositOrWithdrawAlertFontSize : "2xl"
+            //   }
+              borderRadius="10px"
+              width="100%"
+              height="70px"
+              bg={token?.color ?? "#FFF"}
+              color={token?.overlayTextColor ?? "#000"}
+              // If the size is small, this means the text is large and we don't want the font size scale animation.
+              className={
+                isMobile
+                  ? "confirm-button-disable-font-size-scale"
+                  : ""
+              }
+              _hover={{ transform: "scale(1.02)" }}
+              _active={{ transform: "scale(0.95)" }}
+            //   onClick={onConfirm}
+            //   isDisabled={!amountIsValid}
+            >
+              {/* {depositOrWithdrawAlert ?? t("Confirm")} */}
+              Confirm
+            </Button>
     </Box>
   );
 };
@@ -150,6 +190,7 @@ const StatsColumn = ({
   assetIndex,
   lendAmount,
   borrowAmount,
+  pool,
   enableAsCollateral = true,
 }: {
   color?: string;
@@ -158,6 +199,7 @@ const StatsColumn = ({
   mode: AmountSelectMode;
   assets: USDPricedFuseAssetWithTokenData[] | USDPricedFuseAsset[];
   assetIndex: number;
+  pool?: FusePoolData;
   enableAsCollateral?: boolean;
 }) => {
   const { t } = useTranslation();
@@ -179,6 +221,7 @@ const StatsColumn = ({
   const borrowLimit = useBorrowLimit(assets);
   const updatedBorrowLimit = useBorrowLimit(updatedAssets ?? [], {
     ignoreIsEnabledCheckFor: enableAsCollateral ? asset.cToken : undefined,
+    subtractDebt: true,
   });
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
@@ -215,7 +258,7 @@ const StatsColumn = ({
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             width="100%"
-            color={color}
+            color="white"
           >
             <Text fontWeight="bold" flexShrink={0}>
               {t("Supply Balance")}:
@@ -242,7 +285,7 @@ const StatsColumn = ({
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             width="100%"
-            color={color}
+            color={"white"}
           >
             <Text fontWeight="bold" flexShrink={0}>
               {t("Borrow Balance")}:
@@ -262,6 +305,7 @@ const StatsColumn = ({
             </Text>
           </Row>
 
+         {/* Supply APY  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
@@ -290,10 +334,12 @@ const StatsColumn = ({
             </Text>
           </Row>
 
+         {/* Borrow Limit  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             width="100%"
+            color="white"
           >
             <Text fontWeight="bold" flexShrink={0}>
               {t("Borrow Limit")}:
@@ -311,10 +357,12 @@ const StatsColumn = ({
             </Text>
           </Row>
 
+         {/* Debt Balance  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             width="100%"
+            color="white"
           >
             <Text fontWeight="bold">{t("Debt Balance")}:</Text>
             <Text
@@ -328,6 +376,22 @@ const StatsColumn = ({
                   {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
                 </>
               ) : null}
+            </Text>
+          </Row>
+
+         {/* Fuse Pool  */}
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            color="white"
+          >
+            <Text fontWeight="bold">{t("Fuse Pool")}:</Text>
+            <Text
+              fontWeight="bold"
+              fontSize={!isSupplyingOrWithdrawing ? "sm" : "lg"}
+            >
+              {pool?.id}
             </Text>
           </Row>
         </Column>

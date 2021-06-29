@@ -28,11 +28,11 @@ const AssetBorrowLend = ({
         w="100%"
         pt={0}
       >
-        <Box h="20%" w="100%">
+        <Box h="25%" w="100%">
           <Header token={token} />
         </Box>
         <ModalDivider />
-        <Box h="80%" w="100%">
+        <Box h="75%" w="100%">
           <AmountSelectNew
             token={token}
             modes={[AmountSelectMode.LENDANDBORROW, AmountSelectMode.REPAY]}

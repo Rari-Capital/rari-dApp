@@ -10,7 +10,7 @@ import { createTokensDataMap } from "utils/tokenUtils";
 export const useTrendingOpportunities = (): TrendingOpportunity[] => {
   const trending: TrendingOpportunity[] = TRENDING_OPPORTUNITIES;
 
-  // Get assets in question
+  // Get data for assets in question
   // @ts-ignore
   const ids: string[] = [...new Set(trending.map(({ tokenId }) => tokenId))];
   const tokensData: TokenData[] | null = useTokensData(ids);
@@ -18,11 +18,11 @@ export const useTrendingOpportunities = (): TrendingOpportunity[] => {
   const tokensDataMap = createTokensDataMap(tokensData);
   const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset();
 
-  // Todo - fake USDC vault for each opportunity
+  // Todo - remove fake USDC vault for each opportunity
   const trendingOpportunities = trending.map((t: TrendingOpportunity) => ({
     ...t,
     token: tokensDataMap[t.tokenId],
-    opportunityData: vaultsData.aggregatePoolsInfo[0],
+    opportunityData: vaultsData.aggregatePoolsInfo[1],
   }));
 
   return trendingOpportunities;

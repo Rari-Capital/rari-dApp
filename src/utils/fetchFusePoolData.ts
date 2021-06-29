@@ -165,5 +165,6 @@ export const fetchFusePoolData = async (
 
     totalSupplyBalanceUSD,
     totalBorrowBalanceUSD,
+    id: parseFloat(poolId)
   };
 };
