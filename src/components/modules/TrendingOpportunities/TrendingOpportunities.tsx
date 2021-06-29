@@ -20,8 +20,6 @@ const TrendingOpportunities = ({
 }) => {
   const trendingOpportunities = useTrendingOpportunities();
 
-  console.log({ trendingOpportunities });
-
   return (
     <DashboardBox height="350px" w="100%" {...boxProps}>
       <Column

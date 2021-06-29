@@ -8,15 +8,18 @@ import Web3 from "web3";
 export const fetchTokenBalance = async (
   tokenAddress: string,
   web3: Web3,
-  address: string
+  address?: string
 ) => {
   let stringBalance;
 
-  if (
+  if (!address || address === ETH_TOKEN_DATA.address) {
+    stringBalance = "0"
+  }
+  else if (
     tokenAddress === ETH_TOKEN_DATA.address ||
     tokenAddress === "NO_ADDRESS_HERE_USE_WETH_FOR_ADDRESS"
   ) {
-    stringBalance = await web3.eth.getBalance(address);
+    stringBalance = await web3.eth.getBalance(address)
   } else {
     const contract = new web3.eth.Contract(ERC20ABI as any, tokenAddress);
     stringBalance = await contract.methods.balanceOf(address).call();
