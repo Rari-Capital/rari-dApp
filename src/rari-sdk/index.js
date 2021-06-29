@@ -119,7 +119,7 @@ export default class Rari {
       Fuse14: new FuseSubpool(this.web3, { "USDC": "0x6447026FE96363669B5be2EE135843a5e4d15B50" }),
       Fuse15: new FuseSubpool(this.web3, { "USDC": "0x5F9FaeD5599D86D2e6F8d982189d560C067897a0" }),
       Fuse16: new FuseSubpool(this.web3, { "USDC": "0x7bA788fa2773fb157EfAfAd046FE5E0e6120DEd5" }),
-      Fuse18: new FuseSubpool(this.web3, { "USDC": "0x6f95d4d251053483f41c8718C30F4F3C404A8cf2" }),
+      Fuse18: new FuseSubpool(this.web3, { "USDC": "0x6f95d4d251053483f41c8718C30F4F3C404A8cf2", "DAI": "0x8E4E0257A4759559B4B1AC087fe8d80c63f20D19" }),
     };
 
     this.pools = {
@@ -173,7 +173,8 @@ export default class Rari {
           Aave: subpools["Aave"],
           mStable: subpools["mStable"],
           Fuse6: subpools["Fuse6"],
-          Fuse7: subpools["Fuse7"]
+          Fuse7: subpools["Fuse7"],
+          Fuse18: subpools["Fuse18"],
         },
         this.getAllTokens
       ),
