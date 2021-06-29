@@ -46,10 +46,10 @@ const useUpdatedUserAssets = ({
           const totalSupply =
             parseInt(assetToBeUpdated.totalSupply as any) + amount;
 
-          console.log(
-            { mode, assetToBeUpdated, totalSupply, amount },
-            assetToBeUpdated.totalSupply
-          );
+        //   console.log(
+        //     { mode, assetToBeUpdated, totalSupply, amount },
+        //     assetToBeUpdated.totalSupply
+        //   );
 
           updatedAsset = {
             ...assetToBeUpdated,
@@ -105,7 +105,7 @@ const useUpdatedUserAssets = ({
           const totalBorrow =
             parseInt(assetToBeUpdated.totalBorrow as any) + amount;
 
-          console.log({ assetToBeUpdated, totalBorrow, mode });
+        //   console.log({ assetToBeUpdated, totalBorrow, mode });
 
           updatedAsset = {
             ...assetToBeUpdated,
@@ -134,6 +134,19 @@ const useUpdatedUserAssets = ({
           const totalBorrow =
             parseInt(assetToBeUpdated.totalBorrow as any) - amount;
 
+          const borrowRatePerBlock = interestRateModel.getBorrowRate(
+            fuse.web3.utils.toBN(
+              assetToBeUpdated.totalSupply > 0
+                ? new BigNumber(totalBorrow.toString())
+                    .dividedBy(assetToBeUpdated.totalSupply.toString())
+                    .multipliedBy(1e18)
+                    .toFixed(0)
+                : 0
+            )
+          );
+
+        //   console.log({ borrowRatePerBlock });
+
           updatedAsset = {
             ...assetToBeUpdated,
 
@@ -143,16 +156,7 @@ const useUpdatedUserAssets = ({
               ethPrice,
 
             totalBorrow,
-            borrowRatePerBlock: interestRateModel.getBorrowRate(
-              fuse.web3.utils.toBN(
-                assetToBeUpdated.totalSupply > 0
-                  ? new BigNumber(totalBorrow.toString())
-                      .dividedBy(assetToBeUpdated.totalSupply)
-                      .multipliedBy(1e18)
-                      .toFixed(0)
-                  : 0
-              )
-            ),
+            borrowRatePerBlock,
           };
         }
 
@@ -166,7 +170,7 @@ const useUpdatedUserAssets = ({
       }
     );
 
-  console.log({ updatedAssets, mode });
+//   console.log({ updatedAssets, mode });
 
   return useMemo(() => updatedAssets, [updatedAssets]);
 };
@@ -182,7 +186,7 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
   lendAmount: number;
   borrowAmount: number;
 }) => {
-  console.log({ lendAmount, borrowAmount });
+//   console.log({ lendAmount, borrowAmount });
 
   const updatedAssetsLend: USDPricedFuseAsset[] | undefined =
     useUpdatedUserAssets({

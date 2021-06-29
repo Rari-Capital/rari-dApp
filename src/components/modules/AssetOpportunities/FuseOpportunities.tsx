@@ -9,7 +9,7 @@ import { Row, useIsMobile } from "utils/chakraUtils";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 const FuseOpportunities = ({ token }: { token: TokenData }) => {
-  const fuseDataForAsset = useFuseDataForAsset(token.symbol);
+  const fuseDataForAsset = useFuseDataForAsset(token.address);
   const { poolsWithThisAsset } = fuseDataForAsset;
 
   const isMobile = useIsMobile();

@@ -1,3 +1,5 @@
+import dynamic from "next/dynamic";
+
 import { Box, Heading, Link, Image } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "components/shared/DashboardBox";
@@ -11,6 +13,11 @@ import TrendingOpportunities from "components/modules/TrendingOpportunities";
 import AssetBalance from "components/modules/AssetBalance";
 import InternalAd from "components/modules/InternalAd";
 import AssetHistory from "components/modules/AssetHistory";
+
+const AssetBorrowLend = dynamic(
+  () => import("components/modules/AssetBorrowLend"),
+  { ssr: false }
+);
 
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
@@ -75,6 +82,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
         >
           {/* Foursq */}
           {/* <Foursquare token={token}  mb={5}/> */}
+          {/* <AssetBorrowLend token={token} mb={5} /> */}
 
           <TrendingOpportunities token={token} mb={5} />
 

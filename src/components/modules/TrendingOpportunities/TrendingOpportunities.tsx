@@ -1,9 +1,12 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/layout";
+import { Spinner } from "@chakra-ui/spinner";
 import AppLink from "components/shared/AppLink";
 import DashboardBox from "components/shared/DashboardBox";
+
 import { TrendingOpportunity } from "constants/trending";
 import { useTrendingOpportunities } from "hooks/opportunities/useTrendingOpportunities";
+
 import { TokenData } from "hooks/useTokenData";
 import React, { useMemo } from "react";
 import { Column, Row } from "utils/chakraUtils";
@@ -16,6 +19,8 @@ const TrendingOpportunities = ({
   [x: string]: any;
 }) => {
   const trendingOpportunities = useTrendingOpportunities();
+
+  console.log({ trendingOpportunities });
 
   return (
     <DashboardBox height="350px" w="100%" {...boxProps}>
@@ -46,8 +51,8 @@ const TrendingOpportunities = ({
           w="100%"
         >
           <SimpleGrid columns={2} spacing={4} h="100%" w="100%">
-            {trendingOpportunities.map((t) => (
-              <TrendingBox trendingOpportunity={t} />
+            {trendingOpportunities.map((t, i) => (
+              <TrendingBox key={i} trendingOpportunity={t} />
             ))}
           </SimpleGrid>
         </Row>
@@ -72,7 +77,12 @@ const TrendingBox = ({
   }, [trendingOpportunity]);
 
   return (
-    <AppLink w="100%" h="100%" href="/pools/stable" style={{ textDecoration: 'none' }}>
+    <AppLink
+      w="100%"
+      h="100%"
+      href="/pools/stable"
+      style={{ textDecoration: "none" }}
+    >
       <Column
         mainAxisAlignment="space-around"
         crossAxisAlignment="flex-start"
@@ -92,20 +102,28 @@ const TrendingBox = ({
             "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
           }
         />
-        <Heading fontSize="md">
-          {trendingOpportunity.token?.symbol}{" "}
-          {trendingOpportunity.opportunityData?.poolAPY &&
-            ` - ${trendingOpportunity.opportunityData.poolAPY}% APY`}
-        </Heading>
-        {/* <Text fontSize="sm" fontWeight="bold">
+        {trendingOpportunity &&
+        trendingOpportunity.opportunityData &&
+        trendingOpportunity.token &&
+        weeklyAPY ? (
+          <>
+            <Heading fontSize="md">
+              {trendingOpportunity.token.symbol}{" "}
+              {` - ${trendingOpportunity.opportunityData.poolAPY}% APY`}
+            </Heading>
+            {/* <Text fontSize="sm" fontWeight="bold">
           {monthlyAPY &&
             `${monthlyAPY.toFixed(
               1
             )}% monthly,`}
         </Text> */}
-        <Text fontSize="sm" fontWeight="bold" color="grey">
-          {weeklyAPY && `${weeklyAPY.toFixed(1)}% weekly`}
-        </Text>
+            <Text fontSize="sm" fontWeight="bold" color="grey">
+              {weeklyAPY && `${weeklyAPY.toFixed(1)}% weekly`}
+            </Text>
+          </>
+        ) : (
+          <Spinner />
+        )}
       </Column>
     </AppLink>
   );
