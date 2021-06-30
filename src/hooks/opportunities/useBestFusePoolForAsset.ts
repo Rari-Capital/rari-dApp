@@ -1,5 +1,5 @@
 import { useFuseDataForAsset } from "hooks/fuse/useFuseDataForAsset";
-import { useEffect, useMemo, useState } from "react";
+import {  useMemo, } from "react";
 import {
   FusePoolData,
   USDPricedFuseAssetWithTokenData,
@@ -17,14 +17,9 @@ export const useBestFusePoolForAsset = (
 
   // Get all the Fuse pools with this Asset
   const fuseData = useFuseDataForAsset(tokenAddress);
-  const [bestPool, setBestPool] = useState<FusePoolData | undefined>();
-  const [poolAssetIndex, setPoolAssetIndex] = useState<number | undefined>();
 
-  useEffect(() => {
-    // If we have already found the "best pool" on this render, then don't do it again.
-    if (bestPool) return; 
-
-    // Else, Find and setthe Fuse pool with the best lending rate for this asset
+  // Get the best possible Fuse pool and asset details for this token
+  return useMemo(() => {
     const { poolsWithThisAsset, poolAssetIndex } = fuseData;
 
     if (poolsWithThisAsset?.length) {
@@ -38,6 +33,12 @@ export const useBestFusePoolForAsset = (
           poolAssetIndex[pool.id]
         ] as USDPricedFuseAssetWithTokenData;
 
+        // First, see if the user has any supply for this asset
+        if (asset.supplyBalanceUSD > 0) {
+          bestPoolIndex = i;
+          break;
+        }
+
         // Compare supply rates
         if (asset.supplyRatePerBlock > highestSupplyRatePerBlock) {
           highestSupplyRatePerBlock = asset.supplyRatePerBlock;
@@ -45,10 +46,15 @@ export const useBestFusePoolForAsset = (
         }
       }
       const _bestPool = poolsWithThisAsset[bestPoolIndex];
-      setBestPool(_bestPool);
-      setPoolAssetIndex(poolAssetIndex[_bestPool.id]);
+      return {
+        bestPool: _bestPool,
+        poolAssetIndex: poolAssetIndex[_bestPool.id],
+      };
+    } else {
+      return {
+        bestPool: undefined,
+        poolAssetIndex: undefined,
+      };
     }
-  }, [fuseData, bestPool]);
-
-  return { bestPool, poolAssetIndex };
+  }, [fuseData]);
 };

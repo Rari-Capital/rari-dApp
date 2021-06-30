@@ -17,12 +17,13 @@ import { useTranslation } from "react-i18next";
 import useUpdatedUserAssets, {
   useUpdatedUserAssetsForBorrowAndLend,
 } from "hooks/fuse/useUpdatedUserAssets";
-import { useBorrowLimit } from "hooks/useBorrowLimit";
+import { useBorrowCredit, useBorrowLimit } from "hooks/useBorrowLimit";
 import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import DashboardBox from "../DashboardBox";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { Spinner } from "@chakra-ui/spinner";
 import tokenData from "pages/api/tokenData";
+import { useTotalBorrowAndSupplyBalanceUSD } from "hooks/fuse/useTotalBorrowBalanceUSD";
 
 const LendAndBorrow = ({
   token,
@@ -31,15 +32,13 @@ const LendAndBorrow = ({
   token?: TokenData;
   setUserAction: (action: AmountSelectUserAction) => void;
 }) => {
-
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
 
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
   const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
+
   const assetWithTokenData: USDPricedFuseAssetWithTokenData = useMemo(
-    () =>
-      (bestPool?.assets[poolAssetIndex!] as USDPricedFuseAssetWithTokenData) ??
-      undefined,
+    () => bestPool?.assets[poolAssetIndex!] as USDPricedFuseAssetWithTokenData,
     [bestPool, poolAssetIndex]
   );
 
@@ -60,16 +59,12 @@ const LendAndBorrow = ({
       setLendInput(newAmount);
 
       // Try to set the amount to BigNumber(newAmount):
-      try {
-        BigNumber.DEBUG = true;
-        const bigAmount = new BigNumber(newAmount);
-        setLendAmountBN(
-          bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
-        );
-      } catch (e) {
-        // If the number was invalid, set the amount to null to disable confirming:
-        setLendAmountBN(null);
-      }
+      const bigAmount = new BigNumber(newAmount);
+      bigAmount.isNaN()
+        ? setLendAmountBN(null)
+        : setLendAmountBN(
+            bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
+          );
 
       setUserAction(AmountSelectUserAction.NO_ACTION);
     },
@@ -82,16 +77,12 @@ const LendAndBorrow = ({
       setBorrowInput(newAmount);
 
       // Try to set the amount to BigNumber(newAmount):
-      try {
-        BigNumber.DEBUG = true;
-        const bigAmount = new BigNumber(newAmount);
-        setBorrowAmountBN(
-          bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
-        );
-      } catch (e) {
-        // If the number was invalid, set the amount to null to disable confirming:
-        setBorrowAmountBN(null);
-      }
+      const bigAmount = new BigNumber(newAmount);
+      bigAmount.isNaN()
+        ? setBorrowAmountBN(null)
+        : setBorrowAmountBN(
+            bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
+          );
 
       setUserAction(AmountSelectUserAction.NO_ACTION);
     },
@@ -100,7 +91,7 @@ const LendAndBorrow = ({
 
   if (!bestPool || !bestPool.assets.length)
     return (
-      <Box h="200px" w="100%">
+      <Box h="100%" w="100%">
         <Center h="100%" w="100%">
           <Spinner />
         </Center>
@@ -150,32 +141,28 @@ const LendAndBorrow = ({
         enableAsCollateral={true}
       />
 
-{/* Submit Button - todo */}
-        <Button
-              mt={4}
-              fontWeight="bold"
-            //   fontSize={
-            //     depositOrWithdrawAlert ? depositOrWithdrawAlertFontSize : "2xl"
-            //   }
-              borderRadius="10px"
-              width="100%"
-              height="70px"
-              bg={token?.color ?? "#FFF"}
-              color={token?.overlayTextColor ?? "#000"}
-              // If the size is small, this means the text is large and we don't want the font size scale animation.
-              className={
-                isMobile
-                  ? "confirm-button-disable-font-size-scale"
-                  : ""
-              }
-              _hover={{ transform: "scale(1.02)" }}
-              _active={{ transform: "scale(0.95)" }}
-            //   onClick={onConfirm}
-            //   isDisabled={!amountIsValid}
-            >
-              {/* {depositOrWithdrawAlert ?? t("Confirm")} */}
-              Confirm
-            </Button>
+      {/* Submit Button - todo */}
+      <Button
+        mt={4}
+        fontWeight="bold"
+        //   fontSize={
+        //     depositOrWithdrawAlert ? depositOrWithdrawAlertFontSize : "2xl"
+        //   }
+        borderRadius="10px"
+        width="100%"
+        height="70px"
+        bg={token?.color ?? "#FFF"}
+        color={token?.overlayTextColor ?? "#000"}
+        // If the size is small, this means the text is large and we don't want the font size scale animation.
+        className={isMobile ? "confirm-button-disable-font-size-scale" : ""}
+        _hover={{ transform: "scale(1.02)" }}
+        _active={{ transform: "scale(0.95)" }}
+        //   onClick={onConfirm}
+        //   isDisabled={!amountIsValid}
+      >
+        {/* {depositOrWithdrawAlert ?? t("Confirm")} */}
+        Confirm
+      </Button>
     </Box>
   );
 };
@@ -204,12 +191,12 @@ const StatsColumn = ({
 }) => {
   const { t } = useTranslation();
 
-  // Get the new representation of a user's USDPricedFuseAssets after proposing a supply amount.
+  // Get the new representation of a user's USDPricedFuseAssets after proposing a supply an/or borrow amount.
   const updatedAssets: USDPricedFuseAsset[] | undefined =
     useUpdatedUserAssetsForBorrowAndLend({
       assets,
       index: assetIndex,
-      lendAmount: lendAmount,
+      lendAmount,
       borrowAmount,
     });
 
@@ -218,11 +205,31 @@ const StatsColumn = ({
   const updatedAsset = updatedAssets ? updatedAssets[assetIndex] : null;
 
   // Calculate Old and new Borrow Limits
+  const borrowCredit = useBorrowCredit(assets);
   const borrowLimit = useBorrowLimit(assets);
+  const updatedBorrowCredit = useBorrowCredit(updatedAssets ?? [], {
+    ignoreIsEnabledCheckFor: enableAsCollateral ? asset.cToken : undefined,
+  });
   const updatedBorrowLimit = useBorrowLimit(updatedAssets ?? [], {
     ignoreIsEnabledCheckFor: enableAsCollateral ? asset.cToken : undefined,
-    subtractDebt: true,
   });
+
+  // Total USD supplied/borrowed
+  const borrowAndSupplyBalanceUSD = useTotalBorrowAndSupplyBalanceUSD(assets);
+  const updatedBorrowAndSupplyBalanceUSD = useTotalBorrowAndSupplyBalanceUSD(
+    updatedAssets ?? []
+  );
+
+  // Borrow Ratios (Inverse of health factor)
+  // Todo - Fix this
+  const oldRatio =
+    borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD / borrowLimit;
+
+  const updatedRatio =
+    updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD / updatedBorrowLimit;
+
+  const atRiskOfLiquidation = oldRatio > 0.95;
+  const updatedAtRiskOfLiquidation = updatedRatio > 0.95;
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
   const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
@@ -305,7 +312,7 @@ const StatsColumn = ({
             </Text>
           </Row>
 
-         {/* Supply APY  */}
+          {/* Supply APY  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
@@ -318,23 +325,17 @@ const StatsColumn = ({
               fontWeight="bold"
               fontSize={updatedAPYDiffIsLarge ? "sm" : "lg"}
             >
-              {isSupplyingOrWithdrawing
-                ? supplyAPY.toFixed(2)
-                : borrowAPR.toFixed(2)}
-              %
+              {supplyAPY.toFixed(2)} %
               {updatedAPYDiffIsLarge ? (
                 <>
                   {" → "}
-                  {isSupplyingOrWithdrawing
-                    ? updatedSupplyAPY.toFixed(2)
-                    : updatedBorrowAPR.toFixed(2)}
-                  %
+                  {updatedSupplyAPY.toFixed(2)}%
                 </>
               ) : null}
             </Text>
           </Row>
 
-         {/* Borrow Limit  */}
+          {/* Borrow Limit  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
@@ -342,22 +343,60 @@ const StatsColumn = ({
             color="white"
           >
             <Text fontWeight="bold" flexShrink={0}>
-              {t("Borrow Limit")}:
+              {t("Borrow Credit")}:
             </Text>
-            <Text
-              fontWeight="bold"
-              fontSize={isSupplyingOrWithdrawing ? "sm" : "lg"}
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              fontSize={updatedBorrowCredit < 0 ? "lg" : "sm"}
             >
-              {smallUsdFormatter(borrowLimit)}
-              {isSupplyingOrWithdrawing ? (
-                <>
-                  {" → "} {smallUsdFormatter(updatedBorrowLimit)}
-                </>
-              ) : null}{" "}
-            </Text>
+              <Text fontWeight="bold" fontSize={"sm"}>
+                {smallUsdFormatter(borrowCredit)}
+              </Text>
+              <Text ml={1} fontWeight="bold" fontSize={"sm"}>
+                {" → "}
+              </Text>
+              <Text
+                ml={1}
+                fontWeight="bold"
+                color={updatedBorrowCredit < 0 ? "red" : ""}
+              >
+                {smallUsdFormatter(updatedBorrowCredit)}
+              </Text>
+            </Row>
           </Row>
 
-         {/* Debt Balance  */}
+          {/* Ratio  */}
+          {/* <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            color="white"
+          >
+            <Text fontWeight="bold" flexShrink={0}>
+              {t("Ratios")}:
+            </Text>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <Text fontWeight="bold" fontSize={"sm"}>
+                {(oldRatio * 100).toFixed(2)}%
+              </Text>
+              <Text ml={1} fontWeight="bold" fontSize={"sm"}>
+                {" → "}
+              </Text>
+              <Text
+                ml={1}
+                fontWeight="bold"
+                fontSize={updatedAtRiskOfLiquidation ? "lg" : "sm"}
+                color={updatedAtRiskOfLiquidation ? "red" : ""}
+              >
+                {updatedAtRiskOfLiquidation
+                  ? "Too Risky!"
+                  : `${(updatedRatio * 100).toFixed(2)}%`}
+              </Text>
+            </Row>
+          </Row> */}
+
+          {/* Asset Debt Balance 
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
@@ -370,16 +409,42 @@ const StatsColumn = ({
               fontSize={!isSupplyingOrWithdrawing ? "sm" : "lg"}
             >
               {smallUsdFormatter(asset.borrowBalanceUSD)}
-              {!isSupplyingOrWithdrawing ? (
-                <>
-                  {" → "}
-                  {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
-                </>
-              ) : null}
+              {" → "}
+              {smallUsdFormatter(updatedAsset.borrowBalanceUSD)}
             </Text>
+          </Row> */}
+
+          {/* Total Debt Balance  */}
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            color="white"
+          >
+            <Text fontWeight="bold">{t("Total Debt")}:</Text>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <Text fontWeight="bold" fontSize={"sm"}>
+                {smallUsdFormatter(
+                  borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
+                )}
+              </Text>
+              <Text ml={1} fontWeight="bold" fontSize={"sm"}>
+                {" → "}
+              </Text>
+              <Text
+                ml={1}
+                fontWeight="bold"
+                fontSize={updatedAtRiskOfLiquidation ? "lg" : "sm"}
+                color={updatedAtRiskOfLiquidation ? "red" : ""}
+              >
+                {smallUsdFormatter(
+                  updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
+                )} ({(updatedRatio*100).toFixed(0)}%)
+              </Text>
+            </Row>
           </Row>
 
-         {/* Fuse Pool  */}
+          {/* Fuse Pool  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"

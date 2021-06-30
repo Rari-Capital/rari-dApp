@@ -19,6 +19,7 @@ export const useFuseDataForAsset = (assetAddress?: String) => {
   // IE: Fuse pool 6 has this asset at index N
   const poolAssetIndex: { [poolId: number]: number } = {};
 
+  // Find Fuse pools where this asset exists
   const poolsWithThisAsset: FusePoolData[] | undefined = useMemo(
     () =>
       allPools?.filter((pool) =>

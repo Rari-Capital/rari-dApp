@@ -46,10 +46,11 @@ const useUpdatedUserAssets = ({
           const totalSupply =
             parseInt(assetToBeUpdated.totalSupply as any) + amount;
 
-        //   console.log(
-        //     { mode, assetToBeUpdated, totalSupply, amount },
-        //     assetToBeUpdated.totalSupply
-        //   );
+          //   Len.log(
+          //     { mode, assetToBeUpdated, totalSupply, amount },
+          //     assetToBeUpdated.totalSupply
+          //   );
+
 
           updatedAsset = {
             ...assetToBeUpdated,
@@ -105,8 +106,6 @@ const useUpdatedUserAssets = ({
           const totalBorrow =
             parseInt(assetToBeUpdated.totalBorrow as any) + amount;
 
-        //   console.log({ assetToBeUpdated, totalBorrow, mode });
-
           updatedAsset = {
             ...assetToBeUpdated,
 
@@ -145,7 +144,7 @@ const useUpdatedUserAssets = ({
             )
           );
 
-        //   console.log({ borrowRatePerBlock });
+          //   console.log({ borrowRatePerBlock });
 
           updatedAsset = {
             ...assetToBeUpdated,
@@ -170,7 +169,7 @@ const useUpdatedUserAssets = ({
       }
     );
 
-//   console.log({ updatedAssets, mode });
+  //   console.log({ updatedAssets, mode });
 
   return useMemo(() => updatedAssets, [updatedAssets]);
 };
@@ -186,7 +185,7 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
   lendAmount: number;
   borrowAmount: number;
 }) => {
-//   console.log({ lendAmount, borrowAmount });
+  //   console.log({ lendAmount, borrowAmount });
 
   const updatedAssetsLend: USDPricedFuseAsset[] | undefined =
     useUpdatedUserAssets({
@@ -204,9 +203,8 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
       amount: borrowAmount,
     });
 
-  //   console.log({ updatedAssetsLend, updatedAssetsLendAndBorrow });
 
-  return updatedAssetsLend;
+  return updatedAssetsLendAndBorrow;
 };
 
 // const useAmountIsValid = ({
