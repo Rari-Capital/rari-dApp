@@ -392,16 +392,13 @@ const AssetSupplyRow = ({
     asset.underlyingToken.toLowerCase() ==
     "0x04F2694C8fcee23e8Fd0dfEA1d4f5Bb8c352111F".toLowerCase();
 
-  const { data: stakedOHMApyData } = useQuery(
-    address + " tokenData",
-    async () => {
-      const data = (
-        await fetch("https://api.rari.capital/fuse/pools/18/apy")
-      ).json();
+  const { data: stakedOHMApyData } = useQuery("sOHM_APY", async () => {
+    const data = (
+      await fetch("https://api.rari.capital/fuse/pools/18/apy")
+    ).json();
 
-      return data as Promise<{ supplyApy: number; supplyWpy: number }>;
-    }
-  );
+    return data as Promise<{ supplyApy: number; supplyWpy: number }>;
+  });
 
   const isMobile = useIsMobile();
 
