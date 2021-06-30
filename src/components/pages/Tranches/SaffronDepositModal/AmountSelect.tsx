@@ -123,16 +123,10 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
     _setUserEnteredAmount(newAmount);
 
-    try {
-      BigNumber.DEBUG = true;
-
-      // Try to set the amount to BigNumber(newAmount):
-      const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
+    const bigAmount = new BigNumber(newAmount);
+    bigAmount.isNaN()
+      ? _setAmount(null)
+      : _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
 
     setUserAction(UserAction.NO_ACTION);
   };

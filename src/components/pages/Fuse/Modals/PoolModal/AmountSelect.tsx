@@ -121,22 +121,15 @@ const AmountSelect = ({
   const { t } = useTranslation();
 
   const updateAmount = (newAmount: string) => {
-    if (newAmount.startsWith("-")) {
-      return;
-    }
-
+    if (newAmount.startsWith("-")) return 
+    
     _setUserEnteredAmount(newAmount);
 
-    try {
-      BigNumber.DEBUG = true;
+    const bigAmount = new BigNumber(newAmount);
 
-      // Try to set the amount to BigNumber(newAmount):
-      const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** asset.underlyingDecimals));
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
+    bigAmount.isNaN()
+      ? _setAmount(null)
+      : _setAmount(bigAmount.multipliedBy(10 ** asset.underlyingDecimals));
 
     setUserAction(UserAction.NO_ACTION);
   };
@@ -665,7 +658,6 @@ const StatsColumn = ({
   enableAsCollateral: boolean;
 }) => {
   const { t } = useTranslation();
-
 
   // Get the new representation of a user's USDPricedFuseAssets after proposing a supply amount.
   const updatedAssets: USDPricedFuseAsset[] | undefined = useUpdatedUserAssets({

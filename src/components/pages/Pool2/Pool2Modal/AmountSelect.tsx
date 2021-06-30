@@ -77,16 +77,10 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
     _setUserEnteredAmount(newAmount);
 
-    try {
-      BigNumber.DEBUG = true;
-
-      // Try to set the amount to BigNumber(newAmount):
-      const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** 18));
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
+    const bigAmount = new BigNumber(newAmount);
+    bigAmount.isNaN()
+      ? _setAmount(null)
+      : _setAmount(bigAmount.multipliedBy(10 ** 18));
 
     setUserAction(UserAction.NO_ACTION);
   };
