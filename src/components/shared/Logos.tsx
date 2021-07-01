@@ -35,9 +35,7 @@ export const SmallLogo = ({ boxSize }: { boxSize?: string }) => {
 
 export const AnimatedSmallLogo = ({ boxSize }: { boxSize?: string }) => {
   return (
-    <Flip delay={300}>
       <SmallLogo boxSize={boxSize} />
-    </Flip>
   );
 };
 
