@@ -12,7 +12,7 @@ export default class YVaultSubpool {
       DAI: Web3.utils.toBN(0),
       USDC: Web3.utils.toBN(0),
       USDT: Web3.utils.toBN(0),
-      TUSD: Web3.utils.toBN(0)
+      TUSD: Web3.utils.toBN(0),
     };
   }
 }

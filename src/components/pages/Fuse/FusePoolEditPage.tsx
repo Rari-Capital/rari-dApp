@@ -9,19 +9,16 @@ import {
   useToast,
   Input,
 } from "@chakra-ui/react";
-import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
-import React, { ReactNode, useEffect, useState } from "react";
+import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
+import { memo, ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
-
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
@@ -33,7 +30,7 @@ import {
   createComptroller,
   createUnitroller,
 } from "../../../utils/createComptroller";
-import { useQueryCache, useQuery } from "react-query";
+import { useQueryClient, useQuery } from "react-query";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
@@ -41,6 +38,7 @@ import BigNumber from "bignumber.js";
 import { useTokenData } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
 import { handleGenericError } from "../../../utils/errorHandling";
+import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -107,7 +105,7 @@ export async function testForComptrollerErrorAndSend(
   return txObject.send({ from: caller });
 }
 
-const FusePoolEditPage = React.memo(() => {
+const FusePoolEditPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
@@ -118,6 +116,8 @@ const FusePoolEditPage = React.memo(() => {
     onClose: closeAddAssetModal,
   } = useDisclosure();
 
+  const authedOpenModal = useAuthedCallback(openAddAssetModal);
+
   const { t } = useTranslation();
 
   const { poolId } = useParams();
@@ -126,8 +126,6 @@ const FusePoolEditPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
-
       {data ? (
         <AddAssetModal
           comptrollerAddress={data.comptroller}
@@ -185,7 +183,7 @@ const FusePoolEditPage = React.memo(() => {
               {data ? (
                 data.assets.length > 0 ? (
                   <AssetConfiguration
-                    openAddAssetModal={openAddAssetModal}
+                    openAddAssetModal={authedOpenModal}
                     assets={data.assets}
                     comptrollerAddress={data.comptroller}
                     poolID={poolId}
@@ -202,7 +200,7 @@ const FusePoolEditPage = React.memo(() => {
 
                     <AddAssetButton
                       comptrollerAddress={data.comptroller}
-                      openAddAssetModal={openAddAssetModal}
+                      openAddAssetModal={authedOpenModal}
                     />
                   </Column>
                 )
@@ -215,8 +213,6 @@ const FusePoolEditPage = React.memo(() => {
           </Box>
         </RowOrColumn>
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });
@@ -235,7 +231,7 @@ const PoolConfiguration = ({
 
   const { fuse, address } = useRari();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
   const toast = useToast();
 
   const data = useExtraPoolInfo(comptrollerAddress);
@@ -252,7 +248,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-ChangeWhitelistStatus");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -275,7 +271,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-AddToWhitelist");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -297,7 +293,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-RemoveFromWhitelist");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -317,7 +313,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-RevokeRights");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -335,7 +331,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-AcceptAdmin");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -358,7 +354,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-UpdateAdmin");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -404,7 +400,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-UpdateCloseFactor");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -429,7 +425,7 @@ const PoolConfiguration = ({
 
       LogRocket.track("Fuse-UpdateLiquidationIncentive");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }

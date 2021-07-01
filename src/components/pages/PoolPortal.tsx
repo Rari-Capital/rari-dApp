@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { memo, useState } from "react";
 import {
   Box,
   Text,
@@ -21,8 +21,6 @@ import DashboardBox, {
   DASHBOARD_BOX_PROPS,
 } from "../shared/DashboardBox";
 
-import CopyrightSpacer from "../shared/CopyrightSpacer";
-
 import Chart from "react-apexcharts";
 
 import FullPageSpinner from "../shared/FullPageSpinner";
@@ -38,7 +36,7 @@ import {
   ResponsivePixelSize,
   PixelSize,
   PercentOnDesktopPixelOnMobileSize,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 
 import {
   USDSelfReturnChartOptions,
@@ -59,7 +57,6 @@ import { useTranslation } from "react-i18next";
 import { PoolTypeProvider, usePoolType } from "../../context/PoolContext";
 import { usePoolInfo, usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 import { Header, HeaderHeightWithTopPadding } from "../shared/Header";
-import ForceAuthModal from "../shared/ForceAuthModal";
 
 import { GlowingButton } from "../shared/GlowingButton";
 
@@ -75,6 +72,10 @@ import { usePoolAPY } from "../../hooks/usePoolAPY";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { tokens } from "../../utils/tokenUtils";
 import { fetchRGTAPR } from "../../utils/fetchPoolAPY";
+import { formatBalanceBN } from "utils/format";
+import Footer from "components/shared/Footer";
+
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -89,7 +90,7 @@ const currencyCodesByHashes: { [key: string]: string } = {
   "0x33d80a03b5585b94e68b56bdea4f57fd2e459401902cb2f61772e1b630afb4b2": "mUSD",
 };
 
-const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
+const PoolPortal = memo(({ pool }: { pool: Pool }) => {
   return (
     <PoolTypeProvider pool={pool}>
       <PoolPortalContent />
@@ -100,9 +101,9 @@ const PoolPortal = React.memo(({ pool }: { pool: Pool }) => {
 export default PoolPortal;
 
 const PoolPortalContent = () => {
-  const { isAuthed } = useRari();
+  const { isAuthed, rari } = useRari();
 
-  const { windowHeight, isLocked } = useLockedViewHeight({
+  const { windowHeight } = useLockedViewHeight({
     min: 750,
     max: 1900,
   });
@@ -121,43 +122,40 @@ const PoolPortalContent = () => {
     ],
   });
 
-  const {
-    spacing: statsSidebarSpacing,
-    childSizes: statsSidebarChildSizes,
-  } = useSpacedLayout({
-    parentHeight: bodySize.asNumber(),
-    spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [
-      new PixelSize(90),
-      new PixelSize(100),
-      new PixelSize(152),
-      new PixelSize(180),
-      new PercentOnDesktopPixelOnMobileSize({
-        percentageSize: 1,
-        pixelSize: 100,
-      }),
-    ],
-  });
+  const { spacing: statsSidebarSpacing, childSizes: statsSidebarChildSizes } =
+    useSpacedLayout({
+      parentHeight: bodySize.asNumber(),
+      spacing: DASHBOARD_BOX_SPACING.asNumber(),
+      childSizes: [
+        new PixelSize(90),
+        new PixelSize(100),
+        new PixelSize(152),
+        new PixelSize(230),
+        new PercentOnDesktopPixelOnMobileSize({
+          percentageSize: 1,
+          pixelSize: 100,
+        }),
+      ],
+    });
 
-  const {
-    spacing: mainSectionSpacing,
-    childSizes: mainSectionChildSizes,
-  } = useSpacedLayout({
-    parentHeight: bodySize.asNumber(),
-    spacing: DASHBOARD_BOX_SPACING.asNumber(),
-    childSizes: [
-      new PixelSize(90),
-      new PercentOnDesktopPixelOnMobileSize({
-        percentageSize: 1,
-        pixelSize: 600,
-      }),
-      new PixelSize(180),
-    ],
-  });
+  const { spacing: mainSectionSpacing, childSizes: mainSectionChildSizes } =
+    useSpacedLayout({
+      parentHeight: bodySize.asNumber(),
+      spacing: DASHBOARD_BOX_SPACING.asNumber(),
+      childSizes: [
+        new PixelSize(90),
+        new PercentOnDesktopPixelOnMobileSize({
+          percentageSize: 1,
+          pixelSize: 600,
+        }),
+        new PixelSize(180),
+      ],
+    });
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
 
-  const { balanceData, isPoolBalanceLoading } = usePoolBalance(poolType);
+  const { data: poolBalance, isLoading: isPoolBalanceLoading } =
+    usePoolBalance(poolType);
 
   const {
     isOpen: isDepositModalOpen,
@@ -165,17 +163,21 @@ const PoolPortalContent = () => {
     onClose: closeDepositModal,
   } = useDisclosure();
 
-  if (isPoolBalanceLoading) {
-    return <FullPageSpinner />;
-  }
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
-  const { formattedBalance: myBalance, bigBalance } = balanceData!;
-  const hasNotDeposited = bigBalance.isZero();
+  // If loading, stop here
+  if (isPoolBalanceLoading) return <FullPageSpinner />;
+
+  const myBalance: BN = poolBalance ?? rari.web3.utils.toBN(0);
+  const hasNotDeposited: boolean = poolBalance?.isZero() ?? true;
+  const formattedBalance = formatBalanceBN(
+    rari,
+    myBalance,
+    poolType === Pool.ETH
+  );
 
   return (
     <>
-      <ForceAuthModal />
-
       <DepositModal isOpen={isDepositModalOpen} onClose={closeDepositModal} />
 
       <Column
@@ -225,7 +227,7 @@ const PoolPortalContent = () => {
                   <Text fontSize="xs">{poolCaption}</Text>
                 </Column>
 
-                <DepositButton onClick={openDepositModal} />
+                <DepositButton onClick={authedOpenModal} />
               </RowOnDesktopColumnOnMobile>
             </DashboardBox>
 
@@ -242,7 +244,7 @@ const PoolPortalContent = () => {
                   position="absolute"
                   top="50%"
                   left="50%"
-                  onClick={openDepositModal}
+                  onClick={authedOpenModal}
                 />
               ) : null}
 
@@ -250,7 +252,7 @@ const PoolPortalContent = () => {
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
-                  balance={myBalance}
+                  balance={formattedBalance!}
                 />
               </Box>
             </DashboardBox>
@@ -349,8 +351,7 @@ const PoolPortalContent = () => {
             </DashboardBox>
           </Column>
         </RowOnDesktopColumnOnMobile>
-
-        <CopyrightSpacer forceShow={isLocked} />
+        <Footer />
       </Column>
     </>
   );
@@ -359,7 +360,6 @@ const PoolPortalContent = () => {
 const UserStatsAndChart = ({
   size,
   balance,
-
   hasNotDeposited,
 }: {
   size: number;
@@ -603,36 +603,38 @@ const APYStats = () => {
 
   const { rari } = useRari();
 
-  const { data: apys, isLoading: areAPYsLoading } = useQuery(
-    pool + " monthly and weekly apys",
-    async () => {
-      const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
-        getSDKPool({
-          rari,
-          pool,
-        }).apy.getApyOverTime(
-          Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
-        ),
-        getSDKPool({
-          rari,
-          pool,
-        }).apy.getApyOverTime(
-          Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
-        ),
-        fetchRGTAPR(rari),
-      ]);
+  const {
+    data: apys,
+    isLoading: areAPYsLoading,
+    isError,
+    error,
+  } = useQuery(pool + " monthly and weekly apys", async () => {
+    const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
+      getSDKPool({
+        rari,
+        pool,
+      }).apy.getApyOverTime(
+        Math.floor((Date.now() - millisecondsPerDay * 30) / 1000)
+      ),
+      getSDKPool({
+        rari,
+        pool,
+      }).apy.getApyOverTime(
+        Math.floor((Date.now() - millisecondsPerDay * 7) / 1000)
+      ),
+      fetchRGTAPR(rari),
+    ]);
 
-      const month = parseFloat(
-        rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(1);
+    const month = parseFloat(
+      rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
+    ).toFixed(1);
 
-      const week = parseFloat(
-        rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
-      ).toFixed(1);
+    const week = parseFloat(
+      rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
+    ).toFixed(1);
 
-      return { month, week, rgtAPR };
-    }
-  );
+    return { month, week, rgtAPR };
+  });
 
   return (
     <Column
@@ -655,7 +657,8 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Month")}: <b>{areAPYsLoading ? "?" : apys!.month}%</b>
+            {t("This Month")}:{" "}
+            <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.month}%</b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
@@ -673,7 +676,8 @@ const APYStats = () => {
           width="100%"
         >
           <Text fontSize="sm">
-            {t("This Week")}: <b>{areAPYsLoading ? "?" : apys!.week}%</b>
+            {t("This Week")}:{" "}
+            <b>{isError ? "🚫" : areAPYsLoading ? "?" : apys!.week}%</b>
           </Text>
 
           {/* <Text fontWeight="bold" textAlign="center">
@@ -725,7 +729,7 @@ const StrategyAllocation = () => {
 
       const values = Object.values(allocations);
 
-      return [keys, values];
+      return [keys, values] as const;
     }
   );
 
@@ -769,19 +773,22 @@ const StrategyAllocation = () => {
 
 const MonthlyReturns = () => {
   const ethPoolAPY = usePoolAPY(Pool.ETH);
-  const stablePoolAPY = usePoolAPY(Pool.STABLE);
+  const stablePoolAPY = usePoolAPY(Pool.USDC);
+  const daiPoolAPY = usePoolAPY(Pool.DAI);
   const yieldPoolAPY = usePoolAPY(Pool.YIELD);
 
   const { poolName: ethPoolName } = usePoolInfo(Pool.ETH);
-  const { poolName: stablePoolName } = usePoolInfo(Pool.STABLE);
+  const { poolName: stablePoolName } = usePoolInfo(Pool.USDC);
+  const { poolName: daiPoolName } = usePoolInfo(Pool.DAI);
   const { poolName: yieldPoolName } = usePoolInfo(Pool.YIELD);
 
   const returns =
-    ethPoolAPY && stablePoolAPY && yieldPoolAPY
+    ethPoolAPY && stablePoolAPY && yieldPoolAPY && daiPoolAPY
       ? {
           [ethPoolName]: parseFloat(ethPoolAPY!),
           [stablePoolName]: parseFloat(stablePoolAPY!),
           [yieldPoolName]: parseFloat(yieldPoolAPY!),
+          [daiPoolName]: parseFloat(daiPoolAPY!),
         }
       : null;
 

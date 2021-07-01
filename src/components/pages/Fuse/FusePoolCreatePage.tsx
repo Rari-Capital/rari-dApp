@@ -8,15 +8,14 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row } from "buttered-chakra";
-import React, { ReactNode, useState } from "react";
+import { Column, Center, Row } from "utils/chakraUtils";
+import { memo, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
@@ -35,15 +34,13 @@ import LogRocket from "logrocket";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-const FusePoolCreatePage = React.memo(() => {
+const FusePoolCreatePage = memo(() => {
   const isMobile = useIsSemiSmallScreen();
 
   const { isAuthed } = useRari();
 
   return (
     <>
-      <ForceAuthModal />
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -212,15 +209,6 @@ const PoolConfiguration = () => {
               >
                 ChainlinkPriceOracle
               </option>
-
-              {/* <option
-                className="black-bg-option"
-                value={
-                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.Keep3rPriceOracle
-                }
-              >
-                Keep3rPriceOracle
-              </option> */}
 
               <option
                 className="black-bg-option"

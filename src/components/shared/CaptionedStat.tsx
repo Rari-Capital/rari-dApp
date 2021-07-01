@@ -1,6 +1,5 @@
-import React from "react";
 import { Heading, Text } from "@chakra-ui/react";
-import { CrossAxisAlignment, Column } from "buttered-chakra";
+import { CrossAxisAlignment, Column } from "utils/chakraUtils";
 import { useMaybeResponsiveProp } from "../../hooks/useMaybeResponsiveProp";
 
 export interface CaptionedStatProps {

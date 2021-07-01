@@ -1,81 +1,43 @@
 import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
-import { Center, Column, Row, useIsMobile } from "buttered-chakra";
-import React, { useMemo } from "react";
+import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
-import { useRari } from "../../../context/RariContext";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "../../../utils/bigUtils";
+import { useRari } from "context/RariContext";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { smallUsdFormatter } from "utils/bigUtils";
 
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar, { useFilter } from "./FuseTabBar";
-import { useQuery } from "react-query";
-import { useTokenData } from "../../../hooks/useTokenData";
-import Fuse from "fuse.js";
-import {
-  filterOnlyObjectProperties,
-  filterPoolName,
-} from "../../../utils/fetchFusePoolData";
-import { letterScore, usePoolRSS } from "../../../hooks/useRSS";
-import { SimpleTooltip } from "../../shared/SimpleTooltip";
+import { useTokenData } from "hooks/useTokenData";
 
-export interface FusePool {
-  name: string;
-  creator: string;
-  comptroller: string;
-  isPrivate: boolean;
-}
+import { filterPoolName } from "utils/fetchFusePoolData";
 
-interface MergedPool {
-  id: number;
-  pool: FusePool;
-  underlyingTokens: string[];
-  underlyingSymbols: string[];
-  suppliedUSD: number;
-  borrowedUSD: number;
-}
+import { letterScore, usePoolRSS } from "hooks/useRSS";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
+import { useFusePools } from "hooks/fuse/useFusePools";
+import Footer from "components/shared/Footer";
+import { memo } from "react";
 
-const poolSort = (pools: MergedPool[]) => {
-  return pools.sort((a, b) => {
-    if (b.suppliedUSD > a.suppliedUSD) {
-      return 1;
-    }
-
-    if (b.suppliedUSD < a.suppliedUSD) {
-      return -1;
-    }
-
-    // They're equal, let's sort by pool number:
-
-    return b.id > a.id ? 1 : -1;
-  });
-};
-
-const FusePoolsPage = React.memo(() => {
+const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();
-
   const isMobile = useIsSmallScreen();
 
   return (
     <>
-      <ForceAuthModal />
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1000px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -83,9 +45,9 @@ const FusePoolsPage = React.memo(() => {
         <DashboardBox width="100%" mt={4}>
           <PoolList />
         </DashboardBox>
-      </Column>
 
-      <CopyrightSpacer forceShow />
+        <Footer />
+      </Column>
     </>
   );
 });
@@ -94,82 +56,9 @@ export default FusePoolsPage;
 
 const PoolList = () => {
   const filter = useFilter();
-
-  const isMyPools = filter === "my-pools";
-  const isCreatedPools = filter === "created-pools";
-
   const { t } = useTranslation();
 
-  const { fuse, rari, address } = useRari();
-
-  const { data: _pools } = useQuery(
-    address + " fusePoolList" + (isMyPools || isCreatedPools ? filter : ""),
-    async () => {
-      const [
-        {
-          0: ids,
-          1: fusePools,
-          2: totalSuppliedETH,
-          3: totalBorrowedETH,
-          4: underlyingTokens,
-          5: underlyingSymbols,
-        },
-        ethPrice,
-      ] = await Promise.all([
-        isMyPools
-          ? fuse.contracts.FusePoolLens.methods
-              .getPoolsBySupplierWithData(address)
-              .call({ gas: 1e18 })
-          : isCreatedPools
-          ? fuse.contracts.FusePoolLens.methods
-              .getPoolsByAccountWithData(address)
-              .call({ gas: 1e18 })
-          : fuse.contracts.FusePoolLens.methods
-              .getPublicPoolsWithData()
-              .call({ gas: 1e18 }),
-
-        rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
-      ]);
-
-      const merged: MergedPool[] = [];
-      for (let id = 0; id < ids.length; id++) {
-        merged.push({
-          // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
-          underlyingTokens: underlyingTokens[id],
-          underlyingSymbols: underlyingSymbols[id],
-          pool: filterOnlyObjectProperties(fusePools[id]),
-          id: ids[id],
-          suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
-          borrowedUSD: (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice),
-        });
-      }
-
-      return merged;
-    }
-  );
-
-  const filteredPools = useMemo(() => {
-    if (!_pools) {
-      return undefined;
-    }
-
-    if (!filter) {
-      return poolSort(_pools);
-    }
-
-    if (isMyPools || isCreatedPools) {
-      return poolSort(_pools);
-    }
-
-    const options = {
-      keys: ["pool.name", "id", "underlyingTokens", "underlyingSymbols"],
-      threshold: 0.3,
-    };
-
-    const filtered = new Fuse(_pools, options).search(filter);
-    return poolSort(filtered.map((item) => item.item));
-  }, [_pools, filter, isMyPools, isCreatedPools]);
-
+  const { filteredPools } = useFusePools(filter);
   const isMobile = useIsMobile();
 
   return (
@@ -187,7 +76,7 @@ const PoolList = () => {
         pl={4}
         pr={1}
       >
-        <Text fontWeight="bold" width="40%">
+        <Text fontWeight="bold" width={isMobile ? "100%" : "40%"}>
           {!isMobile ? t("Pool Assets") : t("Pool Directory")}
         </Text>
 
@@ -280,7 +169,7 @@ const PoolRow = ({
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          height={isMobile ? "120px" : "90px"}
+          height="90px"
           className="hover-row"
           pl={4}
           pr={1}

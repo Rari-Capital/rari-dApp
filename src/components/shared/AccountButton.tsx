@@ -1,4 +1,4 @@
-import React from "react";
+import { memo, useCallback } from "react";
 import { useRari } from "../../context/RariContext";
 import {
   useDisclosure,
@@ -6,10 +6,12 @@ import {
   ModalOverlay,
   ModalContent,
   Button,
+  Link,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column, Center } from "utils/chakraUtils";
 import DashboardBox from "./DashboardBox";
 
 // @ts-ignore
@@ -27,13 +29,16 @@ import { version } from "../..";
 
 import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
+import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
-export const AccountButton = React.memo(() => {
+export const AccountButton = memo(() => {
   const {
     isOpen: isSettingsModalOpen,
     onOpen: openSettingsModal,
     onClose: closeSettingsModal,
   } = useDisclosure();
+
+  const authedOpenSettingsModal = useAuthedCallback(openSettingsModal);
 
   const {
     isOpen: isClaimRGTModalOpen,
@@ -41,11 +46,15 @@ export const AccountButton = React.memo(() => {
     onClose: closeClaimRGTModal,
   } = useDisclosure();
 
+  const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal);
+
   const {
     isOpen: isMoonpayModalOpen,
     onOpen: openMoonpayModal,
     onClose: closeMoonpayModal,
   } = useDisclosure();
+
+  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal);
 
   return (
     <>
@@ -61,9 +70,9 @@ export const AccountButton = React.memo(() => {
       />
       <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons
-        openModal={openSettingsModal}
-        openClaimRGTModal={openClaimRGTModal}
-        openMoonpayModal={openMoonpayModal}
+        openModal={authedOpenSettingsModal}
+        openClaimRGTModal={authedOpenClaimRGTModal}
+        openMoonpayModal={authedOpenMoonpayModal}
       />
     </>
   );
@@ -78,17 +87,23 @@ const Buttons = ({
   openClaimRGTModal: () => any;
   openMoonpayModal: () => any;
 }) => {
-  const { address } = useRari();
+  const { address, isAuthed, login, isAttemptingLogin } = useRari();
 
   const { t } = useTranslation();
 
   const isMobile = useIsSmallScreen();
 
+  const handleAccountButtonClick = useCallback(() => {
+    if (isAuthed) {
+      openModal();
+    } else login();
+  }, [isAuthed, login, openModal]);
+
   return (
-    <>
+    <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
-          <DashboardBox
+          {/* <DashboardBox
             as="button"
             flexShrink={0}
             width="110px"
@@ -97,14 +112,15 @@ const Buttons = ({
             onClick={openMoonpayModal}
           >
             <Center expand>{t("Buy Crypto")}</Center>
-          </DashboardBox>
+          </DashboardBox> */}
 
           <DashboardBox
-            ml={4}
+            ml={1}
             as="button"
             height="40px"
             flexShrink={0}
-            width="98px"
+            width="95px"
+            fontSize="15px"
             onClick={openClaimRGTModal}
             fontWeight="bold"
           >
@@ -113,28 +129,41 @@ const Buttons = ({
         </>
       )}
 
+      {/* Connect + Account button */}
       <DashboardBox
-        ml={{ md: 4, base: 0 }}
+        ml={isMobile ? 0 : 4}
         as="button"
         height="40px"
         flexShrink={0}
-        width="auto"
-        onClick={openModal}
+        flexGrow={0}
+        width="133px"
+        onClick={handleAccountButtonClick}
       >
         <Row
           expand
           mainAxisAlignment="space-around"
           crossAxisAlignment="center"
           px={3}
+          py={1}
         >
-          <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
-
-          <Text ml={2} fontWeight="semibold">
-            {shortAddress(address)}
-          </Text>
+          {/* Conditionally display Connect button or Account button */}
+          {!isAuthed ? (
+            isAttemptingLogin ? (
+              <Spinner />
+            ) : (
+              <Text fontWeight="semibold">{t("Connect")}</Text>
+            )
+          ) : (
+            <>
+              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              <Text ml={2} fontWeight="semibold">
+                {shortAddress(address)}
+              </Text>
+            </>
+          )}
         </Row>
       </DashboardBox>
-    </>
+    </Row>
   );
 };
 
@@ -151,11 +180,16 @@ export const SettingsModal = ({
 }) => {
   const { t } = useTranslation();
 
-  const { login } = useRari();
+  const { login, logout } = useRari();
 
   const onSwitchWallet = () => {
     onClose();
     setTimeout(() => login(false), 100);
+  };
+
+  const handleDisconnectClick = () => {
+    onClose();
+    logout();
   };
 
   const onClaimRGT = () => {
@@ -191,7 +225,7 @@ export const SettingsModal = ({
           />
 
           <Button
-            bg="red.500"
+            bg="facebook.500"
             width="100%"
             height="45px"
             fontSize="xl"
@@ -206,7 +240,7 @@ export const SettingsModal = ({
           </Button>
 
           <Button
-            bg="whatsapp.500"
+            bg={"whatsapp.500"}
             width="100%"
             height="45px"
             fontSize="xl"
@@ -220,10 +254,54 @@ export const SettingsModal = ({
             {t("Switch Wallet")}
           </Button>
 
+          <Button
+            bg="red.500"
+            width="100%"
+            height="45px"
+            fontSize="xl"
+            borderRadius="7px"
+            fontWeight="bold"
+            onClick={handleDisconnectClick}
+            _hover={{}}
+            _active={{}}
+            mb={4}
+          >
+            {t("Disconnect")}
+          </Button>
+
           <LanguageSelect />
 
+          <Row
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            mt={4}
+            width="100%"
+          >
+            <Link target="_blank" href="https://docs.rari.capital/">
+              <Text mx={2} text="sm" textDecoration="underline">
+                {t("Docs")}
+              </Text>
+            </Link>
+            <Link
+              target="_blank"
+              href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3"
+            >
+              <Text mx={2} text="sm" textDecoration="underline">
+                {t("Notion")}
+              </Text>
+            </Link>
+            <Link
+              target="_blank"
+              href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
+            >
+              <Text mx={2} text="sm" textDecoration="underline">
+                {t("Audit")}
+              </Text>
+            </Link>
+          </Row>
+
           <Text mt={4} fontSize="10px">
-            Version {version}
+            {t("Version")} {version}
           </Text>
         </Column>
       </ModalContent>

@@ -18,7 +18,7 @@ export const fetchFuseTVL = async (fuse: Fuse) => {
   );
 };
 
-export const fetchTVL = async (rari: Rari, fuse: Fuse) => {
+export const perPoolTVL = async (rari: Rari, fuse: Fuse) => {
   const [
     stableTVL,
     yieldTVL,
@@ -42,10 +42,16 @@ export const fetchTVL = async (rari: Rari, fuse: Fuse) => {
   const ethTVL = ethTVLInETH.mul(ethUSDBN);
   const fuseTVL = fuseTVLInETH.mul(ethUSDBN);
 
-  return stableTVL
-    .add(yieldTVL)
-    .add(ethTVL)
-    .add(daiTVL)
-    .add(stakedTVL)
-    .add(fuseTVL);
+  return { stableTVL, yieldTVL, ethTVL, daiTVL, fuseTVL, stakedTVL };
+};
+
+export const fetchTVL = async (rari: Rari, fuse: Fuse) => {
+  const tvls = await perPoolTVL(rari, fuse);
+
+  return tvls.stableTVL
+    .add(tvls.yieldTVL)
+    .add(tvls.ethTVL)
+    .add(tvls.daiTVL)
+    .add(tvls.stakedTVL)
+    .add(tvls.fuseTVL);
 };

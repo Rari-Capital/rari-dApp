@@ -24,7 +24,7 @@ export default class Fuse {
   static FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS =
     "0x835482FE0532f169024d5E9410199369aAD5C77E";
   static FUSE_SAFE_LIQUIDATOR_CONTRACT_ADDRESS =
-    "0xCc29FE6A0e090D464Abb616E1AE4cEeA415c140E";
+    "0x41C7F2D48bde2397dFf43DadA367d2BD3527452F";
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS =
     "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85";
   static FUSE_POOL_LENS_CONTRACT_ADDRESS =
@@ -45,16 +45,24 @@ export default class Fuse {
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
-    UniswapView: "", // TODO: Set correct mainnet address after deployment
-    Keep3rPriceOracle: "0xb90de476d438b37a4a143bf729a9b2237e544af6",
-    Keep3rSushiSwapPriceOracle: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0",
+    ChainlinkPriceOracleV2: "0xb0602af43Ca042550ca9DA3c33bA3aC375d20Df4",
+    UniswapView: "", // NOT IN USE
+    Keep3rPriceOracle_Uniswap: "0xb90de476d438b37a4a143bf729a9b2237e544af6", // NO LONGER IN USE
+    Keep3rPriceOracle_SushiSwap: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0", // NO LONGER IN USE
+    Keep3rV2PriceOracle_Uniswap: "0xd6a8cac634e59c00a3d4163f839d068458e39869", // NO LONGER IN USE
+    UniswapTwapPriceOracle_Uniswap: "0xCd8f1c72Ff98bFE3B307869dDf66f5124D57D3a9",
+    UniswapTwapPriceOracle_SushiSwap: "0xfD4B4552c26CeBC54cD80B1BDABEE2AC3E7eB324",
     UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
     AlphaHomoraV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    AlphaHomoraV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
     SynthetixPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    BalancerLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     MasterPriceOracle: "0x1887118E49e0F4A78Bd71B792a49dE03504A764D",
+    CurveLpTokenPriceOracle: "0x43c534203339bbf15f62b8dde91e7d14195e7a60",
+    CurveLiquidityGaugeV2PriceOracle: "0xd9eefdb09d75ca848433079ea72ef609a1c1ea21",
   };
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
@@ -67,19 +75,32 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    "SimplePriceOracle": "0x825c814c2e008137a46d355a57d0d89f6eea946ad01f0e8203fd33162e3ed799",
-    "PreferredPriceOracle": "0x3899c6d9b979281ffb059859e0c8c2028662201d3796e0ea10e841e1d68a997f",
-    "ChainlinkPriceOracle": "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
-    "Keep3rPriceOracle": "0x36a0d4743a92d3565f3d2709c41e9983bb263c27c339ddbb8ffa87a939498f7d",
-    "MasterPriceOracle": "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
-    "UniswapAnchoredView": "0x764bdac98ac462a37513087378aef33380ac062baa2f86c2c30e5d6a78fabad0",
-    "UniswapView": "0x817d46149b29738f641c876c56fd7524db4c8d5376f7cc756e94c9e32c29b18b",
-    "UniswapLpTokenPriceOracle": "0xc79e96f40986213d5f9fc403b5f37e00d3b57842ef0fae24c750222c02592f9f",
-    "RecursivePriceOracle": "0x6f5280d0028fff9ae0aaa447c6c36ff3b270d9675b74762ed2caf9ce3371d63e",
-    "YVaultV1PriceOracle": "0xeb5c1b3acb093a4158251f5955540f220c72200ffaf32ce89bfefbce0c0b7f49",
-    "YVaultV2PriceOracle": "0x5a07033c6820e6ecc517dd94d03b5e38bf15334d4b3c0624dcdb810698196608",
-    "AlphaHomoraV1PriceOracle": "0xfbec68bfe8dfa9e8bab8af26ee5ae9adeb2dcbf2c91d11c3dd497b6b6c2deb64",
-    "SynthetixPriceOracle": "0x5c92648ceca2c5698fddc9a35af43275c821961ca9056c50da592566daaebdc6"
+    SimplePriceOracle:
+      "0x825c814c2e008137a46d355a57d0d89f6eea946ad01f0e8203fd33162e3ed799",
+    PreferredPriceOracle:
+      "0x3899c6d9b979281ffb059859e0c8c2028662201d3796e0ea10e841e1d68a997f",
+    ChainlinkPriceOracle:
+      "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
+    Keep3rPriceOracle:
+      "0x36a0d4743a92d3565f3d2709c41e9983bb263c27c339ddbb8ffa87a939498f7d",
+    MasterPriceOracle:
+      "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
+    UniswapAnchoredView:
+      "0x764bdac98ac462a37513087378aef33380ac062baa2f86c2c30e5d6a78fabad0",
+    UniswapView:
+      "0x817d46149b29738f641c876c56fd7524db4c8d5376f7cc756e94c9e32c29b18b",
+    UniswapLpTokenPriceOracle:
+      "0xc79e96f40986213d5f9fc403b5f37e00d3b57842ef0fae24c750222c02592f9f",
+    RecursivePriceOracle:
+      "0x6f5280d0028fff9ae0aaa447c6c36ff3b270d9675b74762ed2caf9ce3371d63e",
+    YVaultV1PriceOracle:
+      "0xeb5c1b3acb093a4158251f5955540f220c72200ffaf32ce89bfefbce0c0b7f49",
+    YVaultV2PriceOracle:
+      "0x5a07033c6820e6ecc517dd94d03b5e38bf15334d4b3c0624dcdb810698196608",
+    AlphaHomoraV1PriceOracle:
+      "0xfbec68bfe8dfa9e8bab8af26ee5ae9adeb2dcbf2c91d11c3dd497b6b6c2deb64",
+    SynthetixPriceOracle:
+      "0x5c92648ceca2c5698fddc9a35af43275c821961ca9056c50da592566daaebdc6",
   };
 
   static ORACLES = [
@@ -99,8 +120,10 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel_ETH: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
-    WhitePaperInterestRateModel_WBTC: "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
+    WhitePaperInterestRateModel_ETH:
+      "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    WhitePaperInterestRateModel_WBTC:
+      "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
     JumpRateModel_DAI: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
     JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
     JumpRateModel_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
@@ -1002,12 +1025,14 @@ export default class Fuse {
         priceOracle
       );
 
-      if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) var chainlinkPriceFeed = true;
-      else try {
-        var chainlinkPriceFeed = await chainlinkPriceOracle.methods
-          .hasPriceFeed(conf.underlying)
-          .call();
-      } catch {}
+      if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase())
+        var chainlinkPriceFeed = true;
+      else
+        try {
+          var chainlinkPriceFeed = await chainlinkPriceOracle.methods
+            .hasPriceFeed(conf.underlying)
+            .call();
+        } catch {}
 
       if (chainlinkPriceFeed === undefined || !chainlinkPriceFeed) {
         // Check for PreferredPriceOracle with underlying ChainlinkPriceOracle with a corresponding feed
@@ -1131,7 +1156,9 @@ export default class Fuse {
             TWAP: 3,
           };
 
-          if (conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) {
+          if (
+            conf.underlying.toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()
+          ) {
             // WETH
             await uniswapOrUniswapAnchoredView.methods
               .add([

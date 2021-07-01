@@ -15,8 +15,8 @@ import {
   Center,
   Row,
   useIsMobile,
-} from "buttered-chakra";
-import React, { useState } from "react";
+} from "utils/chakraUtils";
+import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
@@ -24,9 +24,7 @@ import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { shortUsdFormatter } from "../../../utils/bigUtils";
 import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
 
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 import { Link as RouterLink } from "react-router-dom";
@@ -45,6 +43,7 @@ import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
+import Footer from "components/shared/Footer";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -110,7 +109,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
   return data;
 };
 
-const FusePoolInfoPage = React.memo(() => {
+const FusePoolInfoPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
@@ -120,14 +119,13 @@ const FusePoolInfoPage = React.memo(() => {
 
   return (
     <>
-      <ForceAuthModal />
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         color="#FFFFFF"
         mx="auto"
         width={isMobile ? "100%" : "1150px"}
+        height="100%"
         px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
@@ -182,9 +180,8 @@ const FusePoolInfoPage = React.memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
+        <Footer />
       </Column>
-
-      <CopyrightSpacer forceShow />
     </>
   );
 });
@@ -505,46 +502,48 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
             </Center>
           ) : (
             <Chart
-              options={{
-                ...FuseUtilizationChartOptions,
-                annotations: {
-                  points: [
-                    {
-                      x: selectedAssetUtilization,
-                      y: data.borrowerRates[selectedAssetUtilization].y,
-                      marker: {
-                        size: 6,
-                        fillColor: "#FFF",
-                        strokeColor: "#DDDCDC",
-                      },
-                    },
-                    {
-                      x: selectedAssetUtilization,
-                      y: data.supplierRates[selectedAssetUtilization].y,
-                      marker: {
-                        size: 6,
-                        fillColor: selectedTokenData?.color ?? "#A6A6A6",
-                        strokeColor: "#FFF",
-                      },
-                    },
-                  ],
-                  xaxis: [
-                    {
-                      x: selectedAssetUtilization,
-                      label: {
-                        text: t("Current Utilization"),
-                        orientation: "horizontal",
-                        style: {
-                          background: "#121212",
-                          color: "#FFF",
+              options={
+                {
+                  ...FuseUtilizationChartOptions,
+                  annotations: {
+                    points: [
+                      {
+                        x: selectedAssetUtilization,
+                        y: data.borrowerRates[selectedAssetUtilization].y,
+                        marker: {
+                          size: 6,
+                          fillColor: "#FFF",
+                          strokeColor: "#DDDCDC",
                         },
                       },
-                    },
-                  ],
-                },
+                      {
+                        x: selectedAssetUtilization,
+                        y: data.supplierRates[selectedAssetUtilization].y,
+                        marker: {
+                          size: 6,
+                          fillColor: selectedTokenData?.color ?? "#A6A6A6",
+                          strokeColor: "#FFF",
+                        },
+                      },
+                    ],
+                    xaxis: [
+                      {
+                        x: selectedAssetUtilization,
+                        label: {
+                          text: t("Current Utilization"),
+                          orientation: "horizontal",
+                          style: {
+                            background: "#121212",
+                            color: "#FFF",
+                          },
+                        },
+                      },
+                    ],
+                  },
 
-                colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
-              }}
+                  colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
+                } as any
+              }
               type="line"
               width="100%"
               height="100%"

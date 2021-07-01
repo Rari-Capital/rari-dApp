@@ -19,8 +19,9 @@ const shortFormatter = new Intl.NumberFormat("en-US", {
   notation: "compact",
 });
 
-export function smallStringUsdFormatter(num: string) {
-  return smallFormatter.format(parseFloat(num));
+export function smallStringUsdFormatter(num: string | number) {
+
+  return smallFormatter.format(parseFloat(num.toString()));
 }
 
 export function stringUsdFormatter(num: string) {

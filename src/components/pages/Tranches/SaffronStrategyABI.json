@@ -90,6 +90,16 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "uint256", "name": "pool_index", "type": "uint256" },
+      { "internalType": "uint256", "name": "adapter_index", "type": "uint256" }
+    ],
+    "name": "deploy_all_capital_single_pool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "deploy_interval",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -185,6 +195,26 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "oracle",
+    "outputs": [
+      {
+        "internalType": "contract ChainlinkRewardOracle",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint16", "name": "epoch", "type": "uint16" }],
+    "name": "oracle_set_reward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "pool_SFI_rewards",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -206,19 +236,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "base_asset_address",
-        "type": "address"
-      }
-    ],
-    "name": "select_best_adapter",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "address", "name": "to", "type": "address" }],
     "name": "set_governance",
     "outputs": [],
@@ -226,8 +243,36 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "address", "name": "oracleAddr", "type": "address" }
+    ],
+    "name": "set_oracle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "poolIndex", "type": "uint256" },
+      { "internalType": "uint256", "name": "reward", "type": "uint256" }
+    ],
+    "name": "set_pool_SFI_reward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "address", "name": "to", "type": "address" }],
     "name": "set_team_address",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "poolIndex", "type": "uint256" }
+    ],
+    "name": "shutdown_pool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -251,6 +296,15 @@
       { "internalType": "uint256", "name": "epoch", "type": "uint256" }
     ],
     "name": "wind_down_epoch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "epoch", "type": "uint256" }
+    ],
+    "name": "wind_down_epoch_oracle",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

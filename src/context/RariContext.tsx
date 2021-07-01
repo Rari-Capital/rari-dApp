@@ -1,4 +1,6 @@
-import React, {
+import {
+  createContext,
+  useContext,
   useState,
   useCallback,
   useEffect,
@@ -6,7 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 
-import { useQueryCache } from "react-query";
+import { useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
@@ -20,7 +22,7 @@ import {
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "buttered-chakra";
+import { useIsMobile } from "utils/chakraUtils";
 import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
@@ -126,13 +128,13 @@ export interface RariContextData {
   login: (cacheProvider?: boolean) => Promise<any>;
   logout: () => any;
   address: string;
+  isAttemptingLogin: boolean;
 }
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const RariContext = React.createContext<RariContextData | undefined>(
-  undefined
-);
+export const RariContext =
+  createContext<RariContextData | undefined>(undefined);
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
@@ -144,6 +146,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   );
   const [fuse, setFuse] = useState<Fuse>(() => initFuseWithProviders());
 
+  const [isAttemptingLogin, setIsAttemptingLogin] = useState<boolean>(false);
+
   const toast = useToast();
 
   // Check the user's network:
@@ -152,6 +156,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       ([netId, chainId]) => {
         console.log("Network ID: " + netId, "Chain ID: " + chainId);
 
+        // Don't show "wrong network" toasts if dev
         if (process.env.NODE_ENV === "development") {
           return;
         }
@@ -177,7 +182,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
@@ -210,22 +215,27 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(
     async (cacheProvider: boolean = true) => {
-      const provider = await launchModalLazy(t, cacheProvider);
-
-      setWeb3ModalProvider(provider);
-
-      setRariAndAddressFromModal(provider);
+      try {
+        setIsAttemptingLogin(true);
+        const provider = await launchModalLazy(t, cacheProvider);
+        setWeb3ModalProvider(provider);
+        setRariAndAddressFromModal(provider);
+        setIsAttemptingLogin(false);
+      } catch (err) {
+        setIsAttemptingLogin(false);
+        return console.error(err);
+      }
     },
-    [setWeb3ModalProvider, setRariAndAddressFromModal, t]
+    [setWeb3ModalProvider, setRariAndAddressFromModal, setIsAttemptingLogin, t]
   );
 
   const refetchAccountData = useCallback(() => {
-    console.log("New account, clearing the queryCache!");
+    console.log("New account, clearing the queryClient!");
 
     setRariAndAddressFromModal(web3ModalProvider);
 
-    queryCache.clear();
-  }, [setRariAndAddressFromModal, web3ModalProvider, queryCache]);
+    queryClient.clear();
+  }, [setRariAndAddressFromModal, web3ModalProvider, queryClient]);
 
   const logout = useCallback(() => {
     setWeb3ModalProvider((past: any) => {
@@ -236,6 +246,8 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
       return null;
     });
+
+    localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
 
     setAddress(EmptyAddress);
   }, [setWeb3ModalProvider, refetchAccountData]);
@@ -257,7 +269,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
   const isMobile = useIsMobile();
   useEffect(() => {
-    if (!isMobile) {
+    if (localStorage.WEB3_CONNECT_CACHED_PROVIDER) {
       login();
     }
   }, [login, isMobile]);
@@ -271,15 +283,16 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       login,
       logout,
       address,
+      isAttemptingLogin,
     }),
-    [rari, web3ModalProvider, login, logout, address, fuse]
+    [rari, web3ModalProvider, login, logout, address, fuse, isAttemptingLogin]
   );
 
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
 };
 
 export function useRari() {
-  const context = React.useContext(RariContext);
+  const context = useContext(RariContext);
 
   if (context === undefined) {
     throw new Error(`useRari must be used within a RariProvider`);

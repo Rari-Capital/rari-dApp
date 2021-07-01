@@ -1,8 +1,6 @@
-import React from "react";
-import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
+import { Center, Column, Row, RowOrColumn } from "utils/chakraUtils";
 import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
-import ForceAuthModal from "../../shared/ForceAuthModal";
 import { Header } from "../../shared/Header";
 import {
   Heading,
@@ -14,73 +12,30 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { MdSwapHoriz } from "react-icons/md";
-import CopyrightSpacer from "../../shared/CopyrightSpacer";
-import { useQuery } from "react-query";
-
-import ERC20ABI from "../../../rari-sdk/abi/ERC20.json";
-import {
-  smallStringUsdFormatter,
-  smallUsdFormatter,
-} from "../../../utils/bigUtils";
 import DepositModal from "./SaffronDepositModal";
-import { SaffronProvider, useSaffronContracts } from "./SaffronContext";
+import { SaffronProvider } from "./SaffronContext";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 import { WarningTwoIcon } from "@chakra-ui/icons";
-import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
+import { memo } from "react";
 
-export enum TranchePool {
-  DAI = "DAI",
-  USDC = "USDC",
-}
+// Hooks
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import {
+  TranchePool,
+  TrancheRating,
+  tranchePoolIndex,
+  useEpochEndDate,
+  useEstimatedSFI,
+  usePrincipal,
+  usePrincipalBalance,
+  useSaffronData,
+} from "hooks/tranches/useSaffronData";
+import { useSFIDistributions } from "hooks/tranches/useSFIDistributions";
+import { useSFIEarnings } from "hooks/tranches/useSFIEarnings";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import Footer from "components/shared/Footer";
 
-export enum TrancheRating {
-  S = "S",
-  AA = "AA",
-  A = "A",
-}
-
-export const trancheRatingIndex = (trancheRating: TrancheRating) => {
-  return trancheRating === TrancheRating.S
-    ? 0
-    : trancheRating === TrancheRating.AA
-    ? 1
-    : 2;
-};
-
-export const tranchePoolIndex = (tranchePool: TranchePool) => {
-  // TODO: CHANGE USDC TO WHATEVER IT BECOMES LATER
-  return tranchePool === TranchePool.DAI ? 9 : 0;
-};
-
-export const useSaffronData = () => {
-  const { data } = useQuery("saffronData", async () => {
-    return (await fetch("https://api.spice.finance/apy")).json();
-  });
-
-  const contracts = useSaffronContracts();
-
-  const fetchCurrentEpoch = async () => {
-    const currentEpoch = await contracts.saffronPool.methods
-      .get_current_epoch()
-      .call();
-
-    return currentEpoch;
-  };
-
-  return {
-    saffronData: data as {
-      SFI: { USD: number };
-      pools: {
-        name: string;
-        tranches: { A: { "total-apy": number }; S: { "total-apy": number } };
-      }[];
-    },
-    fetchCurrentEpoch,
-    ...contracts,
-  };
-};
-
-const WrappedTranchePage = React.memo(() => {
+const WrappedTranchePage = memo(() => {
   return (
     <SaffronProvider>
       <TranchePage />
@@ -92,15 +47,11 @@ export default WrappedTranchePage;
 
 const TranchePage = () => {
   const { isAuthed } = useRari();
-
   const { t } = useTranslation();
-
   const isMobile = useIsSmallScreen();
 
   return (
     <>
-      <ForceAuthModal />
-
       <Column
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
@@ -123,6 +74,7 @@ const TranchePage = () => {
             crossAxisAlignment="center"
             mr={4}
           >
+            {/* Header */}
             <DashboardBox height={isMobile ? "110px" : "95px"} width="100%">
               <Column
                 expand
@@ -155,6 +107,7 @@ const TranchePage = () => {
               </Column>
             </DashboardBox>
 
+            {/* Information ab. Tranche Ratings */}
             <DashboardBox
               mt={4}
               height={isMobile ? "auto" : "200px"}
@@ -163,6 +116,7 @@ const TranchePage = () => {
               <TranchesRatingInfo />
             </DashboardBox>
 
+            {/* Dai Pool */}
             <DashboardBox
               mt={4}
               height={isMobile ? "auto" : "200px"}
@@ -171,6 +125,7 @@ const TranchePage = () => {
               <TranchePoolInfo tranchePool={TranchePool.DAI} />
             </DashboardBox>
 
+            {/* USDC Pool */}
             {isMobile ? null : (
               <DashboardBox
                 mt={4}
@@ -183,6 +138,7 @@ const TranchePage = () => {
             )}
           </Column>
 
+          {/* Other Metrics */}
           <Column
             mt={isMobile ? 4 : 0}
             width={isMobile ? "100%" : "25%"}
@@ -206,15 +162,14 @@ const TranchePage = () => {
             </DashboardBox>
           </Column>
         </RowOrColumn>
+        <Footer />
       </Column>
-      <CopyrightSpacer forceShow />
     </>
   );
 };
 
 export const TranchesRatingInfo = () => {
   const { t } = useTranslation();
-
   const isMobile = useIsSmallScreen();
 
   return (
@@ -260,20 +215,8 @@ export const TrancheRatingColumn = ({
   trancheRating: TrancheRating;
 }) => {
   const { t } = useTranslation();
-
   const isMobile = useIsSmallScreen();
-
-  const { saffronPool } = useSaffronData();
-
-  const { data } = useQuery("sfiEarnings", async () => {
-    const {
-      S,
-      AA,
-      A,
-    } = await saffronPool.methods.TRANCHE_SFI_MULTIPLIER().call();
-
-    return { S: S / 1000, AA: AA / 1000, A: A / 1000 };
-  });
+  const data = useSFIEarnings();
 
   return (
     <Column
@@ -375,37 +318,17 @@ export const TrancheColumn = ({
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
 
-  const { rari, address } = useRari();
-  const { saffronData, saffronPool, fetchCurrentEpoch } = useSaffronData();
+  const { saffronData } = useSaffronData();
 
-  const { data: principal } = useQuery(
-    tranchePool + trancheRating + " principal " + address,
-    async () => {
-      //TODO: ADD USDC POOL
-
-      const currentEpoch = await fetchCurrentEpoch();
-
-      const tranchePToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        await saffronPool.methods
-          .principal_token_addresses(
-            currentEpoch,
-            trancheRatingIndex(trancheRating)
-          )
-          .call()
-      );
-
-      return smallUsdFormatter(
-        parseInt(await tranchePToken.methods.balanceOf(address).call()) / 1e18
-      ).replace("$", "");
-    }
-  );
+  const principal = usePrincipal(tranchePool, trancheRating);
 
   const {
     isOpen: isDepositModalOpen,
     onOpen: openDepositModal,
     onClose: closeDepositModal,
   } = useDisclosure();
+
+  const authedOpenModal = useAuthedCallback(openDepositModal);
 
   return (
     <>
@@ -446,15 +369,15 @@ export const TrancheColumn = ({
               ? // TODO REMOVE HARDCODED CHECK ABOUT AA TRANCHE ONCE IT'S IMPLEMENTED
                 "0.45%"
               : saffronData
-              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches[
+              ? saffronData.pools[tranchePoolIndex(tranchePool)].tranches?.[
                   trancheRating
-                ]["total-apy"] + "% APY"
+                ]?.["total-apy"] + "% APY"
               : "?% APY"}
           </Text>
         </Column>
 
         <DashboardBox
-          onClick={openDepositModal}
+          onClick={authedOpenModal}
           mt={4}
           as="button"
           height="45px"
@@ -474,18 +397,7 @@ export const TrancheColumn = ({
 
 export const RedemptionDate = () => {
   const { t } = useTranslation();
-
-  const { saffronPool, fetchCurrentEpoch } = useSaffronData();
-
-  const { data } = useQuery("epochEndDate", async () => {
-    const currentEpoch = await fetchCurrentEpoch();
-
-    const endDate = new Date(
-      (await saffronPool.methods.get_epoch_end(currentEpoch).call()) * 1000
-    );
-
-    return { currentEpoch, endDate };
-  });
+  const { data } = useEpochEndDate();
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -507,108 +419,8 @@ export const RedemptionDate = () => {
 export const PrincipalAmount = () => {
   const { t } = useTranslation();
 
-  const { rari, address } = useRari();
-  const { saffronPool, saffronStrategy, fetchCurrentEpoch } = useSaffronData();
-
-  const { data: principal } = useQuery(
-    "principalBalance " + address,
-    async () => {
-      const currentEpoch = await fetchCurrentEpoch();
-
-      const sTranchePToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        await saffronPool.methods
-          .principal_token_addresses(currentEpoch, 0)
-          .call()
-      );
-
-      const aTranchePToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        await saffronPool.methods
-          .principal_token_addresses(currentEpoch, 2)
-          .call()
-      );
-
-      return smallStringUsdFormatter(
-        rari.web3.utils.fromWei(
-          rari.web3.utils
-            .toBN(await sTranchePToken.methods.balanceOf(address).call())
-            .add(
-              rari.web3.utils.toBN(
-                await aTranchePToken.methods.balanceOf(address).call()
-              )
-            )
-        )
-      );
-    }
-  );
-
-  const { data: estimatedSFI } = useQuery(
-    "estimatedSFI " + address,
-    async () => {
-      // TODO: ADD USDC
-
-      const DAI_SFI_REWARDS =
-        parseInt(
-          await saffronStrategy.methods
-            .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-            .call()
-        ) / 1e18;
-
-      const SFI_multipliers = await saffronPool.methods
-        .TRANCHE_SFI_MULTIPLIER()
-        .call();
-
-      const currentEpoch = await fetchCurrentEpoch();
-
-      const dsecSToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        await saffronPool.methods
-          .principal_token_addresses(
-            currentEpoch,
-            trancheRatingIndex(TrancheRating.S)
-          )
-          .call()
-      );
-
-      // TODO ADD AA POOL
-
-      const dsecSSupply = await dsecSToken.methods.totalSupply().call();
-
-      const sPoolSFIEarned =
-        DAI_SFI_REWARDS *
-        (SFI_multipliers[trancheRatingIndex(TrancheRating.S)] / 100000) *
-        // If supply is zero we will get NaN for dividing by zero
-        (dsecSSupply === "0"
-          ? 0
-          : (await dsecSToken.methods.balanceOf(address).call()) / dsecSSupply);
-
-      const dsecAToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        await saffronPool.methods
-          .principal_token_addresses(
-            currentEpoch,
-            trancheRatingIndex(TrancheRating.A)
-          )
-          .call()
-      );
-
-      const dsecASupply = await dsecAToken.methods.totalSupply().call();
-
-      const aPoolSFIEarned =
-        DAI_SFI_REWARDS *
-        (SFI_multipliers[trancheRatingIndex(TrancheRating.A)] / 100000) *
-        // If supply is zero we will get NaN for dividing by zero
-        (dsecASupply === "0"
-          ? 0
-          : (await dsecAToken.methods.balanceOf(address).call()) / dsecASupply);
-
-      return (
-        smallUsdFormatter(sPoolSFIEarned + aPoolSFIEarned).replace("$", "") +
-        " SFI"
-      );
-    }
-  );
+  const principal = usePrincipalBalance();
+  const estimatedSFI = useEstimatedSFI();
 
   return (
     <Column expand mainAxisAlignment="center" crossAxisAlignment="center">
@@ -620,7 +432,7 @@ export const PrincipalAmount = () => {
       <Heading lineHeight={1.4} fontSize="18px" mt={10}>
         {t("Estimated SFI Earnings")}
       </Heading>
-      <Text>{estimatedSFI ?? "? SFI"}</Text>
+      <Text>{estimatedSFI?.formattedTotalSFIEarned ?? "? SFI"}</Text>
     </Column>
   );
 };
@@ -649,25 +461,7 @@ export const SFIPrice = () => {
 export const SFIDistributions = () => {
   const { t } = useTranslation();
 
-  const { saffronStrategy } = useSaffronData();
-
-  const { rari } = useRari();
-
-  const { data: sfiDistributions } = useQuery("sfiDistributions", async () => {
-    const DAI = rari.web3.utils.fromWei(
-      await saffronStrategy.methods
-        .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
-        .call()
-    );
-
-    const USDC = rari.web3.utils.fromWei(
-      await saffronStrategy.methods
-        .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
-        .call()
-    );
-
-    return { DAI, USDC };
-  });
+  const sfiDistributions = useSFIDistributions();
 
   // TODO: ADD USDC
   return (

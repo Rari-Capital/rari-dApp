@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "private": true,
   "dependencies": {
+    "@brainhubeu/react-carousel": "^2.0.3",
     "@chakra-ui/icons": "^1.0.0",
     "@chakra-ui/react": "^1.3.4",
     "@cypress/code-coverage": "^3.8.1",
@@ -25,8 +26,8 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
-    "@walletconnect/web3-provider": "^1.3.1",
-    "apexcharts": "^3.20.2",
+    "@walletconnect/web3-provider": "^1.4.1",
+    "apexcharts": "3.20.2",
     "authereum": "0.0.4-beta.201",
     "axios": "^0.20.0",
     "bad-words": "^3.0.4",
@@ -35,7 +36,7 @@
     "cypress": "^5.3.0",
     "focus-visible": "^5.2.0",
     "fortmatic": "^2.2.1",
-    "framer-motion": "^2.9.4",
+    "framer-motion": "^4.1.11",
     "fuse.js": "^6.4.6",
     "history": "^5.0.0",
     "i18next": "^19.7.0",
@@ -47,17 +48,18 @@
     "nyc": "^15.1.0",
     "rari-tokens-generator": "^2.0.0",
     "react": "^16.13.1",
-    "react-apexcharts": "^1.3.7",
+    "react-apexcharts": "1.3.7",
     "react-awesome-reveal": "^3.3.1",
     "react-dom": "^16.13.1",
     "react-double-marquee": "^1.0.6",
     "react-error-boundary": "^3.0.2",
+    "react-fast-marquee": "^1.1.3",
     "react-i18next": "^11.7.3",
     "react-icons": "^3.11.0",
     "react-ios-pwa-prompt": "^1.8.1",
     "react-jazzicon": "^0.1.3",
-    "react-query": "^2.26.2",
-    "react-query-devtools": "^2.6.3",
+    "react-query": "^3.13.10",
+    "react-responsive-carousel": "^3.2.18",
     "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "4.0.1",
     "react-spinners": "^0.9.0",
@@ -68,6 +70,7 @@
     "web3modal": "^1.9.0"
   },
   "scripts": {
+    "typecheck": "tsc --skipLibCheck -p ./tsconfig.json",
     "postinstall": "rari-tokens-generator ./src/static/compiled/tokens.json",
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
@@ -95,6 +98,8 @@
     ]
   },
   "devDependencies": {
+    "@types/react-query": "^1.1.2",
+    "@types/react-slick": "^0.23.4",
     "@vercel/node": "^1.8.3"
   }
 }

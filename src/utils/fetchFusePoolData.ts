@@ -3,6 +3,8 @@ import Rari from "../rari-sdk/index";
 
 // @ts-ignore
 import Filter from "bad-words";
+import { TokenData } from "hooks/useTokenData";
+import { createComptroller } from "./createComptroller";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -26,6 +28,7 @@ export interface FuseAsset {
   underlyingToken: string;
   underlyingDecimals: number;
   underlyingPrice: number;
+  underlyingBalance: number;
 
   collateralFactor: number;
   reserveFactor: number;
@@ -48,10 +51,34 @@ export interface USDPricedFuseAsset extends FuseAsset {
   totalBorrowUSD: number;
 
   liquidityUSD: number;
+
+  isPaused: boolean;
+}
+
+export interface USDPricedFuseAssetWithTokenData extends USDPricedFuseAsset {
+  tokenData: TokenData;
+}
+
+export interface FusePoolData {
+  assets: USDPricedFuseAssetWithTokenData[] | USDPricedFuseAsset[];
+  comptroller: any;
+  name: any;
+  isPrivate: boolean;
+  totalLiquidityUSD: any;
+  totalSuppliedUSD: any;
+  totalBorrowedUSD: any;
+  totalSupplyBalanceUSD: any;
+  totalBorrowBalanceUSD: any;
+  id?: number;
+}
+
+export enum FusePoolMetric {
+  TotalLiquidityUSD,
+  TotalSuppliedUSD,
+  TotalBorrowedUSD,
 }
 
 export const filterPoolName = (name: string) => {
-  // Manual rename pool 6 until we add func to change pool names.
   if (name === "Tetranode's Pool") {
     return "Tetranode's RGT Pool";
   }
@@ -60,15 +87,29 @@ export const filterPoolName = (name: string) => {
     return "ChainLinkGod's / Tetranode's Up Only Pool";
   }
 
+  if (name === "Tetranode's Flavor of the Month") {
+    return "FeiRari (Fei DAO Pool)";
+  }
+
+  if (name === "WOO pool") {
+    return "Warlord's WOO Pool";
+  }
+
+  if (name === "Yearn's Yield") {
+    return "Yearn Soup Pot of Yield";
+  }
+
   return filter.clean(name);
 };
 
 export const fetchFusePoolData = async (
-  poolId: string,
+  poolId: string | undefined,
   address: string,
   fuse: Fuse,
   rari?: Rari
-) => {
+): Promise<FusePoolData | undefined> => {
+  if (!poolId) return undefined;
+
   const {
     comptroller,
     name: _unfiliteredName,
@@ -99,8 +140,20 @@ export const fetchFusePoolData = async (
     await (rari ?? fuse).getEthUsdPriceBN()
   ) as any;
 
+  let promises = [];
+
   for (let i = 0; i < assets.length; i++) {
+    const comptrollerContract = createComptroller(comptroller, fuse);
+
     let asset = assets[i];
+
+    promises.push(
+      comptrollerContract.methods
+        .borrowGuardianPaused(asset.cToken)
+        .call()
+        // TODO: THIS WILL BE BUILT INTO THE LENS
+        .then((isPaused: boolean) => (asset.isPaused = isPaused))
+    );
 
     asset.supplyBalanceUSD =
       ((asset.supplyBalance * asset.underlyingPrice) / 1e36) * ethPrice;
@@ -124,6 +177,8 @@ export const fetchFusePoolData = async (
 
     totalLiquidityUSD += asset.liquidityUSD;
   }
+
+  await Promise.all(promises);
 
   return {
     assets: assets.sort((a, b) => (b.liquidityUSD > a.liquidityUSD ? 1 : -1)),

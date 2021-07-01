@@ -6,8 +6,8 @@ import {
   PercentageSize,
   Row,
   Center,
-} from "buttered-chakra";
-import React, { useMemo } from "react";
+} from "utils/chakraUtils";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
@@ -41,7 +41,7 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
   const { t } = useTranslation();
 
   const ethAPY = usePoolAPY(Pool.ETH);
-  const stableAPY = usePoolAPY(Pool.STABLE);
+  const stableAPY = usePoolAPY(Pool.USDC);
   const yieldAPY = usePoolAPY(Pool.YIELD);
 
   const points = useMemo(() => {

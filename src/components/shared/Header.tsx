@@ -8,8 +8,8 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
-import { PixelSize, Row } from "buttered-chakra";
-import React from "react";
+import { PixelSize, Row } from "utils/chakraUtils";
+
 import { AccountButton } from "./AccountButton";
 import { DASHBOARD_BOX_PROPS, DASHBOARD_BOX_SPACING } from "./DashboardBox";
 import {
@@ -87,19 +87,13 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-        <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" />
+        {/* <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" /> */}
 
-        {/* <HeaderLink
-            ml={4}
-            name={t("Forums")}
-            route="https://forums.rari.capital"
-          /> */}
+        <GovernanceLink ml={4} />
 
-        <HeaderLink
-          ml={4}
-          name={t("Audit")}
-          route="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
-        />
+        {isAuthed && (
+          <HeaderLink ml={4} name={t("Positions")} route="/positions" />
+        )}
       </Row>
 
       <AccountButton />
@@ -113,14 +107,15 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
         <MenuButton>
-          <PoolText />
+          <SubMenuText text="Pools" />
         </MenuButton>
 
         <Portal>
           <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
-            <PoolMenuItem name={t("Stable Pool")} linkSuffix="stable" />
-            <PoolMenuItem name={t("Yield Pool")} linkSuffix="yield" />
-            <PoolMenuItem name={t("ETH Pool")} linkSuffix="eth" />
+            <SubMenuItem name={t("USDC Pool")} link="/pools/usdc" />
+            <SubMenuItem name={t("DAI Pool")} link="/pools/dai" />
+            <SubMenuItem name={t("Yield Pool")} link="/pools/yield" />
+            <SubMenuItem name={t("ETH Pool")} link="/pools/eth" />
           </MenuList>
         </Portal>
       </Menu>
@@ -128,27 +123,52 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
   );
 };
 
-export const PoolText = () => {
+export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
+  const { t } = useTranslation();
+  return (
+    <Box ml={ml ?? 0}>
+      <Menu autoSelect={false} placement="bottom">
+        <MenuButton>
+          <SubMenuText text="Governance" nope />
+        </MenuButton>
+
+        <Portal>
+          <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
+            <SubMenuItem
+              name={t("Snapshot")}
+              link="https://vote.rari.capital/"
+            />
+            <SubMenuItem
+              name={t("Forums")}
+              link="https://forums.rari.capital/"
+            />
+          </MenuList>
+        </Portal>
+      </Menu>
+    </Box>
+  );
+};
+
+export const SubMenuText = ({ text, nope = false }: { text: string, nope?: boolean }) => {
   const location = useLocation();
   const { t } = useTranslation();
   const isOnThisRoute = location.pathname.includes("pools");
 
   return (
-    <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{t("Pools")}</Text>
+    <Text
+      fontWeight={(isOnThisRoute && !nope) ? "bold" : "normal"}
+      _hover={{ textDecoration: "underline" }}
+    >
+      {t(text)}
+    </Text>
   );
 };
 
-export const PoolMenuItem = ({
-  name,
-  linkSuffix,
-}: {
-  name: string;
-  linkSuffix: string;
-}) => {
+export const SubMenuItem = ({ name, link }: { name: string; link: string }) => {
   return (
     <MenuItem _focus={{ bg: "#2b2a2a" }} _hover={{ bg: "#2b2a2a" }}>
       <Box mx="auto">
-        <HeaderLink noUnderline name={name} route={"/pools/" + linkSuffix} />
+        <HeaderLink noUnderline name={name} route={link} />
       </Box>
     </MenuItem>
   );
@@ -181,7 +201,7 @@ export const HeaderLink = ({
       whiteSpace="nowrap"
       className={noUnderline ? "no-underline" : ""}
     >
-      <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
   ) : (
     <Link
@@ -192,7 +212,7 @@ export const HeaderLink = ({
       whiteSpace="nowrap"
       className={noUnderline ? "no-underline" : ""}
     >
-      <Text fontWeight={isOnThisRoute ? "normal" : "bold"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
   );
 };

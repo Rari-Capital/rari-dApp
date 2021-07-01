@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ReactDOM from "react-dom";
 
 import App from "./components/App";
@@ -10,6 +10,9 @@ import "./index.css";
 // @ts-ignore
 import PWAPrompt from "react-ios-pwa-prompt";
 
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+
 import { ChakraProvider, theme } from "@chakra-ui/react";
 
 import ErrorPage from "./components/pages/ErrorPage";
@@ -17,8 +20,6 @@ import ErrorPage from "./components/pages/ErrorPage";
 import { RariProvider } from "./context/RariContext";
 
 import "focus-visible";
-
-import { ReactQueryDevtools } from "react-query-devtools";
 
 import "./utils/i18n.ts";
 import { BrowserRouter, useLocation } from "react-router-dom";
@@ -62,9 +63,10 @@ function ScrollToTop() {
   return null;
 }
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
   <>
-    <ReactQueryDevtools initialIsOpen={false} />
     <PWAPrompt
       timesToShow={2}
       permanentlyHideOnDismiss={false}
@@ -74,12 +76,15 @@ ReactDOM.render(
     />
     <ChakraProvider theme={customTheme}>
       <ErrorBoundary FallbackComponent={ErrorPage}>
-        <BrowserRouter>
-          <RariProvider>
-            <ScrollToTop />
-            <App />
-          </RariProvider>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <BrowserRouter>
+            <RariProvider>
+              <ScrollToTop />
+              <App />
+            </RariProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
       </ErrorBoundary>
     </ChakraProvider>
   </>,

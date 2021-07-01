@@ -83,8 +83,6 @@ async function computeAssetRSS(address: string) {
       assetVariation,
 
       ethVariation,
-
-      transferList,
     ] = await Promise.all([
       fetch(
         `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
@@ -142,29 +140,6 @@ async function computeAssetRSS(address: string) {
         .then((res) => res.json())
         .then((data) => data.prices.map(([, price]) => price))
         .then((prices) => variance(prices)),
-
-      (async () => {
-        const contract = new fuse.web3.eth.Contract(ERC20ABI as any, address);
-
-        try {
-          const transfers = await contract.getPastEvents("Transfer", {
-            fromBlock: 0,
-            toBlock: await fuse.web3.eth.getBlockNumber(),
-          });
-
-          return transfers;
-        } catch (e) {
-          if (
-            e.message.includes("Log response size exceeded") ||
-            e.message.includes("query returned more than")
-          ) {
-            return new Array(10_000);
-          } else {
-            console.log("Past events error:", e);
-            return [];
-          }
-        }
-      })(),
     ]);
 
     const mcap = await weightedCalculation(async () => {
@@ -236,7 +211,7 @@ async function computeAssetRSS(address: string) {
     }, 3);
 
     const transfers = await weightedCalculation(async () => {
-      return transferList.length >= 500 ? transferList.length / 10_000 : 0;
+      return 1;
     }, 3);
 
     const coingeckoMetadata = await weightedCalculation(async () => {
@@ -261,12 +236,12 @@ async function computeAssetRSS(address: string) {
 
       totalScore:
         mcap +
-        volatility +
-        liquidity +
-        swapCount +
-        coingeckoMetadata +
-        exchanges +
-        transfers,
+          volatility +
+          liquidity +
+          swapCount +
+          coingeckoMetadata +
+          exchanges +
+          transfers || 0,
     };
   } catch (e) {
     console.log(e);
@@ -302,11 +277,12 @@ export default async (request: NowRequest, response: NowResponse) => {
     response.json({ ...(await computeAssetRSS(address)), lastUpdated });
   } else if (poolID) {
     console.time("poolData");
-    const { assets, totalLiquidityUSD, comptroller } = await fetchFusePoolData(
+    const { assets, totalLiquidityUSD, comptroller } = (await fetchFusePoolData(
       poolID,
       "0x0000000000000000000000000000000000000000",
       fuse
-    );
+    ))!;
+
     console.timeEnd("poolData");
 
     const liquidity = await weightedCalculation(async () => {
@@ -314,6 +290,7 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 25);
 
     const collateralFactor = await weightedCalculation(async () => {
+      // @ts-ignore
       const avgCollatFactor = assets.reduce(
         (a, b, _, { length }) => a + b.collateralFactor / 1e16 / length,
         0
@@ -324,12 +301,13 @@ export default async (request: NowRequest, response: NowResponse) => {
     }, 10);
 
     const reserveFactor = await weightedCalculation(async () => {
+      // @ts-ignore
       const avgReserveFactor = assets.reduce(
         (a, b, _, { length }) => a + b.reserveFactor / 1e16 / length,
         0
       );
 
-      return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 22;
+      return avgReserveFactor <= 2 ? 0 : avgReserveFactor / 13;
     }, 10);
 
     const utilization = await weightedCalculation(async () => {
@@ -353,14 +331,13 @@ export default async (request: NowRequest, response: NowResponse) => {
     let assetsRSS: ThenArg<ReturnType<typeof computeAssetRSS>>[] = [];
     let totalRSS = 0;
 
-    // Do all the fetching in parallel and then resolve this promise once they have all fetched.
-    await new Promise((resolve) => {
-      let completed = 0;
+    let promises: Promise<any>[] = [];
 
-      for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i];
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
 
-        console.time(asset.underlyingSymbol);
+      console.time(asset.underlyingSymbol);
+      promises.push(
         fetch(
           `http://${process.env.VERCEL_URL}/api/rss?address=` +
             asset.underlyingToken
@@ -369,45 +346,51 @@ export default async (request: NowRequest, response: NowResponse) => {
           .then((rss) => {
             assetsRSS[i] = rss;
             totalRSS += rss.totalScore;
-            completed++;
 
             console.timeEnd(asset.underlyingSymbol);
+          })
+      );
+    }
 
-            if (completed === assets.length) {
-              resolve(true);
-            }
-          });
-      }
-    });
+    await Promise.all(promises);
 
     const averageRSS = await weightedCalculation(async () => {
       return totalRSS / assets.length / 100;
     }, 15);
 
     const upgradeable = await weightedCalculation(async () => {
-      const {
-        0: admin,
-        1: upgradeable,
-      } = await fuse.contracts.FusePoolLens.methods
-        .getPoolOwnership(comptroller)
-        .call({ gas: 1e18 });
+      try {
+        const { 0: admin, 1: upgradeable } =
+          await fuse.contracts.FusePoolLens.methods
+            .getPoolOwnership(comptroller)
+            .call({ gas: 1e18 });
 
-      // Rari Controlled Multisig
-      if (
-        admin.toLowerCase() === "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85" ||
-        admin.toLowerCase() === "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f" ||
-        admin.toLowerCase() === "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
-        (admin.toLowerCase() === "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6" &&
-          comptroller.toLowerCase() ==
-            "0xd4bdcca1ca76ced6fc8bb1ba91c5d7c0ca4fe567") ||
-        (admin.toLowerCase() === "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" &&
-          comptroller.toLowerCase() ==
-            "0x8583fdff34ddc3744a46eabc1503769af0bc6604")
-      ) {
-        return 1;
+        // Rari Multisig(s)
+        if (
+          admin.toLowerCase() ===
+            "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85" ||
+          admin.toLowerCase() ===
+            "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f" ||
+          admin.toLowerCase() ===
+            "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
+          admin.toLowerCase() ===
+            "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6" ||
+          admin.toLowerCase() ===
+            "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" ||
+          admin.toLowerCase() ===
+            "0x49529a7ccbd9f8cabbfa36c65feb39ae08bdea0f" ||
+          admin.toLowerCase() === "0x639572471f2f318464dc01066a56867130e45e25" ||
+          admin.toLowerCase() === "0x7b34e07da62c716ab79390d37e09182b48f1936d" ||
+          admin.toLowerCase() === "0x0cf30dc0d48604a301df8010cdc028c055336b2e"
+        ) {
+          return 1;
+        }
+
+        return upgradeable ? 0 : 1;
+      } catch (e) {
+        // Assume upgradeable.
+        return 0;
       }
-
-      return upgradeable ? 0 : 1;
     }, 10);
 
     const mustPass = await weightedCalculation(async () => {
@@ -477,12 +460,12 @@ export default async (request: NowRequest, response: NowResponse) => {
 
       totalScore:
         liquidity +
-        collateralFactor +
-        reserveFactor +
-        utilization +
-        averageRSS +
-        upgradeable +
-        mustPass,
+          collateralFactor +
+          reserveFactor +
+          utilization +
+          averageRSS +
+          upgradeable +
+          mustPass || 0,
 
       lastUpdated,
     });

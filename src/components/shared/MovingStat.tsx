@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import * as React from "react";
 import { useQuery } from "react-query";
 import CaptionedStat, { CaptionedStatProps } from "./CaptionedStat";
 
@@ -75,10 +76,10 @@ export const APYMovingStat = React.memo(
 
     const [currentStat, setCurrentStat] = useState(startingAmount);
 
-    const formattedStat = useMemo(() => formatStat(currentStat), [
-      formatStat,
-      currentStat,
-    ]);
+    const formattedStat = useMemo(
+      () => formatStat(currentStat),
+      [formatStat, currentStat]
+    );
 
     useInterval(() => {
       setCurrentStat((past) => past + past * increasePerInterval);
@@ -120,10 +121,10 @@ export const APYWithRefreshMovingStat = React.memo(
 
     const [currentStat, setCurrentStat] = useState(0);
 
-    const formattedStat = useMemo(() => formatStat(currentStat), [
-      formatStat,
-      currentStat,
-    ]);
+    const formattedStat = useMemo(
+      () => formatStat(currentStat),
+      [formatStat, currentStat]
+    );
 
     useInterval(() => {
       setCurrentStat((past) => past + past * increasePerInterval);

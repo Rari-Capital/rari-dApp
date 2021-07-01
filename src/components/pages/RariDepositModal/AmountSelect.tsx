@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Row, Column, Center } from "buttered-chakra";
+import { useState } from "react";
+import { Row, Column, Center } from "utils/chakraUtils";
 import SmallWhiteCircle from "../../../static/small-white-circle.png";
 
 import { ChevronDownIcon, SettingsIcon } from "@chakra-ui/icons";
@@ -32,7 +32,7 @@ import { BN, smallStringUsdFormatter } from "../../../utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
-import { useQueryCache } from "react-query";
+import { useQueryClient } from "react-query";
 
 import {
   getSDKPool,
@@ -188,7 +188,7 @@ const AmountSelect = ({
 
   const toast = useToast();
 
-  const queryCache = useQueryCache();
+  const queryClient = useQueryClient();
 
   const onConfirm = async () => {
     try {
@@ -205,30 +205,24 @@ const AmountSelect = ({
         let slippage: BN;
 
         if (mode === Mode.DEPOSIT) {
-          const [
-            amountToBeAdded,
-            ,
-            _slippage,
-          ] = (await pool.deposits.validateDeposit(
-            token.symbol,
-            amountBN,
-            address,
-            true
-          )) as BN[];
+          const [amountToBeAdded, , _slippage] =
+            (await pool.deposits.validateDeposit(
+              token.symbol,
+              amountBN,
+              address,
+              true
+            )) as BN[];
 
           quote = amountToBeAdded;
           slippage = _slippage;
         } else {
-          const [
-            amountToBeRemoved,
-            ,
-            _slippage,
-          ] = (await pool.withdrawals.validateWithdrawal(
-            token.symbol,
-            amountBN,
-            address,
-            true
-          )) as BN[];
+          const [amountToBeRemoved, , _slippage] =
+            (await pool.withdrawals.validateWithdrawal(
+              token.symbol,
+              amountBN,
+              address,
+              true
+            )) as BN[];
 
           quote = amountToBeRemoved;
           slippage = _slippage;
@@ -292,7 +286,7 @@ const AmountSelect = ({
         });
       }
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
       // Wait 2 seconds for refetch and then close modal.
       // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -461,9 +455,9 @@ const TokenNameAndMaxButton = ({
         // Subtract gas from ETH max
 
         // Ex: 100 (in GWEI)
-        const { standard } = await fetch(
-          "https://gasprice.poa.network"
-        ).then((res) => res.json());
+        const { standard } = await fetch("https://gasprice.poa.network").then(
+          (res) => res.json()
+        );
 
         const gasPrice = rari.web3.utils.toBN(
           // @ts-ignore For some reason it's returning a string not a BN

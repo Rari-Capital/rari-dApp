@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 
 import AmountSelect from "./AmountSelect";
