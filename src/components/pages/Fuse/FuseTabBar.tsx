@@ -63,10 +63,10 @@ const FuseTabBar = () => {
                     navigate("");
                   }
                 }}
-                width="185px"
+                width="100px"
                 height="100%"
                 ml={2}
-                placeholder={t("Try searching for USDC")}
+                placeholder={t("USDC, DAI")}
                 variant="filled"
                 size="sm"
                 _placeholder={{ color: "#e0e0e0" }}

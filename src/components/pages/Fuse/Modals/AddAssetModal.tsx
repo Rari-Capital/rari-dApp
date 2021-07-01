@@ -140,7 +140,7 @@ export const AssetSettings = ({
 
   const [collateralFactor, setCollateralFactor] = useState(50);
   const [reserveFactor, setReserveFactor] = useState(10);
-  const [adminFee, setAdminFee] = useState(5);
+  const [adminFee, setAdminFee] = useState(0);
 
   const scaleCollateralFactor = (_collateralFactor: number) => {
     return _collateralFactor / 1e16;
