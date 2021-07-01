@@ -389,7 +389,7 @@ const AssetSupplyRow = ({
   };
 
   const isStakedOHM =
-    asset.underlyingToken.toLowerCase() ==
+    asset.underlyingToken.toLowerCase() ===
     "0x04F2694C8fcee23e8Fd0dfEA1d4f5Bb8c352111F".toLowerCase();
 
   const { data: stakedOHMApyData } = useQuery("sOHM_APY", async () => {
