@@ -182,11 +182,9 @@
   "Created Pools": "Created Pools",
   "Already added:": "Already added:",
   "Pool {{num}} Configuration": "Pool {{num}} Configuration",
-  "Renounce Ownership": "Renounce Ownership",
   "Assets Configuration": "Assets Configuration",
   "Save": "Save",
   "None": "None",
-  "Admin Rights Disabled": "Admin Rights Disabled",
   "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset.": "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset.",
   "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction.": "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction.",
   "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.": "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.",
@@ -236,7 +234,6 @@
   "Debt": "Debt",
   "Product": "Product",
   "Snapshot": "Snapshot",
-  "Try searching for USDC": "Try searching for USDC",
   "At risk positions are positions that are less than 110% collateralized.": "At risk positions are positions that are less than 110% collateralized.",
   "Liquidatable positions are positions less than 100% collateralized.": "Liquidatable positions are positions less than 100% collateralized.",
   "At Risk Positions": "At Risk Positions",
@@ -262,5 +259,10 @@
   "DAI Pool": "DAI Pool",
   "Safe returns on USDC": "Safe returns on USDC",
   "Safe returns on DAI": "Safe returns on DAI",
-  "Returns on ETH": "Returns on ETH"
+  "Returns on ETH": "Returns on ETH",
+  "Revoke Rights": "Revoke Rights",
+  "USDC, DAI": "USDC, DAI",
+  "If enabled borrowing this asset will be disabled.": "If enabled borrowing this asset will be disabled.",
+  "Pause Borrowing": "Pause Borrowing",
+  "Enable Borrowing": "Enable Borrowing"
 }

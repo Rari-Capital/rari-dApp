@@ -132,7 +132,6 @@
   "Supply": "供应",
   "Borrow": "借",
   "Repay": "偿还",
-  "Try searching for USDC": "尝试搜索“ USDC”",
   "Buy Crypto": "購買加密",
   "This pool has performance fees. Click to learn more.": "该池收取性能费。 点击了解更多。",
   "This pool has withdrawal & interest fees. Click to learn more.": "该池有提款和利息费用。 点击了解更多。",
@@ -183,11 +182,9 @@
   "Created Pools": "创建的池",
   "Already added:": "已经加入：",
   "Pool {{num}} Configuration": "池{{num}}配置",
-  "Renounce Ownership": "放弃所有权",
   "Assets Configuration": "资产配置",
   "Save": "救",
   "None": "沒有",
-  "Admin Rights Disabled": "管理員權限已禁用",
   "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset.": "抵押因子可以在0-90％的範圍內，代表帳戶通過存入資產而獲得的流動性（借貸限額）的成比例增長。",
   "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction.": "在給定資產上產生的利息部分，將其路由到該資產的儲備庫。 儲備池可保護貸方免受借款人違約和清算故障的影響。",
   "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee.": "在給定資產上產生的利息部分，作為費用被路由到該資產的管理地址。",
@@ -262,5 +259,10 @@
   "DAI Pool": "DAI池",
   "Safe returns on USDC": "USDC的安全收益",
   "Safe returns on DAI": "DAI的安全收益",
-  "Returns on ETH": "ETH回报"
+  "Returns on ETH": "ETH回报",
+  "Revoke Rights": "撤销权利",
+  "USDC, DAI": "USDC, DAI",
+  "If enabled borrowing this asset will be disabled.": "如果启用借用此资产将被禁用。",
+  "Pause Borrowing": "暂停借阅",
+  "Enable Borrowing": "启用借用"
 }

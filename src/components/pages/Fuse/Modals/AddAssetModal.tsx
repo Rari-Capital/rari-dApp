@@ -82,6 +82,7 @@ export const useCTokenData = (
         pendingAdmin,
         adminHasRights,
         { collateralFactorMantissa },
+        isPaused,
       ] = await Promise.all([
         cToken.methods.adminFeeMantissa().call(),
         cToken.methods.reserveFactorMantissa().call(),
@@ -90,6 +91,7 @@ export const useCTokenData = (
         cToken.methods.pendingAdmin().call(),
         cToken.methods.adminHasRights().call(),
         comptroller.methods.markets(cTokenAddress).call(),
+        comptroller.methods.borrowGuardianPaused(cTokenAddress).call(),
       ]);
 
       return {
@@ -101,6 +103,7 @@ export const useCTokenData = (
         pendingAdmin,
         cTokenAddress,
         adminHasRights,
+        isPaused,
       };
     } else {
       return null;
@@ -141,6 +144,8 @@ export const AssetSettings = ({
   const [collateralFactor, setCollateralFactor] = useState(50);
   const [reserveFactor, setReserveFactor] = useState(10);
   const [adminFee, setAdminFee] = useState(0);
+
+  const [isBorrowPaused, setIsBorrowPaused] = useState(false);
 
   const scaleCollateralFactor = (_collateralFactor: number) => {
     return _collateralFactor / 1e16;
@@ -280,8 +285,27 @@ export const AssetSettings = ({
       setAdminFee(cTokenData.adminFeeMantissa / 1e16);
       setAdmin(cTokenData.admin);
       setInterestRateModel(cTokenData.interestRateModelAddress);
+      setIsBorrowPaused(cTokenData.isPaused);
     }
   }, [cTokenData]);
+
+  const togglePause = async () => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    try {
+      await testForComptrollerErrorAndSend(
+        comptroller.methods._setBorrowPaused(cTokenAddress, !isBorrowPaused),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-PauseToggle");
+
+      queryClient.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
 
   const updateCollateralFactor = async () => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
@@ -392,7 +416,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-UpdateAdmin");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -410,7 +434,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-AcceptAdmin");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -428,7 +452,7 @@ export const AssetSettings = ({
 
       LogRocket.track("Fuse-RevokeRights");
 
-      queryCache.refetchQueries();
+      queryClient.refetchQueries();
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -469,6 +493,28 @@ export const AssetSettings = ({
           max={90}
         />
       </ConfigRow>
+
+      <ModalDivider />
+      {cTokenAddress ? (
+        <ConfigRow>
+          <SimpleTooltip
+            label={t("If enabled borrowing this asset will be disabled.")}
+          >
+            <Text fontWeight="bold">
+              {t("Pause Borrowing")} <QuestionIcon ml={1} mb="4px" />
+            </Text>
+          </SimpleTooltip>
+
+          <SaveButton
+            ml="auto"
+            onClick={togglePause}
+            fontSize="xs"
+            altText={
+              isBorrowPaused ? t("Enable Borrowing") : t("Pause Borrowing")
+            }
+          />
+        </ConfigRow>
+      ) : null}
 
       <ModalDivider />
 
