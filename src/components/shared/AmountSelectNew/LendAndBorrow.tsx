@@ -1,29 +1,37 @@
 import { Box, Heading, Text } from "@chakra-ui/layout";
-import { Button } from "@chakra-ui/react";
-import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
-import { TokenData } from "hooks/useTokenData";
-import { useCallback, useMemo, useState } from "react";
+import { Button, useToast } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/spinner";
+import DashboardBox from "../DashboardBox";
 import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
+import FuseAmountInput from "./components/FuseAmountInput";
+
+// Hooks
+import { useCallback, useMemo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useUpdatedUserAssetsForBorrowAndLend } from "hooks/fuse/useUpdatedUserAssets";
+import { useBorrowCredit, useBorrowLimit } from "hooks/useBorrowLimit";
+import { useTotalBorrowAndSupplyBalanceUSD } from "hooks/fuse/useTotalBorrowBalanceUSD";
+import { useQuery } from "react-query";
+import { useRari } from "context/RariContext";
+import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
+
+// Utils
+import { handleGenericError } from "utils/errorHandling";
+import { fetchTokenBalance } from "hooks/useTokenBalance";
+import { bigNumberIsZero, smallUsdFormatter } from "utils/bigUtils";
+import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
+import BigNumber from "bignumber.js";
+import { onLendBorrowConfirm } from "utils/inputUtils";
+
+// Types
+import { TokenData } from "hooks/useTokenData";
 import {
   FusePoolData,
   USDPricedFuseAsset,
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
 import { AmountSelectUserAction, AmountSelectMode } from "./AmountSelectNew";
-import FuseAmountInput from "./components/FuseAmountInput";
 
-import BigNumber from "bignumber.js";
-import { useTranslation } from "react-i18next";
-import useUpdatedUserAssets, {
-  useUpdatedUserAssetsForBorrowAndLend,
-} from "hooks/fuse/useUpdatedUserAssets";
-import { useBorrowCredit, useBorrowLimit } from "hooks/useBorrowLimit";
-import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
-import DashboardBox from "../DashboardBox";
-import { smallUsdFormatter } from "utils/bigUtils";
-import { Spinner } from "@chakra-ui/spinner";
-import tokenData from "pages/api/tokenData";
-import { useTotalBorrowAndSupplyBalanceUSD } from "hooks/fuse/useTotalBorrowBalanceUSD";
 
 const LendAndBorrow = ({
   token,
@@ -33,6 +41,8 @@ const LendAndBorrow = ({
   setUserAction: (action: AmountSelectUserAction) => void;
 }) => {
   const isMobile = useIsMobile();
+  const toast = useToast();
+  const { fuse, address } = useRari();
 
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
   const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
@@ -44,15 +54,19 @@ const LendAndBorrow = ({
 
   // State
   const [lendInput, setLendInput] = useState<string>("");
-  const [lendAmountBN, setLendAmountBN] = useState<BigNumber | null>(
+  const [lendAmountBN, setLendAmountBN] = useState<BigNumber | undefined>(
     () => new BigNumber(0)
   );
 
   const [borrowInput, setBorrowInput] = useState<string>("");
-  const [borrowAmountBN, setBorrowAmountBN] = useState<BigNumber | null>(
+  const [borrowAmountBN, setBorrowAmountBN] = useState<BigNumber | undefined>(
     () => new BigNumber(0)
   );
 
+  // Bubbled up from StatsColumn
+  const [error, setError] = useState<string | null>(null);
+
+  // Wrappers for updating input
   const updateLendAmount = useCallback(
     (newAmount: string) => {
       if (newAmount.startsWith("-")) return;
@@ -61,12 +75,10 @@ const LendAndBorrow = ({
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
       bigAmount.isNaN()
-        ? setLendAmountBN(null)
+        ? setLendAmountBN(undefined)
         : setLendAmountBN(
             bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
           );
-
-      setUserAction(AmountSelectUserAction.NO_ACTION);
     },
     [assetWithTokenData]
   );
@@ -79,15 +91,28 @@ const LendAndBorrow = ({
       // Try to set the amount to BigNumber(newAmount):
       const bigAmount = new BigNumber(newAmount);
       bigAmount.isNaN()
-        ? setBorrowAmountBN(null)
+        ? setBorrowAmountBN(undefined)
         : setBorrowAmountBN(
             bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
           );
-
-      setUserAction(AmountSelectUserAction.NO_ACTION);
     },
     [assetWithTokenData]
   );
+
+  const handleSubmit = () => {
+    if (!bestPool) return undefined;
+    onLendBorrowConfirm({
+      asset: assetWithTokenData as USDPricedFuseAsset,
+      borrowedAsset: assetWithTokenData as USDPricedFuseAsset,
+      fuse,
+      address,
+      lendAmount: lendAmountBN,
+      borrowAmount: borrowAmountBN,
+      comptrollerAddress: bestPool.comptroller,
+      setUserAction,
+      toast,
+    });
+  };
 
   if (!bestPool || !bestPool.assets.length)
     return (
@@ -98,7 +123,7 @@ const LendAndBorrow = ({
       </Box>
     );
 
-  return (
+    return (
     <Box h="100%" w="100%" color={token?.color ?? "white"}>
       {/* Lend */}
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
@@ -139,6 +164,7 @@ const LendAndBorrow = ({
         lendAmount={parseInt(lendAmountBN?.toFixed(0) ?? "0") ?? 0}
         borrowAmount={parseInt(borrowAmountBN?.toFixed(0) ?? "0") ?? 0}
         enableAsCollateral={true}
+        setError={setError}
       />
 
       {/* Submit Button - todo */}
@@ -157,11 +183,16 @@ const LendAndBorrow = ({
         className={isMobile ? "confirm-button-disable-font-size-scale" : ""}
         _hover={{ transform: "scale(1.02)" }}
         _active={{ transform: "scale(0.95)" }}
-        //   onClick={onConfirm}
-        //   isDisabled={!amountIsValid}
+        onClick={handleSubmit}
+        isDisabled={!!error}
       >
-        {/* {depositOrWithdrawAlert ?? t("Confirm")} */}
-        Confirm
+        {error
+          ? error
+          : !bigNumberIsZero(lendAmountBN) && !bigNumberIsZero(borrowAmountBN)
+          ? "Lend & Borrow"
+          : !bigNumberIsZero(lendAmountBN)
+          ? "Lend"
+          : "Borrow"}
       </Button>
     </Box>
   );
@@ -179,6 +210,7 @@ const StatsColumn = ({
   borrowAmount,
   pool,
   enableAsCollateral = true,
+  setError,
 }: {
   color?: string;
   lendAmount: number;
@@ -188,8 +220,11 @@ const StatsColumn = ({
   assetIndex: number;
   pool?: FusePoolData;
   enableAsCollateral?: boolean;
+  setError: (error: string | null) => void;
 }) => {
   const { t } = useTranslation();
+  const { fuse, address } = useRari();
+  const toast = useToast();
 
   // Get the new representation of a user's USDPricedFuseAssets after proposing a supply an/or borrow amount.
   const updatedAssets: USDPricedFuseAsset[] | undefined =
@@ -224,13 +259,14 @@ const StatsColumn = ({
   // Todo - Fix this
   const oldRatio =
     borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD / borrowLimit;
-
   const updatedRatio =
     updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD / updatedBorrowLimit;
 
+  // At Liquidation Risk?
   const atRiskOfLiquidation = oldRatio > 0.95;
   const updatedAtRiskOfLiquidation = updatedRatio > 0.95;
 
+  // APY/APRs
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
   const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
 
@@ -242,12 +278,61 @@ const StatsColumn = ({
     updatedAsset?.borrowRatePerBlock ?? 0
   );
 
+  // Vestigial, should remove (todo)
   const isSupplyingOrWithdrawing = true;
 
   // If the difference is greater than a 0.1 percentage point change, alert the user
   const updatedAPYDiffIsLarge = isSupplyingOrWithdrawing
     ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
     : Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
+
+  // Todo - refactor this query
+  const { data: lendAmountisValid } = useQuery(
+    (lendAmount?.toString() ?? "null") + "LEND" + " isValid",
+    async () => {
+      if (lendAmount === null) return false;
+
+      try {
+        const balance = await fetchTokenBalance(
+          asset.underlyingToken,
+          fuse.web3,
+          address
+        );
+
+        // Check if lend amount is more than balance
+        return lendAmount <= parseFloat(balance.toString());
+      } catch (e) {
+        handleGenericError(e, toast);
+        return false;
+      }
+    }
+  );
+
+  const error: string | null = useMemo(() => {
+    if (!pool) return "Finding best pool..."
+
+    if (
+      lendAmount === null ||
+      lendAmount < 0 ||
+      (lendAmount === 0 && borrowAmount <= 0)
+    )
+      return "Enter a valid amount to supply.";
+    else if (lendAmountisValid === undefined) return `Loading your balance...`;
+    else if (!lendAmountisValid)
+      return `You don't have enough ${asset.underlyingSymbol}!`;
+    else if (updatedAtRiskOfLiquidation) return "You cannot borrow this much!";
+    else return null;
+  }, [
+    lendAmount,
+    borrowAmount,
+    lendAmountisValid,
+    updatedAtRiskOfLiquidation,
+    asset,
+  ]);
+
+  useEffect(() => {
+    setError(error);
+  }, [error]);
 
   return (
     <DashboardBox width="100%" height="190px" mt={4}>
@@ -439,7 +524,8 @@ const StatsColumn = ({
               >
                 {smallUsdFormatter(
                   updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
-                )} ({(updatedRatio*100).toFixed(0)}%)
+                )}{" "}
+                ({(updatedRatio * 100).toFixed(0)}%)
               </Text>
             </Row>
           </Row>

@@ -2,11 +2,15 @@ import Fuse from "../fuse-sdk/src";
 
 declare let window: any;
 
-
 export const infuraURL = `https://mainnet.infura.io/v3/2e56500614ce4496bde29b22e65f1607`;
 // export const turboGethURL = `https://turbogeth.crows.sh`;
 export const turboGethURL = `https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN`; // TODO CHANGE BACK TO TURBOGETH
 export const alchemyURL = `https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN`;
+
+// RariChain
+// export const infuraURL = `http://135.181.216.35:21917`;
+// export const turboGethURL = `http://135.181.216.35:21917`;
+// export const alchemyURL = `http://135.181.216.35:21917`;
 
 export function chooseBestWeb3Provider() {
   const isClient = typeof window === 'object'
@@ -26,6 +30,7 @@ export function chooseBestWeb3Provider() {
 export const initFuseWithProviders = (provider = chooseBestWeb3Provider()) => {
   const fuse = new Fuse(provider);
 
+  // Comment out for rarichain
   // @ts-ignore We have to do this to avoid Infura ratelimits on our large calls.
   fuse.contracts.FusePoolLens.setProvider(alchemyURL);
 

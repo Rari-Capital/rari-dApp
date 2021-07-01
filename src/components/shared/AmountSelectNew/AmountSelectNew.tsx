@@ -1,6 +1,5 @@
 import { Box, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
-import DashboardBox from "../DashboardBox";
 import AwaitingTransactions from "./AwaitingTransactions";
 
 // Hooks
@@ -13,7 +12,6 @@ import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Utils
 import { Column, Row } from "utils/chakraUtils";
-import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
 import LendAndBorrow from "./LendAndBorrow";
 
 export enum AmountSelectMode {
@@ -25,8 +23,12 @@ export enum AmountSelectMode {
 }
 
 export enum AmountSelectUserAction {
-  NO_ACTION,
-  WAITING_FOR_TRANSACTIONS,
+  NO_ACTION = "No Action",
+  WAITING_FOR_TRANSACTIONS = "Waiting For Transactions",
+  WAITING_FOR_LEND = "Waiting for Lend",
+  WAITING_FOR_ENTER_MARKETS = "Waiting for Enter Markets",
+  WAITING_FOR_LEND_APPROVAL = "Waiting for Lend Approval",
+  WAITING_FOR_BORROW = "Waiting for Borrow",
 }
 
 interface Props {
@@ -45,14 +47,15 @@ const AmountSelectNew = ({
   comptrollerAddress,
 }: Props) => {
   const [mode, setMode] = useState<AmountSelectMode>(modes[0]);
+
   const [userAction, setUserAction] = useState(
     AmountSelectUserAction.NO_ACTION
   );
 
   return (
     <>
-      {userAction === AmountSelectUserAction.WAITING_FOR_TRANSACTIONS ? (
-        <AwaitingTransactions token={token} />
+      {userAction !== AmountSelectUserAction.NO_ACTION ? (
+        <AwaitingTransactions token={token} mode={userAction} />
       ) : (
         <Column
           expand
@@ -61,41 +64,40 @@ const AmountSelectNew = ({
           p={4}
         >
           <TabBar
-            mode={mode}
             setMode={setMode}
             modes={modes}
             color={token?.color ?? "white"}
           />
-            <Row
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
-              bg=""
-              expand
-            >
-              {mode === AmountSelectMode.LENDANDBORROW && (
-                <LendAndBorrow token={token} setUserAction={setUserAction} />
-              )}
-              {mode === AmountSelectMode.BORROW && (
-                <Box h="300px">
-                  <Heading>BORROW</Heading>
-                </Box>
-              )}
-              {mode === AmountSelectMode.REPAY && (
-                <Box h="350px">
-                  <Heading color="white">REPAY</Heading>
-                </Box>
-              )}
-              {mode === AmountSelectMode.LEND && (
-                <Box>
-                  <Heading>LEND</Heading>
-                </Box>
-              )}
-              {mode === AmountSelectMode.WITHDRAW && (
-                <Box>
-                  <Heading>WITHDRAW</Heading>
-                </Box>
-              )}
-            </Row>
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            bg=""
+            expand
+          >
+            {mode === AmountSelectMode.LENDANDBORROW && (
+              <LendAndBorrow token={token} setUserAction={setUserAction} />
+            )}
+            {mode === AmountSelectMode.BORROW && (
+              <Box h="300px">
+                <Heading>BORROW</Heading>
+              </Box>
+            )}
+            {mode === AmountSelectMode.REPAY && (
+              <Box h="350px">
+                <Heading color="white">REPAY</Heading>
+              </Box>
+            )}
+            {mode === AmountSelectMode.LEND && (
+              <Box>
+                <Heading>LEND</Heading>
+              </Box>
+            )}
+            {mode === AmountSelectMode.WITHDRAW && (
+              <Box>
+                <Heading>WITHDRAW</Heading>
+              </Box>
+            )}
+          </Row>
         </Column>
       )}
     </>
@@ -107,11 +109,9 @@ export default AmountSelectNew;
 const TabBar = ({
   color,
   modes,
-  mode,
   setMode,
 }: {
   color?: string | null | undefined;
-  mode: AmountSelectMode;
   modes: AmountSelectMode[];
   setMode: (mode: AmountSelectMode) => any;
 }) => {

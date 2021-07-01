@@ -212,13 +212,15 @@ const AmountSelect = ({
       setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
 
       const isETH = asset.underlyingToken === ETH_TOKEN_DATA.address;
+
       const isRepayingMax =
         amount!.eq(asset.borrowBalance) && !isETH && mode === Mode.REPAY;
 
       isRepayingMax && console.log("Using max repay!");
 
-      const max = new BigNumber(2).pow(256).minus(1).toFixed(0);
+      const max = new BigNumber(2).pow(256).minus(1).toFixed(0); //big fucking #
 
+      // todo - do we need this?
       const amountBN = fuse.web3.utils.toBN(amount!.toFixed(0));
 
       const cToken = new fuse.web3.eth.Contract(
@@ -237,6 +239,8 @@ const AmountSelect = ({
       );
 
       if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
+
+        // if not eth check if amounti is approved for thsi token
         if (!isETH) {
           const token = new fuse.web3.eth.Contract(
             JSON.parse(
@@ -264,6 +268,7 @@ const AmountSelect = ({
           LogRocket.track("Fuse-Approve");
         }
 
+        // if ur suplying, then 
         if (mode === Mode.SUPPLY) {
           // If they want to enable as collateral now, enter the market:
           if (enableAsCollateral) {
@@ -277,14 +282,15 @@ const AmountSelect = ({
           }
 
           if (isETH) {
-            const call = cToken.methods.mint();
+            const call = cToken.methods.mint();  //
 
             if (
               // If they are supplying their whole balance:
               amountBN.toString() === (await fuse.web3.eth.getBalance(address))
             ) {
-              // Subtract gas for max ETH
+              // full balance of ETH
 
+              // Subtract gas for max ETH
               const { gasWEI, gasPrice, estimatedGas } = await fetchGasForCall(
                 call,
                 amountBN,
@@ -300,18 +306,27 @@ const AmountSelect = ({
                 gas: estimatedGas,
               });
             } else {
+              // custom amount of ETH
               await call.send({
                 from: address,
                 value: amountBN,
               });
             }
-          } else {
+          }
+           else {
+            //  Custom amount of ERC20
             await testForCTokenErrorAndSend(
               cToken.methods.mint(amountBN),
               address,
               "Cannot deposit this amount right now!"
             );
           }
+
+          await testForCTokenErrorAndSend(
+            cToken.methods.borrow(amountBN),
+            address,
+            "Cannot borrow this amount right now!"
+          );
 
           LogRocket.track("Fuse-Supply");
         } else if (mode === Mode.REPAY) {
@@ -974,7 +989,7 @@ export async function testForCTokenErrorAndSend(
   return txObject.send({ from: caller });
 }
 
-const fetchGasForCall = async (
+export const fetchGasForCall = async (
   call: any,
   amountBN: BN,
   fuse: Fuse,
