@@ -1,5 +1,6 @@
 import { Box, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
+import DashboardBox from "../DashboardBox";
 import AwaitingTransactions from "./AwaitingTransactions";
 
 // Hooks
@@ -64,6 +65,7 @@ const AmountSelectNew = ({
           p={4}
         >
           <TabBar
+            mode={mode}
             setMode={setMode}
             modes={modes}
             color={token?.color ?? "white"}
@@ -109,9 +111,11 @@ export default AmountSelectNew;
 const TabBar = ({
   color,
   modes,
+  mode,
   setMode,
 }: {
   color?: string | null | undefined;
+  mode: AmountSelectMode;
   modes: AmountSelectMode[];
   setMode: (mode: AmountSelectMode) => any;
 }) => {
@@ -140,7 +144,10 @@ const TabBar = ({
           isFitted
           width="100%"
           align="center"
-          onChange={(index: number) => setMode(modes[index])}
+          onChange={(index: number) =>{ 
+            console.log(modes[index])
+            setMode(modes[index])
+          }}
         >
           <TabList>
             {modes.map((mode) => {

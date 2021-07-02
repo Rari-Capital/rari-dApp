@@ -2,14 +2,28 @@ import { Button } from "@chakra-ui/button";
 import { Image } from "@chakra-ui/image";
 import { Input } from "@chakra-ui/input";
 import { Box, Heading } from "@chakra-ui/layout";
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuIcon,
+  MenuCommand,
+  MenuDivider,
+} from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
 import BigNumber from "bignumber.js";
 import DashboardBox from "components/shared/DashboardBox";
 
 // Hooks
 import { useRari } from "context/RariContext";
+import { useCallback } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FaChevronDown } from "react-icons/fa";
 
 // Utils
 import { Row } from "utils/chakraUtils";
@@ -31,12 +45,14 @@ const FuseAmountInput = ({
   mode,
   value,
   updateAmount,
+  updateAsset,
 }: {
   asset?: USDPricedFuseAssetWithTokenData;
   fusePool?: FusePoolData;
   mode: AmountSelectMode;
   value: string;
   updateAmount: (value: string) => any;
+  updateAsset?: (assetAddress: string) => any;
 }) => {
   return (
     <DashboardBox width="100%" height="70px">
@@ -61,7 +77,9 @@ const FuseAmountInput = ({
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
             asset={asset}
+            pool={fusePool}
             updateAmount={updateAmount}
+            updateAsset={updateAsset}
           />
         )}
       </Row>
@@ -78,14 +96,14 @@ export const AmountInputField = ({
   color,
 }: {
   value: string;
-  updateAmount: (value: string) => any;
   color: string;
+  updateAmount: (value: string) => any;
 }) => {
   return (
     <Input
       type="number"
       inputMode="decimal"
-      fontSize="3xl"
+      fontSize="2xl"
       fontWeight="bold"
       variant="unstyled"
       _placeholder={{ color }}
@@ -100,23 +118,31 @@ export const AmountInputField = ({
 
 // Token Name and Max Button
 export const TokenNameAndMaxButton = ({
-  updateAmount,
   logoURL,
+  pool,
   asset,
   mode,
   comptrollerAddress,
+  updateAmount,
+  updateAsset,
 }: {
   logoURL: string;
+  pool: FusePoolData;
   asset: USDPricedFuseAssetWithTokenData;
   mode: AmountSelectMode;
   comptrollerAddress: string;
   updateAmount: (newAmount: string) => any;
+  updateAsset?: (assetAddress: string) => any;
 }) => {
   const { fuse, address } = useRari();
   const toast = useToast();
   const { t } = useTranslation();
   const [isMaxLoading, setIsMaxLoading] = useState(false);
 
+  // If we defined an updateAsset handler, then we want to show the assets dropdown
+  const shouldShowAssetsDropdown = !!updateAsset;
+
+  // Set value to max
   const setToMax = async () => {
     setIsMaxLoading(true);
 
@@ -154,21 +180,15 @@ export const TokenNameAndMaxButton = ({
       flexShrink={0}
       color="white"
     >
-      <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-        <Box height="25px" width="25px" mb="2px" mr={2}>
-          <Image
-            width="100%"
-            height="100%"
-            borderRadius="50%"
-            backgroundImage={`url(/static/small-white-circle.png)`}
-            src={logoURL}
-            alt=""
-          />
-        </Box>
-        <Heading fontSize="24px" mr={2} flexShrink={0}>
-          {asset.underlyingSymbol}
-        </Heading>
-      </Row>
+      {shouldShowAssetsDropdown ? (
+        <AssetsDropDown
+          assets={pool.assets as USDPricedFuseAssetWithTokenData[]}
+          currentAsset={asset}
+          updateAsset={updateAsset!}
+        />
+      ) : (
+        <AssetNameAndIcon asset={asset} />
+      )}
 
       <Button
         ml={1}
@@ -188,5 +208,65 @@ export const TokenNameAndMaxButton = ({
         {t("MAX")}
       </Button>
     </Row>
+  );
+};
+
+const AssetNameAndIcon = ({
+  asset,
+}: {
+  asset: USDPricedFuseAssetWithTokenData;
+}) => {
+  return (
+    <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+      <Box height="20px" width="20px" mb="2px" mr={1.5}>
+        <Image
+          width="100%"
+          height="100%"
+          borderRadius="50%"
+          backgroundImage={`url(/static/small-white-circle.png)`}
+          src={asset.tokenData.logoURL}
+          alt={asset.underlyingSymbol}
+        />
+      </Box>
+      <Heading fontSize="20px" mr={2} flexShrink={0}>
+        {asset.underlyingSymbol}
+      </Heading>
+    </Row>
+  );
+};
+
+const AssetsDropDown = ({
+  assets,
+  currentAsset,
+  updateAsset,
+}: {
+  assets: USDPricedFuseAssetWithTokenData[];
+  currentAsset: USDPricedFuseAssetWithTokenData;
+  updateAsset: (assetAddress: string) => any;
+}) => {
+  const handleClick = useCallback(
+    (asset: USDPricedFuseAssetWithTokenData) => {
+      updateAsset(asset.underlyingToken);
+    },
+    [updateAsset]
+  );
+
+  return (
+    <Menu>
+      <MenuButton as={Button} rightIcon={<FaChevronDown />}>
+        <AssetNameAndIcon asset={currentAsset} />
+      </MenuButton>
+      <MenuList maxHeight="200px" overflowY="scroll">
+        {assets.map((asset: USDPricedFuseAssetWithTokenData) => (
+          <MenuItem
+            _hover={{ bg: "grey.400" }}
+            color="black"
+            onClick={() => handleClick(asset)}
+          >
+            {asset.underlyingSymbol}
+          </MenuItem>
+        ))}
+      </MenuList>
+    </Menu>
   );
 };

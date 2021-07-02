@@ -55,4 +55,10 @@ export const bigNumberToBN = ({
 };
 
 // If BigNumber is null, undefined or zero then we return true
-export const bigNumberIsZero = (bn?: BigNumber | null) =>  (bn?.isZero() ?? true)
+export const bigNumberIsZero = (bn?: BigNumber | null) => bn?.isZero() ?? true;
+
+export const abbreviateAmount = (amount: number) => {
+  return Math.abs(amount) > 100000
+    ? shortUsdFormatter(amount)
+    : smallUsdFormatter(amount);
+};

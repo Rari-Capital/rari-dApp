@@ -175,13 +175,15 @@ const useUpdatedUserAssets = ({
 };
 
 export const useUpdatedUserAssetsForBorrowAndLend = ({
-  index,
+  lendIndex,
+  borrowIndex,
   assets,
   lendAmount,
   borrowAmount,
 }: {
   assets: USDPricedFuseAsset[];
-  index: number;
+  lendIndex: number;
+  borrowIndex: number;
   lendAmount: number;
   borrowAmount: number;
 }) => {
@@ -191,7 +193,7 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
     useUpdatedUserAssets({
       mode: AmountSelectMode.LEND,
       assets,
-      index,
+      index: lendIndex,
       amount: lendAmount,
     });
 
@@ -199,7 +201,7 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
     useUpdatedUserAssets({
       mode: AmountSelectMode.BORROW,
       assets: updatedAssetsLend,
-      index,
+      index: borrowIndex,
       amount: borrowAmount,
     });
 

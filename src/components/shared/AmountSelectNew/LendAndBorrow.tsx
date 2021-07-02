@@ -18,7 +18,11 @@ import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForA
 // Utils
 import { handleGenericError } from "utils/errorHandling";
 import { fetchTokenBalance } from "hooks/useTokenBalance";
-import { bigNumberIsZero, smallUsdFormatter } from "utils/bigUtils";
+import {
+  bigNumberIsZero,
+  smallUsdFormatter,
+  abbreviateAmount,
+} from "utils/bigUtils";
 import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import BigNumber from "bignumber.js";
 import { onLendBorrowConfirm } from "utils/inputUtils";
@@ -31,7 +35,8 @@ import {
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
 import { AmountSelectUserAction, AmountSelectMode } from "./AmountSelectNew";
-
+import AppLink from "../AppLink";
+import { string } from "mathjs";
 
 const LendAndBorrow = ({
   token,
@@ -47,9 +52,20 @@ const LendAndBorrow = ({
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
   const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
 
-  const assetWithTokenData: USDPricedFuseAssetWithTokenData = useMemo(
+  // Assets
+  const lendAsset: USDPricedFuseAssetWithTokenData = useMemo(
     () => bestPool?.assets[poolAssetIndex!] as USDPricedFuseAssetWithTokenData,
     [bestPool, poolAssetIndex]
+  );
+
+  const [borrowAssetIndex, setBorrowAssetIndex] = useState<number>(
+    poolAssetIndex ?? 0
+  );
+
+  const borrowAsset: USDPricedFuseAssetWithTokenData = useMemo(
+    () =>
+      bestPool?.assets[borrowAssetIndex!] as USDPricedFuseAssetWithTokenData,
+    [bestPool, borrowAssetIndex]
   );
 
   // State
@@ -77,10 +93,10 @@ const LendAndBorrow = ({
       bigAmount.isNaN()
         ? setLendAmountBN(undefined)
         : setLendAmountBN(
-            bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
+            bigAmount.multipliedBy(10 ** lendAsset.underlyingDecimals)
           );
     },
-    [assetWithTokenData]
+    [lendAsset]
   );
 
   const updateBorrowAmount = useCallback(
@@ -93,17 +109,27 @@ const LendAndBorrow = ({
       bigAmount.isNaN()
         ? setBorrowAmountBN(undefined)
         : setBorrowAmountBN(
-            bigAmount.multipliedBy(10 ** assetWithTokenData.underlyingDecimals)
+            bigAmount.multipliedBy(10 ** lendAsset.underlyingDecimals)
           );
     },
-    [assetWithTokenData]
+    [lendAsset]
+  );
+
+  const updateBorrowedAsset = useCallback(
+    (tokenAddress: string) => {
+      const borrowedAssetIndex: number | undefined = bestPool?.assets.findIndex(
+        (asset) => asset.underlyingToken === tokenAddress
+      );
+      if (borrowedAssetIndex) setBorrowAssetIndex(borrowedAssetIndex);
+    },
+    [setBorrowAssetIndex, bestPool]
   );
 
   const handleSubmit = () => {
     if (!bestPool) return undefined;
     onLendBorrowConfirm({
-      asset: assetWithTokenData as USDPricedFuseAsset,
-      borrowedAsset: assetWithTokenData as USDPricedFuseAsset,
+      asset: lendAsset as USDPricedFuseAsset,
+      borrowedAsset: borrowAsset as USDPricedFuseAsset,
       fuse,
       address,
       lendAmount: lendAmountBN,
@@ -123,12 +149,12 @@ const LendAndBorrow = ({
       </Box>
     );
 
-    return (
-    <Box h="100%" w="100%" color={token?.color ?? "white"}>
+  return (
+    <Box h="100%" w="100%" color={"white"}>
       {/* Lend */}
       <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
         <FuseAmountInput
-          asset={assetWithTokenData}
+          asset={lendAsset}
           fusePool={bestPool}
           mode={AmountSelectMode.LEND}
           value={lendInput}
@@ -146,24 +172,27 @@ const LendAndBorrow = ({
           Borrow{" "}
         </Heading>
         <FuseAmountInput
-          asset={assetWithTokenData}
+          asset={borrowAsset}
           fusePool={bestPool}
           mode={AmountSelectMode.BORROW}
           value={borrowInput}
           updateAmount={updateBorrowAmount}
+          updateAsset={updateBorrowedAsset}
         />
       </Column>
 
       {/* Stats */}
       <StatsColumn
-        color={token?.color}
         mode={AmountSelectMode.LENDANDBORROW}
         pool={bestPool}
         assets={bestPool.assets}
         assetIndex={poolAssetIndex!}
+        borrowAssetIndex={borrowAssetIndex}
         lendAmount={parseInt(lendAmountBN?.toFixed(0) ?? "0") ?? 0}
         borrowAmount={parseInt(borrowAmountBN?.toFixed(0) ?? "0") ?? 0}
         enableAsCollateral={true}
+        lendColor={lendAsset?.tokenData.color ?? "white"}
+        borrowColor={borrowAsset?.tokenData.color ?? "white"}
         setError={setError}
       />
 
@@ -202,23 +231,27 @@ export default LendAndBorrow;
 
 // Todo - Refactor this back into a single component!
 const StatsColumn = ({
-  color,
   mode,
   assets,
   assetIndex,
+  borrowAssetIndex,
   lendAmount,
   borrowAmount,
   pool,
+  lendColor,
+  borrowColor,
   enableAsCollateral = true,
   setError,
 }: {
-  color?: string;
+  mode: AmountSelectMode;
   lendAmount: number;
   borrowAmount: number;
-  mode: AmountSelectMode;
   assets: USDPricedFuseAssetWithTokenData[] | USDPricedFuseAsset[];
   assetIndex: number;
+  borrowAssetIndex: number;
   pool?: FusePoolData;
+  lendColor: string;
+  borrowColor: string;
   enableAsCollateral?: boolean;
   setError: (error: string | null) => void;
 }) => {
@@ -230,7 +263,8 @@ const StatsColumn = ({
   const updatedAssets: USDPricedFuseAsset[] | undefined =
     useUpdatedUserAssetsForBorrowAndLend({
       assets,
-      index: assetIndex,
+      lendIndex: assetIndex,
+      borrowIndex: borrowAssetIndex,
       lendAmount,
       borrowAmount,
     });
@@ -238,6 +272,11 @@ const StatsColumn = ({
   // Define the old and new asset (same asset different numerical values)
   const asset = assets[assetIndex];
   const updatedAsset = updatedAssets ? updatedAssets[assetIndex] : null;
+
+  const borrowAsset = assets[borrowAssetIndex];
+  const updatedBorrowAsset = updatedAssets
+    ? updatedAssets[borrowAssetIndex]
+    : null;
 
   // Calculate Old and new Borrow Limits
   const borrowCredit = useBorrowCredit(assets);
@@ -266,25 +305,34 @@ const StatsColumn = ({
   const atRiskOfLiquidation = oldRatio > 0.95;
   const updatedAtRiskOfLiquidation = updatedRatio > 0.95;
 
+  // Is there liquidity for this borrow?
+  const insufficientBorrowLiquidity = useMemo(
+    () => borrowAmount >= borrowAsset.liquidity,
+    [borrowAsset, borrowAmount]
+  );
+
   // APY/APRs
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
-  const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
+
+  const borrowAPR = convertMantissaToAPR(borrowAsset.borrowRatePerBlock);
 
   const updatedSupplyAPY = convertMantissaToAPY(
     updatedAsset?.supplyRatePerBlock ?? 0,
     365
   );
   const updatedBorrowAPR = convertMantissaToAPR(
-    updatedAsset?.borrowRatePerBlock ?? 0
+    updatedAsset?.borrowRatePerBlock ?? borrowAPR
   );
 
-  // Vestigial, should remove (todo)
+  // todo - Vestigial, should remove
   const isSupplyingOrWithdrawing = true;
 
   // If the difference is greater than a 0.1 percentage point change, alert the user
-  const updatedAPYDiffIsLarge = isSupplyingOrWithdrawing
-    ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
-    : Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
+  const updatedLendAPYDiffIsLarge =
+    Math.abs(updatedSupplyAPY - supplyAPY) > 0.1;
+
+  const updatedBorrowAPYDiffIsLarge =
+    Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
 
   // Todo - refactor this query
   const { data: lendAmountisValid } = useQuery(
@@ -309,9 +357,8 @@ const StatsColumn = ({
   );
 
   const error: string | null = useMemo(() => {
-    if (!pool) return "Finding best pool..."
-
-    if (
+    if (!pool) return "Finding best pool...";
+    else if (
       lendAmount === null ||
       lendAmount < 0 ||
       (lendAmount === 0 && borrowAmount <= 0)
@@ -320,6 +367,8 @@ const StatsColumn = ({
     else if (lendAmountisValid === undefined) return `Loading your balance...`;
     else if (!lendAmountisValid)
       return `You don't have enough ${asset.underlyingSymbol}!`;
+    else if (insufficientBorrowLiquidity)
+      return "Insufficient liquidity for this borrow!";
     else if (updatedAtRiskOfLiquidation) return "You cannot borrow this much!";
     else return null;
   }, [
@@ -334,9 +383,18 @@ const StatsColumn = ({
     setError(error);
   }, [error]);
 
+  const showSpinner: boolean = useMemo(
+    () => (lendAmount >= 0 && borrowAmount >= 0 && !updatedAsset) ?? false,
+    [updatedAsset, lendAmount, borrowAmount]
+  );
+
   return (
-    <DashboardBox width="100%" height="190px" mt={4}>
-      {updatedAsset ? (
+    <DashboardBox width="100%" height="250px" mt={4}>
+      {showSpinner ? (
+        <Center expand>
+          <Spinner />
+        </Center>
+      ) : (
         <Column
           mainAxisAlignment="space-between"
           crossAxisAlignment="flex-start"
@@ -352,10 +410,10 @@ const StatsColumn = ({
             width="100%"
             color="white"
           >
-            <Text fontWeight="bold" flexShrink={0}>
+            <Text fontWeight="bold" fontSize="md">
               {t("Supply Balance")}:
             </Text>
-            <Text fontWeight="bold" flexShrink={0} fontSize={"sm"}>
+            <Text fontWeight="bold" flexShrink={0} fontSize={"xs"}>
               {smallUsdFormatter(
                 asset.supplyBalance / 10 ** asset.underlyingDecimals
               ).replace("$", "")}
@@ -379,39 +437,41 @@ const StatsColumn = ({
             width="100%"
             color={"white"}
           >
-            <Text fontWeight="bold" flexShrink={0}>
+            <Text fontWeight="bold" fontSize="md">
               {t("Borrow Balance")}:
             </Text>
-            <Text fontWeight="bold" flexShrink={0} fontSize={"sm"}>
-              {smallUsdFormatter(
-                asset.borrowBalance / 10 ** asset.underlyingDecimals
+            <Text fontWeight="bold" flexShrink={0} fontSize={"xs"}>
+              {abbreviateAmount(
+                borrowAsset.borrowBalance / 10 ** borrowAsset.underlyingDecimals
               ).replace("$", "")}
               <>
                 {" → "}
-                {smallUsdFormatter(
-                  updatedAsset!.borrowBalance /
-                    10 ** updatedAsset!.underlyingDecimals
+                {abbreviateAmount(
+                  updatedBorrowAsset!.borrowBalance /
+                    10 ** updatedBorrowAsset!.underlyingDecimals
                 ).replace("$", "")}
-              </>
-              {asset.underlyingSymbol}
+              </>{" "}
+              {borrowAsset.underlyingSymbol}
             </Text>
           </Row>
 
           {/* Supply APY  */}
+
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             width="100%"
+            color={lendColor}
           >
-            <Text fontWeight="bold" flexShrink={0}>
-              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APR")}:
+            <Text fontWeight="bold" fontSize="md">
+              Supply APY
             </Text>
             <Text
               fontWeight="bold"
-              fontSize={updatedAPYDiffIsLarge ? "sm" : "lg"}
+              fontSize={updatedLendAPYDiffIsLarge ? "xs" : "md"}
             >
               {supplyAPY.toFixed(2)} %
-              {updatedAPYDiffIsLarge ? (
+              {updatedLendAPYDiffIsLarge ? (
                 <>
                   {" → "}
                   {updatedSupplyAPY.toFixed(2)}%
@@ -420,33 +480,66 @@ const StatsColumn = ({
             </Text>
           </Row>
 
-          {/* Borrow Limit  */}
+          {/* Borrow APR  */}
+          {borrowAmount > 0 && (
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              color={borrowColor}
+            >
+              <Text fontWeight="bold" fontSize="md">
+                Borrow APR
+              </Text>
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                fontSize={"md"}
+              >
+                <Text fontWeight="bold">
+                {borrowAPR.toFixed(2)}%
+                </Text>
+                <Text ml={1} fontWeight="bold">
+                  {" → "}
+                </Text>
+                <Text
+                  ml={1}
+                  fontWeight="bold"
+                >
+                  {updatedBorrowAPR.toFixed(2)}%
+                </Text>
+              </Row>
+            </Row>
+          )}
+
+          {/* Borrow Credit  */}
           <Row
             mainAxisAlignment="space-between"
             crossAxisAlignment="center"
             width="100%"
             color="white"
           >
-            <Text fontWeight="bold" flexShrink={0}>
+            <Text fontWeight="bold" fontSize="md">
               {t("Borrow Credit")}:
             </Text>
             <Row
               mainAxisAlignment="flex-start"
               crossAxisAlignment="center"
-              fontSize={updatedBorrowCredit < 0 ? "lg" : "sm"}
+              fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
             >
-              <Text fontWeight="bold" fontSize={"sm"}>
-                {smallUsdFormatter(borrowCredit)}
+              <Text fontWeight="bold" fontSize={"xs"}>
+                {abbreviateAmount(borrowCredit)}
               </Text>
-              <Text ml={1} fontWeight="bold" fontSize={"sm"}>
+              <Text ml={1} fontWeight="bold" fontSize={"xs"}>
                 {" → "}
               </Text>
               <Text
                 ml={1}
                 fontWeight="bold"
-                color={updatedBorrowCredit < 0 ? "red" : ""}
+                color={updatedAtRiskOfLiquidation ? "red" : ""}
+                fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
               >
-                {smallUsdFormatter(updatedBorrowCredit)}
+                {abbreviateAmount(updatedBorrowCredit)}
               </Text>
             </Row>
           </Row>
@@ -506,26 +599,28 @@ const StatsColumn = ({
             width="100%"
             color="white"
           >
-            <Text fontWeight="bold">{t("Total Debt")}:</Text>
+            <Text fontWeight="bold" fontSize="md">
+              {t("Total Debt")}:
+            </Text>
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <Text fontWeight="bold" fontSize={"sm"}>
-                {smallUsdFormatter(
+              <Text fontWeight="bold" fontSize={"xs"}>
+                {abbreviateAmount(
                   borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
                 )}
               </Text>
-              <Text ml={1} fontWeight="bold" fontSize={"sm"}>
+              <Text ml={1} fontWeight="bold" fontSize={"xs"}>
                 {" → "}
               </Text>
               <Text
                 ml={1}
                 fontWeight="bold"
-                fontSize={updatedAtRiskOfLiquidation ? "lg" : "sm"}
+                fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
                 color={updatedAtRiskOfLiquidation ? "red" : ""}
               >
-                {smallUsdFormatter(
+                {abbreviateAmount(
                   updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
                 )}{" "}
-                ({(updatedRatio * 100).toFixed(0)}%)
+                ({!isNaN(updatedRatio) && (updatedRatio * 100).toFixed(0)}%)
               </Text>
             </Row>
           </Row>
@@ -537,19 +632,19 @@ const StatsColumn = ({
             width="100%"
             color="white"
           >
-            <Text fontWeight="bold">{t("Fuse Pool")}:</Text>
-            <Text
-              fontWeight="bold"
-              fontSize={!isSupplyingOrWithdrawing ? "sm" : "lg"}
-            >
-              {pool?.id}
+            <Text fontWeight="bold" fontSize="md">
+              {t("Fuse Pool")}:
             </Text>
+            <AppLink href={`/fuse/pool/${pool?.id}`}>
+              <Text
+                fontWeight="bold"
+                fontSize={!isSupplyingOrWithdrawing ? "xs" : "md"}
+              >
+                {pool?.id}
+              </Text>
+            </AppLink>
           </Row>
         </Column>
-      ) : (
-        <Center expand>
-          <Spinner />
-        </Center>
       )}
     </DashboardBox>
   );

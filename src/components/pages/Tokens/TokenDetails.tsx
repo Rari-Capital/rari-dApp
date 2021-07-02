@@ -28,7 +28,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
       crossAxisAlignment="center"
       color="#FFFFFF"
       mx="auto"
-      mt={10}
+      mt={5}
       width="100%"
       px={isMobile ? 3 : 10}
     >
@@ -49,7 +49,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
           p={2}
-          flexBasis={"65%"}
+          flexBasis={"70%"}
         >
           {/* Chart */}
           <MarketChart token={token} mb={5} />
@@ -76,7 +76,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           crossAxisAlignment="flex-start"
           w={"100%"}
           h={"100%"}
-          flexBasis={"35%"}
+          flexBasis={"30%"}
           mt={isMobile ? 5 : 0}
           p={2}
         >
