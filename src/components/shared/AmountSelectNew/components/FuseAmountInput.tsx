@@ -2,18 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { Image } from "@chakra-ui/image";
 import { Input } from "@chakra-ui/input";
 import { Box, Heading } from "@chakra-ui/layout";
-import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuIcon,
-  MenuCommand,
-  MenuDivider,
-} from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
 import BigNumber from "bignumber.js";
 import DashboardBox from "components/shared/DashboardBox";
@@ -54,6 +43,7 @@ const FuseAmountInput = ({
   updateAmount: (value: string) => any;
   updateAsset?: (assetAddress: string) => any;
 }) => {
+
   return (
     <DashboardBox width="100%" height="70px">
       <Row
@@ -73,7 +63,7 @@ const FuseAmountInput = ({
             comptrollerAddress={fusePool.comptroller}
             mode={mode}
             logoURL={
-              asset.tokenData?.logoURL ??
+              asset?.tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
             asset={asset}
@@ -224,8 +214,8 @@ const AssetNameAndIcon = ({
           height="100%"
           borderRadius="50%"
           backgroundImage={`url(/static/small-white-circle.png)`}
-          src={asset.tokenData.logoURL}
-          alt={asset.underlyingSymbol}
+          src={asset?.tokenData?.logoURL ?? null}
+          alt={asset?.underlyingSymbol}
         />
       </Box>
       <Heading fontSize="20px" mr={2} flexShrink={0}>

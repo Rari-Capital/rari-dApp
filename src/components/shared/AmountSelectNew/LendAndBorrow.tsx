@@ -119,7 +119,7 @@ const LendAndBorrow = ({
       const borrowedAssetIndex: number | undefined = bestPool?.assets.findIndex(
         (asset) => asset.underlyingToken === tokenAddress
       );
-      if (borrowedAssetIndex) setBorrowAssetIndex(borrowedAssetIndex);
+      if (borrowedAssetIndex !== undefined) setBorrowAssetIndex(borrowedAssetIndex);
     },
     [setBorrowAssetIndex, bestPool]
   );
@@ -138,7 +138,6 @@ const LendAndBorrow = ({
       toast,
     });
   };
-
 
   if (!bestPool || !bestPool.assets.length)
     return (
@@ -228,7 +227,6 @@ const LendAndBorrow = ({
 };
 
 export default LendAndBorrow;
-
 
 // Todo - Refactor this back into a single component!
 const StatsColumn = ({
@@ -497,16 +495,11 @@ const StatsColumn = ({
                 crossAxisAlignment="center"
                 fontSize={"md"}
               >
-                <Text fontWeight="bold">
-                {borrowAPR.toFixed(2)}%
-                </Text>
+                <Text fontWeight="bold">{borrowAPR.toFixed(2)}%</Text>
                 <Text ml={1} fontWeight="bold">
                   {" → "}
                 </Text>
-                <Text
-                  ml={1}
-                  fontWeight="bold"
-                >
+                <Text ml={1} fontWeight="bold">
                   {updatedBorrowAPR.toFixed(2)}%
                 </Text>
               </Row>
