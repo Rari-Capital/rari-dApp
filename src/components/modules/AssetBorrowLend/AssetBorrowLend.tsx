@@ -3,6 +3,7 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Box, Heading } from "@chakra-ui/layout";
 import AmountSelectNew from "components/shared/AmountSelectNew";
 import { AmountSelectMode } from "components/shared/AmountSelectNew/AmountSelectNew";
+import LBRW from "components/shared/AmountSelectNew/LBRW";
 import DashboardBox from "components/shared/DashboardBox";
 import CloseIconButton from "components/shared/Icons/CloseIconButton";
 import { ModalDivider } from "components/shared/Modal";
@@ -18,7 +19,6 @@ const AssetBorrowLend = ({
   token?: TokenData;
   [x: string]: any;
 }) => {
-  
   return (
     <DashboardBox height="100%" w="100%" bg="" {...boxProps}>
       <Column
@@ -33,10 +33,7 @@ const AssetBorrowLend = ({
         </Box>
         <ModalDivider />
         <Box h="75%" w="100%">
-          <AmountSelectNew
-            token={token}
-            modes={[AmountSelectMode.LENDANDBORROW, AmountSelectMode.REPAY]}
-          />
+          <LBRW token={token} />
         </Box>
       </Column>
     </DashboardBox>

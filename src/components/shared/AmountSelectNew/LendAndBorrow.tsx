@@ -13,7 +13,6 @@ import { useBorrowCredit, useBorrowLimit } from "hooks/useBorrowLimit";
 import { useTotalBorrowAndSupplyBalanceUSD } from "hooks/fuse/useTotalBorrowBalanceUSD";
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
 
 // Utils
 import { handleGenericError } from "utils/errorHandling";
@@ -36,21 +35,21 @@ import {
 } from "utils/fetchFusePoolData";
 import { AmountSelectUserAction, AmountSelectMode } from "./AmountSelectNew";
 import AppLink from "../AppLink";
-import { string } from "mathjs";
 
 const LendAndBorrow = ({
   token,
+  bestPool,
+  poolAssetIndex,
   setUserAction,
 }: {
   token?: TokenData;
+  bestPool?: FusePoolData;
+  poolAssetIndex?: number;
   setUserAction: (action: AmountSelectUserAction) => void;
 }) => {
   const isMobile = useIsMobile();
   const toast = useToast();
   const { fuse, address } = useRari();
-
-  // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
-  const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
 
   // Assets
   const lendAsset: USDPricedFuseAssetWithTokenData = useMemo(
@@ -140,6 +139,7 @@ const LendAndBorrow = ({
     });
   };
 
+
   if (!bestPool || !bestPool.assets.length)
     return (
       <Box h="100%" w="100%">
@@ -191,8 +191,8 @@ const LendAndBorrow = ({
         lendAmount={parseInt(lendAmountBN?.toFixed(0) ?? "0") ?? 0}
         borrowAmount={parseInt(borrowAmountBN?.toFixed(0) ?? "0") ?? 0}
         enableAsCollateral={true}
-        lendColor={lendAsset?.tokenData.color ?? "white"}
-        borrowColor={borrowAsset?.tokenData.color ?? "white"}
+        lendColor={lendAsset?.tokenData?.color ?? "white"}
+        borrowColor={borrowAsset?.tokenData?.color ?? "white"}
         setError={setError}
       />
 
@@ -228,6 +228,7 @@ const LendAndBorrow = ({
 };
 
 export default LendAndBorrow;
+
 
 // Todo - Refactor this back into a single component!
 const StatsColumn = ({

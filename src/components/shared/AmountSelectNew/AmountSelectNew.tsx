@@ -1,3 +1,5 @@
+// Todo - delete this
+
 import { Box, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
 import DashboardBox from "../DashboardBox";
@@ -13,14 +15,15 @@ import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Utils
 import { Column, Row } from "utils/chakraUtils";
-import LendAndBorrow from "./LendAndBorrow";
+import LBRW from "./LBRW";
 
 export enum AmountSelectMode {
   LEND = "Lend",
   WITHDRAW = "Withdraw",
   BORROW = "Borrow",
   REPAY = "Repay",
-  LENDANDBORROW = "Lend and Borrow",
+  LENDANDBORROW = "Lend/Borrow",
+  REPAYANDWITHDRAW = "Repay/Withdraw"
 }
 
 export enum AmountSelectUserAction {
@@ -77,7 +80,7 @@ const AmountSelectNew = ({
             expand
           >
             {mode === AmountSelectMode.LENDANDBORROW && (
-              <LendAndBorrow token={token} setUserAction={setUserAction} />
+              <LBRW token={token} />
             )}
             {mode === AmountSelectMode.BORROW && (
               <Box h="300px">
