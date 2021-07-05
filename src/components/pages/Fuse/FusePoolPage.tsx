@@ -48,6 +48,7 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
+import { transform } from "cypress/types/lodash";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
@@ -401,6 +402,8 @@ const AssetSupplyRow = ({
 
   const isMobile = useIsMobile();
 
+  const { t } = useTranslation();
+
   return (
     <>
       <PoolModal
@@ -462,7 +465,13 @@ const AssetSupplyRow = ({
               %
             </Text>
 
-            <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
+            <SimpleTooltip
+              label={t(
+                "The Loan to Value (LTV) ratio defines the maximum amount of tokens in the pool that can be borrowed with a specific collateral. It’s expressed in percentage: if in a pool ETH has 75% LTV, for every 1 ETH worth of collateral, borrowers will be able to borrow 0.75 ETH worth of other tokens in the pool."
+              )}
+            >
+              <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
+            </SimpleTooltip>
           </Column>
         )}
 
