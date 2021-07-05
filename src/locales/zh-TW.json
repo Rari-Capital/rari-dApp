@@ -157,7 +157,6 @@
   "Click confirm to continue!": "單擊確認繼續！",
   "Keep this bar from filling up to avoid being liquidated!": "請勿填充此欄，以免被清算！",
   "If your borrow amount reaches this value, you will be liquidated.": "如果您的借貸金額達到此值，您將被清算。",
-  "APY/WPY": "APY / WPY",
   "Supply Balance": "供應平衡",
   "Debt Balance": "債務餘額",
   "Supply APY": "供應APY",
@@ -259,5 +258,6 @@
   "DAI Pool": "DAI池",
   "Safe returns on USDC": "USDC的安全收益",
   "Safe returns on DAI": "DAI的安全收益",
-  "Returns on ETH": "ETH回報"
+  "Returns on ETH": "ETH回報",
+  "APY/LTV": "APY/LTV"
 }

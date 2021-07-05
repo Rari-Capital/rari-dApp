@@ -249,7 +249,7 @@ const SupplyList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APY/WPY")}
+              {t("APY/LTV")}
             </Text>
           )}
 
@@ -337,7 +337,6 @@ const AssetSupplyRow = ({
   const tokenData = useTokenData(asset.underlyingToken);
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
-  const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
   const queryClient = useQueryClient();
 
@@ -463,14 +462,7 @@ const AssetSupplyRow = ({
               %
             </Text>
 
-            <Text fontSize="sm">
-              {isStakedOHM
-                ? stakedOHMApyData
-                  ? (stakedOHMApyData.supplyWpy * 100).toFixed(3)
-                  : "?"
-                : supplyWPY.toFixed(3)}
-              %
-            </Text>
+            <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
           </Column>
         )}
 
