@@ -58,7 +58,7 @@ export type LiquidationEvent = {
   liquidator: string;
 
   borrowedTokenUnderlyingDecimals: number;
-  borrowedTokenUnderlyingSymbol: number;
+  borrowedTokenUnderlyingSymbol: string;
 
   repayAmount: number;
   seizeTokens: number;

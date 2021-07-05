@@ -10,11 +10,17 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
+import {
+  Column,
+  Center,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 
 // Hooks
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
@@ -243,7 +249,7 @@ const SupplyList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APY/WPY")}
+              {t("APY/LTV")}
             </Text>
           )}
 
@@ -331,7 +337,6 @@ const AssetSupplyRow = ({
   const tokenData = useTokenData(asset.underlyingToken);
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
-  const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
   const queryClient = useQueryClient();
 
@@ -381,6 +386,18 @@ const AssetSupplyRow = ({
 
     queryClient.refetchQueries();
   };
+
+  const isStakedOHM =
+    asset.underlyingToken.toLowerCase() ===
+    "0x04F2694C8fcee23e8Fd0dfEA1d4f5Bb8c352111F".toLowerCase();
+
+  const { data: stakedOHMApyData } = useQuery("sOHM_APY", async () => {
+    const data = (
+      await fetch("https://api.rari.capital/fuse/pools/18/apy")
+    ).json();
+
+    return data as Promise<{ supplyApy: number; supplyWpy: number }>;
+  });
 
   const isMobile = useIsMobile();
 
@@ -437,10 +454,15 @@ const AssetSupplyRow = ({
               fontWeight="bold"
               fontSize="17px"
             >
-              {supplyAPY.toFixed(3)}%
+              {isStakedOHM
+                ? stakedOHMApyData
+                  ? (stakedOHMApyData.supplyApy * 100).toFixed(3)
+                  : "?"
+                : supplyAPY.toFixed(3)}
+              %
             </Text>
 
-            <Text fontSize="sm">{supplyWPY.toFixed(3)}%</Text>
+            <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
           </Column>
         )}
 
@@ -561,6 +583,11 @@ const BorrowList = ({
         {assets.length > 0 ? (
           <>
             {borrowedAssets.map((asset, index) => {
+              // Don't show paused assets.
+              if (asset.isPaused) {
+                return null;
+              }
+
               return (
                 <AssetBorrowRow
                   comptrollerAddress={comptrollerAddress}
@@ -574,6 +601,11 @@ const BorrowList = ({
             {borrowedAssets.length > 0 ? <ModalDivider my={2} /> : null}
 
             {nonBorrowedAssets.map((asset, index) => {
+              // Don't show paused assets.
+              if (asset.isPaused) {
+                return null;
+              }
+
               return (
                 <AssetBorrowRow
                   comptrollerAddress={comptrollerAddress}
