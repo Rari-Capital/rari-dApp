@@ -561,7 +561,7 @@ const BorrowList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APR/WPR")}
+              {t("APR/TVL")}
             </Text>
           )}
 
@@ -657,7 +657,6 @@ const AssetBorrowRow = ({
   const tokenData = useTokenData(asset.underlyingToken);
 
   const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
-  const borrowWPR = convertMantissaToAPR(asset.borrowRatePerBlock) / 52;
 
   const { t } = useTranslation();
 
@@ -717,7 +716,9 @@ const AssetBorrowRow = ({
               {borrowAPR.toFixed(3)}%
             </Text>
 
-            <Text fontSize="sm">{borrowWPR.toFixed(3)}%</Text>
+            <Text fontSize="sm">
+              {shortUsdFormatter(asset.totalSupplyUSD)} TVL
+            </Text>
           </Column>
         )}
 
