@@ -48,7 +48,6 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
-import { transform } from "cypress/types/lodash";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
@@ -716,9 +715,15 @@ const AssetBorrowRow = ({
               {borrowAPR.toFixed(3)}%
             </Text>
 
-            <Text fontSize="sm">
-              {shortUsdFormatter(asset.totalSupplyUSD)} TVL
-            </Text>
+            <SimpleTooltip
+              label={t(
+                "Total Value Lent (TVL) measures how much of this asset has been supplied in total. TVL does not account for how much of the lent assets have been borrowed, use 'liquidity' to determine the total unborrowed assets lent."
+              )}
+            >
+              <Text fontSize="sm">
+                {shortUsdFormatter(asset.totalSupplyUSD)} TVL
+              </Text>
+            </SimpleTooltip>
           </Column>
         )}
 
