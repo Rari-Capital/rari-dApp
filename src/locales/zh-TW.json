@@ -260,6 +260,6 @@
   "Returns on ETH": "ETH回報",
   "APY/LTV": "APY/LTV",
   "The Loan to Value (LTV) ratio defines the maximum amount of tokens in the pool that can be borrowed with a specific collateral. It’s expressed in percentage: if in a pool ETH has 75% LTV, for every 1 ETH worth of collateral, borrowers will be able to borrow 0.75 ETH worth of other tokens in the pool.": "贷款价值 (LTV) 比率定义了池中可以用特定抵押品借入的最大代币数量。 它以百分比表示：如果池中 ETH 的 LTV 为 75%，则每 1 ETH 的抵押品，借款人将能够借入池中价值 0.75 ETH 的其他代币。",
-  "APR/TVL": "__NOT_TRANSLATED__",
+  "APR/TVL": "APR/TVL",
   "Total Value Lent (TVL) measures how much of this asset has been supplied in total. TVL does not account for how much of the lent assets have been borrowed, use 'liquidity' to determine the total unborrowed assets lent.": "Total Value Lent (TVL) 衡量該資產的總供應量。 TVL 不考慮借出資產的多少，使用“流動性”來確定借出的未借入資產總額。"
 }
