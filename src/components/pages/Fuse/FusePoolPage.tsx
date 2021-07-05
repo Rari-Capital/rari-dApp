@@ -10,7 +10,13 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
+import {
+  Column,
+  Center,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 
 // Hooks
 import { useTranslation } from "react-i18next";
@@ -45,7 +51,7 @@ const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
-  const router = useRouter()
+  const router = useRouter();
 
   let { poolId } = router.query;
 
@@ -61,7 +67,6 @@ const FusePoolPage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-
         <FuseStatsBar />
 
         <FuseTabBar />

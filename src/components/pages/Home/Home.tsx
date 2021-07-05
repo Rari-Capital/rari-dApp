@@ -42,6 +42,7 @@ import { SearchIcon } from "@chakra-ui/icons";
 import DashboardBox from "components/shared/DashboardBox";
 import AppLink from "components/shared/AppLink";
 import { APYWithRefreshMovingProps } from "components/shared/MovingStat";
+import Searchbar from "components/shared/Searchbar";
 
 const Home = React.memo(() => {
   // const { isAuthed } = useRari();
@@ -70,7 +71,6 @@ const Home = React.memo(() => {
         mx="auto"
         width="100%"
       >
-
         {/* Hero */}
         <Row
           mainAxisAlignment="center"
@@ -104,32 +104,7 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <form onSubmit={handleSubmit}>
-                <InputGroup
-                  width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
-                  h="55px"
-                  // pl={2}
-                >
-                  <InputLeftElement
-                    pointerEvents="none"
-                    height="100%"
-                    color="grey"
-                    children={<SearchIcon color="gray.300" boxSize={5} />}
-                    ml={1}
-                  />
-
-                  <Input
-                    border="3px solid"
-                    borderColor="grey"
-                    height="100%"
-                    placeholder="Search by token, pool or product..."
-                    _placeholder={{ color: "grey", fontWeight: "bold" }}
-                    onChange={({ target: { value } }) => setVal(value)}
-                    value={val}
-                    color="grey"
-                  />
-                </InputGroup>
-              </form>
+              <Searchbar width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }} />
             </motion.div>
           </Column>
         </Row>

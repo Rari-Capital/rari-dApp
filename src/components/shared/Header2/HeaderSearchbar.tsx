@@ -2,12 +2,13 @@ import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { SearchIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Box } from "@chakra-ui/react";
+import Searchbar from "../Searchbar";
 
 const HeaderSearchbar = (props: any) => {
-  const [val, setVal] = useState("");
   return (
     <Box {...props} w={800} mx={5}>
-      <InputGroup>
+      <Searchbar variant="filled"/>
+      {/* <InputGroup>
         <InputLeftElement
           pointerEvents="none"
           children={<SearchIcon color="gray.300" />}
@@ -19,7 +20,7 @@ const HeaderSearchbar = (props: any) => {
           placeholder="Search by token, pool or product..."
           _placeholder={{ color: "grey.500", fontWeight: "bold" }}
         />
-      </InputGroup>
+      </InputGroup> */}
     </Box>
   );
 };
