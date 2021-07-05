@@ -24,6 +24,7 @@ export type point = {
 }
 
 export type score = {
+  symbol: string;
   g: number;
   h: number;
   c: number;

@@ -158,7 +158,7 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
   ])
 
   let score: score = {
-    // add historical when done
+    symbol: asset.underlyingSymbol,
     h: historical,
     c: crash,
     v: volatility,
@@ -289,9 +289,9 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       asset.comptroller = comptroller;
 
       // curve pool tokens are not listed on exchange
-      if (asset.underlyingName.includes('Curve')) {
-        asset.underlyingToken = '0xD533a949740bb3306d119CC777fa900bA034cd52';
-      }
+      // if (asset.underlyingName.includes('Curve')) {
+      //   asset.underlyingToken = '0xD533a949740bb3306d119CC777fa900bA034cd52';
+      // }
 
       return asset;
     })
