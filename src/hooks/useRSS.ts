@@ -20,7 +20,7 @@ export const usePoolRSS = (poolId: string | number) => {
           console.log(e);
         }) as Promise<{
         poolScore: number;
-        pools: score[];
+        assets: score[];
         lastUpdated: string;
       }>;
     },

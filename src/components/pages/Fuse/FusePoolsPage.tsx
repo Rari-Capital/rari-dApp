@@ -212,8 +212,8 @@ const PoolRow = ({
               <Center height="100%" width="15%">
                 <SimpleTooltip
                   label={
-                    "Underlying RSS: " +
-                    (rss ? rss.poolScore : "?")
+                    " " +
+                    (rss && rss.assets ? rss.assets.map((asset) => {return ` ${asset.symbol}: ${asset.g}`}) : "?")
                   }
                 >
                   <b>{rssScore}</b>

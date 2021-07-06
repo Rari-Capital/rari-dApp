@@ -3,7 +3,7 @@
 import fetch from 'node-fetch';
 
 import { ChainId, Token, Pair } from '@uniswap/sdk'
-import { parse, point } from '../../src/utils/rssUtils';
+import { point } from '../../src/utils/rssUtils';
 
 import checksum from 'eth-checksum';
 

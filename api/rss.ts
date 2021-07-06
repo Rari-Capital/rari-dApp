@@ -8,46 +8,43 @@ import { resultSet, rssAsset, score } from "../src/utils/rssUtils";
 import { initFuseWithProviders, turboGethURL } from "../src/utils/web3Providers";
 
 import backtest from "./backtest/historical";
-import { sushiswap, testSushi } from "./backtest/sushiswap"; // sushiswap data
-import { uniswap,   testUni   } from './backtest/uniswap';   // uniswap data
 
 const fuse = initFuseWithProviders(turboGethURL);
 
 const scorePool = async (assets: rssAsset[], comptroller: any) => {
 
-  const set = await Promise.all(assets.map(async (asset): Promise<score> => {
-    console.log(asset.underlyingName, asset.underlyingToken);
+  let promises: Promise<any>[] = [];
 
-    // MAX SCORE FOR ETH
-    if (asset.underlyingToken === "0x0000000000000000000000000000000000000000") {
-      return {
-        g: 0,
-        h: 0,
-        c: 0,
-        v: 0,
-        l: 0
-      } as score;
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+
+      console.time(asset.underlyingSymbol);
+      promises.push(
+
+        (async () => {
+
+          // pass for ETH
+          if (asset.underlyingToken === "0x0000000000000000000000000000000000000000") {
+            return {
+              symbol: asset.underlyingSymbol,
+              g: 0,
+              h: 0,
+              c: 0,
+              v: 0,
+              l: 0
+            } as score;
+          }
+
+          const assetData = await fetchAssetData(asset.underlyingToken);
+          const score = await scoreAsset(asset, assetData);
+
+          return score
+        })()
+        
+      );
     }
 
-    if (asset.underlyingToken === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52") {
-      return {
-        g: 0,
-        h: 0,
-        c: 0,
-        v: 0,
-        l: 0
-      } as score;
-    }
-
-    const assetData = await fetchAssetData(asset.underlyingToken);
-    const score = await scoreAsset(asset, assetData);
-
-    console.log(asset.underlyingName, " has been scored:", score);
-
-    return score;
-  }))
-
-  return set;
+  return await Promise.all(promises);
 }
 
 const scoreAsset = async (asset: rssAsset, assetData: any) => {
@@ -296,18 +293,6 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       return asset;
     })
 
-    // // // DEBUGGG
-    // let asset = rssAssets[0];
-
-    // const config = {
-    //     period: 68, // around 15 mins of blocktime
-    //     no_segments: 500, // keep divisible of 100 for batching
-    //     end: 12635203
-    //   }
-    // let historical = await backtest(asset.underlyingToken, config);
-
-    // console.log(historical);
-
     // main thread
     await new Promise(async (resolve) => {
 
@@ -315,15 +300,15 @@ export default async (request: VercelRequest, response: VercelResponse) => {
  
       resolve(scores);
 
-    }).then((pool) => {
+    }).then((assets) => {
 
-      const poolScore = calculatePoolScore(pool as score[])
+      const poolScore = calculatePoolScore(assets as score[])
 
       response.setHeader("Cache-Control", "s-maxage=3600");
       response.json({
 
         poolScore,
-        pool,
+        assets,
         lastUpdated,
       });
     })

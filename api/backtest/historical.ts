@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 /* eslint-disable no-loop-func */
 
-import { biggerblockno, parse, point, resultSet } from '../../src/utils/rssUtils';
+import { biggerblockno, point, resultSet } from '../../src/utils/rssUtils';
 import { uniswap, testUni }     from './uniswap';
 import { sushiswap, testSushi } from './sushiswap';
 
@@ -18,31 +18,23 @@ export default async (address: string, financials: {liquidationIncentive: number
     }
 
     // // it is possible to return either sushiswap or uniswap data in the form of point[]; currently uniswap is much faster
-    // let data = await uniswap(address, config).catch( async (e) => {
-    //   console.log('uni fetch failed, trying sushi');
-    //   return await sushiswap(address,config).catch((e) => {
-    //     console.log('both sushiswap and uniswap failed');
-    //     return false;
-    //   })
-    // })
-    // if (data !== false) {
-    //   let result = await calcTokenDown(data as point[], financials);
+    let data = await uniswap(address, config).catch( async (e) => {
+      console.log('uni fetch failed, trying sushi');
+      return await sushiswap(address,config).catch((e) => {
+        console.log('both sushiswap and uniswap failed');
+        return false;
+      })
+    })
+    if (data !== false) {
+      let result = await calcTokenDown(data as point[], financials);
 
-    //   resolve(result);
-    // } else {
-    //   resolve(false);
-    // }
-
-
-    let data = await uniswap(address, config);
-    let result = await calcTokenDown(data as point[], financials);
-    resolve(result);
-
+      resolve(result);
+    } else {
+      resolve(false);
+    }
 
   })
 }
-
-// TODO: function to match token0 to token1, ex: rgt:weth, dai:usdt
 
 const calcTokenDown = async (data: point[], financials: {liquidationIncentive: number, slippage: number}) => {
 
