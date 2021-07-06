@@ -14,7 +14,6 @@ import StatsFuseSection from "./StatsFuseSection";
 import StatsPool2Section from "./StatsPool2Section";
 import StatsEarnSection from "./StatsEarnSection";
 import StatsTranchesSection from "./StatsTranchesSection";
-import StatsPositionsSection from "./StatsPositionsSection";
 import Footer from "components/shared/Footer";
 
 // Context
@@ -120,7 +119,6 @@ const StatsPage = () => {
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Box>
         </Column>
-        <StatsPositionsSection />
         <Footer />
       </Column>
     </SaffronProvider>
