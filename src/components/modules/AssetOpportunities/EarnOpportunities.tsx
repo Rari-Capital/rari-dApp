@@ -20,9 +20,9 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { Row, useIsMobile } from "utils/chakraUtils";
 
-const EarnOpportunities = ({ token }: { token: TokenData }) => {
+const EarnOpportunities = ({ token }: { token?: TokenData }) => {
   const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset(
-    token.address
+    token?.address
   );
   const isMobile = useIsMobile();
   const { t } = useTranslation();

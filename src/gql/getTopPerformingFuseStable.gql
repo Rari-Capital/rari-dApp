@@ -1,0 +1,18 @@
+{
+  markets(
+    where: { underlyingSymbol_in: ["USDC", "DAI"] }
+    orderBy: supplyRate
+    orderDirection: desc
+    first: 1
+  ) {
+    id
+    supplyRate
+    supplyRateAPR
+    supplyRateAPY
+    symbol
+    totalBorrows
+    totalSupply
+    name
+    borrowIndex
+  }
+}
