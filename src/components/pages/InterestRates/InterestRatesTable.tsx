@@ -109,8 +109,6 @@ export default function InterestRatesTable() {
           position: "relative",
           overflowY: "hidden",
         }}
-        //@ts-ignore
-        onScroll={handleHorizontalScroll}
       ></WindowTable>
       {/* gradient at rightmost edge of scroll to hint at scrolling functionality */}
       <Box
