@@ -11,7 +11,7 @@ import backtest from "./backtest/historical";
 
 const fuse = initFuseWithProviders(turboGethURL);
 
-const scorePool = async (assets: rssAsset[], comptroller: any) => {
+const scorePool = async (assets: rssAsset[]) => {
 
   let promises: Promise<any>[] = [];
 
@@ -27,6 +27,25 @@ const scorePool = async (assets: rssAsset[], comptroller: any) => {
           if (asset.underlyingToken === "0x0000000000000000000000000000000000000000") {
             return {
               symbol: asset.underlyingSymbol,
+              address: asset.underlyingToken,
+              g: 0,
+              h: 0,
+              c: 0,
+              v: 0,
+              l: 0
+            } as score;
+          } else if (await checkAddress(asset.underlyingToken)) {
+            const assetData = await fetchAssetData(asset.underlyingToken);
+            const score = await scoreAsset(asset, assetData);
+  
+            return score;
+          } else {
+            // asset not listed on apis
+            // mostly yearn and curve vaults, staked OHM, etc
+            // bypass for now
+            return {
+              symbol: asset.underlyingSymbol,
+              address: asset.underlyingToken,
               g: 0,
               h: 0,
               c: 0,
@@ -34,11 +53,7 @@ const scorePool = async (assets: rssAsset[], comptroller: any) => {
               l: 0
             } as score;
           }
-
-          const assetData = await fetchAssetData(asset.underlyingToken);
-          const score = await scoreAsset(asset, assetData);
-
-          return score
+          
         })()
         
       );
@@ -155,6 +170,7 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
   ])
 
   let score: score = {
+    address: asset.underlyingToken,
     symbol: asset.underlyingSymbol,
     h: historical,
     c: crash,
@@ -163,6 +179,23 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     g: max([historical, crash, volatility, liquidity])
   }
   return score
+}
+
+const checkAddress = async (address: string) => {
+  try {
+    let data = await fetch(
+      `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
+    ).then((res) => res.json())
+
+    if (data.error) {
+      return false;
+    } else {
+      return true;
+    }
+
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 const fetchAssetData = async (address: string) => {
@@ -296,8 +329,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     // main thread
     await new Promise(async (resolve) => {
 
-      let scores: score[] = await scorePool(rssAssets, comptroller);
- 
+      let scores: score[] = await scorePool(rssAssets);
+
       resolve(scores);
 
     }).then((assets) => {
@@ -306,7 +339,6 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
       response.setHeader("Cache-Control", "s-maxage=3600");
       response.json({
-
         poolScore,
         assets,
         lastUpdated,
