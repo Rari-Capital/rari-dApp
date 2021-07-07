@@ -3,7 +3,7 @@ import { useCallback, useContext, useMemo, useState } from "react";
 // Components
 import { Avatar, Box, Spinner } from "@chakra-ui/react";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@chakra-ui/table";
-import { Html5Table as WindowTable } from "window-table";
+import { WindowTable } from "window-table";
 
 // Context
 import {
@@ -149,9 +149,11 @@ function CustomTable({ children, ...props }: any) {
     <Table {...props}>
       {children}
       {tokens.length === 0 ? (
-        <Tr>
-          <Td colSpan={10000}>No assets match your search.</Td>
-        </Tr>
+        <Tbody>
+          <Tr>
+            <Td colSpan={10000}>No assets match your search.</Td>
+          </Tr>
+        </Tbody>
       ) : null}
     </Table>
   );
