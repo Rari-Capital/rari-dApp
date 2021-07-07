@@ -1,5 +1,6 @@
 // Components
-import { Alert, AlertIcon, Link } from "@chakra-ui/react";
+import { Alert, Link, AlertIcon } from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
 import { Column } from "utils/chakraUtils";
 import InterestRatesView from "./InterestRatesView";
 import { Header } from "components/shared/Header";
@@ -37,6 +38,15 @@ export default function InterestRates() {
           </Link>
         </span>
       </Alert>
+      {isMobile ? (
+        <Alert colorScheme="orange" borderRadius={5} mt="5">
+          <AlertIcon />
+          <span style={{ color: "#C05621" }}>
+            This page is not optimized for use on smaller screens. Sorry for the
+            inconvenience!
+          </span>
+        </Alert>
+      ) : null}
       <InterestRatesView />
       <Footer />
     </Column>
