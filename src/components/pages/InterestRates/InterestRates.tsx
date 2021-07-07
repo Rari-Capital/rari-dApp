@@ -1,6 +1,5 @@
 // Components
 import { Alert, Link, AlertIcon } from "@chakra-ui/react";
-import { WarningIcon } from "@chakra-ui/icons";
 import { Column } from "utils/chakraUtils";
 import InterestRatesView from "./InterestRatesView";
 import { Header } from "components/shared/Header";

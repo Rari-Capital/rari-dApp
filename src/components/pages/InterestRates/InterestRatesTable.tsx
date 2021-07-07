@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 
 // Components
 import { Avatar, Box, Spinner } from "@chakra-ui/react";
@@ -37,8 +37,6 @@ const DEFAULT_COLUMNS: any = [
 ];
 
 export default function InterestRatesTable() {
-  const tableContainerRef = useRef<HTMLDivElement>();
-
   const { fusePools, tokens, markets } = useContext(InterestRatesContext);
 
   const columns = useMemo(
