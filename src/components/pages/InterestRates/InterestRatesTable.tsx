@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 // Components
 import { Avatar, Box, Spinner } from "@chakra-ui/react";
@@ -46,9 +46,11 @@ export default function InterestRatesTable() {
   const handleHorizontalScroll = useCallback(
     (e: any) => {
       const scrollBox: HTMLDivElement = e.target;
+      console.log();
       setScrolledToEnd(
-        scrollBox.scrollLeft >=
-          scrollBox.scrollWidth - scrollBox.parentElement?.scrollWidth! - 50
+        scrollBox.parentElement !== null &&
+          scrollBox.scrollLeft >=
+            scrollBox.scrollWidth - scrollBox.parentElement.scrollWidth - 50
       );
     },
     [setScrolledToEnd]
@@ -158,6 +160,19 @@ function CustomTable({ children, ...props }: any) {
     </Table>
   );
 }
+
+// function CustomTr({ children, index, ...props }: any) {
+//   const { tokens } = useContext(InterestRatesContext);
+
+//   return (
+//     <Tr
+//       {...props}
+//       style={{ marginBottom: index + 1 === tokens.length ? null : "50px" }}
+//     >
+//       {children}
+//     </Tr>
+//   );
+// }
 
 function TableCell({ children, column, ...props }: any) {
   return (

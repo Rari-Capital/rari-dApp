@@ -149,7 +149,7 @@ export default function InterestRatesView() {
         width="100%"
         mainAxisAlignment="center"
         crossAxisAlignment="flex-start"
-        mt="1rem"
+        mt="3"
         p={15}
       >
         {/* TODO (Zane): Add i18n */}
