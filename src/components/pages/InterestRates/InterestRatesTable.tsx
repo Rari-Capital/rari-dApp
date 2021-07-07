@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 
 // Components
 import { Avatar, Box, Spinner } from "@chakra-ui/react";
@@ -37,24 +37,9 @@ const DEFAULT_COLUMNS: any = [
 ];
 
 export default function InterestRatesTable() {
-  // whether or not the horizontal scroll is at the end or not
-  const [scrolledToEnd, setScrolledToEnd] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>();
 
   const { fusePools, tokens, markets } = useContext(InterestRatesContext);
-
-  // TODO: change "any" type to UIEvent
-  const handleHorizontalScroll = useCallback(
-    (e: any) => {
-      const scrollBox: HTMLDivElement = e.target;
-      console.log();
-      setScrolledToEnd(
-        scrollBox.parentElement !== null &&
-          scrollBox.scrollLeft >=
-            scrollBox.scrollWidth - scrollBox.parentElement.scrollWidth - 50
-      );
-    },
-    [setScrolledToEnd]
-  );
 
   const columns = useMemo(
     () => [
@@ -134,7 +119,7 @@ export default function InterestRatesTable() {
         pointerEvents="none"
         position="absolute"
         background="linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)"
-        opacity={scrolledToEnd ? 0 : 1}
+        // opacity={scrolledToEnd ? 0 : 1}
         transition="opacity 200ms ease"
         top={0}
         right={0}
