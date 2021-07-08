@@ -10,6 +10,7 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { PixelSize, Row } from "utils/chakraUtils";
 
 import { AccountButton } from "./AccountButton";
@@ -129,6 +130,7 @@ export const OverviewLink = ({ ml }: { ml?: number | string }) => {
         route="/"
         onMouseOver={handleMouseOverMenu}
         onMouseOut={handleMouseOutMenu}
+        withChevron={true}
       />
       <Menu
         autoSelect={false}
@@ -250,6 +252,7 @@ export const HeaderLink = ({
   noUnderline,
   onMouseOver,
   onMouseOut,
+  withChevron,
 }: {
   name: string;
   route: string;
@@ -257,6 +260,7 @@ export const HeaderLink = ({
   ml?: number | string;
   onMouseOver?: MouseEventHandler<HTMLAnchorElement>;
   onMouseOut?: MouseEventHandler<HTMLAnchorElement>;
+  withChevron?: boolean;
 }) => {
   const location = useLocation();
 
@@ -276,7 +280,10 @@ export const HeaderLink = ({
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
     >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
+        {withChevron ? <ChevronDownIcon mr="1" /> : null}
+        {name}
+      </Text>
     </Link>
   ) : (
     <Link
@@ -289,7 +296,10 @@ export const HeaderLink = ({
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
     >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
+        {withChevron ? <ChevronDownIcon mr="1" /> : null}
+        {name}
+      </Text>
     </Link>
   );
 };
