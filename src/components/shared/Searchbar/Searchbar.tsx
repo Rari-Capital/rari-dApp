@@ -13,6 +13,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { Column, Row } from "utils/chakraUtils";
 import { FinalSearchReturn } from "types/search";
+import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 
 // Fetchers
 const searchFetcher = async (
@@ -39,36 +40,36 @@ const Searchbar = ({
 
   return (
     <Box width={width ?? ""} position="relative">
-      <form>
-        <InputGroup
-          width="100%"
-          h="55px"
-          // pl={2}
-        >
-          <InputLeftElement
-            pointerEvents="none"
-            height="100%"
-            color="grey"
-            children={<SearchIcon color="gray.300" boxSize={5} />}
-            ml={1}
-          />
-          <Input
-            border="3px solid"
-            borderColor="grey"
-            height="100%"
-            placeholder="Search by token, pool or product..."
-            _placeholder={{ color: "grey", fontWeight: "bold" }}
-            onChange={({ target: { value } }) => setVal(value)}
-            value={val}
-            color="grey"
-            {...inputProps}
-          />
-          <InputRightElement
-            pointerEvents="none"
-            height="100%"
-            color="grey"
-            children={
-              !!val && loading ? (
+      <InputGroup
+        width="100%"
+        h="55px"
+        // pl={2}
+      >
+        <InputLeftElement
+          pointerEvents="none"
+          height="100%"
+          color="grey"
+          children={<SearchIcon color="gray.300" boxSize={5} />}
+          ml={1}
+        />
+        <Input
+          border="3px solid"
+          borderColor="grey"
+          height="100%"
+          placeholder="Search by token, pool or product..."
+          _placeholder={{ color: "grey", fontWeight: "bold" }}
+          onChange={({ target: { value } }) => setVal(value)}
+          value={val}
+          color="grey"
+          {...inputProps}
+        />
+        <InputRightElement
+          pointerEvents="none"
+          height="100%"
+          color="grey"
+          children={
+            !!val ? (
+              loading ? (
                 <Spinner />
               ) : (
                 <CloseIcon
@@ -78,11 +79,11 @@ const Searchbar = ({
                   onClick={() => setVal("")}
                 />
               )
-            }
-            ml={1}
-          />
-        </InputGroup>
-      </form>
+            ) : null
+          }
+          ml={1}
+        />
+      </InputGroup>
       {hasResults && (
         <SearchResults results={data!} handleClick={() => setVal("")} />
       )}
@@ -117,24 +118,30 @@ const SearchResults = ({
       crossAxisAlignment="flex-start"
       overflowY="scroll"
     >
-      {results.map((result: FinalSearchReturn, i: number) => (
-        <AppLink href="/token/eth" w="100%" h="100%">
-          <Row
-            p={3}
-            w="100%"
-            h="100%"
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"
-            key={i}
-            _hover={{ bg: "grey" }}
-            expand
-            onClick={handleClick}
-          >
-            <Avatar src={result.tokenData.logoURL} boxSize={8} />
-            <Text ml={2}> - {result.underlyingSymbol}</Text>
-          </Row>
-        </AppLink>
-      ))}
+      {results.map((result: FinalSearchReturn, i: number) => {
+        const route =
+          result.underlyingAddress === ETH_TOKEN_DATA.address
+            ? `/token/eth`
+            : `/token/${result.underlyingAddress}`;
+        return (
+          <AppLink href={route} w="100%" h="100%">
+            <Row
+              p={3}
+              w="100%"
+              h="100%"
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              key={i}
+              _hover={{ bg: "grey" }}
+              expand
+              onClick={handleClick}
+            >
+              <Avatar src={result.tokenData.logoURL} boxSize={8} />
+              <Text ml={2}>{result.underlyingSymbol}</Text>
+            </Row>
+          </AppLink>
+        );
+      })}
     </Column>
   );
 };

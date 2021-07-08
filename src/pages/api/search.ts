@@ -1,9 +1,10 @@
-import { FinalSearchReturn, GQLSearchReturn } from "types/search";
-import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
 import { NextApiRequest, NextApiResponse } from "next";
+import { RariApiTokenData } from "types/tokens";
+import { FinalSearchReturn, GQLSearchReturn } from "types/search";
+
+import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
 import { makeGqlRequest } from "utils/gql";
 import { fetchTokenAPIData } from "utils/services";
-import { RariApiTokenData } from "types/tokens";
 
 // Takes a search string, makes a graphql request, then stitches on the TokenData by making a second API request
 export default async function handler(

@@ -73,7 +73,6 @@ export const fetchGranularTokenMarketInfo = async (
       : `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart?vs_currency=${VS_CURRENCY}&days=${days}`;
 
   const { data } = await axios.get(url);
-
   return data;
 };
 

@@ -50,7 +50,6 @@ export const HeaderLink = ({
     </AppLink>
   ) : (
     <AppLink
-      /* @ts-ignore */
       href={route}
       ml={ml ?? 0}
       whiteSpace="nowrap"
