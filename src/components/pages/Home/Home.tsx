@@ -149,7 +149,7 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-              <AppLink href="/">
+              <AppLink href="/explore">
                 <Text size="md" color="grey">
                   View All
                 </Text>
@@ -263,7 +263,7 @@ const Home = React.memo(() => {
               mb={5}
             >
               <Heading size="md">Easily Earn </Heading>
-              <AppLink href="/">
+              <AppLink href="/explore">
                 <Text size="md" color="grey">
                   View All
                 </Text>

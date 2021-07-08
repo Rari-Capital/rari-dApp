@@ -88,7 +88,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
 
           <InternalAd mb={5} />
 
-          <AssetHistory token={token} />
+          {/* <AssetHistory token={token} /> */}
 
           {/* <DashboardBox height="100%" w="100%" h="100%" mt={5}>
             <Heading>Fuse stuff</Heading>

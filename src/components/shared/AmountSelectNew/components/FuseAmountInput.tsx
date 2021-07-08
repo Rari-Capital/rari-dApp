@@ -43,7 +43,6 @@ const FuseAmountInput = ({
   updateAmount: (value: string) => any;
   updateAsset?: (assetAddress: string) => any;
 }) => {
-
   return (
     <DashboardBox width="100%" height="70px">
       <Row
@@ -247,11 +246,12 @@ const AssetsDropDown = ({
         <AssetNameAndIcon asset={currentAsset} />
       </MenuButton>
       <MenuList maxHeight="200px" overflowY="scroll">
-        {assets.map((asset: USDPricedFuseAssetWithTokenData) => (
+        {assets.map((asset: USDPricedFuseAssetWithTokenData, i: number) => (
           <MenuItem
             _hover={{ bg: "grey.400" }}
             color="black"
             onClick={() => handleClick(asset)}
+            key={i}
           >
             {asset.underlyingSymbol}
           </MenuItem>

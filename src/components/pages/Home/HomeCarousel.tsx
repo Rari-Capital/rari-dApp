@@ -5,7 +5,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Column } from "utils/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFuseDataForAssets } from "hooks/fuse/useFuseDataForAsset";
-import { smallStringUsdFormatter } from "utils/bigUtils";
+import { shortUsdFormatter, smallStringUsdFormatter } from "utils/bigUtils";
 
 const ASSETS = ["DAI", "ETH", "RGT"];
 
@@ -41,11 +41,12 @@ const HomeCarousel = () => {
               >
                 The Rari Capital Ecosystem currently has{" "}
                 <InlineStyledText
-                  text={`${smallStringUsdFormatter(pool.totalSuppliedUSD)} ${
-                    ASSETS[i]
-                  }`}
-                />{" "}
-                earning{" "}
+                  text={`${shortUsdFormatter(pool.totalSuppliedUSD)}
+                  `}
+                />
+                in {" "}
+                <InlineStyledText text={`${ASSETS[i]}`} />
+                {" "} earning{" "}
                 <InlineStyledText
                   text={`${pool.highestSupplyAPY.toFixed(2)}%`}
                 />{" "}

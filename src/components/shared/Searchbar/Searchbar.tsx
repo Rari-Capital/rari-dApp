@@ -1,6 +1,17 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
+import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import useSWR from "swr";
+import { makeGqlRequest } from "utils/gql";
+
+// Fetchers
+const searchFetcher = async (query: any, search: string) => {
+  console.log({ query, search });
+  if (!search) return undefined;
+  await makeGqlRequest(query, { search: search.toUpperCase() });
+};
 
 const Searchbar = ({
   width,
@@ -11,8 +22,12 @@ const Searchbar = ({
 }) => {
   const [val, setVal] = useState("");
 
+  const router = useRouter();
+
+  const { data, error } = useSWR([SEARCH_FOR_TOKEN, val], searchFetcher);
+
   const handleSubmit = () => {
-    alert(val);
+    router.push(`/token/${val}`);
   };
 
   return (

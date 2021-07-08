@@ -113,6 +113,8 @@ export const fetchFusePoolData = async (
       .call({ from: address, gas: 1e18 })
   ).map(filterOnlyObjectProperties);
 
+  console.log({assets})
+
   let totalLiquidityUSD = 0;
 
   let totalSupplyBalanceUSD = 0;

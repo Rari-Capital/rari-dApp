@@ -43,6 +43,10 @@ const FuseList = () => {
         height="45px"
         width="100%"
         flexShrink={0}
+        position="sticky"
+        bg="#121212"
+        zIndex={9}
+        top={-1}
         pl={4}
         pr={1}
       >

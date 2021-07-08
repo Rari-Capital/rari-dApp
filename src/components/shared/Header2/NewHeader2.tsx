@@ -4,14 +4,13 @@ import { PixelSize, Row } from "utils/chakraUtils";
 
 //  Components
 import { DASHBOARD_BOX_SPACING } from "../DashboardBox";
-import { Heading } from "@chakra-ui/layout";
 import { AccountButton } from "../AccountButton";
 
 import { SmallLogo } from "components/shared/Logos";
 import { useRari } from "context/RariContext";
 import { useTranslation } from "react-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { HeaderLink } from "./HeaderLink";
+import { DropDownLink, HeaderLink } from "./HeaderLink";
 import HeaderSearchbar from "./HeaderSearchbar";
 import AppLink from "../AppLink";
 
@@ -22,7 +21,7 @@ export const HeaderHeightWithTopPadding = new PixelSize(
 export const NewHeader = () => {
   const { isAuthed } = useRari();
   const { t } = useTranslation();
-  // const isMobile = useIsSmallScreen();
+  const isMobile = useIsSmallScreen();
 
   const [expanded, setExpanded] = useState(false);
 
@@ -38,6 +37,7 @@ export const NewHeader = () => {
       overflowY="visible"
       width="100%"
       zIndex={3}
+      mb={5}
       // bg="pink"
     >
       <AppLink href="/">
@@ -54,15 +54,33 @@ export const NewHeader = () => {
         // transform="translate(0px, 7px)"
         height="100%"
       >
-        <HeaderLink name={t("Overview")} route="/overview" />
-        <HeaderLink name={t("Pools")} route="/pools/yield" ml={5} />
-        <HeaderLink name={t("Fuse")} route="/fuse" ml={5} />
-        <HeaderLink name={t("Pool2")} route="/pool2" ml={5} />
-        <HeaderLink name={t("Tranches")} route="/tranches" ml={5} />
-        {isAuthed && <HeaderLink ml={5} name={t("Positions")} route="/positions" />}
+        <HeaderLink name={t("Home")} route="/" />
+        <HeaderLink name={t("Explore")} route="/explore" ml={5} />
+        {isAuthed && (
+          <HeaderLink ml={5} name={t("Positions")} route="/positions" />
+        )}
+        {/* Dropdown  */}
+        <DropDownLink
+          name={t("Products")}
+          ml={2}
+          links={[
+            { name: "Fuse", route: "/fuse" },
+            { name: "Vaults", route: "/pools/yield" },
+            { name: "Pool2", route: "/pool2" },
+            { name: "Tranches", route: "/tranches" },
+            { name: "Overview", route: "/overview" },
+          ]}
+        />
+        <DropDownLink
+          name={t("Governance")}
+          links={[
+            { name: "Snapshot", route: "https://vote.rari.capital/" },
+            { name: "Forums", route: "https://forums.rari.capital/" },
+          ]}
+        />
       </Row>
 
-      <HeaderSearchbar />
+      {!isMobile && <HeaderSearchbar />}
       <AccountButton />
     </Row>
   );

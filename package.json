@@ -37,7 +37,9 @@
     "fortmatic": "^2.2.1",
     "framer-motion": "^4.1.11",
     "fuse.js": "^6.4.6",
+    "graphql": "^15.5.1",
     "graphql-request": "^3.4.0",
+    "graphql-tag": "^2.12.5",
     "history": "^5.0.0",
     "i18next": "^19.7.0",
     "istanbul-lib-coverage": "^3.0.0",
@@ -102,6 +104,7 @@
     "@types/react": "^17.0.6",
     "@types/react-query": "^1.1.2",
     "@types/react-slick": "^0.23.4",
-    "@vercel/node": "^1.8.3"
+    "@vercel/node": "^1.8.3",
+    "web3-eth-contract": "^1.3.5"
   }
 }

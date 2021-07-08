@@ -13,7 +13,7 @@ export const createCTokenContract = ({
 }: {
   fuse: Fuse;
   asset: USDPricedFuseAsset;
-}): Contract => {
+}) => {
   const isETH = isAssetETH(asset.underlyingToken);
 
   // Create the cTokenContract
