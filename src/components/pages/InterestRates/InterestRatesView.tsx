@@ -72,6 +72,8 @@ export default function InterestRatesView() {
   const { pools: fusePools, markets: fuseMarkets } = useFuseMarkets();
 
   useEffect(() => {
+    let isUnmounting = false;
+
     async function getTokenData() {
       // gather list of all tokens
       const allTokens = [
@@ -103,12 +105,17 @@ export default function InterestRatesView() {
           tokenAddresses.indexOf(b.address!)
       );
 
-      // set list in state
-      if (tokenDataList.length === tokenAddresses.length)
+      // set list in state if conditions are met
+      if (!isUnmounting && tokenDataList.length === tokenAddresses.length)
         setTokenData(tokenDataList);
     }
 
     getTokenData();
+
+    // set isUnmounting to true when unmounting
+    return () => {
+      isUnmounting = false;
+    };
   }, [aaveReserves, compoundMarkets, setTokenData, fusePools]);
 
   // const orderedTokenData = useTokensOrderedByMarketCap(tokenData);
