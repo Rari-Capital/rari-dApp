@@ -70,7 +70,7 @@
     "typescript": "^4.0.3",
     "web3": "^1.2.11",
     "web3modal": "^1.9.0",
-    "window-table": "*"
+    "window-table": "^1.0.0-alpha.11"
   },
   "scripts": {
     "typecheck": "tsc --skipLibCheck -p ./tsconfig.json",
