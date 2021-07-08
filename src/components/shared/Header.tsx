@@ -83,7 +83,7 @@ export const Header = ({
         {/* <HeaderLink name={t("Overview")} route="/" /> */}
         <OverviewLink />
 
-        <PoolsLink ml={4} />
+        <PoolsLink ml={3} />
 
         <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
 
@@ -281,8 +281,8 @@ export const HeaderLink = ({
       onMouseOut={onMouseOut}
     >
       <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
-        {withChevron ? <ChevronDownIcon mr="1" /> : null}
         {name}
+        {withChevron ? <ChevronDownIcon ml="1" /> : null}
       </Text>
     </Link>
   ) : (
@@ -297,8 +297,8 @@ export const HeaderLink = ({
       onMouseOut={onMouseOut}
     >
       <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
-        {withChevron ? <ChevronDownIcon mr="1" /> : null}
         {name}
+        {withChevron ? <ChevronDownIcon ml="1" /> : null}
       </Text>
     </Link>
   );
