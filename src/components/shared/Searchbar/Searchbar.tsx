@@ -6,7 +6,7 @@ const Searchbar = ({
   width,
   ...inputProps
 }: {
-  width: any;
+  width?: any;
   [x: string]: any;
 }) => {
   const [val, setVal] = useState("");
@@ -18,7 +18,7 @@ const Searchbar = ({
   return (
     <form onSubmit={handleSubmit}>
       <InputGroup
-        width={width}
+        width={width ?? ""}
         h="55px"
         // pl={2}
       >
