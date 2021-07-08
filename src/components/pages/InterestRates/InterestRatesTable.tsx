@@ -1,7 +1,8 @@
-import { useContext, useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 // Components
-import { Avatar, Box, Spinner } from "@chakra-ui/react";
+import { Avatar, Box, Link, Spinner } from "@chakra-ui/react";
 import { Table, Td, Th, Tr, Thead, Tbody } from "@chakra-ui/table";
 import { WindowTable } from "window-table";
 
@@ -94,7 +95,7 @@ export default function InterestRatesTable() {
         Table={CustomTable}
         HeaderRow={Tr}
         Row={Tr}
-        HeaderCell={CenteredTh}
+        HeaderCell={HeaderCell}
         Cell={TableCell}
         Header={Thead}
         Body={Tbody}
@@ -142,19 +143,6 @@ function CustomTable({ children, ...props }: any) {
   );
 }
 
-// function CustomTr({ children, index, ...props }: any) {
-//   const { tokens } = useContext(InterestRatesContext);
-
-//   return (
-//     <Tr
-//       {...props}
-//       style={{ marginBottom: index + 1 === tokens.length ? null : "50px" }}
-//     >
-//       {children}
-//     </Tr>
-//   );
-// }
-
 function TableCell({ children, column, ...props }: any) {
   return (
     <Td
@@ -168,7 +156,21 @@ function TableCell({ children, column, ...props }: any) {
   );
 }
 
-function CenteredTh({ children, column, ...props }: any) {
+function HeaderCell({ children, column, ...props }: any) {
+  const poolLink = useMemo(() => {
+    switch (column.key) {
+      case "asset":
+        return "";
+      case "aave":
+        return "https://app.aave.com/markets";
+      case "compound":
+        return "https://app.compound.finance/";
+      default:
+        // column.key is the pool ID for Fuse pools
+        return "/fuse/pool/" + column.key;
+    }
+  }, [column.key]);
+
   return (
     // janky way to make exception for asset column
     <Th
@@ -177,7 +179,19 @@ function CenteredTh({ children, column, ...props }: any) {
       color="#fff"
       {...props}
     >
-      {children}
+      {column.key === "asset" ? (
+        children
+      ) : column.key === "aave" || column.key === "compound" ? (
+        // external (out) links (Aave, Compound)
+        <Link href={poolLink} isExternal={true}>
+          {children}
+        </Link>
+      ) : (
+        // internal router links (Fuse)
+        <Link to={poolLink} as={RouterLink}>
+          {children}
+        </Link>
+      )}
     </Th>
   );
 }
