@@ -37,94 +37,90 @@ export default async (request: NowRequest, response: NowResponse) => {
       web3.utils.toChecksumAddress("0xB8c77482e45F1F44dE1745F52C74426C631bDD52")
     ) {
       // BNB
-      response.json({
+      return response.json({
         name,
         symbol,
         decimals,
         color: "#E6B93D",
         overlayTextColor: "#FFFFFF",
+        address,
         logoURL:
           "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png",
       });
 
-      return;
     } else if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xcee60cFa923170e4f8204AE08B4fA6A3F5656F3a")
     ) {
       // crvLINK
-      response.json({
+      return response.json({
         name,
         symbol,
         decimals,
         color: "#2A5ADA",
         overlayTextColor: "#FFFFFF",
+        address,
         logoURL:
           "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINK.png",
       });
-
-      return;
     } else if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
     ) {
       // crvLINK-gauges
-      response.json({
+      return response.json({
         name: "linkCRV Gauge Deposit",
         symbol: "[G]linkCRV",
         decimals,
         color: "#2A5ADA",
         overlayTextColor: "#FFFFFF",
+        address,
         logoURL:
           "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png",
       });
-
-      return;
     } else if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0x986b4AFF588a109c09B50A03f42E4110E29D353F")
     ) {
       // yvCurve-sETH
-      response.json({
+      return response.json({
         name: "Curve sETH yVault",
         symbol: "ycrvSETH",
         decimals,
         color: "#627EEA",
         overlayTextColor: "#FFFFFF",
+        address,
         logoURL:
           "https://raw.githack.com/yearn/yearn-assets/master/icons/tokens/0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c/logo-128.png",
       });
 
-      return;
     } else if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0x96Ea6AF74Af09522fCB4c28C269C26F59a31ced6")
     ) {
       // yvCurve-LINK
-      response.json({
+      return response.json({
         name: "Curve LINK/sLINK yVault",
         symbol: "ycrvLINK",
         decimals,
         color: "#2A5ADA",
         overlayTextColor: "#FFFFFF",
+        address,
         logoURL:
           "https://raw.githack.com/yearn/yearn-assets/master/icons/tokens/0xcee60cFa923170e4f8204AE08B4fA6A3F5656F3a/logo-128.png",
       });
-
-      return;
     }
 
-    response.json({
+    return response.json({
       name,
       symbol,
       decimals,
       color: "#FFFFFF",
       overlayTextColor: "#000000",
+      address,
       logoURL:
         "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
     });
-
-    return;
   }
 
   let {
@@ -157,35 +153,32 @@ export default async (request: NowRequest, response: NowResponse) => {
     symbol: symbol.toUpperCase(),
     name,
     decimals,
+    address
   };
 
   let color: Palette;
   try {
     color = await Vibrant.from(logoURL).getPalette();
   } catch (error) {
-    response.json({
+    return response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
       overlayTextColor: "#000",
       logoURL:
         "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
     });
-
-    return;
   }
 
   if (!color.Vibrant) {
-    response.json({
+    return response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
       overlayTextColor: "#000",
       logoURL,
     });
-
-    return;
   }
 
-  response.json({
+  return response.json({
     ...basicTokenInfo,
     color: color.Vibrant.getHex(),
     overlayTextColor: color.Vibrant.getTitleTextColor(),

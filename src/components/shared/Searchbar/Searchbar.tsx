@@ -1,16 +1,25 @@
-import { SearchIcon } from "@chakra-ui/icons";
+import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
+import { Avatar, Box, InputRightElement, Text } from "@chakra-ui/react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
-import { useRouter } from "next/router";
+import { Spinner } from "@chakra-ui/spinner";
+import AppLink from "../AppLink";
+
+// Hooks
+import useDebounce from "hooks/useDebounce";
 import { useState } from "react";
 import useSWR from "swr";
-import { makeGqlRequest } from "utils/gql";
+
+// Utils
+import axios from "axios";
+import { Column, Row } from "utils/chakraUtils";
+import { FinalSearchReturn } from "types/search";
 
 // Fetchers
-const searchFetcher = async (query: any, search: string) => {
-  console.log({ query, search });
+const searchFetcher = async (
+  search: string
+): Promise<FinalSearchReturn[] | undefined> => {
   if (!search) return undefined;
-  await makeGqlRequest(query, { search: search.toUpperCase() });
+  return (await axios.get(`/api/search?query=${search}`)).data;
 };
 
 const Searchbar = ({
@@ -21,43 +30,111 @@ const Searchbar = ({
   [x: string]: any;
 }) => {
   const [val, setVal] = useState("");
+  const debouncedSearch = useDebounce(val, 200);
 
-  const router = useRouter();
+  const { data } = useSWR(debouncedSearch, searchFetcher);
 
-  const { data, error } = useSWR([SEARCH_FOR_TOKEN, val], searchFetcher);
-
-  const handleSubmit = () => {
-    router.push(`/token/${val}`);
-  };
+  const hasResults = !!val && !!data?.length;
+  const loading = !data;
 
   return (
-    <form onSubmit={handleSubmit}>
-      <InputGroup
-        width={width ?? ""}
-        h="55px"
-        // pl={2}
-      >
-        <InputLeftElement
-          pointerEvents="none"
-          height="100%"
-          color="grey"
-          children={<SearchIcon color="gray.300" boxSize={5} />}
-          ml={1}
-        />
-        <Input
-          border="3px solid"
-          borderColor="grey"
-          height="100%"
-          placeholder="Search by token, pool or product..."
-          _placeholder={{ color: "grey", fontWeight: "bold" }}
-          onChange={({ target: { value } }) => setVal(value)}
-          value={val}
-          color="grey"
-          {...inputProps}
-        />
-      </InputGroup>
-    </form>
+    <Box width={width ?? ""} position="relative">
+      <form>
+        <InputGroup
+          width="100%"
+          h="55px"
+          // pl={2}
+        >
+          <InputLeftElement
+            pointerEvents="none"
+            height="100%"
+            color="grey"
+            children={<SearchIcon color="gray.300" boxSize={5} />}
+            ml={1}
+          />
+          <Input
+            border="3px solid"
+            borderColor="grey"
+            height="100%"
+            placeholder="Search by token, pool or product..."
+            _placeholder={{ color: "grey", fontWeight: "bold" }}
+            onChange={({ target: { value } }) => setVal(value)}
+            value={val}
+            color="grey"
+            {...inputProps}
+          />
+          <InputRightElement
+            pointerEvents="none"
+            height="100%"
+            color="grey"
+            children={
+              !!val && loading ? (
+                <Spinner />
+              ) : (
+                <CloseIcon
+                  color="gray.300"
+                  boxSize={3}
+                  _hover={{ cursor: "pointer" }}
+                  onClick={() => setVal("")}
+                />
+              )
+            }
+            ml={1}
+          />
+        </InputGroup>
+      </form>
+      {hasResults && (
+        <SearchResults results={data!} handleClick={() => setVal("")} />
+      )}
+    </Box>
   );
 };
 
 export default Searchbar;
+
+const SearchResults = ({
+  results,
+  handleClick,
+}: {
+  results: FinalSearchReturn[];
+  handleClick: () => void;
+}) => {
+  return (
+    <Column
+      position="absolute"
+      w="100%"
+      h="100%"
+      maxHeight="100px"
+      mt="55px"
+      bg="white"
+      color="black"
+      fontWeight="bold"
+      zIndex={2}
+      top={0}
+      left={0}
+      boxShadow="0 4.5px 3.6px rgba(0, 0, 0, 0.08), 0 12.5px 10px rgba(0, 0, 0, 0.18)"
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      overflowY="scroll"
+    >
+      {results.map((result: FinalSearchReturn, i: number) => (
+        <AppLink href="/token/eth" w="100%" h="100%">
+          <Row
+            p={3}
+            w="100%"
+            h="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            key={i}
+            _hover={{ bg: "grey" }}
+            expand
+            onClick={handleClick}
+          >
+            <Avatar src={result.tokenData.logoURL} boxSize={8} />
+            <Text ml={2}> - {result.underlyingSymbol}</Text>
+          </Row>
+        </AppLink>
+      ))}
+    </Column>
+  );
+};
