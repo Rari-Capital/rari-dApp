@@ -64,6 +64,8 @@ const scorePool = async (assets: rssAsset[]) => {
 
 const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
+  let logs:any = {}
+
   const comptrollerContract = new fuse.web3.eth.Contract(
     JSON.parse(
       fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
@@ -73,6 +75,14 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
   const liquidationIncentive = ((await comptrollerContract.methods.liquidationIncentiveMantissa().call()) / 1e18) - 1;
 
+  console.log('uni',assetData.uniData);
+  console.log('sushi',assetData.sushiData);
+
+  const uniswapLiquidity = assetData.uniData.data.token.totalLiquidity;
+  const sushiswapLiquidity = assetData.sushiData.data.token.totalLiquidity;
+
+  const totalLiquidity = uniswapLiquidity + sushiswapLiquidity;
+
   const calcHistorical = async () => {
     let h = 0;
 
@@ -81,7 +91,12 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
     const historical = await backtest(asset.underlyingToken, {liquidationIncentive, slippage}) as resultSet;
 
+    logs.liquidationIncentive = liquidationIncentive;
+
     if (historical) {
+
+      logs.tokenDown = historical.TOKEN0DOWN;
+
       if (collateralFactor < 1 - liquidationIncentive - historical.TOKEN0DOWN) {
         h++;
       }
@@ -97,8 +112,14 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
     const market_cap = assetData.asset_market_cap;
 
+    logs.market_cap = market_cap;
+
+    logs.fdv = assetData.fully_diluted_value;
+
     if (market_cap < .03 * assetData.fully_diluted_value) c++;
     if (assetData.twitter_followers === 0 || assetData.twitter_followers < 50) c++;
+
+    logs.twitter_followers = assetData.twitter_followers;
 
     let reputableExchanges: any[] = [];
     for (const exchange of assetData.tickers) {
@@ -113,6 +134,8 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     }
 
     if (reputableExchanges.length < 3) c++;
+
+    logs.reputableExchanges = reputableExchanges.length;
 
     return c;
   }
@@ -131,7 +154,10 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     const collateralFactor = asset.collateralFactor / 1e18;
     const slippage = collateralFactor / 2;
 
-    if ((volatility < .1) && (2 * volatility < (1 - collateralFactor - liquidationIncentive) && (2 * volatility < liquidationIncentive - (asset.liquidityUSD * slippage)))) {
+    logs.peak = peak;
+    logs.volatility = volatility;
+
+    if ((volatility < .1) && (2 * volatility < (1 - collateralFactor - liquidationIncentive) && (2 * volatility < liquidationIncentive - (totalLiquidity * slippage)))) {
       v2 = 1;
     } else v2 = 0;
 
@@ -145,12 +171,12 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     const collateralFactor = asset.collateralFactor / 1e18;
     const slippage = collateralFactor / 2;
 
-    if (asset.liquidityUSD * slippage < 2e5) l1 = 2;
-    else if (asset.liquidityUSD * slippage < 1e6) l1 = 1;
+    if (totalLiquidity * slippage < 2e5) l1 = 2;
+    else if (totalLiquidity * slippage < 1e6) l1 = 1;
     else l1 = 0;
 
     // need to add lp tokens being pulled
-    if (assetData.ethplorer.holdersCount < 1e3) l2 = 1;
+    if (assetData.ethplorer.holdersCount < 1e2) l2 = 1;
     else l2 = 0;
 
     const l = l1 + l2;
@@ -230,7 +256,7 @@ const fetchAssetData = async (address: string) => {
 
         body: JSON.stringify({
           query: `{
-            token(id: "${address}") {
+            token(id: "${address.toLowerCase()}") {
               totalLiquidity
               txCount
             }
@@ -249,7 +275,7 @@ const fetchAssetData = async (address: string) => {
 
           body: JSON.stringify({
             query: `{
-              token(id: "${address}") {
+              token(id: "${address.toLowerCase()}") {
                 totalLiquidity
                 txCount
               }
@@ -261,7 +287,7 @@ const fetchAssetData = async (address: string) => {
       )
         .then((res) => res.json()),
 
-      // asset variance (30 day)
+      // asset variance (1 day)
       fetch(
         `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=1`
       )

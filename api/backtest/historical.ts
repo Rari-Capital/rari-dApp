@@ -13,7 +13,7 @@ export default async (address: string, financials: {liquidationIncentive: number
 
     const config = {
       period: 68, // around 15 mins of blocktime
-      no_segments: 2000, // keep divisible of 100 for batching
+      no_segments: 500, // keep divisible of 100 for batching
       end: 12635203
     }
 
