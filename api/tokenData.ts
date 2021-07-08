@@ -4,12 +4,12 @@ import fetch from "node-fetch";
 import Web3 from "web3";
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 
-import { NowRequest, NowResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 import { turboGethURL } from "../src/utils/web3Providers";
 
 const web3 = new Web3(turboGethURL);
 
-export default async (request: NowRequest, response: NowResponse) => {
+export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
 
@@ -126,6 +126,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       overlayTextColor: "#000",
       logoURL:
         "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+      address,
     });
 
     return;
@@ -137,6 +138,7 @@ export default async (request: NowRequest, response: NowResponse) => {
       color: "#FFFFFF",
       overlayTextColor: "#000",
       logoURL,
+      address,
     });
 
     return;
@@ -147,5 +149,6 @@ export default async (request: NowRequest, response: NowResponse) => {
     color: color.Vibrant.getHex(),
     overlayTextColor: color.Vibrant.getTitleTextColor(),
     logoURL,
+    address,
   });
 };
