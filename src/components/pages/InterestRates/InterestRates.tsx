@@ -19,9 +19,10 @@ export default function InterestRates() {
       crossAxisAlignment="center"
       color="#FFFFFF"
       mx="auto"
-      width={isMobile ? "100%" : "1000px"}
+      // width={isMobile ? "100%" : "1000px"}
+      width="100%"
       height="100%"
-      px={isMobile ? 4 : 0}
+      px={4}
     >
       <Header isAuthed={isAuthed} />
       <Alert colorScheme="green" borderRadius={5} mt="5">
