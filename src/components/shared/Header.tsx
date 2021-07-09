@@ -94,10 +94,6 @@ export const Header = ({
 
         <GovernanceLink ml={4} />
 
-        {/* {isAuthed && (
-          <HeaderLink ml={4} name={t("Positions")} route="/positions" />
-        )} */}
-
         <UtilsLink ml={4} isAuthed={isAuthed} />
       </Row>
 
@@ -118,7 +114,7 @@ export const UtilsLink = ({
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
         <MenuButton>
-          <SubMenuText text="Utilities" />
+          <SubMenuText text="Utilities" nope={true} />
         </MenuButton>
 
         <Portal>
