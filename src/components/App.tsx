@@ -83,6 +83,14 @@ const StatsPage = loadable(
   }
 );
 
+const InterestRatesPage = loadable(
+  () =>
+    import(/* webpackPrefetch: true */ "./pages/InterestRates/InterestRates"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = memo(() => {
   return (
     <Heading
@@ -130,6 +138,8 @@ const App = memo(() => {
         <Route path="/fuse/pool/:poolId" element={<FusePoolPage />} />
         <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
         <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
+
+        <Route path="/interest_rates" element={<InterestRatesPage />} />
 
         <Route path="/" element={<MultiPoolPortal />} />
 
