@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, MouseEventHandler } from "react";
+import { MouseEventHandler } from "react";
 
 import {
   Box,
@@ -80,8 +80,7 @@ export const Header = ({
         overflowY="hidden"
         transform="translate(0px, 7px)"
       >
-        {/* <HeaderLink name={t("Overview")} route="/" /> */}
-        <OverviewLink />
+        <HeaderLink name={t("Overview")} route="/" />
 
         <PoolsLink ml={3} />
 
@@ -95,9 +94,11 @@ export const Header = ({
 
         <GovernanceLink ml={4} />
 
-        {isAuthed && (
+        {/* {isAuthed && (
           <HeaderLink ml={4} name={t("Positions")} route="/positions" />
-        )}
+        )} */}
+
+        <UtilsLink ml={4} isAuthed={isAuthed} />
       </Row>
 
       <AccountButton />
@@ -105,60 +106,27 @@ export const Header = ({
   );
 };
 
-export const OverviewLink = ({ ml }: { ml?: number | string }) => {
+export const UtilsLink = ({
+  isAuthed,
+  ml,
+}: {
+  isAuthed: boolean;
+  ml?: number | string;
+}) => {
   const { t } = useTranslation();
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const timeoutRef = useRef<number | null>(null);
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
-
-  const handleMouseOverMenu = useCallback(() => {
-    if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
-    if (!menuIsOpen) buttonRef.current?.click();
-  }, [menuIsOpen]);
-
-  const handleMouseOutMenu = useCallback(() => {
-    timeoutRef.current = window.setTimeout(
-      () => buttonRef.current?.click(),
-      600
-    );
-  }, []);
-
   return (
-    <Box ml={ml ?? 0} position="relative">
-      <HeaderLink
-        name={t("Overview")}
-        route="/"
-        onMouseOver={handleMouseOverMenu}
-        onMouseOut={handleMouseOutMenu}
-        withChevron={true}
-      />
-      <Menu
-        autoSelect={false}
-        placement="bottom"
-        onOpen={() => setMenuIsOpen(true)}
-        onClose={() => setMenuIsOpen(false)}
-      >
-        <MenuButton
-          ref={buttonRef}
-          position="absolute"
-          top={0}
-          left="50%"
-          transform="translateX(-50%)"
-          pointerEvents="none"
-          aria-hidden={true}
-        >
-          &nbsp;
+    <Box ml={ml ?? 0}>
+      <Menu autoSelect={false} placement="bottom">
+        <MenuButton>
+          <SubMenuText text="Utilities" />
         </MenuButton>
 
         <Portal>
-          <MenuList
-            {...DASHBOARD_BOX_PROPS}
-            color="#FFF"
-            minWidth="110px"
-            onMouseOver={handleMouseOverMenu}
-            onMouseOut={handleMouseOutMenu}
-          >
-            <SubMenuItem name="Interest Rates" link="/interest_rates" />
+          <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
+            {isAuthed && (
+              <SubMenuItem name={t("Positions")} link="/positions" />
+            )}
+            <SubMenuItem name="Interest Rates" link="/interest-rates" />
           </MenuList>
         </Portal>
       </Menu>
