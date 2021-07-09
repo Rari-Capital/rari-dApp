@@ -139,7 +139,8 @@ const App = memo(() => {
         <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
         <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
-        <Route path="/interest_rates" element={<InterestRatesPage />} />
+        <Route path="/interest-rates" element={<InterestRatesPage />} />
+        <Route path="/interest_rates" element={<Navigate to="/interest-rates" replace={true} />} />
 
         <Route path="/" element={<MultiPoolPortal />} />
 
