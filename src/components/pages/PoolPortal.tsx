@@ -607,7 +607,6 @@ const APYStats = () => {
     data: apys,
     isLoading: areAPYsLoading,
     isError,
-    error,
   } = useQuery(pool + " monthly and weekly apys", async () => {
     const [monthRaw, weekRaw, rgtAPR]: [BN, BN, string] = await Promise.all([
       getSDKPool({

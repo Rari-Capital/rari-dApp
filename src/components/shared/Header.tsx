@@ -10,7 +10,6 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import { PixelSize, Row } from "utils/chakraUtils";
 
 import { AccountButton } from "./AccountButton";
@@ -90,9 +89,26 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-        {/* <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" /> */}
+        <Box ml={4}>
+          <Menu autoSelect={false} placement="bottom">
+            <MenuButton>
+              <SubMenuText text={t("Governance")} />
+            </MenuButton>
 
-        <GovernanceLink ml={4} />
+            <Portal>
+              <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
+                <SubMenuItem
+                  name={t("Snapshot")}
+                  link="https://vote.rari.capital/"
+                />
+                <SubMenuItem
+                  name={t("Forums")}
+                  link="https://forums.rari.capital/"
+                />
+              </MenuList>
+            </Portal>
+          </Menu>
+        </Box>
 
         <UtilsLink ml={4} isAuthed={isAuthed} />
       </Row>
@@ -110,19 +126,23 @@ export const UtilsLink = ({
   ml?: number | string;
 }) => {
   const { t } = useTranslation();
+
   return (
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
         <MenuButton>
-          <SubMenuText text="Utilities" nope={true} />
+          <SubMenuText text={t("Utilities")} parentLink="/utils" />
         </MenuButton>
 
         <Portal>
           <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
             {isAuthed && (
-              <SubMenuItem name={t("Positions")} link="/positions" />
+              <SubMenuItem name={t("Positions")} link="/utils/positions" />
             )}
-            <SubMenuItem name="Interest Rates" link="/interest-rates" />
+            <SubMenuItem
+              name={t("Interest Rates")}
+              link="/utils/interest-rates"
+            />
           </MenuList>
         </Portal>
       </Menu>
@@ -136,7 +156,7 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
         <MenuButton>
-          <SubMenuText text="Pools" />
+          <SubMenuText text={t("Pools")} parentLink="/pools" />
         </MenuButton>
 
         <Portal>
@@ -152,58 +172,27 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
   );
 };
 
-export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
-  const { t } = useTranslation();
-  return (
-    <Box ml={ml ?? 0}>
-      <Menu autoSelect={false} placement="bottom">
-        <MenuButton>
-          <SubMenuText text="Governance" nope />
-        </MenuButton>
-
-        <Portal>
-          <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
-            <SubMenuItem
-              name={t("Snapshot")}
-              link="https://vote.rari.capital/"
-            />
-            <SubMenuItem
-              name={t("Forums")}
-              link="https://forums.rari.capital/"
-            />
-          </MenuList>
-        </Portal>
-      </Menu>
-    </Box>
-  );
-};
-
 export const SubMenuText = ({
   text,
-  nope = false,
+  parentLink,
 }: {
   text: string;
-  nope?: boolean;
+  parentLink?: string;
 }) => {
   const location = useLocation();
   const { t } = useTranslation();
-  const isOnThisRoute = location.pathname.includes("pools");
+  const isOnThisRoute = parentLink
+    ? location.pathname.includes(parentLink)
+    : false;
 
-  return (
-    <Text
-      fontWeight={isOnThisRoute && !nope ? "bold" : "normal"}
-      _hover={{ textDecoration: "underline" }}
-    >
-      {t(text)}
-    </Text>
-  );
+  return <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{t(text)}</Text>;
 };
 
 export const SubMenuItem = ({ name, link }: { name: string; link: string }) => {
   return (
     <MenuItem _focus={{ bg: "#2b2a2a" }} _hover={{ bg: "#2b2a2a" }}>
       <Box mx="auto">
-        <HeaderLink noUnderline name={name} route={link} />
+        <HeaderLink name={name} route={link} />
       </Box>
     </MenuItem>
   );
@@ -213,18 +202,15 @@ export const HeaderLink = ({
   name,
   route,
   ml,
-  noUnderline,
   onMouseOver,
   onMouseOut,
-  withChevron,
 }: {
   name: string;
   route: string;
-  noUnderline?: boolean;
+
   ml?: number | string;
   onMouseOver?: MouseEventHandler<HTMLAnchorElement>;
   onMouseOut?: MouseEventHandler<HTMLAnchorElement>;
-  withChevron?: boolean;
 }) => {
   const location = useLocation();
 
@@ -240,14 +226,11 @@ export const HeaderLink = ({
       isExternal
       ml={ml ?? 0}
       whiteSpace="nowrap"
-      className={noUnderline ? "no-underline" : ""}
+      className="no-underline"
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
     >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
-        {name}
-        {withChevron ? <ChevronDownIcon ml="1" /> : null}
-      </Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
   ) : (
     <Link
@@ -256,14 +239,11 @@ export const HeaderLink = ({
       to={route}
       ml={ml ?? 0}
       whiteSpace="nowrap"
-      className={noUnderline ? "no-underline" : ""}
+      className="no-underline"
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
     >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
-        {name}
-        {withChevron ? <ChevronDownIcon ml="1" /> : null}
-      </Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
   );
 };

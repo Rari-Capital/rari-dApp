@@ -15,6 +15,7 @@ import {
 // Types
 import { MarketInfo } from "hooks/interestRates/types";
 import { TokenData } from "hooks/useTokenData";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_COLUMNS: any = [
   {
@@ -130,7 +131,6 @@ export default function InterestRatesTable() {
         pointerEvents="none"
         position="absolute"
         background="linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)"
-        // opacity={scrolledToEnd ? 0 : 1}
         transition="opacity 200ms ease"
         top={0}
         right={0}
@@ -143,13 +143,15 @@ export default function InterestRatesTable() {
 function CustomTable({ children, ...props }: any) {
   const { tokens } = useContext(InterestRatesContext);
 
+  const { t } = useTranslation();
+
   return (
     <Table {...props}>
       {children}
       {tokens.length === 0 ? (
         <Tbody>
           <Tr>
-            <Td colSpan={10000}>No assets match your search.</Td>
+            <Td colSpan={10000}>{t("No assets match your search.")}</Td>
           </Tr>
         </Tbody>
       ) : null}

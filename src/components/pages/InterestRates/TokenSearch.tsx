@@ -10,6 +10,7 @@ import {
   InputRightElement,
 } from "@chakra-ui/input";
 import { SearchIcon, CloseIcon } from "@chakra-ui/icons";
+import { useTranslation } from "react-i18next";
 
 export default function TokenSearch({
   onChange,
@@ -23,6 +24,8 @@ export default function TokenSearch({
     onChange(val);
   }, [val, onChange]);
 
+  const { t } = useTranslation();
+
   return (
     <Box>
       <InputGroup>
@@ -35,7 +38,7 @@ export default function TokenSearch({
           value={val}
           color="#757575"
           onChange={({ target: { value } }) => setVal(value)}
-          placeholder="Search Assets"
+          placeholder={t("Search Assets")}
           _placeholder={{ color: "gray.500", fontWeight: "bold" }}
           _focus={{ color: "#fff", background: "transparent" }}
         />
