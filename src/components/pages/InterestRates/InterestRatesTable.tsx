@@ -15,7 +15,6 @@ import {
 // Types
 import { MarketInfo } from "hooks/interestRates/types";
 import { TokenData } from "hooks/useTokenData";
-import { useEffect } from "react";
 
 const DEFAULT_COLUMNS: any = [
   {
