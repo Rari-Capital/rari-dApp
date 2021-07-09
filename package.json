@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "private": true,
   "dependencies": {
+    "@aave/protocol-v2": "^1.0.1",
     "@brainhubeu/react-carousel": "^2.0.3",
     "@chakra-ui/icons": "^1.0.0",
     "@chakra-ui/react": "^1.3.4",
@@ -11,6 +12,7 @@
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
     "@loadable/component": "^5.13.2",
+    "@mycrypto/eth-scan": "^3.4.4",
     "@portis/web3": "^2.0.0-beta.59",
     "@testing-library/cypress": "^7.0.1",
     "@testing-library/jest-dom": "^5.11.2",
@@ -67,7 +69,8 @@
     "react-window": "^1.8.5",
     "typescript": "^4.0.3",
     "web3": "^1.2.11",
-    "web3modal": "^1.9.0"
+    "web3modal": "^1.9.0",
+    "window-table": "^1.0.0-alpha.11"
   },
   "scripts": {
     "typecheck": "tsc --skipLibCheck -p ./tsconfig.json",

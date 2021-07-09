@@ -1,3 +1,5 @@
+import { useCallback, useRef, useState, MouseEventHandler } from "react";
+
 import {
   Box,
   Link,
@@ -8,6 +10,7 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { PixelSize, Row } from "utils/chakraUtils";
 
 import { AccountButton } from "./AccountButton";
@@ -77,9 +80,10 @@ export const Header = ({
         overflowY="hidden"
         transform="translate(0px, 7px)"
       >
-        <HeaderLink name={t("Overview")} route="/" />
+        {/* <HeaderLink name={t("Overview")} route="/" /> */}
+        <OverviewLink />
 
-        <PoolsLink ml={4} />
+        <PoolsLink ml={3} />
 
         <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
 
@@ -98,6 +102,67 @@ export const Header = ({
 
       <AccountButton />
     </Row>
+  );
+};
+
+export const OverviewLink = ({ ml }: { ml?: number | string }) => {
+  const { t } = useTranslation();
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const timeoutRef = useRef<number | null>(null);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
+
+  const handleMouseOverMenu = useCallback(() => {
+    if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
+    if (!menuIsOpen) buttonRef.current?.click();
+  }, [menuIsOpen]);
+
+  const handleMouseOutMenu = useCallback(() => {
+    timeoutRef.current = window.setTimeout(
+      () => buttonRef.current?.click(),
+      600
+    );
+  }, []);
+
+  return (
+    <Box ml={ml ?? 0} position="relative">
+      <HeaderLink
+        name={t("Overview")}
+        route="/"
+        onMouseOver={handleMouseOverMenu}
+        onMouseOut={handleMouseOutMenu}
+        withChevron={true}
+      />
+      <Menu
+        autoSelect={false}
+        placement="bottom"
+        onOpen={() => setMenuIsOpen(true)}
+        onClose={() => setMenuIsOpen(false)}
+      >
+        <MenuButton
+          ref={buttonRef}
+          position="absolute"
+          top={0}
+          left="50%"
+          transform="translateX(-50%)"
+          pointerEvents="none"
+          aria-hidden={true}
+        >
+          &nbsp;
+        </MenuButton>
+
+        <Portal>
+          <MenuList
+            {...DASHBOARD_BOX_PROPS}
+            color="#FFF"
+            minWidth="110px"
+            onMouseOver={handleMouseOverMenu}
+            onMouseOut={handleMouseOutMenu}
+          >
+            <SubMenuItem name="Interest Rates" link="/interest_rates" />
+          </MenuList>
+        </Portal>
+      </Menu>
+    </Box>
   );
 };
 
@@ -149,14 +214,20 @@ export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
   );
 };
 
-export const SubMenuText = ({ text, nope = false }: { text: string, nope?: boolean }) => {
+export const SubMenuText = ({
+  text,
+  nope = false,
+}: {
+  text: string;
+  nope?: boolean;
+}) => {
   const location = useLocation();
   const { t } = useTranslation();
   const isOnThisRoute = location.pathname.includes("pools");
 
   return (
     <Text
-      fontWeight={(isOnThisRoute && !nope) ? "bold" : "normal"}
+      fontWeight={isOnThisRoute && !nope ? "bold" : "normal"}
       _hover={{ textDecoration: "underline" }}
     >
       {t(text)}
@@ -179,11 +250,17 @@ export const HeaderLink = ({
   route,
   ml,
   noUnderline,
+  onMouseOver,
+  onMouseOut,
+  withChevron,
 }: {
   name: string;
   route: string;
   noUnderline?: boolean;
   ml?: number | string;
+  onMouseOver?: MouseEventHandler<HTMLAnchorElement>;
+  onMouseOut?: MouseEventHandler<HTMLAnchorElement>;
+  withChevron?: boolean;
 }) => {
   const location = useLocation();
 
@@ -200,8 +277,13 @@ export const HeaderLink = ({
       ml={ml ?? 0}
       whiteSpace="nowrap"
       className={noUnderline ? "no-underline" : ""}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
     >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
+        {name}
+        {withChevron ? <ChevronDownIcon ml="1" /> : null}
+      </Text>
     </Link>
   ) : (
     <Link
@@ -211,8 +293,13 @@ export const HeaderLink = ({
       ml={ml ?? 0}
       whiteSpace="nowrap"
       className={noUnderline ? "no-underline" : ""}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
     >
-      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
+      <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>
+        {name}
+        {withChevron ? <ChevronDownIcon ml="1" /> : null}
+      </Text>
     </Link>
   );
 };
