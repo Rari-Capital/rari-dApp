@@ -15,6 +15,7 @@ import {
 // Types
 import { MarketInfo } from "hooks/interestRates/types";
 import { TokenData } from "hooks/useTokenData";
+import { useEffect } from "react";
 
 const DEFAULT_COLUMNS: any = [
   {
@@ -56,8 +57,8 @@ export default function InterestRatesTable() {
   );
 
   const data = useMemo(
-    () =>
-      tokens.map((token) => {
+    () => [
+      ...tokens.map((token) => {
         return {
           asset: JSON.stringify(token),
           compound: JSON.stringify(
@@ -86,6 +87,20 @@ export default function InterestRatesTable() {
           ),
         };
       }),
+      // last couple items are here to add additional padding
+      {
+        asset: "NO_ASSET",
+        compound: "",
+        aave: "",
+        fuse: "",
+      },
+      {
+        asset: "NO_ASSET",
+        compound: "",
+        aave: "",
+        fuse: "",
+      },
+    ],
     [tokens, fusePools, markets]
   );
 
@@ -94,7 +109,7 @@ export default function InterestRatesTable() {
       <WindowTable
         Table={CustomTable}
         HeaderRow={Tr}
-        Row={Tr}
+        Row={TableRow}
         HeaderCell={HeaderCell}
         Cell={TableCell}
         Header={Thead}
@@ -153,6 +168,19 @@ function TableCell({ children, column, ...props }: any) {
     >
       {children}
     </Td>
+  );
+}
+
+function TableRow({ children, row, ...props }: any) {
+  // NO_ASSET is for blank rows (added jankily to provide padding at the end of the list)
+  return row.asset === "NO_ASSET" ? (
+    <Tr {...props}>
+      <Td colSpan={10000} userSelect="none" pointerEvents="none" border="none">
+        &nbsp;
+      </Td>
+    </Tr>
+  ) : (
+    <Tr {...props}>{children}</Tr>
   );
 }
 
