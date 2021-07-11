@@ -12,12 +12,8 @@ export default async function handler(req: any, res: any) {
     // Get Underlying Assets from subgraph
     try {
 
-        console.log("MAKING GQL")
-
       const { underlyingAssets }: { underlyingAssets: UnderlyingAsset[] } =
         await makeGqlRequest(GET_ALL_UNDERLYING_ASSETS, {});
-
-        console.log("FETCHED UNDERLYINGASSETS")
 
       // Get TokenData (logo, color etc) from Rari API
       const tokensDataMap: { [address: string]: RariApiTokenData } =
@@ -25,16 +21,12 @@ export default async function handler(req: any, res: any) {
           underlyingAssets.map((asset) => asset.id)
         );
 
-        console.log("CREATED tokensDataMap")
-
       // Stitch tokenData onto underlyingAssets
       const finalUnderlyingAssets: UnderlyingAssetWithTokenData[] =
         underlyingAssets.map((asset) => ({
           ...asset,
           tokenData: tokensDataMap[asset.id],
         }));
-
-      console.log({ finalUnderlyingAssets });
 
       return res.status(200).json(finalUnderlyingAssets);
     } catch (err) {
