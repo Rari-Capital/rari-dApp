@@ -4,7 +4,9 @@ import { FinalSearchReturn, GQLSearchReturn } from "types/search";
 
 import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
 import { makeGqlRequest } from "utils/gql";
-import { fetchTokenAPIData } from "utils/services";
+import {
+  fetchTokensAPIDataAsMap,
+} from "utils/services";
 
 // Takes a search string, makes a graphql request, then stitches on the TokenData by making a second API request
 export default async function handler(
@@ -30,27 +32,14 @@ export default async function handler(
       if (!searchData.markets.length) return res.json([]);
 
       // We are now going to stitch the tokenData from the API onto the searchData received
-      const uniqueAddresses: string[] = Array.from(
-        new Set(searchData.markets.map((cToken) => cToken.underlyingAddress))
-      );
-
-      const fetchers = uniqueAddresses.map((addr) =>
-        fetchTokenAPIData(addr).then(({ data }) => data as RariApiTokenData)
-      );
-
-      const tokenDatas: RariApiTokenData[] = await Promise.all(fetchers);
-
-      // construct a map for easy lookups
-      const tokenDataMap: { [address: string]: RariApiTokenData } = {};
-      for (let i: number = 0; i < uniqueAddresses.length; i++) {
-        tokenDataMap[uniqueAddresses[i]] = tokenDatas[i];
-      }
+      const tokensDataMap: { [address: string]: RariApiTokenData } =
+        await fetchTokensAPIDataAsMap(searchData.markets.map((cToken) => cToken.underlyingAddress));
 
       // Finally, stitch the tokendata onto the search results
       const stitchedData: FinalSearchReturn[] = searchData.markets.map(
         (cToken) => ({
           ...cToken,
-          tokenData: tokenDataMap[cToken.underlyingAddress],
+          tokenData: tokensDataMap[cToken.underlyingAddress],
         })
       );
 

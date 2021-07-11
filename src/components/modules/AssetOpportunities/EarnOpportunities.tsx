@@ -49,6 +49,7 @@ const EarnOpportunities = ({ token }: { token?: TokenData }) => {
                   className="hover-row"
                   width="100%"
                   borderTop="1px solid #272727"
+                  key={vault.poolInfo.name}
                 >
                   <Td>
                     <Row

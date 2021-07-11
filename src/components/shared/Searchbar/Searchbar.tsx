@@ -1,5 +1,11 @@
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
-import { Avatar, Box, InputRightElement, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  IconButton,
+  InputRightElement,
+  Text,
+} from "@chakra-ui/react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Spinner } from "@chakra-ui/spinner";
 import AppLink from "../AppLink";
@@ -72,7 +78,9 @@ const Searchbar = ({
               loading ? (
                 <Spinner />
               ) : (
-                <CloseIcon
+                <IconButton
+                  icon={<CloseIcon />}
+                  aria-label="Close"
                   color="gray.300"
                   boxSize={3}
                   _hover={{ cursor: "pointer" }}

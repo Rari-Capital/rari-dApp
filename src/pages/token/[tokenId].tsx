@@ -48,12 +48,18 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
   }
 
-  const token: TokenData = await fetchTokenData(tokenAddress);
-  console.log({ token });
-
-  return {
-    props: {
-      token,
-    },
-  };
+  // Fetch the tokenData. Throw 404 if error.
+  try {
+    const token: TokenData = await fetchTokenData(tokenAddress);
+    if (!token) throw new Error(`Error fetching token ${tokenAddress}.`);
+    return {
+      props: {
+        token,
+      },
+    };
+  } catch (err) {
+    return {
+      notFound: true,
+    };
+  }
 };
