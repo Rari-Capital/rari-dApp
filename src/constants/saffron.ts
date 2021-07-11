@@ -1,3 +1,3 @@
 export const SaffronStrategyAddress =
-  "0xf9C61B7B76c0b644Ce0B107344227A82E34B7793";
-export const SaffronPoolAddress = "0xf5c5377fd70b76e6Bb907b9561c5c0d0916A107f";
+  "0x75a154c5177a631f32771B4cAb9466bd777C3291";
+export const SaffronPoolAddress = "0xa4e5251EC719c733381491E54FaF1cE1d98DA133";
