@@ -2,6 +2,11 @@
 
 Rari Capital's Web3 Portal.
 
+## Requirements
+
+- node: `v14.17.0`
+- npm: `v6.14.13`
+
 ## Notes:
 
 <details>
