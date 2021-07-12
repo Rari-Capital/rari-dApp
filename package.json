@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "private": true,
   "dependencies": {
+    "@aave/protocol-v2": "^1.0.1",
     "@brainhubeu/react-carousel": "^2.0.3",
     "@chakra-ui/icons": "^1.0.0",
     "@chakra-ui/react": "^1.3.4",
@@ -14,6 +15,7 @@
     "@ethersproject/providers": "^5.3.1",
     "@ethersproject/solidity": "^5.3.0",
     "@loadable/component": "^5.13.2",
+    "@mycrypto/eth-scan": "^3.4.4",
     "@portis/web3": "^2.0.0-beta.59",
     "@sushiswap/sdk": "^5.0.0-canary.19",
     "@sushiswap/sushi-data": "^1.0.26",
@@ -75,7 +77,8 @@
     "react-window": "^1.8.5",
     "typescript": "^4.0.3",
     "web3": "^1.2.11",
-    "web3modal": "^1.9.0"
+    "web3modal": "^1.9.0",
+    "window-table": "^1.0.0-alpha.11"
   },
   "scripts": {
     "typecheck": "tsc --skipLibCheck -p ./tsconfig.json",
