@@ -9,7 +9,7 @@ import PoolRow from "./PoolRow";
 // Hooks
 import { useFusePools } from "hooks/fuse/useFusePools";
 import useSWR from "swr";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 
 // Utils
 import { Column, Row, useIsMobile } from "utils/chakraUtils";
@@ -19,6 +19,14 @@ import axios from "axios";
 // Types
 import { UnderlyingAssetWithTokenData } from "types/tokens";
 import { ExploreNavType } from "../ExplorePage";
+
+// Fetchers
+const exploreAssetsFetcher = async (
+  route: string
+): Promise<UnderlyingAssetWithTokenData[]> => {
+  const { data } = await axios.get(route);
+  return data;
+};
 
 const PoolList = ({ nav }: { nav: ExploreNavType }) => {
   return (
@@ -113,18 +121,10 @@ const FuseList = () => {
   );
 };
 
-const exploreFetcher = async (
-  route: string
-): Promise<UnderlyingAssetWithTokenData[]> => {
-  const { data } = await axios.get("/api/explore");
-  return data;
-};
-
 const AllAssetsList = () => {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
-  const { data, error } = useSWR("/api/explore", exploreFetcher);
-  console.log({ data, error });
+  const { data, error } = useSWR("/api/explore/allAssets", exploreAssetsFetcher);
 
   return (
     <>
@@ -175,7 +175,9 @@ const AllAssetsList = () => {
       >
         {data?.length ? (
           data.map((underlyingAsset) => {
-            return <AssetRow asset={underlyingAsset} />;
+            return (
+              <AssetRow asset={underlyingAsset} key={underlyingAsset.symbol} />
+            );
           })
         ) : (
           <Spinner my={8} />

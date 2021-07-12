@@ -12,7 +12,6 @@
   "Total APY": "Total APY",
   "Whoops! Looks like something went wrong!": "Whoops! Looks like something went wrong!",
   "You can either reload the page, or report this error to us on our": "You can either reload the page, or report this error to us on our",
-  "The Rari Protocol currently secures:": "The Rari Protocol currently secures:",
   "Pool Number": "Pool Number",
   "Total Supplied": "Total Supplied",
   "Total Borrowed": "Total Borrowed",
@@ -258,5 +257,6 @@
   "Yield Pool": "Yield Pool",
   "Safe returns on ETH": "Safe returns on ETH",
   "Safe returns on stablecoins": "Safe returns on stablecoins",
-  "High risk, high reward": "High risk, high reward"
+  "High risk, high reward": "High risk, high reward",
+  "The Rari Protocol currently secures": "The Rari Protocol currently secures"
 }

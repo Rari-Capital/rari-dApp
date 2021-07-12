@@ -12,7 +12,6 @@
   "Total APY": "__NOT_TRANSLATED__",
   "Whoops! Looks like something went wrong!": "__NOT_TRANSLATED__",
   "You can either reload the page, or report this error to us on our": "__NOT_TRANSLATED__",
-  "The Rari Protocol currently secures:": "__NOT_TRANSLATED__",
   "Pool Number": "__NOT_TRANSLATED__",
   "Total Supplied": "__NOT_TRANSLATED__",
   "Total Borrowed": "__NOT_TRANSLATED__",
@@ -258,5 +257,6 @@
   "Yield Pool": "__NOT_TRANSLATED__",
   "Safe returns on ETH": "__NOT_TRANSLATED__",
   "Safe returns on stablecoins": "__NOT_TRANSLATED__",
-  "High risk, high reward": "__NOT_TRANSLATED__"
+  "High risk, high reward": "__NOT_TRANSLATED__",
+  "The Rari Protocol currently secures": "__NOT_TRANSLATED__"
 }

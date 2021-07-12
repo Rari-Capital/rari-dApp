@@ -1,12 +1,10 @@
 
 import { gql } from "graphql-tag";
 
-
 // TODO: Use GQL Fragments
-export const GET_TOP_PERFORMING_FUSE_STABLE = gql`
+export const GET_TOP_PERFORMING_FUSE_ASSET = gql`
   {
     markets(
-      where: { underlyingSymbol_in: ["USDC", "DAI", "FEI"] }
       orderBy: supplyRate
       orderDirection: desc
       first: 1

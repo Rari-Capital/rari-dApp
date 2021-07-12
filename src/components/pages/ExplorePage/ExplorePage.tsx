@@ -1,20 +1,20 @@
-import { Heading } from "@chakra-ui/react";
-import { Box, Divider, SimpleGrid } from "@chakra-ui/layout";
-import { Avatar } from "@chakra-ui/avatar";
-import AppLink from "components/shared/AppLink";
-import List from "./List";
-
 import Image from "next/image";
-
+import { Heading } from "@chakra-ui/react";
+import List from "./List";
 import DashboardBox from "components/shared/DashboardBox";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+
+// Hooks
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useTVLFetchers } from "hooks/useTVL";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
+import { useState, useMemo } from "react";
+
+// Utils
 import { smallUsdFormatter } from "utils/bigUtils";
 import { Column, Row } from "utils/chakraUtils";
-import { useState } from "react";
-import { useMemo } from "react";
+
+import ExploreGrid from "./Grid/ExploreGrid";
 
 export enum ExploreNavType {
   FUSE,
@@ -66,7 +66,7 @@ const ExplorePage = () => {
           apy={0.15}
           statSize="2xl"
           captionSize="md"
-          caption={t("The Rari Protocol currently secures:")}
+          caption={t("The Rari Protocol currently secures") + ":"}
           crossAxisAlignment="flex-start"
           captionFirst={true}
         />
@@ -79,20 +79,7 @@ const ExplorePage = () => {
         h="100%"
         mb={5}
       >
-        <DashboardBox w="100%" h={isMobile ? "300px" : "250px"}>
-          <SimpleGrid columns={isMobile ? 2 : 3} spacing={0} h="100%" w="100%">
-            <GridBox bg="" />
-            <GridBox bg="" heading="Newest Yield Aggregator" />
-            <GridBox bg="" heading="Most Popular Asset" />
-            <GridBox bg="" heading="Top Earning Asset" />
-            {!isMobile && (
-              <>
-                <GridBox bg="" heading="Most Borrowed Asset" />
-                <GridBox bg="" />
-              </>
-            )}
-          </SimpleGrid>
-        </DashboardBox>
+        <ExploreGrid />
       </Row>
 
       {/* NAV */}
@@ -184,80 +171,5 @@ const ExploreNav = ({
         <Heading fontSize="sm">{heading}</Heading>
       </Column>
     </DashboardBox>
-  );
-};
-
-// top earning stablecoin, newest yield agg, most popular asset, top earning asset, and most borrowed asset?
-const GridBox = ({
-  bg,
-  heading = "Top earning Stablecoin",
-}: {
-  bg: string;
-  heading?: string;
-}) => {
-  return (
-    <AppLink
-      href="/token/usdc"
-      as={Column}
-      w="100%"
-      h="100%"
-      bg={bg}
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      p={4}
-      border="1px solid #272727"
-      _hover={{ border: "1px solid grey", bg: "grey" }}
-    >
-      <Row
-        h="100%"
-        w="100%"
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
-      >
-        <Column
-          w="100%"
-          h="100%"
-          bg={bg}
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
-          flexBasis="75%"
-          flexGrow={1}
-        >
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-            <Heading fontSize="lg" color="grey">
-              {heading}
-            </Heading>
-          </Row>
-          <Row
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            mt="auto"
-          >
-            <Column
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="flex-start"
-            >
-              <Heading fontSize="2xl">USDC</Heading>
-              <Heading fontSize="sm" color="grey">
-                3% weekly, 12% monthly
-              </Heading>
-            </Column>
-          </Row>
-        </Column>
-
-        <Column
-          w="100%"
-          h="100%"
-          mainAxisAlignment="center"
-          crossAxisAlignment="center"
-          flexBasis="25%"
-        >
-          <Avatar
-            src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
-            boxSize={"75%"}
-          />
-        </Column>
-      </Row>
-    </AppLink>
   );
 };

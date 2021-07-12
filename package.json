@@ -41,7 +41,6 @@
     "graphql-request": "^3.4.0",
     "graphql-tag": "^2.12.5",
     "history": "^5.0.0",
-    "i18next": "^19.7.0",
     "istanbul-lib-coverage": "^3.0.0",
     "lightweight-charts": "^3.3.0",
     "logrocket": "^1.0.14",
