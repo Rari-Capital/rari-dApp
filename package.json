@@ -50,6 +50,7 @@
     "history": "^5.0.0",
     "i18next": "^19.7.0",
     "import": "0.0.6",
+    "isomorphic-ws": "^4.0.1",
     "istanbul-lib-coverage": "^3.0.0",
     "logrocket": "^1.0.14",
     "mathjs": "^9.0.0",
