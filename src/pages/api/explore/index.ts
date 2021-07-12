@@ -4,6 +4,7 @@ import {
   UnderlyingAsset,
   UnderlyingAssetWithTokenData,
 } from "types/tokens";
+
 import { makeGqlRequest } from "utils/gql";
 import { fetchTokensAPIDataAsMap } from "utils/services";
 
