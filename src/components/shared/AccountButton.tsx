@@ -28,7 +28,6 @@ import { ClaimRGTModal } from "./ClaimRGTModal";
 // import version from "utils/version";
 
 import MoonpayModal from "components/pages/MoonpayModal";
-import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 export const AccountButton = memo(() => {
@@ -104,6 +103,7 @@ const Buttons = ({
     <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
+          {/* Moonpay */}
           {/* <DashboardBox
             as="button"
             flexShrink={0}
@@ -302,7 +302,7 @@ export const SettingsModal = ({
           </Row>
 
           <Text mt={4} fontSize="10px">
-            {t("Version")} 
+            {t("Version")}
             {/* {version} */}
           </Text>
         </Column>

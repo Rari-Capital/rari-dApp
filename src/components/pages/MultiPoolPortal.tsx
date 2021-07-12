@@ -82,7 +82,6 @@ const MultiPoolPortal = memo(() => {
   const { isAuthed } = useRari();
 
   const router = useRouter();
-  // console.log({ router }, router.query.filter );
 
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";

@@ -214,3 +214,8 @@ img:not([src]) {
 li .dot .selected {
   background: green !important;
 }
+
+/* Needed to remove ugly blue boxes: https://github.com/chakra-ui/chakra-ui/issues/708 */
+*:focus {
+  box-shadow:  none !important;
+}

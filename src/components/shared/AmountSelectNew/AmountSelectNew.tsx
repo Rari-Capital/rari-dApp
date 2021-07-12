@@ -148,7 +148,6 @@ const TabBar = ({
           width="100%"
           align="center"
           onChange={(index: number) =>{ 
-            console.log(modes[index])
             setMode(modes[index])
           }}
         >

@@ -1,6 +1,6 @@
 import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
 import { TokenData } from "hooks/useTokenData";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AmountSelectMode, AmountSelectUserAction } from "../AmountSelectNew";
 import LendAndBorrow from "../LendAndBorrow";
 
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 import AwaitingTransactions from "../AwaitingTransactions";
 
-// Stands for Lend, Borrow, Repay, Withdraw
+// LBRP for Lend, Borrow, Repay, Withdraw
 const LBRP = ({ token }: { token?: TokenData }) => {
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
   const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
@@ -126,7 +126,6 @@ const TabBar = ({
           width="100%"
           align="center"
           onChange={(index: number) => {
-            console.log(modes[index]);
             setMode(modes[index]);
           }}
         >
