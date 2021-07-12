@@ -1,8 +1,6 @@
 // Components
 import { Avatar } from "@chakra-ui/avatar";
 import { Box, Heading } from "@chakra-ui/layout";
-import AmountSelectNew from "components/shared/AmountSelectNew";
-import { AmountSelectMode } from "components/shared/AmountSelectNew/AmountSelectNew";
 import LBRW from "components/shared/AmountSelectNew/LBRW";
 import DashboardBox from "components/shared/DashboardBox";
 import CloseIconButton from "components/shared/Icons/CloseIconButton";

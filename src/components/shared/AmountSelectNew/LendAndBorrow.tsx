@@ -301,7 +301,7 @@ const StatsColumn = ({
     updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD / updatedBorrowLimit;
 
   // At Liquidation Risk?
-  const atRiskOfLiquidation = oldRatio > 0.95;
+  // const atRiskOfLiquidation = oldRatio > 0.95;
   const updatedAtRiskOfLiquidation = updatedRatio > 0.95;
 
   // Is there liquidity for this borrow?
@@ -330,8 +330,8 @@ const StatsColumn = ({
   const updatedLendAPYDiffIsLarge =
     Math.abs(updatedSupplyAPY - supplyAPY) > 0.1;
 
-  const updatedBorrowAPYDiffIsLarge =
-    Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
+  // const updatedBorrowAPYDiffIsLarge =
+  //   Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
 
   // Todo - refactor this query
   const { data: lendAmountisValid } = useQuery(

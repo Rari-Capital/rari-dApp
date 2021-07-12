@@ -38,7 +38,7 @@ import {
 } from "constants/homepage";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
-import { SearchIcon } from "@chakra-ui/icons";
+// import { SearchIcon } from "@chakra-ui/icons";
 import DashboardBox from "components/shared/DashboardBox";
 import AppLink from "components/shared/AppLink";
 import { APYWithRefreshMovingProps } from "components/shared/MovingStat";

@@ -2,17 +2,16 @@ import dynamic from "next/dynamic";
 
 import { Box, Heading, Link, Image } from "@chakra-ui/react";
 import { Column, Row, RowOrColumn } from "utils/chakraUtils";
-import DashboardBox from "components/shared/DashboardBox";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
 import { TokenData } from "hooks/useTokenData";
 import MarketChart from "components/modules/MarketChart";
 import AssetOpportunities from "components/modules/AssetOpportunities";
-import Foursquare from "components/modules/Foursquare";
+// import Foursquare from "components/modules/Foursquare";
 import TrendingOpportunities from "components/modules/TrendingOpportunities";
 import AssetBalance from "components/modules/AssetBalance";
 import InternalAd from "components/modules/InternalAd";
-import AssetHistory from "components/modules/AssetHistory";
+// import AssetHistory from "components/modules/AssetHistory";
 
 const AssetBorrowLend = dynamic(
   () => import("components/modules/AssetBorrowLend"),

@@ -5,7 +5,7 @@ import { Carousel } from "react-responsive-carousel";
 import { Column } from "utils/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFuseDataForAssets } from "hooks/fuse/useFuseDataForAsset";
-import { shortUsdFormatter, smallStringUsdFormatter } from "utils/bigUtils";
+import { shortUsdFormatter } from "utils/bigUtils";
 
 const ASSETS = ["DAI", "ETH", "RGT"];
 

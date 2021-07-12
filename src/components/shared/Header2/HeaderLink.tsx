@@ -67,7 +67,7 @@ export const HeaderLink = ({
   );
 };
 
-export interface DropDownLink {
+export interface DropDownLinkType {
   name: string;
   route: string;
 }
@@ -78,7 +78,7 @@ export const DropDownLink = ({
   ml,
 }: {
   name: string;
-  links: DropDownLink[];
+  links: DropDownLinkType[];
   ml?: number | string;
 }) => {
   const isOnThisRoute = false;
@@ -104,7 +104,7 @@ export const DropDownLink = ({
   );
 };
 
-const DropdownItem = ({ link }: { link: DropDownLink }) => {
+const DropdownItem = ({ link }: { link: DropDownLinkType }) => {
   const isExternal = link.route.startsWith("http");
 
   return (

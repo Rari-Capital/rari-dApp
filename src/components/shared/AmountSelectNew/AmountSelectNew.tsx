@@ -1,8 +1,8 @@
 // Todo - delete this
 
-import { Box, Heading, Text } from "@chakra-ui/layout";
+import { Box, Heading } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
-import DashboardBox from "../DashboardBox";
+// import DashboardBox from "../DashboardBox";
 import AwaitingTransactions from "./AwaitingTransactions";
 
 // Hooks
@@ -52,6 +52,8 @@ const AmountSelectNew = ({
 }: Props) => {
   const [mode, setMode] = useState<AmountSelectMode>(modes[0]);
 
+
+  // @ts-ignore
   const [userAction, setUserAction] = useState(
     AmountSelectUserAction.NO_ACTION
   );

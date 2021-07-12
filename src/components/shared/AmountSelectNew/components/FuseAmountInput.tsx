@@ -19,13 +19,12 @@ import { Row } from "utils/chakraUtils";
 import { handleGenericError } from "utils/errorHandling";
 import {
   FusePoolData,
-  USDPricedFuseAsset,
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
 import { fetchMaxAmount } from "utils/inputUtils";
 
 // Types
-import { AmountSelectMode, AmountSelectUserAction } from "../AmountSelectNew";
+import { AmountSelectMode } from "../AmountSelectNew";
 
 // todo: Restrict modes used to LEND and BORROW
 const FuseAmountInput = ({

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { PixelSize, Row } from "utils/chakraUtils";
 
 //  Components
@@ -23,7 +21,7 @@ export const NewHeader = () => {
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
 
-  const [expanded, setExpanded] = useState(false);
+  // const [expanded, setExpanded] = useState(false);
 
   return (
     <Row

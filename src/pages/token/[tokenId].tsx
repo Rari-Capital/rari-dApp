@@ -4,10 +4,7 @@ import { GetStaticProps, NextPage } from "next";
 import TokenDetails from "components/pages/Tokens/TokenDetails";
 
 // Constants
-import TOKENS from "static/compiled/tokens.json";
 import { ETH_TOKEN_DATA, fetchTokenData, TokenData } from "hooks/useTokenData";
-
-
 
 // Utils
 import Web3 from "web3";

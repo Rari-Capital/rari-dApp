@@ -15,7 +15,7 @@ import StatsEarnSection from "./StatsEarnSection";
 import StatsTranchesSection from "./StatsTranchesSection";
 
 // Context
-import { useRari } from "context/RariContext";
+// import { useRari } from "context/RariContext";
 
 // Hooks
 import { useTranslation } from 'next-i18next';
@@ -33,7 +33,6 @@ export enum StatsSubNav {
 }
 
 const StatsPage = () => {
-  const { isAuthed } = useRari();
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
   const [subNav, setSubNav] = useState(StatsSubNav.TOTAL);

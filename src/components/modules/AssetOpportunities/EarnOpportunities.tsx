@@ -1,31 +1,27 @@
-import { Box, Divider, Heading, Text } from "@chakra-ui/layout";
+import { Box,  Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import {
   Table,
-  TableCaption,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
 } from "@chakra-ui/table";
 import AppLink from "components/shared/AppLink";
-import { ModalDivider } from "components/shared/Modal";
 import { AggregatePoolsInfoReturn } from "hooks/usePoolInfo";
 
 import { TokenData } from "hooks/useTokenData";
 import { useVaultsDataForAsset } from "hooks/vaults/useVaultsDataForAsset";
 import Image from "next/image";
-import { useTranslation } from 'next-i18next';
-import { Row, useIsMobile } from "utils/chakraUtils";
+import { Row } from "utils/chakraUtils";
 
 const EarnOpportunities = ({ token }: { token?: TokenData }) => {
   const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset(
     token?.address
   );
-  const isMobile = useIsMobile();
-  const { t } = useTranslation();
+  // const isMobile = useIsMobile();
+  // const { t } = useTranslation();
   return (
     <Box h="100%" w="100%">
       <Table variant="unstyled">

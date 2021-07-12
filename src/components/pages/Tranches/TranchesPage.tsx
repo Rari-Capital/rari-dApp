@@ -1,5 +1,4 @@
 import { Center, Column, Row, RowOrColumn } from "utils/chakraUtils";
-import { useRari } from "../../../context/RariContext";
 import DashboardBox from "../../shared/DashboardBox";
 import {
   Heading,
@@ -44,7 +43,6 @@ const WrappedTranchePage = memo(() => {
 export default WrappedTranchePage;
 
 const TranchePage = () => {
-  const { isAuthed } = useRari();
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
 

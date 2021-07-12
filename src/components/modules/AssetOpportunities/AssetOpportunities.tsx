@@ -1,5 +1,3 @@
-import dynamic from "next/dynamic";
-
 // Components
 import { Divider, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
@@ -65,6 +63,7 @@ const AssetOpportunities = ({
 export default AssetOpportunities;
 
 const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
+  
   // Filter out Nav Items for Opportunities based on the asset
   const navItems: OpportunityNav[] = useMemo(() => {
     // Only DAI has tranches
@@ -75,7 +74,7 @@ const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
     }
 
     return Object.values(OpportunityNav);
-  }, [token, OpportunityNav]);
+  }, [token]);
 
   return (
     <Tabs

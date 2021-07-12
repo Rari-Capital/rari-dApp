@@ -4,7 +4,6 @@ import {
   AvatarGroup,
   Avatar,
   Heading,
-  Link,
   SkeletonText,
   Text,
 } from "@chakra-ui/react";
