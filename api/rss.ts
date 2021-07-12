@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
-import { variance, max } from "mathjs";
+import { max, min } from "mathjs";
 import fetch from "node-fetch";
 
 import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
@@ -64,7 +64,11 @@ const scorePool = async (assets: rssAsset[]) => {
 
 const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
-  let logs:any = {}
+  let logs:any = {
+    name: asset.underlyingName,
+    address: asset.underlyingToken,
+    tests: []
+  }
 
   const comptrollerContract = new fuse.web3.eth.Contract(
     JSON.parse(
@@ -74,9 +78,6 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
   );
 
   const liquidationIncentive = ((await comptrollerContract.methods.liquidationIncentiveMantissa().call()) / 1e18) - 1;
-
-  console.log('uni',assetData.uniData);
-  console.log('sushi',assetData.sushiData);
 
   const uniswapLiquidity = assetData.uniData.data.token.totalLiquidity;
   const sushiswapLiquidity = assetData.sushiData.data.token.totalLiquidity;
@@ -89,19 +90,21 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     const collateralFactor = asset.collateralFactor / 1e18;
     const slippage = collateralFactor / 2;
 
+    // testing 1 month back;
     const historical = await backtest(asset.underlyingToken, {liquidationIncentive, slippage}) as resultSet;
 
     logs.liquidationIncentive = liquidationIncentive;
 
     if (historical) {
 
-      logs.tokenDown = historical.TOKEN0DOWN;
-
       if (collateralFactor < 1 - liquidationIncentive - historical.TOKEN0DOWN) {
+        // historically safe
+      } else {
+        logs.tests.push('backtest: token0down too high');
         h++;
       }
     } else {
-      console.log('historical test failed');
+      logs.tests.push('historical test failed');
     }
 
     return h;
@@ -116,8 +119,14 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
     logs.fdv = assetData.fully_diluted_value;
 
-    if (market_cap < .03 * assetData.fully_diluted_value) c++;
-    if (assetData.twitter_followers === 0 || assetData.twitter_followers < 50) c++;
+    if (market_cap < .03 * assetData.fully_diluted_value) {
+      c++;
+      logs.tests.push('crash: market cap < .03 * fdv')
+    }
+    if (assetData.twitter_followers === 0 || assetData.twitter_followers < 50) {
+      logs.tests.push('crash: not enough twitter followers :/')
+      c++;
+    }
 
     logs.twitter_followers = assetData.twitter_followers;
 
@@ -133,32 +142,45 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
       }
     }
 
-    if (reputableExchanges.length < 3) c++;
+    if (reputableExchanges.length < 3) {
+      logs.tests.push('crash: not enough reputable exchanges')
+      c++;
+    }
 
     logs.reputableExchanges = reputableExchanges.length;
 
     return c;
   }
 
-  const calcVolatility = () => {
+  const calcVolatility = async () => {
     let v1: number, v2: number;
 
     const market_cap = assetData.asset_market_cap;
 
-    if (market_cap < 1e8) v1 = 2;
-    else if (market_cap < 6e8) v1 = 1;
+    if (market_cap < 1e8) {
+      logs.tests.push('volatility: market cap lower than 100,000,000')
+      v1 = 2;
+    }
+    else if (market_cap < 6e8) {
+      logs.tests.push('volatility: market cap lower than 600,000,000')
+      v1 = 1;
+    }
     else v1 = 0;
 
-    const peak = assetData.ethVariation * 3;
-    const volatility = 1 - assetData.assetVariation / peak;
+    const priceMax:number = max(assetData.assetVariation);
+    const priceMin:number = min(assetData.assetVariation);
+
+    const change = 1 - priceMin / priceMax;
+
     const collateralFactor = asset.collateralFactor / 1e18;
     const slippage = collateralFactor / 2;
 
-    logs.peak = peak;
-    logs.volatility = volatility;
+    //logs.peak = peak;
+    logs.pricechange = change;
 
-    if ((volatility < .1) && (2 * volatility < (1 - collateralFactor - liquidationIncentive) && (2 * volatility < liquidationIncentive - (totalLiquidity * slippage)))) {
+    if ((change < .1) && (2 * change < (1 - collateralFactor - liquidationIncentive) && (2 * change < liquidationIncentive - (totalLiquidity * slippage)))) {
       v2 = 1;
+      logs.tests.push('volatility: doubled price change too volatile')
     } else v2 = 0;
 
     const v = v1 + v2;
@@ -171,12 +193,20 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     const collateralFactor = asset.collateralFactor / 1e18;
     const slippage = collateralFactor / 2;
 
-    if (totalLiquidity * slippage < 2e5) l1 = 2;
-    else if (totalLiquidity * slippage < 1e6) l1 = 1;
+    if (totalLiquidity * slippage < 2e5) {
+      l1 = 2;
+      logs.tests.push('liquidity: liquidity too low')
+    }
+    else if (totalLiquidity * slippage < 1e6) {
+      l1 = 1;
+      logs.tests.push('liquidity: liquidity low')
+    }
     else l1 = 0;
 
-    // need to add lp tokens being pulled
-    if (assetData.ethplorer.holdersCount < 1e2) l2 = 1;
+    if (assetData.ethplorer.holdersCount < 1e2) {
+      l2 = 1;
+      logs.tests.push('liquidity: LP token holder count < 100')
+    }
     else l2 = 0;
 
     const l = l1 + l2;
@@ -191,7 +221,7 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
   ] = await Promise.all([
     await calcHistorical(),
     calcCrash(),
-    calcVolatility(),
+    await calcVolatility(),
     calcLiquidity(),
   ])
 
@@ -204,6 +234,9 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     l: liquidity,
     g: max([historical, crash, volatility, liquidity])
   }
+
+  console.log(logs);
+
   return score
 }
 
@@ -287,13 +320,14 @@ const fetchAssetData = async (address: string) => {
       )
         .then((res) => res.json()),
 
-      // asset variance (1 day)
+      // asset prices (1/4 day)
       fetch(
-        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=1`
+        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}/market_chart/?vs_currency=usd&days=0.25`
       )
         .then((res) => res.json())
-        .then((data) => data.prices.map(([, price]) => price))
-        .then((prices) => variance(prices)),
+        .then((data) => data.prices.map((price) => {
+          return price[1];
+        })),
 
       fetch(
         `https://api.ethplorer.io/getTokenInfo/${address}?apiKey=freekey`

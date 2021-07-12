@@ -13,7 +13,7 @@ export default async (address: string, financials: {liquidationIncentive: number
 
     const config = {
       period: 68, // around 15 mins of blocktime
-      no_segments: 500, // keep divisible of 100 for batching
+      no_segments: 2900, // keep divisible of 100 for batching
       end: 12635203
     }
 
@@ -40,7 +40,7 @@ const calcTokenDown = async (data: point[], financials: {liquidationIncentive: n
 
   let result = await work(data, financials);
 
-  let TOKEN0DOWN  = result.shocks.token0down;
+  let TOKEN0DOWN  = result;
 
   return {
     TOKEN0DOWN
@@ -48,24 +48,17 @@ const calcTokenDown = async (data: point[], financials: {liquidationIncentive: n
 }
 
 const work = async (data: any[], financials: {liquidationIncentive: number, slippage: number}) => {
-  data = data.sort(biggerblockno);
 
-  var result: any = {
-    shocks: 0,
-  };
-
-  result.shocks = await simulateshock(data, financials);
+  const shocks = await simulateshock(data.sort(biggerblockno), financials);
   // console.log("shocks: " + JSON.stringify(result.shocks));
 
-  return result;
+  return shocks;
 }
 
 const simulateshock = async (data: point[], financials: {liquidationIncentive: number, slippage: number}) => {
  
   let shocks = new Promise( (resolve) => {
-    let shocks = {
-      token0down: 0,
-    };
+    let shocks: number = 0;
 
     data.forEach( async (point, index) => {
       const i: number = index;
@@ -73,8 +66,8 @@ const simulateshock = async (data: point[], financials: {liquidationIncentive: n
       for (let j = 0; i + j + 1 < data.length; ++j) { // check whether liquidation feasible at i+j+1
         if ((data[i + j].token0Price - data[i + j + 1].token0Price) / point.token0Price < financials.liquidationIncentive - financials.slippage) { // liquidation feasible
           let token0down = (data[i].token0Price - data[i + j + 1].token0Price) / point.token0Price;
-          if (token0down > shocks.token0down) {
-            shocks.token0down = token0down;
+          if (token0down > shocks) {
+            shocks = token0down;
           }
           break;
         }

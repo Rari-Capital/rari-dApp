@@ -6,8 +6,6 @@ import { parse, point } from '../../src/utils/rssUtils';
 import checksum from 'eth-checksum';
 import sushiData from '@sushiswap/sushi-data';
 
-const INF = 1000000000000000;
-
 const sushiswap = async (address: string, config: {period: number, no_segments: number, end: number}) => {
 
   const id = fetchPairID(address);
