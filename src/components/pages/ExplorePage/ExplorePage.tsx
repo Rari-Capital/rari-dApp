@@ -156,7 +156,8 @@ const ExploreNav = ({
       h="80px"
       position="relative"
       p={2}
-      _hover={{ bg: "grey", cursor: "pointer" }}
+      className="hover-row"
+      _hover={{ cursor: "pointer" }}
       color={active ? "#44C33D" : "white"}
       onClick={() => setNav(nav)}
       {...boxProps}

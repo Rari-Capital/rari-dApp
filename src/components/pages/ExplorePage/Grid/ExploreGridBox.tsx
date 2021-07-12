@@ -6,7 +6,7 @@ import { SubgraphMarket } from "pages/api/explore";
 import { convertMantissaToAPY, convertMantissaToAPR } from "utils/apyUtils";
 import { useMemo } from "react";
 import { shortUsdFormatter } from "utils/bigUtils";
-import { useQuery } from "react-query";
+// import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
 
 export enum ExploreGridBoxMetric {
@@ -82,7 +82,6 @@ export const FuseAssetGridBox = ({
           : `#`
       }
       className="no-underline"
-      passHref
     >
       <Column
         w="100%"
@@ -91,8 +90,8 @@ export const FuseAssetGridBox = ({
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
         p={4}
+        className="hover-row"
         border="1px solid #272727"
-        _hover={{ border: "1px solid grey", bg: "grey" }}
       >
         <Row
           h="100%"

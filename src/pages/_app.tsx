@@ -48,6 +48,7 @@ const customTheme = {
     heading: `'Avenir Next', ${theme.fonts.heading}`,
   },
   colors: {
+    ...theme.colors,
     nav: {
       50: "#F0FFF4",
       100: "#41C143",

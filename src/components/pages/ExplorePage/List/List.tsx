@@ -4,7 +4,7 @@ import { Avatar } from "@chakra-ui/react";
 import EarnOpportunities from "components/modules/AssetOpportunities/EarnOpportunities";
 import AppLink from "components/shared/AppLink";
 import { ModalDivider } from "components/shared/Modal";
-import PoolRow from "./PoolRow";
+import PoolRow from "components/pages/Fuse/FusePoolsPage/PoolRow";
 
 // Hooks
 import { useFusePools } from "hooks/fuse/useFusePools";
@@ -124,7 +124,10 @@ const FuseList = () => {
 const AllAssetsList = () => {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
-  const { data, error } = useSWR("/api/explore/allAssets", exploreAssetsFetcher);
+  const { data, error } = useSWR(
+    "/api/explore/allAssets",
+    exploreAssetsFetcher
+  );
 
   return (
     <>
