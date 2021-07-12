@@ -19,7 +19,8 @@ export const GET_TOP_PERFORMING_FUSE_ASSET = gql`
       borrowIndex
       underlyingAddress
       underlyingSymbol
-      underlyingDecimals
+      underlyingDecimals    	
+      underlyingPrice
     }
   }
 `;

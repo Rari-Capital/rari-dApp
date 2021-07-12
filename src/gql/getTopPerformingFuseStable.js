@@ -21,7 +21,8 @@ export const GET_TOP_PERFORMING_FUSE_STABLE = gql`
       borrowIndex
       underlyingAddress
       underlyingSymbol
-      underlyingDecimals
+      underlyingDecimals    	
+      underlyingPrice
     }
   }
 `;

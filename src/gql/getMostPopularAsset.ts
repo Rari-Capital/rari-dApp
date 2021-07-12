@@ -17,6 +17,7 @@ query GetMostPopularAsset($orderBy: Market_orderBy! = "supplyRate", $orderDirect
       underlyingAddress
       underlyingSymbol
       underlyingDecimals    	
+      underlyingPrice
   }
 }
 `;

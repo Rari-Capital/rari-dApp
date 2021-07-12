@@ -27,6 +27,7 @@ export type SubgraphMarket = {
   underlyingAddress: string;
   underlyingSymbol: string;
   underlyingDecimals: number;
+  underlyingPrice: number;
   pool?: SubgraphPool;
   tokenData?: RariApiTokenData;
 };

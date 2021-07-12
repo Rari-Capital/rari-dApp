@@ -54,7 +54,7 @@ const FuseTabBar = () => {
               mainAxisAlignment="flex-start"
               fontWeight="bold"
             >
-              <Text flexShrink={0}>{t("Search:")}</Text>
+              <Text flexShrink={0}>{t("Search") + ":"}</Text>
 
               <Input
                 // value={filter ?? ""}

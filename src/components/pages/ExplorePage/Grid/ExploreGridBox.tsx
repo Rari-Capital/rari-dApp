@@ -6,6 +6,8 @@ import { SubgraphMarket } from "pages/api/explore";
 import { convertMantissaToAPY, convertMantissaToAPR } from "utils/apyUtils";
 import { useMemo } from "react";
 import { shortUsdFormatter } from "utils/bigUtils";
+import { useQuery } from "react-query";
+import { useRari } from "context/RariContext";
 
 export enum ExploreGridBoxMetric {
   TOTAL_BORROWS,
@@ -26,6 +28,8 @@ export const FuseAssetGridBox = ({
   data?: SubgraphMarket;
   metric: ExploreGridBoxMetric;
 }) => {
+  const { fuse } = useRari();
+
   const loading = !data;
 
   const supplyRate = convertMantissaToAPY(data?.supplyRate, 365);
@@ -33,6 +37,24 @@ export const FuseAssetGridBox = ({
   const weeklySupplyRate = monthlySupplyRate / 4;
 
   const borrowRate = convertMantissaToAPR(data?.borrowRate);
+
+  // const { data: ethPrice } = useQuery("ethPrice", async () => {
+  //   return fuse.web3.utils.fromWei(await fuse.getEthUsdPriceBN()) as any;
+  // });
+
+  // const totalSupplyUSD = useMemo(() => {
+  //   const { totalSupply, underlyingPrice } = data ?? {};
+  //   return totalSupply && underlyingPrice && ethPrice
+  //     ? ((totalSupply * underlyingPrice) / 1e36) * ethPrice
+  //     : 0;
+  // }, [ethPrice, data]);
+
+  // const totalBorrowsUSD = useMemo(() => {
+  //   const { totalBorrows, underlyingPrice } = data ?? {};
+  //   return totalBorrows && underlyingPrice && ethPrice
+  //     ? ((totalBorrows * underlyingPrice) / 1e36) * ethPrice
+  //     : 0;
+  // }, [ethPrice, data]);
 
   const subtitle: string = useMemo(() => {
     switch (metric) {
@@ -46,7 +68,7 @@ export const FuseAssetGridBox = ({
       case ExploreGridBoxMetric.TOTAL_SUPPLY:
         return `${shortUsdFormatter(data?.totalSupply ?? 0)} Supplied`;
       default:
-        return null;
+        return "";
     }
   }, [metric, monthlySupplyRate, weeklySupplyRate, data]);
 
