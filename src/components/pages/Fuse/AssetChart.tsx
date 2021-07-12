@@ -1,7 +1,7 @@
 /*  This is a dynamically imported component on client-side only */
 
 import Chart from "react-apexcharts";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { FuseUtilizationChartOptions } from "utils/chartOptions";
 
 type AssetChartProps = {

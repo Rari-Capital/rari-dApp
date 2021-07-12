@@ -7,7 +7,7 @@ import AwaitingTransactions from "./AwaitingTransactions";
 
 // Hooks
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 // Types
 import { TokenData } from "hooks/useTokenData";

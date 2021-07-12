@@ -11,7 +11,7 @@ import DashboardBox from "components/shared/DashboardBox";
 import { useRari } from "context/RariContext";
 import { useCallback } from "react";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { FaChevronDown } from "react-icons/fa";
 
 // Utils

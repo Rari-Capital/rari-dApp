@@ -1,10 +1,25 @@
 import { NextPage } from "next";
 import FusePoolpage from "components/pages/Fuse/FusePoolPage";
 
-const FusePage: NextPage = () => {
-    return (
-        <FusePoolpage />
-    )
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale)),
+    },
+  };
 }
 
-export default FusePage
+export const getStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};
+
+const FusePage: NextPage = () => {
+  return <FusePoolpage />;
+};
+
+export default FusePage;

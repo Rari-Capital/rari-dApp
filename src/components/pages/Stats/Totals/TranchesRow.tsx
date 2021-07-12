@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Column } from "utils/chakraUtils";
 import { TranchesLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { UseEstimatedSFIReturn } from "hooks/tranches/useSaffronData";
 
 const TranchesRow = ({

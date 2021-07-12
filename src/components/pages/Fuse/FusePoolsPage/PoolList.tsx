@@ -5,7 +5,7 @@ import PoolRow from "./PoolRow";
 
 // Hooks
 import { MergedPool } from "hooks/fuse/useFusePools";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 // Utils
 import { Column, Row, useIsMobile } from "utils/chakraUtils";

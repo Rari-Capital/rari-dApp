@@ -14,7 +14,7 @@ import {
   SaffronTranchePool,
 } from "hooks/tranches/useSaffronData";
 import { smallUsdFormatter } from "utils/bigUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 const Earn = () => {
   const { t } = useTranslation();

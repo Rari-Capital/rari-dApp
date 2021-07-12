@@ -25,7 +25,7 @@ import { useTokenData } from "hooks/useTokenData";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
 import { useFusePoolData } from "hooks/useFusePoolData";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useRari } from "context/RariContext";
 import { useRouter } from "next/router";
 import { useExtraPoolInfo } from "./FusePoolInfoPage";

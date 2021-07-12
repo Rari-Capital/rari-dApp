@@ -7,7 +7,7 @@ import { RowOrColumn, Row, Center } from "utils/chakraUtils";
 
 // Hooks
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFilter } from "hooks/useFilter";
 import { useRouter } from "next/router";

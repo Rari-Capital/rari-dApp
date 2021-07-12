@@ -17,7 +17,7 @@ import { AggregatePoolsInfoReturn } from "hooks/usePoolInfo";
 import { TokenData } from "hooks/useTokenData";
 import { useVaultsDataForAsset } from "hooks/vaults/useVaultsDataForAsset";
 import Image from "next/image";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { Row, useIsMobile } from "utils/chakraUtils";
 
 const EarnOpportunities = ({ token }: { token?: TokenData }) => {

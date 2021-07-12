@@ -7,6 +7,8 @@ import TokenDetails from "components/pages/Tokens/TokenDetails";
 import TOKENS from "static/compiled/tokens.json";
 import { ETH_TOKEN_DATA, fetchTokenData, TokenData } from "hooks/useTokenData";
 
+
+
 // Utils
 import Web3 from "web3";
 const web3 = new Web3();

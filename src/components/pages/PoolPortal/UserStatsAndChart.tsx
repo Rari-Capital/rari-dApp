@@ -9,7 +9,7 @@ import { useRari } from "context/RariContext";
 import { usePoolAPY } from "hooks/usePoolAPY";
 import { usePoolInfoFromContext } from "hooks/usePoolInfo";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useQuery } from "react-query";
 import { stringUsdFormatter } from "utils/bigUtils";
 import {

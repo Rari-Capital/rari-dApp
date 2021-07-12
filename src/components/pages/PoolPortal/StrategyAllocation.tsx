@@ -6,7 +6,7 @@ import Chart from "react-apexcharts";
 
 import { usePoolType } from "context/PoolContext";
 import { useRari } from "context/RariContext";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useQuery } from "react-query";
 
 import { BN } from "utils/bigUtils";

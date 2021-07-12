@@ -7,7 +7,7 @@ import FuseAmountInput from "./components/FuseAmountInput";
 
 // Hooks
 import { useCallback, useMemo, useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useUpdatedUserAssetsForBorrowAndLend } from "hooks/fuse/useUpdatedUserAssets";
 import { useBorrowCredit, useBorrowLimit } from "hooks/useBorrowLimit";
 import { useTotalBorrowAndSupplyBalanceUSD } from "hooks/fuse/useTotalBorrowBalanceUSD";

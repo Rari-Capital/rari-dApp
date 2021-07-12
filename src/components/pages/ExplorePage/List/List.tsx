@@ -9,7 +9,7 @@ import PoolRow from "./PoolRow";
 // Hooks
 import { useFusePools } from "hooks/fuse/useFusePools";
 import useSWR from "swr";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 // Utils
 import { Column, Row, useIsMobile } from "utils/chakraUtils";

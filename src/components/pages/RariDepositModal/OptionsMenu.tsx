@@ -4,7 +4,7 @@ import { Fade } from "react-awesome-reveal";
 import { Column } from "utils/chakraUtils";
 
 import { Mode } from ".";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 
 const OptionsMenu = ({

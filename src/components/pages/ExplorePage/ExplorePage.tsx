@@ -10,7 +10,7 @@ import DashboardBox from "components/shared/DashboardBox";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useTVLFetchers } from "hooks/useTVL";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { smallUsdFormatter } from "utils/bigUtils";
 import { Column, Row } from "utils/chakraUtils";
 import { useState } from "react";

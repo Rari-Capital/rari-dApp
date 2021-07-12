@@ -7,7 +7,7 @@ import LendAndBorrow from "../LendAndBorrow";
 import { Column, Row } from "utils/chakraUtils";
 import { Box, Heading } from "@chakra-ui/react";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useMemo } from "react";
 import AwaitingTransactions from "../AwaitingTransactions";
 

@@ -19,7 +19,7 @@ import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
 import AppLink from "components/shared/AppLink";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useQuery } from "react-query";
