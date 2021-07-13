@@ -2,23 +2,45 @@ import Rari from "../rari-sdk/index";
 
 import EthereumPool from "../rari-sdk/pools/ethereum";
 import StablePool from "../rari-sdk/pools/stable";
+import DAIPool from "../rari-sdk/pools/dai";
 import YieldPool from "../rari-sdk/pools/yield";
 
 export enum Pool {
   STABLE = "stable",
   YIELD = "yield",
   ETH = "eth",
+  DAI = "dai",
+  USDC = "usdc",
 }
 
-export function getSDKPool({ rari, pool }: { rari: Rari; pool: Pool | undefined }) {
-  let sdkPool: StablePool | EthereumPool | YieldPool;
+export function getSDKPool({
+  rari,
+  pool,
+}: {
+  rari: Rari;
+  pool: Pool | undefined;
+}) {
+  let sdkPool: StablePool | EthereumPool | YieldPool | DAIPool;
 
-  if (pool === Pool.ETH) {
-    sdkPool = rari.pools.ethereum;
-  } else if (pool === Pool.STABLE) {
-    sdkPool = rari.pools.stable;
-  } else {
-    sdkPool = rari.pools.yield;
+  switch (pool) {
+    case Pool.USDC:
+      sdkPool = rari.pools.stable;
+      break;
+    case Pool.STABLE:
+      sdkPool = rari.pools.stable;
+      break;
+    case Pool.DAI:
+      sdkPool = rari.pools.dai;
+      break;
+    case Pool.ETH:
+      sdkPool = rari.pools.ethereum;
+      break;
+    case Pool.YIELD:
+      sdkPool = rari.pools.yield;
+      break;
+    default:
+      sdkPool = rari.pools.yield;
+      break;
   }
 
   return sdkPool;

@@ -11,25 +11,39 @@ export interface PoolInterface {
 }
 
 export const pools: PoolInterface[] = [
+  // {
+  //   type: Pool.STABLE,
+  //   title: "Stable",
+  //   name: "Stable Pool",
+  //   caption: "Safe returns on stablecoins",
+  //   logo: "/static/stableicon.png",
+  // },
   {
-    type: Pool.STABLE,
-    title: "Stable",
-    name: "Stable Pool",
-    caption: "Safe returns on stablecoins",
-    logo: '/static/stableicon.png'
+    type: Pool.USDC,
+    title: "USDC",
+    name: "USDC Pool",
+    caption: "Safe returns on USDC",
+    logo: "/static/stableicon.png",
+  },
+  {
+    type: Pool.DAI,
+    title: "DAI",
+    name: "DAI Pool",
+    caption: "Safe returns on DAI",
+    logo: "/static/stableicon.png",
   },
   {
     type: Pool.YIELD,
     title: "Yield",
     name: "Yield Pool",
     caption: "High risk, high reward",
-    logo:  '/static/yieldicon.png'
+    logo: "/static/yieldicon.png",
   },
   {
     type: Pool.ETH,
     title: "ETH",
     name: "ETH Pool",
-    caption: "Safe returns on ETH",
-    logo: '/static/ethicon.png'
+    caption: "Returns on ETH",
+    logo: "/static/ethicon.png",
   },
 ];

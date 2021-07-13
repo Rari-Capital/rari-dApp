@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { usePoolType } from "context/PoolContext";
 import { Pool, getPoolName, getPoolCaption } from "utils/poolUtils";
 import { formatBalanceBN } from "utils/format";
@@ -74,7 +74,7 @@ export type AggregatePoolsInfoReturn = {
   totals: PoolTotals;
 };
 
-export const useAggregatePoolInfos = () : AggregatePoolsInfoReturn => {
+export const useAggregatePoolInfos = (): AggregatePoolsInfoReturn => {
   const { rari } = useRari();
   const {
     web3: {

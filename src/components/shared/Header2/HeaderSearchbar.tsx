@@ -4,8 +4,7 @@ import Searchbar from "../Searchbar";
 const HeaderSearchbar = (props: any) => {
   return (
     <Box {...props} w={800} mx={5}>
-      <Searchbar variant="filled" />
-      
+      <Searchbar variant="" />
     </Box>
   );
 };

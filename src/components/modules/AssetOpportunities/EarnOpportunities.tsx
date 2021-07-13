@@ -1,13 +1,6 @@
-import { Box,  Text } from "@chakra-ui/layout";
+import { Box, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
-import {
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/table";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table";
 import AppLink from "components/shared/AppLink";
 import { AggregatePoolsInfoReturn } from "hooks/usePoolInfo";
 
@@ -20,6 +13,8 @@ const EarnOpportunities = ({ token }: { token?: TokenData }) => {
   const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset(
     token?.address
   );
+
+  console.log({ vaultsData });
   // const isMobile = useIsMobile();
   // const { t } = useTranslation();
   return (
@@ -36,7 +31,7 @@ const EarnOpportunities = ({ token }: { token?: TokenData }) => {
           </Tr>
         </Thead>
         <Tbody w="100%">
-          {vaultsData.aggregatePoolsInfo.map((vault) => {
+          {vaultsData.aggregatePoolsInfo.map((vault, i) => {
             return (
               <>
                 <AppLink
@@ -45,7 +40,7 @@ const EarnOpportunities = ({ token }: { token?: TokenData }) => {
                   className="hover-row"
                   width="100%"
                   borderTop="1px solid #272727"
-                  key={vault.poolInfo.name}
+                  key={i}
                 >
                   <Td>
                     <Row
@@ -58,10 +53,19 @@ const EarnOpportunities = ({ token }: { token?: TokenData }) => {
                         width={35}
                         height={35}
                       />
-                      <Text ml={3} fontWeight="bold"> {vault.poolInfo.name}</Text>
+                      <Text ml={3} fontWeight="bold">
+                        {" "}
+                        {vault.poolInfo.name}
+                      </Text>
                     </Row>
                   </Td>
-                  <Td isNumeric>{vault.poolAPY ? `${vault.poolAPY }%`: <Spinner />}</Td>
+                  <Td isNumeric>
+                    {vault.poolAPY !== undefined ? (
+                      `${vault.poolAPY}%`
+                    ) : (
+                      <Spinner />
+                    )}
+                  </Td>
                 </AppLink>
               </>
             );

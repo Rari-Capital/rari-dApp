@@ -23,8 +23,8 @@ export const fetchRGTAPR = async (rari: Rari) => {
 export const fetchPoolAPY = async (
   rari: Rari,
   pool: Pool | undefined
-): Promise<string | null > => {
-  if (!pool) return null
+): Promise<string | null> => {
+  if (!pool) return null;
 
   const poolRawAPY = await getSDKPool({
     rari,

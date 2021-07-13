@@ -15,6 +15,12 @@ import {
 import AppLink from "../AppLink";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
+// Types
+export interface DropDownLinkType {
+  name: string;
+  route: string;
+}
+
 export const HeaderLink = ({
   name,
   route,
@@ -67,11 +73,6 @@ export const HeaderLink = ({
   );
 };
 
-export interface DropDownLinkType {
-  name: string;
-  route: string;
-}
-
 export const DropDownLink = ({
   name,
   links,
@@ -87,10 +88,16 @@ export const DropDownLink = ({
     <Box ml={ml ?? 0} color="white">
       <Menu>
         <MenuButton
+          p={2}
+          bg="none"
           as={Button}
           rightIcon={<ChevronDownIcon />}
           fontWeight={isOnThisRoute ? "bold" : "normal"}
           color={isOnThisRoute ? "purple" : "white"}
+          className="hover-row"
+          _hover={{ bg: "none" }}
+          _active={{ bg: "grey.100" }}
+          _focus={{ bg: "grey.200" }}
         >
           {name}
         </MenuButton>
@@ -110,6 +117,7 @@ const DropdownItem = ({ link }: { link: DropDownLinkType }) => {
   return (
     <MenuItem
       as={Link}
+      _focus={{ bg: "grey" }}
       _hover={{ bg: "grey" }}
       href={link.route}
       isExternal={isExternal}

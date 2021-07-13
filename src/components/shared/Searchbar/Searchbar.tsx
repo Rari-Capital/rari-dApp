@@ -77,17 +77,19 @@ const Searchbar = ({
             !!val ? (
               loading ? (
                 <Spinner />
-              ) : (
-                <IconButton
-                  icon={<CloseIcon />}
-                  aria-label="Close"
-                  color="gray.300"
-                  boxSize={3}
-                  _hover={{ cursor: "pointer" }}
-                  onClick={() => setVal("")}
-                />
-              )
-            ) : null
+              ) : null
+            ) :  null
+            //  (
+            //   <IconButton
+            //     icon={<CloseIcon />}
+            //     aria-label="Close"
+            //     color="gray.300"
+            //     bg="none"
+            //     height=""
+            //     _hover={{ cursor: "pointer" }}
+            //     onClick={() => setVal("")}
+            //   />
+            // )
           }
           ml={1}
         />
