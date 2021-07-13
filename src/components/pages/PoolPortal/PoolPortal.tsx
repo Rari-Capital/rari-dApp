@@ -52,7 +52,7 @@ const StrategyAllocation = dynamic(() => import("./StrategyAllocation"), {
 // Hooks
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { usePoolInfo, usePoolInfoFromContext } from "hooks/usePoolInfo";
 import { usePoolBalance } from "hooks/usePoolBalance";
 import { usePoolAPY } from "hooks/usePoolAPY";
@@ -177,6 +177,7 @@ const PoolPortalContent = () => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
         color="#FFFFFF"
+        width="100%"
       >
         <RowOnDesktopColumnOnMobile
           mainAxisAlignment="flex-start"
@@ -245,11 +246,7 @@ const PoolPortalContent = () => {
                 />
               ) : null}
 
-              <Box 
-              opacity={hasNotDeposited ? 0.2 : 1} 
-              height="100%" 
-
-              >
+              <Box opacity={hasNotDeposited ? 0.2 : 1} height="100%">
                 <UserStatsAndChart
                   hasNotDeposited={hasNotDeposited}
                   size={mainSectionChildSizes[1].asNumber()}
