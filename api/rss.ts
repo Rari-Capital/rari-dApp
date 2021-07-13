@@ -232,7 +232,8 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     c: crash,
     v: volatility,
     l: liquidity,
-    g: max([historical, crash, volatility, liquidity])
+    g: max([historical, crash, volatility, liquidity]),
+    tests: logs.tests
   }
 
   console.log(logs);
