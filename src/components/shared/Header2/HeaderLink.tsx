@@ -148,8 +148,6 @@ export const DropDownLink = ({
 const DropdownItem = ({ link }: { link: DropDownLinkInterface }) => {
   const { route, name } = link;
   const isExternal = route.startsWith("http");
-
-  console.log({ route, name, isExternal });
   return (
     <AppLink href={route} isExternal={isExternal}>
       <MenuItem _focus={{ bg: "grey" }} _hover={{ bg: "grey" }}>

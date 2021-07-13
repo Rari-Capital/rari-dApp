@@ -127,7 +127,9 @@ export const FuseAssetGridBox = ({
                   height={loading ? "20px" : "100%"}
                   my={1}
                 >
-                  <Heading fontSize="2xl">{data?.tokenData?.symbol}</Heading>
+                  <Heading fontSize="2xl">
+                    {data?.tokenData?.symbol} - Pool {data?.pool?.index}
+                  </Heading>
                 </Skeleton>
 
                 <Skeleton
