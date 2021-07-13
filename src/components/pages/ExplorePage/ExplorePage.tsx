@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Heading } from "@chakra-ui/react";
+import { Heading, Menu, MenuList } from "@chakra-ui/react";
 import List from "./List";
 import DashboardBox from "components/shared/DashboardBox";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
@@ -109,7 +109,7 @@ const ExplorePage = () => {
         crossAxisAlignment="flex-start"
         w="100%"
         h="100%"
-        my={5}
+        mt={5}
       >
         <ExploreNav
           heading="Fuse"
@@ -132,6 +132,18 @@ const ExplorePage = () => {
           nav={ExploreNavType.ALL}
           setNav={setExploreNav}
         />
+      </Row>
+      {/* Sort */}
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        w="100%"
+        h="100%"
+        mb={5}
+      >
+        <Menu>
+          <MenuList></MenuList>
+        </Menu>
       </Row>
 
       {/* LIST */}

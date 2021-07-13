@@ -83,7 +83,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           {/* <Foursquare token={token}  mb={5}/> */}
           <AssetBorrowLend token={token} mb={5} />
 
-          <TrendingOpportunities token={token} mb={5} />
+          {/* <TrendingOpportunities token={token} mb={5} /> */}
 
           <InternalAd mb={5} />
 

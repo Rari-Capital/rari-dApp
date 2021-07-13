@@ -19,15 +19,18 @@ import useTokenMarketInfo, {
 } from "hooks/tokens/useTokenMarketInfo";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
-const MarketChart = ({ token, ...boxProps }: { 
-  token: TokenData,
-  [x:string]: any
- }) => {
+const MarketChart = ({
+  token,
+  ...boxProps
+}: {
+  token: TokenData;
+  [x: string]: any;
+}) => {
   const isMobile = useIsSmallScreen();
 
   const [priceHover, setPriceHover] = useState<number | undefined>(undefined);
   const [marketInterval, setMarketInterval] = useState<MarketInterval>(
-    MarketInterval.DAY
+    MarketInterval.YEAR
   );
 
   const { granularTokenMarketInfo, aggregateTokenMarketInfo } =
@@ -51,11 +54,7 @@ const MarketChart = ({ token, ...boxProps }: {
   }, [priceHover, aggregateTokenMarketInfo]);
 
   return (
-    <DashboardBox
-      w="100%"
-      h="450px"
-      {...boxProps}
-    >
+    <DashboardBox w="100%" h="450px" {...boxProps}>
       <Column
         mainAxisAlignment="space-between"
         crossAxisAlignment="flex-start"

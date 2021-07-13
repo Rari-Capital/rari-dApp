@@ -232,6 +232,7 @@ const AssetsDropDown = ({
   currentAsset: USDPricedFuseAssetWithTokenData;
   updateAsset: (assetAddress: string) => any;
 }) => {
+
   const handleClick = useCallback(
     (asset: USDPricedFuseAssetWithTokenData) => {
       updateAsset(asset.underlyingToken);
@@ -241,13 +242,14 @@ const AssetsDropDown = ({
 
   return (
     <Menu>
-      <MenuButton as={Button} rightIcon={<FaChevronDown />}>
+      <MenuButton as={Button} bg=""  rightIcon={<FaChevronDown />}>
         <AssetNameAndIcon asset={currentAsset} />
       </MenuButton>
       <MenuList maxHeight="200px" overflowY="scroll">
         {assets.map((asset: USDPricedFuseAssetWithTokenData, i: number) => (
           <MenuItem
             _hover={{ bg: "grey.400" }}
+            bg=""
             color="black"
             onClick={() => handleClick(asset)}
             key={i}

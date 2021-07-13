@@ -41,18 +41,17 @@ const AssetBorrowLend = ({
 export default AssetBorrowLend;
 
 const Header = ({ token }: { token?: TokenData }) => (
-  <Row mainAxisAlignment="center" crossAxisAlignment="center" w="100%" h="100%">
+  <Row mainAxisAlignment="center" crossAxisAlignment="center" w="100%" h="100%" py={2}>
     <Row
       mainAxisAlignment="center"
       crossAxisAlignment="center"
       h="100%"
-      ml="auto"
     >
       <Avatar src={token?.logoURL} boxSize={25} />
       <Heading ml={2} color="white" fontSize="xl">
         {token?.symbol} Lend {"&"} Borrow
       </Heading>
     </Row>
-    <CloseIconButton />
+    {/* <CloseIconButton /> */}
   </Row>
 );

@@ -7,7 +7,7 @@ import FuseAmountInput from "./components/FuseAmountInput";
 
 // Hooks
 import { useCallback, useMemo, useState, useEffect } from "react";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useUpdatedUserAssetsForBorrowAndLend } from "hooks/fuse/useUpdatedUserAssets";
 import { useBorrowCredit, useBorrowLimit } from "hooks/useBorrowLimit";
 import { useTotalBorrowAndSupplyBalanceUSD } from "hooks/fuse/useTotalBorrowBalanceUSD";
@@ -35,7 +35,9 @@ import {
 } from "utils/fetchFusePoolData";
 import { AmountSelectUserAction, AmountSelectMode } from "./AmountSelectNew";
 import AppLink from "../AppLink";
+import { SimpleTooltip } from "../SimpleTooltip";
 
+//
 const LendAndBorrow = ({
   token,
   bestPool,
@@ -108,10 +110,10 @@ const LendAndBorrow = ({
       bigAmount.isNaN()
         ? setBorrowAmountBN(undefined)
         : setBorrowAmountBN(
-            bigAmount.multipliedBy(10 ** lendAsset.underlyingDecimals)
+            bigAmount.multipliedBy(10 ** borrowAsset.underlyingDecimals)
           );
     },
-    [lendAsset]
+    [borrowAsset]
   );
 
   const updateBorrowedAsset = useCallback(
@@ -119,7 +121,8 @@ const LendAndBorrow = ({
       const borrowedAssetIndex: number | undefined = bestPool?.assets.findIndex(
         (asset) => asset.underlyingToken === tokenAddress
       );
-      if (borrowedAssetIndex !== undefined) setBorrowAssetIndex(borrowedAssetIndex);
+      if (borrowedAssetIndex !== undefined)
+        setBorrowAssetIndex(borrowedAssetIndex);
     },
     [setBorrowAssetIndex, bestPool]
   );
@@ -403,84 +406,103 @@ const StatsColumn = ({
           fontSize="lg"
         >
           {/* Supply Balance */}
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            color="white"
+          <SimpleTooltip
+            label={`${asset.underlyingSymbol} supplied to Fuse Pool ${pool?.id}`}
           >
-            <Text fontWeight="bold" fontSize="md">
-              {t("Supply Balance")}:
-            </Text>
-            <Text fontWeight="bold" flexShrink={0} fontSize={"xs"}>
-              {smallUsdFormatter(
-                asset.supplyBalance / 10 ** asset.underlyingDecimals
-              ).replace("$", "")}
-              {isSupplyingOrWithdrawing ? (
-                <>
-                  {" → "}
-                  {smallUsdFormatter(
-                    updatedAsset!.supplyBalance /
-                      10 ** updatedAsset!.underlyingDecimals
-                  ).replace("$", "")}
-                </>
-              ) : null}{" "}
-              {asset.underlyingSymbol}
-            </Text>
-          </Row>
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              color="white"
+            >
+              <Text fontWeight="bold" fontSize="md">
+                {t("Supply Balance")}:
+              </Text>
+
+              <Text fontWeight="bold" flexShrink={0} fontSize={"xs"}>
+                {smallUsdFormatter(
+                  asset.supplyBalance / 10 ** asset.underlyingDecimals
+                ).replace("$", "")}
+                {isSupplyingOrWithdrawing ? (
+                  <>
+                    {" → "}
+                    {smallUsdFormatter(
+                      updatedAsset!.supplyBalance /
+                        10 ** updatedAsset!.underlyingDecimals
+                    ).replace("$", "")}
+                  </>
+                ) : null}{" "}
+                {asset.underlyingSymbol}
+              </Text>
+            </Row>
+          </SimpleTooltip>
 
           {/* Borrow Balance */}
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            color={"white"}
-          >
-            <Text fontWeight="bold" fontSize="md">
-              {t("Borrow Balance")}:
-            </Text>
-            <Text fontWeight="bold" flexShrink={0} fontSize={"xs"}>
-              {abbreviateAmount(
-                borrowAsset.borrowBalance / 10 ** borrowAsset.underlyingDecimals
-              ).replace("$", "")}
-              <>
-                {" → "}
-                {abbreviateAmount(
-                  updatedBorrowAsset!.borrowBalance /
-                    10 ** updatedBorrowAsset!.underlyingDecimals
-                ).replace("$", "")}
-              </>{" "}
-              {borrowAsset.underlyingSymbol}
-            </Text>
-          </Row>
+
+          {(borrowAsset.borrowBalance > 0 ||
+            (updatedBorrowAsset?.borrowBalance ?? 0) > 0) && (
+            <SimpleTooltip
+              label={`${borrowAsset.underlyingSymbol} borrowed from Fuse Pool ${pool?.id}`}
+            >
+              <Row
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                width="100%"
+                color={"white"}
+              >
+                <Text fontWeight="bold" fontSize="md">
+                  {t("Borrow Balance")}:
+                </Text>
+                <Text fontWeight="bold" flexShrink={0} fontSize={"xs"}>
+                  {abbreviateAmount(
+                    borrowAsset.borrowBalance /
+                      10 ** borrowAsset.underlyingDecimals
+                  ).replace("$", "")}
+                  <>
+                    {" → "}
+                    {abbreviateAmount(
+                      updatedBorrowAsset!.borrowBalance /
+                        10 ** updatedBorrowAsset!.underlyingDecimals
+                    ).replace("$", "")}
+                  </>{" "}
+                  {borrowAsset.underlyingSymbol}
+                </Text>
+              </Row>
+            </SimpleTooltip>
+          )}
 
           {/* Supply APY  */}
-
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            color={lendColor}
+          <SimpleTooltip
+            label={`${asset.underlyingSymbol} supply APY in Fuse Pool ${pool?.id}`}
           >
-            <Text fontWeight="bold" fontSize="md">
-              Supply APY
-            </Text>
-            <Text
-              fontWeight="bold"
-              fontSize={updatedLendAPYDiffIsLarge ? "xs" : "md"}
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              color={lendColor}
             >
-              {supplyAPY.toFixed(2)} %
-              {updatedLendAPYDiffIsLarge ? (
-                <>
-                  {" → "}
-                  {updatedSupplyAPY.toFixed(2)}%
-                </>
-              ) : null}
-            </Text>
-          </Row>
+              <Text fontWeight="bold" fontSize="md">
+                Supply APY
+              </Text>
+              <Text
+                fontWeight="bold"
+                fontSize={updatedLendAPYDiffIsLarge ? "xs" : "md"}
+              >
+                {supplyAPY.toFixed(2)} %
+                {updatedLendAPYDiffIsLarge ? (
+                  <>
+                    {" → "}
+                    {updatedSupplyAPY.toFixed(2)}%
+                  </>
+                ) : null}
+              </Text>
+            </Row>
+          </SimpleTooltip>
 
           {/* Borrow APR  */}
-          {borrowAmount > 0 && (
+          <SimpleTooltip
+            label={`${borrowAsset.underlyingSymbol} borrow APR in Fuse Pool ${pool?.id}`}
+          >
             <Row
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
@@ -504,39 +526,43 @@ const StatsColumn = ({
                 </Text>
               </Row>
             </Row>
-          )}
+          </SimpleTooltip>
 
           {/* Borrow Credit  */}
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            color="white"
+          <SimpleTooltip
+            label={`How much USD you can still borrow in pool ${pool?.id} after this transaction succeeds`}
           >
-            <Text fontWeight="bold" fontSize="md">
-              {t("Borrow Credit")}:
-            </Text>
             <Row
-              mainAxisAlignment="flex-start"
+              mainAxisAlignment="space-between"
               crossAxisAlignment="center"
-              fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
+              width="100%"
+              color="white"
             >
-              <Text fontWeight="bold" fontSize={"xs"}>
-                {abbreviateAmount(borrowCredit)}
+              <Text fontWeight="bold" fontSize="md">
+                {t("Borrow Credit")}:
               </Text>
-              <Text ml={1} fontWeight="bold" fontSize={"xs"}>
-                {" → "}
-              </Text>
-              <Text
-                ml={1}
-                fontWeight="bold"
-                color={updatedAtRiskOfLiquidation ? "red" : ""}
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
                 fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
               >
-                {abbreviateAmount(updatedBorrowCredit)}
-              </Text>
+                <Text fontWeight="bold" fontSize={"xs"}>
+                  {abbreviateAmount(borrowCredit)}
+                </Text>
+                <Text ml={1} fontWeight="bold" fontSize={"xs"}>
+                  {" → "}
+                </Text>
+                <Text
+                  ml={1}
+                  fontWeight="bold"
+                  color={updatedAtRiskOfLiquidation ? "red" : ""}
+                  fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
+                >
+                  {abbreviateAmount(updatedBorrowCredit)}
+                </Text>
+              </Row>
             </Row>
-          </Row>
+          </SimpleTooltip>
 
           {/* Ratio  */}
           {/* <Row
@@ -587,37 +613,44 @@ const StatsColumn = ({
           </Row> */}
 
           {/* Total Debt Balance  */}
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            color="white"
-          >
-            <Text fontWeight="bold" fontSize="md">
-              {t("Total Debt")}:
-            </Text>
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <Text fontWeight="bold" fontSize={"xs"}>
-                {abbreviateAmount(
-                  borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
-                )}
-              </Text>
-              <Text ml={1} fontWeight="bold" fontSize={"xs"}>
-                {" → "}
-              </Text>
-              <Text
-                ml={1}
-                fontWeight="bold"
-                fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
-                color={updatedAtRiskOfLiquidation ? "red" : ""}
+          {(borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD > 0 ||
+            updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD > 0) && (
+            <SimpleTooltip
+              label={`Total USD debt balance in pool ${pool?.id} after this transaction succeeds`}
+            >
+              <Row
+                mainAxisAlignment="space-between"
+                crossAxisAlignment="center"
+                width="100%"
+                color="white"
               >
-                {abbreviateAmount(
-                  updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
-                )}{" "}
-                ({!isNaN(updatedRatio) && (updatedRatio * 100).toFixed(0)}%)
-              </Text>
-            </Row>
-          </Row>
+                <Text fontWeight="bold" fontSize="md">
+                  {t("Total Debt")}:
+                </Text>
+                <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+                  <Text fontWeight="bold" fontSize={"xs"}>
+                    {abbreviateAmount(
+                      borrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
+                    )}
+                  </Text>
+                  <Text ml={1} fontWeight="bold" fontSize={"xs"}>
+                    {" → "}
+                  </Text>
+                  <Text
+                    ml={1}
+                    fontWeight="bold"
+                    fontSize={updatedAtRiskOfLiquidation ? "md" : "xs"}
+                    color={updatedAtRiskOfLiquidation ? "red" : ""}
+                  >
+                    {abbreviateAmount(
+                      updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD
+                    )}{" "}
+                    ({!isNaN(updatedRatio) && (updatedRatio * 100).toFixed(0)}%)
+                  </Text>
+                </Row>
+              </Row>
+            </SimpleTooltip>
+          )}
 
           {/* Fuse Pool  */}
           <Row

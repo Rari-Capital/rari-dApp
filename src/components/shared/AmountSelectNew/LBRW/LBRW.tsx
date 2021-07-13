@@ -11,8 +11,8 @@ import { useTranslation } from 'next-i18next';
 import { useMemo } from "react";
 import AwaitingTransactions from "../AwaitingTransactions";
 
-// LBRP for Lend, Borrow, Repay, Withdraw
-const LBRP = ({ token }: { token?: TokenData }) => {
+// LBRW for Lend, Borrow, Repay, Withdraw
+const LBRW = ({ token }: { token?: TokenData }) => {
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
   const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
 
@@ -83,8 +83,9 @@ const LBRP = ({ token }: { token?: TokenData }) => {
   );
 };
 
-export default LBRP;
+export default LBRW;
 
+// Tab Bar for Lend&Borrow / Repay/Withdraw
 const TabBar = ({
   color,
   modes,

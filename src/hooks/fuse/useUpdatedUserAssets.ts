@@ -187,7 +187,6 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
   lendAmount: number;
   borrowAmount: number;
 }) => {
-  //   console.log({ lendAmount, borrowAmount });
 
   const updatedAssetsLend: USDPricedFuseAsset[] | undefined =
     useUpdatedUserAssets({
