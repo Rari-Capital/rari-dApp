@@ -6,11 +6,15 @@ import { AccountButton } from "../AccountButton";
 
 import { SmallLogo } from "components/shared/Logos";
 import { useRari } from "context/RariContext";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { DropDownLink, HeaderLink } from "./HeaderLink";
+import { DropDownLink, HeaderLink, MenuItemType } from "./HeaderLink";
 import HeaderSearchbar from "./HeaderSearchbar";
 import AppLink from "../AppLink";
+import {
+  GOVERNANCE_DROPDOWN_ITEMS,
+  PRODUCTS_DROPDOWN_ITEMS,
+} from "constants/nav";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -54,28 +58,25 @@ export const NewHeader = () => {
       >
         <HeaderLink name={t("Home")} route="/" />
         <HeaderLink name={t("Explore")} route="/explore" ml={5} />
-        {isAuthed && (
-          <HeaderLink ml={5} name={t("Positions")} route="/positions" />
-        )}
+
         {/* Dropdown  */}
         <DropDownLink
           name={t("Products")}
           ml={2}
-          links={[
-            { name: "Fuse", route: "/fuse" },
-            { name: "Vaults", route: "/pools/yield" },
-            { name: "Pool2", route: "/pool2" },
-            { name: "Tranches", route: "/tranches" },
-            { name: "Overview", route: "/overview" },
-          ]}
+          links={PRODUCTS_DROPDOWN_ITEMS}
         />
         <DropDownLink
           name={t("Governance")}
-          links={[
-            { name: "Snapshot", route: "https://vote.rari.capital/" },
-            { name: "Forums", route: "https://forums.rari.capital/" },
-          ]}
+          links={GOVERNANCE_DROPDOWN_ITEMS}
         />
+        {/* <DropDownLink
+          name={t("Utils")}
+          ml={2}
+          links={UTILS_DROPDOWN_ITEMS}
+        /> */}
+        {isAuthed && (
+          <HeaderLink ml={5} name={t("Positions")} route="/positions" />
+        )}
       </Row>
 
       {!isMobile && <HeaderSearchbar />}

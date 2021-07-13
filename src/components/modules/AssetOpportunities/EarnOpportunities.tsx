@@ -13,8 +13,6 @@ const EarnOpportunities = ({ token }: { token?: TokenData }) => {
   const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset(
     token?.address
   );
-
-  console.log({ vaultsData });
   // const isMobile = useIsMobile();
   // const { t } = useTranslation();
   return (

@@ -21,6 +21,7 @@ export const usePoolInfo = (poolType: Pool) => {
     const poolName = getPoolName(poolType, t);
     const poolCaption = getPoolCaption(poolType, t);
     const poolLogo = getPoolLogo(poolType);
+
     return { poolCaption, poolName, poolLogo };
   }, [poolType, t]);
 

@@ -1,10 +1,14 @@
-// Icons
 import { Pool } from "./poolUtils";
 
 export const getPoolLogo = (pool: Pool) => {
-  return pool === Pool.ETH
-    ? '/static/ethicon.png'
-    : pool === Pool.STABLE
-    ? '/static/stableicon.png'
-    : 'static/yieldicon.png';
+  switch (pool) {
+    case Pool.USDC:
+      return "/static/stableicon.png";
+    case Pool.DAI:
+      return "/static/stableicon.png";
+    case Pool.ETH:
+      return "/static/ethicon.png";
+    default:
+      return "/static/yieldicon.png";
+  }
 };

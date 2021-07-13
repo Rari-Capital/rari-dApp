@@ -50,16 +50,34 @@ export function poolHasDivergenceRisk(pool: Pool) {
   return pool === Pool.YIELD;
 }
 
-export const getPoolName = (pool: Pool, t: any) =>
-  pool === Pool.ETH
-    ? t("ETH Pool")
-    : pool === Pool.STABLE
-    ? t("Stable Pool")
-    : t("Yield Pool");
+export const getPoolName = (pool: Pool, t: any) => {
+  switch (pool) {
+    case Pool.USDC:
+      return t("USDC Pool");
+    case Pool.DAI:
+      return t("DAI Pool");
+    case Pool.ETH:
+      return t("ETH Pool");
+    case Pool.YIELD:
+      return t("Yield Pool");
+    default:
+      return t("Yield Pool");
+  }
+};
 
-export const getPoolCaption = (pool: Pool, t: any) =>
-  pool === Pool.ETH
-    ? t("Safe returns on ETH")
-    : pool === Pool.STABLE
-    ? t("Safe returns on stablecoins")
-    : t("High risk, high reward");
+export const getPoolCaption = (pool: Pool, t: any) => {
+  console.log({ pool },);
+
+  switch (pool) {
+    case Pool.USDC:
+      return t("Safe returns on USDC");
+    case Pool.DAI:
+      return t("Safe returns on DAI");
+    case Pool.ETH:
+      return t("Returns on ETH");
+    case Pool.YIELD:
+      return t("High risk, high reward");
+    default:
+      return t("High risk, high reward");
+  }
+};

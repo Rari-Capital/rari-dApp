@@ -11,16 +11,32 @@ import {
   MenuList,
   MenuItem,
   Button,
+  MenuGroup,
+  MenuDivider,
 } from "@chakra-ui/react";
 import AppLink from "../AppLink";
 import { ChevronDownIcon } from "@chakra-ui/icons";
+import { useMemo } from "react";
 
 // Types
-export interface DropDownLinkType {
+
+export enum MenuItemType {
+  LINK,
+  MENUGROUP,
+}
+export interface MenuItemInterface {
+  type: MenuItemType;
+  title?: string; // used only if MENUGROUP
+  link?: DropDownLinkInterface; // used only if LINK
+  links?: DropDownLinkInterface[]; // used only if MENUGROUP
+}
+
+export interface DropDownLinkInterface {
   name: string;
   route: string;
 }
 
+// Normal Header Link
 export const HeaderLink = ({
   name,
   route,
@@ -73,56 +89,85 @@ export const HeaderLink = ({
   );
 };
 
+// Dropdown Header Link
+// Subitems are rendered as either a MenuItem or a MenuGroup
 export const DropDownLink = ({
   name,
   links,
   ml,
 }: {
   name: string;
-  links: DropDownLinkType[];
+  links: MenuItemInterface[];
   ml?: number | string;
 }) => {
-  const isOnThisRoute = false;
+  const router = useRouter();
+
+  const isOnThisRoute = useMemo(
+    () =>
+      links.find((l) => {
+        if (l.type === MenuItemType.LINK)
+          return l.link!.route === router.asPath;
+        else if (l.type === MenuItemType.MENUGROUP) return false;
+      }),
+    [links, router]
+  );
 
   return (
     <Box ml={ml ?? 0} color="white">
-      <Menu>
+      <Menu isLazy={false}>
         <MenuButton
           p={2}
           bg="none"
           as={Button}
           rightIcon={<ChevronDownIcon />}
           fontWeight={isOnThisRoute ? "bold" : "normal"}
-          color={isOnThisRoute ? "purple" : "white"}
-          className="hover-row"
-          _hover={{ bg: "none" }}
+          textDecor={isOnThisRoute ? "underline" : ""}
+          textDecorationThickness="1.5px"
+          color={isOnThisRoute ? "#7065F2" : "white"}
+          _hover={{ bg: "none", textDecoration: "hover" }}
           _active={{ bg: "grey.100" }}
           _focus={{ bg: "grey.200" }}
         >
           {name}
         </MenuButton>
         <MenuList bg="black">
-          {links.map((link) => (
-            <DropdownItem link={link} key={link.route} />
-          ))}
+          {links.map((link) => {
+            // Link
+            if (link.type === MenuItemType.LINK)
+              return <DropdownItem link={link.link!} key={link.link!.route} />;
+            // MenuGroup
+            else if (link.type === MenuItemType.MENUGROUP)
+              return <DropdownMenuGroup menuItem={link} />;
+          })}
         </MenuList>
       </Menu>
     </Box>
   );
 };
 
-const DropdownItem = ({ link }: { link: DropDownLinkType }) => {
-  const isExternal = link.route.startsWith("http");
+const DropdownItem = ({ link }: { link: DropDownLinkInterface }) => {
+  const { route, name } = link;
+  const isExternal = route.startsWith("http");
 
+  console.log({ route, name, isExternal });
   return (
-    <MenuItem
-      as={Link}
-      _focus={{ bg: "grey" }}
-      _hover={{ bg: "grey" }}
-      href={link.route}
-      isExternal={isExternal}
-    >
-      {link.name}
-    </MenuItem>
+    <AppLink href={route} isExternal={isExternal}>
+      <MenuItem _focus={{ bg: "grey" }} _hover={{ bg: "grey" }}>
+        {name}
+      </MenuItem>
+    </AppLink>
+  );
+};
+
+const DropdownMenuGroup = ({ menuItem }: { menuItem: MenuItemInterface }) => {
+  return (
+    <>
+      <MenuDivider />
+      <MenuGroup title={menuItem.title}>
+        {menuItem.links?.map((link) => (
+          <DropdownItem link={link} />
+        ))}
+      </MenuGroup>
+    </>
   );
 };

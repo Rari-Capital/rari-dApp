@@ -15,6 +15,8 @@ import { smallUsdFormatter } from "utils/bigUtils";
 import { Column, Row } from "utils/chakraUtils";
 
 import ExploreGrid from "./Grid/ExploreGrid";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export enum ExploreNavType {
   FUSE,
@@ -34,11 +36,30 @@ const getAssetLogo = (nav: ExploreNavType, active: boolean) => {
 };
 
 const ExplorePage = () => {
+  const router = useRouter();
+  const { filter } = router.query;
+
   const isMobile = useIsSmallScreen();
   const { getNumberTVL } = useTVLFetchers();
   const { t } = useTranslation();
 
   const [exploreNav, setExploreNav] = useState(ExploreNavType.FUSE);
+
+  useEffect(() => {
+    let nav: ExploreNavType = exploreNav;
+    switch (filter) {
+      case "fuse":
+        nav = ExploreNavType.FUSE;
+        break;
+      case "earn":
+        nav = ExploreNavType.EARN;
+        break;
+      case "all":
+        nav = ExploreNavType.ALL;
+        break;
+    }
+    setExploreNav(nav);
+  }, [filter]);
 
   return (
     <Column
@@ -88,7 +109,7 @@ const ExplorePage = () => {
         crossAxisAlignment="flex-start"
         w="100%"
         h="100%"
-        mb={5}
+        my={5}
       >
         <ExploreNav
           heading="Fuse"

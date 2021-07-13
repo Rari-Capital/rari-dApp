@@ -263,7 +263,7 @@ const Home = React.memo(() => {
               mb={5}
             >
               <Heading size="md">Easily Earn </Heading>
-              <AppLink href="/explore">
+              <AppLink href="/explore?filter=earn">
                 <Text size="md" color="grey">
                   View All
                 </Text>
