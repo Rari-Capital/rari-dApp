@@ -359,6 +359,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const { poolID } = request.query as { [key: string]: string };
 
   response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
 
   let lastUpdated = new Date().toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
