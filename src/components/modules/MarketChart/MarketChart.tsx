@@ -170,7 +170,9 @@ const MarketChart = ({
         >
           {" "}
           {!formattedChartData ? (
-            <Spinner />
+            <Column mainAxisAlignment="center" crossAxisAlignment="center">
+              <Spinner />
+            </Column>
           ) : (
             <LineChart
               data={formattedChartData}
