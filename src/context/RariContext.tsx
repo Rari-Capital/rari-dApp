@@ -22,7 +22,6 @@ import {
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "utils/chakraUtils";
 import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
@@ -269,13 +268,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [web3ModalProvider, refetchAccountData]);
 
-  // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
-  const isMobile = useIsMobile();
+  // Automatically open the web3modal if they have previously logged in on the site:
   useEffect(() => {
     if (localStorage.WEB3_CONNECT_CACHED_PROVIDER) {
       login();
     }
-  }, [login, isMobile]);
+  }, [login]);
 
   const value = useMemo(
     () => ({
