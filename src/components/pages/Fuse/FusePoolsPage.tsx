@@ -16,7 +16,7 @@ import { useTokenData } from "hooks/useTokenData";
 
 import { filterPoolName } from "utils/fetchFusePoolData";
 
-import { letterScore, usePoolRSS } from "hooks/useRSS";
+import { usePoolRSS } from "hooks/useRSS";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
@@ -152,7 +152,7 @@ const PoolRow = ({
 
   const rss = usePoolRSS(poolNumber);
 
-  const rssScore = rss ? letterScore(rss.totalScore) : "?";
+  const rssScore = rss ? rss.poolScore : "?";
 
   const isMobile = useIsMobile();
 
@@ -212,9 +212,8 @@ const PoolRow = ({
               <Center height="100%" width="15%">
                 <SimpleTooltip
                   label={
-                    "Underlying RSS: " +
-                    (rss ? rss.totalScore.toFixed(2) : "?") +
-                    "%"
+                    " " +
+                    (rss && rss.assets ? rss.assets.map((asset) => {return ` ${asset.symbol}: ${asset.g}`}) : "?")
                   }
                 >
                   <b>{rssScore}</b>
