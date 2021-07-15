@@ -74,11 +74,7 @@ const Searchbar = ({
           height="100%"
           color="grey"
           children={
-            !!val ? (
-              loading ? (
-                <Spinner />
-              ) : null
-            ) :  null
+            !!val ? loading ? <Spinner /> : null : null
             //  (
             //   <IconButton
             //     icon={<CloseIcon />}
@@ -134,7 +130,7 @@ const SearchResults = ({
             ? `/token/eth`
             : `/token/${result.underlyingAddress}`;
         return (
-          <AppLink href={route} w="100%" h="100%">
+          <AppLink href={route} w="100%" h="100%" key={i}>
             <Row
               p={3}
               w="100%"

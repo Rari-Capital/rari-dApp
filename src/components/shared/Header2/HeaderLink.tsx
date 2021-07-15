@@ -131,13 +131,13 @@ export const DropDownLink = ({
           {name}
         </MenuButton>
         <MenuList bg="black">
-          {links.map((link) => {
+          {links.map((link, i) => {
             // Link
             if (link.type === MenuItemType.LINK)
               return <DropdownItem link={link.link!} key={link.link!.route} />;
             // MenuGroup
             else if (link.type === MenuItemType.MENUGROUP)
-              return <DropdownMenuGroup menuItem={link} />;
+              return <DropdownMenuGroup menuItem={link} key={i} />;
           })}
         </MenuList>
       </Menu>
@@ -162,8 +162,8 @@ const DropdownMenuGroup = ({ menuItem }: { menuItem: MenuItemInterface }) => {
     <>
       <MenuDivider />
       <MenuGroup title={menuItem.title}>
-        {menuItem.links?.map((link) => (
-          <DropdownItem link={link} />
+        {menuItem.links?.map((link, i) => (
+          <DropdownItem link={link} key={i} />
         ))}
       </MenuGroup>
     </>

@@ -18,6 +18,7 @@ import useTokenMarketInfo, {
   MarketInterval,
 } from "hooks/tokens/useTokenMarketInfo";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { SkeletonText, Spinner } from "@chakra-ui/react";
 
 const MarketChart = ({
   token,
@@ -71,9 +72,16 @@ const MarketChart = ({
         >
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
             <Box>
-              <Heading>
-                {priceHover ? smallUsdFormatter(priceHover) : "-"}
-              </Heading>
+              <SkeletonText
+                noOfLines={1}
+                width="100%"
+                height="100%"
+                isLoaded={!!priceHover}
+              >
+                <Heading>
+                  {priceHover ? smallUsdFormatter(priceHover) : "-"}
+                </Heading>
+              </SkeletonText>
             </Box>
             <Box ml={3} alignSelf="flex-start">
               <Heading
@@ -160,13 +168,18 @@ const MarketChart = ({
           h="100%"
           w="100%"
         >
-          <LineChart
-            data={formattedChartData}
-            marketInterval={marketInterval}
-            color={token?.color ?? "white"}
-            setValue={setPriceHover}
-            value={priceHover}
-          />
+          {" "}
+          {!formattedChartData ? (
+            <Spinner />
+          ) : (
+            <LineChart
+              data={formattedChartData}
+              marketInterval={marketInterval}
+              color={token?.color ?? "white"}
+              setValue={setPriceHover}
+              value={priceHover}
+            />
+          )}
         </Box>
 
         {/* Numeric data */}
