@@ -46,8 +46,6 @@ const TokenDetailsPage: NextPage<{ token: TokenData }> = () => {
 
   const { data, error } = useSWR(tokenAddress, tokenDataFetcher);
 
-  console.log({ data, error });
-
   if (!data)
     return (
       <Column
