@@ -9,15 +9,14 @@ import {
   Box,
 } from "@chakra-ui/react";
 
-import { Center, RowOrColumn, Column } from "buttered-chakra";
+import { Center, RowOrColumn, Column } from "utils/chakraUtils";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
 import DashboardBox from "components/shared/DashboardBox";
-import { Header } from "components/shared/Header";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { usePool2Balance } from "hooks/pool2/usePool2Balance";
@@ -29,7 +28,6 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
-import Footer from "components/shared/Footer";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -49,7 +47,6 @@ const Pool2Page = () => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
 
         <Column
           width="100%"
@@ -166,7 +163,6 @@ const Pool2Page = () => {
             </Column>
           </RowOrColumn>
         </Column>
-        <Footer />
       </Column>
     </>
   );

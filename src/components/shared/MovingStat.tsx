@@ -89,7 +89,7 @@ export const APYMovingStat = React.memo(
   }
 );
 
-type APYWithRefreshMovingProps = Omit<
+export type APYWithRefreshMovingProps = Omit<
   Omit<APYMovingStatProps, "interval">,
   "startingAmount"
 > &

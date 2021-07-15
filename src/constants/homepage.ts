@@ -1,5 +1,4 @@
 // Logos
-import FuseLogo from "static/fuseicon.png";
 import { FusePoolMetric } from "utils/fetchFusePoolData";
 import { Pool } from "utils/poolUtils";
 
@@ -83,7 +82,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on ETH deposits",
     bgColor: "#A5A7ED",
-    icon: FuseLogo,
+    icon: "/static/icons/eth-glow.svg",
     vaultType: Pool.ETH,
   },
   {
@@ -91,7 +90,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     title: "DAI Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
-    icon: FuseLogo,
+    icon: "/static/icons/dai-glow.svg",
     vaultType: Pool.STABLE,
   },
   {
@@ -99,7 +98,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     title: "Tetranode's Pool",
     subtitle: "Lend RGT and borrow against it",
     bgColor: "#00BB28",
-    icon: FuseLogo,
+    icon: "/static/icons/tetranode-pool.svg",
     fusePoolId: 6,
     fuseMetric: FusePoolMetric.TotalSuppliedUSD,
   },
@@ -108,7 +107,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     title: "Rari DAO Fuse Pool",
     subtitle: "Lend and borrow top community assets",
     bgColor: "#00BEFF",
-    icon: FuseLogo,
+    icon: "/static/icons/community-pool-glow.svg",
     fusePoolId: 3,
     fuseMetric: FusePoolMetric.TotalSuppliedUSD,
   },
@@ -117,28 +116,28 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     title: "Earn",
     subtitle: "Sustainable yield made easy",
     bgColor: "#6041FC",
-    icon: FuseLogo,
+    icon: "/static/icons/earn-glow.svg",
   },
   {
     type: HomepageOpportunityType.FusePage,
     title: "Fuse",
     subtitle: "The first open interest rate market protocol",
     bgColor: "#E6303A",
-    icon: FuseLogo,
+    icon: "/static/icons/fuse-glow.svg",
   },
   {
     type: HomepageOpportunityType.Pool2Page,
     title: "Pool2",
     subtitle: "Rewards for Rari Capital LPs",
     bgColor: "#00BBA8",
-    icon: FuseLogo,
+    icon: "/static/icons/pool2-glow.svg",
   },
   {
     type: HomepageOpportunityType.TranchesPage,
     title: "Tranches",
     subtitle: "Tranche yields across Earn Pools",
     bgColor: "#F45C30",
-    icon: FuseLogo,
+    icon: "/static/icons/tranches-glow.svg",
   },
 ];
 
@@ -148,7 +147,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "USDC Pool",
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
-    icon: FuseLogo,
+    icon: "/static/icons/usdc-glow.svg",
     vaultType: Pool.STABLE,
   },
   {
@@ -156,15 +155,23 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
-    icon: FuseLogo,
+    icon: "/static/icons/eth-glow.svg",
     vaultType: Pool.ETH,
   },
   {
     type: HomepageOpportunityType.EarnVault,
+    title: "DAI Pool",
+    subtitle: "Earn interest on DAI deposits",
+    bgColor: "#FFA700",
+    icon: "/static/icons/dai-glow.svg",
+    vaultType: Pool.STABLE,
+  },
+  {
+    type: HomepageOpportunityType.EarnVault,
     title: "Yield Pool",
-    subtitle: "Earn interest on YIEYieldLD deposits",
+    subtitle: "Earn interest on YIELD deposits",
     bgColor: "#101111",
-    icon: FuseLogo,
+    icon: "static/fuseicon.png",
     vaultType: Pool.YIELD,
   },
   {
@@ -172,7 +179,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "USDC Pool",
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
-    icon: FuseLogo,
+    icon: "/static/icons/usdc-glow.svg",
     vaultType: Pool.STABLE,
   },
   {
@@ -180,15 +187,23 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
-    icon: FuseLogo,
+    icon: "/static/icons/eth-glow.svg",
     vaultType: Pool.ETH,
+  },
+  {
+    type: HomepageOpportunityType.EarnVault,
+    title: "DAI Pool",
+    subtitle: "Earn interest on DAI deposits",
+    bgColor: "#FFA700",
+    icon: "/static/icons/dai-glow.svg",
+    vaultType: Pool.STABLE,
   },
   {
     type: HomepageOpportunityType.EarnVault,
     title: "Yield Pool",
     subtitle: "Earn interest on Yield deposits",
     bgColor: "#101111",
-    icon: FuseLogo,
+    icon: "static/fuseicon.png",
     vaultType: Pool.YIELD,
   },
   {
@@ -196,7 +211,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "USDC Pool",
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
-    icon: FuseLogo,
+    icon: "/static/icons/usdc-glow.svg",
     vaultType: Pool.STABLE,
   },
   {
@@ -204,15 +219,23 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     title: "ETH Pool",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#A5A7ED",
-    icon: FuseLogo,
+    icon: "/static/icons/eth-glow.svg",
     vaultType: Pool.ETH,
+  },
+  {
+    type: HomepageOpportunityType.EarnVault,
+    title: "DAI Pool",
+    subtitle: "Earn interest on DAI deposits",
+    bgColor: "#FFA700",
+    icon: "/static/icons/dai-glow.svg",
+    vaultType: Pool.STABLE,
   },
   {
     type: HomepageOpportunityType.EarnVault,
     title: "Yield Pool",
     subtitle: "Earn interest on Yield deposits",
     bgColor: "#101111",
-    icon: FuseLogo,
+    icon: "static/fuseicon.png",
     vaultType: Pool.YIELD,
   },
 ];

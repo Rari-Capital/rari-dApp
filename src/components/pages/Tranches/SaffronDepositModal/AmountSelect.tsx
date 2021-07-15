@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "buttered-chakra";
-import SmallWhiteCircle from "../../../../static/small-white-circle.png";
+import { Row, Column } from "utils/chakraUtils";
 
 import {
   Heading,
@@ -19,7 +18,7 @@ import {
   fetchTokenBalance,
 } from "../../../../hooks/useTokenBalance";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { ModalDivider } from "../../../shared/Modal";
 import { useRari } from "../../../../context/RariContext";
 
@@ -124,16 +123,10 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
     _setUserEnteredAmount(newAmount);
 
-    try {
-      BigNumber.DEBUG = true;
-
-      // Try to set the amount to BigNumber(newAmount):
-      const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
+    const bigAmount = new BigNumber(newAmount);
+    bigAmount.isNaN()
+      ? _setAmount(null)
+      : _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
 
     setUserAction(UserAction.NO_ACTION);
   };
@@ -454,7 +447,7 @@ const TokenNameAndMaxButton = ({
             width="100%"
             height="100%"
             borderRadius="50%"
-            backgroundImage={`url(${SmallWhiteCircle})`}
+            backgroundImage={`url(/static/small-white-circle.png)`}
             src={token.logoURL}
             alt=""
           />

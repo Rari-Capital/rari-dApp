@@ -8,15 +8,14 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row } from "buttered-chakra";
+import { Column, Center, Row } from "utils/chakraUtils";
 import { memo, ReactNode, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
 import FuseStatsBar from "./FuseStatsBar";
@@ -24,13 +23,13 @@ import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
 import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 import { handleGenericError } from "../../../utils/errorHandling";
 import LogRocket from "logrocket";
+import { useRouter } from "next/router";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -49,8 +48,6 @@ const FusePoolCreatePage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -67,7 +64,7 @@ const PoolConfiguration = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { fuse, address } = useRari();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [name, setName] = useState("");
   const [oracle, setOracle] = useState("");
@@ -153,7 +150,7 @@ const PoolConfiguration = () => {
           toBlock: "latest",
         })
       ).filter(
-        (event) =>
+        (event: any) =>
           event.returnValues.pool.comptroller.toLowerCase() ===
           poolAddress.toLowerCase()
       )[0];
@@ -161,7 +158,7 @@ const PoolConfiguration = () => {
       LogRocket.track("Fuse-CreatePool");
 
       let id = event.returnValues.index;
-      navigate(`/fuse/pool/${id}/edit`);
+      router.push(`/fuse/pool/${id}/edit`);
     } catch (e) {
       handleGenericError(e, toast);
     }

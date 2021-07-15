@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Row } from "buttered-chakra";
+import { Row } from "utils/chakraUtils";
 
 const HomeSection = ({ children, ...rowProps }: { children: ReactNode[] }) => {
   return (

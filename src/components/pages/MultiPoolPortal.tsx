@@ -1,4 +1,6 @@
 import { memo, ReactNode } from "react";
+// Next
+import dynamic from "next/dynamic";
 
 import {
   Center,
@@ -6,13 +8,12 @@ import {
   Row,
   RowOnDesktopColumnOnMobile,
   useWindowSize,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 import DashboardBox from "../shared/DashboardBox";
 
-// import SmallLogo from "../../static/small-logo.png";
-
-import CaptionedStat from "../shared/CaptionedStat";
-import { Link as RouterLink } from "react-router-dom";
+const CaptionedStat = dynamic(() => import("components/shared/CaptionedStat"), {
+  ssr: false,
+});
 
 import { FaTwitter } from "react-icons/fa";
 import {
@@ -32,30 +33,36 @@ import Marquee from "react-double-marquee";
 import { useRari } from "../../context/RariContext";
 
 import { MdSwapHoriz } from "react-icons/md";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 import { PoolTypeProvider } from "../../context/PoolContext";
 import { usePoolInfo } from "../../hooks/usePoolInfo";
 import { useQuery } from "react-query";
 
 import DepositModal from "./RariDepositModal";
-import { Header } from "../shared/Header";
 import { SimpleTooltip } from "../shared/SimpleTooltip";
 import {
   APYMovingStat,
   APYWithRefreshMovingStat,
   RefetchMovingStat,
 } from "../shared/MovingStat";
+
 import {
   smallStringUsdFormatter,
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
+
 import {
   usePoolBalance,
   useTotalPoolsBalance,
 } from "../../hooks/usePoolBalance";
-import PoolsPerformanceChart from "../shared/PoolsPerformance";
+
+const PoolsPerformanceChart = dynamic(
+  () => import("components/shared/PoolsPerformance"),
+  { ssr: false }
+);
+
 import { useTVLFetchers } from "../../hooks/useTVL";
 import { usePoolAPY } from "../../hooks/usePoolAPY";
 
@@ -65,14 +72,16 @@ import { getSDKPool, Pool } from "../../utils/poolUtils";
 import { useNoSlippageCurrencies } from "../../hooks/useNoSlippageCurrencies";
 import { usePoolInterestEarned } from "hooks/usePoolInterest";
 import { formatBalanceBN } from "utils/format";
-import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
+import AppLink from "components/shared/AppLink";
+import { useRouter } from "next/router";
 
 const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
-
   const { isAuthed } = useRari();
+
+  const router = useRouter();
 
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";
@@ -87,8 +96,6 @@ const MultiPoolPortal = memo(() => {
         width={columnWidth}
         px={columnWidth === "100%" ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
-
         <FundStats />
 
         <DashboardBox mt={4} width="100%" height="100px">
@@ -115,7 +122,6 @@ const MultiPoolPortal = memo(() => {
         </DashboardBox>
 
         <PoolCards />
-        <Footer />
       </Column>
     </>
   );
@@ -453,12 +459,10 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
           width="100%"
           mt="auto"
         >
-          <Link
-            /* @ts-ignore */
-            as={RouterLink}
+          <AppLink
             width="100%"
             className="no-underline"
-            to={"/pools/" + pool.toString()}
+            href={"/pools/" + pool.toString()}
           >
             <DashboardBox
               mt={4}
@@ -470,7 +474,7 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
             >
               <Center expand>{t("Access")}</Center>
             </DashboardBox>
-          </Link>
+          </AppLink>
 
           <DashboardBox
             mt={4}

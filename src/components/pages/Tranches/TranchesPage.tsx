@@ -1,7 +1,5 @@
-import { Center, Column, Row, RowOrColumn } from "buttered-chakra";
-import { useRari } from "../../../context/RariContext";
+import { Center, Column, Row, RowOrColumn } from "utils/chakraUtils";
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import {
   Heading,
   Link,
@@ -10,7 +8,7 @@ import {
   Image,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { MdSwapHoriz } from "react-icons/md";
 import DepositModal from "./SaffronDepositModal";
 import { SaffronProvider } from "./SaffronContext";
@@ -33,7 +31,6 @@ import {
 import { useSFIDistributions } from "hooks/tranches/useSFIDistributions";
 import { useSFIEarnings } from "hooks/tranches/useSFIEarnings";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
-import Footer from "components/shared/Footer";
 
 const WrappedTranchePage = memo(() => {
   return (
@@ -46,7 +43,6 @@ const WrappedTranchePage = memo(() => {
 export default WrappedTranchePage;
 
 const TranchePage = () => {
-  const { isAuthed } = useRari();
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
 
@@ -60,7 +56,6 @@ const TranchePage = () => {
         width={isMobile ? "100%" : "1000px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
 
         <RowOrColumn
           width="100%"
@@ -162,7 +157,6 @@ const TranchePage = () => {
             </DashboardBox>
           </Column>
         </RowOrColumn>
-        <Footer />
       </Column>
     </>
   );

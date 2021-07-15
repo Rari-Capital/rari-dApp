@@ -1,3 +1,5 @@
+/*  This is a dynamically imported component on client-side only */
+
 import { Box, Text } from "@chakra-ui/react";
 import {
   useSpacedLayout,
@@ -6,9 +8,9 @@ import {
   PercentageSize,
   Row,
   Center,
-} from "buttered-chakra";
+} from "utils/chakraUtils";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import Chart from "react-apexcharts";

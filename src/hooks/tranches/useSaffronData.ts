@@ -72,6 +72,8 @@ export const trancheRatingIndex = (trancheRating: TrancheRating): number => {
     : 2;
 };
 
+
+// Returns SFI price and all Saffron Pools
 export const useSaffronData = () => {
   const { data } = useQuery("saffronData", async () => {
     return (await fetch("https://api.spice.finance/apy")).json();
@@ -262,7 +264,8 @@ export const useEstimatedSFI = (): UseEstimatedSFIReturn | undefined => {
   return estimatedSFI;
 };
 
-export const useMySaffronData = (): SaffronTranchePool[] => {
+// Returns all Saffron Tranches which Rari Currenty supports
+export const useRariSupportedTranches = (): SaffronTranchePool[] => {
   const { saffronData } = useSaffronData();
 
   const currentPools: SaffronTranchePool[] = saffronData?.pools;
