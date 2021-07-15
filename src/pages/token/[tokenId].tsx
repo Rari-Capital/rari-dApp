@@ -19,8 +19,8 @@ const web3 = new Web3();
 const tokenDataFetcher = async (
   tokenAddress: string
 ): Promise<TokenData | undefined> => {
-  if (!tokenAddress) return undefined;
   console.log({ tokenAddress });
+  if (!tokenAddress) return undefined;
   const token: TokenData = await fetchTokenData(tokenAddress);
   return token;
 };
@@ -42,7 +42,7 @@ const TokenDetailsPage: NextPage<{ token: TokenData }> = () => {
       console.error(err);
       router.push("/404");
     }
-  }, []);
+  }, [router.query]);
 
   const { data, error } = useSWR(tokenAddress, tokenDataFetcher);
 
