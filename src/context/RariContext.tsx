@@ -22,7 +22,6 @@ import {
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "utils/chakraUtils";
 import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
@@ -103,6 +102,7 @@ async function launchModalLazy(
 
   if (!cacheProvider) {
     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
+    localStorage.removeItem("walletconnect");
   }
 
   const web3Modal = new Web3Modal.default({
@@ -133,8 +133,9 @@ export interface RariContextData {
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const RariContext =
-  createContext<RariContextData | undefined>(undefined);
+export const RariContext = createContext<RariContextData | undefined>(
+  undefined
+);
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
@@ -248,6 +249,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     });
 
     localStorage.removeItem("WEB3_CONNECT_CACHED_PROVIDER");
+    localStorage.removeItem("walletconnect");
 
     setAddress(EmptyAddress);
   }, [setWeb3ModalProvider, refetchAccountData]);
@@ -266,13 +268,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [web3ModalProvider, refetchAccountData]);
 
-  // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
-  const isMobile = useIsMobile();
+  // Automatically open the web3modal if they have previously logged in on the site:
   useEffect(() => {
     if (localStorage.WEB3_CONNECT_CACHED_PROVIDER) {
       login();
     }
-  }, [login, isMobile]);
+  }, [login]);
 
   const value = useMemo(
     () => ({

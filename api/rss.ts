@@ -3,7 +3,6 @@ import { NowRequest, NowResponse } from "@vercel/node";
 import { variance, median } from "mathjs";
 import fetch from "node-fetch";
 
-import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
 import {
   initFuseWithProviders,
@@ -25,10 +24,34 @@ const weightedCalculation = async (
 
 const fuse = initFuseWithProviders(turboGethURL);
 
-async function computeAssetRSS(address: string) {
+async function computeAssetRSS(address: string): Promise<{
+  liquidityUSD: number;
+
+  mcap: number;
+  volatility: number;
+  liquidity: number;
+  swapCount: number;
+  coingeckoMetadata: number;
+  exchanges: number;
+  transfers: number;
+
+  totalScore: number;
+}> {
   address = address.toLowerCase();
 
-  // MAX SCORE FOR ETH
+  // swap sOHM to OHM with a penalty.
+  if (address === "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f") {
+    let OHM_RSS = await computeAssetRSS(
+      "0x383518188c0c6d7730d91b2c03a03c837814a899"
+    );
+
+    // 10% smart contract risk penalty.
+    OHM_RSS.totalScore *= 0.9;
+
+    return OHM_RSS;
+  }
+
+  // max score for ETH.
   if (address === "0x0000000000000000000000000000000000000000") {
     return {
       liquidityUSD: 4_000_000_000,
@@ -42,23 +65,6 @@ async function computeAssetRSS(address: string) {
       transfers: 3,
 
       totalScore: 100,
-    };
-  }
-
-  // BNB IS WEIRD SO WE HAVE TO HARDCODE SOME STUFF
-  if (address === "0xB8c77482e45F1F44dE1745F52C74426C631bDD52") {
-    return {
-      liquidityUSD: 0,
-
-      mcap: 33,
-      volatility: 20,
-      liquidity: 0,
-      swapCount: 7,
-      coingeckoMetadata: 0,
-      exchanges: 3,
-      transfers: 3,
-
-      totalScore: 66,
     };
   }
 
@@ -379,8 +385,10 @@ export default async (request: NowRequest, response: NowResponse) => {
             "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" ||
           admin.toLowerCase() ===
             "0x49529a7ccbd9f8cabbfa36c65feb39ae08bdea0f" ||
-          admin.toLowerCase() === "0x639572471f2f318464dc01066a56867130e45e25" ||
-          admin.toLowerCase() === "0x7b34e07da62c716ab79390d37e09182b48f1936d" ||
+          admin.toLowerCase() ===
+            "0x639572471f2f318464dc01066a56867130e45e25" ||
+          admin.toLowerCase() ===
+            "0x7b34e07da62c716ab79390d37e09182b48f1936d" ||
           admin.toLowerCase() === "0x0cf30dc0d48604a301df8010cdc028c055336b2e"
         ) {
           return 1;

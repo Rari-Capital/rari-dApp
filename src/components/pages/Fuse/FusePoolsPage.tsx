@@ -197,7 +197,11 @@ const PoolRow = ({
           {isMobile ? null : (
             <>
               <Center height="100%" width="13%">
-                <b>{poolNumber}</b>
+                <b>
+                  {poolNumber == 18
+                    ? "3, 3" // TODO: Remove. Celebrating the ohmies
+                    : poolNumber}
+                </b>
               </Center>
               <Center height="100%" width="16%">
                 <b>{smallUsdFormatter(tvl)}</b>

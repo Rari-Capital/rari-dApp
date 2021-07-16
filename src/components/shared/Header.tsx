@@ -1,3 +1,5 @@
+import { MouseEventHandler } from "react";
+
 import {
   Box,
   Link,
@@ -79,7 +81,7 @@ export const Header = ({
       >
         <HeaderLink name={t("Overview")} route="/" />
 
-        <PoolsLink ml={4} />
+        <PoolsLink ml={3} />
 
         <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
 
@@ -87,17 +89,64 @@ export const Header = ({
 
         <HeaderLink ml={4} name={t("Tranches")} route="/tranches" />
 
-        {/* <HeaderLink ml={4} name={t("Vote")} route="https://vote.rari.capital" /> */}
+        <Box ml={4}>
+          <Menu autoSelect={false} placement="bottom">
+            <MenuButton>
+              <SubMenuText text={t("Governance")} />
+            </MenuButton>
 
-        <GovernanceLink ml={4} />
+            <Portal>
+              <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
+                <SubMenuItem
+                  name={t("Snapshot")}
+                  link="https://vote.rari.capital/"
+                />
+                <SubMenuItem
+                  name={t("Forums")}
+                  link="https://forums.rari.capital/"
+                />
+              </MenuList>
+            </Portal>
+          </Menu>
+        </Box>
 
-        {isAuthed && (
-          <HeaderLink ml={4} name={t("Positions")} route="/positions" />
-        )}
+        <UtilsLink ml={4} isAuthed={isAuthed} />
       </Row>
 
       <AccountButton />
     </Row>
+  );
+};
+
+export const UtilsLink = ({
+  isAuthed,
+  ml,
+}: {
+  isAuthed: boolean;
+  ml?: number | string;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box ml={ml ?? 0}>
+      <Menu autoSelect={false} placement="bottom">
+        <MenuButton>
+          <SubMenuText text={t("Utilities")} parentLink="/utils" />
+        </MenuButton>
+
+        <Portal>
+          <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
+            {isAuthed && (
+              <SubMenuItem name={t("Positions")} link="/utils/positions" />
+            )}
+            <SubMenuItem
+              name={t("Interest Rates")}
+              link="/utils/interest-rates"
+            />
+          </MenuList>
+        </Portal>
+      </Menu>
+    </Box>
   );
 };
 
@@ -107,7 +156,7 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
     <Box ml={ml ?? 0}>
       <Menu autoSelect={false} placement="bottom">
         <MenuButton>
-          <SubMenuText text="Pools" />
+          <SubMenuText text={t("Pools")} parentLink="/pools" />
         </MenuButton>
 
         <Portal>
@@ -123,52 +172,27 @@ export const PoolsLink = ({ ml }: { ml?: number | string }) => {
   );
 };
 
-export const GovernanceLink = ({ ml }: { ml?: number | string }) => {
-  const { t } = useTranslation();
-  return (
-    <Box ml={ml ?? 0}>
-      <Menu autoSelect={false} placement="bottom">
-        <MenuButton>
-          <SubMenuText text="Governance" nope />
-        </MenuButton>
-
-        <Portal>
-          <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
-            <SubMenuItem
-              name={t("Snapshot")}
-              link="https://vote.rari.capital/"
-            />
-            <SubMenuItem
-              name={t("Forums")}
-              link="https://forums.rari.capital/"
-            />
-          </MenuList>
-        </Portal>
-      </Menu>
-    </Box>
-  );
-};
-
-export const SubMenuText = ({ text, nope = false }: { text: string, nope?: boolean }) => {
+export const SubMenuText = ({
+  text,
+  parentLink,
+}: {
+  text: string;
+  parentLink?: string;
+}) => {
   const location = useLocation();
   const { t } = useTranslation();
-  const isOnThisRoute = location.pathname.includes("pools");
+  const isOnThisRoute = parentLink
+    ? location.pathname.includes(parentLink)
+    : false;
 
-  return (
-    <Text
-      fontWeight={(isOnThisRoute && !nope) ? "bold" : "normal"}
-      _hover={{ textDecoration: "underline" }}
-    >
-      {t(text)}
-    </Text>
-  );
+  return <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{t(text)}</Text>;
 };
 
 export const SubMenuItem = ({ name, link }: { name: string; link: string }) => {
   return (
     <MenuItem _focus={{ bg: "#2b2a2a" }} _hover={{ bg: "#2b2a2a" }}>
       <Box mx="auto">
-        <HeaderLink noUnderline name={name} route={link} />
+        <HeaderLink name={name} route={link} />
       </Box>
     </MenuItem>
   );
@@ -178,12 +202,15 @@ export const HeaderLink = ({
   name,
   route,
   ml,
-  noUnderline,
+  onMouseOver,
+  onMouseOut,
 }: {
   name: string;
   route: string;
-  noUnderline?: boolean;
+
   ml?: number | string;
+  onMouseOver?: MouseEventHandler<HTMLAnchorElement>;
+  onMouseOut?: MouseEventHandler<HTMLAnchorElement>;
 }) => {
   const location = useLocation();
 
@@ -199,7 +226,9 @@ export const HeaderLink = ({
       isExternal
       ml={ml ?? 0}
       whiteSpace="nowrap"
-      className={noUnderline ? "no-underline" : ""}
+      className="no-underline"
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
     >
       <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>
@@ -210,7 +239,9 @@ export const HeaderLink = ({
       to={route}
       ml={ml ?? 0}
       whiteSpace="nowrap"
-      className={noUnderline ? "no-underline" : ""}
+      className="no-underline"
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
     >
       <Text fontWeight={isOnThisRoute ? "bold" : "normal"}>{name}</Text>
     </Link>

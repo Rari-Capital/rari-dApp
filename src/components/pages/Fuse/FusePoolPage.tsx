@@ -249,7 +249,7 @@ const SupplyList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APY/WPY")}
+              {t("APY/LTV")}
             </Text>
           )}
 
@@ -337,7 +337,6 @@ const AssetSupplyRow = ({
   const tokenData = useTokenData(asset.underlyingToken);
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
-  const supplyWPY = convertMantissaToAPY(asset.supplyRatePerBlock, 7);
 
   const queryClient = useQueryClient();
 
@@ -402,6 +401,8 @@ const AssetSupplyRow = ({
 
   const isMobile = useIsMobile();
 
+  const { t } = useTranslation();
+
   return (
     <>
       <PoolModal
@@ -463,14 +464,13 @@ const AssetSupplyRow = ({
               %
             </Text>
 
-            <Text fontSize="sm">
-              {isStakedOHM
-                ? stakedOHMApyData
-                  ? (stakedOHMApyData.supplyWpy * 100).toFixed(3)
-                  : "?"
-                : supplyWPY.toFixed(3)}
-              %
-            </Text>
+            <SimpleTooltip
+              label={t(
+                "The Loan to Value (LTV) ratio defines the maximum amount of tokens in the pool that can be borrowed with a specific collateral. It’s expressed in percentage: if in a pool ETH has 75% LTV, for every 1 ETH worth of collateral, borrowers will be able to borrow 0.75 ETH worth of other tokens in the pool."
+              )}
+            >
+              <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
+            </SimpleTooltip>
           </Column>
         )}
 
@@ -560,7 +560,7 @@ const BorrowList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APR/WPR")}
+              {t("APR/TVL")}
             </Text>
           )}
 
@@ -656,7 +656,6 @@ const AssetBorrowRow = ({
   const tokenData = useTokenData(asset.underlyingToken);
 
   const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
-  const borrowWPR = convertMantissaToAPR(asset.borrowRatePerBlock) / 52;
 
   const { t } = useTranslation();
 
@@ -716,7 +715,15 @@ const AssetBorrowRow = ({
               {borrowAPR.toFixed(3)}%
             </Text>
 
-            <Text fontSize="sm">{borrowWPR.toFixed(3)}%</Text>
+            <SimpleTooltip
+              label={t(
+                "Total Value Lent (TVL) measures how much of this asset has been supplied in total. TVL does not account for how much of the lent assets have been borrowed, use 'liquidity' to determine the total unborrowed assets lent."
+              )}
+            >
+              <Text fontSize="sm">
+                {shortUsdFormatter(asset.totalSupplyUSD)} TVL
+              </Text>
+            </SimpleTooltip>
           </Column>
         )}
 
