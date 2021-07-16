@@ -80,7 +80,7 @@ export enum FusePoolMetric {
 
 export const filterPoolName = (name: string) => {
   if (name === "Tetranode's Pool") {
-    return "Tetranode's RGT Pool";
+    return "Tetranode's Locker";
   }
 
   if (name === "Tetranode's ETH Pool") {
