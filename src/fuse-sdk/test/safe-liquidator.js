@@ -1,10 +1,12 @@
 var assert = require('assert');
 var Big = require('big.js');
+var hre = require('hardhat');
 
 const Fuse = require("../dist/fuse.node.commonjs2.js");
 
 assert(process.env.TESTING_WEB3_PROVIDER_URL, "Web3 provider URL required");
-var fuse = new Fuse(process.env.TESTING_WEB3_PROVIDER_URL);
+var fuse = new Fuse(process.env.TESTING_WEB3_PROVIDER_URL, hre);
+hre.ethers.provider = new hre.ethers.providers.Web3Provider(fuse.web3.currentProvider);
 
 var erc20Abi = JSON.parse(fuse.compoundContracts["contracts/EIP20Interface.sol:EIP20Interface"].abi);
 var cErc20Abi = JSON.parse(fuse.compoundContracts["contracts/CErc20Delegate.sol:CErc20Delegate"].abi);
@@ -59,6 +61,22 @@ function dryRun(promise) {
   }
 }
 
+// hardhat_impersonateAccount
+function impersonateAccount(account) {
+  return new Promise(function(resolve, reject) {
+    fuse.web3.currentProvider.send({
+      jsonrpc: "2.0",
+      method: "hardhat_impersonateAccount",
+      params: [account],
+      id: new Date().getTime()
+    }, function(err, result) {
+      if (err) return reject(err);
+      assert(result.result);
+      resolve();
+    });
+  });
+}
+
 // Deploy pool + assets
 async function deployPool(conf, options) {
   if (conf.closeFactor === undefined) conf.poolName = "Example Fuse Pool " + (new Date()).getTime();
@@ -84,9 +102,6 @@ async function deployAsset(conf, collateralFactor, reserveFactor, adminFee, opti
   return assetAddress;
 }
 
-// Set FSL address and ABI
-fuse.contracts.FuseSafeLiquidator.options.address = "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49";
-
 // Set CERC20_DELEGATE_CONTRACT_ADDRESS
 Fuse.CERC20_DELEGATE_CONTRACT_ADDRESS = "0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1";
 
@@ -97,7 +112,16 @@ const LIQUIDATION_STRATEGIES = {
   UniswapLpToken: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
   YearnYVaultV1: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
   YearnYVaultV2: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
-  BalancerPoolToken: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319"
+  BalancerPoolToken: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+  SynthetixSynth: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
+  PoolTogether: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+  CurveSwap: "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
+  UniswapV1: "0x1291Be112d480055DaFd8a610b7d1e203891C274",
+  UniswapV2: "0x5f3f1dBD7B74C6B46e8c44f98792A1dAf8d69154",
+  SOhm: "0xb7278A61aa25c888815aFC32Ad3cC52fF24fE575",
+  WSTEth: "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90",
+  SushiBar: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+  UniswapV3: "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3"
 };
 
 // Supported Uniswap V2 protocols
@@ -156,8 +180,8 @@ async function getLiquidationStrategyData(token, strategy) {
       // Break if we have iterated through all coins
       if (coins[i] == "0x0000000000000000000000000000000000000000") break;
 
-      // Break if coin is WETH
-      if (coins[i].toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) {
+      // Break if coin is ETH or WETH
+      if (coins[i].toLowerCase() == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" || coins[i].toLowerCase() == Fuse.WETH_ADDRESS.toLowerCase()) {
         bestUniswapV2Router = UNISWAP_V2_PROTOCOLS.Uniswap.router;
         bestCurveCoinIndex = i;
         bestUnderlying = coins[i];
@@ -179,6 +203,17 @@ async function getLiquidationStrategyData(token, strategy) {
     // Return strategy data and Uniswap V2 router
     return [fuse.web3.eth.abi.encodeParameters(['uint8', 'address'], [bestCurveCoinIndex, bestUnderlying]), bestUniswapV2Router];
   }
+
+  if (strategy == "CurveSwap") {
+    // Get Curve pool for token => WETH
+    var registryAbi = [{"name":"find_pool_for_coins","outputs":[{"type":"address","name":""}],"inputs":[{"type":"address","name":"_from"},{"type":"address","name":"_to"}],"stateMutability":"view","type":"function"},{"name":"get_coin_indices","outputs":[{"type":"int128","name":""},{"type":"int128","name":""},{"type":"bool","name":""}],"inputs":[{"type":"address","name":"_pool"},{"type":"address","name":"_from"},{"type":"address","name":"_to"}],"stateMutability":"view","type":"function","gas":27456}];
+    var registry = new fuse.web3.eth.Contract(registryAbi, "0x7D86446dDb609eD0F5f8684AcF30380a356b2B4c");
+    var pool = await registry.methods.find_pool_for_coins(token, "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE").call();
+    var indices = await registry.methods.get_coin_indices(pool, token, "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE").call();
+
+    // Return strategy data and Uniswap V2 router
+    return [fuse.web3.eth.abi.encodeParameters(['address', 'int128', 'int128', 'address'], [pool, indices["0"], indices["1"], "0x0000000000000000000000000000000000000000"]), UNISWAP_V2_PROTOCOLS.Uniswap.router];
+  }
 }
 
 // Assets to be added to pool
@@ -193,7 +228,14 @@ const testAssetFixtures = [
   { name: "Fuse Uniswap DAI-ETH", symbol: "f123u-DAI-ETH", underlying: "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11", price: "42140750105351800" },
   { name: "Fuse Balancer WETH-50-WBTC-50", symbol: "f123b-WETH-50-WBTC-50", underlying: "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5", price: "100000000000000000000" }, // BPT WETH-WBTC
   { name: "Fuse yvlinkCRV", symbol: "f123-yvlinkCRV", underlying: "0x96Ea6AF74Af09522fCB4c28C269C26F59a31ced6", price: "14810827631962988" }, // crvLINK yVault V1
-  { name: "Fuse yvCurve-sETH", symbol: "f123-yvCurve-sETH", underlying: "0x986b4AFF588a109c09B50A03f42E4110E29D353F", price: "1879096400000000000" } // eCRV yVault V2
+  { name: "Fuse yvCurve-sETH", symbol: "f123-yvCurve-sETH", underlying: "0x986b4AFF588a109c09B50A03f42E4110E29D353F", price: "1879096400000000000" }, // eCRV yVault V2
+  { name: "Fuse sEUR", symbol: "f123-sEUR", underlying: "0xd71ecff9342a5ced620049e616c5035f1db98620", price: "421407501053518" },
+  { name: "Fuse PcUSDC", symbol: "f123-PcUSDC", underlying: "0xd81b1a8b1ad00baa2d6609e0bae28a38713872f7", price: "421407501053518000000000000" },
+  { name: "Fuse stETH", symbol: "f123-stETH", underlying: "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", price: "1000000000000000000" },
+  { name: "Fuse sOHM", symbol: "f123-sOHM", underlying: "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", price: "100000000000000000000000000" },
+  { name: "Fuse wstETH", symbol: "f123-wstETH", underlying: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", price: "920000000000000000" },
+  { name: "Fuse SOCKS", symbol: "f123-SOCKS", underlying: "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", price: "16000000000000000000" },
+  { name: "Fuse xSUSHI", symbol: "f123-xSUSHI", underlying: "0x8798249c2e607446efb7ad49ec89dd1865ff4272", price: "4500000000000000" }
 ];
 
 describe('FuseSafeLiquidator', function() {
@@ -202,11 +244,93 @@ describe('FuseSafeLiquidator', function() {
 
   before(async function() {
     this.timeout(60000);
-    accounts = ["0x45D54B22582c79c8Fb8f4c4F2663ef54944f397a", "0x1Eeb75CFad36EDb6C996f7809f30952B0CA0B5B9"];
+    accounts = ["0x45D54B22582c79c8Fb8f4c4F2663ef54944f397a", "0x1Eeb75CFad36EDb6C996f7809f30952B0CA0B5B9", "0x10dB6Bce3F2AE1589ec91A872213DAE59697967a"];
 
-    // _setPoolLimits
-    // TODO: Make this work without having to fork from block 12085726
-    await fuse.contracts.FuseFeeDistributor.methods._setPoolLimits(Fuse.Web3.utils.toBN(0), Fuse.Web3.utils.toBN(2).pow(Fuse.Web3.utils.toBN(256)).subn(1), Fuse.Web3.utils.toBN(2).pow(Fuse.Web3.utils.toBN(256)).subn(1)).send({ from: "0x10dB6Bce3F2AE1589ec91A872213DAE59697967a" });
+    // Impersonate accounts
+    if (process.env.HARDHAT_IMPERSONATE) for (const account of accounts) await impersonateAccount(account);
+
+    // Whitelist accounts[0] as deployer
+    await fuse.contracts.FusePoolDirectory.methods._whitelistDeployers([accounts[0]]).send({ from: "0x10dB6Bce3F2AE1589ec91A872213DAE59697967a" });
+
+    // Deploy liquidation strategies
+    if (process.env.HARDHAT_IMPERSONATE) for (const strategy of Object.keys(LIQUIDATION_STRATEGIES)) {
+      const contractFactory = await fuse.hre.ethers.getContractFactory(strategy + "Liquidator");
+      const contract = await contractFactory.deploy();
+      LIQUIDATION_STRATEGIES[strategy] = contract.address;
+    }
+
+    // Send tokens to accounts[0]
+    // Block 12680852
+    var tokensNeeded = [
+      [
+        "0xcee60cfa923170e4f8204ae08b4fa6a3f5656f3a",
+        "0xee1f07f88934c2811e3dcabdf438d975c3d62cd3",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0xfd4d8a17df4c27c1dd245d153ccf4499e806c87d",
+        "0xd47ca06c4866318ff9680695e39aa3a5bd337fbd",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x597aD1e0c13Bfe8025993D9e79C69E1c0233522e", "0xe19b0990735b625920972b0743403fbaf08ef8b2",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e6))
+      ],
+      [
+        "0x19D3364A399d251E894aC732651be8B0E4e85001", "0xe8e8f41ed29e46f34e206d7d2a7d6f735a3ff2cb",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x96Ea6AF74Af09522fCB4c28C269C26F59a31ced6", "0x31d9377e7500ebc345b821a9740005e280c904fd",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x986b4AFF588a109c09B50A03f42E4110E29D353F", "0x577ebc5de943e35cdf9ecb5bbe1f7d7cb6c7c647",
+        Fuse.Web3.utils.toBN(100).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0xa478c2975ab1ea89e8196811f51a7b7ade33eb11", "0xd916127b40e3383fcc09ab8feaae0f2a6a1300c1",
+        Fuse.Web3.utils.toBN(100).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5", "0x438fd34eab0e80814a231a983d8bfaf507ae16d4",
+        Fuse.Web3.utils.toBN(10).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0xd71ecff9342a5ced620049e616c5035f1db98620", "0xe896e539e557bc751860a7763c8dd589af1698ce",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0xd81b1a8b1ad00baa2d6609e0bae28a38713872f7", "0xb0b0f6f13a5158eb67724282f586a552e75b5728",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e6))
+      ],
+      [
+        "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "0x62e41b1185023bcc14a465d350e1dde341557925",
+        Fuse.Web3.utils.toBN(100).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", "0x1512c7c4a4266dc9a56b1f21c8cb19e13410e684",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e9))
+      ],
+      [
+        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", "0xf9ce182b0fbe597773ab9bb5159b7479047de8fe",
+        Fuse.Web3.utils.toBN(10).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "0xb9fddbd225b6c8cc24ce193e5fb95db76d783f2d",
+        Fuse.Web3.utils.toBN(1).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x8798249c2e607446efb7ad49ec89dd1865ff4272", "0xf977814e90da44bfa03b6295a0616a897441acec",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+    ];
+
+    for (const [tokenAddress, sender, amount] of tokensNeeded) {
+      if (process.env.HARDHAT_IMPERSONATE) await impersonateAccount(sender);
+      var token = new fuse.web3.eth.Contract(erc20Abi, tokenAddress);
+      if (Fuse.Web3.utils.toBN(await token.methods.balanceOf(accounts[0]).call()).lt(amount)) await token.methods.transfer(accounts[0], amount).send({ from: sender });
+    }
 
     // Deploy pool
     var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: "SimplePriceOracle" }, { from: accounts[0], gasPrice: "0", gas: 10e6 });
@@ -534,6 +658,52 @@ describe('FuseSafeLiquidator', function() {
     // Safe liquidate ETH borrow with flashloan using Balancer Pool Token (BPT) collateral + exchange seized collateral
     it('should liquidate an ETH borrow (using a flash swap) for Balancer Pool Token (BPT) collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5", "BalancerPoolToken", fuse.web3.eth.abi.encodeParameters(['address', 'address[][]'], [UNISWAP_V2_PROTOCOLS.Uniswap.router, [[], ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"]]]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
     it('should liquidate an ETH borrow (using a flash swap) for Balancer Pool Token (BPT) collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5", "BalancerPoolToken", fuse.web3.eth.abi.encodeParameters(['address', 'address[][]'], [UNISWAP_V2_PROTOCOLS.Uniswap.router, [[], ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"]]]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate ETH borrow with flashloan using Synthetix sEUR collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for Synthetix sEUR collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xd71ecff9342a5ced620049e616c5035f1db98620", "SynthetixSynth", fuse.web3.eth.abi.encodeParameters(["address"], ["0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb"]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for Synthetix sEUR collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xd71ecff9342a5ced620049e616c5035f1db98620", "SynthetixSynth", fuse.web3.eth.abi.encodeParameters(["address"], ["0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb"]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate ETH borrow with flashloan using PoolTogether PcUSDC collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for PoolTogether PcUSDC collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xd81b1a8b1ad00baa2d6609e0bae28a38713872f7", "PoolTogether", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for PoolTogether PcUSDC collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xd81b1a8b1ad00baa2d6609e0bae28a38713872f7", "PoolTogether", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate ETH borrow with flashloan using token collateral (via 0x) + exchange seized collateral
+    /* function get0xQuote(sellToken) {
+      var decoded = (await axios.get('https://api.0x.org/swap/v1/quote?sellToken=' + sellToken + '&buyToken=WETH&sellAmount=1000000000000000000', {
+        params: {
+          vs_currencies: "eth",
+          sellAmount: tokenAddress
+        }
+      })).data;
+      if (!decoded || !decoded[tokenAddress]) throw "Failed to decode price of " + tokenAddress + " from CoinGecko";
+      return [res.to, res.data];
+    }
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via 0x) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "ZeroEx", fuse.web3.eth.abi.encodeParameters(["address"], [Fuse.WETH_ADDRESS]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via 0x) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "ZeroEx", fuse.web3.eth.abi.encodeParameters(["address"], [Fuse.WETH_ADDRESS]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); */
+
+    // Safe liquidate ETH borrow with flashloan using token collateral (via Curve) + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Curve) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap", ...await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap")) }));
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Curve) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap", ...await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap")) }));
+
+    // Safe liquidate ETH borrow with flashloan using sOHM collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for sOHM collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", ["SOhm", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x383518188c0c6d7730d91b2c03a03c837814a899", "0x6b175474e89094c44da98b954eedeac495271d0f"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for sOHM collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", ["SOhm", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x383518188c0c6d7730d91b2c03a03c837814a899", "0x6b175474e89094c44da98b954eedeac495271d0f"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate ETH borrow with flashloan using wstETH collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for wstETH collateral and exchange to ETH', dryRun(async () => { var [strategyData, bestUniswapV2Router] = await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap"); await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", ["WSTEth", "CurveSwap"], ["0x0", strategyData], bestUniswapV2Router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for wstETH collateral and exchange to another token', dryRun(async () => { var [strategyData, bestUniswapV2Router] = await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap"); await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", ["WSTEth", "CurveSwap"], ["0x0", strategyData], bestUniswapV2Router) }));
+
+    // Safe liquidate ETH borrow with flashloan using token collateral (via Uniswap V1 liquidator) + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Uniswap V1 liquidator) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV1", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Uniswap V1 liquidator) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV1", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+
+    // Safe liquidate ETH borrow with flashloan using xSUSHI collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for xSUSHI collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x8798249c2e607446efb7ad49ec89dd1865ff4272", "SushiBar", undefined, UNISWAP_V2_PROTOCOLS.SushiSwap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for xSUSHI collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x8798249c2e607446efb7ad49ec89dd1865ff4272", "SushiBar", undefined, UNISWAP_V2_PROTOCOLS.SushiSwap.router) }));
+
+    // Safe liquidate ETH borrow with flashloan using token collateral (via Uniswap V3 liquidator) + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+    it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
   });
 
   describe('#safeLiquidateToTokensWithFlashLoan()', function() {
@@ -593,5 +763,37 @@ describe('FuseSafeLiquidator', function() {
     // Safe liquidate token borrow with flashloan using Balancer Pool Token (BPT) collateral + exchange seized collateral
     it('should liquidate a token borrow (using a flash swap) for Balancer Pool Token (BPT) collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5", "BalancerPoolToken", fuse.web3.eth.abi.encodeParameters(['address', 'address[][]'], [UNISWAP_V2_PROTOCOLS.Uniswap.router, [[], ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"]]]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
     it('should liquidate a token borrow (using a flash swap) for Balancer Pool Token (BPT) collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x1eff8af5d577060ba4ac8a29a13525bb0ee2a3d5", "BalancerPoolToken", fuse.web3.eth.abi.encodeParameters(['address', 'address[][]'], [UNISWAP_V2_PROTOCOLS.Uniswap.router, [[], ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"]]]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate token borrow with flashloan using Synthetix sEUR collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for Synthetix sEUR collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xd71ecff9342a5ced620049e616c5035f1db98620", "SynthetixSynth", fuse.web3.eth.abi.encodeParameters(["address"], ["0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb"]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate a token borrow (using a flash swap) for Synthetix sEUR collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xd71ecff9342a5ced620049e616c5035f1db98620", "SynthetixSynth", fuse.web3.eth.abi.encodeParameters(["address"], ["0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb"]), UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate token borrow with flashloan using PoolTogether PcUSDC collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for PoolTogether PcUSDC collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xd81b1a8b1ad00baa2d6609e0bae28a38713872f7", "PoolTogether", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate a token borrow (using a flash swap) for PoolTogether PcUSDC collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xd81b1a8b1ad00baa2d6609e0bae28a38713872f7", "PoolTogether", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate token borrow with flashloan using token collateral (via Curve) + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for token collateral (via Curve) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap", ...await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap")) }));
+    it('should liquidate a token borrow (using a flash swap) for token collateral (via Curve) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap", ...await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap")) }));
+
+    // Safe liquidate token borrow with flashloan using sOHM collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for sOHM collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", ["SOhm", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x383518188c0c6d7730d91b2c03a03c837814a899", "0x6b175474e89094c44da98b954eedeac495271d0f"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate a token borrow (using a flash swap) for sOHM collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", ["SOhm", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x383518188c0c6d7730d91b2c03a03c837814a899", "0x6b175474e89094c44da98b954eedeac495271d0f"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate token borrow with flashloan using wstETH collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for wstETH collateral and exchange to ETH', dryRun(async () => { var [strategyData, bestUniswapV2Router] = await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap"); await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", ["WSTEth", "CurveSwap"], ["0x0", strategyData], bestUniswapV2Router) }));
+    it('should liquidate a token borrow (using a flash swap) for wstETH collateral and exchange to another token', dryRun(async () => { var [strategyData, bestUniswapV2Router] = await getLiquidationStrategyData("0xae7ab96520de3a18e5e111b5eaab095312d7fe84", "CurveSwap"); await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", ["WSTEth", "CurveSwap"], ["0x0", strategyData], bestUniswapV2Router) }));
+
+    // Safe liquidate token borrow with flashloan using token collateral (via Uniswap V1 liquidator) + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for token collateral (via Uniswap V1 liquidator) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV1", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+    it('should liquidate a token borrow (using a flash swap) for token collateral (via Uniswap V1 liquidator) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV1", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+
+    // Safe liquidate token borrow with flashloan using xSUSHI collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for xSUSHI collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x8798249c2e607446efb7ad49ec89dd1865ff4272", "SushiBar", undefined, UNISWAP_V2_PROTOCOLS.SushiSwap.router) }));
+    it('should liquidate a token borrow (using a flash swap) for xSUSHI collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x8798249c2e607446efb7ad49ec89dd1865ff4272", "SushiBar", undefined, UNISWAP_V2_PROTOCOLS.SushiSwap.router) }));
+
+    // Safe liquidate token borrow with flashloan using token collateral (via Uniswap V3 liquidator) + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+    it('should liquidate a token borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
   });
 });
