@@ -31,11 +31,11 @@ export default class Fuse {
     "0x8dA38681826f4ABBe089643D2B3fE4C6e4730493";
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0x94b2200d28932679def4a7d08596a229553a994e";
+    "0x94b2200d28932679def4a7d08596a229553a994e"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
-    "0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c";
+    "0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
-    "0x60884c8faad1b30b1c76100da92b76ed3af849ba";
+    "0x60884c8faad1b30b1c76100da92b76ed3af849ba"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79";
@@ -43,27 +43,41 @@ export default class Fuse {
     "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC";
 
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
-    PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
     ChainlinkPriceOracleV2: "0xb0602af43Ca042550ca9DA3c33bA3aC375d20Df4",
-    UniswapView: "", // NOT IN USE
-    Keep3rPriceOracle_Uniswap: "0xb90de476d438b37a4a143bf729a9b2237e544af6", // NO LONGER IN USE
-    Keep3rPriceOracle_SushiSwap: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0", // NO LONGER IN USE
-    Keep3rV2PriceOracle_Uniswap: "0xd6a8cac634e59c00a3d4163f839d068458e39869", // NO LONGER IN USE
+    // PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    // UniswapAnchoredView: "", // NOT IN USE
+    // UniswapView: "", // NOT IN USE
+    // Keep3rPriceOracle_Uniswap: "0xb90de476d438b37a4a143bf729a9b2237e544af6", // NO LONGER IN USE
+    // Keep3rPriceOracle_SushiSwap: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0", // NO LONGER IN USE
+    // Keep3rV2PriceOracle_Uniswap: "0xd6a8cac634e59c00a3d4163f839d068458e39869", // NO LONGER IN USE
     UniswapTwapPriceOracle_Uniswap: "0xCd8f1c72Ff98bFE3B307869dDf66f5124D57D3a9",
     UniswapTwapPriceOracle_SushiSwap: "0xfD4B4552c26CeBC54cD80B1BDABEE2AC3E7eB324",
-    UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
-    RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
-    YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
-    YVaultV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
-    AlphaHomoraV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
-    AlphaHomoraV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
-    SynthetixPriceOracle: "", // TODO: Set correct mainnet address after deployment
-    BalancerLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    UniswapLpTokenPriceOracle: "0x50f42c004bd9b0e5acc65c33da133fbfbe86c7c0",
+    UniswapV3TwapPriceOracle_Uniswap_3000: "0x80829b8A344741E28ae70374Be02Ec9d4b51CD89",
+    UniswapV3TwapPriceOracleV2_Uniswap_10000_USDC: "0x3288a2d5f11FcBefbf77754e073cAD2C10325dE2",
+    // RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
+    YVaultV1PriceOracle: "0xb04be6165cf1879310e48f8900ad8c647b9b5c5d", // NOT CURRENTLY IN USE
+    YVaultV2PriceOracle: "0xb669d0319fb9de553e5c206e6fbebd58512b668b",
+    // AlphaHomoraV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    // AlphaHomoraV2PriceOracle: "", // TODO: Set correct mainnet address after deployment
+    // SynthetixPriceOracle: "", // TODO: Set correct mainnet address after deployment
+    // BalancerLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     MasterPriceOracle: "0x1887118E49e0F4A78Bd71B792a49dE03504A764D",
     CurveLpTokenPriceOracle: "0x43c534203339bbf15f62b8dde91e7d14195e7a60",
     CurveLiquidityGaugeV2PriceOracle: "0xd9eefdb09d75ca848433079ea72ef609a1c1ea21",
+    FixedEthPriceOracle: "0xffc9ec4adbf75a537e4d233720f06f0df01fb7f5",
+    FixedEurPriceOracle: "0x817158553F4391B0d53d242fC332f2eF82463e2a",
+    WSTEthPriceOracle: "0xb11de4c003c80dc36a810254b433d727ac71c517",
+    FixedTokenPriceOracle_OHM: "0x71FE48562B816D03Ce9e2bbD5aB28674A8807CC5",
+    UniswapTwapPriceOracleV2_SushiSwap_DAI: "0x72fd4c801f5845ab672a12bce1b05bdba1fd851a", // v1.1.2
+    UniswapTwapPriceOracleV2_SushiSwap_CRV: "0x552163f2a63f82bb47b686ffc665ddb3ceaca0ea", // v1.1.3
+    UniswapTwapPriceOracleV2_SushiSwap_USDC: "0x9ee412a83a52f033d23a0b7e2e030382b3e53208", // v1.1.3
+    SushiBarPriceOracle: "0x290E0f31e96e13f9c0DB14fD328a3C2A94557245",
   };
+
+  static UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS = "0xa170dba2cd1f68cdd7567cf70184d5492d2e8138";
+  static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS = "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1";
@@ -75,60 +89,66 @@ export default class Fuse {
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
-    SimplePriceOracle:
-      "0x825c814c2e008137a46d355a57d0d89f6eea946ad01f0e8203fd33162e3ed799",
-    PreferredPriceOracle:
-      "0x3899c6d9b979281ffb059859e0c8c2028662201d3796e0ea10e841e1d68a997f",
-    ChainlinkPriceOracle:
-      "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
-    Keep3rPriceOracle:
-      "0x36a0d4743a92d3565f3d2709c41e9983bb263c27c339ddbb8ffa87a939498f7d",
-    MasterPriceOracle:
-      "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
-    UniswapAnchoredView:
-      "0x764bdac98ac462a37513087378aef33380ac062baa2f86c2c30e5d6a78fabad0",
-    UniswapView:
-      "0x817d46149b29738f641c876c56fd7524db4c8d5376f7cc756e94c9e32c29b18b",
-    UniswapLpTokenPriceOracle:
-      "0xc79e96f40986213d5f9fc403b5f37e00d3b57842ef0fae24c750222c02592f9f",
-    RecursivePriceOracle:
-      "0x6f5280d0028fff9ae0aaa447c6c36ff3b270d9675b74762ed2caf9ce3371d63e",
-    YVaultV1PriceOracle:
-      "0xeb5c1b3acb093a4158251f5955540f220c72200ffaf32ce89bfefbce0c0b7f49",
-    YVaultV2PriceOracle:
-      "0x5a07033c6820e6ecc517dd94d03b5e38bf15334d4b3c0624dcdb810698196608",
-    AlphaHomoraV1PriceOracle:
-      "0xfbec68bfe8dfa9e8bab8af26ee5ae9adeb2dcbf2c91d11c3dd497b6b6c2deb64",
-    SynthetixPriceOracle:
-      "0x5c92648ceca2c5698fddc9a35af43275c821961ca9056c50da592566daaebdc6",
+    "ChainlinkPriceOracle": "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
+    "ChainlinkPriceOracleV2": "0x8d2bcaa1429031ae2b19a4516e5fdc68fb9346f158efb642fcf9590c09de2175",
+    "UniswapTwapPriceOracle_Uniswap": "0xa2537dcbd2b55b1a690db3b83fa1042f86b21ec3e1557f918bc3930b6bbb9244",
+    "UniswapTwapPriceOracle_SushiSwap": "0x9b11abfe7bfc1dcef0b1bc513959f1172cfe2cb595c5131b9cabc3b6448d89ac",
+    "UniswapV3TwapPriceOracle_Uniswap_3000": "0xb300f7f64110b952340e896d33f133482de6715f1b8b7e0acbd2416e0e6593c1",
+    "UniswapV3TwapPriceOracleV2_Uniswap_10000_USDC": "0xc301f891f1f905e68d1c5df5202cf0eec2ee8abcf3a510d5bd00d46f7dea01b4",
+    "YVaultV1PriceOracle": "0xd0dda181a4eb699a966b23edb883cff43377297439822b1b0f99b06af2002cc3",
+    "YVaultV2PriceOracle": "0x177c22cc7d05280cea84a36782303d17246783be7b8c0b6f9731bb9002ffcc68",
+    "MasterPriceOracle": "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
+    "CurveLpTokenPriceOracle": "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
+    "CurveLiquidityGaugeV2PriceOracle": "0xfcf0d93de474152898668c4ebd963e0237bfc46c3d5f0ce51b7045b60c831734",
+    "FixedEthPriceOracle": "0xcb669c93632a1c991adced5f4d97202aa219fab3d5d86ebd28f4f62ad7aa6cb3",
+    "FixedEurPriceOracle": "0x678dbe9f2399a44e89edc934dc17f6d4ee7004d9cbcee83c0fa0ef43de924b84",
+    "WSTEthPriceOracle": "0x11daa8dfb8957304aa7d926ce6876c523c7567b4052962e65e7d6a324ddcb4cc",
+    "FixedTokenPriceOracle_OHM": "0x136d369f53594c2f10e3ff3f14eaaf0bada4a63964f3cfeda3923e3531e407dc",
+    "UniswapTwapPriceOracleV2_SushiSwap_DAI": "0xb4d279232ab52a2fcaee6dc47db486a733c24a499ade9d7de1b0d417d4730817",
+    "SushiBarPriceOracle": "0x3736e8b6c11fcd413c0b60c3291a3a2e2ebe496a2780f3c45790a123f5ee9705"
   };
 
   static ORACLES = [
     "SimplePriceOracle",
     "PreferredPriceOracle",
     "ChainlinkPriceOracle",
-    "Keep3rPriceOracle",
+    // "Keep3rPriceOracle",
     "MasterPriceOracle",
-    "UniswapAnchoredView",
-    "UniswapView",
+    // "UniswapAnchoredView",
+    // "UniswapView",
     "UniswapLpTokenPriceOracle",
     "RecursivePriceOracle",
     "YVaultV1PriceOracle",
     "YVaultV2PriceOracle",
     "AlphaHomoraV1PriceOracle",
     "SynthetixPriceOracle",
+    "ChainlinkPriceOracleV2",
+    "CurveLpTokenPriceOracle",
+    "CurveLiquidityGaugeV2PriceOracle",
+    "FixedEthPriceOracle",
+    "FixedEurPriceOracle",
+    "FixedTokenPriceOracle",
+    "WSTEthPriceOracle",
+    "UniswapTwapPriceOracle",
+    "UniswapTwapPriceOracleV2",
+    "UniswapV3TwapPriceOracle",
+    "UniswapV3TwapPriceOracleV2",
+    "SushiBarPriceOracle"
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel_ETH:
-      "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
-    WhitePaperInterestRateModel_WBTC:
-      "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
-    JumpRateModel_DAI: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
-    JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
-    JumpRateModel_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
-    JumpRateModel_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
+    WhitePaperInterestRateModel_Compound_ETH: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    WhitePaperInterestRateModel_Compound_WBTC: "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
+    JumpRateModel_Compound_Stables: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
+    JumpRateModel_Compound_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
+    JumpRateModel_Cream_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
+    JumpRateModel_Cream_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
+    JumpRateModel_Cream_SLP: "",
     JumpRateModel_ALCX: "0x58c3e7119ec200c09b2b3a9f8ce3bd77b6b47012",
+    JumpRateModel_Fei_FEI: "0x8f47be5692180079931e2f983db6996647aba0a5",
+    JumpRateModel_Fei_TRIBE: "0x075538650a9c69ac8019507a7dd1bd879b12c1d7",
+    JumpRateModel_Fei_ETH: "0xbab47e4b692195bf064923178a90ef999a15f819",
+    JumpRateModel_Fei_DAI: "0xede47399e2aa8f076d40dc52896331cba8bd40f7",
   };
 
   constructor(web3Provider) {
@@ -293,7 +313,7 @@ export default class Fuse {
       if (!conf) conf = {};
 
       switch (model) {
-        case "PreferredPriceOracle":
+        /* case "PreferredPriceOracle":
           // Deploy ChainlinkPriceOracle
           if (!conf.chainlinkPriceOracle)
             conf.chainlinkPriceOracle = await this.deployPriceOracle(
@@ -329,7 +349,7 @@ export default class Fuse {
             })
             .send(options);
 
-          break;
+          break; */
         case "ChainlinkPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["ChainlinkPriceOracle"].abi
@@ -345,7 +365,7 @@ export default class Fuse {
             })
             .send(options);
           break;
-        case "UniswapAnchoredView":
+        /* case "UniswapAnchoredView":
           // Input validation/default config
           if (
             conf.reporter === undefined ||
@@ -460,7 +480,7 @@ export default class Fuse {
               arguments: deployArgs,
             })
             .send(options);
-          break;
+          break; */
         case "UniswapLpTokenPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["UniswapLpTokenPriceOracle"].abi
@@ -473,7 +493,7 @@ export default class Fuse {
             })
             .send(options);
           break;
-        case "Keep3rPriceOracle":
+        /* case "Keep3rPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["Keep3rPriceOracle"].abi
           );
@@ -481,6 +501,85 @@ export default class Fuse {
           priceOracle = await priceOracle
             .deploy({
               data: oracleContracts["Keep3rPriceOracle"].bin,
+              arguments: deployArgs,
+            })
+            .send(options);
+          break; */
+        case "UniswapTwapPriceOracle": // Uniswap V2 TWAPs
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["UniswapTwapPriceOracle"].abi
+          );
+          var deployArgs = [conf.rootOracle ? conf.rootOracle : Fuse.UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS, conf.uniswapV2Factory ? conf.uniswapV2Factory : "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"]; // Default to official Uniswap V2 factory
+          priceOracle = await priceOracle
+            .deploy({
+              data: oracleContracts["UniswapTwapPriceOracle"].bin,
+              arguments: deployArgs,
+            })
+            .send(options);
+          break;
+        case "UniswapTwapPriceOracleV2": // Uniswap V2 TWAPs
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["UniswapTwapPriceOracleV2"].abi
+          );
+          var deployArgs = [conf.rootOracle ? conf.rootOracle : Fuse.UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS, conf.uniswapV2Factory ? conf.uniswapV2Factory : "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", conf.baseToken ? conf.baseToken : Fuse.WETH_ADDRESS]; // Default to official Uniswap V2 factory
+          priceOracle = await priceOracle
+            .deploy({
+              data: oracleContracts["UniswapTwapPriceOracleV2"].bin,
+              arguments: deployArgs,
+            })
+            .send(options);
+          break;
+        case "ChainlinkPriceOracleV2":
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["ChainlinkPriceOracleV2"].abi
+          );
+          var deployArgs = [
+            conf.admin ? conf.admin : options.from,
+            conf.canAdminOverwrite ? true : false,
+          ];
+          priceOracle = await priceOracle
+            .deploy({
+              data: oracleContracts["ChainlinkPriceOracleV2"].bin,
+              arguments: deployArgs,
+            })
+            .send(options);
+          break;
+        case "UniswapV3TwapPriceOracle":
+          if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0) throw "Invalid fee tier passed to UniswapV3TwapPriceOracle deployment.";
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["UniswapV3TwapPriceOracle"].abi
+          );
+          var deployArgs = [conf.uniswapV3Factory ? conf.uniswapV3Factory : "0x1f98431c8ad98523631ae4a59f267346ea31f984", conf.feeTier]; // Default to official Uniswap V3 factory
+          priceOracle = await priceOracle
+            .deploy({
+              data: oracleContracts["UniswapV3TwapPriceOracle"].bin,
+              arguments: deployArgs,
+            })
+            .send(options);
+          break;
+        case "UniswapV3TwapPriceOracleV2":
+          if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0) throw "Invalid fee tier passed to UniswapV3TwapPriceOracleV2 deployment.";
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["UniswapV3TwapPriceOracleV2"].abi
+          );
+          var deployArgs = [conf.uniswapV3Factory ? conf.uniswapV3Factory : "0x1f98431c8ad98523631ae4a59f267346ea31f984", conf.feeTier, conf.baseToken]; // Default to official Uniswap V3 factory
+          priceOracle = await priceOracle
+            .deploy({
+              data: oracleContracts["UniswapV3TwapPriceOracleV2"].bin,
+              arguments: deployArgs,
+            })
+            .send(options);
+          break;
+        case "FixedTokenPriceOracle":
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["FixedTokenPriceOracle"].abi
+          );
+          var deployArgs = [
+            conf.baseToken
+          ];
+          priceOracle = await priceOracle
+            .deploy({
+              data: oracleContracts["FixedTokenPriceOracle"].bin,
               arguments: deployArgs,
             })
             .send(options);
