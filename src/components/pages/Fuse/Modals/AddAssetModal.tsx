@@ -63,6 +63,21 @@ export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
   return cErc20Delegate;
 };
 
+export const useLiquidationIncentive = (comptrollerAddress: string) => {
+  const { fuse } = useRari();
+
+  const { data } = useQuery(
+    comptrollerAddress + " comptrollerData",
+    async () => {
+      const comptroller = createComptroller(comptrollerAddress, fuse);
+
+      return comptroller.methods.liquidationIncentiveMantissa().call();
+    }
+  );
+
+  return data;
+};
+
 export const useCTokenData = (
   comptrollerAddress?: string,
   cTokenAddress?: string
@@ -274,6 +289,8 @@ export const AssetSettings = ({
       handleGenericError(e, toast);
     }
   };
+
+  const liquidationIncentiveMantissa = useLiquidationIncentive(comptrollerAddress);
 
   const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
 
@@ -490,7 +507,12 @@ export const AssetSettings = ({
           value={collateralFactor}
           setValue={setCollateralFactor}
           formatValue={formatPercentage}
-          max={90}
+          max={
+            liquidationIncentiveMantissa
+              ? // 100% CF - Liquidation Incentive (ie: 8%) - 5% buffer
+                100 - (liquidationIncentiveMantissa.toString() / 1e16 - 100) - 5
+              : 90
+          }
         />
       </ConfigRow>
 
