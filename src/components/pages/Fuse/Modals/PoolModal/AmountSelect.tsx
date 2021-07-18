@@ -94,7 +94,7 @@ export async function testForCTokenErrorAndSend(
     if (response >= 1000) {
       const comptrollerResponse = response - 1000;
 
-      let msg = ComptrollerErrorCodes[comptrollerResponse];
+      let msg = ComptrollerErrorCodes[comptrollerResponse] ?? response;
 
       if (msg === "BORROW_BELOW_MIN") {
         msg =

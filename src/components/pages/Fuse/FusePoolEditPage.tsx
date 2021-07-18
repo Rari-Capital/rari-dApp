@@ -95,7 +95,7 @@ export async function testForComptrollerErrorAndSend(
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
     const err = new Error(
-      failMessage + " Code: " + ComptrollerErrorCodes[response]
+      failMessage + " Code: " + (ComptrollerErrorCodes[response] ?? response)
     );
 
     LogRocket.captureException(err);
