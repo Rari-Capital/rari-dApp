@@ -139,6 +139,7 @@ export default class Rari {
           Fuse15: subpools["Fuse15"],
           Fuse16: subpools["Fuse16"],
           Fuse18: subpools["Fuse18"],
+          Fuse6: subpools["Fuse6"],
         },
         this.getAllTokens
       ),
