@@ -109,8 +109,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0x8fcb1783bf4b71a51f702af0c266729c4592204a")
   ) {
     // OT token names are too long.
-    symbol = "OT-aUSDC-22DEC";
-    name = "OT aUSDC DEC 22 2020";
+    symbol = "OT-aUSDC-22";
+    name = "OT-aUSDC DEC22-20";
   }
 
   if (
@@ -118,8 +118,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0x3d4e7f52efafb9e0c70179b688fc3965a75bcfea")
   ) {
     // OT token names are too long.
-    symbol = "OT-cDAI-22DEC";
-    name = "OT cDAI DEC 22 2020";
+    symbol = "OT-cDAI-22";
+    name = "OT-cDAI DEC22-20";
   }
 
   const basicTokenInfo = {
