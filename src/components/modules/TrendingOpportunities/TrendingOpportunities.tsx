@@ -9,7 +9,7 @@ import { useTrendingOpportunities } from "hooks/opportunities/useTrendingOpportu
 
 import { TokenData } from "hooks/useTokenData";
 import React, { useMemo } from "react";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 const TrendingOpportunities = ({
   token,

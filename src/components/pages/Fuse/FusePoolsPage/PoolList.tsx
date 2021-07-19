@@ -8,7 +8,7 @@ import { MergedPool } from "hooks/fuse/useFusePools";
 import { useTranslation } from 'next-i18next';
 
 // Utils
-import { Column, Row, useIsMobile } from "utils/chakraUtils";
+import { Column, Row, useIsMobile } from "lib/chakraUtils";
 import { filterPoolName } from "utils/fetchFusePoolData";
 
 export const PoolList = ({ pools }: { pools: MergedPool[] | null }) => {

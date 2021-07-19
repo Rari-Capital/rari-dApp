@@ -6,7 +6,7 @@ import { HashLoader } from "react-spinners";
 import { TokenData } from "hooks/useTokenData";
 
 // Utils
-import { Column } from "utils/chakraUtils";
+import { Column } from "lib/chakraUtils";
 import { useMemo } from "react";
 import { AmountSelectUserAction } from "./AmountSelectNew";
 

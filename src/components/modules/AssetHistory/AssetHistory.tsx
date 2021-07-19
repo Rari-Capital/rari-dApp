@@ -3,7 +3,7 @@ import DashboardBox from "components/shared/DashboardBox";
 
 // Utils
 import { TokenData } from "hooks/useTokenData";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 const AssetHistory = ({
   token,

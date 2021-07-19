@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 // Components
 import { Box, Heading } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import { motion } from "framer-motion";
 
 import SubNav from "./StatsSubNav";

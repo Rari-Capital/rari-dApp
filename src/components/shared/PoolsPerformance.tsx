@@ -8,9 +8,9 @@ import {
   PercentageSize,
   Row,
   Center,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 import { useMemo } from "react";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import Chart from "react-apexcharts";
@@ -43,8 +43,9 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
   const { t } = useTranslation();
 
   const ethAPY = usePoolAPY(Pool.ETH);
-  const stableAPY = usePoolAPY(Pool.STABLE);
+  const stableAPY = usePoolAPY(Pool.USDC);
   const yieldAPY = usePoolAPY(Pool.YIELD);
+
 
   const points = useMemo(() => {
     if (ethAPY && stableAPY && yieldAPY) {

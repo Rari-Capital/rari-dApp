@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column, Center, useIsMobile } from "utils/chakraUtils";
+import { Row, Column, Center, useIsMobile } from "lib/chakraUtils";
 
 import LogRocket from "logrocket";
 import {
@@ -39,7 +39,8 @@ import {
 } from "../../../../../hooks/useTokenData";
 import { useBorrowLimit } from "../../../../../hooks/useBorrowLimit";
 
-import Fuse from "../../../../../fuse-sdk";
+import Fuse from "lib/fuse-sdk";
+
 import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../../../utils/createComptroller";
 import { handleGenericError } from "../../../../../utils/errorHandling";

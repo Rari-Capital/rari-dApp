@@ -1,4 +1,4 @@
-import { Center, Column, Row, RowOrColumn } from "utils/chakraUtils";
+import { Center, Column, Row, RowOrColumn } from "lib/chakraUtils";
 import DashboardBox from "../../shared/DashboardBox";
 import {
   Heading,

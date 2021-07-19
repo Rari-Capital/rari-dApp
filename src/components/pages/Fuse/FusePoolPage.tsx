@@ -16,7 +16,7 @@ import {
   Row,
   RowOrColumn,
   useIsMobile,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 
 // Hooks
 import { useTranslation } from 'next-i18next';

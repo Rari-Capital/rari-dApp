@@ -4,7 +4,7 @@ import { NowRequest, NowResponse } from "@vercel/node";
 import { variance, median } from "mathjs";
 import fetch from "node-fetch";
 
-import ERC20ABI from "rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 import { fetchFusePoolData } from "utils/fetchFusePoolData";
 import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
 

@@ -8,7 +8,7 @@ import { AvatarGroup, Text } from "@chakra-ui/react";
 import { letterScore, usePoolRSS } from "hooks/useRSS";
 
 // Utils
-import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
+import { Center, Column, Row, useIsMobile } from "lib/chakraUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { CTokenIcon } from "./CTokenIcon";
 

@@ -1,4 +1,4 @@
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
 
 import { getSDKPool, Pool } from "./poolUtils";
 

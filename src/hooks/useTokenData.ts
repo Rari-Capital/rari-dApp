@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { useQuery, useQueries } from "react-query";
-import ERC20ABI from "../../src/rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 import { useRari } from "../context/RariContext";
 
 export const ETH_TOKEN_DATA = {

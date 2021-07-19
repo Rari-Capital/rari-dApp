@@ -12,7 +12,7 @@ import { TokenData } from "hooks/useTokenData";
 import Image from "next/image";
 
 // Utils
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 const InternalAd = ({ ...boxProps }: { [x: string]: any }) => {
   const adData = useAdvertisementData();

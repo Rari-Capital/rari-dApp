@@ -1,5 +1,5 @@
-import Fuse from "../fuse-sdk";
-import Rari from "../rari-sdk/index";
+import Fuse from "lib/fuse-sdk";
+import Rari from "lib/rari-sdk/index";
 
 // @ts-ignore
 import Filter from "bad-words";

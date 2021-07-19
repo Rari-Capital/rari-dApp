@@ -1,4 +1,4 @@
-import Fuse from "../fuse-sdk";
+import Fuse from "lib/fuse-sdk";
 
 export const createComptroller = (comptrollerAddress: string, fuse: Fuse) => {
   const comptroller = new fuse.web3.eth.Contract(

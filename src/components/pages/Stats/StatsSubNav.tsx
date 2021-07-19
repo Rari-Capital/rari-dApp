@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 // Components
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import { Box, Heading } from "@chakra-ui/react";
 
 import {

@@ -5,7 +5,7 @@ import {
   SliderThumb,
   Text,
 } from "@chakra-ui/react";
-import { Row } from "utils/chakraUtils";
+import { Row } from "lib/chakraUtils";
 
 export const SliderWithLabel = ({
   value,

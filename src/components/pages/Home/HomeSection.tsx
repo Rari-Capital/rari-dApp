@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Row } from "utils/chakraUtils";
+import { Row } from "lib/chakraUtils";
 
 const HomeSection = ({ children, ...rowProps }: { children: ReactNode[] }) => {
   return (

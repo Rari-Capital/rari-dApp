@@ -10,7 +10,7 @@ import { TokenData } from "hooks/useTokenData";
 import { useCallback, useMemo, useState } from "react";
 
 // Utils
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 export enum FoursquareNav {
   EARN = "Earn",

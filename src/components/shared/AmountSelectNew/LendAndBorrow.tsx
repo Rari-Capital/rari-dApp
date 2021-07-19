@@ -2,7 +2,7 @@ import { Box, Heading, Text } from "@chakra-ui/layout";
 import { Button, useToast } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
 import DashboardBox from "../DashboardBox";
-import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
+import { Center, Column, Row, useIsMobile } from "lib/chakraUtils";
 import FuseAmountInput from "./components/FuseAmountInput";
 
 // Hooks

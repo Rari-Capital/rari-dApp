@@ -7,7 +7,7 @@ import { AggregatePoolsInfoReturn } from "hooks/usePoolInfo";
 import { TokenData } from "hooks/useTokenData";
 import { useVaultsDataForAsset } from "hooks/vaults/useVaultsDataForAsset";
 import Image from "next/image";
-import { Row } from "utils/chakraUtils";
+import { Row } from "lib/chakraUtils";
 
 const EarnOpportunities = ({ token }: { token?: TokenData }) => {
   const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset(

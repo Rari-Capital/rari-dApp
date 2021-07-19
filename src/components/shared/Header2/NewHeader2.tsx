@@ -1,4 +1,4 @@
-import { PixelSize, Row } from "utils/chakraUtils";
+import { PixelSize, Row } from "lib/chakraUtils";
 
 //  Components
 import { DASHBOARD_BOX_SPACING } from "../DashboardBox";

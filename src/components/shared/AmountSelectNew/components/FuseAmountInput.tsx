@@ -15,7 +15,7 @@ import { useTranslation } from 'next-i18next';
 import { FaChevronDown } from "react-icons/fa";
 
 // Utils
-import { Row } from "utils/chakraUtils";
+import { Row } from "lib/chakraUtils";
 import { handleGenericError } from "utils/errorHandling";
 import {
   FusePoolData,

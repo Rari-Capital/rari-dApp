@@ -12,7 +12,7 @@ import useSWR from "swr";
 import { useTranslation } from "next-i18next";
 
 // Utils
-import { Column, Row, useIsMobile } from "utils/chakraUtils";
+import { Column, Row, useIsMobile } from "lib/chakraUtils";
 import { filterPoolName } from "utils/fetchFusePoolData";
 import axios from "axios";
 

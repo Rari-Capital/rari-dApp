@@ -33,7 +33,7 @@ import {
   PercentageSize,
   PixelSize,
   PercentOnDesktopPixelOnMobileSize,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 
 import ProgressBar from "components/shared/ProgressBar";
 import { GlowingButton } from "components/shared/GlowingButton";
@@ -146,6 +146,7 @@ const PoolPortalContent = () => {
     });
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
+  console.log({ poolName, poolCaption, poolType });
 
   const { data: poolBalance, isLoading: isPoolBalanceLoading } =
     usePoolBalance(poolType);

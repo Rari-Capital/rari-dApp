@@ -6,7 +6,7 @@ import React, { useState } from "react";
 
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";
@@ -104,7 +104,9 @@ const Home = React.memo(() => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <Searchbar width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }} />
+              <Searchbar
+                width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
+              />
             </motion.div>
           </Column>
         </Row>
@@ -197,7 +199,7 @@ const Home = React.memo(() => {
                 flexBasis={{
                   base: "25%",
                   sm: "25%",
-                  md: "30%",
+                  md: "40%",
                   lg: "40%",
                 }}
                 p={5}
@@ -210,13 +212,13 @@ const Home = React.memo(() => {
                   fetch={getNumberTVL}
                   queryKey={"totalValueLocked"}
                   apy={0.15}
-                  statSize="2xl"
-                  captionSize="xs"
+                  statSize="3xl"
+                  captionSize="md"
                   caption={"in TVL across all products"}
                   crossAxisAlignment="flex-start"
                   captionFirst={false}
                 />
-                <Text fontSize={isMobile ? "sm" : "md"} fontWeight="bold">
+                <Text fontSize={isMobile ? "sm" : "lg"} fontWeight="bold">
                   Discover infinite possibilities across the Rari Capital
                   Ecosystem
                 </Text>
@@ -229,11 +231,11 @@ const Home = React.memo(() => {
                 flexBasis={{
                   base: "75%",
                   sm: "75%",
-                  md: "70%",
+                  md: "60%",
                   lg: "60%",
                 }}
                 width="1px" // weird hack to make the carousel fit. idk why it works
-                py={{ base: 0, sm: 0, md: 0, lg: 5 }}
+                p={{ base: 0, sm: 0, md: 0, lg: 5 }}
               >
                 <HomeCarousel />
               </Column>

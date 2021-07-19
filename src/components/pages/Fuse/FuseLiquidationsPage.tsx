@@ -33,7 +33,7 @@ import {
   Row,
   RowOrColumn,
   useIsMobile,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 

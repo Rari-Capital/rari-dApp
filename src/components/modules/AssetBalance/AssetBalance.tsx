@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { smallUsdFormatter } from "utils/bigUtils";
 
 // Utils
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 const AssetOpportunities = ({
   token,
   ...boxProps

@@ -8,7 +8,7 @@ import {
   IconButton,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row } from "utils/chakraUtils";
+import { Column, Center, Row } from "lib/chakraUtils";
 import { memo, ReactNode, useState } from "react";
 import { useTranslation } from 'next-i18next';
 
@@ -23,7 +23,7 @@ import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
-import Fuse from "../../../fuse-sdk";
+import Fuse from "lib/fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 

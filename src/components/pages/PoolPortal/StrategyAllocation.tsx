@@ -6,11 +6,11 @@ import Chart from "react-apexcharts";
 
 import { usePoolType } from "context/PoolContext";
 import { useRari } from "context/RariContext";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useQuery } from "react-query";
 
 import { BN } from "utils/bigUtils";
-import { Column } from "utils/chakraUtils";
+import { Column } from "lib/chakraUtils";
 import { getSDKPool, Pool } from "utils/poolUtils";
 import {
   USDStrategyAllocationChartOptions,
@@ -31,6 +31,8 @@ const StrategyAllocation = () => {
         rari,
         pool: poolType,
       }).allocations.getRawPoolAllocations();
+
+      console.log({ rawAllocations, poolType });
 
       let allocations: { [key: string]: number } = {};
 
@@ -60,6 +62,8 @@ const StrategyAllocation = () => {
     poolType === Pool.ETH
       ? ETHStrategyAllocationChartOptions
       : USDStrategyAllocationChartOptions;
+
+  console.log({ allocations });
 
   return (
     <Column

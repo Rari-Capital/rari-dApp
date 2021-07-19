@@ -3,7 +3,7 @@ import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
 import AppLink from "components/shared/AppLink";
 import DashboardBox from "components/shared/DashboardBox";
-import { RowOrColumn, Row, Center } from "utils/chakraUtils";
+import { RowOrColumn, Row, Center } from "lib/chakraUtils";
 
 // Hooks
 import { useEffect, useState } from "react";

@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 import { Box, Heading, Link, Image } from "@chakra-ui/react";
-import { Column, Row, RowOrColumn } from "utils/chakraUtils";
+import { Column, Row, RowOrColumn } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
 import { TokenData } from "hooks/useTokenData";

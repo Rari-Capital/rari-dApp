@@ -3,7 +3,7 @@ import {
   USDPricedFuseAsset,
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
-import Fuse from "fuse-sdk";
+import Fuse from "lib/fuse-sdk";
 
 // Hooks
 import { ETH_TOKEN_DATA, TokenData } from "hooks/useTokenData";

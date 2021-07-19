@@ -1,5 +1,5 @@
-import Rari from "../rari-sdk/index";
-import Fuse from "../fuse-sdk";
+import Rari from "lib/rari-sdk/index";
+import Fuse from "lib/fuse-sdk/src";
 import BigNumber from "bignumber.js";
 
 export const fetchFuseTVL = async (fuse: Fuse) => {

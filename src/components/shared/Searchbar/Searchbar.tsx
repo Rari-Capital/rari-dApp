@@ -17,7 +17,7 @@ import useSWR from "swr";
 
 // Utils
 import axios from "axios";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import { FinalSearchReturn } from "types/search";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 

@@ -10,7 +10,7 @@ import {
   Th,
   Td,
 } from "@chakra-ui/react";
-import { Row, Column } from "utils/chakraUtils";
+import { Row, Column } from "lib/chakraUtils";
 import { motion } from "framer-motion";
 
 // Hooks
@@ -46,6 +46,7 @@ const Fuse = () => {
 
   const assetsArray: USDPricedFuseAsset[][] | null =
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
+    
   const maxBorrows = useBorrowLimits(assetsArray);
 
   const { tokensDataMap }: { tokensDataMap: TokensDataHash } =

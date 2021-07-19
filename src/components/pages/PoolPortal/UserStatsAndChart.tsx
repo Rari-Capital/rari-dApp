@@ -18,7 +18,7 @@ import {
   ResponsivePixelSize,
   RowOnDesktopColumnOnMobile,
   useSpacedLayout,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 import {
   DisableChartInteractions,
   ETHSelfReturnChartOptions,
@@ -58,8 +58,6 @@ const UserStatsAndChart = ({
       new PixelSize(5),
     ],
   });
-
-  console.log({ topPadding, statsSize, chartSize });
 
   const { data: interestEarned, isLoading: isInterestEarnedLoading } = useQuery(
     address + " " + poolType + " interestAccrued " + timeRange,

@@ -12,12 +12,12 @@ import { useQueryClient } from "react-query";
 import { useTranslation } from 'next-i18next';
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
+import Fuse from "lib/fuse-sdk/src";
 
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
 
-import Fuse from "../fuse-sdk/src";
 import {
   chooseBestWeb3Provider,
   infuraURL,

@@ -3,7 +3,7 @@ import { useRari } from "context/RariContext";
 import { useSaffronContracts } from "components/pages/Tranches/SaffronContext";
 
 import { smallUsdFormatter, smallStringUsdFormatter } from "utils/bigUtils";
-import ERC20ABI from "rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 
 export enum TranchePool {
   DAI = "DAI",

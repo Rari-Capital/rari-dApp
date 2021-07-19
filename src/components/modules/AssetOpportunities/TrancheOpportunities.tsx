@@ -7,7 +7,7 @@ import {
 } from "hooks/tranches/useTranchesDataForAsset";
 import { TokenData } from "hooks/useTokenData";
 import { useTranslation } from 'next-i18next';
-import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
+import { Center, Column, Row, useIsMobile } from "lib/chakraUtils";
 
 const TrancheOpportunities = ({ token }: { token: TokenData }) => {
   return (

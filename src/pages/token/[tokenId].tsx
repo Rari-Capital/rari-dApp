@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import { Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { Column } from "utils/chakraUtils";
+import { Column } from "lib/chakraUtils";
 const web3 = new Web3();
 
 const tokenDataFetcher = async (

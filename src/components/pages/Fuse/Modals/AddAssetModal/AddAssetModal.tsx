@@ -14,7 +14,7 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center } from "utils/chakraUtils";
+import { Column, Center } from "lib/chakraUtils";
 import { useEffect, useState } from "react";
 import { useTranslation } from 'next-i18next';
 
@@ -33,7 +33,7 @@ import { FuseIRMDemoChartOptions } from "../../../../../utils/chartOptions";
 import { SliderWithLabel } from "../../../../shared/SliderWithLabel";
 import { convertIRMtoCurve } from "../../FusePoolInfoPage";
 
-import Fuse from "../../../../../fuse-sdk/src";
+import Fuse from "lib/fuse-sdk/src";
 import {
   ConfigRow,
   SaveButton,

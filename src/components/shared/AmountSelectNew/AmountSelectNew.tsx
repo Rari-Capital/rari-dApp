@@ -14,7 +14,7 @@ import { TokenData } from "hooks/useTokenData";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Utils
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import LBRW from "./LBRW";
 
 export enum AmountSelectMode {

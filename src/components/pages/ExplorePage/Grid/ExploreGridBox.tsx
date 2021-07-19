@@ -1,7 +1,7 @@
 import { Heading, Skeleton } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/avatar";
 import AppLink from "components/shared/AppLink";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import { SubgraphMarket } from "pages/api/explore";
 import { convertMantissaToAPY, convertMantissaToAPR } from "utils/apyUtils";
 import { useMemo } from "react";

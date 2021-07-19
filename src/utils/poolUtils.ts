@@ -1,9 +1,9 @@
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
 
-import EthereumPool from "../rari-sdk/pools/ethereum";
-import StablePool from "../rari-sdk/pools/stable";
-import DAIPool from "../rari-sdk/pools/dai";
-import YieldPool from "../rari-sdk/pools/yield";
+import EthereumPool from "lib/rari-sdk/pools/ethereum";
+import StablePool from "lib/rari-sdk/pools/stable";
+import DAIPool from "lib/rari-sdk/pools/dai";
+import YieldPool from "lib/rari-sdk/pools/yield";
 
 export enum Pool {
   STABLE = "stable",
@@ -22,7 +22,7 @@ export function getSDKPool({
 }) {
   let sdkPool: StablePool | EthereumPool | YieldPool | DAIPool;
 
-  switch (pool) {
+  switch (pool?.toLowerCase()) {
     case Pool.USDC:
       sdkPool = rari.pools.stable;
       break;
@@ -51,7 +51,7 @@ export function poolHasDivergenceRisk(pool: Pool) {
 }
 
 export const getPoolName = (pool: Pool, t: any) => {
-  switch (pool) {
+  switch (pool.toLowerCase()) {
     case Pool.USDC:
       return t("USDC Pool");
     case Pool.DAI:
@@ -66,9 +66,7 @@ export const getPoolName = (pool: Pool, t: any) => {
 };
 
 export const getPoolCaption = (pool: Pool, t: any) => {
-  console.log({ pool },);
-
-  switch (pool) {
+  switch (pool.toLowerCase()) {
     case Pool.USDC:
       return t("Safe returns on USDC");
     case Pool.DAI:

@@ -19,7 +19,7 @@ import {
   Center,
   Row,
   useIsMobile,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 
 const AssetChart = dynamic(() => import("./AssetChart"), { ssr: false });
 import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
@@ -41,7 +41,7 @@ import { memo, useState } from "react";
 import { useTranslation } from 'next-i18next';
 
 // Utils
-import Fuse from "fuse-sdk";
+import Fuse from "lib/fuse-sdk";
 import { shortAddress } from "utils/shortAddress";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { createComptroller } from "utils/createComptroller";

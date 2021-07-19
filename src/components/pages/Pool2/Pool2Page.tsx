@@ -9,7 +9,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 
-import { Center, RowOrColumn, Column } from "utils/chakraUtils";
+import { Center, RowOrColumn, Column } from "lib/chakraUtils";
 import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";

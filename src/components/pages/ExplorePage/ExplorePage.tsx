@@ -12,7 +12,7 @@ import { useState, useMemo } from "react";
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 import ExploreGrid from "./Grid/ExploreGrid";
 import { useRouter } from "next/router";

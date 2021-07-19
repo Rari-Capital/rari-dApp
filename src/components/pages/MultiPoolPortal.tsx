@@ -8,7 +8,7 @@ import {
   Row,
   RowOnDesktopColumnOnMobile,
   useWindowSize,
-} from "utils/chakraUtils";
+} from "lib/chakraUtils";
 import DashboardBox from "../shared/DashboardBox";
 
 const CaptionedStat = dynamic(() => import("components/shared/CaptionedStat"), {
@@ -16,6 +16,7 @@ const CaptionedStat = dynamic(() => import("components/shared/CaptionedStat"), {
 });
 
 import { FaTwitter } from "react-icons/fa";
+
 import {
   Box,
   Heading,
@@ -26,37 +27,37 @@ import {
   useDisclosure,
   Icon,
 } from "@chakra-ui/react";
-import { ModalDivider } from "../shared/Modal";
+import { ModalDivider } from "components/shared/Modal";
 
 //@ts-ignore
 import Marquee from "react-double-marquee";
-import { useRari } from "../../context/RariContext";
+import { useRari } from "context/RariContext";
 
 import { MdSwapHoriz } from "react-icons/md";
 import { useTranslation } from 'next-i18next';
 
-import { PoolTypeProvider } from "../../context/PoolContext";
-import { usePoolInfo } from "../../hooks/usePoolInfo";
+import { PoolTypeProvider } from "context/PoolContext";
+import { usePoolInfo } from "hooks/usePoolInfo";
 import { useQuery } from "react-query";
 
 import DepositModal from "./RariDepositModal";
-import { SimpleTooltip } from "../shared/SimpleTooltip";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import {
   APYMovingStat,
   APYWithRefreshMovingStat,
   RefetchMovingStat,
-} from "../shared/MovingStat";
+} from "components/shared/MovingStat";
 
 import {
   smallStringUsdFormatter,
   stringUsdFormatter,
   usdFormatter,
-} from "../../utils/bigUtils";
+} from "utils/bigUtils";
 
 import {
   usePoolBalance,
   useTotalPoolsBalance,
-} from "../../hooks/usePoolBalance";
+} from "hooks/usePoolBalance";
 
 const PoolsPerformanceChart = dynamic(
   () => import("components/shared/PoolsPerformance"),

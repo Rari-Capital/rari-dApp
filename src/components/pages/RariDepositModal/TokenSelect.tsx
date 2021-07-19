@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
-import { Row, Column } from "utils/chakraUtils";
+import { Row, Column } from "lib/chakraUtils";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 
 import {

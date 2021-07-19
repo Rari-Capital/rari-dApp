@@ -9,7 +9,7 @@ import { useFuseTotalBorrowAndSupply } from "hooks/fuse/useFuseTotalBorrowAndSup
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
-import { RowOrColumn, Column, Center } from "utils/chakraUtils";
+import { RowOrColumn, Column, Center } from "lib/chakraUtils";
 
 // Components
 import { Heading } from "@chakra-ui/react";

@@ -30,7 +30,7 @@ const ExploreGrid = () => {
   } = data ?? {};
 
   return (
-    <DashboardBox w="100%" h={isMobile ? "300px" : "250px"}>
+    <DashboardBox w="100%" h={isMobile ? "300px" : "100%"}>
       <SimpleGrid columns={isMobile ? 2 : 3} spacing={0} h="100%" w="100%">
         <FuseAssetGridBox
           bg=""

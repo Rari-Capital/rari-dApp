@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "utils/chakraUtils";
+import { Row, Column } from "lib/chakraUtils";
 
 import {
   Heading,
@@ -20,21 +20,21 @@ import { useQuery, useQueryClient } from "react-query";
 import { HashLoader } from "react-spinners";
 
 import { useTranslation } from 'next-i18next';
-import { useRari } from "../../../../context/RariContext";
+import { useRari } from "context/RariContext";
 import {
   fetchTokenBalance,
   useTokenBalance,
-} from "../../../../hooks/useTokenBalance";
-import { BN } from "../../../../utils/bigUtils";
+} from "hooks/useTokenBalance";
+import { BN } from "utils/bigUtils";
 
-import DashboardBox from "../../../shared/DashboardBox";
-import { ModalDivider } from "../../../shared/Modal";
+import DashboardBox from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
 
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
 
-import { LP_TOKEN_CONTRACT } from "../../../../rari-sdk/governance";
-import { handleGenericError } from "../../../../utils/errorHandling";
+import { LP_TOKEN_CONTRACT } from "lib/rari-sdk/governance";
+import { handleGenericError } from "utils/errorHandling";
 
 interface Props {
   onClose: () => any;

@@ -5,7 +5,7 @@ import PoolRow from "components/pages/Fuse/FusePoolsPage/PoolRow";
 import { useFuseDataForAsset } from "hooks/fuse/useFuseDataForAsset";
 import { TokenData } from "hooks/useTokenData";
 import { useTranslation } from 'next-i18next';
-import { Row, useIsMobile } from "utils/chakraUtils";
+import { Row, useIsMobile } from "lib/chakraUtils";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 const FuseOpportunities = ({ token }: { token: TokenData }) => {

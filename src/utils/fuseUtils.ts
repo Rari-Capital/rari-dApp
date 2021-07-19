@@ -1,4 +1,4 @@
-import Fuse from "fuse-sdk";
+import Fuse from "lib/fuse-sdk";
 import { USDPricedFuseAsset } from "./fetchFusePoolData";
 import { isAssetETH } from "./tokenUtils";
 

@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import Rari from "rari-sdk/index";
-import Fuse from "fuse-sdk";
+import Rari from "lib/rari-sdk/index";
+import Fuse from "lib/fuse-sdk";
 import FuseJs from "fuse.js";
 
 import { filterOnlyObjectProperties } from "utils/fetchFusePoolData";

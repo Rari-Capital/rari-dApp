@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 
 // Utils
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 // Types
 import { TokenData } from "hooks/useTokenData";

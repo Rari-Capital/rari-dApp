@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "utils/chakraUtils";
+import { Row, Column } from "lib/chakraUtils";
 
 import {
   Heading,
@@ -10,19 +10,16 @@ import {
   Input,
   useToast,
 } from "@chakra-ui/react";
-import DashboardBox from "../../../shared/DashboardBox";
-import { tokens } from "../../../../utils/tokenUtils";
+import DashboardBox from "components/shared/DashboardBox";
+import { tokens } from "utils/tokenUtils";
 
-import {
-  useTokenBalance,
-  fetchTokenBalance,
-} from "../../../../hooks/useTokenBalance";
+import { useTokenBalance, fetchTokenBalance } from "hooks/useTokenBalance";
 
-import { useTranslation } from 'next-i18next';
-import { ModalDivider } from "../../../shared/Modal";
-import { useRari } from "../../../../context/RariContext";
+import { useTranslation } from "next-i18next";
+import { ModalDivider } from "components/shared/Modal";
+import { useRari } from "context/RariContext";
 
-import { BN } from "../../../../utils/bigUtils";
+import { BN } from "utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
@@ -37,9 +34,10 @@ import {
 
 import { useSaffronData } from "hooks/tranches/useSaffronData";
 
-import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
+
 import { Token } from "rari-tokens-generator";
-import { handleGenericError } from "../../../../utils/errorHandling";
+import { handleGenericError } from "utils/errorHandling";
 
 function noop() {}
 

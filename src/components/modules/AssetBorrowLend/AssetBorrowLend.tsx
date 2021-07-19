@@ -8,7 +8,7 @@ import { ModalDivider } from "components/shared/Modal";
 
 // Utils
 import { TokenData } from "hooks/useTokenData";
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 
 const AssetBorrowLend = ({
   token,

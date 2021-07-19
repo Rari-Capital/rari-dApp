@@ -17,22 +17,19 @@ import { getPoolLogo } from "utils/poolIconUtils";
 export const usePoolInfo = (poolType: Pool) => {
   const { t } = useTranslation();
 
-  const poolData = useMemo(() => {
+  return useMemo(() => {
     const poolName = getPoolName(poolType, t);
     const poolCaption = getPoolCaption(poolType, t);
     const poolLogo = getPoolLogo(poolType);
 
-    return { poolCaption, poolName, poolLogo };
+    return { poolCaption, poolName, poolLogo, poolType };
   }, [poolType, t]);
-
-  return {
-    ...poolData,
-    poolType,
-  };
 };
 
 export const usePoolInfoFromContext = () => {
   const poolType = usePoolType();
+  console.log({ poolType });
+
   return usePoolInfo(poolType);
 };
 

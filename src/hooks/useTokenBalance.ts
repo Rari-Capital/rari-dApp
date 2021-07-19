@@ -1,7 +1,7 @@
 import { useQueries, useQuery } from "react-query";
 
-import { useRari } from "../context/RariContext";
-import ERC20ABI from "../rari-sdk/abi/ERC20.json";
+import { useRari } from "context/RariContext";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 import { ETH_TOKEN_DATA } from "./useTokenData";
 import Web3 from "web3";
 

@@ -34,7 +34,7 @@ import { useExtraPoolInfo } from "./FusePoolInfoPage";
 import { createComptroller } from "utils/createComptroller";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { handleGenericError } from "utils/errorHandling";
-import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
+import { Column, RowOrColumn, Center, Row } from "lib/chakraUtils";
 
 import { WhitelistInfo } from "./FusePoolCreatePage";
 import LogRocket from "logrocket";

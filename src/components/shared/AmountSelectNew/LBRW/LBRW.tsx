@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AmountSelectMode, AmountSelectUserAction } from "../AmountSelectNew";
 import LendAndBorrow from "../LendAndBorrow";
 
-import { Column, Row } from "utils/chakraUtils";
+import { Column, Row } from "lib/chakraUtils";
 import { Box, Heading } from "@chakra-ui/react";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
 import { useTranslation } from 'next-i18next';

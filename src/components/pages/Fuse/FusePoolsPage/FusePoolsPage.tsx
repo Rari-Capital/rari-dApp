@@ -10,7 +10,7 @@ import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 
 // Utils
-import { Column } from "utils/chakraUtils";
+import { Column } from "lib/chakraUtils";
 import { PoolList } from "./PoolList";
 import { useFilter } from "hooks/useFilter";
 import { useFusePools } from "hooks/fuse/useFusePools";

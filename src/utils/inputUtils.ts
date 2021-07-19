@@ -3,7 +3,7 @@ import { fetchTokenBalance } from "hooks/useTokenBalance";
 
 // Types
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
-import Fuse from "fuse-sdk";
+import Fuse from "lib/fuse-sdk";
 import {
   AmountSelectMode,
   AmountSelectUserAction,

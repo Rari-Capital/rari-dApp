@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react";
 
 import { Fade } from "react-awesome-reveal";
-import { Column } from "utils/chakraUtils";
+import { Column } from "lib/chakraUtils";
 
 import { Mode } from ".";
 import { useTranslation } from 'next-i18next';
