@@ -622,6 +622,7 @@ const AmountSelect = ({
             </Column>
 
             <StatsColumn
+              symbol={tokenData?.symbol ?? assets[index].underlyingSymbol}
               amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
               color={tokenData?.color ?? "#FFF"}
               assets={assets}
@@ -790,6 +791,7 @@ const StatsColumn = ({
   assets,
   index,
   amount,
+  symbol,
   enableAsCollateral,
 }: {
   color: string;
@@ -797,6 +799,7 @@ const StatsColumn = ({
   assets: USDPricedFuseAsset[];
   index: number;
   amount: number;
+  symbol: string;
   enableAsCollateral: boolean;
 }) => {
   const { t } = useTranslation();
@@ -1007,7 +1010,7 @@ const StatsColumn = ({
                   ).replace("$", "")}
                 </>
               ) : null}{" "}
-              {asset.underlyingSymbol}
+              {symbol}
             </Text>
           </Row>
 
