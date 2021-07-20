@@ -43,10 +43,10 @@ const Footer = () => {
 
           <Link
             target="_blank"
-            href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
+            href="https://info.rari.capital/security/#smart-contract-audits"
           >
             <Text color="white" mx={2} text="sm" textDecoration="underline">
-              {t("Audit")}
+              {t("Audits")}
             </Text>
           </Link>
         </Row>
