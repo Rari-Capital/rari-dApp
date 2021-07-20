@@ -72,7 +72,6 @@ export default async function handler(
 
       const totalBorrowsUSD =
         fusePoolsData?.reduce((a, b) => {
-          console.log({ a, b });
           return a + (b?.totalBorrowBalanceUSD ?? 0);
         }, 0) ?? 0;
 
