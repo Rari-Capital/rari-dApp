@@ -21,25 +21,26 @@ const Footer = () => {
           mt={4}
           width="100%"
         >
-          <Link target="_blank" href="https://docs.rari.capital/">
+          <Link isExternal href="https://docs.rari.capital/">
             <Text color="white" mx={2} text="sm" textDecoration="underline">
-              {t("Docs")}
+              {t("Developer Docs")}
             </Text>
           </Link>
+
           <Text color="white" text="sm">
             ·
           </Text>
-          <Link
-            target="_blank"
-            href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3"
-          >
+
+          <Link isExternal href="https://info.rari.capital">
             <Text color="white" mx={2} text="sm" textDecoration="underline">
-              {t("Notion")}
+              {t("Learn")}
             </Text>
           </Link>
+
           <Text color="white" text="sm">
             ·
           </Text>
+
           <Link
             target="_blank"
             href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"

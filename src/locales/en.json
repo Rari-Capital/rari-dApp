@@ -223,8 +223,6 @@
   "DAI-A": "DAI-A",
   "RGT-ETH": "RGT-ETH",
   "RGT": "RGT",
-  "Docs": "Docs",
-  "Notion": "Notion",
   "Version": "Version",
   "Debt": "Debt",
   "Product": "Product",
@@ -270,5 +268,8 @@
   "Lending Rates": "Lending Rates",
   "Borrowing Rates": "Borrowing Rates",
   "Search Assets": "Search Assets",
-  "Utilities": "Utilities"
+  "Utilities": "Utilities",
+  "Audits": "Audits",
+  "Developer Docs": "Developer Docs",
+  "Learn": "Learn"
 }

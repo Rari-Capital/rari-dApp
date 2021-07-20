@@ -222,8 +222,6 @@
   "DAI-A": "DAI-A",
   "RGT-ETH": "RGT-ETH",
   "RGT": "RGT",
-  "Docs": "文件资料",
-  "Notion": "Notion",
   "Version": "版本",
   "Debt": "不适用",
   "Product": "产品",
@@ -270,5 +268,8 @@
   "Lending Rates": "贷款利率",
   "Borrowing Rates": "借款利率",
   "Search Assets": "搜索资产",
-  "Utilities": "公用事业"
+  "Utilities": "公用事业",
+  "Audits": "审计",
+  "Developer Docs": "开发者文档",
+  "Learn": "学"
 }
