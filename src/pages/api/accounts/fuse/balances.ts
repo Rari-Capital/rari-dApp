@@ -29,11 +29,13 @@ export default async function handler(
       // Validate address input
       const address = req.query.address as string;
 
+      if (!address)
+        return res.status(400).json({ error: "No Address provided." });
+
       try {
-        userAddress = validateAddressQuery(address);
-      } catch (error) {
-        console.log({ error });
-        return res.status(400).json({ error });
+        userAddress = Web3.utils.toChecksumAddress(address);
+      } catch (err) {
+        return res.status(400).json({ error: "Invalid address provided." });
       }
 
       // Set up SDKs
@@ -99,14 +101,6 @@ export default async function handler(
 
 const validateAddressQuery = (address: string) => {
   let userAddress: string = "";
-
-  if (!address) throw new Error("No address provided.");
-
-  try {
-    userAddress = Web3.utils.toChecksumAddress(address);
-  } catch (err) {
-    throw new Error("Invalid address provided.");
-  }
 
   return userAddress;
 };
