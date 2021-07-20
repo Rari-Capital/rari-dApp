@@ -2,7 +2,7 @@ import Vibrant from "node-vibrant";
 import { Palette } from "node-vibrant/lib/color";
 import fetch from "node-fetch";
 import Web3 from "web3";
-import ERC20ABI from "rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 
 import { NowRequest, NowResponse } from "@vercel/node";
 import { turboGethURL } from "utils/web3Providers";

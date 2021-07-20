@@ -39,7 +39,7 @@ const poolSort = (pools: MergedPool[]) => {
   });
 };
 
-const fetchPools = async ({
+export const fetchPools = async ({
   rari,
   fuse,
   address,
