@@ -536,14 +536,17 @@ const PoolConfiguration = ({
               ) : null}
 
               <Input
-                isDisabled={!data.adminHasRights}
+                isDisabled={
+                  !data.adminHasRights ||
+                  data.admin?.toLowerCase() !== address.toLowerCase()
+                }
                 ml="auto"
                 width="320px"
                 height="100%"
                 textAlign="center"
                 variant="filled"
                 size="sm"
-                value={data.admin}
+                value={admin}
                 onChange={(event) => {
                   const address = event.target.value;
                   setAdmin(address);

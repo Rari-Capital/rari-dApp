@@ -290,7 +290,8 @@ export const AssetSettings = ({
     }
   };
 
-  const liquidationIncentiveMantissa = useLiquidationIncentive(comptrollerAddress);
+  const liquidationIncentiveMantissa =
+    useLiquidationIncentive(comptrollerAddress);
 
   const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
 
@@ -628,7 +629,12 @@ export const AssetSettings = ({
         ) : null}
 
         <Input
-          isDisabled={cTokenData ? !cTokenData.adminHasRights : false}
+          isDisabled={
+            cTokenData
+              ? !cTokenData.adminHasRights ||
+                cTokenData.admin.toLowerCase() !== address
+              : false
+          }
           ml="auto"
           width="320px"
           height="100%"
