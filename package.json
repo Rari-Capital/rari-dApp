@@ -31,6 +31,7 @@
     "axios": "^0.20.0",
     "bad-words": "^3.0.4",
     "bignumber.js": "^9.0.1",
+    "cors": "^2.8.5",
     "cypress": "^5.3.0",
     "dayjs": "^1.10.5",
     "focus-visible": "^5.2.0",
@@ -100,6 +101,7 @@
     ]
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/react": "^17.0.6",
     "@types/react-query": "^1.1.2",
     "@types/react-slick": "^0.23.4",
