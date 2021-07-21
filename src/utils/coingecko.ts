@@ -3,10 +3,6 @@ import axios from "axios";
 import { MarketInterval } from "hooks/tokens/useTokenMarketInfo";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 
-// utils
-import Web3 from "web3";
-import Big from "big.js";
-
 const VS_CURRENCY = "usd";
 
 export interface GranularTokenMarketInfo {
@@ -118,15 +114,6 @@ export const fetchAggregateTokenMarketInfo = async (
     },
   };
   return aggregateMarketInfo;
-};
-
-// Datestring is in format `DD-MM-YYYY`
-export const getETHUSDPriceBN = async (date?: string) => {
-  try {
-    return Web3.utils.toBN(new Big().mul(1e18).toFixed(0));
-  } catch (error) {
-    throw new Error("Error retrieving data from Coingecko API: " + error);
-  }
 };
 
 export const fetchCurrentETHPrice = async () =>
