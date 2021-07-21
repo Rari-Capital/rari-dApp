@@ -19,11 +19,14 @@ export const fetchFuseTVL = async (fuse: Fuse) => {
 };
 
 // Todo - delete this and just make `fetchFuseTVL` do this stuff
-export const fetchFuseTVLBorrowsAndSupply = async (fuse: Fuse) => {
+export const fetchFuseTVLBorrowsAndSupply = async (
+  fuse: Fuse,
+  blockNum?: number
+) => {
   const { 2: suppliedETHPerPool, 3: borrowedETHPerPool } =
     await fuse.contracts.FusePoolLens.methods
       .getPublicPoolsWithData()
-      .call({ gas: 1e18 });
+      .call({ gas: 1e18 }, blockNum);
 
   const totalSuppliedETH = fuse.web3.utils.toBN(
     new BigNumber(
