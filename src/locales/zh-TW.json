@@ -71,7 +71,6 @@
   "Access": "訪問",
   "Forums": "論壇",
   "Do not increase the price of gas more than 1.5x the prefilled amount!": "汽油價格不要超過預充量的1.5倍！",
-  "Audit": "審計",
   "Tranches": "分檔",
   "Access Saffron Finance tranches through the Rari Capital interface!": "通過Rari Capital界面訪問Saffron Finance付款！",
   "Current SFI Price": "當前SFI價格",
@@ -222,8 +221,6 @@
   "DAI-A": "DAI-A",
   "RGT-ETH": "RGT-ETH",
   "RGT": "RGT",
-  "Docs": "文件资料",
-  "Notion": "概念",
   "Version": "版本",
   "Debt": "債務",
   "Product": "產品",
@@ -275,5 +272,8 @@
   "Lending Rates": "貸款利率",
   "Borrowing Rates": "借款利率",
   "Search Assets": "搜索資產",
-  "Utilities": "公用事業"
+  "Utilities": "公用事業",
+  "Audits": "審計",
+  "Developer Docs": "開發者文檔",
+  "Learn": "學"
 }

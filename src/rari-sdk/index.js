@@ -112,7 +112,7 @@ export default class Rari {
       Alpha: new AlphaSubpool(this.web3),
       Fuse2: new FuseSubpool(this.web3, { "USDC": "0x69aEd4932B3aB019609dc567809FA6953a7E0858" }),
       Fuse3: new FuseSubpool(this.web3, { "USDC": "0x94C49563a3950424a2a7790c3eF5458A2A359C7e" }),
-      Fuse6: new FuseSubpool(this.web3, { "DAI": "0x989273ec41274C4227bCB878C2c26fdd3afbE70d" }),
+      Fuse6: new FuseSubpool(this.web3, { "USDC": "0xdb55b77f5e8a1a41931684cf9e4881d24e6b6cc9", "DAI": "0x989273ec41274C4227bCB878C2c26fdd3afbE70d" }),
       Fuse7: new FuseSubpool(this.web3, { "USDC": "0x53De5A7B03dc24Ff5d25ccF7Ad337a0425Dfd8D1", "DAI": "0x7322B10Db09687fe8889aD8e87f333f95104839F" }),
       Fuse11: new FuseSubpool(this.web3, { "USDC": "0x241056eb034BEA7482290f4a9E3e4dd7269D4329" }),
       Fuse13: new FuseSubpool(this.web3, { "USDC": "0x3b624de26A6CeBa421f9857127e37A5EFD8ecaab" }),

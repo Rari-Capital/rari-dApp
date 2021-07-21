@@ -277,25 +277,25 @@ export const SettingsModal = ({
             mt={4}
             width="100%"
           >
-            <Link target="_blank" href="https://docs.rari.capital/">
+            <Link isExternal href="https://docs.rari.capital/">
               <Text mx={2} text="sm" textDecoration="underline">
-                {t("Docs")}
+                {t("Developer Docs")}
               </Text>
             </Link>
             <Link
-              target="_blank"
+              isExternal
               href="https://www.notion.so/Rari-Capital-3d762a07d2c9417e9cd8c2e4f719e4c3"
             >
               <Text mx={2} text="sm" textDecoration="underline">
-                {t("Notion")}
+                {t("Learn")}
               </Text>
             </Link>
             <Link
-              target="_blank"
-              href="https://www.notion.so/Rari-Capital-Audit-Quantstamp-December-2020-24a1d1df94894d6881ee190686f47bc7"
+              isExternal
+              href="https://info.rari.capital/security/#smart-contract-audits"
             >
               <Text mx={2} text="sm" textDecoration="underline">
-                {t("Audit")}
+                {t("Audits")}
               </Text>
             </Link>
           </Row>

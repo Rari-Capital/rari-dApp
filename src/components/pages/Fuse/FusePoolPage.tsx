@@ -439,7 +439,7 @@ const AssetSupplyRow = ({
             }
           />
           <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-            {asset.underlyingSymbol}
+            {tokenData?.symbol ?? asset.underlyingSymbol}
           </Text>
         </Row>
 
@@ -697,7 +697,7 @@ const AssetBorrowRow = ({
             }
           />
           <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-            {asset.underlyingSymbol}
+          {tokenData?.symbol ?? asset.underlyingSymbol}
           </Text>
         </Row>
 
