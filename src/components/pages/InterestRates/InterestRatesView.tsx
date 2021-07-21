@@ -13,14 +13,11 @@ import { TokenData, fetchTokenData } from "hooks/useTokenData";
 import useReserves from "hooks/interestRates/aave/useReserves";
 import useCompoundMarkets from "hooks/interestRates/compound/useCompoundMarkets";
 import useFuseMarkets from "hooks/interestRates/fuse/useFuseMarkets";
-// import useTokensOrderedByMarketCap from "hooks/useTokensOrderedByMarketCap";
-
-// Util
-// import { fetchTokenMarketCapOrder } from "utils/coingecko";
 
 // Types
 import { MarketInfo } from "hooks/interestRates/types";
 import { MergedPool } from "hooks/fuse/useFusePools";
+import { useTranslation } from "react-i18next";
 
 export enum InterestRatesTableOptions {
   Lending = "lending",
@@ -118,8 +115,6 @@ export default function InterestRatesView() {
     };
   }, [aaveReserves, compoundMarkets, setTokenData, fusePools]);
 
-  // const orderedTokenData = useTokensOrderedByMarketCap(tokenData);
-
   // token list filtered by search term
   const filteredTokenData = useMemo(
     () =>
@@ -137,6 +132,8 @@ export default function InterestRatesView() {
             ),
     [tokenSearchValue, tokenData]
   );
+
+  const { t } = useTranslation();
 
   return (
     <InterestRatesContext.Provider
@@ -177,8 +174,8 @@ export default function InterestRatesView() {
               <Box flex="3">
                 <MultiPicker
                   options={{
-                    lending: "Lending Rates",
-                    borrowing: "Borrowing Rates",
+                    lending: t("Lending Rates"),
+                    borrowing: t("Borrowing Rates"),
                   }}
                   // set table on change
                   onChange={(value) =>

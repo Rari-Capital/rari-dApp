@@ -15,6 +15,7 @@ import {
 // Types
 import { MarketInfo } from "hooks/interestRates/types";
 import { TokenData } from "hooks/useTokenData";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_COLUMNS: any = [
   {
@@ -106,7 +107,7 @@ export default function InterestRatesTable() {
   return (
     <Box w="100%" mt="5">
       <WindowTable
-        Table={CustomTable}
+        Table={Table}
         HeaderRow={Tr}
         Row={TableRow}
         HeaderCell={HeaderCell}
@@ -114,7 +115,11 @@ export default function InterestRatesTable() {
         Header={Thead}
         Body={Tbody}
         columns={columns}
-        data={data}
+        data={
+          tokens.length === 0
+            ? [{ asset: "NO_RESULTS", compound: "", aave: "", fuse: "" }]
+            : data
+        }
         rowHeight={55}
         style={{
           width: "100%",
@@ -130,30 +135,12 @@ export default function InterestRatesTable() {
         pointerEvents="none"
         position="absolute"
         background="linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%)"
-        // opacity={scrolledToEnd ? 0 : 1}
         transition="opacity 200ms ease"
         top={0}
         right={0}
         zIndex={2}
       />
     </Box>
-  );
-}
-
-function CustomTable({ children, ...props }: any) {
-  const { tokens } = useContext(InterestRatesContext);
-
-  return (
-    <Table {...props}>
-      {children}
-      {tokens.length === 0 ? (
-        <Tbody>
-          <Tr>
-            <Td colSpan={10000}>No assets match your search.</Td>
-          </Tr>
-        </Tbody>
-      ) : null}
-    </Table>
   );
 }
 
@@ -171,11 +158,13 @@ function TableCell({ children, column, ...props }: any) {
 }
 
 function TableRow({ children, row, ...props }: any) {
+  const { t } = useTranslation();
+
   // NO_ASSET is for blank rows (added jankily to provide padding at the end of the list)
-  return row.asset === "NO_ASSET" ? (
+  return row.asset === "NO_ASSET" || row.asset === "NO_RESULTS" ? (
     <Tr {...props}>
-      <Td colSpan={10000} userSelect="none" pointerEvents="none" border="none">
-        &nbsp;
+      <Td colSpan={10000} border="none">
+        {row.asset === "NO_ASSET" ? "" : t("No assets match your search.")}
       </Td>
     </Tr>
   ) : (
@@ -293,4 +282,7 @@ function PercentageComponent({ row, column }: any) {
 }
 
 // format percentage with 2 decimal places
-const formatPercentage = (rate: number) => (rate * 100).toFixed(2) + "%";
+const formatPercentage = (rate: number) => {
+  const percent = rate * 100;
+  return percent < 0.01 && percent > 0 ? "<0.01%" : percent.toFixed(2) + "%";
+};

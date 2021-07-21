@@ -376,11 +376,12 @@ export default class StablePool {
         pools[106] = "Fuse11";
         pools[107] = "Fuse2";
         pools[108] = "Fuse18";
+        pools[109] = "Fuse6";
         return pools;
       })(),
       POOLS_BY_CURRENCY: {
         DAI: ["dYdX", "Compound", "Aave"],
-        USDC: ["dYdX", "Compound", "Aave", "Fuse3", "Fuse7", "Fuse13", "Fuse14", "Fuse15", "Fuse16", "Fuse11", "Fuse2", "Fuse18"],
+        USDC: ["dYdX", "Compound", "Aave", "Fuse3", "Fuse7", "Fuse13", "Fuse14", "Fuse15", "Fuse16", "Fuse11", "Fuse2", "Fuse18", "Fuse6"],
         USDT: ["Compound", "Aave"],
         TUSD: ["Aave"],
         BUSD: ["Aave"],
@@ -401,6 +402,7 @@ export default class StablePool {
         Fuse11: ["USDC"],
         Fuse2: ["USDC"],
         Fuse18: ["USDC"],
+        Fuse6: ["USDC"],
       },
       getRawCurrencyAllocations: async function () {
         var allocationsByCurrency = {

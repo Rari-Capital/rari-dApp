@@ -110,7 +110,7 @@ const Pool2Page = () => {
                     )}{" "}
                     <Link
                       isExternal
-                      href="https://app.sushiswap.fi/pair/0x18a797c7c70c1bf22fdee1c09062aba709cacf04"
+                      href="https://app.sushi.com/add/ETH/0xD291E7a03283640FDc51b121aC401383A46cC623"
                     >
                       <u>{t("here")}</u>
                     </Link>{" "}

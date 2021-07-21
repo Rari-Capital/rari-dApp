@@ -130,8 +130,6 @@ const App = memo(() => {
 
         <Route path="/pool2" element={<Pool2Page />} />
 
-        <Route path="/positions" element={<StatsPage />} />
-
         <Route path="/fuse" element={<FusePoolsPage />} />
         <Route path="/fuse/liquidations" element={<FuseLiquidationsPage />} />
         <Route path="/fuse/new-pool" element={<FusePoolCreatePage />} />
@@ -139,8 +137,24 @@ const App = memo(() => {
         <Route path="/fuse/pool/:poolId/info" element={<FusePoolInfoPage />} />
         <Route path="/fuse/pool/:poolId/edit" element={<FusePoolEditPage />} />
 
-        <Route path="/interest-rates" element={<InterestRatesPage />} />
-        <Route path="/interest_rates" element={<Navigate to="/interest-rates" replace={true} />} />
+        <Route path="/utils" element={<Navigate to="/" replace={true} />} />
+        <Route path="/utils/interest-rates" element={<InterestRatesPage />} />
+        <Route path="/utils/positions" element={<StatsPage />} />
+
+        {/* Backwards Compatibility Routes */}
+        <Route
+          path="/interest_rates"
+          element={<Navigate to="/utils/interest-rates" replace={true} />}
+        />
+        <Route
+          path="/interest-rates"
+          element={<Navigate to="/utils/interest-rates" replace={true} />}
+        />
+        <Route
+          path="/positions"
+          element={<Navigate to="/utils/positions" replace={true} />}
+        />
+        {/* Backwards Compatibility Routes */}
 
         <Route path="/" element={<MultiPoolPortal />} />
 

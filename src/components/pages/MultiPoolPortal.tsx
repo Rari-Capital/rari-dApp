@@ -423,7 +423,10 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
                 ? noSlippageCurrencies.join(" + ")
                 : " ? ") +
               " between " +
-              getSDKPool({ rari, pool: poolType }).allocations.POOLS.join(", ")
+              getSDKPool({ rari, pool: poolType })
+                // Filter out empty pools
+                .allocations.POOLS.filter((el) => !!el)
+                .join(", ")
             }
           >
             <QuestionIcon ml={2} mb="3px" boxSize="12px" />
@@ -595,7 +598,6 @@ const NewsMarquee = memo(() => {
   const news = [
     "The first Fuse pools deployed by the Rari Capital DAO are now open for deposits/borrows in the Fuse tab!",
     "You can now earn rewards for pooling ETH and RGT on Sushiswap in the Pool2 tab.",
-    "Saffron x Rari tranches are now open for deposits under the Tranches tab.",
     "We're migrating from Telegram to Discord! Join us there to talk all things Rari Capital.",
     "Individual Pool Dashboards are now live! View detailed analytics about your account and other useful metrics!",
   ];
