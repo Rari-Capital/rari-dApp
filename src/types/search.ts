@@ -1,3 +1,4 @@
+import { FusePoolData } from "utils/fetchFusePoolData";
 import { RariApiTokenData } from "./tokens";
 
 export type CTokenSearchReturn = {
@@ -12,6 +13,10 @@ export type GQLSearchReturn = {
   markets: CTokenSearchReturn[];
 };
 
-export interface FinalSearchReturn extends CTokenSearchReturn {
+export interface CTokenSearchReturnWithTokenData extends CTokenSearchReturn {
   tokenData: RariApiTokenData;
+}
+export interface FinalSearchReturn {
+  tokens: CTokenSearchReturnWithTokenData[],
+  fuse: FusePoolData[]
 }

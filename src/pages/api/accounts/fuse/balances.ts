@@ -14,7 +14,7 @@ interface APIAccountsFuseBalancesResponse {
   };
 }
 
-interface APIError {
+export interface APIError {
   error: any;
 }
 
@@ -80,7 +80,7 @@ export default async function handler(
           return a + (b?.totalSupplyBalanceUSD ?? 0);
         }, 0) ?? 0;
 
-      //   Calc totals
+      // Calc totals
       const totals = {
         totalBorrowsUSD,
         totalSuppliedUSD,

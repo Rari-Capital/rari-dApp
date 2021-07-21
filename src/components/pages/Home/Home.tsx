@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
+import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
 import { Column, Row } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import Marquee from "react-fast-marquee";
@@ -73,18 +73,22 @@ const Home = React.memo(() => {
       >
         {/* Hero */}
         <Row
-          mainAxisAlignment="center"
-          crossAxisAlignment="center"
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
           width="100%"
           height="400px"
           px={{ sm: "0", md: "15%" }}
+          // bg="pink"
         >
           <Column
-            mainAxisAlignment="center"
+            mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            mx="auto"
+            my="auto"
+            mt="auto"
             width="100%"
-            padding="20%"
+            height="100%"
+            padding="10%"
+            // bg="aqua"
           >
             <motion.div
               initial={{ opacity: 0, y: -40 }}
@@ -99,6 +103,7 @@ const Home = React.memo(() => {
                 , lend <br /> and borrow
               </Heading>
             </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}

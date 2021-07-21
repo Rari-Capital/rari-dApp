@@ -1,11 +1,5 @@
-import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
-import {
-  Avatar,
-  Box,
-  IconButton,
-  InputRightElement,
-  Text,
-} from "@chakra-ui/react";
+import { SearchIcon } from "@chakra-ui/icons";
+import { Avatar, Collapse, InputRightElement, Text } from "@chakra-ui/react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Spinner } from "@chakra-ui/spinner";
 import AppLink from "../AppLink";
@@ -18,22 +12,29 @@ import useSWR from "swr";
 // Utils
 import axios from "axios";
 import { Column, Row } from "lib/chakraUtils";
-import { FinalSearchReturn } from "types/search";
+import {
+  CTokenSearchReturnWithTokenData,
+  FinalSearchReturn,
+} from "types/search";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
+import { useMemo } from "react";
+import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
 
 // Fetchers
 const searchFetcher = async (
   search: string
-): Promise<FinalSearchReturn[] | undefined> => {
+): Promise<FinalSearchReturn | undefined> => {
   if (!search) return undefined;
   return (await axios.get(`/api/search?query=${search}`)).data;
 };
 
 const Searchbar = ({
   width,
+  height = "55px",
   ...inputProps
 }: {
   width?: any;
+  height?: any;
   [x: string]: any;
 }) => {
   const [val, setVal] = useState("");
@@ -41,30 +42,56 @@ const Searchbar = ({
 
   const { data } = useSWR(debouncedSearch, searchFetcher);
 
-  const hasResults = !!val && !!data?.length;
+  const hasResults = useMemo(() => {
+    if (!val || !data) return false;
+    // If any of the values in the `data` object has items, then we have some results.
+    return Object.values(data).some((arr) => !!arr.length);
+  }, [data, val]);
+
+  // const hasResults = !!val && !!data?.length;
   const loading = !data;
 
   return (
-    <Box width={width ?? ""} position="relative">
+    <Column
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+      height="100%"
+      width="100%"
+      position="relative"
+      bg="white"
+      border="4px solid"
+      borderRadius="xl"
+      borderColor="grey"
+      id="Searchbox"
+    >
       <InputGroup
-        width="100%"
-        h="55px"
+        width={width ?? ""}
+        h={height}
         // pl={2}
       >
         <InputLeftElement
           pointerEvents="none"
           height="100%"
           color="grey"
-          children={<SearchIcon color="gray.300" boxSize={5} />}
+          children={
+            !!val && !!loading ? (
+              <Spinner />
+            ) : (
+              <SearchIcon color="gray.300" boxSize={5} />
+            )
+          }
           ml={1}
+          mr={1}
         />
         <Input
-          border="3px solid"
-          borderColor="grey"
           height="100%"
+          width="100%"
           placeholder="Search by token, pool or product..."
           _placeholder={{ color: "grey", fontWeight: "bold" }}
           onChange={({ target: { value } }) => setVal(value)}
+          border="none"
+          borderBottom={hasResults ? "1px solid grey" : ""}
+          borderBottomRadius={hasResults ? "none" : "xl"}
           value={val}
           color="grey"
           {...inputProps}
@@ -74,7 +101,8 @@ const Searchbar = ({
           height="100%"
           color="grey"
           children={
-            !!val ? loading ? <Spinner /> : null : null
+            null
+            // !!val ? loading ? <Spinner /> : null : null
             //  (
             //   <IconButton
             //     icon={<CloseIcon />}
@@ -90,30 +118,33 @@ const Searchbar = ({
           ml={1}
         />
       </InputGroup>
-      {hasResults && (
-        <SearchResults results={data!} handleClick={() => setVal("")} />
-      )}
-    </Box>
+      {/* {hasResults && ( */}
+      <Collapse in={hasResults} unmountOnExit style={{ width: "100%" }}>
+        <SearchResults results={data} handleClick={() => setVal("")} />
+      </Collapse>
+
+      {/* )} */}
+    </Column>
   );
 };
 
 export default Searchbar;
 
 const SearchResults = ({
-  results,
+  results = DEFAULT_SEARCH_RETURN,
   handleClick,
 }: {
-  results: FinalSearchReturn[];
+  results?: FinalSearchReturn;
   handleClick: () => void;
 }) => {
+  const { tokens, fuse } = results;
+
   return (
     <Column
-      position="absolute"
+      position="relative"
       w="100%"
       h="100%"
       maxHeight="100px"
-      mt="55px"
-      bg="white"
       color="black"
       fontWeight="bold"
       zIndex={2}
@@ -124,11 +155,11 @@ const SearchResults = ({
       crossAxisAlignment="flex-start"
       overflowY="scroll"
     >
-      {results.map((result: FinalSearchReturn, i: number) => {
+      {tokens.map((token, i: number) => {
         const route =
-          result.underlyingAddress === ETH_TOKEN_DATA.address
+          token.underlyingAddress === ETH_TOKEN_DATA.address
             ? `/token/eth`
-            : `/token/${result.underlyingAddress}`;
+            : `/token/${token.underlyingAddress}`;
         return (
           <AppLink href={route} w="100%" h="100%" key={i}>
             <Row
@@ -142,8 +173,8 @@ const SearchResults = ({
               expand
               onClick={handleClick}
             >
-              <Avatar src={result.tokenData.logoURL} boxSize={8} />
-              <Text ml={2}>{result.underlyingSymbol}</Text>
+              <Avatar src={token.tokenData.logoURL} boxSize={8} />
+              <Text ml={2}>{token.underlyingSymbol}</Text>
             </Row>
           </AppLink>
         );

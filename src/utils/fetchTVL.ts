@@ -3,19 +3,45 @@ import Fuse from "lib/fuse-sdk/src";
 import BigNumber from "bignumber.js";
 
 export const fetchFuseTVL = async (fuse: Fuse) => {
-  const {
-    2: totalSuppliedETH,
-  } = await fuse.contracts.FusePoolLens.methods
+  const { 2: suppliedETHPerPool } = await fuse.contracts.FusePoolLens.methods
     .getPublicPoolsWithData()
     .call({ gas: 1e18 });
 
-  return fuse.web3.utils.toBN(
+  const totalSuppliedETH = fuse.web3.utils.toBN(
     new BigNumber(
-      totalSuppliedETH
+      suppliedETHPerPool
         .reduce((a: number, b: string) => a + parseInt(b), 0)
         .toString()
     ).toFixed(0)
   );
+
+  return totalSuppliedETH;
+};
+
+// Todo - delete this and just make `fetchFuseTVL` do this stuff
+export const fetchFuseTVLBorrowsAndSupply = async (fuse: Fuse) => {
+  const { 2: suppliedETHPerPool, 3: borrowedETHPerPool } =
+    await fuse.contracts.FusePoolLens.methods
+      .getPublicPoolsWithData()
+      .call({ gas: 1e18 });
+
+  const totalSuppliedETH = fuse.web3.utils.toBN(
+    new BigNumber(
+      suppliedETHPerPool
+        .reduce((a: number, b: string) => a + parseInt(b), 0)
+        .toString()
+    ).toFixed(0)
+  );
+
+  const totalBorrowedETH = fuse.web3.utils.toBN(
+    new BigNumber(
+      borrowedETHPerPool
+        .reduce((a: number, b: string) => a + parseInt(b), 0)
+        .toString()
+    ).toFixed(0)
+  );
+
+  return { totalSuppliedETH, totalBorrowedETH };
 };
 
 export const perPoolTVL = async (rari: Rari, fuse: Fuse) => {

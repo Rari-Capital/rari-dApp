@@ -28,9 +28,6 @@ const PoolPage: NextPage = () => {
   const router = useRouter();
   const { poolId } = router.query;
   const pool: Pool = getEnumKeyByEnumValue(Pool, poolId) as Pool;
-
-  console.log("next", { pool, poolId });
-
   return <PoolPortal pool={pool} />;
 };
 
