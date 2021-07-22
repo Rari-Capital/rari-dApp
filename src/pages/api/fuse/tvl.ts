@@ -62,17 +62,12 @@ export default async function handler(
 
       const blockTimestamp = blockNumber
         ? await blockNumberToTimeStamp(web3, blockNumber)
-        : await blockNumberToTimeStamp(web3, latestBlockNumber)
+        : await blockNumberToTimeStamp(web3, latestBlockNumber);
 
       let fetchETHUSDPrice: Promise<any>;
       //   Blocknum 2 timestamp
       if (blockNumber) {
-        const ddMMYYY = new Date(blockTimestamp * 1000)
-          .toISOString()
-          .split("T")[0]
-          .split("-")
-          .reverse()
-          .join("-");
+        const ddMMYYY = formatDate(new Date(blockTimestamp * 1000));
 
         //   If we did specified a blockNumber, we want the historical ETH Price apprxomiated to a DD-MM-YYYY Date
         fetchETHUSDPrice = fetchETHPriceAtDate(ddMMYYY);
@@ -95,6 +90,7 @@ export default async function handler(
           (parseInt(totalBorrowedETH.toString()) / 1e18) * ethUSDPrice,
         blockNumber: blockNumber ?? latestBlockNumber,
         blockTimestamp,
+        blockDate: formatDate(new Date(blockTimestamp * 1000)),
         ethUSDPrice,
       };
 
@@ -105,3 +101,7 @@ export default async function handler(
     }
   }
 }
+
+// Formats date into "DD-MM-YYYY"
+const formatDate = (date: Date) =>
+  date.toISOString().split("T")[0].split("-").reverse().join("-");
