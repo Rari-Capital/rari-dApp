@@ -46,6 +46,7 @@
     "lightweight-charts": "^3.3.0",
     "logrocket": "^1.0.14",
     "mathjs": "^9.0.0",
+    "mongoose": "^5.13.3",
     "next": "^11.0.2-canary.3",
     "next-i18next": "^8.5.3",
     "next-pwa": "^5.2.21",

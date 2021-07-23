@@ -1,6 +1,6 @@
 import Web3 from "web3";
 
-// Converts block Number to Timestamp
+// Converts block Number to Unix Timestamp
 export const blockNumberToTimeStamp = async (
   web3: Web3,
   blockNumber?: number

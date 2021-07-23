@@ -11,6 +11,12 @@ import Cors from "cors";
 import { fetchCurrentETHPrice, fetchETHPriceAtDate } from "utils/coingecko";
 import { blockNumberToTimeStamp } from "utils/web3Utils";
 import { formatDateToDDMMYY } from "utils/api/dateUtils";
+import {
+  getAllTVLs,
+  getTVLsByBlockRange,
+  getTVLsByDateRange,
+  setupDB,
+} from "utils/api/db";
 
 // Initializing the cors middleware
 const cors = Cors({
@@ -40,9 +46,16 @@ export interface APIFuseTVL {
   ethUSDPrice: number;
 }
 
+// If we specify a startBlock and endBlock
+// query db against this range of blocks
+// return a range
+
+// If we specify a startDate and endDate
+// query db against this range of dates
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<APIFuseTVL | APIError>
+  res: NextApiResponse<any>
 ) {
   // Run the middleware
   await runMiddleware(req, res, cors);
@@ -50,6 +63,8 @@ export default async function handler(
   //   Gets ALL fuse pool Data
   if (req.method === "GET") {
     try {
+      await setupDB();
+
       // Set up SDKs
       const web3 = new Web3(turboGethURL);
       const rari = new Rari(web3);
@@ -57,48 +72,28 @@ export default async function handler(
 
       // Query params
       // startDate and endDate is in DD-MM-YYY format
-      const { startDate, endDate, startBlock, endBlock } =
+      const { startDate, endDate, startBlock, endBlock, useContract } =
         parseQueryParams(req);
       const latestBlockNumber = await web3.eth.getBlockNumber();
-
-      // We will always have a startBlockTimestamp
-      const startBlockTimestamp = startBlock
-        ? await blockNumberToTimeStamp(web3, startBlock)
-        : await blockNumberToTimeStamp(web3, latestBlockNumber);
+      const currentDate = formatDateToDDMMYY(new Date());
 
       let fetchETHUSDPrice: Promise<any>;
-      // If a startBlock is specified
-      if (startBlock) {
-        const ddMMYYY = formatDateToDDMMYY(new Date(startBlockTimestamp * 1000));
 
-        //   We want the historical ETH Price apprxomiated to a DD-MM-YYYY Date
-        fetchETHUSDPrice = fetchETHPriceAtDate(ddMMYYY);
-      } 
-      // Else 
-      else {
-        //   If we did not specify a blockNumber, we want the CURRENT REAL TIME ETH PRICE
-        fetchETHUSDPrice = fetchCurrentETHPrice();
+      let data;
+      if (startBlock && endBlock) {
+        data = await getTVLsByBlockRange(startBlock, endBlock);
+      } else if (startBlock) {
+        data = await getTVLsByBlockRange(startBlock, latestBlockNumber);
+      } else if (startDate && endDate) {
+        console.log({ startDate, endDate });
+        data = await getTVLsByDateRange(startDate, endDate);
+      } else if (startDate) {
+        data = await getTVLsByDateRange(startDate, currentDate);
+      } else {
+        data = await getAllTVLs();
       }
 
-      //   Get TVL supplied and borrowed in ETH denomination
-      const [{ totalSuppliedETH, totalBorrowedETH }, ethUSDPrice] =
-        await Promise.all([
-          fetchFuseTVLBorrowsAndSupply(fuse, startBlock),
-          fetchETHUSDPrice,
-        ]);
-
-      const tvlReturn = {
-        totalSuppliedUSD:
-          (parseInt(totalSuppliedETH.toString()) / 1e18) * ethUSDPrice,
-        totalBorrowedUSD:
-          (parseInt(totalBorrowedETH.toString()) / 1e18) * ethUSDPrice,
-        blockNumber: startBlock ?? latestBlockNumber,
-        blockTimestamp: startBlockTimestamp,
-        blockDate: formatDateToDDMMYY(new Date(startBlockTimestamp * 1000)),
-        ethUSDPrice,
-      };
-
-      return res.status(200).json(tvlReturn);
+      return res.status(200).json({ data });
     } catch (error) {
       console.log({ error }, error.message);
       return res.status(400).json({ error });
@@ -122,7 +117,8 @@ const parseQueryParams = (req: NextApiRequest) => {
 
   const endDate = req.query.endDate ? (req.query.endDate as string) : undefined;
 
-  const useContract = req.query.useContract
+  const useContract =
+    req.query.useContract && req.query.useContract === "true" ? true : false;
 
   return { startBlock, endBlock, startDate, endDate, useContract };
 };
