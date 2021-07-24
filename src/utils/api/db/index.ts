@@ -71,7 +71,7 @@ export const getTVLsByDateRange = async (
   return await TVLModel.find({
     blockTimestamp: { $gte: start, $lte: end },
   })
-    .sort({ blockDate: 1 })
+    .sort({ blockTimestamp: 1 })
     .exec();
 };
 
