@@ -123,15 +123,16 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel_ETH:
-      "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
-    WhitePaperInterestRateModel_WBTC:
-      "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
-    JumpRateModel_DAI: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
-    JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
-    JumpRateModel_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
-    JumpRateModel_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
-    JumpRateModel_FEI: "0x8f47be5692180079931e2f983db6996647aba0a5",
+    WhitePaperInterestRateModel_Compound_ETH: "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    WhitePaperInterestRateModel_Compound_WBTC: "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
+    JumpRateModel_Compound_Stables: "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
+    JumpRateModel_Compound_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
+    JumpRateModel_Cream_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
+    JumpRateModel_Cream_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
+    JumpRateModel_Fei_FEI: "0x8f47be5692180079931e2f983db6996647aba0a5",
+    JumpRateModel_Fei_TRIBE: "0x075538650a9c69ac8019507a7dd1bd879b12c1d7",
+    JumpRateModel_Fei_ETH: "0xbab47e4b692195bf064923178a90ef999a15f819",
+    JumpRateModel_Fei_DAI: "0xede47399e2aa8f076d40dc52896331cba8bd40f7",
   };
 
   constructor(web3Provider) {
