@@ -11,12 +11,12 @@ var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
-var contracts = require(__dirname + "/contracts/compound-protocol.min.json")
-  .contracts;
-var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
-  .contracts;
-var oracleContracts = require(__dirname + "/contracts/oracles.min.json")
-  .contracts;
+var contracts = require(__dirname +
+  "/contracts/compound-protocol.min.json").contracts;
+var openOracleContracts = require(__dirname +
+  "/contracts/open-oracle.min.json").contracts;
+var oracleContracts = require(__dirname +
+  "/contracts/oracles.min.json").contracts;
 
 const axios = require("axios");
 
@@ -50,8 +50,10 @@ export default class Fuse {
     Keep3rPriceOracle_Uniswap: "0xb90de476d438b37a4a143bf729a9b2237e544af6", // NO LONGER IN USE
     Keep3rPriceOracle_SushiSwap: "0x08d415f90ccfb971dfbfdd6266f9a7cb1c166fc0", // NO LONGER IN USE
     Keep3rV2PriceOracle_Uniswap: "0xd6a8cac634e59c00a3d4163f839d068458e39869", // NO LONGER IN USE
-    UniswapTwapPriceOracle_Uniswap: "0xCd8f1c72Ff98bFE3B307869dDf66f5124D57D3a9",
-    UniswapTwapPriceOracle_SushiSwap: "0xfD4B4552c26CeBC54cD80B1BDABEE2AC3E7eB324",
+    UniswapTwapPriceOracle_Uniswap:
+      "0xCd8f1c72Ff98bFE3B307869dDf66f5124D57D3a9",
+    UniswapTwapPriceOracle_SushiSwap:
+      "0xfD4B4552c26CeBC54cD80B1BDABEE2AC3E7eB324",
     UniswapLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "", // TODO: Set correct mainnet address after deployment
@@ -62,7 +64,8 @@ export default class Fuse {
     BalancerLpTokenPriceOracle: "", // TODO: Set correct mainnet address after deployment
     MasterPriceOracle: "0x1887118E49e0F4A78Bd71B792a49dE03504A764D",
     CurveLpTokenPriceOracle: "0x43c534203339bbf15f62b8dde91e7d14195e7a60",
-    CurveLiquidityGaugeV2PriceOracle: "0xd9eefdb09d75ca848433079ea72ef609a1c1ea21",
+    CurveLiquidityGaugeV2PriceOracle:
+      "0xd9eefdb09d75ca848433079ea72ef609a1c1ea21",
   };
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
@@ -128,7 +131,7 @@ export default class Fuse {
     JumpRateModel_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
     JumpRateModel_Stables_Majors: "0xb579d2761470bba14018959d6dffcc681c09c04b",
     JumpRateModel_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
-    JumpRateModel_ALCX: "0x58c3e7119ec200c09b2b3a9f8ce3bd77b6b47012",
+    JumpRateModel_FEI: "0x8f47be5692180079931e2f983db6996647aba0a5",
   };
 
   constructor(web3Provider) {
@@ -1091,9 +1094,8 @@ export default class Fuse {
             );
 
             try {
-              var uniswapOrUniswapAnchoredView = await preferredPriceOracle.methods
-                .secondaryOracle()
-                .call();
+              var uniswapOrUniswapAnchoredView =
+                await preferredPriceOracle.methods.secondaryOracle().call();
             } catch {
               throw "Underlying token price for this asset is not available via this oracle.";
             }
