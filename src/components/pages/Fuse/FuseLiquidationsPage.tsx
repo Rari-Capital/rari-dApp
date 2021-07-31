@@ -167,6 +167,11 @@ const FuseLiquidationsPage = memo(() => {
 
       console.log(pool.comptroller, poolID);
 
+      if (poolID == 4) {
+        // Pool 4 is broken, we'll just skip it for now.
+        continue;
+      }
+
       poolFetches.push(
         fuse.contracts.FusePoolLens.methods
           .getPoolAssetsWithData(pool.comptroller)
