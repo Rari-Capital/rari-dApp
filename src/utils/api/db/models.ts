@@ -10,4 +10,14 @@ const TVLSchema = new Schema({
   blockTimestamp: String,
 });
 
+const UserBalanceSchema = new Schema({
+  userAddress: String,
+  pools: Array,
+  totals: {
+    totalBorrowedUSD: Number,
+    totalSuppliedUSD: Number
+  }
+});
+
 export const TVLModel = mongoose.models.TVL || mongoose.model("TVL", TVLSchema);
+export const UserBalanceModel = mongoose.models.UserBalanace || mongoose.model("UserBalance", UserBalanceSchema);
