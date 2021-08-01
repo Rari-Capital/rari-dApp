@@ -4,6 +4,9 @@ import Rari from "lib/rari-sdk/index";
 // @ts-ignore
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
+import { fetchETHPriceAtDate } from "./coingecko";
+import { formatDateToDDMMYY } from "./api/dateUtils";
+import { blockNumberToTimeStamp } from "./web3Utils";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -92,6 +95,7 @@ export const fetchFusePoolData = async (
   poolId: string | undefined,
   address: string,
   fuse: Fuse,
+  blockNum?: number,
   rari?: Rari
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
@@ -102,7 +106,7 @@ export const fetchFusePoolData = async (
     isPrivate,
   } = await fuse.contracts.FusePoolDirectory.methods
     .pools(poolId)
-    .call({ from: address });
+    .call({ from: address }, blockNum);
 
   // Remove any profanity from the pool name
   let name = filterPoolName(_unfiliteredName);
@@ -110,7 +114,7 @@ export const fetchFusePoolData = async (
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
       .getPoolAssetsWithData(comptroller)
-      .call({ from: address, gas: 1e18 })
+      .call({ from: address, gas: 1e18 }, blockNum)
   ).map(filterOnlyObjectProperties);
 
   let totalLiquidityUSD = 0;
@@ -121,10 +125,17 @@ export const fetchFusePoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
-  const ethPrice: number = fuse.web3.utils.fromWei(
-    // prefer rari because it has caching
-    await (rari ?? fuse).getEthUsdPriceBN()
-  ) as any;
+  const latestBlockNumber = await fuse.web3.eth.getBlockNumber();
+
+  const startBlockTimestamp = blockNum
+    ? await blockNumberToTimeStamp(fuse.web3, blockNum)
+    : await blockNumberToTimeStamp(fuse.web3, latestBlockNumber);
+
+  let ethPrice: number;
+
+  const ddMMYYYY = formatDateToDDMMYY(new Date(startBlockTimestamp * 1000));
+
+  ethPrice = await fetchETHPriceAtDate(ddMMYYYY);
 
   for (let i = 0; i < assets.length; i++) {
     let asset = assets[i];
