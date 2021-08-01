@@ -41,7 +41,7 @@ export default async function handler(
           fuse,
           address: userAddress,
           filter: "",
-          blockNum: blockNum
+          blockNum: blockNum.toString()
         });
         _poolIndices = fusePools.map((pool) => pool.id.toString());
       }
@@ -84,7 +84,7 @@ export default async function handler(
         fuse,
         address: userAddress,
         filter: "",
-        blockNum: blockNum
+        blockNum: blockNum.toString()
       });
 
       const poolIndices = fusePools

@@ -46,14 +46,14 @@ export const fetchPools = async ({
   rari,
   fuse,
   address,
-  blockNum,
-  filter
+  filter,
+  blockNum
 }: {
   rari: Rari;
   fuse: Fuse;
   address: string;
   filter: string | null;
-  blockNum: string | null;
+  blockNum?: string | null;
 }) => {
   const isMyPools = filter === "my-pools";
   const isCreatedPools = filter === "created-pools";
