@@ -6,6 +6,9 @@ import Fuse from "lib/fuse-sdk";
 import FuseJs from "fuse.js";
 
 import { filterOnlyObjectProperties } from "utils/fetchFusePoolData";
+import { formatDateToDDMMYY } from "utils/api/dateUtils";
+import { blockNumberToTimeStamp } from "utils/web3Utils";
+import { fetchETHPriceAtDate } from "utils/coingecko";
 
 export interface FusePool {
   name: string;
@@ -43,15 +46,26 @@ export const fetchPools = async ({
   rari,
   fuse,
   address,
-  filter,
+  blockNum,
+  filter
 }: {
   rari: Rari;
   fuse: Fuse;
   address: string;
   filter: string | null;
+  blockNum: string | null;
 }) => {
   const isMyPools = filter === "my-pools";
   const isCreatedPools = filter === "created-pools";
+
+  // let ethPrice: number;
+  const latestBlockNumber = await fuse.web3.eth.getBlockNumber();
+
+  const startBlockTimestamp = blockNum
+    ? await blockNumberToTimeStamp(fuse.web3, parseInt(blockNum))
+    : await blockNumberToTimeStamp(fuse.web3, latestBlockNumber);
+
+  const ddMMYYYY = formatDateToDDMMYY(new Date(startBlockTimestamp * 1000));
 
   const [
     {
@@ -66,17 +80,17 @@ export const fetchPools = async ({
   ] = await Promise.all([
     isMyPools
       ? fuse.contracts.FusePoolLens.methods
-          .getPoolsBySupplierWithData(address)
-          .call({ gas: 1e18 })
+        .getPoolsBySupplierWithData(address)
+        .call({ gas: 1e18 }, blockNum)
       : isCreatedPools
-      ? fuse.contracts.FusePoolLens.methods
+        ? fuse.contracts.FusePoolLens.methods
           .getPoolsByAccountWithData(address)
-          .call({ gas: 1e18 })
-      : fuse.contracts.FusePoolLens.methods
+          .call({ gas: 1e18 }, blockNum)
+        : fuse.contracts.FusePoolLens.methods
           .getPublicPoolsWithData()
-          .call({ gas: 1e18 }),
+          .call({ gas: 1e18 }, blockNum),
 
-    rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
+    await fetchETHPriceAtDate(ddMMYYYY),
   ]);
 
   const merged: MergedPool[] = [];
@@ -101,7 +115,7 @@ export interface UseFusePoolsReturn {
 }
 
 // returns impersonal data about fuse pools ( can filter by your supplied/created pools )
-export const useFusePools = (filter: string | null) : UseFusePoolsReturn => {
+export const useFusePools = (filter: string | null): UseFusePoolsReturn => {
   const { fuse, rari, address } = useRari();
 
   const isMyPools = filter === "my-pools";

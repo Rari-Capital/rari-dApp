@@ -28,6 +28,7 @@ export default async function handler(
 
       // Validate address input
       const address = req.query.address as string;
+      const blockNum = req.query.blockNum as string;
 
       if (!address)
         return res.status(400).json({ error: "No Address provided." });
@@ -49,6 +50,7 @@ export default async function handler(
         fuse,
         address,
         filter: "my-pools",
+        blockNum
       });
 
       // Then get the data for each of these fuse pools

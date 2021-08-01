@@ -12,6 +12,7 @@ const TVLSchema = new Schema({
 
 const UserBalanceSchema = new Schema({
   userAddress: String,
+  blockNumber: Number,
   pools: Array,
   totals: {
     totalBorrowedUSD: Number,

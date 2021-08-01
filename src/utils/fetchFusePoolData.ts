@@ -95,8 +95,8 @@ export const fetchFusePoolData = async (
   poolId: string | undefined,
   address: string,
   fuse: Fuse,
-  blockNum?: number,
-  rari?: Rari
+  rari?: Rari,
+  blockNum?: number | undefined
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
 
