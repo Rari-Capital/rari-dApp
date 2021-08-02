@@ -19,7 +19,6 @@ export default async function handler(
       // Validate queryParams
       const poolIndices = req.body.poolIndices as string[]; // optional
       const address = (req.body.address as string) ?? EmptyAddress; // optional
-      const blockNum = (req.body.blockNum as number) ?? 12060024; // optional
 
       try {
         userAddress = Web3.utils.toChecksumAddress(address);
@@ -41,18 +40,19 @@ export default async function handler(
           fuse,
           address: userAddress,
           filter: "",
-          blockNum: blockNum.toString()
         });
         _poolIndices = fusePools.map((pool) => pool.id.toString());
       }
 
       const fusePoolsData = await Promise.all(
         _poolIndices.map((poolIndex) =>
-          fetchFusePoolData(poolIndex, userAddress, fuse, rari, blockNum)
+          fetchFusePoolData(poolIndex, userAddress, fuse, rari)
         )
       );
 
-      return res.status(200).json({ pools: fusePoolsData, userAddress, blockNum });
+      return res
+        .status(200)
+        .json({ pools: fusePoolsData, userAddress });
     } catch (error) {
       console.log({ error });
       return res.status(400).json({ error });
@@ -66,7 +66,6 @@ export default async function handler(
       // Validate queryParams
       // const poolIndices = req.body.poolIndices as string[]; // optional
       const address = (req.body.address as string) ?? EmptyAddress; // optional
-      const blockNum = (req.body.blockNum as number) ?? 12060024; // optional
 
       try {
         userAddress = Web3.utils.toChecksumAddress(address);
@@ -84,7 +83,6 @@ export default async function handler(
         fuse,
         address: userAddress,
         filter: "",
-        blockNum: blockNum.toString()
       });
 
       const poolIndices = fusePools
@@ -93,11 +91,13 @@ export default async function handler(
 
       const fusePoolsData = await Promise.all(
         poolIndices.map((poolIndex) =>
-          fetchFusePoolData(poolIndex, userAddress, fuse, rari, blockNum)
+          fetchFusePoolData(poolIndex, userAddress, fuse, rari)
         )
       );
 
-      return res.status(200).json({ pools: fusePoolsData, userAddress, blockNum });
+      return res
+        .status(200)
+        .json({ pools: fusePoolsData, userAddress });
     } catch (error) {
       console.log({ error }, error.message);
       return res.status(400).json({ error });
