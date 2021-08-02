@@ -1,8 +1,10 @@
 import { fetchPools } from "hooks/fuse/useFusePools";
 import Rari from "lib/rari-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
+import { formatDateToDDMMYY } from "utils/api/dateUtils";
 import { fetchFusePoolData, FusePoolData } from "utils/fetchFusePoolData";
 import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { blockNumberToTimeStamp } from "utils/web3Utils";
 import Web3 from "web3";
 
 interface APIAccountsFuseBalancesResponse {
@@ -12,6 +14,9 @@ interface APIAccountsFuseBalancesResponse {
     totalBorrowsUSD: number;
     totalSuppliedUSD: number;
   };
+  blockNumber: number;
+  blockTimestamp: string | number;
+  blockDate: string;
 }
 
 export interface APIError {
@@ -44,20 +49,33 @@ export default async function handler(
       const rari = new Rari(web3);
       const fuse = initFuseWithProviders(turboGethURL);
 
+      const latestBlockNumber = await web3.eth.getBlockNumber();
+
+      // We will always have a startBlockTimestamp
+      const blockTimestamp = blockNum
+        ? await blockNumberToTimeStamp(web3, parseFloat(blockNum))
+        : await blockNumberToTimeStamp(web3, latestBlockNumber);
+
       // Get all fuse pools this user is active in
       const pools = await fetchPools({
         rari,
         fuse,
         address,
         filter: "my-pools",
-        blockNum
+        blockNum: parseFloat(blockNum),
       });
 
       // Then get the data for each of these fuse pools
       const poolIndices = pools.map((pool) => pool.id);
       const fusePoolsData = await Promise.all(
         poolIndices.map((poolIndex) =>
-          fetchFusePoolData(poolIndex.toString(), userAddress, fuse, rari)
+          fetchFusePoolData(
+            poolIndex.toString(),
+            userAddress,
+            fuse,
+            rari,
+            blockNum
+          )
         )
       );
 
@@ -92,6 +110,9 @@ export default async function handler(
         userAddress,
         pools: fusePoolsDataWithFilteredAssets,
         totals,
+        blockNumber: blockNum ? parseFloat(blockNum) : latestBlockNumber,
+        blockTimestamp,
+        blockDate: formatDateToDDMMYY(new Date(blockTimestamp * 1000)),
       });
     } catch (error) {
       console.log(error);
