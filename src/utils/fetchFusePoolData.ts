@@ -4,9 +4,6 @@ import Rari from "lib/rari-sdk/index";
 // @ts-ignore
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
-import { fetchETHPriceAtDate } from "./coingecko";
-import { formatDateToDDMMYY } from "./api/dateUtils";
-import { blockNumberToTimeStamp } from "./web3Utils";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -75,7 +72,7 @@ export interface FusePoolData {
 export enum FusePoolMetric {
   TotalLiquidityUSD,
   TotalSuppliedUSD,
-  TotalBorrowedUSD
+  TotalBorrowedUSD,
 }
 
 export const filterPoolName = (name: string) => {
@@ -96,7 +93,7 @@ export const fetchFusePoolData = async (
   address: string,
   fuse: Fuse,
   rari?: Rari,
-  blockNum?: number | undefined
+  blockNum: string | number = "latest"
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
 
@@ -125,17 +122,10 @@ export const fetchFusePoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
-  const latestBlockNumber = await fuse.web3.eth.getBlockNumber();
-
-  const startBlockTimestamp = blockNum
-    ? await blockNumberToTimeStamp(fuse.web3, blockNum)
-    : await blockNumberToTimeStamp(fuse.web3, latestBlockNumber);
-
-  let ethPrice: number;
-
-  const ddMMYYYY = formatDateToDDMMYY(new Date(startBlockTimestamp * 1000));
-
-  ethPrice = await fetchETHPriceAtDate(ddMMYYYY);
+  const ethPrice: number = fuse.web3.utils.fromWei(
+    // prefer rari because it has caching
+    await (rari ?? fuse).getEthUsdPriceBN()
+  ) as any;
 
   for (let i = 0; i < assets.length; i++) {
     let asset = assets[i];
@@ -176,6 +166,6 @@ export const fetchFusePoolData = async (
 
     totalSupplyBalanceUSD,
     totalBorrowBalanceUSD,
-    id: parseFloat(poolId)
+    id: parseFloat(poolId),
   };
 };

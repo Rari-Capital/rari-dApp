@@ -8,7 +8,7 @@ import FuseJs from "fuse.js";
 import { filterOnlyObjectProperties } from "utils/fetchFusePoolData";
 import { formatDateToDDMMYY } from "utils/api/dateUtils";
 import { blockNumberToTimeStamp } from "utils/web3Utils";
-import { fetchETHPriceAtDate } from "utils/coingecko";
+import { fetchCurrentETHPrice, fetchETHPriceAtDate } from "utils/coingecko";
 
 export interface FusePool {
   name: string;
@@ -47,25 +47,32 @@ export const fetchPools = async ({
   fuse,
   address,
   filter,
-  blockNum
+  blockNum,
 }: {
   rari: Rari;
   fuse: Fuse;
   address: string;
   filter: string | null;
-  blockNum?: string | null;
+  blockNum?: number;
 }) => {
   const isMyPools = filter === "my-pools";
   const isCreatedPools = filter === "created-pools";
 
-  // let ethPrice: number;
+  // We need the latest blockNumber
   const latestBlockNumber = await fuse.web3.eth.getBlockNumber();
+  const _blockNum = blockNum ? blockNum : latestBlockNumber;
 
-  const startBlockTimestamp = blockNum
-    ? await blockNumberToTimeStamp(fuse.web3, parseInt(blockNum))
-    : await blockNumberToTimeStamp(fuse.web3, latestBlockNumber);
+  // Get the unix timestamp of the blockNumber
+  const startBlockTimestamp = await blockNumberToTimeStamp(
+    fuse.web3,
+    _blockNum
+  );
 
   const ddMMYYYY = formatDateToDDMMYY(new Date(startBlockTimestamp * 1000));
+
+  const fetchETHPrice = blockNum
+    ? fetchETHPriceAtDate(ddMMYYYY)
+    : fetchCurrentETHPrice();
 
   const [
     {
@@ -80,17 +87,16 @@ export const fetchPools = async ({
   ] = await Promise.all([
     isMyPools
       ? fuse.contracts.FusePoolLens.methods
-        .getPoolsBySupplierWithData(address)
-        .call({ gas: 1e18 }, blockNum)
+          .getPoolsBySupplierWithData(address)
+          .call({ gas: 1e18 }, _blockNum)
       : isCreatedPools
-        ? fuse.contracts.FusePoolLens.methods
+      ? fuse.contracts.FusePoolLens.methods
           .getPoolsByAccountWithData(address)
-          .call({ gas: 1e18 }, blockNum)
-        : fuse.contracts.FusePoolLens.methods
+          .call({ gas: 1e18 }, _blockNum)
+      : fuse.contracts.FusePoolLens.methods
           .getPublicPoolsWithData()
-          .call({ gas: 1e18 }, blockNum),
-
-    await fetchETHPriceAtDate(ddMMYYYY),
+          .call({ gas: 1e18 }, _blockNum),
+    fetchETHPrice,
   ]);
 
   const merged: MergedPool[] = [];
@@ -110,8 +116,8 @@ export const fetchPools = async ({
 };
 
 export interface UseFusePoolsReturn {
-  pools: MergedPool[] | undefined,
-  filteredPools: MergedPool[] | null,
+  pools: MergedPool[] | undefined;
+  filteredPools: MergedPool[] | null;
 }
 
 // returns impersonal data about fuse pools ( can filter by your supplied/created pools )
