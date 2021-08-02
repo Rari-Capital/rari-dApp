@@ -7,9 +7,10 @@ const Components = () => {
 
   return (
     <Box w="500px">
-      <AssetBorrowLend token={token} />
+      {/* <AssetBorrowLend token={token} /> */}
     </Box>
   );
 };
 
 export default Components;
+

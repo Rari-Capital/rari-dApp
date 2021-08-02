@@ -17,6 +17,7 @@ export interface CTokenSearchReturnWithTokenData extends CTokenSearchReturn {
   tokenData: RariApiTokenData;
 }
 export interface FinalSearchReturn {
-  tokens: CTokenSearchReturnWithTokenData[],
-  fuse: FusePoolData[]
+  tokens: CTokenSearchReturn[];
+  fuse: FusePoolData[];
+  tokensData: { [address: string]: RariApiTokenData };
 }

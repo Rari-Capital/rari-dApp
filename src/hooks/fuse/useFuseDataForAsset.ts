@@ -107,3 +107,28 @@ export const useFuseDataForAssets = (assetSymbols: String[]) => {
 
   return { totals, poolsWithThisAsset };
 };
+
+export const filterFusePoolsByToken = (
+  fusePools: FusePoolData[],
+  tokenAddress: string
+) =>
+  fusePools.filter((pool) =>
+    pool.assets.find((asset) => {
+      if (asset.underlyingToken.toLowerCase() === tokenAddress?.toLowerCase()) {
+        return true;
+      }
+    })
+  );
+
+export const filterFusePoolsByTokens = (
+  fusePools: FusePoolData[],
+  tokenAddresses: string[]
+) =>
+  fusePools.filter((pool) =>
+    pool.assets.find((_asset) => {
+      const asset = _asset as USDPricedFuseAssetWithTokenData;
+      return asset?.tokenData?.symbol
+        ? tokenAddresses.includes(asset.tokenData.symbol)
+        : false;
+    })
+  );

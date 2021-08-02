@@ -1,5 +1,17 @@
 import { SearchIcon } from "@chakra-ui/icons";
-import { Avatar, Collapse, InputRightElement, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  AvatarBadge,
+  Collapse,
+  Image,
+  InputRightElement,
+  Menu,
+  MenuGroup,
+  MenuItem,
+  MenuList,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Spinner } from "@chakra-ui/spinner";
 import AppLink from "../AppLink";
@@ -19,6 +31,7 @@ import {
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 import { useMemo } from "react";
 import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
+import { shortUsdFormatter } from "utils/bigUtils";
 
 // Fetchers
 const searchFetcher = async (
@@ -31,10 +44,12 @@ const searchFetcher = async (
 const Searchbar = ({
   width,
   height = "55px",
+  smaller = false,
   ...inputProps
 }: {
   width?: any;
   height?: any;
+  smaller: boolean;
   [x: string]: any;
 }) => {
   const [val, setVal] = useState("");
@@ -48,7 +63,6 @@ const Searchbar = ({
     return Object.values(data).some((arr) => !!arr.length);
   }, [data, val]);
 
-  // const hasResults = !!val && !!data?.length;
   const loading = !data;
 
   return (
@@ -62,13 +76,10 @@ const Searchbar = ({
       border="4px solid"
       borderRadius="xl"
       borderColor="grey"
+      zIndex={3}
       id="Searchbox"
     >
-      <InputGroup
-        width={width ?? ""}
-        h={height}
-        // pl={2}
-      >
+      <InputGroup width={width ?? "100%"} h={height}>
         <InputLeftElement
           pointerEvents="none"
           height="100%"
@@ -81,13 +92,18 @@ const Searchbar = ({
             )
           }
           ml={1}
-          mr={1}
+          mr={2}
         />
         <Input
           height="100%"
           width="100%"
           placeholder="Search by token, pool or product..."
-          _placeholder={{ color: "grey", fontWeight: "bold" }}
+          _placeholder={{
+            color: "grey",
+            fontWeight: "bold",
+            fontSize: smaller ? "xs" : "md",
+            width: "100%",
+          }}
           onChange={({ target: { value } }) => setVal(value)}
           border="none"
           borderBottom={hasResults ? "1px solid grey" : ""}
@@ -96,7 +112,7 @@ const Searchbar = ({
           color="grey"
           {...inputProps}
         />
-        <InputRightElement
+        {/* <InputRightElement
           pointerEvents="none"
           height="100%"
           color="grey"
@@ -116,11 +132,16 @@ const Searchbar = ({
             // )
           }
           ml={1}
-        />
+        /> */}
       </InputGroup>
       {/* {hasResults && ( */}
       <Collapse in={hasResults} unmountOnExit style={{ width: "100%" }}>
-        <SearchResults results={data} handleClick={() => setVal("")} />
+        <SearchResults
+          results={data}
+          handleClick={() => setVal("")}
+          hasResults={hasResults}
+          smaller={smaller}
+        />
       </Collapse>
 
       {/* )} */}
@@ -132,19 +153,25 @@ export default Searchbar;
 
 const SearchResults = ({
   results = DEFAULT_SEARCH_RETURN,
+  hasResults,
   handleClick,
+  smaller,
 }: {
   results?: FinalSearchReturn;
+  hasResults: boolean;
   handleClick: () => void;
+  smaller: boolean;
 }) => {
-  const { tokens, fuse } = results;
+  const { tokens, fuse, tokensData } = results;
 
   return (
     <Column
       position="relative"
       w="100%"
       h="100%"
-      maxHeight="100px"
+      maxHeight={smaller ? "200px" : "300px"}
+      minHeight="100px"
+      // background="pink"
       color="black"
       fontWeight="bold"
       zIndex={2}
@@ -155,6 +182,22 @@ const SearchResults = ({
       crossAxisAlignment="flex-start"
       overflowY="scroll"
     >
+      {/* Tokens */}
+      <Row
+        pt={3}
+        pl={2}
+        mb={1}
+        w="100%"
+        h="100%"
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        expand
+        color="grey"
+      >
+        <Text ml={2} fontWeight="bold" fontSize="sm">
+          Tokens
+        </Text>
+      </Row>
       {tokens.map((token, i: number) => {
         const route =
           token.underlyingAddress === ETH_TOKEN_DATA.address
@@ -163,7 +206,8 @@ const SearchResults = ({
         return (
           <AppLink href={route} w="100%" h="100%" key={i}>
             <Row
-              p={3}
+              p={2}
+              pl={5}
               w="100%"
               h="100%"
               mainAxisAlignment="flex-start"
@@ -173,8 +217,68 @@ const SearchResults = ({
               expand
               onClick={handleClick}
             >
-              <Avatar src={token.tokenData.logoURL} boxSize={8} />
+              <Avatar
+                src={tokensData[token.underlyingAddress]?.logoURL}
+                boxSize={8}
+              />
               <Text ml={2}>{token.underlyingSymbol}</Text>
+            </Row>
+          </AppLink>
+        );
+      })}
+
+      <Row
+        pt={3}
+        pl={2}
+        mb={1}
+        w="100%"
+        h="100%"
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="center"
+        expand
+        color="grey"
+      >
+        <Text ml={2} fontSize="sm">
+          Opportunities
+        </Text>
+      </Row>
+
+      {fuse.map((fusePool, i: number) => {
+        const route = `/fuse/pool/${fusePool.id}`;
+        return (
+          <AppLink href={route} w="100%" h="100%" key={i}>
+            <Row
+              p={2}
+              pl={5}
+              w="100%"
+              h="100%"
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              key={i}
+              _hover={{ bg: "grey" }}
+              expand
+              onClick={handleClick}
+            >
+              <Stack direction="row" spacing={4}>
+                <Avatar
+                  src={tokensData[tokens[0].underlyingAddress]?.logoURL}
+                  boxSize={8}
+                >
+                  <AvatarBadge
+                    boxSize={6}
+                    borderColor="transparent"
+                    bg="white border"
+                  >
+                    <Image src="/static/fuseicon.png" />
+                  </AvatarBadge>
+                </Avatar>
+              </Stack>
+              <Text ml={2}>{fusePool.name}</Text>
+              {!smaller && (
+                <Text ml={"auto"}>
+                  {shortUsdFormatter(fusePool.totalLiquidityUSD)} Liquidity
+                </Text>
+              )}
             </Row>
           </AppLink>
         );

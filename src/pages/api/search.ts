@@ -9,10 +9,14 @@ import {
 import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
 import { makeGqlRequest } from "utils/gql";
 import { fetchTokensAPIDataAsMap } from "utils/services";
+import axios from "axios";
+import { filterFusePoolsByToken } from "hooks/fuse/useFuseDataForAsset";
+import { FusePoolData } from "utils/fetchFusePoolData";
 
 export const DEFAULT_SEARCH_RETURN: FinalSearchReturn = {
   tokens: [],
   fuse: [],
+  tokensData: {},
 };
 
 // Takes a search string, makes a graphql request, then stitches on the TokenData by making a second API request
@@ -51,9 +55,19 @@ export default async function handler(
           tokenData: tokensDataMap[cToken.underlyingAddress],
         }));
 
+      const fusePools = await getFusePoolsByToken(
+        searchTokens.markets[0].underlyingAddress
+      );
+
+      // Return only the top 3 fuse pools
+      const sortedFusePools = fusePools
+        .sort((a, b) => (b.totalLiquidityUSD > a.totalLiquidityUSD ? 1 : -1))
+        .slice(0, 3);
+
       const searchResults: FinalSearchReturn = {
         tokens: stitchedSearchTokens,
-        fuse: [],
+        fuse: sortedFusePools,
+        tokensData: tokensDataMap,
       };
 
       return res.status(200).json(searchResults);
@@ -63,3 +77,10 @@ export default async function handler(
     }
   }
 }
+
+export const getFusePoolsByToken = async (tokenAddress: string) => {
+  const { data } = await axios.get("https://beta.rari.capital/api/fuse/pools");
+  const { pools } = data;
+  const filteredPools = filterFusePoolsByToken(pools, tokenAddress);
+  return filteredPools;
+};
