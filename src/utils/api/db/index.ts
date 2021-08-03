@@ -57,7 +57,7 @@ export const saveUserBalanceObject = async ({
   blockNumber,
   blockTimestamp,
   blockDate
-}: APIFuseTVL) => {
+}: APIAccountsFuseBalancesResponse) => {
   const instance = new UserBalanceModel();
   instance.userAddress = userAddress;
   instance.pools = pools;
