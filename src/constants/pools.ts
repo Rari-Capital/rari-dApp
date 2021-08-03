@@ -23,14 +23,14 @@ export const pools: PoolInterface[] = [
     title: "USDC",
     name: "USDC Pool",
     caption: "Safe returns on USDC",
-    logo: "/static/stableicon.png",
+    logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
   },
   {
     type: Pool.DAI,
     title: "DAI",
     name: "DAI Pool",
     caption: "Safe returns on DAI",
-    logo: "/static/stableicon.png",
+    logo: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
   },
   {
     type: Pool.YIELD,
@@ -44,6 +44,6 @@ export const pools: PoolInterface[] = [
     title: "ETH",
     name: "ETH Pool",
     caption: "Returns on ETH",
-    logo: "/static/ethicon.png",
+    logo: "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.pngnotes",
   },
 ];

@@ -63,8 +63,6 @@ const StrategyAllocation = () => {
       ? ETHStrategyAllocationChartOptions
       : USDStrategyAllocationChartOptions;
 
-  console.log({ allocations });
-
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -72,7 +70,7 @@ const StrategyAllocation = () => {
         md: "flex-start",
         base: "center",
       }}
-      expand
+      expand={true}
     >
       <Heading lineHeight={1} size="sm" mb={1}>
         {t("Strategy Allocation")}
