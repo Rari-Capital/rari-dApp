@@ -1,5 +1,5 @@
 import { APIFuseTVL } from "pages/api/fuse/tvl";
-import { APIAccountsFuseBalancesResponse } from "pages/api/accounts/fuse/balances";
+import { APIAccountsFuseBalancesResponseType } from "pages/api/accounts/fuse/balances";
 import mongoose from "mongoose";
 import { TVLModel, UserBalanceModel } from "./models";
 import { formatDDMMYYToDate } from "../dateUtils";
@@ -57,7 +57,7 @@ export const saveUserBalanceObject = async ({
   blockNumber,
   blockTimestamp,
   blockDate
-}: APIAccountsFuseBalancesResponse) => {
+}: APIAccountsFuseBalancesResponseType) => {
   const instance = new UserBalanceModel();
   instance.userAddress = userAddress;
   instance.pools = pools;
