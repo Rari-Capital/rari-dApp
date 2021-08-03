@@ -5,13 +5,19 @@ import {
   UnderlyingAsset,
   UnderlyingAssetWithTokenData,
 } from "types/tokens";
+import { fetchAggregateTokenMarketInfo } from "utils/coingecko";
 
 import { makeGqlRequest } from "utils/gql";
 import { fetchTokensAPIDataAsMap } from "utils/services";
 
+export interface AllAssetsResponse {
+  assets: UnderlyingAsset[];
+  tokensData: { [address: string]: RariApiTokenData };
+}
+
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<UnderlyingAssetWithTokenData[]>
+  res: NextApiResponse<AllAssetsResponse>
 ) {
   if (req.method === "GET") {
     // Get Underlying Assets from subgraph
@@ -32,7 +38,16 @@ export default async function handler(
           tokenData: tokensDataMap[asset.id],
         }));
 
-      return res.status(200).json(finalUnderlyingAssets);
+      const fetchAssetMarketInfoPromises = underlyingAssets.map(({ id }) =>
+        fetchAggregateTokenMarketInfo(id)
+      );
+
+      const result = {
+        assets: underlyingAssets,
+        tokensData: tokensDataMap,
+      };
+
+      return res.status(200).json(result);
     } catch (err) {
       return res.status(400);
     }

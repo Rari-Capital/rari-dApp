@@ -27,10 +27,11 @@ const ExploreGrid = () => {
     topEarningFuseAsset,
     mostPopularAsset,
     mostBorrowedFuseAsset,
+    cheapestStableBorrow
   } = data ?? {};
 
   return (
-    <DashboardBox w="100%" h={isMobile ? "300px" : "100%"}>
+    <DashboardBox w="100%" h="100%">
       <SimpleGrid columns={isMobile ? 2 : 3} spacing={0} h="100%" w="100%">
         <FuseAssetGridBox
           bg=""
@@ -66,9 +67,9 @@ const ExploreGrid = () => {
             />
             <FuseAssetGridBox
               bg=""
-              heading="Most Borrowed Asset"
-              data={mostBorrowedFuseAsset}
-              metric={ExploreGridBoxMetric.TOTAL_BORROWS}
+              heading="Cheapest Stablecoin Borrow"
+              data={cheapestStableBorrow}
+              metric={ExploreGridBoxMetric.BORROW_RATE}
             />
           </>
         )}

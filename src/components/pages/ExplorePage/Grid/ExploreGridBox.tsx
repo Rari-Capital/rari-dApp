@@ -1,4 +1,4 @@
-import { Heading, Skeleton } from "@chakra-ui/react";
+import { Heading, Skeleton, SkeletonCircle } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/avatar";
 import AppLink from "components/shared/AppLink";
 import { Column, Row } from "lib/chakraUtils";
@@ -107,9 +107,10 @@ export const FuseAssetGridBox = ({
             crossAxisAlignment="flex-start"
             flexBasis="75%"
             flexGrow={1}
+            p={[0,1,2]}
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-              <Heading fontSize="lg" color="grey">
+              <Heading fontSize={["sm", "lg", "2xl"]} color="grey">
                 {heading}
               </Heading>
             </Row>
@@ -127,7 +128,7 @@ export const FuseAssetGridBox = ({
                   height={loading ? "20px" : "100%"}
                   my={1}
                 >
-                  <Heading fontSize="2xl">
+                  <Heading fontSize={["sm", "md", "2xl"]}>
                     {data?.tokenData?.symbol} - Pool {data?.pool?.index}
                   </Heading>
                 </Skeleton>
@@ -136,7 +137,7 @@ export const FuseAssetGridBox = ({
                   isLoaded={!loading}
                   height={loading ? "20px" : "100%"}
                 >
-                  <Heading fontSize="sm" color="grey">
+                  <Heading fontSize={["xs", "xs", "sm"]} color="grey">
                     {subtitle}
                   </Heading>
                 </Skeleton>
@@ -150,11 +151,14 @@ export const FuseAssetGridBox = ({
             mainAxisAlignment="center"
             crossAxisAlignment="center"
             flexBasis="25%"
+            flexShrink={0}
+            p={[0,0,5]}
           >
-            {/* <SkeletonCircle size="10" bg="pink"/> */}
-            {data?.tokenData?.logoURL && (
-              <Avatar src={data?.tokenData?.logoURL} boxSize={"75%"} />
-            )}
+            <SkeletonCircle isLoaded={!loading} boxSize={"60px"}>
+              {data?.tokenData?.logoURL && (
+                <Avatar src={data?.tokenData?.logoURL} h="100%" w="100%" />
+              )}
+            </SkeletonCircle>
           </Column>
         </Row>
       </Column>

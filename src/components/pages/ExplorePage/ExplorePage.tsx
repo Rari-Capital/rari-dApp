@@ -85,8 +85,8 @@ const ExplorePage = () => {
           fetch={getNumberTVL}
           queryKey={"totalValueLocked"}
           apy={0.15}
-          statSize="2xl"
-          captionSize="md"
+          statSize={isMobile ? "2xl" : "3xl"}
+          captionSize={isMobile ? "md" : "xl"}
           caption={t("The Rari Protocol currently secures") + ":"}
           crossAxisAlignment="flex-start"
           captionFirst={true}
@@ -119,14 +119,14 @@ const ExplorePage = () => {
           setNav={setExploreNav}
         />
         <ExploreNav
-          heading="Earn"
+          heading="Vaults"
           mr={5}
           active={exploreNav === ExploreNavType.EARN}
           nav={ExploreNavType.EARN}
           setNav={setExploreNav}
         />
         <ExploreNav
-          heading="All"
+          heading="Tokens"
           mr={5}
           active={exploreNav === ExploreNavType.ALL}
           nav={ExploreNavType.ALL}

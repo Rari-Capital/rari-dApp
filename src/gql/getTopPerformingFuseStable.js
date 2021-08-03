@@ -4,11 +4,11 @@ import { gql } from "graphql-tag";
 
 // TODO: Use GQL Fragments
 export const GET_TOP_PERFORMING_FUSE_STABLE = gql`
-  {
+  query GetMostPopularStable($orderBy: Market_orderBy! = supplyRate, $orderDirection: OrderDirection! = desc){
     markets(
       where: { underlyingSymbol_in: ["USDC", "DAI", "FEI"] }
-      orderBy: supplyRate
-      orderDirection: desc
+      orderBy: $orderBy,
+      orderDirection: $orderDirection
       first: 1
     ) {
       id

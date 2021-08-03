@@ -2,6 +2,8 @@ import { SearchIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   AvatarBadge,
+  Box,
+  Button,
   Collapse,
   Image,
   InputRightElement,
@@ -32,6 +34,7 @@ import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 import { useMemo } from "react";
 import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
 import { shortUsdFormatter } from "utils/bigUtils";
+import { useEffect } from "react";
 
 // Fetchers
 const searchFetcher = async (
@@ -49,10 +52,10 @@ const Searchbar = ({
 }: {
   width?: any;
   height?: any;
-  smaller: boolean;
+  smaller?: boolean;
   [x: string]: any;
 }) => {
-  const [val, setVal] = useState("");
+  const [val, setVal] = useState<string>("");
   const debouncedSearch = useDebounce(val, 200);
 
   const { data } = useSWR(debouncedSearch, searchFetcher);
@@ -101,9 +104,10 @@ const Searchbar = ({
           _placeholder={{
             color: "grey",
             fontWeight: "bold",
-            fontSize: smaller ? "xs" : "md",
+            fontSize: smaller ? "sm" : "md",
             width: "100%",
           }}
+          _focus={{ borderColor: "grey" }}
           onChange={({ target: { value } }) => setVal(value)}
           border="none"
           borderBottom={hasResults ? "1px solid grey" : ""}
@@ -112,29 +116,24 @@ const Searchbar = ({
           color="grey"
           {...inputProps}
         />
-        {/* <InputRightElement
-          pointerEvents="none"
-          height="100%"
-          color="grey"
-          children={
-            null
-            // !!val ? loading ? <Spinner /> : null : null
-            //  (
-            //   <IconButton
-            //     icon={<CloseIcon />}
-            //     aria-label="Close"
-            //     color="gray.300"
-            //     bg="none"
-            //     height=""
-            //     _hover={{ cursor: "pointer" }}
-            //     onClick={() => setVal("")}
-            //   />
-            // )
-          }
-          ml={1}
-        /> */}
+        {!smaller && (
+          <Column
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            h="100%"
+            width="100px"
+            position="absolute"
+            zIndex="5"
+            right="0"
+          >
+            <AppLink href="/explore">
+              <Button colorScheme="purple" _hover={{ transform: "scale(1.04)" }}>
+                Explore
+              </Button>
+            </AppLink>
+          </Column>
+        )}
       </InputGroup>
-      {/* {hasResults && ( */}
       <Collapse in={hasResults} unmountOnExit style={{ width: "100%" }}>
         <SearchResults
           results={data}
@@ -171,7 +170,6 @@ const SearchResults = ({
       h="100%"
       maxHeight={smaller ? "200px" : "300px"}
       minHeight="100px"
-      // background="pink"
       color="black"
       fontWeight="bold"
       zIndex={2}
@@ -216,6 +214,7 @@ const SearchResults = ({
               _hover={{ bg: "grey" }}
               expand
               onClick={handleClick}
+              fontWeight={smaller ? "normal" : "bold"}
             >
               <Avatar
                 src={tokensData[token.underlyingAddress]?.logoURL}
@@ -258,6 +257,7 @@ const SearchResults = ({
               _hover={{ bg: "grey" }}
               expand
               onClick={handleClick}
+              fontWeight={smaller ? "normal" : "bold"}
             >
               <Stack direction="row" spacing={4}>
                 <Avatar
@@ -275,7 +275,7 @@ const SearchResults = ({
               </Stack>
               <Text ml={2}>{fusePool.name}</Text>
               {!smaller && (
-                <Text ml={"auto"}>
+                <Text ml={"auto"} fontWeight="normal">
                   {shortUsdFormatter(fusePool.totalLiquidityUSD)} Liquidity
                 </Text>
               )}

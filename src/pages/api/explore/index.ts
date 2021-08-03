@@ -37,6 +37,7 @@ export type APIExploreData = {
   topEarningFuseAsset: SubgraphMarket;
   mostPopularAsset: SubgraphMarket;
   mostBorrowedFuseAsset: SubgraphMarket;
+  cheapestStableBorrow: SubgraphMarket;
 };
 
 export default async function handler(
@@ -51,11 +52,13 @@ export default async function handler(
         topEarningFuseAsset,
         mostPopularAsset,
         mostBorrowedFuseAsset,
+        cheapestStableBorrow
       ] = await Promise.all([
         getTopEarningFuseStable(),
         getTopEarningFuseAsset(),
         getMostPopularFuseAsset(),
         getMostBorrowedFuseAsset(),
+        getCheapestStablecoinBorrow()
       ]);
 
       const returnObj: APIExploreData = {
@@ -63,6 +66,7 @@ export default async function handler(
         topEarningFuseAsset,
         mostPopularAsset,
         mostBorrowedFuseAsset,
+        cheapestStableBorrow
       };
 
       return res.status(200).json(returnObj);
@@ -155,3 +159,24 @@ const getMostBorrowedFuseAsset = async (): Promise<SubgraphMarket> => {
     tokenData,
   };
 };
+
+// Most Popular = Highest borrow liquidity Fuse Asset
+const getCheapestStablecoinBorrow = async (): Promise<SubgraphMarket> => {
+  const { markets } = await makeGqlRequest(GET_TOP_PERFORMING_FUSE_STABLE, {
+    orderBy: "borrowRate",
+    orderDirection: "asc",
+  });
+
+  const mostBorrowedFuseAsset = markets?.[0];
+  const pool = await getPoolWithMarketId(mostBorrowedFuseAsset.id);
+  const tokenData = await fetchTokenAPIData(
+    mostBorrowedFuseAsset.underlyingAddress
+  );
+
+  return {
+    ...mostBorrowedFuseAsset,
+    pool,
+    tokenData,
+  };
+};
+

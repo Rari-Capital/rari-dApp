@@ -91,7 +91,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: "/static/icons/dai-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.DAI,
   },
   {
     type: HomepageOpportunityType.FusePool,
@@ -148,7 +148,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
     icon: "/static/icons/usdc-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -164,7 +164,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: "/static/icons/dai-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.DAI,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -180,7 +180,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
     icon: "/static/icons/usdc-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -196,7 +196,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: "/static/icons/dai-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.DAI,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -212,7 +212,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on USDC deposits",
     bgColor: "#1079FD",
     icon: "/static/icons/usdc-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.EarnVault,
@@ -228,7 +228,7 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: "/static/icons/dai-glow.svg",
-    vaultType: Pool.STABLE,
+    vaultType: Pool.DAI,
   },
   {
     type: HomepageOpportunityType.EarnVault,

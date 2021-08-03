@@ -17,13 +17,18 @@ import { filterPoolName } from "utils/fetchFusePoolData";
 import axios from "axios";
 
 // Types
-import { UnderlyingAssetWithTokenData } from "types/tokens";
+import {
+  RariApiTokenData,
+  UnderlyingAsset,
+  UnderlyingAssetWithTokenData,
+} from "types/tokens";
 import { ExploreNavType } from "../ExplorePage";
+import { AllAssetsResponse } from "pages/api/explore/allAssets";
 
 // Fetchers
 const exploreAssetsFetcher = async (
   route: string
-): Promise<UnderlyingAssetWithTokenData[]> => {
+): Promise<AllAssetsResponse> => {
   const { data } = await axios.get(route);
   return data;
 };
@@ -129,6 +134,11 @@ const AllAssetsList = () => {
     exploreAssetsFetcher
   );
 
+  const { assets, tokensData } = data ?? {
+    assets: [],
+    tokensData: {},
+  };
+
   return (
     <>
       <Row
@@ -176,10 +186,14 @@ const AllAssetsList = () => {
         crossAxisAlignment="center"
         width="100%"
       >
-        {data?.length ? (
-          data.map((underlyingAsset) => {
+        {assets?.length ? (
+          assets.map((underlyingAsset) => {
             return (
-              <AssetRow asset={underlyingAsset} key={underlyingAsset.symbol} />
+              <AssetRow
+                asset={underlyingAsset}
+                tokenData={tokensData[underlyingAsset.id]}
+                key={underlyingAsset.symbol}
+              />
             );
           })
         ) : (
@@ -192,8 +206,10 @@ const AllAssetsList = () => {
 
 export const AssetRow = ({
   asset,
+  tokenData,
 }: {
-  asset: UnderlyingAssetWithTokenData;
+  asset: UnderlyingAsset;
+  tokenData?: RariApiTokenData;
 }) => {
   const isMobile = useIsMobile();
 
@@ -220,7 +236,7 @@ export const AssetRow = ({
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
           >
-            <Avatar src={asset?.tokenData?.logoURL} boxSize={10} />
+            <Avatar src={tokenData?.logoURL} boxSize={10} />
             <Text ml={2} fontWeight="bold">
               {asset.symbol}
             </Text>
