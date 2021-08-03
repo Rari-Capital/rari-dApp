@@ -56,7 +56,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
       style={{ textDecoration: "none" }}
     >
       <DashboardBox
-        height="125px"
+        height="130px"
         width="300px"
         ml={10}
         p={5}
