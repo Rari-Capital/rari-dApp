@@ -120,7 +120,6 @@
   "SFI Pool Distributions": "SFI Pool Distributions",
   "Account": "Account",
   "Switch Wallet": "Switch Wallet",
-  "Audit": "Audit",
   "Connect with a browser extension": "Connect with a browser extension",
   "Scan with a wallet to connect": "Scan with a wallet to connect",
   "Connect with your {{provider}} account": "Connect with your {{provider}} account",
@@ -223,8 +222,6 @@
   "DAI-A": "DAI-A",
   "RGT-ETH": "RGT-ETH",
   "RGT": "RGT",
-  "Docs": "Docs",
-  "Notion": "Notion",
   "Version": "Version",
   "Debt": "Debt",
   "Product": "Product",
@@ -270,5 +267,8 @@
   "Lending Rates": "Lending Rates",
   "Borrowing Rates": "Borrowing Rates",
   "Search Assets": "Search Assets",
-  "Utilities": "Utilities"
+  "Utilities": "Utilities",
+  "Audits": "Audits",
+  "Developer Docs": "Developer Docs",
+  "Learn": "Learn"
 }

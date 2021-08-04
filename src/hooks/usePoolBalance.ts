@@ -71,19 +71,21 @@ export const useTotalPoolsBalance = (): UseQueryResponse => {
   const { isLoading, data, error } = useQuery(
     address + " allPoolBalance",
     async () => {
-      const [stableBal, yieldBal, ethBalInETH, ethPriceBN] = await Promise.all([
-        rari.pools.stable.balances.balanceOf(address),
-        rari.pools.yield.balances.balanceOf(address),
-        rari.pools.ethereum.balances.balanceOf(address),
-        rari.getEthUsdPriceBN(),
-      ]);
+      const [stableBal, yieldBal, ethBalInETH, daiBal, ethPriceBN] =
+        await Promise.all([
+          rari.pools.stable.balances.balanceOf(address),
+          rari.pools.yield.balances.balanceOf(address),
+          rari.pools.ethereum.balances.balanceOf(address),
+          rari.pools.dai.balances.balanceOf(address),
+          rari.getEthUsdPriceBN(),
+        ]);
 
       const ethBal = ethBalInETH.mul(
         ethPriceBN.div(rari.web3.utils.toBN(1e18))
       );
 
       return parseFloat(
-        rari.web3.utils.fromWei(stableBal.add(yieldBal).add(ethBal))
+        rari.web3.utils.fromWei(stableBal.add(yieldBal).add(daiBal).add(ethBal))
       );
     }
   );

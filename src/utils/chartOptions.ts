@@ -30,7 +30,7 @@ export const LineChartOptions: ApexOptions = {
     curve: "smooth",
   },
 
-  colors: ["#FFFFFF", "#007D43", "#F83536"],
+  colors: ["#FFFFFF", "#007D43", "#F4CD00", "#F83536"],
 
   grid: {
     yaxis: {

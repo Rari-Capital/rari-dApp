@@ -5,8 +5,9 @@ import fetch from 'node-fetch';
 import { ChainId, Token, Pair } from '@uniswap/sdk'
 import { point } from '../../src/utils/rssUtils';
 
-import Queue from 'smart-request-balancer';
 import checksum from 'eth-checksum';
+
+import {queue}  from '../rss';
 
 const createQuery = async (id: string, config) => {
 
@@ -61,22 +62,32 @@ const queryUniswap = async (sets: string[]) => {
 
   const points = await Promise.all(sets.map( async (set) => {
     
-    // let bufferObj = Buffer.from(set, "utf8");
-
-    // const key = bufferObj.toString('base64');
-
-    // console.log(key)
-
+    let bufferObj = Buffer.from(set, "utf8");
+    const key = bufferObj.toString('base64');
+    
     // request balancer
-    const data = await fetch(
-      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
-      {
-        method: "post",
-        body: JSON.stringify({ query: set }),
-        headers: { "Content-Type": "application/json" },
-        timeout: 50000,
+    const data = async () => {
+      return await fetch(
+        "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+        {
+          method: "post",
+          body: JSON.stringify({ query: set }),
+          headers: { "Content-Type": "application/json" },
+          timeout: 50000,
+        }
+      ).then((res) => res.json());
+    }
+
+    queue.request((retry) => data()
+    .then(response => response.data)
+    .catch(error => {
+      if (error.response.status === 429) {
+        return retry(error.response.data.parameters.retry_after)
       }
-    ).then((res) => res.json());
+      throw error;
+    }), key, 'uniswap')
+    .then(response => console.log(response))
+    .catch(error => console.error(error));
 
     let final = await addBlocknumber(data);
 

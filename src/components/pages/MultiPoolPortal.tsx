@@ -423,7 +423,10 @@ const PoolDetailCard = ({ pool }: { pool: Pool }) => {
                 ? noSlippageCurrencies.join(" + ")
                 : " ? ") +
               " between " +
-              getSDKPool({ rari, pool: poolType }).allocations.POOLS.join(", ")
+              getSDKPool({ rari, pool: poolType })
+                // Filter out empty pools
+                .allocations.POOLS.filter((el) => !!el)
+                .join(", ")
             }
           >
             <QuestionIcon ml={2} mb="3px" boxSize="12px" />
