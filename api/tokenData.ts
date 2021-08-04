@@ -63,7 +63,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
     ) {
       logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/sOHM.png";
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/token_sOHM_2.png";
     }
 
     // Fetch the logo from yearn if possible:

@@ -29,26 +29,31 @@ export default function useFuseMarkets() {
           pools.map(async (pool) => {
             marketData[pool.id.toString()] = [];
 
-            // fetch fuse pool data
-            const poolData = (await fetchFusePoolData(
-              pool.id.toString(), // type incorrectly believes pool.id to be number
-              address,
-              fuse,
-              rari
-            )) as FusePoolData;
+            try {
+              // fetch fuse pool data
+              const poolData = (await fetchFusePoolData(
+                pool.id.toString(), // type incorrectly believes pool.id to be number
+                address,
+                fuse,
+                rari
+              )) as FusePoolData;
 
-            // add market info
-            poolData.assets.forEach((asset) => {
-              marketData[pool.id.toString()].push({
-                tokenAddress: asset.underlyingToken,
-                rates: {
-                  lending:
-                    convertMantissaToAPY(asset.supplyRatePerBlock, 365) / 100,
-                  borrowing:
-                    convertMantissaToAPR(asset.borrowRatePerBlock) / 100,
-                },
+              // add market info
+              poolData.assets.forEach((asset) => {
+                marketData[pool.id.toString()].push({
+                  tokenAddress: asset.underlyingToken,
+                  rates: {
+                    lending:
+                      convertMantissaToAPY(asset.supplyRatePerBlock, 365) / 100,
+                    borrowing:
+                      convertMantissaToAPR(asset.borrowRatePerBlock) / 100,
+                  },
+                });
               });
-            });
+            } catch (e) {
+              // replace with empty array in case of error
+              marketData[pool.id.toString()] = [];
+            }
           })
         );
 
