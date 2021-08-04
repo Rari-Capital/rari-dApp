@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 import { ChainId, Token, Pair } from '@uniswap/sdk'
 import { point } from '../../src/utils/rssUtils';
 
+import Queue from 'smart-request-balancer';
 import checksum from 'eth-checksum';
 
 const createQuery = async (id: string, config) => {
@@ -56,23 +57,31 @@ const createQuery = async (id: string, config) => {
   });
 }
 
-
 const queryUniswap = async (sets: string[]) => {
 
   const points = await Promise.all(sets.map( async (set) => {
+    
+    // let bufferObj = Buffer.from(set, "utf8");
 
-      let data = await fetch(
-        "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
-        {
-          method: "post",
-          body: JSON.stringify({ query: set }),
-          headers: { "Content-Type": "application/json" },
-          timeout: 50000,
-        }
-      ).then((res) => res.json());
-  
-      let final = await addBlocknumber(data.data);
-      return final as any;
+    // const key = bufferObj.toString('base64');
+
+    // console.log(key)
+
+    // request balancer
+    const data = await fetch(
+      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+      {
+        method: "post",
+        body: JSON.stringify({ query: set }),
+        headers: { "Content-Type": "application/json" },
+        timeout: 50000,
+      }
+    ).then((res) => res.json());
+
+    let final = await addBlocknumber(data);
+
+    return final as any;
+
   }))
 
   // flatten array

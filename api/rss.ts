@@ -389,23 +389,23 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     })
 
     // main thread
-    await new Promise(async (resolve) => {
+    // await new Promise(async (resolve) => {
 
-      let scores: score[] = await scorePool(rssAssets);
+    //   let scores: score[] = await scorePool(rssAssets);
 
-      resolve(scores);
+    //   resolve(scores);
 
-    }).then((assets) => {
+    // }).then((assets) => {
 
-      const poolScore = calculatePoolScore(assets as score[])
+    //   const poolScore = calculatePoolScore(assets as score[])
 
-      response.setHeader("Cache-Control", "s-maxage=3600");
-      response.json({
-        poolScore,
-        assets,
-        lastUpdated,
-      });
-    })
+    //   response.setHeader("Cache-Control", "s-maxage=3600");
+    //   response.json({
+    //     poolScore,
+    //     assets,
+    //     lastUpdated,
+    //   });
+    // })
 
     console.log("done!");
   } else {
