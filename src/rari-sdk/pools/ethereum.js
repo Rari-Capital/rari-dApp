@@ -5,7 +5,7 @@ import StablePool from "./stable.js";
 import { get0xSwapOrders } from "../0x.js";
 
 const contractAddresses = {
-  RariFundController: "0xa422890cbBE5EAa8f1c88590fBab7F319D7e24B6",
+  RariFundController: "0x3f4931a8e9d4cdf8f56e7e8a8cfe3bede0e43657",
   RariFundManager: "0xD6e194aF3d9674b62D1b30Ec676030C23961275e",
   RariFundToken: "0xCda4770d65B4211364Cb870aD6bE19E7Ef1D65f4",
   RariFundProxy: "0xa3cc9e4B9784c80a05B3Af215C32ff223C3ebE5c",
@@ -37,6 +37,9 @@ const legacyContractAddresses = {
   "v1.0.0": {
     RariFundController: "0xD9F223A36C2e398B0886F945a7e556B41EF91A3C",
   },
+  "v1.2.0": {
+    RariFundController: "0xa422890cbBE5EAa8f1c88590fBab7F319D7e24B6",
+  },
 };
 
 var legacyAbis = {};
@@ -46,6 +49,12 @@ legacyAbis["v1.0.0"]["RariFundController"] = require("." +
   "/ethereum/abi/legacy/" +
   "v1.0.0" +
   "/" +
+  "RariFundController" +
+  ".json");
+
+legacyAbis["v1.2.0"] = {};
+legacyAbis["v1.2.0"]["RariFundController"] = require("." +
+  "/ethereum/abi/" +
   "RariFundController" +
   ".json");
 
@@ -674,12 +683,22 @@ export default class EthereumPool extends StablePool {
           toBlock: Math.min(toBlock, 11819251),
           filter,
         });
-      if (toBlock >= 11819251)
+      if (toBlock >= 11819251 && fromBlock <= 12904645)
+        events = events.concat(
+          await self.legacyContracts[
+            "v1.2.0"
+          ].RariFundController.getPastEvents("PoolAllocation", {
+            fromBlock: Math.max(fromBlock, 11819251),
+            toBlock: Math.min(toBlock, 12904645),
+            filter,
+          })
+        );
+      if (toBlock >= 12904645)
         events = events.concat(
           await self.contracts.RariFundController.getPastEvents(
             "PoolAllocation",
             {
-              fromBlock: Math.max(fromBlock, 11819251),
+              fromBlock: Math.max(fromBlock, 12904645),
               toBlock,
               filter,
             }
@@ -702,12 +721,22 @@ export default class EthereumPool extends StablePool {
           toBlock: Math.min(toBlock, 11819251),
           filter,
         });
-      if (toBlock >= 11819251)
+      if (toBlock >= 11819251 && fromBlock <= 12904645)
+        events = events.concat(
+          await self.legacyContracts[
+            "v1.2.0"
+          ].RariFundController.getPastEvents("CompToEthTrade", {
+            fromBlock: Math.max(fromBlock, 11819251),
+            toBlock: Math.min(toBlock, 12904645),
+            filter,
+          })
+        );
+      if (toBlock >= 12904645)
         events = events.concat(
           await self.contracts.RariFundController.getPastEvents(
             "CurrencyTrade",
             {
-              fromBlock: Math.max(fromBlock, 11819251),
+              fromBlock: Math.max(fromBlock, 12904645),
               toBlock,
               filter,
             }

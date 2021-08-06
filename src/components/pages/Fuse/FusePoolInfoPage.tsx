@@ -345,7 +345,11 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Close Factor")}
-          statA={data?.closeFactor ? data.closeFactor / 1e16 + "%" : "?%"}
+          statA={
+            data?.closeFactor
+              ? (data.closeFactor / 1e16).toFixed(2) + "%"
+              : "?%"
+          }
           statBTitle={t("Liquidation Incentive")}
           statB={
             data?.liquidationIncentive
