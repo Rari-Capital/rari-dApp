@@ -278,6 +278,27 @@ const checkAddress = async (address: string) => {
 const fetchAssetData = async (address: string) => {
 
   try {
+    
+    const coingeckoRequest = async (address: string) => {
+        // request balancer
+      const data = async () => {
+        return await fetch(
+          `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`,
+        ).then((res) => res.json());
+      }
+
+      return queue.request((retry) => data()
+      .then(response => response)
+      .catch(error => {
+        if (error.response.status === 429) {
+          return retry(error.response.data.parameters.retry_after)
+        }
+        throw error;
+      }), address, 'coingecko')
+      .then(response => response)
+      .catch(error => console.error(error));
+    }
+
     const [
       {
         market_data: {
@@ -297,9 +318,7 @@ const fetchAssetData = async (address: string) => {
     ] = await Promise.all([
 
       // object data
-      fetch(
-        `https://api.coingecko.com/api/v3/coins/ethereum/contract/${address}`
-      ).then((res) => res.json()),
+      await coingeckoRequest(address) as any,
 
       // uniswap
       fetch("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2", {
