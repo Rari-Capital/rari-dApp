@@ -95,11 +95,16 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
   );
 
   const liquidationIncentive = ((await comptrollerContract.methods.liquidationIncentiveMantissa().call()) / 1e18) - 1;
-
-  const uniswapLiquidity = assetData.uniData.data.token.totalLiquidity;
-  const sushiswapLiquidity = assetData.sushiData.data.token.totalLiquidity;
-
-  const totalLiquidity = uniswapLiquidity + sushiswapLiquidity;
+  
+  const totalLiquidity = () => {
+    const uniswapLiquidity = assetData.uniData.data.token.totalLiquidity;
+    if (assetData.sushiData.data.token) {
+      const sushiswapLiquidity = assetData.sushiData.data.token.totalLiquidity;
+      return uniswapLiquidity + sushiswapLiquidity;
+    } else {
+      return uniswapLiquidity;
+    }
+  }
 
   const calcHistorical = async () => {
     let h = 0;
@@ -195,7 +200,7 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     //logs.peak = peak;
     logs.pricechange = change;
 
-    if ((change < .1) && (2 * change < (1 - collateralFactor - liquidationIncentive) && (2 * change < liquidationIncentive - (totalLiquidity * slippage)))) {
+    if ((change < .1) && (2 * change < (1 - collateralFactor - liquidationIncentive) && (2 * change < liquidationIncentive - (totalLiquidity() * slippage)))) {
       v2 = 1;
       logs.tests.push('volatility: doubled price change too volatile')
     } else v2 = 0;
@@ -210,11 +215,11 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     const collateralFactor = asset.collateralFactor / 1e18;
     const slippage = collateralFactor / 2;
 
-    if (totalLiquidity * slippage < 2e5) {
+    if (totalLiquidity() * slippage < 2e5) {
       l1 = 2;
       logs.tests.push('liquidity: liquidity too low')
     }
-    else if (totalLiquidity * slippage < 1e6) {
+    else if (totalLiquidity() * slippage < 1e6) {
       l1 = 1;
       logs.tests.push('liquidity: liquidity low')
     }
