@@ -118,6 +118,10 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     logs.liquidationIncentive = liquidationIncentive;
 
     if (historical) {
+      
+      logs.data.token0down            = historical.TOKEN0DOWN;
+      logs.data.liquidationIncentive  = liquidationIncentive;
+      logs.data.collateralFactor      = collateralFactor;
 
       if (collateralFactor < 1 - liquidationIncentive - historical.TOKEN0DOWN) {
         // historically safe
@@ -146,8 +150,12 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
       logs.tests.push('crash: market cap < .03 * fdv')
     }
     if (assetData.twitter_followers === 0 || assetData.twitter_followers < 50) {
-      logs.tests.push('crash: not enough twitter followers :/')
-      c++;
+
+      //  hardcode pass for USDC  (no twitter acc for circle)
+      if (asset.underlyingToken.toLowerCase() !== "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase()) {
+        logs.tests.push('crash: not enough twitter followers :/')
+        c++;
+      }
     }
 
     logs.twitter_followers = assetData.twitter_followers;
@@ -255,6 +263,7 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
     v: volatility,
     l: liquidity,
     g: max([historical, crash, volatility, liquidity]),
+    data: logs.data,
     tests: logs.tests
   }
 

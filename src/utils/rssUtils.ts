@@ -32,6 +32,7 @@ export type score = {
   v: number;
   l: number;
   tests: string[];
+  data: object;
 }
 
 export function biggerblockno (a: { blockno: number }, b: { blockno: number }) {
