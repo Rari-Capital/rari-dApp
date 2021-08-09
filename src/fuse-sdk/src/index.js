@@ -2,6 +2,7 @@
 import Web3 from "web3";
 
 import JumpRateModel from "./irm/JumpRateModel.js";
+import JumpRateModelV2 from "./irm/JumpRateModelV2.js";
 import DAIInterestRateModelV2 from "./irm/DAIInterestRateModelV2.js";
 import WhitePaperInterestRateModel from "./irm/WhitePaperInterestRateModel.js";
 
@@ -973,6 +974,7 @@ export default class Fuse {
       // Get interest rate model type from runtime bytecode hash and init class
       var interestRateModels = {
         JumpRateModel: JumpRateModel,
+        JumpRateModelV2: JumpRateModelV2,
         DAIInterestRateModelV2: DAIInterestRateModelV2,
         WhitePaperInterestRateModel: WhitePaperInterestRateModel,
       };
@@ -984,6 +986,7 @@ export default class Fuse {
 
       for (const model of [
         "JumpRateModel",
+        "JumpRateModelV2",
         "DAIInterestRateModelV2",
         "WhitePaperInterestRateModel",
       ])
