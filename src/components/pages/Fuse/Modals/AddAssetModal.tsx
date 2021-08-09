@@ -175,7 +175,8 @@ export const AssetSettings = ({
   };
 
   const [interestRateModel, setInterestRateModel] = useState(
-    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_Cream_Stables_Majors
+    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+      .JumpRateModel_Cream_Stables_Majors
   );
 
   const [admin, setAdmin] = useState(address);
@@ -311,11 +312,9 @@ export const AssetSettings = ({
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
     try {
-      await testForComptrollerErrorAndSend(
-        comptroller.methods._setBorrowPaused(cTokenAddress, !isBorrowPaused),
-        address,
-        ""
-      );
+      await comptroller.methods
+        ._setBorrowPaused(cTokenAddress, !isBorrowPaused)
+        .send({ from: address });
 
       LogRocket.track("Fuse-PauseToggle");
 
