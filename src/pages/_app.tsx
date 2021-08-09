@@ -16,6 +16,7 @@ import Layout from "components/shared/Layout/Layout";
 
 // Styles
 import "../index.css";
+import { BalancesContextProvider } from "context/BalancesContext";
 
 // Components
 const AuthMiddleware = dynamic(() => import("components/Auth"), {
@@ -76,13 +77,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <RariProvider>
-          <Layout>
-            <AuthMiddleware />
-            <Component {...pageProps} />
-           </Layout>
-         </RariProvider>
-       </QueryClientProvider>
-     </ChakraProvider>
+          <BalancesContextProvider>
+            <Layout>
+              <AuthMiddleware />
+              <Component {...pageProps} />
+            </Layout>
+          </BalancesContextProvider>
+        </RariProvider>
+      </QueryClientProvider>
+    </ChakraProvider>
   );
 }
 

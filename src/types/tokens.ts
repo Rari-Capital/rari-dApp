@@ -15,6 +15,7 @@ export type UnderlyingAsset = {
   name: string;
   price: number;
   symbol: string;
+  decimals: number;
 };
 
 // UnderlyingAsset with stitched on tokenData

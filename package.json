@@ -104,6 +104,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
+    "@types/ioredis": "^4.26.7",
     "@types/react": "^17.0.6",
     "@types/react-query": "^1.1.2",
     "@types/react-slick": "^0.23.4",

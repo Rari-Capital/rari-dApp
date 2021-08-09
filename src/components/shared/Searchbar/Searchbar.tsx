@@ -30,13 +30,25 @@ import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
 import { shortUsdFormatter } from "utils/bigUtils";
 import { useEffect } from "react";
 import AvatarWithBadge from "../Icons/AvatarWithBadge";
+import { useAccountBalances } from "context/BalancesContext";
 
 // Fetchers
 const searchFetcher = async (
-  search: string
+  text: string,
+  ...addresses: string[]
 ): Promise<FinalSearchReturn | undefined> => {
-  if (!search) return undefined;
-  return (await axios.get(`/api/search?query=${search}`)).data;
+  let url = `/api/search`;
+
+  if (!text && !addresses.length) return undefined;
+  if (text) url += `?text=${text}`;
+  if (addresses.length) {
+    for (let i = 0; i < addresses.length; i++) {
+      url += `${url.includes("?") ? "&" : "?"}address=${addresses[i]}`;
+    }
+  }
+
+  // if (!text) return undefined;
+  return (await axios.get(url)).data;
 };
 
 const Searchbar = ({
@@ -51,12 +63,29 @@ const Searchbar = ({
   [x: string]: any;
 }) => {
   const [val, setVal] = useState<string>("");
-  const debouncedSearch = useDebounce(val, 200);
+  const [focused, setFocused] = useState<boolean>(false);
+  const balances = useAccountBalances();
 
-  const { data } = useSWR(debouncedSearch, searchFetcher);
+  const balancesToSearchWith: string[] = useMemo(
+    () =>
+      Object.keys(balances)
+        .filter((address) => balances[address] >= 1)
+        .sort(function (a, b) {
+          return balances[b] - balances[a];
+        }),
+    [balances]
+  );
+
+  const debouncedSearch = useDebounce([val, ...balancesToSearchWith], 200);
+
+  const { data } = useSWR(debouncedSearch, searchFetcher, {
+    dedupingInterval: 60000,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const hasResults = useMemo(() => {
-    if (!val || !data) return false;
+    if (!data) return false;
     // If any of the values in the `data` object has items, then we have some results.
     return Object.values(data).some((arr) => !!arr.length);
   }, [data, val]);
@@ -99,7 +128,12 @@ const Searchbar = ({
           _placeholder={{
             color: "grey",
             fontWeight: "bold",
-            fontSize: smaller ? "sm" : "md",
+            fontSize: smaller
+              ? "sm"
+              : {
+                  sm: "sm",
+                  md: "md",
+                },
             width: "100%",
           }}
           _focus={{ borderColor: "grey" }}
@@ -109,6 +143,8 @@ const Searchbar = ({
           borderBottomRadius={hasResults ? "none" : "xl"}
           value={val}
           color="grey"
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           {...inputProps}
         />
         {!smaller && (
@@ -133,12 +169,17 @@ const Searchbar = ({
           </Column>
         )}
       </InputGroup>
-      <Collapse in={hasResults} unmountOnExit style={{ width: "100%" }}>
+      <Collapse
+        in={hasResults && (!!val || focused)}
+        unmountOnExit
+        style={{ width: "100%" }}
+      >
         <SearchResults
           results={data}
-          handleClick={() => setVal("")}
+          handleResultsClick={() => setVal("")}
           hasResults={hasResults}
           smaller={smaller}
+          balances={balances}
         />
       </Collapse>
 
@@ -152,13 +193,15 @@ export default Searchbar;
 const SearchResults = ({
   results = DEFAULT_SEARCH_RETURN,
   hasResults,
-  handleClick,
+  handleResultsClick,
   smaller,
+  balances,
 }: {
   results?: FinalSearchReturn;
   hasResults: boolean;
-  handleClick: () => void;
+  handleResultsClick: () => void;
   smaller: boolean;
+  balances?: { [address: string]: number };
 }) => {
   const { tokens, fuse, tokensData } = results;
 
@@ -197,9 +240,9 @@ const SearchResults = ({
       </Row>
       {tokens.map((token, i: number) => {
         const route =
-          token.underlyingAddress === ETH_TOKEN_DATA.address
+          token.id === ETH_TOKEN_DATA.address
             ? `/token/eth`
-            : `/token/${token.underlyingAddress}`;
+            : `/token/${token.id}`;
         return (
           <AppLink href={route} w="100%" h="100%" key={i}>
             <Row
@@ -212,14 +255,14 @@ const SearchResults = ({
               key={i}
               _hover={{ bg: "grey" }}
               expand
-              onClick={handleClick}
+              onClick={handleResultsClick}
               fontWeight={smaller ? "normal" : "bold"}
             >
-              <Avatar
-                src={tokensData[token.underlyingAddress]?.logoURL}
-                boxSize={8}
-              />
-              <Text ml={2}>{token.underlyingSymbol}</Text>
+              <Avatar src={tokensData[token.id]?.logoURL} boxSize={8} />
+              <Text ml={2}>{token.symbol}</Text>
+              {!smaller && balances && balances[token.id] && (
+                <Text ml={"auto"}>{balances[token.id].toFixed(2)}</Text>
+              )}
             </Row>
           </AppLink>
         );
@@ -255,16 +298,16 @@ const SearchResults = ({
               key={i}
               _hover={{ bg: "grey" }}
               expand
-              onClick={handleClick}
+              onClick={handleResultsClick}
               fontWeight={smaller ? "normal" : "bold"}
             >
               <AvatarWithBadge
-                outerImage={tokensData[tokens[0].underlyingAddress]?.logoURL}
+                outerImage={tokensData[tokens[0].id]?.logoURL}
                 badgeImage="/static/fuseicon.png"
               />
               <Text ml={2}>{fusePool.name}</Text>
               {!smaller && (
-                  <Text ml={"auto"}>
+                <Text ml={"auto"}>
                   {shortUsdFormatter(fusePool.totalLiquidityUSD)} Liquidity
                 </Text>
               )}

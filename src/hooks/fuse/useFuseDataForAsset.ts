@@ -125,10 +125,10 @@ export const filterFusePoolsByTokens = (
   tokenAddresses: string[]
 ) =>
   fusePools.filter((pool) =>
-    pool.assets.find((_asset) => {
-      const asset = _asset as USDPricedFuseAssetWithTokenData;
-      return asset?.tokenData?.symbol
-        ? tokenAddresses.includes(asset.tokenData.symbol)
-        : false;
+    pool.assets.find((asset) => {
+      if (tokenAddresses.includes(asset.underlyingToken)) {
+        console.log("yup");
+        return true;
+      }
     })
   );

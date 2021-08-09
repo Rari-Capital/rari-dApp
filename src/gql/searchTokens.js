@@ -1,13 +1,23 @@
 import { gql } from "graphql-tag";
 
 export const SEARCH_FOR_TOKEN = gql`
-  query SearchForToken($search: String!) {
-    markets(where: { underlyingSymbol_contains: $search }, first: 1) {
+ query SearchForTokenBySymbol($search: String!) {
+    underlyingAssets(where: { symbol_contains: $search } orderBy:symbol) {
       id
-      underlyingSymbol
-      underlyingAddress
-      underlyingDecimals
-      underlyingName
+      name
+      price
+      symbol
+    }
+  }
+`;
+
+export const SEARCH_FOR_TOKENS_BY_ADDRESSES = gql`
+  query SearchForTokensByAddresses($addresses: [ID!]!) {
+    underlyingAssets(where: { id_in: $addresses }) {
+      id
+      name
+      price
+      symbol
     }
   }
 `;

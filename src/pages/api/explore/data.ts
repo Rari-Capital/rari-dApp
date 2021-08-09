@@ -68,7 +68,7 @@ export default async function handler(
         )
       )) as FusePoolData[];
 
-      if (!fusePoolsData) return res.status(400).json({});
+      if (!fusePoolsData) return res.status(400);
 
       const exploreData: APIExploreData2 = iterateThroughFusePoolData(
         fusePoolsData!

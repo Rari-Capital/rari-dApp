@@ -1,16 +1,22 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { RariApiTokenData } from "types/tokens";
 import {
-  CTokenSearchReturnWithTokenData,
   FinalSearchReturn,
   GQLSearchReturn,
+  UnderlyingAssetSearchReturn,
 } from "types/search";
 
-import { SEARCH_FOR_TOKEN } from "gql/searchTokens";
+import {
+  SEARCH_FOR_TOKEN,
+  SEARCH_FOR_TOKENS_BY_ADDRESSES,
+} from "gql/searchTokens";
 import { makeGqlRequest } from "utils/gql";
 import { fetchTokensAPIDataAsMap } from "utils/services";
 import axios from "axios";
-import { filterFusePoolsByToken } from "hooks/fuse/useFuseDataForAsset";
+import {
+  filterFusePoolsByToken,
+  filterFusePoolsByTokens,
+} from "hooks/fuse/useFuseDataForAsset";
 import { FusePoolData } from "utils/fetchFusePoolData";
 
 export const DEFAULT_SEARCH_RETURN: FinalSearchReturn = {
@@ -22,51 +28,67 @@ export const DEFAULT_SEARCH_RETURN: FinalSearchReturn = {
 // Takes a search string, makes a graphql request, then stitches on the TokenData by making a second API request
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<FinalSearchReturn>
+  res: NextApiResponse<FinalSearchReturn | undefined>
 ) {
   if (req.method === "GET") {
-    const { query } = req.query;
+    const { text, address } = req.query;
 
-    // If no search, return
-    if (!query || typeof query !== "string") return res.status(400);
+    // // If no search, return
+    if (text && typeof text !== "string")
+      return res.status(400).json(undefined);
+
+    const addresses = [];
+    if (address !== undefined) {
+      if (typeof address === "string") {
+        addresses.push(address);
+      } else addresses.push(...address);
+    }
 
     try {
-      // Make the GQL Request to perform the search for tokens that exist
-      const searchTokens: GQLSearchReturn = await makeGqlRequest(
-        SEARCH_FOR_TOKEN,
-        {
-          search: query.toUpperCase(),
-        }
-      );
+      let gqlsearchResults: UnderlyingAssetSearchReturn[] = [];
 
-      if (!searchTokens) return res.status(400);
-      if (!searchTokens.markets.length) return res.json(DEFAULT_SEARCH_RETURN);
+      // If we explicitly provided a text input, search with this
+      if (text) {
+        // Make the GQL Request to perform the search for tokens that exist
+        const { underlyingAssets: searchTokens }: GQLSearchReturn =
+          await makeGqlRequest(SEARCH_FOR_TOKEN, {
+            search: text.toUpperCase(),
+          });
+
+        if (!searchTokens) return res.status(400).send(undefined);
+        if (!searchTokens.length) return res.json(DEFAULT_SEARCH_RETURN);
+        gqlsearchResults = searchTokens;
+      }
+
+      // If there is no text input but we did provide addresses, then use this to search
+      else if (addresses.length) {
+        // Make the GQL Request to perform the search for tokens that exist
+        const { underlyingAssets: balanceTokens }: GQLSearchReturn =
+          await makeGqlRequest(SEARCH_FOR_TOKENS_BY_ADDRESSES, {
+            addresses,
+          });
+
+        if (!balanceTokens) return res.status(400).send(undefined);
+        if (!balanceTokens.length) return res.json(DEFAULT_SEARCH_RETURN);
+        gqlsearchResults = balanceTokens;
+      }
 
       // We are now going to stitch the tokenData from the API onto the searchData received
       const tokensDataMap: { [address: string]: RariApiTokenData } =
         await fetchTokensAPIDataAsMap(
-          searchTokens.markets.map((cToken) => cToken.underlyingAddress)
+          gqlsearchResults.map((asset) => asset.id)
         );
 
-      // Finally, stitch the tokendata onto the search results
-      const stitchedSearchTokens: CTokenSearchReturnWithTokenData[] =
-        searchTokens.markets.map((cToken) => ({
-          ...cToken,
-          tokenData: tokensDataMap[cToken.underlyingAddress],
-        }));
-
-      const fusePools = await getFusePoolsByToken(
-        searchTokens.markets[0].underlyingAddress
-      );
+      const fusePools = await getFusePoolsByToken(gqlsearchResults[0].id);
 
       // Return only the top 3 fuse pools
-      const sortedFusePools = fusePools
-        .sort((a, b) => (b.totalLiquidityUSD > a.totalLiquidityUSD ? 1 : -1))
-        .slice(0, 3);
+      const sortedFusePools = fusePools.sort((a, b) =>
+        b.totalLiquidityUSD > a.totalLiquidityUSD ? 1 : -1
+      );
 
       const searchResults: FinalSearchReturn = {
-        tokens: stitchedSearchTokens,
-        fuse: sortedFusePools,
+        tokens: gqlsearchResults.slice(0, 3),
+        fuse: sortedFusePools.slice(0, 2),
         tokensData: tokensDataMap,
       };
 
