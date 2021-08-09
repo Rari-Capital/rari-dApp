@@ -13,6 +13,7 @@ import {
   USDPricedFuseAsset,
 } from "utils/fetchFusePoolData";
 import { fetchTokensAPIDataAsMap } from "utils/services";
+import redis from "utils/redis";
 
 // Types
 export interface ExploreAsset extends USDPricedFuseAsset {
@@ -39,12 +40,25 @@ export type APIExploreReturn = {
   tokensData: TokensDataMap;
 };
 
+const REDIS_KEY_PREFIX = "explore-";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<APIExploreReturn>
 ) {
   if (req.method === "GET") {
     try {
+      // Redis query
+      const redisKey = REDIS_KEY_PREFIX + "exploredata";
+      const redisSearchData = await redis.get(redisKey);
+      // If we found Redis data, then send it
+      if (!!redisSearchData) {
+        console.log("found redis data. returning", redisKey);
+        return res
+          .status(200)
+          .json(JSON.parse(redisSearchData) as APIExploreReturn);
+      }
+
       // Get Underlying Assets from subgraph
       // Set up SDKs
       const web3 = new Web3(turboGethURL);
@@ -79,10 +93,16 @@ export default async function handler(
         Object.values(exploreData).map((asset) => asset.underlyingToken)
       );
 
-      return res.status(200).json({
+      const returnObj = {
         results: exploreData,
         tokensData,
-      });
+      };
+
+      // Save results to redis every 10 minutes
+      await redis.set(redisKey, JSON.stringify(returnObj), "EX", 10);
+      console.log("set redis key", redisKey);
+
+      return res.status(200).json(returnObj);
     } catch (err) {
       return res.status(400);
     }

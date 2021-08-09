@@ -15,15 +15,17 @@ import { fetchTokensAPIDataAsMap } from "utils/services";
 import axios from "axios";
 import {
   filterFusePoolsByToken,
-  filterFusePoolsByTokens,
 } from "hooks/fuse/useFuseDataForAsset";
-import { FusePoolData } from "utils/fetchFusePoolData";
+
+import redis from "../../utils/redis";
 
 export const DEFAULT_SEARCH_RETURN: FinalSearchReturn = {
   tokens: [],
   fuse: [],
   tokensData: {},
 };
+
+const REDIS_KEY_PREFIX = "search-";
 
 // Takes a search string, makes a graphql request, then stitches on the TokenData by making a second API request
 export default async function handler(
@@ -46,9 +48,22 @@ export default async function handler(
 
     try {
       let gqlsearchResults: UnderlyingAssetSearchReturn[] = [];
+      const redisKey = REDIS_KEY_PREFIX + text;
 
       // If we explicitly provided a text input, search with this
       if (text) {
+
+        // Redis query
+        const redisSearchData = await redis.get(redisKey);
+        // If we found Redis data, then send it
+        if (!!redisSearchData) {
+          console.log('found redis data. returning', redisKey)
+          return res
+          .status(200)
+          .json(JSON.parse(redisSearchData) as FinalSearchReturn);
+        }
+         
+
         // Make the GQL Request to perform the search for tokens that exist
         const { underlyingAssets: searchTokens }: GQLSearchReturn =
           await makeGqlRequest(SEARCH_FOR_TOKEN, {
@@ -91,6 +106,12 @@ export default async function handler(
         fuse: sortedFusePools.slice(0, 2),
         tokensData: tokensDataMap,
       };
+
+      // Save results to redis every 5 minutes
+      if (text) {
+        await redis.set(redisKey, JSON.stringify(searchResults), "EX", 300);
+        console.log('set redis key', redisKey)
+      }
 
       return res.status(200).json(searchResults);
     } catch (err) {
