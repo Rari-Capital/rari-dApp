@@ -2,15 +2,9 @@ import { SearchIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   AvatarBadge,
-  Box,
   Button,
   Collapse,
   Image,
-  InputRightElement,
-  Menu,
-  MenuGroup,
-  MenuItem,
-  MenuList,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -35,6 +29,7 @@ import { useMemo } from "react";
 import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
 import { shortUsdFormatter } from "utils/bigUtils";
 import { useEffect } from "react";
+import AvatarWithBadge from "../Icons/AvatarWithBadge";
 
 // Fetchers
 const searchFetcher = async (
@@ -125,9 +120,13 @@ const Searchbar = ({
             position="absolute"
             zIndex="5"
             right="0"
+            mr={1}
           >
             <AppLink href="/explore">
-              <Button colorScheme="purple" _hover={{ transform: "scale(1.04)" }}>
+              <Button
+                colorScheme="purple"
+                _hover={{ transform: "scale(1.04)" }}
+              >
                 Explore
               </Button>
             </AppLink>
@@ -259,23 +258,13 @@ const SearchResults = ({
               onClick={handleClick}
               fontWeight={smaller ? "normal" : "bold"}
             >
-              <Stack direction="row" spacing={4}>
-                <Avatar
-                  src={tokensData[tokens[0].underlyingAddress]?.logoURL}
-                  boxSize={8}
-                >
-                  <AvatarBadge
-                    boxSize={6}
-                    borderColor="transparent"
-                    bg="white border"
-                  >
-                    <Image src="/static/fuseicon.png" />
-                  </AvatarBadge>
-                </Avatar>
-              </Stack>
+              <AvatarWithBadge
+                outerImage={tokensData[tokens[0].underlyingAddress]?.logoURL}
+                badgeImage="/static/fuseicon.png"
+              />
               <Text ml={2}>{fusePool.name}</Text>
               {!smaller && (
-                <Text ml={"auto"} fontWeight="normal">
+                  <Text ml={"auto"}>
                   {shortUsdFormatter(fusePool.totalLiquidityUSD)} Liquidity
                 </Text>
               )}

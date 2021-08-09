@@ -8,6 +8,8 @@ import { useMemo } from "react";
 import { shortUsdFormatter } from "utils/bigUtils";
 // import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
+import { ExploreAsset } from "pages/api/explore/data";
+import { RariApiTokenData } from "types/tokens";
 
 export enum ExploreGridBoxMetric {
   TOTAL_BORROWS,
@@ -21,22 +23,24 @@ export const FuseAssetGridBox = ({
   bg,
   heading = "Top earning Stablecoin",
   data,
+  tokenData,
   metric = ExploreGridBoxMetric.SUPPLY_RATE,
 }: {
   bg: string;
   heading?: string;
-  data?: SubgraphMarket;
+  data?: ExploreAsset;
+  tokenData?: RariApiTokenData;
   metric: ExploreGridBoxMetric;
 }) => {
   const { fuse } = useRari();
 
   const loading = !data;
 
-  const supplyRate = convertMantissaToAPY(data?.supplyRate, 365);
+  const supplyRate = convertMantissaToAPY(data?.supplyRatePerBlock, 365);
   const monthlySupplyRate = supplyRate / 12;
   const weeklySupplyRate = monthlySupplyRate / 4;
 
-  const borrowRate = convertMantissaToAPR(data?.borrowRate);
+  const borrowRate = convertMantissaToAPR(data?.borrowRatePerBlock);
 
   // const { data: ethPrice } = useQuery("ethPrice", async () => {
   //   return fuse.web3.utils.fromWei(await fuse.getEthUsdPriceBN()) as any;
@@ -59,14 +63,15 @@ export const FuseAssetGridBox = ({
   const subtitle: string = useMemo(() => {
     switch (metric) {
       case ExploreGridBoxMetric.SUPPLY_RATE:
+        return `${supplyRate.toFixed(1)}% APY`;
         return `${weeklySupplyRate.toFixed(1)}% weekly, 
         ${monthlySupplyRate.toFixed(1)}% monthly`;
       case ExploreGridBoxMetric.BORROW_RATE:
-        return `${borrowRate}% Borrow APR`;
+        return `${borrowRate.toFixed(1)}% Borrow APR`;
       case ExploreGridBoxMetric.TOTAL_BORROWS:
-        return `${shortUsdFormatter(data?.totalBorrows ?? 0)} Borrowed`;
+        return `${shortUsdFormatter(data?.totalBorrowUSD ?? 0)} Borrowed`;
       case ExploreGridBoxMetric.TOTAL_SUPPLY:
-        return `${shortUsdFormatter(data?.totalSupply ?? 0)} Supplied`;
+        return `${shortUsdFormatter(data?.totalSupplyUSD ?? 0)} Supplied`;
       default:
         return "";
     }
@@ -75,10 +80,10 @@ export const FuseAssetGridBox = ({
   return (
     <AppLink
       href={
-        data?.pool?.id
-          ? `/fuse/pool/${data.pool.index}`
-          : data?.underlyingAddress
-          ? `/token/${data.underlyingAddress}`
+        data?.fusePool?.id
+          ? `/fuse/pool/${data.fusePool.id}`
+          : data?.underlyingToken
+          ? `/token/${data.underlyingToken}`
           : `#`
       }
       className="no-underline"
@@ -107,10 +112,10 @@ export const FuseAssetGridBox = ({
             crossAxisAlignment="flex-start"
             flexBasis="75%"
             flexGrow={1}
-            p={[0,1,2]}
+            p={[0, 1, 2]}
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-              <Heading fontSize={["sm", "lg", "2xl"]} color="grey">
+              <Heading fontSize={["sm", "lg"]} color="grey">
                 {heading}
               </Heading>
             </Row>
@@ -129,7 +134,7 @@ export const FuseAssetGridBox = ({
                   my={1}
                 >
                   <Heading fontSize={["sm", "md", "2xl"]}>
-                    {data?.tokenData?.symbol} - Pool {data?.pool?.index}
+                    {tokenData?.symbol} - Pool {data?.fusePool?.id}
                   </Heading>
                 </Skeleton>
 
@@ -152,11 +157,11 @@ export const FuseAssetGridBox = ({
             crossAxisAlignment="center"
             flexBasis="25%"
             flexShrink={0}
-            p={[0,0,5]}
+            p={[0, 0, 5]}
           >
-            <SkeletonCircle isLoaded={!loading} boxSize={"60px"}>
-              {data?.tokenData?.logoURL && (
-                <Avatar src={data?.tokenData?.logoURL} h="100%" w="100%" />
+            <SkeletonCircle isLoaded={!loading} boxSize={["60px", "80px"]}>
+              {tokenData?.logoURL && (
+                <Avatar src={tokenData?.logoURL} h="100%" w="100%" />
               )}
             </SkeletonCircle>
           </Column>
@@ -165,3 +170,8 @@ export const FuseAssetGridBox = ({
     </AppLink>
   );
 };
+
+
+const ExploreGridBox = () => {
+  
+}

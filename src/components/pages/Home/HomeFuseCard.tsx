@@ -29,6 +29,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
 
     const symbols: string[] = [];
 
+    // 
     pool.assets.forEach((a, i) => {
       const asset = a as USDPricedFuseAssetWithTokenData;
       const { symbol } = asset?.tokenData ?? {};
@@ -56,7 +57,7 @@ const HomeFuseCard = ({ pool }: { pool: FusePoolData | undefined }) => {
       style={{ textDecoration: "none" }}
     >
       <DashboardBox
-        height="130px"
+        height="150px"
         width="300px"
         ml={10}
         p={5}
