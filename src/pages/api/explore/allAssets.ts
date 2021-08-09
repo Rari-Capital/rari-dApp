@@ -2,6 +2,7 @@ import { GET_ALL_UNDERLYING_ASSETS } from "gql/getAllUnderlyingAssets";
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   RariApiTokenData,
+  TokensDataMap,
   UnderlyingAsset,
   UnderlyingAssetWithTokenData,
 } from "types/tokens";
@@ -26,20 +27,8 @@ export default async function handler(
         await makeGqlRequest(GET_ALL_UNDERLYING_ASSETS, {});
 
       // Get TokenData (logo, color etc) from Rari API
-      const tokensDataMap: { [address: string]: RariApiTokenData } =
-        await fetchTokensAPIDataAsMap(
-          underlyingAssets.map((asset) => asset.id)
-        );
-
-      // Stitch tokenData onto underlyingAssets
-      const finalUnderlyingAssets: UnderlyingAssetWithTokenData[] =
-        underlyingAssets.map((asset) => ({
-          ...asset,
-          tokenData: tokensDataMap[asset.id],
-        }));
-
-      const fetchAssetMarketInfoPromises = underlyingAssets.map(({ id }) =>
-        fetchAggregateTokenMarketInfo(id)
+      const tokensDataMap: TokensDataMap = await fetchTokensAPIDataAsMap(
+        underlyingAssets.map((asset) => asset.id)
       );
 
       const result = {

@@ -79,10 +79,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Layout>
             <AuthMiddleware />
             <Component {...pageProps} />
-          </Layout>
-        </RariProvider>
-      </QueryClientProvider>
-    </ChakraProvider>
+           </Layout>
+         </RariProvider>
+       </QueryClientProvider>
+     </ChakraProvider>
   );
 }
 

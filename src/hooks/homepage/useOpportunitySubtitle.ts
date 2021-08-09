@@ -87,7 +87,9 @@ export const useOpportunitySubtitle = (
         return pool2APR ? `${pool2APR}% APR` : null;
 
       case HomepageOpportunityType.TranchesPage:
-        return `${trancheAPYs.map((apy) => `${apy}%`).join(" - ")} APY`;
+        return `${trancheAPYs
+          .map((apy) => `${apy?.toFixed(0)}%`)
+          .join(" - ")} APY`;
 
       default:
         return null;

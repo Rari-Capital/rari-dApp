@@ -19,7 +19,6 @@ export enum OpportunityNav {
   FUSE = "Fuse",
   TRANCHES = "Tranches",
   EARN = "Earn",
-  TANKS = "Tanks",
 }
 const AssetOpportunities = ({
   token,

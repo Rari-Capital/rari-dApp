@@ -9,7 +9,6 @@ export type RariApiTokenData = {
   logoURL: string;
 };
 
-
 // Coming from Fuse Subgraph `underlyingAsset` Enitty
 export type UnderlyingAsset = {
   id: string;
@@ -18,8 +17,9 @@ export type UnderlyingAsset = {
   symbol: string;
 };
 
-
 // UnderlyingAsset with stitched on tokenData
 export interface UnderlyingAssetWithTokenData extends UnderlyingAsset {
-  tokenData: RariApiTokenData
+  tokenData: RariApiTokenData;
 }
+
+export type TokensDataMap = { [address: string]: RariApiTokenData };
