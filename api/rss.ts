@@ -84,7 +84,8 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
   let logs:any = {
     name: asset.underlyingName,
     address: asset.underlyingToken,
-    tests: []
+    tests: [],
+    data: {}
   }
 
   const comptrollerContract = new fuse.web3.eth.Contract(
@@ -153,7 +154,7 @@ const scoreAsset = async (asset: rssAsset, assetData: any) => {
 
       //  hardcode pass for USDC  (no twitter acc for circle)
       if (asset.underlyingToken.toLowerCase() !== "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase()) {
-        logs.tests.push('crash: not enough twitter followers :/')
+        logs.tests.push('crash: not enough twitter followers');
         c++;
       }
     }
