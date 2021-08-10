@@ -107,9 +107,9 @@ export default async function handler(
         tokensData: tokensDataMap,
       };
 
-      // Save results to redis every 5 minutes
+      // Save results to redis every 15 minutes
       if (text) {
-        await redis.set(redisKey, JSON.stringify(searchResults), "EX", 300);
+        await redis.set(redisKey, JSON.stringify(searchResults), "EX", 900);
         console.log('set redis key', redisKey)
       }
 

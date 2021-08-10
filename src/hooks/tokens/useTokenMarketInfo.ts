@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useQuery } from "react-query";
-import { fetchAllTokenMarketInfo, fetchAggregateTokenMarketInfo } from "utils/coingecko";
+import {
+  fetchAllTokenMarketInfo,
+  fetchAggregateTokenMarketInfo,
+} from "utils/coingecko";
 
 export enum MarketInterval {
   DAY = 1,

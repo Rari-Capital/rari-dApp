@@ -44,6 +44,6 @@ export const pools: PoolInterface[] = [
     title: "ETH",
     name: "ETH Pool",
     caption: "Returns on ETH",
-    logo: "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.pngnotes",
+    logo: "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png",
   },
 ];

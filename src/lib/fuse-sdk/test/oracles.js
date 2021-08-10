@@ -2,7 +2,7 @@ var assert = require("assert");
 var Big = require("big.js");
 var axios = require("axios");
 
-const Fuse = require("../dist/fuse.node.commonjs2.js.js");
+const Fuse = require("../dist/fuse.node.commonjs2.js");
 
 assert(process.env.TESTING_WEB3_PROVIDER_URL, "Web3 provider URL required");
 var fuse = new Fuse(process.env.TESTING_WEB3_PROVIDER_URL);

@@ -8,33 +8,68 @@ import { useAdvertisementData } from "hooks/opportunities/useAdvertisementData";
 // Constants
 
 // Hooks
-import { TokenData } from "hooks/useTokenData";
 import Image from "next/image";
 
 // Utils
-import { Column, Row } from "lib/chakraUtils";
+import { Column } from "lib/chakraUtils";
+import { useAccountBalances } from "context/BalancesContext";
+import axios from "axios";
+import useSWR from "swr";
+import {
+  APIBestOpportunityData,
+  APIBestOpportunityReturn,
+} from "pages/api/explore/bestOpportunity";
+import { convertMantissaToAPY } from "utils/apyUtils";
+
+const adFetcher = async (route: string): Promise<APIBestOpportunityReturn> => {
+  const result = await axios.get(route);
+  return result.data;
+};
 
 const InternalAd = ({ ...boxProps }: { [x: string]: any }) => {
   const adData = useAdvertisementData();
 
+  const [balances, significantTokens] = useAccountBalances();
+
+  const address = significantTokens[0];
+
+  const { data, error } = useSWR(
+    `/api/explore/bestOpportunity?address=${address}`,
+    adFetcher
+  );
+
+  const { tokensData, bestOpportunity } = data ?? {};
+
+  if (!data || !tokensData || !bestOpportunity) return <> </>;
+
   return (
-    <DashboardBox height="300px" w="100%" {...boxProps}>
-      <Column
-        mainAxisAlignment="center"
-        crossAxisAlignment="center"
-        h="100%"
-        w="100%"
-        p={5}
-      >
-        <Image src={`/static/icons/dai-glow.svg`} height="200px" width="200px" />
-        <Heading mt={6} textAlign="center" fontSize="xl">   
-          Your 9,560 DAI could be earning 16% APY
-        </Heading>
-        <AppLink href='/pool/yield'>
-          <Text mt={6} color="grey" fontWeight="bold">Deposit Today</Text>
-        </AppLink>
-      </Column>
-    </DashboardBox>
+    <AppLink href={`/fuse/pools/${bestOpportunity.bestAsset.fusePool.id}`}>
+      <DashboardBox height="300px" w="100%" {...boxProps}>
+        <Column
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          h="100%"
+          w="100%"
+          p={5}
+        >
+          <Avatar src={tokensData[address]?.logoURL} boxSize="120px" />
+          <Heading mt={6} textAlign="center" fontSize="xl">
+            Your {balances[address]?.toFixed(2)} {tokensData[address]?.symbol}{" "}
+            could be earning{" "}
+            {convertMantissaToAPY(
+              bestOpportunity.bestAsset.supplyRatePerBlock,
+              365
+            )}
+            % APY
+          </Heading>
+          <AppLink href="/pool/yield">
+            <Text mt={6} color="grey" fontWeight="bold">
+              Deposit Today
+            </Text>
+          </AppLink>
+        </Column>
+      </DashboardBox>
+    </AppLink>
   );
 };
 

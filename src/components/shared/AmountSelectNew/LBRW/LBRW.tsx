@@ -50,7 +50,7 @@ const LBRW = ({ token }: { token?: TokenData }) => {
             mode={mode}
             modes={[
               AmountSelectMode.LENDANDBORROW,
-              AmountSelectMode.REPAYANDWITHDRAW,
+              // AmountSelectMode.REPAYANDWITHDRAW,
             ]}
             setMode={setMode}
             hasBorrows={hasBorrows}
@@ -71,11 +71,11 @@ const LBRW = ({ token }: { token?: TokenData }) => {
                 setUserAction={setUserAction}
               />
             )}
-            {mode === AmountSelectMode.REPAYANDWITHDRAW && (
+            {/* {mode === AmountSelectMode.REPAYANDWITHDRAW && (
               <Box h="300px">
                 <Heading>Repay And Withdraw</Heading>
               </Box>
-            )}
+            )} */}
           </Row>
         </Column>
       )}
@@ -133,14 +133,14 @@ const TabBar = ({
           <TabList>
             {modes.map((mode) => {
               let text;
-              if (mode === AmountSelectMode.REPAYANDWITHDRAW) {
-                if (hasBorrows && hasDeposits) text === "Repay/Withdraw";
-                else if (hasBorrows) text === "Repay";
-                else if (hasDeposits) text === "Withdraw";
-                else return null;
-              } else {
-                text === mode;
-              }
+              // if (mode === AmountSelectMode.REPAYANDWITHDRAW) {
+              //   if (hasBorrows && hasDeposits) text === "Repay/Withdraw";
+              //   else if (hasBorrows) text === "Repay";
+              //   else if (hasDeposits) text === "Withdraw";
+              //   else return null;
+              // } else {
+              //   text === mode;
+              // }
               return (
                 <Tab key={mode} fontWeight="bold" _active={{}} mb="-1px">
                   {t(mode)}

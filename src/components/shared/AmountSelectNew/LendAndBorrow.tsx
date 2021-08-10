@@ -408,6 +408,7 @@ const StatsColumn = ({
           {/* Supply Balance */}
           <SimpleTooltip
             label={`${asset.underlyingSymbol} supplied to Fuse Pool ${pool?.id}`}
+            placement="bottom-end"
           >
             <Row
               mainAxisAlignment="space-between"
@@ -443,6 +444,7 @@ const StatsColumn = ({
             (updatedBorrowAsset?.borrowBalance ?? 0) > 0) && (
             <SimpleTooltip
               label={`${borrowAsset.underlyingSymbol} borrowed from Fuse Pool ${pool?.id}`}
+              placement="bottom-end"
             >
               <Row
                 mainAxisAlignment="space-between"
@@ -474,6 +476,7 @@ const StatsColumn = ({
           {/* Supply APY  */}
           <SimpleTooltip
             label={`${asset.underlyingSymbol} supply APY in Fuse Pool ${pool?.id}`}
+            placement="bottom-end"
           >
             <Row
               mainAxisAlignment="space-between"
@@ -502,6 +505,7 @@ const StatsColumn = ({
           {/* Borrow APR  */}
           <SimpleTooltip
             label={`${borrowAsset.underlyingSymbol} borrow APR in Fuse Pool ${pool?.id}`}
+            placement="bottom-end"
           >
             <Row
               mainAxisAlignment="space-between"
@@ -531,6 +535,7 @@ const StatsColumn = ({
           {/* Borrow Credit  */}
           <SimpleTooltip
             label={`How much USD you can still borrow in pool ${pool?.id} after this transaction succeeds`}
+            placement="bottom-end"
           >
             <Row
               mainAxisAlignment="space-between"
@@ -617,6 +622,7 @@ const StatsColumn = ({
             updatedBorrowAndSupplyBalanceUSD.totalBorrowBalanceUSD > 0) && (
             <SimpleTooltip
               label={`Total USD debt balance in pool ${pool?.id} after this transaction succeeds`}
+              placement="bottom-end"
             >
               <Row
                 mainAxisAlignment="space-between"

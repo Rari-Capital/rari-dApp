@@ -10,6 +10,9 @@ import { shortUsdFormatter } from "utils/bigUtils";
 import { useRari } from "context/RariContext";
 import { ExploreAsset } from "pages/api/explore/data";
 import { RariApiTokenData } from "types/tokens";
+import { usePoolInfo } from "hooks/usePoolInfo";
+import { Pool } from "utils/poolUtils";
+import { usePoolAPY } from "hooks/usePoolAPY";
 
 export enum ExploreGridBoxMetric {
   TOTAL_BORROWS,
@@ -32,7 +35,6 @@ export const FuseAssetGridBox = ({
   tokenData?: RariApiTokenData;
   metric: ExploreGridBoxMetric;
 }) => {
-  const { fuse } = useRari();
 
   const loading = !data;
 
@@ -115,7 +117,7 @@ export const FuseAssetGridBox = ({
             p={[0, 1, 2]}
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-              <Heading fontSize={["sm", "lg"]} color="grey">
+              <Heading fontSize={["sm", "md", "lg", "xl"]} color="grey" >
                 {heading}
               </Heading>
             </Row>
@@ -142,7 +144,7 @@ export const FuseAssetGridBox = ({
                   isLoaded={!loading}
                   height={loading ? "20px" : "100%"}
                 >
-                  <Heading fontSize={["xs", "xs", "sm"]} color="grey">
+                  <Heading fontSize={["xs", "xs", "sm", "md"]} color="grey">
                     {subtitle}
                   </Heading>
                 </Skeleton>
@@ -171,7 +173,89 @@ export const FuseAssetGridBox = ({
   );
 };
 
+export const ExploreGridBox = ({ heading }: { heading: string }) => {
+  const poolAPY = usePoolAPY(Pool.USDC);
+  const poolInfo = usePoolInfo(Pool.USDC);
 
-const ExploreGridBox = () => {
-  
-}
+  const loading = !poolAPY;
+
+  return (
+    <AppLink href={`/pools/usdc`} className="no-underline">
+      <Column
+        w="100%"
+        h="100%"
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        p={4}
+        className="hover-row"
+        border="1px solid #272727"
+      >
+        <Row
+          h="100%"
+          w="100%"
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
+        >
+          <Column
+            w="100%"
+            h="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            flexBasis="75%"
+            flexGrow={1}
+            p={[0, 1, 2]}
+          >
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+              <Heading fontSize={["sm", "lg"]} color="grey">
+                {heading}
+              </Heading>
+            </Row>
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              mt="auto"
+            >
+              <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+              >
+                <Skeleton
+                  isLoaded={!loading}
+                  height={loading ? "20px" : "100%"}
+                  my={1}
+                >
+                  <Heading fontSize={["sm", "md", "2xl"]}>
+                    {poolInfo.poolName}
+                  </Heading>
+                </Skeleton>
+
+                <Skeleton
+                  isLoaded={!loading}
+                  height={loading ? "20px" : "100%"}
+                >
+                  <Heading fontSize={["xs", "xs", "sm", "md"]} color="grey">
+                    {poolAPY}% APY
+                  </Heading>
+                </Skeleton>
+              </Column>
+            </Row>
+          </Column>
+
+          <Column
+            w="100%"
+            h="100%"
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            flexBasis="25%"
+            flexShrink={0}
+            p={[0, 0, 5]}
+          >
+            <SkeletonCircle isLoaded={!loading} boxSize={["60px", "80px"]}>
+              <Avatar src={poolInfo.poolLogo} h="100%" w="100%" />
+            </SkeletonCircle>
+          </Column>
+        </Row>
+      </Column>
+    </AppLink>
+  );
+};

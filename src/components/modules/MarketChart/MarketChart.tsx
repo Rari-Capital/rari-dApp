@@ -170,7 +170,11 @@ const MarketChart = ({
         >
           {" "}
           {!formattedChartData ? (
-            <Column mainAxisAlignment="center" crossAxisAlignment="center">
+            <Column
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              h="100%"
+            >
               <Spinner />
             </Column>
           ) : (
@@ -185,80 +189,84 @@ const MarketChart = ({
         </Box>
 
         {/* Numeric data */}
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          w="100%"
-          h="20%"
-          p={4}
-          overflowX="scroll"
-          borderTop="1px solid grey"
-        >
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            mr={10}
+        {aggregateTokenMarketInfo && (
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            w="100%"
+            h="20%"
+            p={4}
+            overflowX="scroll"
+            borderTop="1px solid grey"
           >
-            <Heading size="sm">Market Cap</Heading>
-            <Text>
-              {shortUsdFormatter(
-                aggregateTokenMarketInfo?.market_data?.market_cap?.usd ?? 0
-              )}
-            </Text>
-          </Column>
-          {!isMobile && (
             <Column
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-start"
               mr={10}
             >
-              <Heading size="sm">Volume(24h)</Heading>
+              <Heading size="sm">Market Cap</Heading>
               <Text>
                 {shortUsdFormatter(
-                  aggregateTokenMarketInfo?.market_data?.total_volume?.usd ?? 0
+                  aggregateTokenMarketInfo?.market_data?.market_cap?.usd ?? 0
                 )}
               </Text>
             </Column>
-          )}
+            {!isMobile && (
+              <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+                mr={10}
+              >
+                <Heading size="sm">Volume(24h)</Heading>
+                <Text>
+                  {shortUsdFormatter(
+                    aggregateTokenMarketInfo?.market_data?.total_volume?.usd ??
+                      0
+                  )}
+                </Text>
+              </Column>
+            )}
 
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            mr={10}
-          >
-            <Heading size="sm">24hr high</Heading>
-            <Text>
-              {smallUsdFormatter(
-                aggregateTokenMarketInfo?.market_data?.high_24h?.usd ?? 0
-              )}
-            </Text>
-          </Column>
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-          >
-            <Heading size="sm">24hr low</Heading>
-            <Text>
-              {smallUsdFormatter(
-                aggregateTokenMarketInfo?.market_data?.low_24h?.usd ?? 0
-              )}
-            </Text>
-          </Column>
-
-          {!isMobile && (
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              mr={10}
+            >
+              <Heading size="sm">24hr high</Heading>
+              <Text>
+                {smallUsdFormatter(
+                  aggregateTokenMarketInfo?.market_data?.high_24h?.usd ?? 0
+                )}
+              </Text>
+            </Column>
             <Column
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-start"
             >
-              <Heading size="sm">Circulating Supply</Heading>
+              <Heading size="sm">24hr low</Heading>
               <Text>
-                {shortUsdFormatter(
-                  aggregateTokenMarketInfo?.market_data?.circulating_supply ?? 0
+                {smallUsdFormatter(
+                  aggregateTokenMarketInfo?.market_data?.low_24h?.usd ?? 0
                 )}
               </Text>
             </Column>
-          )}
-        </Row>
+
+            {!isMobile && (
+              <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+              >
+                <Heading size="sm">Circulating Supply</Heading>
+                <Text>
+                  {shortUsdFormatter(
+                    aggregateTokenMarketInfo?.market_data?.circulating_supply ??
+                      0
+                  )}
+                </Text>
+              </Column>
+            )}
+          </Row>
+        )}
       </Column>
     </DashboardBox>
   );

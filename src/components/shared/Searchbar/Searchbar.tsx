@@ -64,17 +64,7 @@ const Searchbar = ({
 }) => {
   const [val, setVal] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
-  const balances = useAccountBalances();
-
-  const balancesToSearchWith: string[] = useMemo(
-    () =>
-      Object.keys(balances)
-        .filter((address) => balances[address] >= 1)
-        .sort(function (a, b) {
-          return balances[b] - balances[a];
-        }),
-    [balances]
-  );
+  const [balances, balancesToSearchWith] = useAccountBalances();
 
   const debouncedSearch = useDebounce([val, ...balancesToSearchWith], 200);
 
@@ -103,7 +93,7 @@ const Searchbar = ({
       border="4px solid"
       borderRadius="xl"
       borderColor="grey"
-      zIndex={3}
+      zIndex={2}
       id="Searchbox"
     >
       <InputGroup width={width ?? "100%"} h={height}>

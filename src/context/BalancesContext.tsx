@@ -78,9 +78,19 @@ export const BalancesContextProvider = ({
 export const useAccountBalances = () => {
   const balances = useContext(BalancesContext);
 
+  const significantTokens: string[] = useMemo(
+    () =>
+      Object.keys(balances)
+        .filter((address) => balances[address] >= 1)
+        .sort(function (a, b) {
+          return balances[b] - balances[a];
+        }),
+    [balances]
+  );
+
   if (balances === undefined) {
     throw new Error(`useBalances must be used within a PoolTypeProvider`);
   }
 
-  return balances;
+  return [balances, significantTokens];
 };

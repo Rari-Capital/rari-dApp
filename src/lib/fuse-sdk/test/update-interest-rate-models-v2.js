@@ -1,4 +1,4 @@
-const Fuse = require("../dist/fuse.node.commonjs2.js.js");
+const Fuse = require("../dist/fuse.node.commonjs2.js");
 
 var fuse = new Fuse(process.env.TESTING_WEB3_PROVIDER_URL);
 

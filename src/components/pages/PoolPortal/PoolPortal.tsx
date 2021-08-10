@@ -146,7 +146,6 @@ const PoolPortalContent = () => {
     });
 
   const { poolName, poolCaption, poolType } = usePoolInfoFromContext();
-  console.log({ poolName, poolCaption, poolType });
 
   const { data: poolBalance, isLoading: isPoolBalanceLoading } =
     usePoolBalance(poolType);
@@ -494,10 +493,10 @@ const MonthlyReturns = () => {
 
 
   const returns =
-    ethPoolAPY && daiPoolAPY && yieldPoolAPY
+    ethPoolAPY && daiPoolAPY && yieldPoolAPY && usdcPoolAPY
       ? {
           [ethPoolName]: parseFloat(ethPoolAPY!),
-          // [usdcPoolName]: parseFloat(usdcPoolAPY!),
+          [usdcPoolName]: parseFloat(usdcPoolAPY!),
           [daiPoolName]: parseFloat(daiPoolAPY!),
           [yieldPoolName]: parseFloat(yieldPoolAPY!),
         }

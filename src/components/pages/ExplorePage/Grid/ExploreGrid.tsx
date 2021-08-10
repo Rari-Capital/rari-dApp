@@ -1,6 +1,10 @@
 import { SimpleGrid } from "@chakra-ui/layout";
 import DashboardBox from "components/shared/DashboardBox";
-import { ExploreGridBoxMetric, FuseAssetGridBox } from "./ExploreGridBox";
+import {
+  ExploreGridBox,
+  ExploreGridBoxMetric,
+  FuseAssetGridBox,
+} from "./ExploreGridBox";
 
 // Hooks
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -94,12 +98,7 @@ const ExploreGrid = () => {
               metric={ExploreGridBoxMetric.TOTAL_BORROWS}
             />
 
-            <FuseAssetGridBox
-              bg=""
-              heading="Newest Yield Aggregator"
-              data={topEarningFuseStable}
-              metric={ExploreGridBoxMetric.SUPPLY_RATE}
-            />
+            <ExploreGridBox heading="Newest Yield Aggregator" />
           </>
         )}
       </SimpleGrid>

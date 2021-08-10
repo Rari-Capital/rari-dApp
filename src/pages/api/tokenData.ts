@@ -28,160 +28,155 @@ export default async (request: NowRequest, response: NowResponse) => {
     ).then((res) => res.json()),
   ]);
 
-  if (rawData.error) {
-    const name = await tokenContract.methods.name().call();
-    const symbol = await tokenContract.methods.symbol().call();
+  let name: string;
+  let symbol: string;
+  let logoURL: string | undefined;
 
+  if (rawData.error) {
+    name = await tokenContract.methods.name().call();
+    symbol = await tokenContract.methods.symbol().call();
+
+    //////////////////
+    // Edge cases: //
+    /////////////////
+
+    // BNB
     if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xB8c77482e45F1F44dE1745F52C74426C631bDD52")
     ) {
-      // BNB
-      return response.json({
-        name,
-        symbol,
-        decimals,
-        color: "#E6B93D",
-        overlayTextColor: "#FFFFFF",
-        address,
-        logoURL:
-          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png",
-      });
+      logoURL =
+      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png",
+    }
 
-    } else if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0xcee60cFa923170e4f8204AE08B4fA6A3F5656F3a")
-    ) {
-      // crvLINK
-      return response.json({
-        name,
-        symbol,
-        decimals,
-        color: "#2A5ADA",
-        overlayTextColor: "#FFFFFF",
-        address,
-        logoURL:
-          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINK.png",
-      });
-    } else if (
+    if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
     ) {
-      // crvLINK-gauges
-      return response.json({
-        name: "linkCRV Gauge Deposit",
-        symbol: "[G]linkCRV",
-        decimals,
-        color: "#2A5ADA",
-        overlayTextColor: "#FFFFFF",
-        address,
-        logoURL:
-          "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png",
-      });
-    } else if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0x986b4AFF588a109c09B50A03f42E4110E29D353F")
-    ) {
-      // yvCurve-sETH
-      return response.json({
-        name: "Curve sETH yVault",
-        symbol: "ycrvSETH",
-        decimals,
-        color: "#627EEA",
-        overlayTextColor: "#FFFFFF",
-        address,
-        logoURL:
-          "https://raw.githack.com/yearn/yearn-assets/master/icons/tokens/0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c/logo-128.png",
-      });
-
-    } else if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0x96Ea6AF74Af09522fCB4c28C269C26F59a31ced6")
-    ) {
-      // yvCurve-LINK
-      return response.json({
-        name: "Curve LINK/sLINK yVault",
-        symbol: "ycrvLINK",
-        decimals,
-        color: "#2A5ADA",
-        overlayTextColor: "#FFFFFF",
-        address,
-        logoURL:
-          "https://raw.githack.com/yearn/yearn-assets/master/icons/tokens/0xcee60cFa923170e4f8204AE08B4fA6A3F5656F3a/logo-128.png",
-      });
+      name = "linkCRV Gauge Deposit";
+      symbol = "[G]linkCRV";
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png";
     }
 
-    return response.json({
-      name,
-      symbol,
-      decimals,
-      color: "#FFFFFF",
-      overlayTextColor: "#000000",
-      address,
-      logoURL:
-        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
-    });
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0")
+    ) {
+      name = "Wrapped Staked Ether";
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
+    }
+
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
+    ) {
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/token_sOHM_2.png";
+    }
+
+    // Fetch the logo from yearn if possible:
+    const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
+    const yearnLogoResponse = await fetch(yearnLogoURL);
+    if (yearnLogoResponse.ok) {
+      // A lot of the yearn tokens are curve tokens with long names,
+      // so we flatten them here and just remove the Curve part
+      symbol = symbol.replace("Curve-", "");
+      logoURL = yearnLogoURL;
+    }
+  } else {
+    let {
+      symbol: _symbol,
+      name: _name,
+      image: { small },
+    } = rawData;
+
+    symbol = _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
+    name = _name;
+
+    // Prefer the logo from trustwallet if possible!
+    const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+    const trustWalletLogoResponse = await fetch(trustWalletURL);
+    if (trustWalletLogoResponse.ok) {
+      logoURL = trustWalletURL;
+    } else {
+      logoURL = small;
+    }
   }
 
-  let {
-    symbol,
-    name,
-    image: { small },
-  } = rawData;
-
-  // FTX swapped the name and symbol so we will correct for that.
   if (
     address ===
     web3.utils.toChecksumAddress("0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9")
   ) {
+    // FTX swapped the name and symbol so we will correct for that.
     symbol = "FTT";
     name = "FTX Token";
   }
 
-  let logoURL;
+  if (
+    address ===
+    web3.utils.toChecksumAddress("0x8fcb1783bf4b71a51f702af0c266729c4592204a")
+  ) {
+    // OT token names are too long.
+    symbol = "OT-aUSDC22";
+    name = "OT-aUSDC DEC22-20";
+  }
 
-  // Fetch the logo from trustwallet if possible!
-  const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
-  const trustWalletLogoResponse = await fetch(trustWalletURL);
-  if (trustWalletLogoResponse.ok) {
-    logoURL = trustWalletURL;
-  } else {
-    logoURL = small;
+  if (
+    address ===
+    web3.utils.toChecksumAddress("0x3d4e7f52efafb9e0c70179b688fc3965a75bcfea")
+  ) {
+    // OT token names are too long.
+    symbol = "OT-cDAI22";
+    name = "OT-cDAI DEC22-20";
   }
 
   const basicTokenInfo = {
-    symbol: symbol.toUpperCase(),
+    symbol,
     name,
     decimals,
-    address
   };
 
   let color: Palette;
   try {
+    if (logoURL == undefined) {
+      // If we have no logo no need to try to get the color
+      // just go to the catch block and return the default logo.
+      throw "Go to the catch block";
+    }
+
     color = await Vibrant.from(logoURL).getPalette();
   } catch (error) {
-    return response.json({
+    response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
       overlayTextColor: "#000",
       logoURL:
         "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg",
+      address,
     });
+
+    return;
   }
 
   if (!color.Vibrant) {
-    return response.json({
+    response.json({
       ...basicTokenInfo,
       color: "#FFFFFF",
       overlayTextColor: "#000",
       logoURL,
+      address,
     });
+
+    return;
   }
 
-  return response.json({
+  response.json({
     ...basicTokenInfo,
     color: color.Vibrant.getHex(),
     overlayTextColor: color.Vibrant.getTitleTextColor(),
     logoURL,
+    address,
   });
 };
