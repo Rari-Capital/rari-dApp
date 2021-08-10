@@ -40,15 +40,6 @@ export default async (request: NowRequest, response: NowResponse) => {
     // Edge cases: //
     /////////////////
 
-    // BNB
-    if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0xB8c77482e45F1F44dE1745F52C74426C631bDD52")
-    ) {
-      logoURL =
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB8c77482e45F1F44dE1745F52C74426C631bDD52/logo.png",
-    }
-
     if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
