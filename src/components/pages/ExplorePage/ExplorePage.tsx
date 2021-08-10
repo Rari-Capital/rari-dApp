@@ -31,7 +31,7 @@ const getAssetLogo = (nav: ExploreNavType, active: boolean) => {
     case ExploreNavType.EARN:
       return active ? "/static/icons/earnGreen.png" : "/static/icons/earn.png";
     default:
-      return active ? "/static/icons/earnGreen.png" : "/static/icons/earn.png";
+      return active ? "/static/icons/assets.png" : "/static/icons/assets.png";
   }
 };
 
