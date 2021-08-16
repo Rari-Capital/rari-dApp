@@ -150,7 +150,7 @@ const Searchbar = ({
           >
             <AppLink href="/explore">
               <Button
-                colorScheme="purple"
+                colorScheme="green"
                 _hover={{ transform: "scale(1.04)" }}
               >
                 Explore

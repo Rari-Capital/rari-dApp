@@ -44,24 +44,6 @@ export const FuseAssetGridBox = ({
 
   const borrowRate = convertMantissaToAPR(data?.borrowRatePerBlock);
 
-  // const { data: ethPrice } = useQuery("ethPrice", async () => {
-  //   return fuse.web3.utils.fromWei(await fuse.getEthUsdPriceBN()) as any;
-  // });
-
-  // const totalSupplyUSD = useMemo(() => {
-  //   const { totalSupply, underlyingPrice } = data ?? {};
-  //   return totalSupply && underlyingPrice && ethPrice
-  //     ? ((totalSupply * underlyingPrice) / 1e36) * ethPrice
-  //     : 0;
-  // }, [ethPrice, data]);
-
-  // const totalBorrowsUSD = useMemo(() => {
-  //   const { totalBorrows, underlyingPrice } = data ?? {};
-  //   return totalBorrows && underlyingPrice && ethPrice
-  //     ? ((totalBorrows * underlyingPrice) / 1e36) * ethPrice
-  //     : 0;
-  // }, [ethPrice, data]);
-
   const subtitle: string = useMemo(() => {
     switch (metric) {
       case ExploreGridBoxMetric.SUPPLY_RATE:
