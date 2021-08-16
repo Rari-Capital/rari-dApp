@@ -1,3 +1,6 @@
+// Next
+import { useRouter } from "next/router";
+
 import {
   createContext,
   useContext,
@@ -9,7 +12,7 @@ import {
 } from "react";
 
 import { useQueryClient } from "react-query";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
 import Rari from "lib/rari-sdk/index";
@@ -24,24 +27,20 @@ import {
   initFuseWithProviders,
 } from "../utils/web3Providers";
 
-// Next
-import { useRouter } from "next/router";
+// Ethers
+import { Web3Provider } from "@ethersproject/providers";
 
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
   cacheProvider: boolean = true
 ) {
-  const [
-    WalletConnectProvider,
-    Authereum,
-    Fortmatic,
-    Web3Modal,
-  ] = await Promise.all([
-    import("@walletconnect/web3-provider"),
-    import("authereum"),
-    import("fortmatic"),
-    import("web3modal"),
-  ]);
+  const [WalletConnectProvider, Authereum, Fortmatic, Web3Modal] =
+    await Promise.all([
+      import("@walletconnect/web3-provider"),
+      import("authereum"),
+      import("fortmatic"),
+      import("web3modal"),
+    ]);
 
   const providerOptions = {
     injected: {
@@ -112,15 +111,16 @@ export interface RariContextData {
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const RariContext =
-  createContext<RariContextData | undefined>(undefined);
+export const RariContext = createContext<RariContextData | undefined>(
+  undefined
+);
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
-  const { t } = useTranslation();
 
   const router = useRouter();
-  const { address: requestedAddress } = router.query
+  const { address: requestedAddress } = router.query;
 
+  // Rari and Fuse get initally set already
   const [rari, setRari] = useState<Rari>(
     () => new Rari(chooseBestWeb3Provider())
   );
@@ -128,7 +128,16 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const [isAttemptingLogin, setIsAttemptingLogin] = useState<boolean>(false);
 
+  const [address, setAddress] = useState<string>(EmptyAddress);
+
+  const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
+
+  const [ethersProvider, setEthersProvider] = useState<any | null>(null);
+
   const toast = useToast();
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
 
   // Check the user's network:
   useEffect(() => {
@@ -158,18 +167,12 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     );
   }, [rari, toast]);
 
-  const [address, setAddress] = useState<string>(EmptyAddress);
-
-  const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
-
-  const queryClient = useQueryClient();
-
+  // We need to give rari the new provider (todo: and also ethers.js signer) every time someone logs in again
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
-
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = initFuseWithProviders(modalProvider);
-
+``
       setRari(rariInstance);
       setFuse(fuseInstance);
 
@@ -196,9 +199,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     async (cacheProvider: boolean = true) => {
       try {
         setIsAttemptingLogin(true);
-        const provider = await launchModalLazy(t, cacheProvider);
-        setWeb3ModalProvider(provider);
-        setRariAndAddressFromModal(provider);
+        const providerWeb3Modal = await launchModalLazy(t, cacheProvider);
+        const ethersProvider = new Web3Provider(providerWeb3Modal);
+        const signer = ethersProvider.getSigner();
+        setWeb3ModalProvider(providerWeb3Modal);
+        setRariAndAddressFromModal(providerWeb3Modal);
         setIsAttemptingLogin(false);
       } catch (err) {
         setIsAttemptingLogin(false);
@@ -262,6 +267,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
 };
 
+// Hook
 export function useRari() {
   const context = useContext(RariContext);
 
