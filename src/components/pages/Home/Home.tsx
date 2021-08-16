@@ -59,7 +59,7 @@ const Home = React.memo(() => {
   );
 
   const handleSubmit = () => {
-    router.push(`/token/${val}`);
+    router.push(`/token/${ val }`);
   };
 
   return (
@@ -78,7 +78,7 @@ const Home = React.memo(() => {
           width="100%"
           height="400px"
           px={{ sm: "0", md: "15%" }}
-          // bg="pink"
+        // bg="pink"
         >
           <Column
             mainAxisAlignment="flex-start"
@@ -88,7 +88,7 @@ const Home = React.memo(() => {
             width="100%"
             height="100%"
             padding="10%"
-            // bg="aqua"
+          // bg="aqua"
           >
             <motion.div
               initial={{ opacity: 0, y: -40 }}
@@ -110,6 +110,7 @@ const Home = React.memo(() => {
               exit={{ opacity: 0, y: -40 }}
             >
               <Searchbar
+                smaller={false}
                 width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
               />
             </motion.div>
@@ -122,7 +123,7 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           width="100%"
           height="100%"
-          // px="20%"
+        // px="20%"
         >
           <Marquee gradient={false} style={{ padding: "10px" }}>
             {HOMEPAGE_FUSE_POOLS.map((constantPool, i) => (
@@ -142,13 +143,13 @@ const Home = React.memo(() => {
           my={10}
           px={["5%", "15%", "15%", "15%"]}
           width="100%"
-          // background="purple"
+        // background="purple"
         >
           <Column
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
             width="100%"
-            // bg="pink"
+          // bg="pink"
           >
             <Row
               width="100%"
@@ -187,7 +188,7 @@ const Home = React.memo(() => {
           my={5}
           px={{ base: "5%", sm: "5%", md: "15%" }}
           width="100%"
-          // background="purple"
+        // background="purple"
         >
           <DashboardBox width="100%" height="200px">
             <Row
@@ -260,7 +261,7 @@ const Home = React.memo(() => {
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
             width="100%"
-            // background="tomato"
+          // background="tomato"
           >
             <Row
               width="100%"

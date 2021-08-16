@@ -7,6 +7,18 @@ import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
 import { blockNumberToTimeStamp } from "utils/web3Utils";
 import Web3 from "web3";
 
+export type APIAccountsFuseBalancesResponseType = {
+  userAddress: string;
+  pools: FusePoolData[];
+  totals: {
+    totalBorrowsUSD: number;
+    totalSuppliedUSD: number;
+  };
+  blockNumber: number;
+  blockTimestamp: string | number;
+  blockDate: string;
+}
+
 interface APIAccountsFuseBalancesResponse {
   userAddress: string;
   pools: FusePoolData[];
