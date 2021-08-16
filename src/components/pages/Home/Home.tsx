@@ -4,8 +4,7 @@ import { useRouter } from "next/router";
 
 import React, { useState } from "react";
 
-import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Heading, Text, Link, SimpleGrid, Box } from "@chakra-ui/react";
+import { Heading, Text, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import Marquee from "react-fast-marquee";
@@ -14,8 +13,6 @@ import HomeFuseCard from "./HomeFuseCard";
 import { motion } from "framer-motion";
 
 import { smallStringUsdFormatter } from "utils/bigUtils";
-
-// import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 
 const APYWithRefreshMovingStat = dynamic<APYWithRefreshMovingProps>(
   () =>

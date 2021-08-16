@@ -12,7 +12,6 @@ import { useRari } from "context/RariContext";
 import { useCallback } from "react";
 import { useState } from "react";
 import { useTranslation } from 'next-i18next';
-import { FaChevronDown } from "react-icons/fa";
 
 // Utils
 import { Row } from "lib/chakraUtils";
@@ -25,6 +24,7 @@ import { fetchMaxAmount } from "utils/inputUtils";
 
 // Types
 import { AmountSelectMode } from "../AmountSelectNew";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 // todo: Restrict modes used to LEND and BORROW
 const FuseAmountInput = ({
@@ -242,7 +242,7 @@ const AssetsDropDown = ({
 
   return (
     <Menu>
-      <MenuButton as={Button} bg=""  rightIcon={<FaChevronDown />}>
+      <MenuButton as={Button} bg=""  rightIcon={<ChevronDownIcon />}>
         <AssetNameAndIcon asset={currentAsset} />
       </MenuButton>
       <MenuList maxHeight="200px" overflowY="scroll">

@@ -33,17 +33,13 @@ async function launchModalLazy(
 ) {
   const [
     WalletConnectProvider,
-    Portis,
     Authereum,
     Fortmatic,
-    Torus,
     Web3Modal,
   ] = await Promise.all([
     import("@walletconnect/web3-provider"),
-    import("@portis/web3"),
     import("authereum"),
     import("fortmatic"),
-    import("@toruslabs/torus-embed"),
     import("web3modal"),
   ]);
 
@@ -71,25 +67,6 @@ async function launchModalLazy(
       display: {
         description: t("Connect with your {{provider}} account", {
           provider: "Fortmatic",
-        }),
-      },
-    },
-    torus: {
-      package: Torus.default,
-      display: {
-        description: t("Connect with your {{provider}} account", {
-          provider: "Torus",
-        }),
-      },
-    },
-    portis: {
-      package: Portis.default,
-      options: {
-        id: process.env.REACT_APP_PORTIS_ID,
-      },
-      display: {
-        description: t("Connect with your {{provider}} account", {
-          provider: "Portis",
         }),
       },
     },

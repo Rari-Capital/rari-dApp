@@ -10,13 +10,19 @@ import {
 } from "@chakra-ui/react";
 
 import { Center, RowOrColumn, Column } from "lib/chakraUtils";
-import { NewsAndTwitterLink } from "../MultiPoolPortal";
 import Pool2Modal from "./Pool2Modal";
 import { ClaimRGTModal } from "components/shared/ClaimRGTModal";
 import DashboardBox from "components/shared/DashboardBox";
 
+const NewsAndTwitterLink = dynamic(
+  () => import("../MultiPoolPortal/NewsAndTwitterLink"),
+  {
+    ssr: false,
+  }
+);
+
 // Hooks
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { usePool2Balance } from "hooks/pool2/usePool2Balance";
@@ -28,6 +34,7 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
+import dynamic from "next/dynamic";
 
 const Pool2Page = () => {
   const { isAuthed } = useRari();
@@ -47,7 +54,6 @@ const Pool2Page = () => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-
         <Column
           width="100%"
           mainAxisAlignment="flex-start"
