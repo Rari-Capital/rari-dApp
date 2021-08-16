@@ -5,38 +5,15 @@ import AppLink from "components/shared/AppLink";
 import DashboardBox from "components/shared/DashboardBox";
 import { useAdvertisementData } from "hooks/opportunities/useAdvertisementData";
 
-// Constants
-
 // Hooks
 import Image from "next/image";
 
 // Utils
 import { Column } from "lib/chakraUtils";
-import { useAccountBalances } from "context/BalancesContext";
-import axios from "axios";
-import useSWR from "swr";
-import {
-  APIBestOpportunityData,
-  APIBestOpportunityReturn,
-} from "pages/api/explore/bestOpportunity";
 import { convertMantissaToAPY } from "utils/apyUtils";
-
-const adFetcher = async (route: string): Promise<APIBestOpportunityReturn> => {
-  const result = await axios.get(route);
-  return result.data;
-};
 
 const InternalAd = ({ ...boxProps }: { [x: string]: any }) => {
   const adData = useAdvertisementData();
-
-  const [balances, significantTokens] = useAccountBalances();
-
-  const address = significantTokens[0];
-
-  const { data, error } = useSWR(
-    `/api/explore/bestOpportunity?address=${address}`,
-    adFetcher
-  );
 
   const { tokensData, bestOpportunity } = data ?? {};
 
