@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
-import { RariApiTokenData } from "types/tokens";
+import { RariApiTokenData, TokensDataMap } from "types/tokens";
 
 // Fetches Token Api Data for a single address
 export const fetchTokenAPIData = async (
@@ -15,7 +15,7 @@ export const fetchTokenAPIData = async (
 // Returns a hashmap of Token API Data for easy lookups
 export const fetchTokensAPIDataAsMap = async (
   addresses: string[]
-): Promise<{ [address: string]: RariApiTokenData }> => {
+): Promise<TokensDataMap> => {
   
   const uniqueAddresses = Array.from(new Set(addresses));
 

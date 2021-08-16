@@ -1,29 +1,16 @@
-import { GET_ALL_UNDERLYING_ASSETS } from "gql/getAllUnderlyingAssets";
 import { useTokenBalances } from "hooks/useTokenBalance";
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useMemo,
-  useEffect,
-} from "react";
+import { createContext, useContext, ReactNode, useMemo } from "react";
+import { queryAllUnderlyingAssets } from "services/gql";
 import useSWR from "swr";
 import { UnderlyingAsset } from "types/tokens";
-import { makeGqlRequest } from "utils/gql";
 import { useRari } from "./RariContext";
 
 export const BalancesContext = createContext<any | undefined>(undefined);
 
-const allTokensFetcher = async (
-  isAuthenticated: boolean
-): Promise<UnderlyingAsset[]> => {
-  if (isAuthenticated) {
-    const { underlyingAssets } = await makeGqlRequest(
-      GET_ALL_UNDERLYING_ASSETS
-    );
-    return underlyingAssets;
-  }
-  return [];
+// Fetchers
+const allTokensFetcher = async (): Promise<UnderlyingAsset[]> => {
+  const { underlyingAssets } = await queryAllUnderlyingAssets();
+  return underlyingAssets;
 };
 
 export const BalancesContextProvider = ({
@@ -33,15 +20,11 @@ export const BalancesContextProvider = ({
 }) => {
   const { isAuthed } = useRari();
 
-  const { data: underlyingAssets, error } = useSWR(
-    [isAuthed],
-    allTokensFetcher,
-    {
-      dedupingInterval: 3600000,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
+  const { data: underlyingAssets } = useSWR([isAuthed], allTokensFetcher, {
+    dedupingInterval: 3600000,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   const tokenAddresses = useMemo(
     () =>
@@ -55,6 +38,7 @@ export const BalancesContextProvider = ({
     [address: string]: number;
   } = useMemo(() => {
     let ret: { [address: string]: number } = {};
+    if (!isAuthed) return ret;
 
     for (let i = 0; i < tokenBalances.length; i++) {
       const asset = underlyingAssets![i];
@@ -66,7 +50,7 @@ export const BalancesContextProvider = ({
     }
 
     return ret;
-  }, [tokenBalances]);
+  }, [tokenBalances, isAuthed]);
 
   return (
     <BalancesContext.Provider value={balances}>

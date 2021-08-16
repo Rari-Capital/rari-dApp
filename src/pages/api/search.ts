@@ -6,18 +6,15 @@ import {
   UnderlyingAssetSearchReturn,
 } from "types/search";
 
-import {
-  SEARCH_FOR_TOKEN,
-  SEARCH_FOR_TOKENS_BY_ADDRESSES,
-} from "gql/searchTokens";
-import { makeGqlRequest } from "utils/gql";
 import { fetchTokensAPIDataAsMap } from "utils/services";
 import axios from "axios";
-import {
-  filterFusePoolsByToken,
-} from "hooks/fuse/useFuseDataForAsset";
+import { filterFusePoolsByToken } from "hooks/fuse/useFuseDataForAsset";
 
 import redis from "../../utils/redis";
+import {
+  querySearchForToken,
+  querySearchForTokenByAddresses,
+} from "services/gql";
 
 export const DEFAULT_SEARCH_RETURN: FinalSearchReturn = {
   tokens: [],
@@ -52,23 +49,19 @@ export default async function handler(
 
       // If we explicitly provided a text input, search with this
       if (text) {
-
         // Redis query
         const redisSearchData = await redis.get(redisKey);
         // If we found Redis data, then send it
         if (!!redisSearchData) {
-          console.log('found redis data. returning', redisKey)
+          console.log("found redis data. returning", redisKey);
           return res
-          .status(200)
-          .json(JSON.parse(redisSearchData) as FinalSearchReturn);
+            .status(200)
+            .json(JSON.parse(redisSearchData) as FinalSearchReturn);
         }
-         
 
         // Make the GQL Request to perform the search for tokens that exist
         const { underlyingAssets: searchTokens }: GQLSearchReturn =
-          await makeGqlRequest(SEARCH_FOR_TOKEN, {
-            search: text.toUpperCase(),
-          });
+          await querySearchForToken(text);
 
         if (!searchTokens) return res.status(400).send(undefined);
         if (!searchTokens.length) return res.json(DEFAULT_SEARCH_RETURN);
@@ -78,10 +71,8 @@ export default async function handler(
       // If there is no text input but we did provide addresses, then use this to search
       else if (addresses.length) {
         // Make the GQL Request to perform the search for tokens that exist
-        const { underlyingAssets: balanceTokens }: GQLSearchReturn =
-          await makeGqlRequest(SEARCH_FOR_TOKENS_BY_ADDRESSES, {
-            addresses,
-          });
+        const { underlyingAssets: balanceTokens } =
+          await querySearchForTokenByAddresses(addresses);
 
         if (!balanceTokens) return res.status(400).send(undefined);
         if (!balanceTokens.length) return res.json(DEFAULT_SEARCH_RETURN);
@@ -110,7 +101,7 @@ export default async function handler(
       // Save results to redis every 15 minutes
       if (text) {
         await redis.set(redisKey, JSON.stringify(searchResults), "EX", 900);
-        console.log('set redis key', redisKey)
+        console.log("set redis key", redisKey);
       }
 
       return res.status(200).json(searchResults);

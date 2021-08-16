@@ -14,18 +14,18 @@ import useSWR from "swr";
 import axios from "axios";
 
 // Types
-import { APIExploreReturn } from "pages/api/explore/data";
+import { APIExploreData } from "pages/api/explore";
 
 // Fetchers
-const exploreFetcher = async (route: string): Promise<APIExploreReturn> => {
+const exploreFetcher = async (route: string): Promise<APIExploreData> => {
   const { data } = await axios.get(route);
   return data;
 };
 
 const ExploreGrid = () => {
   const isMobile = useIsSmallScreen();
-  
-  const { data, error } = useSWR("/api/explore/data", exploreFetcher);
+
+  const { data, error } = useSWR("/api/explore", exploreFetcher);
 
   const { results, tokensData } = data ?? {};
 
@@ -37,6 +37,8 @@ const ExploreGrid = () => {
     cheapestStableBorrow,
   } = results ?? {};
 
+  console.log({ results, tokensData });
+
   return (
     <DashboardBox w="100%" h="100%">
       <SimpleGrid columns={isMobile ? 2 : 3} spacing={0} h="100%" w="100%">
@@ -47,7 +49,7 @@ const ExploreGrid = () => {
           tokenData={
             topEarningFuseStable &&
             tokensData &&
-            tokensData[topEarningFuseStable.underlyingToken]
+            tokensData[topEarningFuseStable.underlying.id]
           }
           metric={ExploreGridBoxMetric.SUPPLY_RATE}
         />
@@ -58,7 +60,7 @@ const ExploreGrid = () => {
           tokenData={
             mostPopularAsset &&
             tokensData &&
-            tokensData[mostPopularAsset.underlyingToken]
+            tokensData[mostPopularAsset.underlying.id]
           }
           metric={ExploreGridBoxMetric.TOTAL_SUPPLY}
         />
@@ -69,7 +71,7 @@ const ExploreGrid = () => {
           tokenData={
             topEarningFuseAsset &&
             tokensData &&
-            tokensData[topEarningFuseAsset.underlyingToken]
+            tokensData[topEarningFuseAsset.underlying.id]
           }
           metric={ExploreGridBoxMetric.SUPPLY_RATE}
         />
@@ -81,7 +83,7 @@ const ExploreGrid = () => {
           tokenData={
             cheapestStableBorrow &&
             tokensData &&
-            tokensData[cheapestStableBorrow.underlyingToken]
+            tokensData[cheapestStableBorrow.underlying.id]
           }
           metric={ExploreGridBoxMetric.BORROW_RATE}
         />
@@ -94,7 +96,7 @@ const ExploreGrid = () => {
               tokenData={
                 mostBorrowedFuseAsset &&
                 tokensData &&
-                tokensData[mostBorrowedFuseAsset.underlyingToken]
+                tokensData[mostBorrowedFuseAsset.underlying.id]
               }
               metric={ExploreGridBoxMetric.TOTAL_BORROWS}
             />

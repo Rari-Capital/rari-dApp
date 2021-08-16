@@ -1,9 +1,5 @@
 // Next
 import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-
-import React, { useState } from "react";
-
 import { Heading, Text, SimpleGrid } from "@chakra-ui/react";
 import { Column, Row } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -33,30 +29,49 @@ import {
   HOMEPAGE_OPPORTUNIES,
   HOMEPAGE_EARN_VAULTS,
 } from "constants/homepage";
-import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
 // import { SearchIcon } from "@chakra-ui/icons";
 import DashboardBox from "components/shared/DashboardBox";
 import AppLink from "components/shared/AppLink";
 import { APYWithRefreshMovingProps } from "components/shared/MovingStat";
 import Searchbar from "components/shared/Searchbar";
+import useSWR from "swr";
+import { queryFusePools } from "services/gql";
+import { fetchTokensAPIDataAsMap } from "utils/services";
+import { TokensDataMap } from "types/tokens";
+import { SubgraphPool } from "pages/api/explore";
 
-const Home = React.memo(() => {
+// Fetcher
+const homepagePoolsFetcher = async (
+  ...ids: number[]
+): Promise<{
+  pools: SubgraphPool[];
+  tokensData: TokensDataMap;
+}> => {
+  const pools = await queryFusePools(ids);
+  const addresses = new Set<string>();
+  for (let pool of pools) {
+    for (let asset of pool.assets) {
+      addresses.add(asset.underlying.address);
+    }
+  }
+  const tokensData = await fetchTokensAPIDataAsMap([...Array.from(addresses)]);
+  return { pools, tokensData };
+};
+
+const Home = () => {
   // const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
-
-  const router = useRouter();
-
-  const [val, setVal] = useState("");
-
   const { getNumberTVL } = useTVLFetchers();
 
-  const pools = useFusePoolsData(
-    HOMEPAGE_FUSE_POOLS.map(({ id }: { id: number }) => id)
+  const { data } = useSWR(
+    [...HOMEPAGE_FUSE_POOLS.map((pool) => pool.id)],
+    homepagePoolsFetcher
   );
 
-  const handleSubmit = () => {
-    router.push(`/token/${val}`);
+  const { pools, tokensData } = data ?? {
+    pools: [],
+    tokensData: {},
   };
 
   return (
@@ -124,7 +139,8 @@ const Home = React.memo(() => {
           <Marquee gradient={false} style={{ padding: "10px" }}>
             {HOMEPAGE_FUSE_POOLS.map((constantPool, i) => (
               <HomeFuseCard
-                pool={pools?.find((p) => p.id === constantPool.id)}
+                pool={pools?.find((p) => p.index == constantPool.id)}
+                tokensData={tokensData}
                 key={i}
               />
             ))}
@@ -289,6 +305,6 @@ const Home = React.memo(() => {
       </Column>
     </SaffronProvider>
   );
-});
+};
 
 export default Home;

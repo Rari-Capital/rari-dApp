@@ -2,7 +2,7 @@ import { Heading, Skeleton, SkeletonCircle } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/avatar";
 import AppLink from "components/shared/AppLink";
 import { Column, Row } from "lib/chakraUtils";
-import { SubgraphMarket } from "pages/api/explore";
+import { SubgraphCToken } from "pages/api/explore";
 import { convertMantissaToAPY, convertMantissaToAPR } from "utils/apyUtils";
 import { useMemo } from "react";
 import { shortUsdFormatter } from "utils/bigUtils";
@@ -31,11 +31,10 @@ export const FuseAssetGridBox = ({
 }: {
   bg: string;
   heading?: string;
-  data?: ExploreAsset;
+  data?: SubgraphCToken;
   tokenData?: RariApiTokenData;
   metric: ExploreGridBoxMetric;
 }) => {
-
   const loading = !data;
 
   const supplyRate = convertMantissaToAPY(data?.supplyRatePerBlock, 365);
@@ -53,9 +52,13 @@ export const FuseAssetGridBox = ({
       case ExploreGridBoxMetric.BORROW_RATE:
         return `${borrowRate.toFixed(1)}% Borrow APR`;
       case ExploreGridBoxMetric.TOTAL_BORROWS:
-        return `${shortUsdFormatter(data?.totalBorrowUSD ?? 0)} Borrowed`;
+        return `${shortUsdFormatter(
+          parseFloat(data?.totalBorrowUSD ?? "0")
+        )} Borrowed`;
       case ExploreGridBoxMetric.TOTAL_SUPPLY:
-        return `${shortUsdFormatter(data?.totalSupplyUSD ?? 0)} Supplied`;
+        return `${shortUsdFormatter(
+          parseFloat(data?.totalSupplyUSD ?? "0")
+        )} Supplied`;
       default:
         return "";
     }
@@ -64,10 +67,10 @@ export const FuseAssetGridBox = ({
   return (
     <AppLink
       href={
-        data?.fusePool?.id
-          ? `/fuse/pool/${data.fusePool.id}`
-          : data?.underlyingToken
-          ? `/token/${data.underlyingToken}`
+        data?.pool?.index
+          ? `/fuse/pool/${data.pool.index}`
+          : data?.underlying?.id
+          ? `/token/${data?.underlying?.id}`
           : `#`
       }
       className="no-underline"
@@ -99,7 +102,7 @@ export const FuseAssetGridBox = ({
             p={[0, 1, 2]}
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-              <Heading fontSize={["sm", "md", "lg", "xl"]} color="grey" >
+              <Heading fontSize={["sm", "md", "lg", "xl"]} color="grey">
                 {heading}
               </Heading>
             </Row>
@@ -118,7 +121,7 @@ export const FuseAssetGridBox = ({
                   my={1}
                 >
                   <Heading fontSize={["sm", "md", "2xl"]}>
-                    {tokenData?.symbol} - Pool {data?.fusePool?.id}
+                    {tokenData?.symbol} - Pool {data?.pool?.index}
                   </Heading>
                 </Skeleton>
 

@@ -1,14 +1,11 @@
-import { GET_ALL_UNDERLYING_ASSETS } from "gql/getAllUnderlyingAssets";
 import { NextApiRequest, NextApiResponse } from "next";
+import { queryAllUnderlyingAssets } from "services/gql";
 import {
   RariApiTokenData,
   TokensDataMap,
   UnderlyingAsset,
-  UnderlyingAssetWithTokenData,
 } from "types/tokens";
-import { fetchAggregateTokenMarketInfo } from "utils/coingecko";
 
-import { makeGqlRequest } from "utils/gql";
 import redis from "utils/redis";
 import { fetchTokensAPIDataAsMap } from "utils/services";
 
@@ -26,8 +23,7 @@ export default async function handler(
   if (req.method === "GET") {
     // Get Underlying Assets from subgraph
     try {
-
-      console.log("yo")
+      console.log("yo");
 
       // Redis query
       const redisKey = REDIS_KEY_PREFIX + "assets";
@@ -41,7 +37,7 @@ export default async function handler(
       }
 
       const { underlyingAssets }: { underlyingAssets: UnderlyingAsset[] } =
-        await makeGqlRequest(GET_ALL_UNDERLYING_ASSETS, {});
+        await queryAllUnderlyingAssets();
 
       // Get TokenData (logo, color etc) from Rari API
       const tokensDataMap: TokensDataMap = await fetchTokensAPIDataAsMap(
