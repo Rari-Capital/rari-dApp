@@ -1,6 +1,9 @@
 const { i18n } = require("./next-i18next.config");
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
 
-module.exports = {
+module.exports = withBundleAnalyzer({
   /* config options here */
   images: {
     domains: ["raw.githubusercontent.com", "icons.iconarchive.com"],
@@ -18,7 +21,6 @@ module.exports = {
       config.resolve.fallback.net = false;
       config.resolve.fallback.tls = false;
     }
-
     return config;
   },
-};
+});

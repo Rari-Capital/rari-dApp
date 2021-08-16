@@ -24,6 +24,7 @@ const exploreFetcher = async (route: string): Promise<APIExploreReturn> => {
 
 const ExploreGrid = () => {
   const isMobile = useIsSmallScreen();
+  
   const { data, error } = useSWR("/api/explore/data", exploreFetcher);
 
   const { results, tokensData } = data ?? {};

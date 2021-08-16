@@ -1,12 +1,12 @@
 /* eslint-disable */
-import Web3 from "web3";
+import Web3 from "web3"; // todo - change to ethers.js
 
 import JumpRateModel from "./irm/JumpRateModel.js";
 import JumpRateModelV2 from "./irm/JumpRateModelV2.js";
 import DAIInterestRateModelV2 from "./irm/DAIInterestRateModelV2.js";
 import WhitePaperInterestRateModel from "./irm/WhitePaperInterestRateModel.js";
 
-import BigNumber from "bignumber.js";
+import BigNumber from "bignumber.js"; // todo - change to ethers
 
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
