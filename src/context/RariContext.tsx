@@ -27,8 +27,6 @@ import {
   initFuseWithProviders,
 } from "../utils/web3Providers";
 
-// Ethers
-import { Web3Provider } from "@ethersproject/providers";
 
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
@@ -200,7 +198,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       try {
         setIsAttemptingLogin(true);
         const providerWeb3Modal = await launchModalLazy(t, cacheProvider);
-        const ethersProvider = new Web3Provider(providerWeb3Modal);
         const signer = ethersProvider.getSigner();
         setWeb3ModalProvider(providerWeb3Modal);
         setRariAndAddressFromModal(providerWeb3Modal);
