@@ -104,6 +104,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     name = "FTX Token";
   }
 
+  // OT-aUSDC
   if (
     address ===
     web3.utils.toChecksumAddress("0x8fcb1783bf4b71a51f702af0c266729c4592204a")
@@ -113,6 +114,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     name = "OT-aUSDC DEC22-20";
   }
 
+  // OT-cDAI22
   if (
     address ===
     web3.utils.toChecksumAddress("0x3d4e7f52efafb9e0c70179b688fc3965a75bcfea")
@@ -120,6 +122,33 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     // OT token names are too long.
     symbol = "OT-cDAI22";
     name = "OT-cDAI DEC22-20";
+  }
+
+  // xSDT
+  if (
+    address ===
+    web3.utils.toChecksumAddress("0xaC14864ce5A98aF3248Ffbf549441b04421247D3")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/xSDT.png";
+  }
+
+  // sd3Crv
+  if (
+    address ===
+    web3.utils.toChecksumAddress("0xB17640796e4c27a39AF51887aff3F8DC0daF9567")
+  ) {
+    logoURL =
+    "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sd3Crv.png";
+  }
+
+  // sdeursCRV
+  if (
+    address ===
+    web3.utils.toChecksumAddress("0xCD6997334867728ba14d7922f72c893fcee70e84")
+  ) {
+    logoURL =
+    "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sdeursCRV.png";
   }
 
   const basicTokenInfo = {
