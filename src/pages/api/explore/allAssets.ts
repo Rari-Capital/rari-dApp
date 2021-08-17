@@ -1,16 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { queryAllUnderlyingAssets } from "services/gql";
-import {
-  RariApiTokenData,
-  TokensDataMap,
-  UnderlyingAsset,
-} from "types/tokens";
+import { RariApiTokenData, TokensDataMap, UnderlyingAsset } from "types/tokens";
 
 import redis from "utils/redis";
 import { fetchTokensAPIDataAsMap } from "utils/services";
+import { SubgraphUnderlyingAsset } from ".";
 
 export interface AllAssetsResponse {
-  assets: UnderlyingAsset[];
+  assets: SubgraphUnderlyingAsset[];
   tokensData: { [address: string]: RariApiTokenData };
 }
 
@@ -36,8 +33,7 @@ export default async function handler(
           .json(JSON.parse(redisSearchData) as AllAssetsResponse);
       }
 
-      const { underlyingAssets }: { underlyingAssets: UnderlyingAsset[] } =
-        await queryAllUnderlyingAssets();
+      const underlyingAssets = await queryAllUnderlyingAssets();
 
       // Get TokenData (logo, color etc) from Rari API
       const tokensDataMap: TokensDataMap = await fetchTokensAPIDataAsMap(

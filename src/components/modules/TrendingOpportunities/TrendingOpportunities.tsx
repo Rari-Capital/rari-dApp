@@ -10,6 +10,8 @@ import { useTrendingOpportunities } from "hooks/opportunities/useTrendingOpportu
 import { TokenData } from "hooks/useTokenData";
 import React, { useMemo } from "react";
 import { Column, Row } from "lib/chakraUtils";
+import { SubgraphCToken } from "pages/api/explore";
+import { RariApiTokenData, TokensDataMap } from "types/tokens";
 
 const TrendingOpportunities = ({
   token,
@@ -18,7 +20,7 @@ const TrendingOpportunities = ({
   token: TokenData;
   [x: string]: any;
 }) => {
-  const trendingOpportunities = useTrendingOpportunities();
+  const { assets, tokensData } = useTrendingOpportunities() ?? {};
 
   return (
     <DashboardBox height="350px" w="100%" {...boxProps}>
@@ -49,8 +51,12 @@ const TrendingOpportunities = ({
           w="100%"
         >
           <SimpleGrid columns={2} spacing={4} h="100%" w="100%">
-            {trendingOpportunities.map((t, i) => (
-              <TrendingBox key={i} trendingOpportunity={t} />
+            {assets?.map((a, i) => (
+              <TrendingBox
+                key={i}
+                asset={a}
+                tokenData={tokensData?.[a.underlying.address]}
+              />
             ))}
           </SimpleGrid>
         </Row>
@@ -62,45 +68,82 @@ const TrendingOpportunities = ({
 export default TrendingOpportunities;
 
 const TrendingBox = ({
-  trendingOpportunity,
+  asset,
+  tokenData,
 }: {
-  trendingOpportunity: TrendingOpportunity;
+  asset: SubgraphCToken;
+  tokenData?: RariApiTokenData;
 }) => {
-  const { monthlyAPY, weeklyAPY } = useMemo(() => {
-    const APY = trendingOpportunity.opportunityData?.poolAPY;
-    return {
-      monthlyAPY: APY ? APY / 12 : null,
-      weeklyAPY: APY ? APY / 52 : null,
-    };
-  }, [trendingOpportunity]);
+  // const { monthlyAPY, weeklyAPY } = useMemo(() => {
+  //   const APY = asset.opportunityData?.poolAPY;
+  //   return {
+  //     monthlyAPY: APY ? APY / 12 : null,
+  //     weeklyAPY: APY ? APY / 52 : null,
+  //   };
+  // }, [trendingOpportunity]);
 
   return (
     <AppLink
       w="100%"
       h="100%"
-      href="/pools/stable"
+      href={"/fuse/pool/" + asset.pool?.index}
       style={{ textDecoration: "none" }}
     >
-      <Column
-        mainAxisAlignment="space-around"
-        crossAxisAlignment="flex-start"
-        py={2}
-        px={3}
-        w="100%"
-        h="100%"
-        borderRadius="md"
-        _hover={{ bg: "#272727", cursor: "pointer" }}
-      >
-        <Avatar
-          bg="#FFF"
-          boxSize="35px"
-          name={trendingOpportunity.token?.symbol ?? "Symbol"}
-          src={
-            trendingOpportunity?.token?.logoURL ??
-            "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-          }
-        />
-        {trendingOpportunity &&
+      <DashboardBox w="100%" h="100%">
+        <Column
+          mainAxisAlignment="space-around"
+          crossAxisAlignment="flex-start"
+          py={2}
+          px={3}
+          w="100%"
+          h="100%"
+          borderRadius="md"
+          _hover={{ bg: "#272727", cursor: "pointer" }}
+        >
+          <Row
+            mainAxisAlignment="space-around"
+            crossAxisAlignment="center"
+            w="100%"
+          >
+            <Avatar
+              bg="#FFF"
+              boxSize="35px"
+              name={asset.underlying?.symbol ?? "Symbol"}
+              src={
+                tokenData?.logoURL ??
+                "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+              }
+            />
+            <Heading fontSize="md">{`${asset.underlying.symbol}`}</Heading>
+          </Row>
+
+          <Row
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            w="100%"
+          >
+            {asset && (
+              <>
+                <Heading fontSize="md">
+                  {`${parseFloat(asset.supplyAPY).toFixed(2)}% APY`}
+                </Heading>
+              </>
+            )}
+          </Row>
+
+          {/* <Text fontSize="sm" fontWeight="bold">
+          {monthlyAPY &&
+            `${monthlyAPY.toFixed(
+              1
+            )}% monthly,`}
+        </Text> 
+            <Text fontSize="sm" fontWeight="bold" color="grey">
+              {weeklyAPY && `${weeklyAPY.toFixed(1)}% weekly`}
+            </Text>
+          </>
+        )}
+        {/* {
+        trendingOpportunity &&
         trendingOpportunity.opportunityData &&
         trendingOpportunity.token &&
         weeklyAPY ? (
@@ -114,15 +157,16 @@ const TrendingBox = ({
             `${monthlyAPY.toFixed(
               1
             )}% monthly,`}
-        </Text> */}
+        </Text> 
             <Text fontSize="sm" fontWeight="bold" color="grey">
               {weeklyAPY && `${weeklyAPY.toFixed(1)}% weekly`}
             </Text>
           </>
         ) : (
           <Spinner />
-        )}
-      </Column>
+        )} */}
+        </Column>
+      </DashboardBox>
     </AppLink>
   );
 };

@@ -85,7 +85,6 @@ export default async function handler(
       } else if (startBlock) {
         data = await getTVLsByBlockRange(startBlock, latestBlockNumber);
       } else if (startDate && endDate) {
-        console.log({ startDate, endDate });
         data = await getTVLsByDateRange(startDate, endDate);
       } else if (startDate) {
         data = await getTVLsByDateRange(startDate, currentDate);

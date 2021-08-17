@@ -7,12 +7,13 @@ export const GET_TOP_PERFORMING_FUSE_ASSET = gql`
     $orderBy: Ctoken_orderBy = supplyAPY
     $orderDirection: OrderDirection! = desc
     $liquidityThreshold: BigInt = 10000
+    $limit: Int = 1
   ) {
     ctokens(
       where: {liquidityUSD_gte: $liquidityThreshold}
       orderBy: $orderBy
       orderDirection: $orderDirection
-      first: 1
+      first: $limit
     ) {
       ...CToken
     }

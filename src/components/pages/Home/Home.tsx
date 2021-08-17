@@ -86,9 +86,9 @@ const Home = () => {
         {/* Hero */}
         <Row
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
+          crossAxisAlignment="center"
           width="100%"
-          height="400px"
+          height={{ sm: "300px", md: "350px" }}
           px={{ sm: "0", md: "15%" }}
           // bg="pink"
         >
@@ -139,7 +139,7 @@ const Home = () => {
           <Marquee gradient={false} style={{ padding: "10px" }}>
             {HOMEPAGE_FUSE_POOLS.map((constantPool, i) => (
               <HomeFuseCard
-                pool={pools?.find((p) => p.index == constantPool.id)}
+                pool={pools?.find((p) => parseInt(p.index) == constantPool.id)}
                 tokensData={tokensData}
                 key={i}
               />

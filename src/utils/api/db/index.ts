@@ -41,7 +41,6 @@ export const saveTVLObject = async ({
     console.log(`Document exists for blockDate ${blockDate}... skip save`);
   } else {
     const saveResult = await instance.save();
-    console.log({ saveResult });
     console.log(`Saved instance for blockNumber ${blockNumber}`);
   }
 };
@@ -65,8 +64,6 @@ export const getTVLsByDateRange = async (
 ) => {
   const start = (formatDDMMYYToDate(startDate)).getTime() / 1000;
   const end = (formatDDMMYYToDate(endDate)).getTime() / 1000;
-
-  console.log({ start, end });
 
   return await TVLModel.find({
     blockTimestamp: { $gte: start, $lte: end },

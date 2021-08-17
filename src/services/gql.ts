@@ -6,13 +6,20 @@ import {
   SEARCH_FOR_TOKEN,
   SEARCH_FOR_TOKENS_BY_ADDRESSES,
 } from "gql/searchTokens";
-import { SubgraphCToken, SubgraphPool } from "pages/api/explore";
-import { KeysEnum } from "types/generics";
+import {
+  SubgraphCToken,
+  SubgraphPool,
+  SubgraphUnderlyingAsset,
+} from "pages/api/explore";
 import { GQLSearchReturn } from "types/search";
 import { makeGqlRequest } from "utils/gql";
 
-export const queryAllUnderlyingAssets = async () =>
-  await makeGqlRequest(GET_ALL_UNDERLYING_ASSETS);
+export const queryAllUnderlyingAssets = async (): Promise<
+  SubgraphUnderlyingAsset[]
+> => {
+  const { underlyingAssets } = await makeGqlRequest(GET_ALL_UNDERLYING_ASSETS);
+  return underlyingAssets;
+};
 
 export const querySearchForToken = async (
   text: string
@@ -49,6 +56,24 @@ export const queryTopFuseAsset = async (
   const ctoken: SubgraphCToken = ctokens?.[0];
 
   return ctoken;
+};
+
+export const queryFuseAssets = async (
+  orderBy: string,
+  orderDirection: "asc" | "desc",
+  limit: number = 1
+): Promise<SubgraphCToken[]> => {
+  const query = GET_TOP_PERFORMING_FUSE_ASSET;
+
+  const vars = {
+    orderBy,
+    orderDirection,
+    limit,
+  };
+
+  const { ctokens } = await makeGqlRequest(query, vars);
+
+  return ctokens;
 };
 
 export const queryFusePools = async (

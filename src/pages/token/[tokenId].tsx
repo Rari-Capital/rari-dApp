@@ -19,7 +19,6 @@ const web3 = new Web3();
 const tokenDataFetcher = async (
   tokenAddress: string
 ): Promise<TokenData | undefined> => {
-  console.log({ tokenAddress });
   if (!tokenAddress) return undefined;
   const token: TokenData = await fetchTokenData(tokenAddress);
   return token;

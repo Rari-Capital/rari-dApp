@@ -167,7 +167,7 @@ const Header = ({
             >
               <Image
                 src={
-                  "https://etherscan.io/images/brandassets/etherscan-logo-circle.jpg"
+                  "/static/icons/etherscan-logo-light-circle.svg"
                 }
                 boxSize="20px"
               />
@@ -179,7 +179,7 @@ const Header = ({
               isExternal
             >
               <Image
-                src={"https://cryptologos.cc/logos/uniswap-uni-logo.png"}
+                src={"/static/icons/uniswap-uni-logo.svg"}
                 boxSize="20px"
               />
             </Link>

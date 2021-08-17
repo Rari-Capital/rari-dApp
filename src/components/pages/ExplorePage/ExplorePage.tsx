@@ -31,7 +31,9 @@ const getAssetLogo = (nav: ExploreNavType, active: boolean) => {
     case ExploreNavType.EARN:
       return active ? "/static/icons/earnGreen.png" : "/static/icons/earn.png";
     default:
-      return active ? "/static/icons/assets.png" : "/static/icons/assetsGreen.png";
+      return active
+        ? "/static/icons/assetsGreen.png"
+        : "/static/icons/assets.png";
   }
 };
 
@@ -60,6 +62,7 @@ const ExplorePage = () => {
     }
     setExploreNav(nav);
   }, [filter]);
+
 
   return (
     <Column
@@ -154,11 +157,7 @@ const ExplorePage = () => {
         h="100%"
         mb={5}
       >
-        <DashboardBox
-          w="100%"
-          h={isMobile ? "300px" : "400px"}
-          overflowY="scroll"
-        >
+        <DashboardBox w="100%" h="100%">
           <List nav={exploreNav} />
         </DashboardBox>
       </Row>

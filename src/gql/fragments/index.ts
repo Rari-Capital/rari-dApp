@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 
-
 export const CTokenFragment = gql`
   fragment CToken on Ctoken {
     id
@@ -37,5 +36,21 @@ export const CTokenFragment = gql`
       totalLiquidityUSD
       totalSupplyUSD
     }
+  }
+`;
+
+export const UnderlyingAssetFragment = gql`
+  fragment UnderlyingAsset on UnderlyingAsset {
+    address
+    id
+    name
+    price
+    symbol
+    totalBorrow
+    totalBorrowUSD
+    totalLiquidity
+    totalLiquidityUSD
+    totalSupply
+    totalSupplyUSD
   }
 `;

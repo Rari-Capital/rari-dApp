@@ -17,20 +17,27 @@ import { filterPoolName } from "utils/fetchFusePoolData";
 import axios from "axios";
 
 // Types
-import {
-  RariApiTokenData,
-  UnderlyingAsset,
-  UnderlyingAssetWithTokenData,
-} from "types/tokens";
+import { RariApiTokenData, TokensDataMap } from "types/tokens";
 import { ExploreNavType } from "../ExplorePage";
 import { AllAssetsResponse } from "pages/api/explore/allAssets";
+import { queryAllUnderlyingAssets } from "services/gql";
+import { SubgraphUnderlyingAsset } from "pages/api/explore";
+import { fetchTokensAPIDataAsMap } from "utils/services";
 
 // Fetchers
-const exploreAssetsFetcher = async (
-  route: string
-): Promise<AllAssetsResponse> => {
-  const { data } = await axios.get(route);
-  return data;
+const allTokensFetcher = async (): Promise<{
+  assets: SubgraphUnderlyingAsset[];
+  tokensData: TokensDataMap;
+}> => {
+  const underlyingAssets = await queryAllUnderlyingAssets();
+
+  const addrs = underlyingAssets.map((asset) => asset.address);
+  const tokensData = await fetchTokensAPIDataAsMap(addrs);
+
+  return {
+    assets: underlyingAssets,
+    tokensData,
+  };
 };
 
 const PoolList = ({ nav }: { nav: ExploreNavType }) => {
@@ -68,6 +75,7 @@ const FuseList = () => {
         top={-1}
         pl={4}
         pr={1}
+        borderBottom="1px solid #272727"
       >
         <Text fontWeight="bold" width={isMobile ? "100%" : "40%"}>
           {!isMobile ? t("Pool Assets") : t("Pool Directory")}
@@ -129,10 +137,7 @@ const FuseList = () => {
 const AllAssetsList = () => {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
-  const { data, error } = useSWR(
-    "/api/explore/allAssets",
-    exploreAssetsFetcher
-  );
+  const { data, error } = useSWR("allAssets", allTokensFetcher);
 
   const { assets, tokensData } = data ?? {
     assets: [],
@@ -208,7 +213,7 @@ export const AssetRow = ({
   asset,
   tokenData,
 }: {
-  asset: UnderlyingAsset;
+  asset: SubgraphUnderlyingAsset;
   tokenData?: RariApiTokenData;
 }) => {
   const isMobile = useIsMobile();

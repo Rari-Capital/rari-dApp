@@ -1,29 +1,28 @@
-import {
-  TrendingOpportunity,
-  TRENDING_OPPORTUNITIES,
-} from "constants/trending";
-import { AggregatePoolsInfoReturn } from "hooks/usePoolInfo";
-import { TokenData, useTokensData } from "hooks/useTokenData";
-import { useVaultsDataForAsset } from "hooks/vaults/useVaultsDataForAsset";
-import { createTokensDataMap } from "utils/tokenUtils";
+import { SubgraphCToken } from "pages/api/explore";
+import { queryFuseAssets } from "services/gql";
+import { TokensDataMap } from "types/tokens";
+import { fetchTokensAPIDataAsMap } from "utils/services";
 
-export const useTrendingOpportunities = (): TrendingOpportunity[] => {
-  const trending: TrendingOpportunity[] = TRENDING_OPPORTUNITIES;
+import useSWR from "swr";
 
-  // Get data for assets in question
-  // @ts-ignore
-  const ids: string[] = [...new Set(trending.map(({ tokenId }) => tokenId))];
-  const tokensData: TokenData[] | null = useTokensData(ids);
-
-  const tokensDataMap = createTokensDataMap(tokensData);
-  const vaultsData: AggregatePoolsInfoReturn = useVaultsDataForAsset();
-
-  // Todo - remove fake USDC vault for each opportunity
-  const trendingOpportunities = trending.map((t: TrendingOpportunity) => ({
-    ...t,
-    token: tokensDataMap[t.tokenId],
-    opportunityData: vaultsData.aggregatePoolsInfo[1],
-  }));
-
-  return trendingOpportunities;
+// fetcher
+const opportunitiesFetcher = async (): Promise<{
+  assets: SubgraphCToken[];
+  tokensData: TokensDataMap;
+}> => {
+  const assets = await queryFuseAssets("supplyAPY", "desc", 4);
+  const tokensData = await fetchTokensAPIDataAsMap(
+    assets.map((a) => a.underlying.address)
+  );
+  return {
+    assets,
+    tokensData,
+  };
 };
+
+export const useTrendingOpportunities = () => {
+  const { data, error } = useSWR("trendingOpportunities", opportunitiesFetcher);
+  return data;
+};
+
+export const useAdvertisementData = (significantTokens: string[]) => {};

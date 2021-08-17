@@ -4,7 +4,6 @@ import {
   AvatarBadge,
   Button,
   Collapse,
-  Image,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -19,18 +18,15 @@ import useSWR from "swr";
 
 // Utils
 import axios from "axios";
-import { Column, Row } from "lib/chakraUtils";
-import {
-  CTokenSearchReturnWithTokenData,
-  FinalSearchReturn,
-} from "types/search";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
+import { Column, Row } from "lib/chakraUtils";
+import { FinalSearchReturn } from "types/search";
 import { useMemo } from "react";
 import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
 import { shortUsdFormatter } from "utils/bigUtils";
-import { useEffect } from "react";
 import AvatarWithBadge from "../Icons/AvatarWithBadge";
 import { useAccountBalances } from "context/BalancesContext";
+import { useRari } from "context/RariContext";
 
 // Fetchers
 const searchFetcher = async (
@@ -62,11 +58,14 @@ const Searchbar = ({
   smaller?: boolean;
   [x: string]: any;
 }) => {
+  const { isAuthed } = useRari();
+
   const [val, setVal] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
   const [balances, balancesToSearchWith] = useAccountBalances();
 
   const debouncedSearch = useDebounce([val, ...balancesToSearchWith], 200);
+
 
   const { data } = useSWR(debouncedSearch, searchFetcher, {
     dedupingInterval: 60000,
@@ -81,6 +80,7 @@ const Searchbar = ({
   }, [data, val]);
 
   const loading = !data;
+  const authedLoading = !data && isAuthed;
 
   return (
     <Column
@@ -102,10 +102,14 @@ const Searchbar = ({
           height="100%"
           color="grey"
           children={
+            // If there is a value typed in AND it is loading
             !!val && !!loading ? (
               <Spinner />
             ) : (
-              <SearchIcon color="gray.300" boxSize={5} />
+              <SearchIcon
+                color={authedLoading ? "yellow.5  00" : "gray.300"}
+                boxSize={5}
+              />
             )
           }
           ml={1}
@@ -149,10 +153,7 @@ const Searchbar = ({
             mr={1}
           >
             <AppLink href="/explore">
-              <Button
-                colorScheme="green"
-                _hover={{ transform: "scale(1.04)" }}
-              >
+              <Button colorScheme="green" _hover={{ transform: "scale(1.04)" }}>
                 Explore
               </Button>
             </AppLink>

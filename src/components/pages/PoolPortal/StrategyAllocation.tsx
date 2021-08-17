@@ -32,8 +32,6 @@ const StrategyAllocation = () => {
         pool: poolType,
       }).allocations.getRawPoolAllocations();
 
-      console.log({ rawAllocations, poolType });
-
       let allocations: { [key: string]: number } = {};
 
       for (const [token, amount] of Object.entries(rawAllocations)) {

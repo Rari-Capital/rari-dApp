@@ -68,7 +68,7 @@ export default async function handler(
         gqlsearchResults = searchTokens;
       }
 
-      // If there is no text input but we did provide addresses, then use this to search
+      // If there is no text input but we did provide addresses, then use these addresses to search
       else if (addresses.length) {
         // Make the GQL Request to perform the search for tokens that exist
         const { underlyingAssets: balanceTokens } =
@@ -79,7 +79,7 @@ export default async function handler(
         gqlsearchResults = balanceTokens;
       }
 
-      // We are now going to stitch the tokenData from the API onto the searchData received
+      // We are now going to fetch the tokenData 
       const tokensDataMap: { [address: string]: RariApiTokenData } =
         await fetchTokensAPIDataAsMap(
           gqlsearchResults.map((asset) => asset.id)

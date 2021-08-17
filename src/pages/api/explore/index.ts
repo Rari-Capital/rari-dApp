@@ -114,7 +114,7 @@ export default async function handler(
 
 // Top Earning Stable = highest lending rate Stablecoin
 const getTopEarningFuseStable = async (): Promise<SubgraphCToken> =>
-  await queryTopFuseAsset("supplyAPY", "desc", stables);
+  (await queryTopFuseAsset("supplyAPY", "desc", stables));
 
 // Top Earning = highest lending rate Fuse Asset
 const getTopEarningFuseAsset = async (): Promise<SubgraphCToken> =>

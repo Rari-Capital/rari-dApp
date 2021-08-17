@@ -31,7 +31,6 @@ import {
   Image,
   Spinner,
   useDisclosure,
-  Icon,
 } from "@chakra-ui/react";
 
 import { useRari } from "context/RariContext";

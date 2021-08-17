@@ -56,7 +56,7 @@ export const NewHeader = () => {
         // transform="translate(0px, 7px)"
         height="100%"
       >
-        <HeaderLink name={t("Home")} route="/" />
+        {/* <HeaderLink name={t("Home")} route="/" /> */}
         <HeaderLink name={t("Explore")} route="/explore" ml={5} />
 
         {/* Dropdown  */}

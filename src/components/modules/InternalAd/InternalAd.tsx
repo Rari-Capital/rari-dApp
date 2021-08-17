@@ -1,6 +1,6 @@
 // Components
 import { Avatar } from "@chakra-ui/avatar";
-import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/layout";
+import { Heading, Text } from "@chakra-ui/layout";
 import AppLink from "components/shared/AppLink";
 import DashboardBox from "components/shared/DashboardBox";
 import { useAdvertisementData } from "hooks/opportunities/useAdvertisementData";
@@ -10,17 +10,19 @@ import Image from "next/image";
 
 // Utils
 import { Column } from "lib/chakraUtils";
-import { convertMantissaToAPY } from "utils/apyUtils";
+import { useAccountBalances } from "context/BalancesContext";
 
 const InternalAd = ({ ...boxProps }: { [x: string]: any }) => {
-  const adData = useAdvertisementData();
+  const [balances, significantTokens] = useAccountBalances();
+  const adData = useAdvertisementData(significantTokens);
+  
+  const { tokensData, asset } = adData ?? {};
+  if (!adData || !tokensData || !asset) return <> </>;
+  const { address } = asset.underlying;
 
-  const { tokensData, bestOpportunity } = data ?? {};
-
-  if (!data || !tokensData || !bestOpportunity) return <> </>;
 
   return (
-    <AppLink href={`/fuse/pools/${bestOpportunity.bestAsset.fusePool.id}`}>
+    <AppLink href={`/fuse/pool/${asset.pool?.index}`}>
       <DashboardBox height="300px" w="100%" {...boxProps}>
         <Column
           mainAxisAlignment="center"
@@ -32,14 +34,9 @@ const InternalAd = ({ ...boxProps }: { [x: string]: any }) => {
           <Avatar src={tokensData[address]?.logoURL} boxSize="120px" />
           <Heading mt={6} textAlign="center" fontSize="xl">
             Your {balances[address]?.toFixed(2)} {tokensData[address]?.symbol}{" "}
-            could be earning{" "}
-            {convertMantissaToAPY(
-              bestOpportunity.bestAsset.supplyRatePerBlock,
-              365
-            )}
-            % APY
+            could be earning {parseFloat(asset.supplyAPY).toFixed(2)}% APY
           </Heading>
-          <AppLink href="/pool/yield">
+          <AppLink href={`/fuse/pool/${asset.pool?.index}`}>
             <Text mt={6} color="grey" fontWeight="bold">
               Deposit Today
             </Text>
