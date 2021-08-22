@@ -70,10 +70,9 @@ export type LiquidationEvent = {
 };
 
 const FuseLiquidationsPage = memo(() => {
-  const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
 
-  const { fuse, rari } = useRari();
+  const { fuse, rari, isAuthed } = useRari();
 
   const [showAtRiskPositions, setShowAtRiskPositions] = useState(false);
 
