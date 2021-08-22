@@ -143,6 +143,7 @@ export const UtilsLink = ({
               name={t("Interest Rates")}
               link="/utils/interest-rates"
             />
+            <SubMenuItem name={t("Charts")} link="/utils/charts" />
           </MenuList>
         </Portal>
       </Menu>

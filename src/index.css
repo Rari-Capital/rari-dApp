@@ -20,6 +20,25 @@ html {
   -ms-overflow-style: none;
 }
 
+.plot {
+  display: block;
+  font: 10px system-ui, sans-serif;
+  color: black;
+  background: white;
+  height: auto;
+  height: intrinsic;
+  max-width: 100%;
+  margin: auto;
+}
+
+svg {
+  overflow: visible;
+}
+
+.plot text {
+  white-space: pre;
+}
+
 .apexcharts-tooltip,
 .apexcharts-tooltip.active,
 .apexcharts-xaxistooltip,

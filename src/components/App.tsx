@@ -91,6 +91,13 @@ const InterestRatesPage = loadable(
   }
 );
 
+const ChartsPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/ChartsPage"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = memo(() => {
   return (
     <Heading
@@ -140,6 +147,7 @@ const App = memo(() => {
         <Route path="/utils" element={<Navigate to="/" replace={true} />} />
         <Route path="/utils/interest-rates" element={<InterestRatesPage />} />
         <Route path="/utils/positions" element={<StatsPage />} />
+        <Route path="/utils/charts" element={<ChartsPage />} />
 
         {/* Backwards Compatibility Routes */}
         <Route
@@ -153,6 +161,10 @@ const App = memo(() => {
         <Route
           path="/positions"
           element={<Navigate to="/utils/positions" replace={true} />}
+        />
+        <Route
+          path="/charts"
+          element={<Navigate to="/utils/charts" replace={true} />}
         />
         {/* Backwards Compatibility Routes */}
 
