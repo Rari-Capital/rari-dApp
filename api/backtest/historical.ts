@@ -5,22 +5,26 @@ import { biggerblockno, point, resultSet } from '../../src/utils/rssUtils';
 import { uniswap, testUni }     from './uniswap';
 import { sushiswap, testSushi } from './sushiswap';
 
+import fetch from "node-fetch";
+
 const INF = 1000000000000000;
 
 export default async (address: string, financials: {liquidationIncentive: number, slippage: number}) => {
+
+  const currentBlock = await fetch('https://api.blockcypher.com/v1/eth/main')
+    .then((res) => res.json())
+    .then((data) => data.height);
 
   return await new Promise(async (resolve) => {
 
     const config = {
       period: 68, // around 15 mins of blocktime
       no_segments: 2900, // keep divisible of 100 for batching
-      end: 13076994
+      end: currentBlock
     }
 
     // // it is possible to return either sushiswap or uniswap data in the form of point[]; currently uniswap is much faster
     let data = await uniswap(address, config);
-
-    console.log(data)
 
     if (data) {
       let result = await calcTokenDown(data as point[], financials);
