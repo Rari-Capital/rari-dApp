@@ -78,7 +78,7 @@ const queryUniswap = async (sets: string[]) => {
       ).then((res) => res.json());
     }
 
-    queue.request((retry) => data()
+    let points = await queue.request((retry) => data()
     .then(response => response.data)
     .catch(error => {
       if (error.response.status === 429) {
@@ -86,10 +86,10 @@ const queryUniswap = async (sets: string[]) => {
       }
       throw error;
     }), key, 'uniswap')
-    .then(response => console.log(response))
+    .then(response => response)
     .catch(error => console.error(error));
 
-    let final = await addBlocknumber(data);
+    let final = await addBlocknumber(points);
 
     return final as any;
 

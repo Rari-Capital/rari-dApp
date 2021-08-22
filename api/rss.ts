@@ -443,7 +443,6 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     await new Promise(async (resolve) => {
 
       let scores: score[] = await scorePool(rssAssets);
-
       resolve(scores);
 
     }).then((assets) => {

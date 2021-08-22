@@ -14,18 +14,15 @@ export default async (address: string, financials: {liquidationIncentive: number
     const config = {
       period: 68, // around 15 mins of blocktime
       no_segments: 2900, // keep divisible of 100 for batching
-      end: 12635203
+      end: 13076994
     }
 
     // // it is possible to return either sushiswap or uniswap data in the form of point[]; currently uniswap is much faster
-    let data = await uniswap(address, config).catch( async (e) => {
-      console.log('uni fetch failed, trying sushi');
-      return await sushiswap(address,config).catch((e) => {
-        console.log('both sushiswap and uniswap failed');
-        return false;
-      })
-    })
-    if (data !== false) {
+    let data = await uniswap(address, config);
+
+    console.log(data)
+
+    if (data) {
       let result = await calcTokenDown(data as point[], financials);
 
       resolve(result);
