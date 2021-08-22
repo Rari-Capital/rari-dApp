@@ -83,6 +83,10 @@ export const filterPoolName = (name: string) => {
     return "Tetranode's Locker";
   }
 
+  if (name === "Stake DAO Pool") {
+    return "The Animal Kingdom";
+  }
+
   if (name === "Tetranode's ETH Pool") {
     return "ChainLinkGod's / Tetranode's Up Only Pool";
   }
