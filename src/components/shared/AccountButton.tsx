@@ -66,6 +66,7 @@ export const AccountButton = memo(() => {
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}
         onClose={closeClaimRGTModal}
+        defaultMode="private"
       />
       <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons

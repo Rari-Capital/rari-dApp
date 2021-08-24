@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { RariApiTokenData } from "types/tokens";
+import { RariApiTokenData, TokensDataMap } from "types/tokens";
 import {
   FinalSearchReturn,
   GQLSearchReturn,
@@ -47,11 +47,12 @@ export default async function handler(
       let gqlsearchResults: UnderlyingAssetSearchReturn[] = [];
       const redisKey = REDIS_KEY_PREFIX + text;
 
-      // If we explicitly provided a text input, search with this
+      // If we explicitly provided a text input, search with this text
       if (text) {
-        // Redis query
+        // Check redis first
         const redisSearchData = await redis.get(redisKey);
-        // If we found Redis data, then send it
+        // If we found Redis data, then send that
+        
         if (!!redisSearchData) {
           console.log("found redis data. returning", redisKey);
           return res
@@ -79,13 +80,11 @@ export default async function handler(
         gqlsearchResults = balanceTokens;
       }
 
-      // We are now going to fetch the tokenData 
-      const tokensDataMap: { [address: string]: RariApiTokenData } =
-        await fetchTokensAPIDataAsMap(
-          gqlsearchResults.map((asset) => asset.id)
-        );
-
-      const fusePools = await getFusePoolsByToken(gqlsearchResults[0].id);
+      // We are now going to fetch the tokenData and Fuse Pool Data
+      const [tokensDataMap, fusePools] = await Promise.all([
+        fetchTokensAPIDataAsMap(gqlsearchResults.map((asset) => asset.id)),
+        getFusePoolsByToken(gqlsearchResults[0].id),
+    ]);
 
       // Return only the top 3 fuse pools
       const sortedFusePools = fusePools.sort((a, b) =>

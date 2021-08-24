@@ -1,5 +1,5 @@
 import { gql } from "graphql-tag";
-import { CTokenFragment } from "./fragments";
+import { CTokenFragment, FusePoolFragment, UnderlyingAssetFragment } from "./fragments";
 
 // TODO: Use GQL Fragments
 export const GET_TOP_PERFORMING_FUSE_ASSET = gql`
@@ -15,8 +15,16 @@ export const GET_TOP_PERFORMING_FUSE_ASSET = gql`
       orderDirection: $orderDirection
       first: $limit
     ) {
-      ...CToken
+      ...CTokenFragment
+      pool {
+        ...FusePoolFragment
+      },
+      underlying {
+        ...UnderlyingAssetFragment
+      }
     }
   }
   ${CTokenFragment}
+  ${UnderlyingAssetFragment}
+  ${FusePoolFragment}
 `;

@@ -27,7 +27,6 @@ import {
   initFuseWithProviders,
 } from "../utils/web3Providers";
 
-
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
   cacheProvider: boolean = true
@@ -114,7 +113,6 @@ export const RariContext = createContext<RariContextData | undefined>(
 );
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
-
   const router = useRouter();
   const { address: requestedAddress } = router.query;
 
@@ -135,7 +133,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   const toast = useToast();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-
 
   // Check the user's network:
   useEffect(() => {
@@ -170,7 +167,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = initFuseWithProviders(modalProvider);
-``
+      ``;
       setRari(rariInstance);
       setFuse(fuseInstance);
 
@@ -198,11 +195,11 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       try {
         setIsAttemptingLogin(true);
         const providerWeb3Modal = await launchModalLazy(t, cacheProvider);
-        const signer = ethersProvider.getSigner();
         setWeb3ModalProvider(providerWeb3Modal);
         setRariAndAddressFromModal(providerWeb3Modal);
         setIsAttemptingLogin(false);
       } catch (err) {
+        console.log(err);
         setIsAttemptingLogin(false);
         return console.error(err);
       }

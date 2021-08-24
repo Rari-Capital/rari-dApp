@@ -1,5 +1,5 @@
 import { gql } from "graphql-tag";
-import { CTokenFragment } from "./fragments";
+import { CTokenFragment, FusePoolFragment, UnderlyingAssetFragment } from "./fragments";
 
 export const stables = [
   "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -19,15 +19,23 @@ export const GET_TOP_PERFORMING_FUSE_ASSET_OF_UNDERLYING = gql`
   ) {
     ctokens(
       where: {
-        underlying_in: $addresses,
+        underlying_in: $addresses
         liquidityUSD_gte: $liquidityThreshold
       }
       orderBy: $orderBy
       orderDirection: $orderDirection
       first: 1
     ) {
-      ...CToken
+      ...CTokenFragment
+      pool {
+        ...FusePoolFragment
+      }
+      underlying {
+        ...UnderlyingAssetFragment
+      }
     }
   }
   ${CTokenFragment}
+  ${UnderlyingAssetFragment}
+  ${FusePoolFragment}
 `;

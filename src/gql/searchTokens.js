@@ -1,14 +1,13 @@
 import { gql } from "graphql-tag";
+import { UnderlyingAssetFragment } from "./fragments";
 
 export const SEARCH_FOR_TOKEN = gql`
  query SearchForTokenBySymbol($search: String!) {
     underlyingAssets(where: { symbol_contains: $search } orderBy:symbol) {
-      id
-      name
-      price
-      symbol
+      ...UnderlyingAssetFragment
     }
   }
+  ${UnderlyingAssetFragment}
 `;
 
 export const SEARCH_FOR_TOKENS_BY_ADDRESSES = gql`
@@ -20,4 +19,5 @@ export const SEARCH_FOR_TOKENS_BY_ADDRESSES = gql`
       symbol
     }
   }
+  ${UnderlyingAssetFragment}
 `;

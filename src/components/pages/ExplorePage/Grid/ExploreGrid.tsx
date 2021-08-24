@@ -37,8 +37,6 @@ const ExploreGrid = () => {
     cheapestStableBorrow,
   } = results ?? {};
 
-  console.log({ results, tokensData });
-
   return (
     <DashboardBox w="100%" h="100%">
       <SimpleGrid columns={isMobile ? 2 : 3} spacing={0} h="100%" w="100%">

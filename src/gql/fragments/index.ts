@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const CTokenFragment = gql`
-  fragment CToken on Ctoken {
+  fragment CTokenFragment on Ctoken {
     id
     name
     symbol
@@ -19,28 +19,11 @@ export const CTokenFragment = gql`
     fuseFee
     reserveFactor
     underlyingBalance
-    underlying {
-      symbol
-      name
-      id
-      decimals
-      address
-    }
-    pool {
-      id
-      name
-      index
-      comptroller
-      address
-      totalBorrowUSD
-      totalLiquidityUSD
-      totalSupplyUSD
-    }
   }
 `;
 
 export const UnderlyingAssetFragment = gql`
-  fragment UnderlyingAsset on UnderlyingAsset {
+  fragment UnderlyingAssetFragment on UnderlyingAsset {
     address
     id
     name
@@ -51,6 +34,23 @@ export const UnderlyingAssetFragment = gql`
     totalLiquidity
     totalLiquidityUSD
     totalSupply
+    totalSupplyUSD
+  }
+`;
+
+export const FusePoolFragment = gql`
+  fragment FusePoolFragment on Pool {
+    address
+    closeFactor
+    comptroller
+    id
+    index
+    maxAssets
+    liquidationIncentive
+    name
+    priceOracle
+    totalBorrowUSD
+    totalLiquidityUSD
     totalSupplyUSD
   }
 `;
