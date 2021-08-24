@@ -11,6 +11,17 @@ import backtest from "./backtest/historical";
 
 import Queue from 'smart-request-balancer';
 
+import { Eth } from 'web3-eth';
+
+
+const fuse = initFuseWithProviders(turboGethURL);
+let   eth = new Eth(turboGethURL);
+
+const fetchLatestBlock = () => {
+
+  return eth.defaultBlock as number
+}
+
 const queue = new Queue({
   rules: {
     uniswap: {
@@ -26,7 +37,6 @@ const queue = new Queue({
   }
 });
 
-const fuse = initFuseWithProviders(turboGethURL);
 
 const scorePool = async (assets: rssAsset[]) => {
 
@@ -475,4 +485,4 @@ const calculatePoolScore = (scores: score[]) => {
   }
 }
 
-export {queue}
+export {queue, fetchLatestBlock}

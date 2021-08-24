@@ -5,6 +5,8 @@ import { biggerblockno, point, resultSet } from '../../src/utils/rssUtils';
 import { uniswap, testUni }     from './uniswap';
 import { sushiswap, testSushi } from './sushiswap';
 
+import { fetchLatestBlock } from '../rss';
+
 import fetch from "node-fetch";
 
 const INF = 1000000000000000;
@@ -20,7 +22,7 @@ export default async (address: string, financials: {liquidationIncentive: number
     const config = {
       period: 68, // around 15 mins of blocktime
       no_segments: 2900, // keep divisible of 100 for batching
-      end: currentBlock
+      end: fetchLatestBlock()
     }
 
     // // it is possible to return either sushiswap or uniswap data in the form of point[]; currently uniswap is much faster
