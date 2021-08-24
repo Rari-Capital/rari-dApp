@@ -11,15 +11,14 @@ import backtest from "./backtest/historical";
 
 import Queue from 'smart-request-balancer';
 
-import { Eth } from 'web3-eth';
-
+import Web3 from 'web3';
 
 const fuse = initFuseWithProviders(turboGethURL);
-let   eth = new Eth(turboGethURL);
 
-const fetchLatestBlock = () => {
+const web3 = new Web3(turboGethURL);
 
-  return eth.defaultBlock as number
+const fetchLatestBlock = async () => {
+  return await web3.eth.getBlockNumber();
 }
 
 const queue = new Queue({
