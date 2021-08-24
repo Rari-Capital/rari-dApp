@@ -166,7 +166,7 @@ const FuseLiquidationsPage = memo(() => {
 
       console.log(pool.comptroller, poolID);
 
-      if (poolID == 4) {
+      if (poolID === 4) {
         // Pool 4 is broken, we'll just skip it for now.
         continue;
       }
