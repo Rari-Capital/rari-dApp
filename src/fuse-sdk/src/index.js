@@ -985,13 +985,18 @@ export default class Fuse {
         "JumpRateModelV2",
         "DAIInterestRateModelV2",
         "WhitePaperInterestRateModel",
-      ])
-        if (
-          runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH
-        )
+      ]) {
+        if (interestRateModels[model].RUNTIME_BYTECODE_HASHES !== undefined) {
+          for (const hash of interestRateModels[model].RUNTIME_BYTECODE_HASHES) {
+            if (runtimeBytecodeHash == hash) {
+              interestRateModel = new interestRateModels[model]();
+              break;
+            }
+          }
+        } else if (runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH) {
           interestRateModel = new interestRateModels[model]();
-
-      if (interestRateModel === null) return null;
+        }
+      }
 
       return interestRateModel;
     };
