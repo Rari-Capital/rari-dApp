@@ -980,6 +980,7 @@ export default class Fuse {
       );
       var interestRateModel = null;
 
+      outerLoop:
       for (const model of [
         "JumpRateModel",
         "JumpRateModelV2",
@@ -990,11 +991,12 @@ export default class Fuse {
           for (const hash of interestRateModels[model].RUNTIME_BYTECODE_HASHES) {
             if (runtimeBytecodeHash == hash) {
               interestRateModel = new interestRateModels[model]();
-              break;
+              break outerLoop;
             }
           }
         } else if (runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH) {
           interestRateModel = new interestRateModels[model]();
+          break;
         }
       }
 
