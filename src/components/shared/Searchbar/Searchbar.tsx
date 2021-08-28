@@ -1,38 +1,32 @@
 import { SearchIcon } from "@chakra-ui/icons";
-import {
-  Avatar,
-  AvatarBadge,
-  Button,
-  Collapse,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Avatar, Button, Collapse, Text } from "@chakra-ui/react";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import { Spinner } from "@chakra-ui/spinner";
 import AppLink from "../AppLink";
 
 // Hooks
 import useDebounce from "hooks/useDebounce";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import useSWR from "swr";
 
 // Utils
 import axios from "axios";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 import { Column, Row } from "lib/chakraUtils";
-import { FinalSearchReturn } from "types/search";
+import { APISearchReturn } from "types/search";
 import { useMemo } from "react";
 import { DEFAULT_SEARCH_RETURN } from "pages/api/search";
 import { shortUsdFormatter } from "utils/bigUtils";
 import AvatarWithBadge from "../Icons/AvatarWithBadge";
 import { useAccountBalances } from "context/BalancesContext";
 import { useRari } from "context/RariContext";
+import { intersect } from "utils/arrayUtils";
 
 // Fetchers
 const searchFetcher = async (
   text: string,
   ...addresses: string[]
-): Promise<FinalSearchReturn | undefined> => {
+): Promise<APISearchReturn | undefined> => {
   let url = `/api/search`;
 
   if (!text && !addresses.length) return undefined;
@@ -65,7 +59,6 @@ const Searchbar = ({
   const [balances, balancesToSearchWith] = useAccountBalances();
 
   const debouncedSearch = useDebounce([val, ...balancesToSearchWith], 200);
-
 
   const { data } = useSWR(debouncedSearch, searchFetcher, {
     dedupingInterval: 60000,
@@ -181,6 +174,7 @@ const Searchbar = ({
 
 export default Searchbar;
 
+// This shit is kinda wonky tbh.
 const SearchResults = ({
   results = DEFAULT_SEARCH_RETURN,
   hasResults,
@@ -188,13 +182,101 @@ const SearchResults = ({
   smaller,
   balances,
 }: {
-  results?: FinalSearchReturn;
+  results?: APISearchReturn;
   hasResults: boolean;
   handleResultsClick: () => void;
   smaller: boolean;
   balances?: { [address: string]: number };
 }) => {
-  const { tokens, fuse, tokensData } = results;
+  const { tokens, fuse, tokensData, fuseTokensMap } = results;
+
+  const renderFuseOpportunities = useCallback(() => {
+    // Which token do we want to display for this fuse pool in the Searchbar?
+    // 1.) Tokens you have a balance of 2.) Tokens you searched 3.) Any other token the pool supports
+    const getDisplayedUnderlyingForFusePool = (
+      supportedUnderlyings: string[],
+      i: number
+    ) => {
+      // First find the intersection of the balances and the supportedUnderlyings to see if user has any of these tokens
+      const intersection = intersect(
+        Object.keys(balances ?? {}),
+        supportedUnderlyings
+      );
+      // Alternate logos
+      return tokensData[
+        intersection[i % intersection.length] ??
+          supportedUnderlyings[i % supportedUnderlyings.length]
+      ];
+    };
+
+    return fuse.map((fusePool, i: number) => {
+      const route = `/fuse/pool/${fusePool.index}`;
+      const supportedUnderlyings = fuseTokensMap[fusePool.comptroller];
+      return (
+        <AppLink href={route} w="100%" h="100%" key={i}>
+          <Row
+            p={2}
+            pl={5}
+            w="100%"
+            h="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            key={i}
+            _hover={{ bg: "grey" }}
+            expand
+            onClick={handleResultsClick}
+            fontWeight={smaller ? "normal" : "bold"}
+          >
+            <AvatarWithBadge
+              outerImage={
+                getDisplayedUnderlyingForFusePool(supportedUnderlyings, i)
+                  ?.logoURL
+              }
+              badgeImage="/static/fuseicon.png"
+            />
+            <Text ml={2}>{fusePool.name}</Text>
+            {!smaller && (
+              <Text ml={"auto"}>
+                {shortUsdFormatter(fusePool.totalLiquidityUSD)} Liquidity
+              </Text>
+            )}
+          </Row>
+        </AppLink>
+      );
+    });
+  }, [fuse, tokensData, fuseTokensMap, balances]);
+
+  const renderTokens = useCallback(() => {
+    return tokens.map((token, i: number) => {
+      const route =
+        token.id === ETH_TOKEN_DATA.address
+          ? `/token/eth`
+          : `/token/${token.id}`;
+      return (
+        <AppLink href={route} w="100%" h="100%" key={i}>
+          <Row
+            p={2}
+            pl={5}
+            w="100%"
+            h="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            key={i}
+            _hover={{ bg: "grey" }}
+            expand
+            onClick={handleResultsClick}
+            fontWeight={smaller ? "normal" : "bold"}
+          >
+            <Avatar src={tokensData[token.id]?.logoURL} boxSize={8} />
+            <Text ml={2}>{token.symbol}</Text>
+            {!smaller && balances && balances[token.id] && (
+              <Text ml={"auto"}>{balances[token.id].toFixed(2)}</Text>
+            )}
+          </Row>
+        </AppLink>
+      );
+    });
+  }, [tokens, tokensData, balances]);
 
   return (
     <Column
@@ -229,35 +311,7 @@ const SearchResults = ({
           Tokens
         </Text>
       </Row>
-      {tokens.map((token, i: number) => {
-        const route =
-          token.id === ETH_TOKEN_DATA.address
-            ? `/token/eth`
-            : `/token/${token.id}`;
-        return (
-          <AppLink href={route} w="100%" h="100%" key={i}>
-            <Row
-              p={2}
-              pl={5}
-              w="100%"
-              h="100%"
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              key={i}
-              _hover={{ bg: "grey" }}
-              expand
-              onClick={handleResultsClick}
-              fontWeight={smaller ? "normal" : "bold"}
-            >
-              <Avatar src={tokensData[token.id]?.logoURL} boxSize={8} />
-              <Text ml={2}>{token.symbol}</Text>
-              {!smaller && balances && balances[token.id] && (
-                <Text ml={"auto"}>{balances[token.id].toFixed(2)}</Text>
-              )}
-            </Row>
-          </AppLink>
-        );
-      })}
+      {renderTokens()}
 
       <Row
         pt={3}
@@ -274,38 +328,7 @@ const SearchResults = ({
           Opportunities
         </Text>
       </Row>
-
-      {fuse.map((fusePool, i: number) => {
-        const route = `/fuse/pool/${fusePool.id}`;
-        return (
-          <AppLink href={route} w="100%" h="100%" key={i}>
-            <Row
-              p={2}
-              pl={5}
-              w="100%"
-              h="100%"
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              key={i}
-              _hover={{ bg: "grey" }}
-              expand
-              onClick={handleResultsClick}
-              fontWeight={smaller ? "normal" : "bold"}
-            >
-              <AvatarWithBadge
-                outerImage={tokensData[tokens[0].id]?.logoURL}
-                badgeImage="/static/fuseicon.png"
-              />
-              <Text ml={2}>{fusePool.name}</Text>
-              {!smaller && (
-                <Text ml={"auto"}>
-                  {shortUsdFormatter(fusePool.totalLiquidityUSD)} Liquidity
-                </Text>
-              )}
-            </Row>
-          </AppLink>
-        );
-      })}
+      {renderFuseOpportunities()}
     </Column>
   );
 };
