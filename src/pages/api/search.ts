@@ -1,24 +1,19 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { RariApiTokenData, TokensDataMap } from "types/tokens";
-import {
-  FinalSearchReturn,
-  GQLSearchReturn,
-  UnderlyingAssetSearchReturn,
-} from "types/search";
+import { APISearchReturn, GQLSearchReturn } from "types/search";
 
 import { fetchTokensAPIDataAsMap } from "utils/services";
-import axios from "axios";
-import { filterFusePoolsByToken } from "hooks/fuse/useFuseDataForAsset";
 
 import redis from "../../utils/redis";
 import {
   querySearchForToken,
   querySearchForTokenByAddresses,
 } from "services/gql";
+import { GQLFusePool, GQLUnderlyingAsset } from "types/gql";
 
-export const DEFAULT_SEARCH_RETURN: FinalSearchReturn = {
+export const DEFAULT_SEARCH_RETURN: APISearchReturn = {
   tokens: [],
   fuse: [],
+  fuseTokensMap: {},
   tokensData: {},
 };
 
@@ -27,7 +22,7 @@ const REDIS_KEY_PREFIX = "search-";
 // Takes a search string, makes a graphql request, then stitches on the TokenData by making a second API request
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<FinalSearchReturn | undefined>
+  res: NextApiResponse<APISearchReturn | undefined>
 ) {
   if (req.method === "GET") {
     const { text, address } = req.query;
@@ -44,7 +39,7 @@ export default async function handler(
     }
 
     try {
-      let gqlsearchResults: UnderlyingAssetSearchReturn[] = [];
+      let gqlsearchResults: GQLUnderlyingAsset[] = [];
       const redisKey = REDIS_KEY_PREFIX + text;
 
       // If we explicitly provided a text input, search with this text
@@ -52,12 +47,12 @@ export default async function handler(
         // Check redis first
         const redisSearchData = await redis.get(redisKey);
         // If we found Redis data, then send that
-        
+
         if (!!redisSearchData) {
           console.log("found redis data. returning", redisKey);
           return res
             .status(200)
-            .json(JSON.parse(redisSearchData) as FinalSearchReturn);
+            .json(JSON.parse(redisSearchData) as APISearchReturn);
         }
 
         // Make the GQL Request to perform the search for tokens that exist
@@ -81,19 +76,42 @@ export default async function handler(
       }
 
       // We are now going to fetch the tokenData and Fuse Pool Data
-      const [tokensDataMap, fusePools] = await Promise.all([
+      const [tokensDataMap] = await Promise.all([
         fetchTokensAPIDataAsMap(gqlsearchResults.map((asset) => asset.id)),
-        getFusePoolsByToken(gqlsearchResults[0].id),
-    ]);
+      ]);
+
+      // Maps a Fuse Pool's address to an array of its underlyingToken Addresses
+      const fuseTokensMap: { [comptroller: string]: string[] } = {};
+      // A unique list of fuse pools among the returned tokens
+      const fusePoolsSet = new Set<GQLFusePool>();
+
+      // Construct a map of which fuse pools have which assets of the returned search assets
+      gqlsearchResults.forEach((result) => {
+        result.pools?.forEach((pool) => {
+          if (pool) {
+            if (!fuseTokensMap[pool.comptroller])
+              fuseTokensMap[pool.comptroller] = [];
+            // If the Array of underlying assets for this fuse pool already has this
+            if (!fuseTokensMap[pool.comptroller].includes(result.id))
+              fuseTokensMap[pool.comptroller] = [
+                ...fuseTokensMap[pool.comptroller],
+                result.id,
+              ];
+
+            fusePoolsSet.add(pool);
+          }
+        });
+      });
 
       // Return only the top 3 fuse pools
-      const sortedFusePools = fusePools.sort((a, b) =>
+      const sortedFusePools = [...Array.from(fusePoolsSet)].sort((a, b) =>
         b.totalLiquidityUSD > a.totalLiquidityUSD ? 1 : -1
       );
 
-      const searchResults: FinalSearchReturn = {
+      const searchResults: APISearchReturn = {
         tokens: gqlsearchResults.slice(0, 3),
-        fuse: sortedFusePools.slice(0, 2),
+        fuse: sortedFusePools.slice(0, 3),
+        fuseTokensMap,
         tokensData: tokensDataMap,
       };
 
@@ -110,10 +128,3 @@ export default async function handler(
     }
   }
 }
-
-export const getFusePoolsByToken = async (tokenAddress: string) => {
-  const { data } = await axios.get("https://beta.rari.capital/api/fuse/pools");
-  const { pools } = data;
-  const filteredPools = filterFusePoolsByToken(pools, tokenAddress);
-  return filteredPools;
-};
