@@ -2,7 +2,7 @@ import { fetchPools } from "hooks/fuse/useFusePools";
 import Rari from "lib/rari-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 import { fetchFusePoolData, FusePoolData } from "utils/fetchFusePoolData";
-import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { initFuseWithProviders, providerURL } from "utils/web3Providers";
 import Web3 from "web3";
 
 interface APIAccountsFuseBalancesResponse {
@@ -39,9 +39,9 @@ export default async function handler(
       }
 
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       // Get all fuse pools this user is active in
       const pools = await fetchPools({

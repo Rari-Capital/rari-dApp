@@ -152,7 +152,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
               description:
                 "You are on the wrong network! Switch to the mainnet and reload this page!",
               status: "warning",
-              position: "top-right",
+              position: "bottom-right",
               duration: 300000,
               isClosable: true,
             });

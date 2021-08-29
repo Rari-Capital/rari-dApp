@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { fetchFusePoolData } from "utils/fetchFusePoolData";
 
 // Web3
-import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { initFuseWithProviders, providerURL } from "utils/web3Providers";
 import Web3 from "web3";
 
 export default async function handler(
@@ -28,9 +28,9 @@ export default async function handler(
         return res.status(400).json({ error: "Invalid address provided." });
 
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       // Get data for this fuse pool
       const fusePoolData = await fetchFusePoolData(

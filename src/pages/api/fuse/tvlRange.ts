@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { fetchFuseTVLBorrowsAndSupply } from "utils/fetchTVL";
-import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { initFuseWithProviders, providerURL } from "utils/web3Providers";
 import Web3 from "web3";
 import Rari from "lib/rari-sdk";
 
@@ -66,9 +66,9 @@ export default async function handler(
       await setupDB();
 
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       // Query params
       // startDate and endDate is in DD-MM-YYY format

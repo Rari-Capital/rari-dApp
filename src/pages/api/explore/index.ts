@@ -22,6 +22,7 @@ export type SubgraphUnderlyingAsset = {
   name: string;
   symbol: string;
   address: string;
+  price: number;
   decimals: number;
   totalBorrow: number;
   totalBorrowUSD: number;

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 // GQL
 import { TokensDataMap } from "types/tokens";
-import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { initFuseWithProviders, providerURL } from "utils/web3Providers";
 import Web3 from "web3";
 import Rari from "lib/rari-sdk";
 import { fetchPools } from "hooks/fuse/useFusePools";
@@ -63,9 +63,9 @@ export default async function handler(
 
       // Get Underlying Assets from subgraph
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       const fusePools = await fetchPools({
         rari,

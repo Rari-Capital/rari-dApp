@@ -3,7 +3,7 @@ import { fetchPools } from "hooks/fuse/useFusePools";
 import Rari from "lib/rari-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 import { fetchFusePoolData } from "utils/fetchFusePoolData";
-import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { initFuseWithProviders, providerURL } from "utils/web3Providers";
 import Web3 from "web3";
 
 export default async function handler(
@@ -27,9 +27,9 @@ export default async function handler(
       }
 
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       // If we specified poolIndices, use those, else fetch all pools
       if (poolIndices?.length) {
@@ -74,9 +74,9 @@ export default async function handler(
       }
 
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       const fusePools = await fetchPools({
         rari,

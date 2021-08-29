@@ -3,7 +3,7 @@ import Rari from "lib/rari-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 import { formatDateToDDMMYY } from "utils/api/dateUtils";
 import { fetchFusePoolData, FusePoolData } from "utils/fetchFusePoolData";
-import { initFuseWithProviders, turboGethURL } from "utils/web3Providers";
+import { initFuseWithProviders, providerURL } from "utils/web3Providers";
 import { blockNumberToTimeStamp } from "utils/web3Utils";
 import Web3 from "web3";
 
@@ -45,9 +45,9 @@ export default async function handler(
       }
 
       // Set up SDKs
-      const web3 = new Web3(turboGethURL);
+      const web3 = new Web3(providerURL);
       const rari = new Rari(web3);
-      const fuse = initFuseWithProviders(turboGethURL);
+      const fuse = initFuseWithProviders(providerURL);
 
       const latestBlockNumber = await web3.eth.getBlockNumber();
 

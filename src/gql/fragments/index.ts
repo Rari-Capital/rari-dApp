@@ -29,6 +29,7 @@ export const UnderlyingAssetFragment = gql`
     name
     price
     symbol
+    decimals
     totalBorrow
     totalBorrowUSD
     totalLiquidity
