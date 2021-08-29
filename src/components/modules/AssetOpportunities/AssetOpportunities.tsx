@@ -11,9 +11,9 @@ import { useMemo, useState } from "react";
 // Utils
 import { Column, Row } from "lib/chakraUtils";
 
-import FuseOpportunities from "./FuseOpportunities";
 import TrancheOpportunities from "./TrancheOpportunities";
-import EarnOpportunities from "./EarnOpportunities";
+import VaultsList from "components/shared/Lists/VaultsList";
+import { FuseList } from "components/shared/Lists/FuseList";
 
 export enum OpportunityNav {
   FUSE = "Fuse",
@@ -50,11 +50,11 @@ const AssetOpportunities = ({
         // bg="green"
         overflowY="scroll"
       >
-        {nav === OpportunityNav.FUSE && <FuseOpportunities token={token} />}
+        {nav === OpportunityNav.FUSE && <FuseList token={token} />}
         {nav === OpportunityNav.TRANCHES && (
           <TrancheOpportunities token={token} />
         )}
-        {nav === OpportunityNav.EARN && <EarnOpportunities token={token} />}
+        {nav === OpportunityNav.EARN && <VaultsList token={token} />}
       </Column>
     </DashboardBox>
   );

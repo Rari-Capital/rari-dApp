@@ -18,4 +18,26 @@ const AvatarWithBadge = ({
   );
 };
 
+export const AvatarWithBadgeColor = ({
+  outerImage,
+  badgeColor,
+  badgeSize = 6,
+}: {
+  outerImage: string;
+  badgeColor: string;
+  badgeSize: string | number;
+}) => {
+  return (
+    <Stack direction="row" spacing={4}>
+      <Avatar src={outerImage} boxSize={8}>
+        <AvatarBadge
+          boxSize={6}
+          borderColor="transparent"
+          bg={`${badgeColor} border`}
+        ></AvatarBadge>
+      </Avatar>
+    </Stack>
+  );
+};
+
 export default AvatarWithBadge;

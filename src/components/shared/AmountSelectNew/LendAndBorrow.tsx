@@ -1,5 +1,6 @@
 import { Box, Heading, Text } from "@chakra-ui/layout";
 import { Button, useToast } from "@chakra-ui/react";
+import AppLink from "../AppLink";
 import { Spinner } from "@chakra-ui/spinner";
 import DashboardBox from "../DashboardBox";
 import { Center, Column, Row, useIsMobile } from "lib/chakraUtils";
@@ -34,24 +35,21 @@ import {
   USDPricedFuseAssetWithTokenData,
 } from "utils/fetchFusePoolData";
 import { AmountSelectUserAction, AmountSelectMode } from "./AmountSelectNew";
-import AppLink from "../AppLink";
 import { SimpleTooltip } from "../SimpleTooltip";
+import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
 
 //
 const LendAndBorrow = ({
   token,
-  bestPool,
-  poolAssetIndex,
   setUserAction,
 }: {
   token?: TokenData;
-  bestPool?: FusePoolData;
-  poolAssetIndex?: number;
-  setUserAction: (action: AmountSelectUserAction) => void;
+  setUserAction?: (action: AmountSelectUserAction) => void;
 }) => {
   const isMobile = useIsMobile();
   const toast = useToast();
   const { fuse, address } = useRari();
+  const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
 
   // Assets
   const lendAsset: USDPricedFuseAssetWithTokenData = useMemo(
@@ -82,6 +80,8 @@ const LendAndBorrow = ({
 
   // Bubbled up from StatsColumn
   const [error, setError] = useState<string | null>(null);
+
+  console.log({ bestPool, poolAssetIndex });
 
   // Wrappers for updating input
   const updateLendAmount = useCallback(
@@ -129,17 +129,19 @@ const LendAndBorrow = ({
 
   const handleSubmit = () => {
     if (!bestPool) return undefined;
-    onLendBorrowConfirm({
-      asset: lendAsset as USDPricedFuseAsset,
-      borrowedAsset: borrowAsset as USDPricedFuseAsset,
-      fuse,
-      address,
-      lendAmount: lendAmountBN,
-      borrowAmount: borrowAmountBN,
-      comptrollerAddress: bestPool.comptroller,
-      setUserAction,
-      toast,
-    });
+
+    setUserAction &&
+      onLendBorrowConfirm({
+        asset: lendAsset as USDPricedFuseAsset,
+        borrowedAsset: borrowAsset as USDPricedFuseAsset,
+        fuse,
+        address,
+        lendAmount: lendAmountBN,
+        borrowAmount: borrowAmountBN,
+        comptrollerAddress: bestPool.comptroller,
+        setUserAction,
+        toast,
+      });
   };
 
   if (!bestPool || !bestPool.assets.length)
@@ -183,7 +185,7 @@ const LendAndBorrow = ({
         />
       </Column>
 
-      {/* Stats */}
+      {/* Stats
       <StatsColumn
         mode={AmountSelectMode.LENDANDBORROW}
         pool={bestPool}
@@ -196,7 +198,7 @@ const LendAndBorrow = ({
         lendColor={lendAsset?.tokenData?.color ?? "white"}
         borrowColor={borrowAsset?.tokenData?.color ?? "white"}
         setError={setError}
-      />
+      /> */}
 
       {/* Submit Button - todo */}
       <Button
@@ -273,7 +275,9 @@ const StatsColumn = ({
 
   // Define the old and new asset (same asset different numerical values)
   const asset = assets[assetIndex];
+
   const updatedAsset = updatedAssets ? updatedAssets[assetIndex] : null;
+  console.log({ updatedAssets, updatedAsset });
 
   const borrowAsset = assets[borrowAssetIndex];
   const updatedBorrowAsset = updatedAssets
@@ -386,7 +390,7 @@ const StatsColumn = ({
   }, [error]);
 
   const showSpinner: boolean = useMemo(
-    () => (lendAmount >= 0 && borrowAmount >= 0 && !updatedAsset) ?? false,
+    () => (lendAmount > 0 && borrowAmount > 0 && !updatedAsset) ?? false,
     [updatedAsset, lendAmount, borrowAmount]
   );
 

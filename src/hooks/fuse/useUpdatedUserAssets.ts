@@ -51,7 +51,6 @@ const useUpdatedUserAssets = ({
           //     assetToBeUpdated.totalSupply
           //   );
 
-
           updatedAsset = {
             ...assetToBeUpdated,
 
@@ -72,6 +71,8 @@ const useUpdatedUserAssets = ({
               )
             ),
           };
+
+          console.log("LEND", { updatedAsset });
         } else if (mode === Mode.WITHDRAW) {
           const supplyBalance =
             parseInt(assetToBeUpdated.supplyBalance as any) - amount;
@@ -159,13 +160,17 @@ const useUpdatedUserAssets = ({
           };
         }
 
-        return assets.map((value, _index) => {
+        const ret = assets.map((value, _index) => {
           if (_index === index) {
             return updatedAsset;
           } else {
             return value;
           }
         });
+
+        console.log({ ret });
+
+        return ret;
       }
     );
 
@@ -187,6 +192,7 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
   lendAmount: number;
   borrowAmount: number;
 }) => {
+  console.log({ assets, lendIndex, borrowIndex, lendAmount, borrowAmount });
 
   const updatedAssetsLend: USDPricedFuseAsset[] | undefined =
     useUpdatedUserAssets({
@@ -196,16 +202,15 @@ export const useUpdatedUserAssetsForBorrowAndLend = ({
       amount: lendAmount,
     });
 
-  const updatedAssetsLendAndBorrow: USDPricedFuseAsset[] | undefined =
-    useUpdatedUserAssets({
-      mode: AmountSelectMode.BORROW,
-      assets: updatedAssetsLend,
-      index: borrowIndex,
-      amount: borrowAmount,
-    });
+  // const updatedAssetsLendAndBorrow: USDPricedFuseAsset[] | undefined =
+  //   useUpdatedUserAssets({
+  //     mode: AmountSelectMode.BORROW,
+  //     assets: updatedAssetsLend,
+  //     index: borrowIndex,
+  //     amount: borrowAmount,
+  //   });
 
-
-  return updatedAssetsLendAndBorrow;
+  return updatedAssetsLend;
 };
 
 // const useAmountIsValid = ({

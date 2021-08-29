@@ -37,7 +37,6 @@ const poolSort = (pools: MergedPool[]) => {
     }
 
     // They're equal, let's sort by pool number:
-
     return b.id > a.id ? 1 : -1;
   });
 };

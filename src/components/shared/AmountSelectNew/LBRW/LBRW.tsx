@@ -1,20 +1,17 @@
-import { useBestFusePoolForAsset } from "hooks/opportunities/useBestFusePoolForAsset";
 import { TokenData } from "hooks/useTokenData";
 import { useState } from "react";
 import { AmountSelectMode, AmountSelectUserAction } from "../AmountSelectNew";
 import LendAndBorrow from "../LendAndBorrow";
 
 import { Column, Row } from "lib/chakraUtils";
-import { Box, Heading } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
-import { useTranslation } from 'next-i18next';
-import { useMemo } from "react";
+import { useTranslation } from "next-i18next";
 import AwaitingTransactions from "../AwaitingTransactions";
 
 // LBRW for Lend, Borrow, Repay, Withdraw
 const LBRW = ({ token }: { token?: TokenData }) => {
   // Get necessary data about the best pool and the Fuse Asset (based on the token) for this pool
-  const { bestPool, poolAssetIndex } = useBestFusePoolForAsset(token?.address);
 
   const [userAction, setUserAction] = useState(
     AmountSelectUserAction.NO_ACTION
@@ -22,17 +19,6 @@ const LBRW = ({ token }: { token?: TokenData }) => {
 
   const [mode, setMode] = useState<AmountSelectMode>(
     AmountSelectMode.LENDANDBORROW
-  );
-
-  const {
-    hasBorrows,
-    hasDeposits,
-  }: { hasBorrows: boolean; hasDeposits: boolean } = useMemo(
-    () => ({
-      hasBorrows: bestPool?.totalBorrowBalanceUSD > 0,
-      hasDeposits: bestPool?.totalSupplyBalanceUSD > 0,
-    }),
-    [bestPool]
   );
 
   return (
@@ -53,8 +39,6 @@ const LBRW = ({ token }: { token?: TokenData }) => {
               // AmountSelectMode.REPAYANDWITHDRAW,
             ]}
             setMode={setMode}
-            hasBorrows={hasBorrows}
-            hasDeposits={hasDeposits}
             color={token?.color ?? "white"}
           />
           <Row
@@ -64,12 +48,7 @@ const LBRW = ({ token }: { token?: TokenData }) => {
             expand
           >
             {mode === AmountSelectMode.LENDANDBORROW && (
-              <LendAndBorrow
-                token={token}
-                bestPool={bestPool}
-                poolAssetIndex={poolAssetIndex}
-                setUserAction={setUserAction}
-              />
+              <LendAndBorrow token={token} setUserAction={setUserAction} />
             )}
             {/* {mode === AmountSelectMode.REPAYANDWITHDRAW && (
               <Box h="300px">
@@ -90,15 +69,11 @@ const TabBar = ({
   color,
   modes,
   mode,
-  hasBorrows,
-  hasDeposits,
   setMode,
 }: {
   color?: string | null | undefined;
   mode: AmountSelectMode;
   modes: AmountSelectMode[];
-  hasBorrows: boolean;
-  hasDeposits: boolean;
   setMode: (mode: AmountSelectMode) => any;
 }) => {
   const { t } = useTranslation();
@@ -133,14 +108,6 @@ const TabBar = ({
           <TabList>
             {modes.map((mode) => {
               let text;
-              // if (mode === AmountSelectMode.REPAYANDWITHDRAW) {
-              //   if (hasBorrows && hasDeposits) text === "Repay/Withdraw";
-              //   else if (hasBorrows) text === "Repay";
-              //   else if (hasDeposits) text === "Withdraw";
-              //   else return null;
-              // } else {
-              //   text === mode;
-              // }
               return (
                 <Tab key={mode} fontWeight="bold" _active={{}} mb="-1px">
                   {t(mode)}

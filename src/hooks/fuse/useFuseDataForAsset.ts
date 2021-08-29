@@ -20,8 +20,10 @@ export const useFuseDataForAsset = (assetAddress?: String) => {
   const poolAssetIndex: { [poolId: number]: number } = {};
 
   // Find Fuse pools where this asset exists
-  const poolsWithThisAsset: FusePoolData[] | undefined = useMemo(
-    () =>
+  const poolsWithThisAsset: FusePoolData[] = useMemo(() => {
+    if (!assetAddress) return allPools as FusePoolData[];
+
+    return (
       allPools?.filter((pool) =>
         pool.assets.find((asset, index) => {
           if (
@@ -31,9 +33,9 @@ export const useFuseDataForAsset = (assetAddress?: String) => {
             return true;
           }
         })
-      ),
-    [assetAddress, allPools]
-  );
+      ) ?? []
+    );
+  }, [assetAddress, allPools]);
 
   const totals = useMemo(() => {
     let totalBorrowedUSD = 0;

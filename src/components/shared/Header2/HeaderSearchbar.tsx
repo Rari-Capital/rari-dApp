@@ -3,8 +3,8 @@ import Searchbar from "../Searchbar";
 
 const HeaderSearchbar = (props: any) => {
   return (
-    <Box {...props} w={800} mx={5} alignSelf="flex-start">
-      <Searchbar variant="" height="30px" smaller/>
+    <Box {...props} w={800} mx={5} my="auto " alignSelf="flex-start">
+      <Searchbar  height="33px" smaller/>
     </Box>
   );
 };

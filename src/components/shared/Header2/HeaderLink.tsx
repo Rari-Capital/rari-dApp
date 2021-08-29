@@ -42,11 +42,13 @@ export const HeaderLink = ({
   route,
   ml,
   noUnderline,
+  ...props
 }: {
   name: string;
   route: string;
   noUnderline?: boolean;
   ml?: number | string;
+  [x: string] : any;
 }) => {
   const router = useRouter();
 
@@ -66,6 +68,7 @@ export const HeaderLink = ({
         fontWeight={isOnThisRoute ? "bold" : "normal"}
         textDecoration="underline"
         color={isOnThisRoute ? "purple" : "white"}
+        {...props}
       >
         {name}
       </Text>
@@ -82,6 +85,7 @@ export const HeaderLink = ({
         textDecor={isOnThisRoute ? "underline" : ""}
         textDecorationThickness="1.5px"
         color={isOnThisRoute ? "#7065F2" : "white"}
+        {...props}
       >
         {name}
       </Text>

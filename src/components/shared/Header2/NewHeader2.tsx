@@ -14,7 +14,9 @@ import AppLink from "../AppLink";
 import {
   GOVERNANCE_DROPDOWN_ITEMS,
   PRODUCTS_DROPDOWN_ITEMS,
+  UTILS_DROPDOWN_ITEMS,
 } from "constants/nav";
+import { Button } from "@chakra-ui/react";
 
 export const HeaderHeightWithTopPadding = new PixelSize(
   38 + DASHBOARD_BOX_SPACING.asNumber()
@@ -57,7 +59,6 @@ export const NewHeader = () => {
         height="100%"
       >
         {/* <HeaderLink name={t("Home")} route="/" /> */}
-        <HeaderLink name={t("Explore")} route="/explore" ml={5} />
 
         {/* Dropdown  */}
         <DropDownLink
@@ -69,14 +70,10 @@ export const NewHeader = () => {
           name={t("Governance")}
           links={GOVERNANCE_DROPDOWN_ITEMS}
         />
-        {/* <DropDownLink
-          name={t("Utils")}
-          ml={2}
-          links={UTILS_DROPDOWN_ITEMS}
-        /> */}
-        {isAuthed && (
-          <HeaderLink ml={5} name={t("Positions")} route="/positions" />
-        )}
+        <DropDownLink name={t("Utils")} ml={2} links={UTILS_DROPDOWN_ITEMS} />
+
+        <HeaderLink name={t("Explore")} route="/explore" ml={5} />
+
       </Row>
 
       {!isMobile && <HeaderSearchbar />}

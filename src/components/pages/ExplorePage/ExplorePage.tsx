@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Heading, Menu, MenuList } from "@chakra-ui/react";
-import List from "./List";
+import ExploreList from "./ExploreList";
+import ExploreGrid from "./ExploreGrid";
 import DashboardBox from "components/shared/DashboardBox";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 
@@ -14,7 +15,6 @@ import { useState, useMemo } from "react";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { Column, Row } from "lib/chakraUtils";
 
-import ExploreGrid from "./Grid/ExploreGrid";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -158,7 +158,7 @@ const ExplorePage = () => {
         mb={5}
       >
         <DashboardBox w="100%" h="100%">
-          <List nav={exploreNav} />
+          <ExploreList nav={exploreNav} />
         </DashboardBox>
       </Row>
     </Column>

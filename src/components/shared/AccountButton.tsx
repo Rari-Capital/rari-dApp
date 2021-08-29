@@ -9,6 +9,9 @@ import {
   Link,
   Text,
   Spinner,
+  Avatar,
+  Box,
+  Stack,
 } from "@chakra-ui/react";
 
 import { Row, Column, Center } from "lib/chakraUtils";
@@ -19,7 +22,7 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 import { shortAddress } from "../../utils/shortAddress";
 
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
@@ -156,12 +159,14 @@ const Buttons = ({
               <Text fontWeight="semibold">{t("Connect")}</Text>
             )
           ) : (
-            <>
-              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+            <Center>
+              <Stack border="transparent" w="100%" h="100%" direction="row" spacing={4} >
+                <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              </Stack>
               <Text ml={2} fontWeight="semibold">
                 {shortAddress(address)}
               </Text>
-            </>
+            </Center>
           )}
         </Row>
       </DashboardBox>

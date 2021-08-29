@@ -4,9 +4,11 @@ import { PoolList } from "components/pages/Fuse/FusePoolsPage/PoolList";
 import PoolRow from "components/pages/Fuse/FusePoolsPage/PoolRow";
 import { useFuseDataForAsset } from "hooks/fuse/useFuseDataForAsset";
 import { TokenData } from "hooks/useTokenData";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { Row, useIsMobile } from "lib/chakraUtils";
 import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
+import { getSortIcon, useSortableList } from "hooks/useSortableList";
+import { Icon, Stack } from "@chakra-ui/react";
 
 const FuseOpportunities = ({ token }: { token: TokenData }) => {
   const fuseDataForAsset = useFuseDataForAsset(token.address);
@@ -14,6 +16,13 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
 
   const isMobile = useIsMobile();
   const { t } = useTranslation();
+
+  const {
+    sorted: sortedPools,
+    handleSortClick,
+    sortBy,
+    sortDir,
+  } = useSortableList(poolsWithThisAsset);
 
   return (
     <Box h="100%" w="100%">
@@ -36,9 +45,18 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
 
         {isMobile ? null : (
           <>
-            <Text fontWeight="bold" textAlign="center" width="13%">
-              {t("Pool #")}
-            </Text>
+            <Box
+              width="13%"
+              onClick={() => handleSortClick("id")}
+              _hover={{ cursor: "pointer" }}
+            >
+              <Stack direction="row">
+                <Text fontWeight="bold" textAlign="center">
+                  {t("Pool #")}
+                  {/* <Icon as={getSortIcon(sortBy === "id", sortDir)} /> */}
+                </Text>
+              </Stack>
+            </Box>
 
             <Text fontWeight="bold" textAlign="center" width="16%">
               {t("Supplied")}
@@ -54,8 +72,8 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
           </>
         )}
       </Row>
-      {poolsWithThisAsset?.length ? (
-        poolsWithThisAsset.map((pool, index) => {
+      {sortedPools?.length ? (
+        sortedPools.map((pool, index) => {
           return (
             <PoolRow
               key={pool.id}
@@ -67,7 +85,7 @@ const FuseOpportunities = ({ token }: { token: TokenData }) => {
                 symbol: asset.underlyingSymbol,
                 address: asset.underlyingToken,
               }))}
-              noBottomDivider={index === poolsWithThisAsset.length - 1}
+              noBottomDivider={index === sortedPools.length - 1}
               smaller={true}
             />
           );

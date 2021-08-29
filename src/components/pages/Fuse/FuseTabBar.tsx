@@ -7,7 +7,7 @@ import { RowOrColumn, Row, Center } from "lib/chakraUtils";
 
 // Hooks
 import { useEffect, useState } from "react";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFilter } from "hooks/useFilter";
 import { useRouter } from "next/router";
@@ -31,7 +31,7 @@ const FuseTabBar = () => {
 
   useEffect(() => {
     if (router.pathname === "/fuse") {
-      const route = val ? `/fuse?filter=${val}` : '/fuse'
+      const route = val ? `/fuse?filter=${val}` : "/fuse";
       router.push(route, undefined, { shallow: true });
     }
   }, [val]);
@@ -161,7 +161,7 @@ const TabLink = ({ route, text }: { route: string; text: string }) => {
         {...(route === router.asPath.replace(/\/+$/, "") ? activeStyle : noop)}
       >
         <Center expand px={2} fontWeight="bold">
-          {text}
+          <Text>{text}</Text>
         </Center>
       </DashboardBox>
     </AppLink>
