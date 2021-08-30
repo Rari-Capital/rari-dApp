@@ -77,7 +77,7 @@ const FuseLiquidationsPage = memo(() => {
   const [showAtRiskPositions, setShowAtRiskPositions] = useState(false);
 
   const { data: positions } = useQuery(
-    showAtRiskPositions ? "atRiskPositions" : "liquidateablePositions",
+    showAtRiskPositions ? "atRiskPositions" : "liquidatablePositions",
     async () => {
       const [response, ethPriceBN] = await Promise.all([
         fuse.contracts.FusePoolLens.methods
