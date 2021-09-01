@@ -221,7 +221,6 @@ export default class Fuse {
       poolName,
       enforceWhitelist,
       closeFactor,
-      maxAssets,
       liquidationIncentive,
       priceOracle,
       priceOracleConf,
