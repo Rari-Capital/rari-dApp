@@ -1698,3 +1698,58 @@ describe('MasterPriceOracle, SushiBarPriceOracle', function() {
     });
   });
 });
+
+
+describe('BadgerPriceOracle', function() {
+  this.timeout(30000);
+  var accounts, assetAddresses, comptroller, oracle;
+
+  before(async function() {
+    this.timeout(60000);
+    accounts = await fuse.web3.eth.getAccounts();
+
+    // Whitelist accounts[0] as deployer
+    if (process.env.HARDHAT_IMPERSONATE) await impersonateAccount("0x10dB6Bce3F2AE1589ec91A872213DAE59697967a");
+    await fuse.contracts.FusePoolDirectory.methods._whitelistDeployers([accounts[0]]).send({ from: "0x10dB6Bce3F2AE1589ec91A872213DAE59697967a" });
+
+    // Deploy BadgerPriceOracle
+    var badgerPriceOracle = await fuse.deployPriceOracle("BadgerPriceOracle", {}, { from: accounts[0], gasPrice: "0" });
+
+    // Deploy pool
+    var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: badgerPriceOracle }, { from: accounts[0], gasPrice: "0" });
+    comptroller = new fuse.web3.eth.Contract(comptrollerAbi, poolAddress);
+    oracle = new fuse.web3.eth.Contract(fuse.oracleContracts["BadgerPriceOracle"].abi, priceOracleAddress);
+
+    // Deploy assets
+    assetAddresses = {};
+    for (const conf of [
+      { name: "Fuse bBADGER", symbol: "fbBADGER", underlying: "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28" },
+      { name: "Fuse bDIGG", symbol: "fbDIGG", underlying: "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a" },
+      { name: "Fuse ibBTC", symbol: "fibBTC", underlying: "0xc4e15973e6ff2a35cc804c2cf9d2a1b817a8b40f" }
+    ]) {
+      assetAddresses[conf.symbol] = await deployAsset({ comptroller: poolAddress, ...conf }, undefined, undefined, undefined, { from: accounts[0], gasPrice: "0" }, true);
+    }
+  });
+
+  describe('#getUnderlyingPrice()', function() {
+    it('should check token prices', async function() {
+      for (const symbol of Object.keys(assetAddresses)) {
+        // Get underlying token address and expected price
+        var underlying = symbol === "fETH" ? null : await (new fuse.web3.eth.Contract(cErc20Abi, assetAddresses[symbol])).methods.underlying().call();
+        var expectedPrice = symbol === "fETH" ? 1 : (symbol === "fibBTC" ? (await getTokenPrice(underlying)) : (symbol === "bDIGG" ? 0.155539222 : (await getYVaultPrice(underlying, false))));
+
+        // Test `getUnderlyingPrice`
+        var oraclePrice = (await oracle.methods.getUnderlyingPrice(assetAddresses[symbol]).call()) / (10 ** (36 - (symbol === "fETH" ? 18 : (await (new fuse.web3.eth.Contract(erc20Abi, underlying)).methods.decimals().call()))));
+        console.log(symbol + ": " + oraclePrice + " ETH (expected " + expectedPrice + " ETH)");
+        // assert(oraclePrice >= expectedPrice * 0.95 && oraclePrice <= expectedPrice * 1.05);
+        
+        // Test `price` if != ETH
+        if (symbol !== "fETH") {
+          oraclePrice = (await oracle.methods.price(underlying).call()) / 1e18;
+          console.log(symbol + ": " + oraclePrice + " ETH (expected " + expectedPrice + " ETH)");
+          // assert(oraclePrice >= expectedPrice * 0.95 && oraclePrice <= expectedPrice * 1.05);
+        }
+      }
+    });
+  });
+});
