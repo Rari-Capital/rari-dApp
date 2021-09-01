@@ -19,6 +19,9 @@ var usedContractAbiKeys = [
   "contracts/JumpRateModel.sol:JumpRateModel",
   "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2",
   "contracts/SimplePriceOracle.sol:SimplePriceOracle",
+  "contracts/RewardsDistributor.sol:RewardsDistributor",
+  "contracts/JumpRateModelV2.sol:JumpRateModelV2",
+  "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
 ];
 for (const contractKey of usedContractAbiKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
@@ -35,6 +38,9 @@ var usedContractBinKeys = [
   "contracts/JumpRateModel.sol:JumpRateModel",
   "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2",
   "contracts/SimplePriceOracle.sol:SimplePriceOracle",
+  "contracts/RewardsDistributor.sol:RewardsDistributor",
+  "contracts/JumpRateModelV2.sol:JumpRateModelV2",
+  "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
 ];
 for (const contractKey of usedContractBinKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
