@@ -69,7 +69,7 @@ const ExplorePage = () => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
-      mx="auto"
+      mx={5}
       mt={5}
       width="100%"
       px={isMobile ? 3 : 10}

@@ -2,7 +2,10 @@ import { useMemo } from "react";
 import { Box, Heading, Text, Image, Skeleton } from "@chakra-ui/react";
 import { Column, Row } from "lib/chakraUtils";
 
-import { HomepageOpportunity } from "constants/homepage";
+import {
+  HomepageOpportunity,
+  HomepageOpportunityType,
+} from "constants/homepage";
 import { useOpportunitySubtitle } from "hooks/homepage/useOpportunitySubtitle";
 import { getOpportunityLink } from "utils/homepage";
 import AppLink from "components/shared/AppLink";
@@ -22,7 +25,7 @@ const OpportunityCard = ({
         height={{
           sm: "140px",
           md: "140px",
-          lg: "140px",
+          lg: "160px",
           xl: "140px",
           "2xl": "170px",
         }}
@@ -103,6 +106,21 @@ const OpportunityCard = ({
             />
           </Column>
         </Row>
+        {/* <Image
+          src={
+            opportunity.type === HomepageOpportunityType.FusePool
+              ? "/static/icons/fuse-glow.svg"
+              : opportunity.type === HomepageOpportunityType.EarnVault
+              ? "/static/icons/earn-glow.svg"
+              : undefined
+          }
+          boxSize={"20px"}
+          position="absolute"
+          bottom={0}
+          right={0}
+          mx={2}
+          my={2}
+        /> */}
       </Box>
     </AppLink>
   );

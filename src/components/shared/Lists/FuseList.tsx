@@ -51,8 +51,8 @@ export const FuseList = ({
   return (
     <Box h="100%" w="100%">
       <Table variant="unstyled">
-        <Thead position="sticky" top={0} left={0} bg="#121212">
-          <Tr>
+        <Thead position="sticky" top={0} left={0} bg="#121212" zIndex={4}>
+          <Tr bg="#121212">
             <Th fontSize="sm">
               {!isMobile ? t("Pool Assets") : t("Pool Directory")}
             </Th>
@@ -108,7 +108,9 @@ export const FuseList = ({
               );
             })
           ) : (
-            <Spinner my={8} />
+            <Tr>
+              <Spinner my={8} />
+            </Tr>
           )}
         </Tbody>
       </Table>
@@ -171,29 +173,36 @@ export const FusePoolRow = ({
           <Text mt={isEmpty ? 0 : 2}>{name}</Text>
         </Column>
       </Td>
-
-      {/* Pool # */}
-      <Td isNumeric={true} fontWeight="bold">
-        {poolNumber}
-      </Td>
-      {/* Total Supply*/}
-      <Td isNumeric={true} fontWeight="bold">
-        {smaller ? shortUsdFormatter(tvl) : smallUsdFormatter(tvl)}
-      </Td>
-      {/* Total Borrow */}
-      <Td isNumeric={true} fontWeight="bold">
-        {smaller ? shortUsdFormatter(borrowed) : smallUsdFormatter(borrowed)}
-      </Td>
-      {/* Risk Score # */}
-      <Td isNumeric={true} fontWeight="bold">
-        <SimpleTooltip
-          label={
-            "Underlying RSS: " + (rss ? rss.totalScore.toFixed(2) : "?") + "%"
-          }
-        >
-          {rssScore}
-        </SimpleTooltip>
-      </Td>
+      {!isMobile && (
+        <>
+          {/* Pool # */}
+          <Td isNumeric={true} fontWeight="bold">
+            {poolNumber}
+          </Td>
+          {/* Total Supply*/}
+          <Td isNumeric={true} fontWeight="bold">
+            {smaller ? shortUsdFormatter(tvl) : smallUsdFormatter(tvl)}
+          </Td>
+          {/* Total Borrow */}
+          <Td isNumeric={true} fontWeight="bold">
+            {smaller
+              ? shortUsdFormatter(borrowed)
+              : smallUsdFormatter(borrowed)}
+          </Td>
+          {/* Risk Score # */}
+          <Td isNumeric={true} fontWeight="bold">
+            <SimpleTooltip
+              label={
+                "Underlying RSS: " +
+                (rss ? rss.totalScore.toFixed(2) : "?") +
+                "%"
+              }
+            >
+              {rssScore}
+            </SimpleTooltip>
+          </Td>
+        </>
+      )}
     </AppLink>
   );
 };

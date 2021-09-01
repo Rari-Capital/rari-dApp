@@ -80,6 +80,8 @@ export default async function handler(
         fetchTokensAPIDataAsMap(gqlsearchResults.map((asset) => asset.id)),
       ]);
 
+      /** Get Fuse Data **/
+
       // Maps a Fuse Pool's address to an array of its underlyingToken Addresses
       const fuseTokensMap: { [comptroller: string]: string[] } = {};
       // A unique list of fuse pools among the returned tokens

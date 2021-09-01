@@ -43,9 +43,15 @@ const VaultsList = ({ token }: { token?: TokenData }) => {
           </Tr>
         </Thead>
         <Tbody w="100%">
-          {sortedPoolInfos?.map((vault, i) => {
-            return <VaultsRow key={i} vault={vault} />;
-          })}
+          {sortedPoolInfos ? (
+            sortedPoolInfos.map((vault, i) => {
+              return <VaultsRow key={i} vault={vault} />;
+            })
+          ) : (
+            <Tr>
+              <Spinner my={8} />
+            </Tr>
+          )}
         </Tbody>
       </Table>
     </Box>

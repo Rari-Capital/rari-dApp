@@ -3,7 +3,7 @@ import {
   MenuItemType,
 } from "components/shared/Header2/HeaderLink";
 
-export const PRODUCTS_DROPDOWN_ITEMS: MenuItemInterface[] = [
+export const  PRODUCTS_DROPDOWN_ITEMS: MenuItemInterface[] = [
   { type: MenuItemType.LINK, link: { name: "Fuse", route: "/fuse" } },
   { type: MenuItemType.LINK, link: { name: "Pool2", route: "/pool2" } },
   { type: MenuItemType.LINK, link: { name: "Tranches", route: "/tranches" } },
@@ -14,8 +14,6 @@ export const PRODUCTS_DROPDOWN_ITEMS: MenuItemInterface[] = [
     links: [
       { name: "DAI", route: "/pools/dai" },
       { name: "USDC", route: "/pools/usdc" },
-      { name: "Yield", route: "/pools/yield" },
-      { name: "ETH", route: "/pools/eth" },
     ],
   },
 ];
@@ -35,6 +33,10 @@ export const UTILS_DROPDOWN_ITEMS: MenuItemInterface[] = [
     {
       type: MenuItemType.LINK,
       link: { name: "Positions", route: "/positions" },
+    },
+    {
+      type: MenuItemType.LINK,
+      link: { name: "Interest Rates", route: "/utils/interest-rates" },
     },
   ];
   

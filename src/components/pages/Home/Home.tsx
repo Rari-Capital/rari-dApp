@@ -1,6 +1,11 @@
 // Next
 import dynamic from "next/dynamic";
-import { Heading, Text, SimpleGrid } from "@chakra-ui/react";
+import {
+  Heading,
+  Text,
+  SimpleGrid,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { Column, Row } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import Marquee from "react-fast-marquee";
@@ -74,6 +79,8 @@ const Home = () => {
     tokensData: {},
   };
 
+  const sliceNum = useBreakpointValue({ sm: 4, md: 4, lg: 6, xl: 8 });
+
   return (
     <SaffronProvider>
       <Column
@@ -134,6 +141,7 @@ const Home = () => {
           crossAxisAlignment="center"
           width="100%"
           height="100%"
+          mb={10}
           // px="20%"
         >
           <Marquee gradient={false} style={{ padding: "10px" }}>
@@ -177,15 +185,12 @@ const Home = () => {
             </Row>
 
             <SimpleGrid
-              columns={{ sm: 2, md: 2, lg: 4 }}
+              columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
               spacing="32px"
               w="100%"
               mt={5}
             >
-              {HOMEPAGE_OPPORTUNIES.slice(
-                0,
-                isMobile ? 4 : HOMEPAGE_OPPORTUNIES.length
-              ).map((opportunity, i) => (
+              {HOMEPAGE_OPPORTUNIES.slice(0, sliceNum).map((opportunity, i) => (
                 <OpportunityCard opportunity={opportunity} key={i} />
               ))}
             </SimpleGrid>
@@ -197,12 +202,12 @@ const Home = () => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           mx="auto"
-          my={5}
+          my={10}
           px={{ base: "5%", sm: "5%", md: "15%" }}
           width="100%"
           // background="purple"
         >
-          <DashboardBox width="100%" height="200px">
+          <DashboardBox width="100%" height="230px">
             <Row
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-start"
@@ -262,7 +267,7 @@ const Home = () => {
         </Row>
 
         {/* Easily Earn (Vaults) */}
-        <Row
+        {/* <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
           width="100%"
@@ -299,7 +304,7 @@ const Home = () => {
               ))}
             </Marquee>
           </Column>
-        </Row>
+        </Row> */}
 
         {/* Explore Today */}
       </Column>

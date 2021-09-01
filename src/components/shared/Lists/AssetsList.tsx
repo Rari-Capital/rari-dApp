@@ -100,12 +100,7 @@ export const AllAssetsList = () => {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr w="100%">
-            <Center>
-              <Spinner my={8} />
-            </Center>
-          </Tr>
-          {/* {sortedAssets ? (
+          {sortedAssets ? (
             sortedAssets.map((underlyingAsset) => {
               return (
                 <AssetRow
@@ -116,10 +111,12 @@ export const AllAssetsList = () => {
               );
             })
           ) : (
-            <Tr>
-              <Spinner my={8} />
+            <Tr w="100%">
+              <Center>
+                <Spinner my={8} />
+              </Center>
             </Tr>
-          )} */}
+          )}
         </Tbody>
       </Table>
     </Box>

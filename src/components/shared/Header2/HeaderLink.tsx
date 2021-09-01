@@ -48,7 +48,7 @@ export const HeaderLink = ({
   route: string;
   noUnderline?: boolean;
   ml?: number | string;
-  [x: string] : any;
+  [x: string]: any;
 }) => {
   const router = useRouter();
 
@@ -128,7 +128,7 @@ export const DropDownLink = ({
           textDecor={isOnThisRoute ? "underline" : ""}
           textDecorationThickness="1.5px"
           color={isOnThisRoute ? "#7065F2" : "white"}
-          _hover={{ bg: "none", textDecoration: "hover" }}
+          _hover={{ bg: "none", textDecoration: "underline" }}
           _active={{ bg: "grey.100" }}
           _focus={{ bg: "grey.200" }}
         >

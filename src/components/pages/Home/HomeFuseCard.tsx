@@ -6,6 +6,7 @@ import {
   Heading,
   SkeletonText,
   Text,
+  Image,
 } from "@chakra-ui/react";
 
 import { HomepageFusePool, HOMEPAGE_FUSE_POOLS } from "constants/homepage";
@@ -101,6 +102,16 @@ const HomeFuseCard = ({
             {subtitle ?? assetsSubtitle}
           </Text>
         </SkeletonText>
+        {/* <Image
+          src={"/static/icons/fuse-glow.svg"}
+          zIndex={11}
+          boxSize={"20px"}
+          position="absolute"
+          bottom={0}
+          right={0}
+          mx={2}
+          my={2}
+        /> */}
       </DashboardBox>
     </AppLink>
     // </motion.div>

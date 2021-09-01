@@ -109,19 +109,19 @@ export interface HomepageOpportunity {
 export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
   {
     type: HomepageOpportunityType.EarnVault,
-    title: "ETH Pool",
-    subtitle: "Earn interest on ETH deposits",
-    bgColor: "#A5A7ED",
-    icon: "/static/icons/eth-glow.svg",
-    vaultType: Pool.ETH,
-  },
-  {
-    type: HomepageOpportunityType.EarnVault,
-    title: "DAI Pool",
+    title: "DAI Vault",
     subtitle: "Earn interest on DAI deposits",
     bgColor: "#FFA700",
     icon: "/static/icons/dai-glow.svg",
     vaultType: Pool.DAI,
+  },
+  {
+    type: HomepageOpportunityType.EarnVault,
+    title: "USDC Vault",
+    subtitle: "Earn interest on USDC deposits",
+    bgColor: "#2474cc",
+    icon: "/static/icons/usdc-glow.svg",
+    vaultType: Pool.USDC,
   },
   {
     type: HomepageOpportunityType.FusePool,
@@ -143,7 +143,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
   },
   {
     type: HomepageOpportunityType.EarnPage,
-    title: "Earn",
+    title: "Earn Vaults",
     subtitle: "Sustainable yield made easy",
     bgColor: "#6041FC",
     icon: "/static/icons/earn-glow.svg",

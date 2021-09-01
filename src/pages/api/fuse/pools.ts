@@ -99,7 +99,7 @@ export default async function handler(
         .status(200)
         .json({ pools: fusePoolsData, userAddress });
     } catch (error) {
-      console.log({ error }, error.message);
+      console.log({ error });
       return res.status(400).json({ error });
     }
   }

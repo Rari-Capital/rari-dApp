@@ -70,7 +70,7 @@ export const NewHeader = () => {
           name={t("Governance")}
           links={GOVERNANCE_DROPDOWN_ITEMS}
         />
-        <DropDownLink name={t("Utils")} ml={2} links={UTILS_DROPDOWN_ITEMS} />
+        <DropDownLink name={t("Tools")} ml={2} links={UTILS_DROPDOWN_ITEMS} />
 
         <HeaderLink name={t("Explore")} route="/explore" ml={5} />
 

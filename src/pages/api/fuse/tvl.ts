@@ -100,7 +100,7 @@ export default async function handler(
 
       return res.status(200).json(tvlReturn);
     } catch (error) {
-      console.log({ error }, error.message);
+      console.log({ error });
       return res.status(400).json({ error });
     }
   }
