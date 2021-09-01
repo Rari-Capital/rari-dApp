@@ -14,8 +14,8 @@ var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
 var contracts = require(__dirname + "/contracts/compound-protocol.min.json")
   .contracts;
-var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
-  .contracts;
+/* var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
+  .contracts; */
 var oracleContracts = require(__dirname + "/contracts/oracles.min.json")
   .contracts;
 
@@ -25,7 +25,7 @@ export default class Fuse {
   static FUSE_POOL_DIRECTORY_CONTRACT_ADDRESS =
     "0x835482FE0532f169024d5E9410199369aAD5C77E";
   static FUSE_SAFE_LIQUIDATOR_CONTRACT_ADDRESS =
-    "0x1bbf310c8707bc2248c0b46a2cd073c81f2cd76c";
+    "0xf0f3a1494ae00b5350535b7777abb2f499fc13d4";
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS =
     "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85";
   static FUSE_POOL_LENS_CONTRACT_ADDRESS =
@@ -39,9 +39,9 @@ export default class Fuse {
     "0x60884c8faad1b30b1c76100da92b76ed3af849ba"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
-    "0xc629c26dced4277419cde234012f8160a0278a79";
+    "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
   static COINBASE_PRO_REPORTER_ADDRESS =
-    "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC";
+    "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC"; // UniswapAnchoredView NOT IN USE
 
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
@@ -56,6 +56,9 @@ export default class Fuse {
     UniswapTwapPriceOracle_SushiSwap: "0xfD4B4552c26CeBC54cD80B1BDABEE2AC3E7eB324",
     UniswapLpTokenPriceOracle: "0x50f42c004bd9b0e5acc65c33da133fbfbe86c7c0",
     UniswapV3TwapPriceOracle_Uniswap_3000: "0x80829b8A344741E28ae70374Be02Ec9d4b51CD89",
+    UniswapV3TwapPriceOracle_Uniswap_10000: "0xF8731EB567c4C7693cF497849247668c91C9Ed36",
+    UniswapV3TwapPriceOracleV2_Uniswap_500_USDC: "0x29490a6F5B4A999601378547Fe681d04d877D29b",
+    UniswapV3TwapPriceOracleV2_Uniswap_3000_USDC: "0xf3a36BB3B627A5C8c36BA0714Fe035A401E86B78",
     UniswapV3TwapPriceOracleV2_Uniswap_10000_USDC: "0x3288a2d5f11FcBefbf77754e073cAD2C10325dE2",
     // RecursivePriceOracle: "", // TODO: Set correct mainnet address after deployment
     YVaultV1PriceOracle: "0xb04be6165cf1879310e48f8900ad8c647b9b5c5d", // NOT CURRENTLY IN USE
@@ -74,14 +77,20 @@ export default class Fuse {
     UniswapTwapPriceOracleV2_SushiSwap_DAI: "0x72fd4c801f5845ab672a12bce1b05bdba1fd851a", // v1.1.2
     UniswapTwapPriceOracleV2_SushiSwap_CRV: "0x552163f2a63f82bb47b686ffc665ddb3ceaca0ea", // v1.1.3
     UniswapTwapPriceOracleV2_SushiSwap_USDC: "0x9ee412a83a52f033d23a0b7e2e030382b3e53208", // v1.1.3
+    UniswapTwapPriceOracleV2_Uniswap_FRAX: "0x6127e381756796fb978bc872556bf790f14cde98", // v1.1.3
     SushiBarPriceOracle: "0x290E0f31e96e13f9c0DB14fD328a3C2A94557245",
+    BadgerPriceOracle: "0xd0C86943e594640c4598086a2359A0e70b80eF8D",
+    HarvestPriceOracle: "0x8D364609cd2716172016838fF9FBC7fBcAC91792",
+    StakedSdtPriceOracle: "0x5447c825ee330015418c1a0d840c4a1b5a7176cc",
+    TokemakPoolTAssetPriceOracle: "0xd806782b31EC52FcB7f2a009d7D045bB732431Fb",
+    MStablePriceOracle: "0xeb988f5492C86584f8D8f1B8662188D5A9BfE357",
   };
 
   static UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS = "0xa170dba2cd1f68cdd7567cf70184d5492d2e8138";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS = "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
 
-  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7";
-  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1";
+  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DaiInterestRateModelV2 NOT IN USE
+  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DaiInterestRateModelV2 NOT IN USE
 
   static UNISWAP_V2_FACTORY_ADDRESS =
     "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
@@ -150,6 +159,7 @@ export default class Fuse {
     JumpRateModel_Fei_TRIBE: "0x075538650a9c69ac8019507a7dd1bd879b12c1d7",
     JumpRateModel_Fei_ETH: "0xbab47e4b692195bf064923178a90ef999a15f819",
     JumpRateModel_Fei_DAI: "0xede47399e2aa8f076d40dc52896331cba8bd40f7",
+    JumpRateModel_Olympus_Majors: "0xe1d35fae219e4d74fe11cb4246990784a4fe6680",
   };
 
   constructor(web3Provider) {
@@ -189,7 +199,7 @@ export default class Fuse {
     };
 
     this.compoundContracts = contracts;
-    this.openOracleContracts = openOracleContracts;
+    // this.openOracleContracts = openOracleContracts;
     this.oracleContracts = oracleContracts;
 
     this.getCreate2Address = function (creatorAddress, salts, byteCodeHash) {
@@ -310,7 +320,7 @@ export default class Fuse {
     };
 
     this.deployPriceOracle = async function (model, conf, options) {
-      if (!model) model = "PreferredPriceOracle";
+      if (!model) model = "ChainlinkPriceOracle";
       if (!conf) conf = {};
 
       switch (model) {

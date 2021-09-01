@@ -2,8 +2,8 @@ const fs = require("fs");
 
 var compoundContracts = require(__dirname +
   "/../src/contracts/compound-protocol.json").contracts;
-var openOracleContracts = require(__dirname +
-  "/../src/contracts/open-oracle.json").contracts;
+/* var openOracleContracts = require(__dirname +
+  "/../src/contracts/open-oracle.json").contracts; */
 
 var minContracts = {};
 var usedContractAbiKeys = [
@@ -45,7 +45,7 @@ fs.writeFileSync(
   JSON.stringify({ contracts: minContracts })
 );
 
-minContracts = {};
+/* minContracts = {};
 var usedContractAbiKeys = [
   "contracts/Uniswap/UniswapAnchoredView.sol:UniswapAnchoredView",
   "contracts/OpenOraclePriceData.sol:OpenOraclePriceData",
@@ -67,7 +67,7 @@ fs.writeFileSync(
   __dirname + "/../src/contracts/open-oracle.min.json",
   JSON.stringify({ contracts: minContracts })
 );
-
+ */
 minContracts = {};
 fs.readdirSync(__dirname + "/../src/contracts/oracles/").forEach((file) => {
   var contract = JSON.parse(
