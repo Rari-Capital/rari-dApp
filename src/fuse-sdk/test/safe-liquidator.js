@@ -121,7 +121,8 @@ const LIQUIDATION_STRATEGIES = {
   SOhm: "0xb7278A61aa25c888815aFC32Ad3cC52fF24fE575",
   WSTEth: "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90",
   SushiBar: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
-  UniswapV3: "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3"
+  UniswapV3: "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3",
+  BadgerSett: "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3"
 };
 
 // Supported Uniswap V2 protocols
@@ -235,7 +236,9 @@ const testAssetFixtures = [
   { name: "Fuse sOHM", symbol: "f123-sOHM", underlying: "0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f", price: "100000000000000000000000000" },
   { name: "Fuse wstETH", symbol: "f123-wstETH", underlying: "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", price: "920000000000000000" },
   { name: "Fuse SOCKS", symbol: "f123-SOCKS", underlying: "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", price: "16000000000000000000" },
-  { name: "Fuse xSUSHI", symbol: "f123-xSUSHI", underlying: "0x8798249c2e607446efb7ad49ec89dd1865ff4272", price: "4500000000000000" }
+  { name: "Fuse xSUSHI", symbol: "f123-xSUSHI", underlying: "0x8798249c2e607446efb7ad49ec89dd1865ff4272", price: "4500000000000000" },
+  { name: "Fuse bBADGER", symbol: "f123-bBADGER", underlying: "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28", price: "5000000000000000" },
+  { name: "Fuse bDIGG", symbol: "f123-bDIGG", underlying: "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a", price: "2000000000000000000" }
 ];
 
 describe('FuseSafeLiquidator', function() {
@@ -252,11 +255,17 @@ describe('FuseSafeLiquidator', function() {
     // Whitelist accounts[0] as deployer
     await fuse.contracts.FusePoolDirectory.methods._whitelistDeployers([accounts[0]]).send({ from: "0x10dB6Bce3F2AE1589ec91A872213DAE59697967a" });
 
-    // Deploy liquidation strategies
-    if (process.env.HARDHAT_IMPERSONATE) for (const strategy of Object.keys(LIQUIDATION_STRATEGIES)) {
-      const contractFactory = await fuse.hre.ethers.getContractFactory(strategy + "Liquidator");
-      const contract = await contractFactory.deploy();
-      LIQUIDATION_STRATEGIES[strategy] = contract.address;
+    // Deploy FuseSafeLiquidator and liquidation strategies
+    if (process.env.HARDHAT_DEPLOY_FUSE_CONTRACTS) {
+      const fslFactory = await fuse.hre.ethers.getContractFactory("FuseSafeLiquidator");
+      const fsl = await fslFactory.deploy();
+      fuse.contracts.FuseSafeLiquidator.options.address = fsl.address;
+
+      for (const strategy of Object.keys(LIQUIDATION_STRATEGIES)) {
+        const contractFactory = await fuse.hre.ethers.getContractFactory(strategy + "Liquidator");
+        const contract = await contractFactory.deploy();
+        LIQUIDATION_STRATEGIES[strategy] = contract.address;
+      }
     }
 
     // Send tokens to accounts[0]
@@ -324,6 +333,14 @@ describe('FuseSafeLiquidator', function() {
         "0x8798249c2e607446efb7ad49ec89dd1865ff4272", "0xf977814e90da44bfa03b6295a0616a897441acec",
         Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
       ],
+      [
+        "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28", "0x533e3c0e6b48010873b947bddc4721b1bdff9648",
+        Fuse.Web3.utils.toBN(1000).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
+      [
+        "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a", "0x533e3c0e6b48010873b947bddc4721b1bdff9648",
+        Fuse.Web3.utils.toBN(10).mul(Fuse.Web3.utils.toBN(1e18))
+      ],
     ];
 
     for (const [tokenAddress, sender, amount] of tokensNeeded) {
@@ -331,6 +348,15 @@ describe('FuseSafeLiquidator', function() {
       var token = new fuse.web3.eth.Contract(erc20Abi, tokenAddress);
       if (Fuse.Web3.utils.toBN(await token.methods.balanceOf(accounts[0]).call()).lt(amount)) await token.methods.transfer(accounts[0], amount).send({ from: sender });
     }
+
+    // Approve contract access to bDIGG and bBADGER
+    var badgerGovernance = "0xb65cef03b9b89f99517643226d76e286ee999e77";
+    if (process.env.HARDHAT_IMPERSONATE) await impersonateAccount(badgerGovernance);
+    var settAbi = [{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"approveContractAccess","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+    var bBADGER = new fuse.web3.eth.Contract(settAbi, "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28");
+    await bBADGER.methods.approveContractAccess(fuse.contracts.FuseSafeLiquidator.options.address).send({ from: badgerGovernance });
+    var bDIGG = new fuse.web3.eth.Contract(settAbi, "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a");
+    await bDIGG.methods.approveContractAccess(fuse.contracts.FuseSafeLiquidator.options.address).send({ from: badgerGovernance });
 
     // Deploy pool
     var [poolAddress, priceOracleAddress] = await deployPool({ priceOracle: "SimplePriceOracle" }, { from: accounts[0], gasPrice: "0", gas: 10e6 });
@@ -706,6 +732,14 @@ describe('FuseSafeLiquidator', function() {
     // Safe liquidate ETH borrow with flashloan using token collateral (via Uniswap V3 liquidator) + exchange seized collateral
     it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
     it('should liquidate an ETH borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+
+    // Safe liquidate ETH borrow with flashloan using bBADGER collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for bBADGER collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28", "BadgerSett", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for bBADGER collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28", "BadgerSett", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate ETH borrow with flashloan using bDIGG collateral + exchange seized collateral
+    it('should liquidate an ETH borrow (using a flash swap) for bDIGG collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a", ["BadgerSett", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x798D1bE841a82a273720CE31c822C61a67a601C3", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate an ETH borrow (using a flash swap) for bDIGG collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyEthBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a", ["BadgerSett", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x798D1bE841a82a273720CE31c822C61a67a601C3", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
   });
 
   describe('#safeLiquidateToTokensWithFlashLoan()', function() {
@@ -798,5 +832,13 @@ describe('FuseSafeLiquidator', function() {
     // Safe liquidate token borrow with flashloan using token collateral (via Uniswap V3 liquidator) + exchange seized collateral
     it('should liquidate a token borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
     it('should liquidate a token borrow (using a flash swap) for token collateral (via Uniswap V3 liquidator) and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x23b608675a2b2fb1890d3abbd85c5775c51691d5", "UniswapV3", fuse.web3.eth.abi.encodeParameters(["address", "address", "uint24"], ["0xe592427a0aece92de3edee1f18e0157c05861564", Fuse.WETH_ADDRESS, 10000]), UNISWAP_V2_PROTOCOLS.Uniswap.router) })); // SOCKS as an example
+
+    // Safe liquidate token borrow with flashloan using bBADGER collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for bBADGER collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28", "BadgerSett", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate a token borrow (using a flash swap) for bBADGER collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x19d97d8fa813ee2f51ad4b4e04ea08baf4dffc28", "BadgerSett", undefined, UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+
+    // Safe liquidate token borrow with flashloan using bDIGG collateral + exchange seized collateral
+    it('should liquidate a token borrow (using a flash swap) for bDIGG collateral and exchange to ETH', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0x0000000000000000000000000000000000000000", true, "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a", ["BadgerSett", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x798D1bE841a82a273720CE31c822C61a67a601C3", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
+    it('should liquidate a token borrow (using a flash swap) for bDIGG collateral and exchange to another token', dryRun(async () => { await setupAndLiquidateUnhealthyTokenBorrowWithTokenCollateral("0xD291E7a03283640FDc51b121aC401383A46cC623", true, "0x7e7e112a68d8d2e221e11047a72ffc1065c38e1a", ["BadgerSett", "UniswapV2"], ["0x0", fuse.web3.eth.abi.encodeParameters(["address", "address[]"], [UNISWAP_V2_PROTOCOLS.SushiSwap.router, ["0x798D1bE841a82a273720CE31c822C61a67a601C3", "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"]])], UNISWAP_V2_PROTOCOLS.Uniswap.router) }));
   });
 });
