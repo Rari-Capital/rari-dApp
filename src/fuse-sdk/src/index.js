@@ -2,6 +2,7 @@
 import Web3 from "web3";
 
 import JumpRateModel from "./irm/JumpRateModel.js";
+import JumpRateModelV2 from "./irm/JumpRateModelV2.js";
 import DAIInterestRateModelV2 from "./irm/DAIInterestRateModelV2.js";
 import WhitePaperInterestRateModel from "./irm/WhitePaperInterestRateModel.js";
 
@@ -1068,6 +1069,7 @@ export default class Fuse {
       // Get interest rate model type from runtime bytecode hash and init class
       var interestRateModels = {
         JumpRateModel: JumpRateModel,
+        JumpRateModelV2: JumpRateModelV2,
         DAIInterestRateModelV2: DAIInterestRateModelV2,
         WhitePaperInterestRateModel: WhitePaperInterestRateModel,
       };
@@ -1077,17 +1079,25 @@ export default class Fuse {
       );
       var interestRateModel = null;
 
+      outerLoop:
       for (const model of [
         "JumpRateModel",
+        "JumpRateModelV2",
         "DAIInterestRateModelV2",
         "WhitePaperInterestRateModel",
-      ])
-        if (
-          runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH
-        )
+      ]) {
+        if (interestRateModels[model].RUNTIME_BYTECODE_HASHES !== undefined) {
+          for (const hash of interestRateModels[model].RUNTIME_BYTECODE_HASHES) {
+            if (runtimeBytecodeHash == hash) {
+              interestRateModel = new interestRateModels[model]();
+              break outerLoop;
+            }
+          }
+        } else if (runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH) {
           interestRateModel = new interestRateModels[model]();
-
-      if (interestRateModel === null) return null;
+          break;
+        }
+      }
 
       return interestRateModel;
     };

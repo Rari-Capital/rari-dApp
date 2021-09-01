@@ -42,23 +42,27 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
 
   const ethAPY = usePoolAPY(Pool.ETH);
   const stableAPY = usePoolAPY(Pool.USDC);
+  const daiAPY = usePoolAPY(Pool.DAI);
   const yieldAPY = usePoolAPY(Pool.YIELD);
 
   const points = useMemo(() => {
-    if (ethAPY && stableAPY && yieldAPY) {
+    if (ethAPY && stableAPY && yieldAPY && daiAPY) {
       const ethAPYPercentPerDay = parseFloat(ethAPY) / 100 / 365;
       const stableAPYPercentPerDay = parseFloat(stableAPY) / 100 / 365;
       const yieldAPYPercentPerDay = parseFloat(yieldAPY) / 100 / 365;
+      const daiAPYPercentPerDay = parseFloat(daiAPY) / 100 / 365;
 
       let now = new Date();
 
       let ethBalance = 10000;
       let stableBalance = 10000;
       let yieldBalance = 10000;
+      let daiBalance = 10000;
 
       let stablePoints = [];
       let yieldPoints = [];
       let ethPoints = [];
+      let daiPoints = [];
 
       let i = 1;
 
@@ -79,6 +83,11 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
           yieldBalance +
           yieldBalance *
             (yieldAPYPercentPerDay * dayInterval) *
+            (Math.random() * 2);
+        daiBalance =
+          daiBalance +
+          daiBalance *
+            (daiAPYPercentPerDay * dayInterval) *
             (Math.random() * 2);
 
         now.setDate(now.getDate() + dayInterval);
@@ -104,6 +113,12 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
           y: ethBalance,
         });
 
+        daiPoints.push({
+          x: formattedDate,
+
+          y: daiBalance,
+        });
+
         i += dayInterval;
       }
 
@@ -117,6 +132,10 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
           data: stablePoints,
         },
         {
+          name: "DAI Pool",
+          data: daiPoints,
+        },
+        {
           name: "ETH Pool",
           data: ethPoints,
         },
@@ -124,7 +143,7 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
     } else {
       return null;
     }
-  }, [yieldAPY, stableAPY, ethAPY]);
+  }, [yieldAPY, stableAPY, ethAPY, daiAPY]);
 
   return (
     <>

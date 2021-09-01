@@ -609,6 +609,7 @@ const AmountSelect = ({
                   <TokenNameAndMaxButton
                     comptrollerAddress={comptrollerAddress}
                     mode={mode}
+                    symbol={tokenData?.symbol ?? asset.underlyingSymbol}
                     logoURL={
                       tokenData?.logoURL ??
                       "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -621,6 +622,7 @@ const AmountSelect = ({
             </Column>
 
             <StatsColumn
+              symbol={tokenData?.symbol ?? assets[index].underlyingSymbol}
               amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
               color={tokenData?.color ?? "#FFF"}
               assets={assets}
@@ -789,6 +791,7 @@ const StatsColumn = ({
   assets,
   index,
   amount,
+  symbol,
   enableAsCollateral,
 }: {
   color: string;
@@ -796,6 +799,7 @@ const StatsColumn = ({
   assets: USDPricedFuseAsset[];
   index: number;
   amount: number;
+  symbol: string;
   enableAsCollateral: boolean;
 }) => {
   const { t } = useTranslation();
@@ -1006,7 +1010,7 @@ const StatsColumn = ({
                   ).replace("$", "")}
                 </>
               ) : null}{" "}
-              {asset.underlyingSymbol}
+              {symbol}
             </Text>
           </Row>
 
@@ -1093,9 +1097,11 @@ const TokenNameAndMaxButton = ({
   logoURL,
   asset,
   mode,
+  symbol,
   comptrollerAddress,
 }: {
   logoURL: string;
+  symbol: string;
   asset: USDPricedFuseAsset;
   mode: Mode;
   comptrollerAddress: string;
@@ -1157,7 +1163,7 @@ const TokenNameAndMaxButton = ({
           />
         </Box>
         <Heading fontSize="24px" mr={2} flexShrink={0}>
-          {asset.underlyingSymbol}
+          {symbol}
         </Heading>
       </Row>
 

@@ -107,7 +107,7 @@ export default function InterestRatesTable() {
   return (
     <Box w="100%" mt="5">
       <WindowTable
-        Table={CustomTable}
+        Table={Table}
         HeaderRow={Tr}
         Row={TableRow}
         HeaderCell={HeaderCell}
@@ -115,7 +115,11 @@ export default function InterestRatesTable() {
         Header={Thead}
         Body={Tbody}
         columns={columns}
-        data={data}
+        data={
+          tokens.length === 0
+            ? [{ asset: "NO_RESULTS", compound: "", aave: "", fuse: "" }]
+            : data
+        }
         rowHeight={55}
         style={{
           width: "100%",
@@ -140,25 +144,6 @@ export default function InterestRatesTable() {
   );
 }
 
-function CustomTable({ children, ...props }: any) {
-  const { tokens } = useContext(InterestRatesContext);
-
-  const { t } = useTranslation();
-
-  return (
-    <Table {...props}>
-      {children}
-      {tokens.length === 0 ? (
-        <Tbody>
-          <Tr>
-            <Td colSpan={10000}>{t("No assets match your search.")}</Td>
-          </Tr>
-        </Tbody>
-      ) : null}
-    </Table>
-  );
-}
-
 function TableCell({ children, column, ...props }: any) {
   return (
     <Td
@@ -173,11 +158,13 @@ function TableCell({ children, column, ...props }: any) {
 }
 
 function TableRow({ children, row, ...props }: any) {
+  const { t } = useTranslation();
+
   // NO_ASSET is for blank rows (added jankily to provide padding at the end of the list)
-  return row.asset === "NO_ASSET" ? (
+  return row.asset === "NO_ASSET" || row.asset === "NO_RESULTS" ? (
     <Tr {...props}>
-      <Td colSpan={10000} userSelect="none" pointerEvents="none" border="none">
-        &nbsp;
+      <Td colSpan={10000} border="none">
+        {row.asset === "NO_ASSET" ? "" : t("No assets match your search.")}
       </Td>
     </Tr>
   ) : (
@@ -295,4 +282,7 @@ function PercentageComponent({ row, column }: any) {
 }
 
 // format percentage with 2 decimal places
-const formatPercentage = (rate: number) => (rate * 100).toFixed(2) + "%";
+const formatPercentage = (rate: number) => {
+  const percent = rate * 100;
+  return percent < 0.01 && percent > 0 ? "<0.01%" : percent.toFixed(2) + "%";
+};

@@ -70,15 +70,14 @@ export type LiquidationEvent = {
 };
 
 const FuseLiquidationsPage = memo(() => {
-  const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
 
-  const { fuse, rari } = useRari();
+  const { fuse, rari, isAuthed } = useRari();
 
   const [showAtRiskPositions, setShowAtRiskPositions] = useState(false);
 
   const { data: positions } = useQuery(
-    showAtRiskPositions ? "atRiskPositions" : "liquidateablePositions",
+    showAtRiskPositions ? "atRiskPositions" : "liquidatablePositions",
     async () => {
       const [response, ethPriceBN] = await Promise.all([
         fuse.contracts.FusePoolLens.methods
@@ -166,6 +165,11 @@ const FuseLiquidationsPage = memo(() => {
       const pool = pools[poolID];
 
       console.log(pool.comptroller, poolID);
+
+      if (poolID === 4) {
+        // Pool 4 is broken, we'll just skip it for now.
+        continue;
+      }
 
       poolFetches.push(
         fuse.contracts.FusePoolLens.methods
