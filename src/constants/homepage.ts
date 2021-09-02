@@ -108,6 +108,20 @@ export interface HomepageOpportunity {
 
 export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
   {
+    type: HomepageOpportunityType.EarnPage,
+    title: "Earn Vaults",
+    subtitle: "Sustainable yield made easy",
+    bgColor: "#6041FC",
+    icon: "/static/icons/earn-glow.svg",
+  },
+  {
+    type: HomepageOpportunityType.FusePage,
+    title: "Fuse",
+    subtitle: "The first open interest rate market protocol",
+    bgColor: "#E6303A",
+    icon: "/static/icons/fuse-glow.svg",
+  },
+  {
     type: HomepageOpportunityType.EarnVault,
     title: "DAI Vault",
     subtitle: "Earn interest on DAI deposits",
@@ -123,6 +137,7 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
     icon: "/static/icons/usdc-glow.svg",
     vaultType: Pool.USDC,
   },
+
   {
     type: HomepageOpportunityType.FusePool,
     title: "Tetranode's Pool",
@@ -134,26 +149,12 @@ export const HOMEPAGE_OPPORTUNIES: HomepageOpportunity[] = [
   },
   {
     type: HomepageOpportunityType.FusePool,
-    title: "Rari DAO Fuse Pool",
-    subtitle: "Lend and borrow top community assets",
+    title: "Olympus Pool Party",
+    subtitle: "Lend and borrow off sOHM",
     bgColor: "#00BEFF",
-    icon: "/static/icons/community-pool-glow.svg",
-    fusePoolId: 3,
+    icon: "/static/icons/olympus-pool.svg",
+    fusePoolId: 18,
     fuseMetric: FusePoolMetric.TotalSuppliedUSD,
-  },
-  {
-    type: HomepageOpportunityType.EarnPage,
-    title: "Earn Vaults",
-    subtitle: "Sustainable yield made easy",
-    bgColor: "#6041FC",
-    icon: "/static/icons/earn-glow.svg",
-  },
-  {
-    type: HomepageOpportunityType.FusePage,
-    title: "Fuse",
-    subtitle: "The first open interest rate market protocol",
-    bgColor: "#E6303A",
-    icon: "/static/icons/fuse-glow.svg",
   },
   {
     type: HomepageOpportunityType.Pool2Page,

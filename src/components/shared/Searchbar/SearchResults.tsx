@@ -82,30 +82,31 @@ const SearchResults = ({
 
   const renderTokens = useCallback(() => {
     return tokens.map((token, i: number) => {
-      const route =  token.id === ETH_TOKEN_DATA.address
+      const route =
+        token.id === ETH_TOKEN_DATA.address
           ? `/token/eth`
           : `/token/${token.id}`;
       return (
-        <AppLink href={route} w="100%" h="100%" key={i}>
-          <Row
-            p={2}
-            pl={5}
-            w="100%"
-            h="100%"
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="center"
-            key={i}
-            _hover={{ bg: "grey" }}
-            expand
-            onClick={handleResultsClick}
-            fontWeight={smaller ? "normal" : "bold"}
-          >
-            <Avatar src={tokensData[token.id]?.logoURL} boxSize={8} />
-            <Text ml={2}>{token.symbol}</Text>
-            {!smaller && balances && balances[token.id] && (
-              <Text ml={"auto"}>{balances[token.id].toFixed(2)}</Text>
-            )}
-          </Row>
+        <AppLink
+          as={Row}
+          href={route}
+          w="100%"
+          h="100%"
+          key={i}
+          p={2}
+          pl={5}
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          _hover={{ bg: "grey" }}
+          expand
+          onClick={handleResultsClick}
+          fontWeight={smaller ? "normal" : "bold"}
+        >
+          <Avatar src={tokensData[token.id]?.logoURL} boxSize={8} />
+          <Text ml={2}>{token.symbol}</Text>
+          {!smaller && balances && balances[token.id] && (
+            <Text ml={"auto"}>{balances[token.id].toFixed(2)}</Text>
+          )}
         </AppLink>
       );
     });

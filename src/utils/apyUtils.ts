@@ -1,4 +1,4 @@
-export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
+export const convertMantissaToAPY = (mantissa: any, dayRange: number = 365) => {
   return (Math.pow((mantissa / 1e18) * (4 * 60 * 24) + 1, dayRange) - 1) * 100;
 };
 

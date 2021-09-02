@@ -14,7 +14,6 @@ import { Column } from "lib/chakraUtils";
 import { PoolList } from "./PoolList";
 import { useFilter } from "hooks/useFilter";
 import { useFusePools } from "hooks/fuse/useFusePools";
-import { FuseList } from "components/shared/Lists/FuseList";
 
 const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();

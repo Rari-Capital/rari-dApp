@@ -56,52 +56,58 @@ export const AllAssetsList = () => {
 
   return (
     <Box h="100%" w="100%">
-      <Table variant="unstyled">
-        <Thead position="sticky" top={0} left={0} bg="#121212">
-          <Tr>
-            <SortableTableHeader
-              text="Asset"
-              sortDir={sortDir}
-              handleSortClick={() => handleSortClick("symbol")}
-              isActive={sortBy === "symbol"}
-            />
+      {!sortedAssets.length ? (
+        <Box w="100%" h="50px">
+          <Center>
+            <Spinner my={8} />
+          </Center>
+        </Box>
+      ) : (
+        <Table variant="unstyled">
+          <Thead position="sticky" top={0} left={0} bg="#121212">
+            <Tr>
+              <SortableTableHeader
+                text="Asset"
+                sortDir={sortDir}
+                handleSortClick={() => handleSortClick("symbol")}
+                isActive={sortBy === "symbol"}
+              />
 
-            {isMobile ? null : (
-              <>
-                <SortableTableHeader
-                  text="Total Supplied"
-                  sortDir={sortDir}
-                  handleSortClick={() => handleSortClick("totalSupplyUSD")}
-                  isActive={sortBy === "totalSupplyUSD"}
-                />
+              {isMobile ? null : (
+                <>
+                  <SortableTableHeader
+                    text="Total Supplied"
+                    sortDir={sortDir}
+                    handleSortClick={() => handleSortClick("totalSupplyUSD")}
+                    isActive={sortBy === "totalSupplyUSD"}
+                  />
 
-                <SortableTableHeader
-                  text="Total Borrowed"
-                  sortDir={sortDir}
-                  handleSortClick={() => handleSortClick("totalBorrowUSD")}
-                  isActive={sortBy === "totalBorrowUSD"}
-                />
+                  <SortableTableHeader
+                    text="Total Borrowed"
+                    sortDir={sortDir}
+                    handleSortClick={() => handleSortClick("totalBorrowUSD")}
+                    isActive={sortBy === "totalBorrowUSD"}
+                  />
 
-                <SortableTableHeader
-                  text="Total Liquidity"
-                  sortDir={sortDir}
-                  handleSortClick={() => handleSortClick("totalLiquidityUSD")}
-                  isActive={sortBy === "totalLiquidityUSD"}
-                />
-                {/* 
+                  <SortableTableHeader
+                    text="Total Liquidity"
+                    sortDir={sortDir}
+                    handleSortClick={() => handleSortClick("totalLiquidityUSD")}
+                    isActive={sortBy === "totalLiquidityUSD"}
+                  />
+                  {/* 
                 <SortableTableHeader
                   text="Price"
                   sortDir={sortDir}
                   handleSortClick={() => handleSortClick("price")}
                   isActive={sortBy === "price"}
                 /> */}
-              </>
-            )}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {sortedAssets ? (
-            sortedAssets.map((underlyingAsset) => {
+                </>
+              )}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {sortedAssets.map((underlyingAsset) => {
               return (
                 <AssetRow
                   asset={underlyingAsset}
@@ -109,16 +115,10 @@ export const AllAssetsList = () => {
                   key={underlyingAsset.symbol}
                 />
               );
-            })
-          ) : (
-            <Tr w="100%">
-              <Center>
-                <Spinner my={8} />
-              </Center>
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
+            })}
+          </Tbody>
+        </Table>
+      )}
     </Box>
   );
 };
@@ -188,7 +188,7 @@ export const AssetRow = ({
           <Td isNumeric={true}>
             <Stack direction="column">
               <Text fontWeight="bold">
-                {smallUsdFormatter(asset.totalLiquidityUSD)}
+                {smallUsdFormatter(asset.totalLiquidityUSD).substring(0, 15)}
               </Text>
               {/* <Text fontWeight="" fontSize="sm">
                 {(asset.totalLiquidity / 10 ** asset.decimals).toFixed(2)}{" "}

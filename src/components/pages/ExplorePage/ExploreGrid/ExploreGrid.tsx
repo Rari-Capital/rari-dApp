@@ -1,4 +1,5 @@
 import { SimpleGrid } from "@chakra-ui/layout";
+import { useBreakpointValue } from "@chakra-ui/react";
 import DashboardBox from "components/shared/DashboardBox";
 import {
   ExploreGridBox,
@@ -10,20 +11,22 @@ import {
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import useSWR from "swr";
 
-// Utils
-import axios from "axios";
-
 // Types
 import { APIExploreData } from "pages/api/explore";
+import { getExploreData } from "services/explore";
+import axios from "axios";
 
 // Fetchers
 const exploreFetcher = async (route: string): Promise<APIExploreData> => {
-  const { data } = await axios.get(route);
+  // const data = await getExploreData();
+  // console.log({ data });
+  const { data }: { data: APIExploreData } = await axios.get(route);
   return data;
 };
 
 const ExploreGrid = () => {
   const isMobile = useIsSmallScreen();
+  const numColumns = useBreakpointValue({ base: 1, sm: 1, md: 3 });
 
   const { data, error } = useSWR("/api/explore", exploreFetcher);
 
@@ -32,14 +35,14 @@ const ExploreGrid = () => {
   const {
     topEarningFuseStable,
     topEarningFuseAsset,
-    mostPopularAsset,
+    mostPopularFuseAsset,
     mostBorrowedFuseAsset,
     cheapestStableBorrow,
   } = results ?? {};
 
   return (
     <DashboardBox w="100%" h="100%">
-      <SimpleGrid columns={isMobile ? 2 : 3} spacing={0} h="100%" w="100%">
+      <SimpleGrid columns={numColumns} spacing={0} h="100%" w="100%">
         <FuseAssetGridBox
           bg=""
           heading="Top Earning Stablecoin"
@@ -54,11 +57,11 @@ const ExploreGrid = () => {
         <FuseAssetGridBox
           bg=""
           heading="Most Popular Asset"
-          data={mostPopularAsset}
+          data={mostPopularFuseAsset}
           tokenData={
-            mostPopularAsset &&
+            mostPopularFuseAsset &&
             tokensData &&
-            tokensData[mostPopularAsset.underlying.id]
+            tokensData[mostPopularFuseAsset.underlying.id]
           }
           metric={ExploreGridBoxMetric.TOTAL_SUPPLY}
         />

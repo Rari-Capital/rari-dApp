@@ -16,10 +16,11 @@ export const fetchTokenAPIData = async (
 export const fetchTokensAPIDataAsMap = async (
   addresses: string[]
 ): Promise<TokensDataMap> => {
-  
   const uniqueAddresses = Array.from(new Set(addresses));
 
   const tokenDatas = await fetchTokensAPIData(uniqueAddresses);
+
+  console.log({ tokenDatas });
 
   // construct a map for easy lookups
   const tokensDataMap: { [address: string]: RariApiTokenData } = {};
@@ -42,3 +43,19 @@ export const fetchTokensAPIData = async (
     return [];
   }
 };
+
+export async function fetchTokenDataWithCache(address: string) {
+  if (typeof window === undefined) {
+    return await fetchTokenAPIData(address);
+  }
+  const storageKey = "tokenInfo:" + address;
+  if (window.sessionStorage.getItem(storageKey)) {
+    return JSON.parse(window.sessionStorage.getItem(storageKey) as string);
+  }
+
+  // if not in storage, fetch it fresh
+  const tokenData = await fetchTokenAPIData(address);
+  window.sessionStorage.setItem(storageKey, JSON.stringify(tokenData));
+
+  return tokenData;
+}

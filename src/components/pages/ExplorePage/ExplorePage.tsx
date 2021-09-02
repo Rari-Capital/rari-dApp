@@ -1,12 +1,11 @@
 import Image from "next/image";
-import { Heading, Menu, MenuList } from "@chakra-ui/react";
+import { Heading, Menu, MenuList, useBreakpointValue } from "@chakra-ui/react";
 import ExploreList from "./ExploreList";
 import ExploreGrid from "./ExploreGrid";
 import DashboardBox from "components/shared/DashboardBox";
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
 
 // Hooks
-import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useTVLFetchers } from "hooks/useTVL";
 import { useTranslation } from "next-i18next";
 import { useState, useMemo } from "react";
@@ -40,10 +39,12 @@ const getAssetLogo = (nav: ExploreNavType, active: boolean) => {
 const ExplorePage = () => {
   const router = useRouter();
   const { filter } = router.query;
-
-  const isMobile = useIsSmallScreen();
   const { getNumberTVL } = useTVLFetchers();
   const { t } = useTranslation();
+
+  const statsSize = useBreakpointValue({base: "2xl", sm: "2xl", md: "3xl", lg: "3xl"}, "2xl")
+  const captionSize = useBreakpointValue({base: "md", sm: "md", md: "lg", lg: "lg"}, "lg")
+  const paddingX = useBreakpointValue({base: 5, sm: 5, md: 10, lg: 10 })
 
   const [exploreNav, setExploreNav] = useState(ExploreNavType.FUSE);
 
@@ -69,10 +70,9 @@ const ExplorePage = () => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       color="#FFFFFF"
-      mx={5}
+      px={ paddingX }
       mt={5}
       width="100%"
-      px={isMobile ? 3 : 10}
     >
       <Row
         mainAxisAlignment="flex-start"
@@ -88,8 +88,8 @@ const ExplorePage = () => {
           fetch={getNumberTVL}
           queryKey={"totalValueLocked"}
           apy={0.15}
-          statSize={isMobile ? "2xl" : "3xl"}
-          captionSize={isMobile ? "md" : "xl"}
+          statSize={statsSize!}
+          captionSize={captionSize!}
           caption={t("The Rari Protocol currently secures") + ":"}
           crossAxisAlignment="flex-start"
           captionFirst={true}

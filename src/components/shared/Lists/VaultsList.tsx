@@ -80,7 +80,9 @@ const VaultsRow = ({ vault }: { vault: AggregatePoolInfo }) => {
           </Row>
         </Td>
         <Td isNumeric>
-          {vault.poolAPY !== undefined ? `${vault.poolAPY}%` : <Spinner />}
+          <Text fontWeight="bold">
+            {vault.poolAPY !== undefined ? `${vault.poolAPY}%` : <Spinner />}
+          </Text>
         </Td>
       </AppLink>
     </>

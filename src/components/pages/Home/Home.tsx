@@ -129,7 +129,7 @@ const Home = () => {
               exit={{ opacity: 0, y: -40 }}
             >
               <Searchbar
-                width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
+                width={{ base: "xs", sm: "sm", md: "md", lg: "2xl" }}
               />
             </motion.div>
           </Column>
@@ -141,7 +141,7 @@ const Home = () => {
           crossAxisAlignment="center"
           width="100%"
           height="100%"
-          mb={10}
+          mb={5}
           // px="20%"
         >
           <Marquee gradient={false} style={{ padding: "10px" }}>

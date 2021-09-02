@@ -36,7 +36,6 @@ const TokenDetailsPage: NextPage<{ token: TokenData }> = () => {
       setTokenAddress(tokenAddress);
     } catch (err) {
       console.error(err);
-      router.push("/404");
     }
   }, [router.query]);
 

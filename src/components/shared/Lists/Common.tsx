@@ -15,7 +15,7 @@ export const SortableTableHeader = ({
   return (
     <Th
       fontSize="sm"
-      _hover={{ cursor: "pointer", fontStyle: "underline" }}
+      _hover={{ cursor: "pointer", textDecoration: "underline" }}
       onClick={handleSortClick}
     >
       <Stack direction="row">

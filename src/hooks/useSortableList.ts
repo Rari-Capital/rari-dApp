@@ -56,15 +56,25 @@ export const sortItems = <T extends IObject>(
   key?: keyof T,
   dir?: SortDir
 ) => {
+  let _items = items;
   if (
     !key || // no key specified
     !items.length || // empty array
-    typeof items[0][key] === typeof {} // value is not a number or string
+    typeof items[0][key] === typeof {} || // value is not a number or string
+    !dir
   ) {
-    return items;
+    return _items;
   }
 
-  if (dir === "asc") return items.sort((a, b) => (a[key] > b[key] ? 1 : -1));
-  if (dir === "desc") return items.sort((a, b) => (a[key] < b[key] ? 1 : -1));
-  return items;
+  // If this value is a string type, check if we can parse it as a number, then try to convert it to a number
+  if (typeof items[0][key] === typeof "") {
+    _items = _items.map((item) => ({
+      ...item,
+      [key]: isNaN(parseFloat(item[key])) ? item[key] : parseFloat(item[key]),
+    }));
+  }
+
+  if (dir === "asc") return _items.sort((a, b) => (a[key] > b[key] ? 1 : -1));
+  if (dir === "desc") return _items.sort((a, b) => (a[key] < b[key] ? 1 : -1));
+  return _items;
 };

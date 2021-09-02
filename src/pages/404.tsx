@@ -1,4 +1,5 @@
 import { Heading } from "@chakra-ui/react";
+import AppLink from "components/shared/AppLink";
 import { Column } from "lib/chakraUtils";
 import { NextPage } from "next";
 
@@ -16,13 +17,14 @@ const IndexPage: NextPage = () => {
     <>
       <Column
         w="100%"
-        h="100%"
-        mainAxisAlignment="flex-start"
+        h="70vh"
+        mainAxisAlignment="center"
         crossAxisAlignment="center"
         mx={5}
         my={5}
       >
         <Heading color="white">404: Not Found</Heading>
+        <AppLink href="/" mt={4} color="grey">Go back home</AppLink>
       </Column>
     </>
   );

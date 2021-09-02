@@ -10,7 +10,7 @@ import useSWR from "swr";
 
 // Utils
 import axios from "axios";
-import { Column } from "lib/chakraUtils";
+import { Column, useIsMobile } from "lib/chakraUtils";
 import { APISearchReturn } from "types/search";
 import { useMemo, useState } from "react";
 import { useAccountBalances } from "context/BalancesContext";
@@ -48,6 +48,7 @@ const Searchbar = ({
   [x: string]: any;
 }) => {
   const { isAuthed } = useRari();
+  const isMobile = useIsMobile();
 
   const [val, setVal] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
@@ -70,7 +71,8 @@ const Searchbar = ({
   const loading = !data;
   const authedLoading = !data && isAuthed;
 
-  const shouldShowDropdown = hasResults && (!!val || focused);
+  // If it has results, and focused is true
+  const shouldShowDropdown = hasResults && focused;
 
   return (
     <Column
@@ -108,13 +110,16 @@ const Searchbar = ({
         <Input
           height="100%"
           width="100%"
-          placeholder="Search by token, pool or product..."
+          placeholder={
+            isMobile ? "Search..." : "Search by token, pool or product..."
+          }
           _placeholder={{
             color: "grey",
             fontWeight: "bold",
             fontSize: smaller
               ? "sm"
               : {
+                  base: "sm",
                   sm: "sm",
                   md: "md",
                 },

@@ -3,7 +3,6 @@ import { Divider, Heading, Text } from "@chakra-ui/layout";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
 import DashboardBox from "components/shared/DashboardBox";
 
-
 // Hooks
 import { TokenData } from "hooks/useTokenData";
 import { useMemo, useState } from "react";
@@ -13,7 +12,7 @@ import { Column, Row } from "lib/chakraUtils";
 
 import TrancheOpportunities from "./TrancheOpportunities";
 import VaultsList from "components/shared/Lists/VaultsList";
-import { FuseList } from "components/shared/Lists/FuseList";
+import FuseList from "components/shared/Lists/Fuse/FuseListForToken";
 
 export enum OpportunityNav {
   FUSE = "Fuse",
@@ -50,7 +49,9 @@ const AssetOpportunities = ({
         // bg="green"
         overflowY="scroll"
       >
-        {nav === OpportunityNav.FUSE && <FuseList token={token} />}
+        {nav === OpportunityNav.FUSE && (
+          <FuseList token={token}/>
+        )}
         {nav === OpportunityNav.TRANCHES && (
           <TrancheOpportunities token={token} />
         )}
@@ -62,7 +63,6 @@ const AssetOpportunities = ({
 export default AssetOpportunities;
 
 const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
-  
   // Filter out Nav Items for Opportunities based on the asset
   const navItems: OpportunityNav[] = useMemo(() => {
     // Only DAI has tranches
@@ -88,11 +88,7 @@ const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
         <Row mainAxisAlignment="center" crossAxisAlignment="center">
           {navItems.map((nav) => (
             <Tab key={nav} borderRadius="2xl" _hover={{ color: "green.200" }}>
-              <Text
-                fontSize="xs"
-                color="white"
-                _hover={{ color: "green.200" }}
-              >
+              <Text fontSize="xs" color="white" _hover={{ color: "green.200" }}>
                 {nav}
               </Text>
             </Tab>

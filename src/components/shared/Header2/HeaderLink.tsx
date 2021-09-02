@@ -93,6 +93,8 @@ export const HeaderLink = ({
   );
 };
 
+const splitHairs = (path: string) => path.split("/").filter((str) => !!str);
+
 // Dropdown Header Link
 // Subitems are rendered as either a MenuItem or a MenuGroup
 export const DropDownLink = ({
@@ -109,9 +111,11 @@ export const DropDownLink = ({
   const isOnThisRoute = useMemo(
     () =>
       links.find((l) => {
-        if (l.type === MenuItemType.LINK)
-          return l.link!.route === router.asPath;
-        else if (l.type === MenuItemType.MENUGROUP) return false;
+        if (l.type === MenuItemType.LINK) {
+          return splitHairs(router.asPath).includes(
+            splitHairs(l.link!.route)[0]
+          );
+        } else if (l.type === MenuItemType.MENUGROUP) return false;
       }),
     [links, router]
   );

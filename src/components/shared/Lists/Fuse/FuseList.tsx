@@ -20,24 +20,27 @@ import { useTranslation } from "next-i18next";
 import { useSortableList } from "hooks/useSortableList";
 
 // Utils
-import { Column, useIsMobile } from "lib/chakraUtils";
-import { filterPoolName } from "utils/fetchFusePoolData";
+import { Center, Column, useIsMobile } from "lib/chakraUtils";
+import { filterPoolName, FusePoolData } from "utils/fetchFusePoolData";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { letterScore, usePoolRSS } from "hooks/useRSS";
 
 // Types
-import { SortableTableHeader } from "./Common";
+import { SortableTableHeader } from "../Common";
 import { TokenData } from "hooks/useTokenData";
 import { RariApiTokenData } from "types/tokens";
 import { useFuseDataForAsset } from "hooks/fuse/useFuseDataForAsset";
+import { useMemo } from "react";
+import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
+import DashboardBox from "components/shared/DashboardBox";
 
 export const FuseList = ({
   token,
 }: {
   token?: TokenData | RariApiTokenData; // same thing
+  displayRatesForToken?: boolean; // same thing
 }) => {
-  const fuseDataForAsset = useFuseDataForAsset(token?.address);
-  const { poolsWithThisAsset } = fuseDataForAsset;
+  const { poolsWithThisAsset } = useFuseDataForAsset(token?.address);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
 
@@ -49,98 +52,109 @@ export const FuseList = ({
   } = useSortableList(poolsWithThisAsset);
 
   return (
-    <Box h="100%" w="100%">
-      <Table variant="unstyled">
-        <Thead position="sticky" top={0} left={0} bg="#121212" zIndex={4}>
-          <Tr bg="#121212">
-            <Th fontSize="sm">
-              {!isMobile ? t("Pool Assets") : t("Pool Directory")}
-            </Th>
+    <DashboardBox h="100%" w="100%">
+      {!sortedPools.length ? (
+        <Box w="100%" h="100px" bg="pink">
+          <Center>
+            <Spinner />
+          </Center>
+        </Box>
+      ) : (
+        <Table variant="unstyled">
+          <Thead position="sticky" top={0} left={0} bg="#121212" zIndex={4}>
+            <Tr bg="#121212">
+              <Th fontSize="sm">
+                {!isMobile ? t("Pool Assets") : t("Pool Directory")}
+              </Th>
 
-            {isMobile ? null : (
-              <>
-                {/* Pool # */}
-                <SortableTableHeader
-                  text="Pool #"
-                  sortDir={sortDir}
-                  handleSortClick={() => handleSortClick("id")}
-                  isActive={sortBy === "id"}
-                />
+              {isMobile ? null : (
+                <>
+                  {/* Pool # */}
+                  <SortableTableHeader
+                    text="Pool"
+                    sortDir={sortDir}
+                    handleSortClick={() => handleSortClick("id")}
+                    isActive={sortBy === "id"}
+                  />
 
-                {/* Pool # */}
-                <SortableTableHeader
-                  text="Total Supplied"
-                  sortDir={sortDir}
-                  handleSortClick={() => handleSortClick("totalSuppliedUSD")}
-                  isActive={sortBy === "totalSuppliedUSD"}
-                />
+                  {/* Pool # */}
+                  <SortableTableHeader
+                    text="Total Supplied"
+                    sortDir={sortDir}
+                    handleSortClick={() => handleSortClick("totalSuppliedUSD")}
+                    isActive={sortBy === "totalSuppliedUSD"}
+                  />
 
-                {/* Pool # */}
-                <SortableTableHeader
-                  text="Total Borrowed"
-                  sortDir={sortDir}
-                  handleSortClick={() => handleSortClick("totalBorrowedUSD")}
-                  isActive={sortBy === "totalBorrowedUSD"}
-                />
+                  {/* Pool # */}
+                  <SortableTableHeader
+                    text="Total Borrowed"
+                    sortDir={sortDir}
+                    handleSortClick={() => handleSortClick("totalBorrowedUSD")}
+                    isActive={sortBy === "totalBorrowedUSD"}
+                  />
 
-                {/* Pool # */}
-                <Th fontSize="sm">{t("Pool Risk Score")}</Th>
-              </>
-            )}
-          </Tr>
-        </Thead>
-        <Tbody w="100%">
-          {sortedPools ? (
-            sortedPools.map((pool, index) => {
+                  {/* Pool # */}
+                  <Th fontSize="sm">{t("Pool Risk Score")}</Th>
+                </>
+              )}
+            </Tr>
+          </Thead>
+
+          <Tbody w="100%">
+            {sortedPools.map((pool, index) => {
               return (
                 <FusePoolRow
                   key={pool.id}
-                  poolNumber={pool.id}
-                  name={filterPoolName(pool.name)}
-                  tvl={pool.totalSuppliedUSD}
-                  borrowed={pool.totalBorrowedUSD}
-                  tokens={pool.assets.map((asset) => ({
-                    symbol: asset.underlyingSymbol,
-                    address: asset.underlyingToken,
-                  }))}
+                  pool={pool}
                   noBottomDivider={index === sortedPools.length - 1}
+                  token={token}
                 />
               );
-            })
-          ) : (
-            <Tr>
-              <Spinner my={8} />
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
-    </Box>
+            })}
+          </Tbody>
+        </Table>
+      )}
+    </DashboardBox>
   );
 };
 
 export const FusePoolRow = ({
-  tokens,
-  poolNumber,
-  tvl,
-  borrowed,
-  name,
+  pool,
   noBottomDivider,
-  smaller,
+  smaller = false,
+  showRatesForAsset,
+  token,
   ...rowProps
 }: {
-  tokens: { symbol: string; address: string }[];
-  poolNumber: number;
-  tvl: number;
-  borrowed: number;
-  name: string;
+  pool: FusePoolData;
   noBottomDivider?: boolean;
   smaller?: boolean;
+  token?: TokenData | RariApiTokenData;
   [x: string]: any;
 }) => {
+  const isMobile = useIsMobile();
+
+  // Pooldata
+  const {
+    id: poolNumber,
+    totalSuppliedUSD: tvl,
+    totalBorrowedUSD: borrowed,
+    assets,
+  } = pool;
+  const name = filterPoolName(pool.name);
+
+  const tokens = useMemo(
+    () =>
+      assets.map((asset) => ({
+        symbol: asset.underlyingSymbol,
+        address: asset.underlyingToken,
+      })),
+    [assets]
+  );
+
   const isEmpty = tokens.length === 0;
   const rss = usePoolRSS(poolNumber);
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
-  const isMobile = useIsMobile();
 
   return (
     <AppLink
@@ -206,3 +220,5 @@ export const FusePoolRow = ({
     </AppLink>
   );
 };
+
+export default FuseList;

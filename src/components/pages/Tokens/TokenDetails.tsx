@@ -49,6 +49,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
           crossAxisAlignment="flex-start"
           p={2}
           flexBasis={"70%"}
+          flexGrow={0}
         >
           {/* Chart */}
           <MarketChart token={token} mb={5} />
@@ -81,7 +82,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
         >
           {/* Foursq */}
           {/* <Foursquare token={token}  mb={5}/> */}
-          <AssetBorrowLend token={token} mb={5} />
+          {/* <AssetBorrowLend token={token} mb={5} /> */}
 
           <TrendingOpportunities token={token} mb={5} />
 
@@ -166,9 +167,7 @@ const Header = ({
               isExternal
             >
               <Image
-                src={
-                  "/static/icons/etherscan-logo-light-circle.svg"
-                }
+                src={"/static/icons/etherscan-logo-light-circle.svg"}
                 boxSize="20px"
               />
             </Link>

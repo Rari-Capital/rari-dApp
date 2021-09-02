@@ -55,3 +55,18 @@ export const FusePoolFragment = gql`
     totalSupplyUSD
   }
 `;
+
+export const FuseAssetFragment = gql`
+  fragment FuseAsset on Ctoken {
+    ...CTokenFragment
+    pool {
+      ...FusePoolFragment
+    }
+    underlying {
+      ...UnderlyingAssetFragment
+    }
+  }
+  ${CTokenFragment}
+  ${FusePoolFragment}
+  ${UnderlyingAssetFragment}
+`;

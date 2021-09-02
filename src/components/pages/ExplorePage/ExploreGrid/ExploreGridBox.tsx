@@ -78,7 +78,7 @@ export const FuseAssetGridBox = ({
         bg={bg}
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        p={4}
+        p={5}
         className="hover-row"
         border="1px solid #272727"
       >

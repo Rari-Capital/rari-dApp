@@ -4,7 +4,7 @@ import { Column } from "lib/chakraUtils";
 // Types
 import { ExploreNavType } from "../ExplorePage";
 
-import { FuseList } from "components/shared/Lists/FuseList";
+import FuseList  from "components/shared/Lists/Fuse/FuseList";
 import { AllAssetsList } from "components/shared/Lists/AssetsList";
 import VaultsList from "components/shared/Lists/VaultsList";
 

@@ -52,7 +52,7 @@ export type APIExploreData = {
   results: {
     topEarningFuseStable: SubgraphCToken;
     topEarningFuseAsset: SubgraphCToken;
-    mostPopularAsset: SubgraphCToken;
+    mostPopularFuseAsset: SubgraphCToken;
     mostBorrowedFuseAsset: SubgraphCToken;
     cheapestStableBorrow: SubgraphCToken;
   };
@@ -69,7 +69,7 @@ export default async function handler(
       const [
         topEarningFuseStable,
         topEarningFuseAsset,
-        mostPopularAsset,
+        mostPopularFuseAsset,
         mostBorrowedFuseAsset,
         cheapestStableBorrow,
       ] = await Promise.all([
@@ -84,7 +84,7 @@ export default async function handler(
       addresses.push(
         topEarningFuseStable.underlying.address,
         topEarningFuseAsset.underlying.address,
-        mostPopularAsset.underlying.address,
+        mostPopularFuseAsset.underlying.address,
         mostBorrowedFuseAsset.underlying.address,
         cheapestStableBorrow.underlying.address
       );
@@ -93,10 +93,12 @@ export default async function handler(
         addresses
       );
 
+      console.log({ tokensData, addresses });
+
       const results = {
         topEarningFuseStable,
         topEarningFuseAsset,
-        mostPopularAsset,
+        mostPopularFuseAsset,
         mostBorrowedFuseAsset,
         cheapestStableBorrow,
       };
@@ -115,7 +117,7 @@ export default async function handler(
 
 // Top Earning Stable = highest lending rate Stablecoin
 const getTopEarningFuseStable = async (): Promise<SubgraphCToken> =>
-  (await queryTopFuseAsset("supplyAPY", "desc", stables));
+  await queryTopFuseAsset("supplyAPY", "desc", stables);
 
 // Top Earning = highest lending rate Fuse Asset
 const getTopEarningFuseAsset = async (): Promise<SubgraphCToken> =>

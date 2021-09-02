@@ -14,6 +14,8 @@ import DashboardBox from "components/shared/DashboardBox";
 import AppLink from "components/shared/AppLink";
 import { SubgraphPool } from "pages/api/explore";
 import { TokensDataMap } from "types/tokens";
+import { isMobile } from "web3modal";
+import { useIsMobile } from "lib/chakraUtils";
 
 const HomeFuseCard = ({
   pool,
@@ -26,6 +28,8 @@ const HomeFuseCard = ({
     if (!pool) return { title: null, subtitle: null, id: -1 };
     return HOMEPAGE_FUSE_POOLS.find((p) => p.id == parseInt(pool.index))!;
   }, [pool]);
+
+  const isMobile = useIsMobile();
 
   const assetsSubtitle: string | null = useMemo(() => {
     if (!pool) return null;
@@ -60,8 +64,14 @@ const HomeFuseCard = ({
       style={{ textDecoration: "none" }}
     >
       <DashboardBox
-        height="150px"
-        width="300px"
+        height={{
+          sm: "150px",
+          lg: "150px",
+        }}
+        width={{
+          sm: "250px",
+          lg: "300px",
+        }}
         ml={10}
         p={5}
         transition="transform 0.2s ease 0s"
@@ -98,9 +108,11 @@ const HomeFuseCard = ({
           <Heading size="sm" mt={2}>
             {title ?? pool?.name}
           </Heading>
-          <Text size="xs" color="gray.500" fontWeight="bold">
-            {subtitle ?? assetsSubtitle}
-          </Text>
+          {!isMobile && (
+            <Text size="xs" color="gray.500" fontWeight="bold">
+              {subtitle ?? assetsSubtitle}
+            </Text>
+          )}
         </SkeletonText>
         {/* <Image
           src={"/static/icons/fuse-glow.svg"}
