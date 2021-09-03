@@ -384,7 +384,7 @@ export default async (request: NowRequest, response: NowResponse) => {
               "0x0cf30dc0d48604a301df8010cdc028c055336b2e"
         ]
         if (
-            rariMultisigs.indexOf(admin.toLowerCase()) !== -1
+            rariMultisigs.includes(admin.toLowerCase())
           ) {
             return 1;
           }
