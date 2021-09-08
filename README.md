@@ -5,7 +5,7 @@ Rari Capital's Web3 Portal.
 ## Requirements
 
 - node: `v14.17.0`
-- npm: `>=0.7.0`
+- npm: `v7.21.0`
 
 ## Notes:
 

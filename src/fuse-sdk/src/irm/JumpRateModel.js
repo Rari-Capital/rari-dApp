@@ -4,8 +4,10 @@ var contracts = require(__dirname + "/../contracts/compound-protocol.min.json")
   .contracts;
 
 export default class JumpRateModel {
-  static RUNTIME_BYTECODE_HASH =
-    "0x00f083d6c0022358b6b3565c026e815cfd6fc9dcd6c3ad1125e72cbb81f41b2a";
+  static RUNTIME_BYTECODE_HASHES = [
+    "0x00f083d6c0022358b6b3565c026e815cfd6fc9dcd6c3ad1125e72cbb81f41b2a",
+    "0x47d7a0e70c9e049792bb96abf3c7527c7543154450c6267f31b52e2c379badc7"
+  ];
 
   initialized;
 

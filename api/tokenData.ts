@@ -139,7 +139,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xB17640796e4c27a39AF51887aff3F8DC0daF9567")
   ) {
     logoURL =
-    "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sd3Crv.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sd3Crv.png";
   }
 
   // sdeursCRV
@@ -148,7 +148,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xCD6997334867728ba14d7922f72c893fcee70e84")
   ) {
     logoURL =
-    "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sdeursCRV.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sdeursCRV.png";
   }
 
   const basicTokenInfo = {
