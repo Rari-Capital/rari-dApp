@@ -130,7 +130,6 @@ const PoolConfiguration = () => {
         name,
         isWhitelisted,
         bigCloseFactor,
-        maxAssets,
         bigLiquidationIncentive,
         oracle,
         { reporter },
