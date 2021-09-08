@@ -145,7 +145,8 @@ export const AssetSettings = ({
   };
 
   const [interestRateModel, setInterestRateModel] = useState(
-    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_DAI
+    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+      .JumpRateModel_Cream_Stables_Majors
   );
 
   const { data: curves } = useQuery(
@@ -468,29 +469,23 @@ export const AssetSettings = ({
           borderRadius="7px"
           fontWeight="bold"
           _focus={{ outline: "none" }}
-          width="230px"
-          value={interestRateModel}
+          width="260px"
+          value={interestRateModel.toLowerCase()}
           onChange={(event) => setInterestRateModel(event.target.value)}
         >
-          <option
-            className="black-bg-option"
-            value={
-              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-                .JumpRateModel_DAI
-            }
-          >
-            DAI JumpRateModel
-          </option>
-
-          <option
-            className="black-bg-option"
-            value={
-              Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-                .WhitePaperInterestRateModel_ETH
-            }
-          >
-            ETH WhitePaperRateModel
-          </option>
+          {Object.entries(
+            Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+          ).map(([key, value]) => {
+            return (
+              <option
+                className="black-bg-option"
+                value={value.toLowerCase()}
+                key={key}
+              >
+                {key}
+              </option>
+            );
+          })}
         </Select>
 
         {cTokenData &&

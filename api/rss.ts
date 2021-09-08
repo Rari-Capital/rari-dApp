@@ -371,26 +371,20 @@ export default async (request: NowRequest, response: NowResponse) => {
             .getPoolOwnership(comptroller)
             .call({ gas: 1e18 });
 
-        // Rari Multisig(s)
-        if (
-          admin.toLowerCase() ===
-            "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85" ||
-          admin.toLowerCase() ===
-            "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f" ||
-          admin.toLowerCase() ===
-            "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f" ||
-          admin.toLowerCase() ===
-            "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6" ||
-          admin.toLowerCase() ===
-            "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5" ||
-          admin.toLowerCase() ===
-            "0x49529a7ccbd9f8cabbfa36c65feb39ae08bdea0f" ||
-          admin.toLowerCase() ===
-            "0x639572471f2f318464dc01066a56867130e45e25" ||
-          admin.toLowerCase() ===
-            "0x7b34e07da62c716ab79390d37e09182b48f1936d" ||
-          admin.toLowerCase() === "0x0cf30dc0d48604a301df8010cdc028c055336b2e"
-        ) {
+        // These addresses MUST be ALL LOWERCASE!
+        const rariMultisigs = [
+          "0xa731585ab05fc9f83555cf9bff8f58ee94e18f85",
+          "0x5ea4a9a7592683bf0bc187d6da706c6c4770976f",
+          "0x7d7ec1c9b40f8d4125d2ee524e16b65b3ee83e8f",
+          "0x7b502f1aa0f48b83ca6349e1f42cacd8150307a6",
+          "0x521cf3d673f4b2025be0bdb03d6410b111cd17d5",
+          "0x49529a7ccbd9f8cabbfa36c65feb39ae08bdea0f",
+          "0x639572471f2f318464dc01066a56867130e45e25",
+          "0x7b34e07da62c716ab79390d37e09182b48f1936d",
+          "0x0cf30dc0d48604a301df8010cdc028c055336b2e",
+        ];
+
+        if (rariMultisigs.includes(admin.toLowerCase())) {
           return 1;
         }
 
