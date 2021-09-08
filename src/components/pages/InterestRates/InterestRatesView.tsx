@@ -198,15 +198,4 @@ export default function InterestRatesView() {
   );
 }
 
-async function fetchTokenDataWithCache(address: string) {
-  const storageKey = "tokenInfo:" + address;
-  if (window.sessionStorage.getItem(storageKey)) {
-    return JSON.parse(window.sessionStorage.getItem(storageKey) as string);
-  }
 
-  // if not in storage, fetch it fresh
-  const tokenData = await fetchTokenData(address);
-  window.sessionStorage.setItem(storageKey, JSON.stringify(tokenData));
-
-  return tokenData;
-}

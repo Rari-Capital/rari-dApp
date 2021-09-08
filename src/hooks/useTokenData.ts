@@ -16,7 +16,7 @@ export const ETH_TOKEN_DATA = {
 };
 
 export interface TokenData {
-  name: string ;
+  name: string;
   symbol: string;
   address: string;
   decimals: number;
@@ -38,10 +38,11 @@ export const useTokenDataWithContract = (address: string) => {
   return { tokenData, contract };
 };
 
-export const fetchTokenData = async (address: string) : Promise<TokenData> => {
+export const fetchTokenData = async (address: string): Promise<TokenData> => {
   let data;
 
   if (address !== ETH_TOKEN_DATA.address) {
+    console.log("saerching address", address);
     try {
       data = {
         ...(await fetch(
@@ -67,13 +68,14 @@ export const fetchTokenData = async (address: string) : Promise<TokenData> => {
       };
     }
   } else {
+    console.log("eth2 address", address);
     data = ETH_TOKEN_DATA;
   }
 
   return data as TokenData;
 };
 
-export const useTokenData = (address: string) : TokenData | undefined => {
+export const useTokenData = (address: string): TokenData | undefined => {
   const { data: tokenData } = useQuery(
     address + " tokenData",
     async () => await fetchTokenData(address)
@@ -81,7 +83,7 @@ export const useTokenData = (address: string) : TokenData | undefined => {
   return tokenData;
 };
 
-export const useTokensData = (addresses: string[]) : TokenData[] | null => {
+export const useTokensData = (addresses: string[]): TokenData[] | null => {
   const tokensData = useQueries(
     addresses.map((address: string) => {
       return {

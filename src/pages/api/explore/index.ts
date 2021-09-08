@@ -93,7 +93,6 @@ export default async function handler(
         addresses
       );
 
-      console.log({ tokensData, addresses });
 
       const results = {
         topEarningFuseStable,
