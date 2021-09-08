@@ -7,6 +7,7 @@ import {
   useDisclosure,
   Spinner,
   useToast,
+  Input,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
 import { memo, ReactNode, useEffect, useState } from "react";
@@ -15,10 +16,9 @@ import { useParams } from "react-router-dom";
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
-import DashboardBox from "../../shared/DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
-
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
@@ -26,7 +26,10 @@ import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import { CTokenIcon } from "./FusePoolsPage";
-import { createComptroller } from "../../../utils/createComptroller";
+import {
+  createComptroller,
+  createUnitroller,
+} from "../../../utils/createComptroller";
 import { useQueryClient, useQuery } from "react-query";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 
@@ -92,7 +95,7 @@ export async function testForComptrollerErrorAndSend(
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
     const err = new Error(
-      failMessage + " Code: " + ComptrollerErrorCodes[response]
+      failMessage + " Code: " + (ComptrollerErrorCodes[response] ?? response)
     );
 
     LogRocket.captureException(err);
@@ -156,7 +159,7 @@ const FusePoolEditPage = memo(() => {
         >
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "440px"}
+            height={isMobile ? "auto" : "560px"}
             mt={4}
           >
             {data ? (
@@ -175,7 +178,7 @@ const FusePoolEditPage = memo(() => {
             <DashboardBox
               width="100%"
               mt={4}
-              height={isMobile ? "auto" : "440px"}
+              height={isMobile ? "auto" : "560px"}
             >
               {data ? (
                 data.assets.length > 0 ? (
@@ -296,23 +299,60 @@ const PoolConfiguration = ({
     }
   };
 
-  const renounceOwnership = async () => {
-    const unitroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Unitroller.sol:Unitroller"].abi
-      ),
-      comptrollerAddress
-    );
+  const [admin, setAdmin] = useState(address);
+
+  const revokeRights = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
 
     try {
-      // TODO: Revoke admin rights on all the cTokens!
       await testForComptrollerErrorAndSend(
         unitroller.methods._renounceAdminRights(),
         address,
         ""
       );
 
-      LogRocket.track("Fuse-RenounceOwnership");
+      LogRocket.track("Fuse-RevokeRights");
+
+      queryClient.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
+  const acceptAdmin = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._acceptAdmin(),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-AcceptAdmin");
+
+      queryClient.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
+  const updateAdmin = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
+
+    if (!fuse.web3.utils.isAddress(admin)) {
+      handleGenericError({ message: "This is not a valid address." }, toast);
+      return;
+    }
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._setPendingAdmin(admin),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-UpdateAdmin");
 
       queryClient.refetchQueries();
     } catch (e) {
@@ -338,6 +378,7 @@ const PoolConfiguration = ({
       setLiquidationIncentive(
         scaleLiquidationIncentive(data.liquidationIncentive)
       );
+      setAdmin(data.admin);
     }
   }, [data]);
 
@@ -472,25 +513,50 @@ const PoolConfiguration = ({
 
             <ModalDivider />
 
-            <ConfigRow>
-              <Text fontWeight="bold">{t("Upgradeable")}:</Text>
+            <ConfigRow height="35px">
+              <Text fontWeight="bold">{t("Admin")}:</Text>
 
-              {data.upgradeable ? (
-                <DashboardBox
-                  height="35px"
-                  ml="auto"
-                  as="button"
-                  onClick={renounceOwnership}
-                >
-                  <Center expand px={2} fontWeight="bold">
-                    {t("Renounce Ownership")}
-                  </Center>
-                </DashboardBox>
-              ) : (
-                <Text ml="auto" fontWeight="bold">
-                  {t("Admin Rights Disabled")}
-                </Text>
-              )}
+              {admin.toLowerCase() !== data.admin.toLowerCase() ? (
+                <SaveButton ml={3} onClick={updateAdmin} />
+              ) : address.toLowerCase() === data.pendingAdmin.toLowerCase() ? (
+                <SaveButton
+                  ml={3}
+                  onClick={acceptAdmin}
+                  fontSize="xs"
+                  altText={t("Become Admin")}
+                />
+              ) : data.adminHasRights &&
+                address.toLowerCase() === data.admin.toLowerCase() ? (
+                <SaveButton
+                  ml={3}
+                  onClick={revokeRights}
+                  fontSize="xs"
+                  altText={t("Revoke Rights")}
+                />
+              ) : null}
+
+              <Input
+                isDisabled={
+                  !data.adminHasRights ||
+                  data.admin?.toLowerCase() !== address.toLowerCase()
+                }
+                ml="auto"
+                width="320px"
+                height="100%"
+                textAlign="center"
+                variant="filled"
+                size="sm"
+                value={admin}
+                onChange={(event) => {
+                  const address = event.target.value;
+                  setAdmin(address);
+                }}
+                {...DASHBOARD_BOX_PROPS}
+                _placeholder={{ color: "#e0e0e0" }}
+                _focus={{ bg: "#121212" }}
+                _hover={{ bg: "#282727" }}
+                bg="#282727"
+              />
             </ConfigRow>
 
             <ModalDivider />
@@ -536,7 +602,7 @@ const PoolConfiguration = ({
         </Column>
       ) : (
         <Center expand>
-          <Spinner />
+          <Spinner my={8} />
         </Center>
       )}
     </Column>
@@ -556,8 +622,6 @@ const AssetConfiguration = ({
   poolName: string;
   poolID: string;
 }) => {
-  const isMobile = useIsSemiSmallScreen();
-
   const { t } = useTranslation();
 
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
@@ -566,7 +630,7 @@ const AssetConfiguration = ({
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "440px"}
+      height="100%"
       width="100%"
       flexShrink={0}
     >
@@ -648,16 +712,18 @@ const ColoredAssetSettings = ({
     />
   ) : (
     <Center expand>
-      <Spinner />
+      <Spinner my={8} />
     </Center>
   );
 };
 
 export const SaveButton = ({
   onClick,
+  altText,
   ...others
 }: {
   onClick: () => any;
+  altText?: string;
   [key: string]: any;
 }) => {
   const { t } = useTranslation();
@@ -666,14 +732,14 @@ export const SaveButton = ({
     <DashboardBox
       flexShrink={0}
       ml={2}
-      width="60px"
+      px={2}
       height="35px"
       as="button"
       fontWeight="bold"
       onClick={onClick}
       {...others}
     >
-      {t("Save")}
+      <Center expand>{altText ?? t("Save")}</Center>
     </DashboardBox>
   );
 };

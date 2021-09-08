@@ -10,3 +10,14 @@ export const createComptroller = (comptrollerAddress: string, fuse: Fuse) => {
 
   return comptroller;
 };
+
+export const createUnitroller = (unitrollerAddress: string, fuse: Fuse) => {
+  const unitroller = new fuse.web3.eth.Contract(
+    JSON.parse(
+      fuse.compoundContracts["contracts/Unitroller.sol:Unitroller"].abi
+    ),
+    unitrollerAddress
+  );
+
+  return unitroller;
+};
