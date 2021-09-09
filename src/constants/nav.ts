@@ -27,6 +27,10 @@ export const GOVERNANCE_DROPDOWN_ITEMS: MenuItemInterface[] = [
     type: MenuItemType.LINK,
     link: { name: "Forums", route: "https://forums.rari.capital/" },
   },
+  {
+    type: MenuItemType.LINK,
+    link: { name: "Governance", route: "/governance" },
+  },
 ];
 
 export const UTILS_DROPDOWN_ITEMS: MenuItemInterface[] = [
@@ -39,4 +43,3 @@ export const UTILS_DROPDOWN_ITEMS: MenuItemInterface[] = [
       link: { name: "Interest Rates", route: "/utils/interest-rates" },
     },
   ];
-  

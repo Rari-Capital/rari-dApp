@@ -1,6 +1,10 @@
 import { NextPage } from "next";
-import FusePoolsPage from "components/pages/Fuse/FusePoolsPage/FusePoolsPage";
+import GovernanceDashPage from "components/pages/GovernanceDash/GovernanceDash";
+
+
+
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
 
 export async function getStaticProps({ locale }: { locale: string }) {
   return {
@@ -10,9 +14,16 @@ export async function getStaticProps({ locale }: { locale: string }) {
   };
 }
 
-const FusePage: NextPage = () => {
 
-  return <FusePoolsPage />;
+
+
+const GovernanceDash : NextPage = () => {
+  //console.log("in govdash under page")
+  return (
+    <>
+      <GovernanceDashPage />
+    </>
+  );
 };
 
-export default FusePage;
+export default GovernanceDash;

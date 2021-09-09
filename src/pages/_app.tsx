@@ -67,6 +67,9 @@ const customTheme = {
 
 const queryClient = new QueryClient();
 
+
+
+
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     console.log("render");
