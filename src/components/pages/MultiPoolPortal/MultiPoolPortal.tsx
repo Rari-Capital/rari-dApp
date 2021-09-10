@@ -71,6 +71,7 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 import { formatBalanceBN } from "utils/format";
 import { getSDKPool, Pool } from "utils/poolUtils";
 import SwapHoriz from "components/shared/Icons/SwapHoriz";
+import { fromWei } from "utils/ethersUtils";
 
 const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
@@ -132,7 +133,7 @@ export const RGTPrice = () => {
       interval={5000}
       fetch={() => {
         return rari.governance.rgt.getExchangeRate().then((data) => {
-          return stringUsdFormatter(rari.web3.utils.fromWei(data));
+          return stringUsdFormatter(fromWei(data));
         });
       }}
       loadingPlaceholder="$?"
@@ -155,7 +156,7 @@ const GovernanceStats = () => {
     async () => {
       const rawBalance = await rari.governance.rgt.balanceOf(address);
 
-      return stringUsdFormatter(rari.web3.utils.fromWei(rawBalance)).replace(
+      return stringUsdFormatter(fromWei(rawBalance)).replace(
         "$",
         ""
       );

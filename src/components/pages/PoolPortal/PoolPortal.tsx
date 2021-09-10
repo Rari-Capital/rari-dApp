@@ -23,6 +23,9 @@ import DashboardBox, {
 } from "components/shared/DashboardBox";
 import FullPageSpinner from "components/shared/FullPageSpinner";
 
+import { BigNumber } from "ethers";
+import { fromWei, toBN } from "utils/ethersUtils";
+
 import {
   Column,
   Row,
@@ -66,6 +69,7 @@ import { tokens } from "utils/tokenUtils";
 import { fetchRGTAPR } from "utils/fetchPoolAPY";
 import { formatBalanceBN } from "utils/format";
 import { HeaderHeightWithTopPadding } from "components/shared/Header2/NewHeader2";
+import { toBN } from "utils/ethersUtils";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -161,7 +165,7 @@ const PoolPortalContent = () => {
   // If loading, stop here
   if (isPoolBalanceLoading) return <FullPageSpinner />;
 
-  const myBalance: BN = poolBalance ?? rari.web3.utils.toBN(0);
+  const myBalance: BigNumber = poolBalance ?? toBN(0);
   const hasNotDeposited: boolean = poolBalance?.isZero() ?? true;
   const formattedBalance = formatBalanceBN(
     rari,
@@ -411,13 +415,9 @@ const APYStats = () => {
       fetchRGTAPR(rari),
     ]);
 
-    const month = parseFloat(
-      rari.web3.utils.fromWei(monthRaw.mul(rari.web3.utils.toBN(100)))
-    ).toFixed(1);
+    const month = parseFloat(fromWei(monthRaw.mul(toBN(100)))).toFixed(1);
 
-    const week = parseFloat(
-      rari.web3.utils.fromWei(weekRaw.mul(rari.web3.utils.toBN(100)))
-    ).toFixed(1);
+    const week = parseFloat(fromWei(weekRaw.mul(toBN(100)))).toFixed(1);
 
     return { month, week, rgtAPR };
   });
@@ -490,7 +490,6 @@ const MonthlyReturns = () => {
   const { poolName: usdcPoolName } = usePoolInfo(Pool.USDC);
   const { poolName: daiPoolName } = usePoolInfo(Pool.DAI);
   const { poolName: yieldPoolName } = usePoolInfo(Pool.YIELD);
-
 
   const returns =
     ethPoolAPY && daiPoolAPY && yieldPoolAPY && usdcPoolAPY

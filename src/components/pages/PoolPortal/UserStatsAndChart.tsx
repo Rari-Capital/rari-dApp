@@ -27,6 +27,7 @@ import {
 import { getSDKPool, Pool } from "utils/poolUtils";
 
 import Chart from "react-apexcharts";
+import { fromWei } from "utils/ethersUtils";
 
 const millisecondsPerDay = 86400000;
 const blocksPerDay = 6500;
@@ -81,7 +82,7 @@ const UserStatsAndChart = ({
       }).balances.interestAccruedBy(address, Math.floor(startingBlock / 1000));
 
       const formattedInterest = stringUsdFormatter(
-        rari.web3.utils.fromWei(interestRaw)
+        fromWei(interestRaw)
       );
 
       return poolType === Pool.ETH
