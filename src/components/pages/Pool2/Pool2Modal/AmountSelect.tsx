@@ -35,6 +35,7 @@ import { SettingsIcon } from "@chakra-ui/icons";
 
 import { LP_TOKEN_CONTRACT } from "lib/rari-sdk/governance";
 import { handleGenericError } from "utils/errorHandling";
+import { toBN } from "utils/ethersUtils";
 
 interface Props {
   onClose: () => any;
@@ -126,7 +127,7 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
       setUserAction(UserAction.WAITING_FOR_TRANSACTIONS);
 
       //@ts-ignore
-      const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
+      const amountBN = toBN(amount!.decimalPlaces(0));
 
       if (mode === Mode.DEPOSIT) {
         await rari.governance.rgt.sushiSwapDistributions.deposit(amountBN, {

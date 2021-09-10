@@ -3,7 +3,7 @@ import { useRari } from "../../../context/RariContext";
 import SaffronPoolABI from "./SaffronPoolABI.json";
 import SaffronStrategyABI from "./SaffronStrategyABI.json";
 import { SaffronStrategyAddress, SaffronPoolAddress } from "constants/saffron";
-import { createContract } from "utils/web3Utils";
+import { createContract } from "utils/ethersUtils";
 import { Contract } from "@ethersproject/contracts";
 
 interface SaffronContextType {

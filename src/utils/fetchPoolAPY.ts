@@ -1,8 +1,9 @@
-import Rari from "lib/rari-sdk/index";
+import { Vaults } from "rari-sdk-sharad-v2";
+import { fromWei, toBN } from "./ethersUtils";
 
 import { getSDKPool, Pool } from "./poolUtils";
 
-export const fetchRGTAPR = async (rari: Rari) => {
+export const fetchRGTAPR = async (rari: Vaults) => {
   // TODO: Won't work with all the staked and Fuse TVL included
   //   const blockNumber = await rari.web3.eth.getBlockNumber();
 
@@ -21,7 +22,7 @@ export const fetchRGTAPR = async (rari: Rari) => {
 };
 
 export const fetchPoolAPY = async (
-  rari: Rari,
+  rari: Vaults,
   pool: Pool | undefined
 ): Promise<string | null> => {
   if (!pool) return null;
@@ -31,9 +32,7 @@ export const fetchPoolAPY = async (
     pool,
   }).apy.getCurrentRawApy();
 
-  const poolAPY = parseFloat(
-    rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-  ).toFixed(2);
+  const poolAPY = parseFloat(fromWei(poolRawAPY.mul(toBN(100)))).toFixed(2);
 
   return poolAPY;
 };
@@ -42,9 +41,7 @@ export const fetchPoolAPY = async (
 export const fetchDAIPoolAPY = async (rari: Rari) => {
   const poolRawAPY = await rari.pools.dai.apy.getCurrentRawApy();
 
-  const poolAPY = parseFloat(
-    rari.web3.utils.fromWei(poolRawAPY.mul(rari.web3.utils.toBN(100)))
-  ).toFixed(2);
+  const poolAPY = parseFloat(fromWei(poolRawAPY.mul(toBN(100)))).toFixed(2);
 
   return poolAPY;
 };

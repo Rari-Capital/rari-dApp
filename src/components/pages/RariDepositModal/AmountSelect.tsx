@@ -23,7 +23,7 @@ import {
 
 import { Mode } from ".";
 
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { ModalDivider } from "../../shared/Modal";
 import { useRari } from "../../../context/RariContext";
 import { usePoolType } from "../../../context/PoolContext";
@@ -46,6 +46,7 @@ import { AttentionSeeker } from "react-awesome-reveal";
 
 import { HashLoader } from "react-spinners";
 import { handleGenericError } from "../../../utils/errorHandling";
+import { fromWei } from "utils/ethersUtils";
 
 interface Props {
   selectedToken: string;
@@ -82,7 +83,7 @@ const AmountSelect = ({
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
 
-  const [quoteAmount, setQuoteAmount] = useState<null | BN>(null);
+  const [quoteAmount, setQuoteAmount] = useState<null | BigNumber>(null);
 
   const [userEnteredAmount, _setUserEnteredAmount] = useState("");
 
@@ -192,8 +193,8 @@ const AmountSelect = ({
       if (userAction === UserAction.NO_ACTION) {
         setUserAction(UserAction.REQUESTED_QUOTE);
 
-        let quote: BN;
-        let slippage: BN;
+        let quote: BigNumber;
+        let slippage: BigNumber;
 
         if (mode === Mode.DEPOSIT) {
           const [amountToBeAdded, , _slippage] =
@@ -202,7 +203,7 @@ const AmountSelect = ({
               amountBN,
               address,
               true
-            )) as BN[];
+            )) as BigNumber[];
 
           quote = amountToBeAdded;
           slippage = _slippage;
@@ -570,7 +571,7 @@ const ApprovalNotch = ({
   mode,
   amount,
 }: {
-  amount: BN;
+  amount: BigNumber;
   mode: Mode;
   color: string;
 }) => {
@@ -581,9 +582,7 @@ const ApprovalNotch = ({
   const { rari } = useRari();
 
   const formattedAmount = (() => {
-    const usdFormatted = smallStringUsdFormatter(
-      rari.web3.utils.fromWei(amount)
-    );
+    const usdFormatted = smallStringUsdFormatter(fromWei(amount));
 
     return poolType === Pool.ETH
       ? usdFormatted.replace("$", "") + " ETH"

@@ -38,6 +38,7 @@ import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 
 import { Token } from "rari-tokens-generator";
 import { handleGenericError } from "utils/errorHandling";
+import { createContract, fromWei, toBN } from "utils/ethersUtils";
 
 function noop() {}
 
@@ -79,7 +80,7 @@ const useSFIBalance = () => {
       .balanceOf(address)
       .call();
 
-    return rari.web3.utils.toBN(stringBalance);
+    return toBN(stringBalance);
   });
 
   return { sfiBalance: data };
@@ -101,9 +102,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
   const { saffronPool } = useSaffronData();
 
   const { data: sfiRatio } = useQuery(tranchePool + " sfiRatio", async () => {
-    return parseFloat(
-      rari.web3.utils.fromWei(await saffronPool.methods.SFI_ratio().call())
-    );
+    return parseFloat(fromWei(await saffronPool.methods.SFI_ratio().call()));
   });
 
   const [userAction, setUserAction] = useState(UserAction.NO_ACTION);
@@ -197,7 +196,7 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
   const onConfirm = async () => {
     try {
       //@ts-ignore
-      const amountBN = rari.web3.utils.toBN(amount!.decimalPlaces(0));
+      const amountBN = toBN(amount!.decimalPlaces(0));
 
       // Check A tranche cap
       if (trancheRating === TrancheRating.A) {
@@ -234,27 +233,19 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
       const poolAddress = saffronPool.options.address;
 
-      const SFIContract = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        SFIToken.address
-      );
+      const SFIContract = createContract(SFIToken.address, ERC20ABI);
 
-      const trancheToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
-        token.address
-      );
+      const trancheToken = createContract(token.address, ERC20ABI as any);
 
       const hasApprovedEnoughSFI = requiresSFIStaking(trancheRating)
-        ? rari.web3.utils
-            .toBN(
-              await SFIContract.methods.allowance(address, poolAddress).call()
-            )
-            .gte(amountBN)
+        ? toBN(
+            await SFIContract.methods.allowance(address, poolAddress).call()
+          ).gte(amountBN)
         : true;
 
-      const hasApprovedEnoughPoolToken = rari.web3.utils
-        .toBN(await trancheToken.methods.allowance(address, poolAddress).call())
-        .gte(amountBN);
+      const hasApprovedEnoughPoolToken = toBN(
+        await trancheToken.methods.allowance(address, poolAddress).call()
+      ).gte(amountBN);
 
       if (!hasApprovedEnoughSFI) {
         // Approve the amount of poolToken because it will always be more than sfiRequired

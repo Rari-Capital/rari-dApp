@@ -1,11 +1,12 @@
-import Fuse from "lib/fuse-sdk";
+import { Fuse } from "rari-sdk-sharad-v2";
+import { createContract } from "./ethersUtils";
 
 export const createComptroller = (comptrollerAddress: string, fuse: Fuse) => {
-  const comptroller = new fuse.web3.eth.Contract(
+  const comptroller = createContract(
+    comptrollerAddress,
     JSON.parse(
       fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
-    ),
-    comptrollerAddress
+    )
   );
 
   return comptroller;

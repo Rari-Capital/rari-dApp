@@ -16,7 +16,7 @@ import BigNumber from "bignumber.js";
 import { Column, Row } from "lib/chakraUtils";
 
 import { useEffect, useState } from "react";
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useQuery } from "react-query";
 
 import { useRari } from "../../context/RariContext";
@@ -26,6 +26,7 @@ import { AnimatedSmallLogo } from "./Logos";
 import { ModalDivider, ModalTitleWithCloseButton, MODAL_PROPS } from "./Modal";
 
 import { SimpleTooltip } from "./SimpleTooltip";
+import { fromWei, toBN } from "utils/ethersUtils";
 
 export const ClaimRGTModal = ({
   isOpen,
@@ -44,9 +45,7 @@ export const ClaimRGTModal = ({
 
   const { data: unclaimed } = useQuery(address + " unclaimed RGT", async () => {
     return parseFloat(
-      rari.web3.utils.fromWei(
-        await rari.governance.rgt.distributions.getUnclaimed(address)
-      )
+      fromWei(await rari.governance.rgt.distributions.getUnclaimed(address))
     );
   });
 
@@ -54,9 +53,7 @@ export const ClaimRGTModal = ({
     address + " privateUnclaimed RGT",
     async () => {
       return parseFloat(
-        rari.web3.utils.fromWei(
-          await rari.governance.rgt.vesting.getUnclaimed(address)
-        )
+        fromWei(await rari.governance.rgt.vesting.getUnclaimed(address))
       );
     }
   );
@@ -65,7 +62,7 @@ export const ClaimRGTModal = ({
     address + " pool2Unclaimed RGT",
     async () => {
       return parseFloat(
-        rari.web3.utils.fromWei(
+        fromWei(
           await rari.governance.rgt.sushiSwapDistributions.getUnclaimed(address)
         )
       );
@@ -100,7 +97,7 @@ export const ClaimRGTModal = ({
 
     // Could do something with the receipt but notify.js is watching the account and will send a notification for us.
     claimMethod(
-      rari.web3.utils.toBN(
+      toBN(
         //@ts-ignore
         new BigNumber(amount).multipliedBy(1e18).decimalPlaces(0)
       ),
@@ -113,7 +110,7 @@ export const ClaimRGTModal = ({
       Math.floor(Date.now() / 1000)
     );
 
-    return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
+    return (parseFloat(fromWei(raw)) * 100).toFixed(2);
   });
 
   // const { data: claimFee } = useQuery("claimFee", async () => {

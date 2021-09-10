@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { fromWei } from "utils/ethersUtils";
 import { useRari } from "../context/RariContext";
 import { fetchTVL } from "../utils/fetchTVL";
 
@@ -8,7 +9,7 @@ export const useTVLFetchers = () => {
   const getTVL = useCallback(() => fetchTVL(rari, fuse), [rari, fuse]);
 
   const getNumberTVL = useCallback(async () => {
-    return parseFloat(rari.web3.utils.fromWei(await getTVL()));
+    return parseFloat(fromWei(await getTVL()));
   }, [rari, getTVL]);
 
   return { getNumberTVL, getTVL };

@@ -2,13 +2,7 @@
 import { memo, useState } from "react";
 
 // Components
-import {
-  AvatarGroup,
-  Box,
-  Spinner,
-  Switch,
-  Text,
-} from "@chakra-ui/react";
+import { AvatarGroup, Box, Spinner, Switch, Text } from "@chakra-ui/react";
 
 import DashboardBox from "components/shared/DashboardBox";
 import { ModalDivider } from "components/shared/Modal";
@@ -19,7 +13,7 @@ import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
 import AppLink from "components/shared/AppLink";
 
 // Hooks
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useQuery } from "react-query";
@@ -27,16 +21,10 @@ import { useQuery } from "react-query";
 // Utils
 import { smallUsdFormatter } from "utils/bigUtils";
 import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
-import {
-  Center,
-  Column,
-  Row,
-  RowOrColumn,
-  useIsMobile,
-} from "lib/chakraUtils";
+import { Center, Column, Row, RowOrColumn, useIsMobile } from "lib/chakraUtils";
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-
+import { fromWei } from "utils/ethersUtils";
 
 const FuseLiquidationsPage = memo(() => {
   const { isAuthed } = useRari();
@@ -133,7 +121,7 @@ const LiquidatablePositionsList = () => {
         rari.getEthUsdPriceBN(),
       ]);
 
-      const ethPrice: number = fuse.web3.utils.fromWei(ethPriceBN) as any;
+      const ethPrice: number = parseFloat(fromWei(ethPriceBN));
 
       const comptrollers = response[0];
       const poolUsers = response[1];

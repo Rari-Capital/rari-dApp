@@ -9,13 +9,15 @@ import { useRari } from "context/RariContext";
 import { useTranslation } from "next-i18next";
 import { useQuery } from "react-query";
 
-import { BN } from "utils/bigUtils";
+import { BigNumber } from "ethers";
+
 import { Column } from "lib/chakraUtils";
 import { getSDKPool, Pool } from "utils/poolUtils";
 import {
   USDStrategyAllocationChartOptions,
   ETHStrategyAllocationChartOptions,
 } from "utils/chartOptions";
+import { fromWei } from "utils/ethersUtils";
 
 const StrategyAllocation = () => {
   const { t } = useTranslation();
@@ -27,7 +29,7 @@ const StrategyAllocation = () => {
   const { data: allocations, isLoading: isAllocationsLoading } = useQuery(
     poolType + "allocations",
     async () => {
-      const rawAllocations: { [key: string]: BN } = await getSDKPool({
+      const rawAllocations: { [key: string]: BigNumber } = await getSDKPool({
         rari,
         pool: poolType,
       }).allocations.getRawPoolAllocations();
@@ -35,7 +37,7 @@ const StrategyAllocation = () => {
       let allocations: { [key: string]: number } = {};
 
       for (const [token, amount] of Object.entries(rawAllocations)) {
-        const parsedAmount = parseFloat(rari.web3.utils.fromWei(amount));
+        const parsedAmount = parseFloat(fromWei(amount));
 
         if (parsedAmount < 5) {
           continue;

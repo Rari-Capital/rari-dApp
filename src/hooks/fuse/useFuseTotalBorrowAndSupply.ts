@@ -2,6 +2,7 @@ import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
 import Rari from "lib/rari-sdk/index";
 import Fuse from "lib/fuse-sdk";
+import { fromWei } from "utils/ethersUtils";
 
 export const fetchFuseTotalBorrowAndSupply = async ({
   rari,
@@ -17,7 +18,7 @@ export const fetchFuseTotalBorrowAndSupply = async ({
       .getUserSummary(address)
       .call({ gas: 1e18 }),
 
-    rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()) as any,
+    fromWei(await rari.getEthUsdPriceBN()) as any,
   ]);
 
   return {

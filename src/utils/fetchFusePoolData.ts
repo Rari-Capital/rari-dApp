@@ -1,9 +1,8 @@
-import Fuse from "lib/fuse-sdk";
-import Rari from "lib/rari-sdk/index";
-
 // @ts-ignore
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
+import { Vaults, Fuse } from "rari-sdk-sharad-v2";
+import { fromWei } from "./ethersUtils";
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -92,7 +91,7 @@ export const fetchFusePoolData = async (
   poolId: string | undefined,
   address: string,
   fuse: Fuse,
-  rari?: Rari,
+  rari?: Vaults,
   blockNum: string | number = "latest"
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
@@ -122,7 +121,7 @@ export const fetchFusePoolData = async (
   let totalSuppliedUSD = 0;
   let totalBorrowedUSD = 0;
 
-  const ethPrice: number = fuse.web3.utils.fromWei(
+  const ethPrice: number = fromWei(
     // prefer rari because it has caching
     await (rari ?? fuse).getEthUsdPriceBN()
   ) as any;

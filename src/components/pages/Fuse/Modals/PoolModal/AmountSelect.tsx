@@ -23,7 +23,7 @@ import { useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from "next-i18next";
 import { useRari } from "../../../../../context/RariContext";
 import { fetchTokenBalance } from "../../../../../hooks/useTokenBalance";
 import { BN, smallUsdFormatter } from "../../../../../utils/bigUtils";
@@ -52,6 +52,7 @@ import {
   convertMantissaToAPY,
 } from "../../../../../utils/apyUtils";
 import useUpdatedUserAssets from "hooks/fuse/useUpdatedUserAssets";
+import { createContract, toBN } from "utils/ethersUtils";
 
 enum UserAction {
   NO_ACTION,
@@ -122,8 +123,8 @@ const AmountSelect = ({
   const { t } = useTranslation();
 
   const updateAmount = (newAmount: string) => {
-    if (newAmount.startsWith("-")) return 
-    
+    if (newAmount.startsWith("-")) return;
+
     _setUserEnteredAmount(newAmount);
 
     const bigAmount = new BigNumber(newAmount);
@@ -222,9 +223,10 @@ const AmountSelect = ({
       const max = new BigNumber(2).pow(256).minus(1).toFixed(0); //big fucking #
 
       // todo - do we need this?
-      const amountBN = fuse.web3.utils.toBN(amount!.toFixed(0));
+      const amountBN = toBN(amount!.toFixed(0));
 
-      const cToken = new fuse.web3.eth.Contract(
+      const cToken = createContract(
+        asset.cToken,
         isETH
           ? JSON.parse(
               fuse.compoundContracts[
@@ -235,30 +237,26 @@ const AmountSelect = ({
               fuse.compoundContracts[
                 "contracts/CErc20Delegate.sol:CErc20Delegate"
               ].abi
-            ),
-        asset.cToken
+            )
       );
 
       if (mode === Mode.SUPPLY || mode === Mode.REPAY) {
-
         // if not eth check if amounti is approved for thsi token
         if (!isETH) {
-          const token = new fuse.web3.eth.Contract(
+          const token = createContract(
+            asset.underlyingToken,
             JSON.parse(
               fuse.compoundContracts[
                 "contracts/EIP20Interface.sol:EIP20Interface"
               ].abi
-            ),
-            asset.underlyingToken
+            )
           );
 
-          const hasApprovedEnough = fuse.web3.utils
-            .toBN(
-              await token.methods
-                .allowance(address, cToken.options.address)
-                .call()
-            )
-            .gte(amountBN);
+          const hasApprovedEnough = toBN(
+            await token.methods
+              .allowance(address, cToken.options.address)
+              .call()
+          ).gte(amountBN);
 
           if (!hasApprovedEnough) {
             await token.methods
@@ -269,7 +267,7 @@ const AmountSelect = ({
           LogRocket.track("Fuse-Approve");
         }
 
-        // if ur suplying, then 
+        // if ur suplying, then
         if (mode === Mode.SUPPLY) {
           // If they want to enable as collateral now, enter the market:
           if (enableAsCollateral) {
@@ -283,7 +281,7 @@ const AmountSelect = ({
           }
 
           if (isETH) {
-            const call = cToken.methods.mint();  //
+            const call = cToken.methods.mint(); //
 
             if (
               // If they are supplying their whole balance:
@@ -313,8 +311,7 @@ const AmountSelect = ({
                 value: amountBN,
               });
             }
-          }
-           else {
+          } else {
             //  Custom amount of ERC20
             await testForCTokenErrorAndSend(
               cToken.methods.mint(amountBN),

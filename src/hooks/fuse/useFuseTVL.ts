@@ -1,15 +1,13 @@
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import Rari from "lib/rari-sdk/index";
-import Fuse from "lib/fuse-sdk";
 import { fetchFuseTVL } from "utils/fetchTVL";
+import { Vaults, Fuse } from "rari-sdk-sharad-v2";
+import { fromWei } from "utils/ethersUtils";
 
-export const fetchFuseNumberTVL = async (rari: Rari, fuse: Fuse) => {
+export const fetchFuseNumberTVL = async (rari: Vaults, fuse: Fuse) => {
   const tvlETH = await fetchFuseTVL(fuse);
 
-  const ethPrice: number = rari.web3.utils.fromWei(
-    await rari.getEthUsdPriceBN()
-  ) as any;
+  const ethPrice: number = fromWei(await rari.getEthUsdPriceBN()) as any;
 
   return (parseInt(tvlETH.toString()) / 1e18) * ethPrice;
 };

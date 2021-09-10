@@ -1,28 +1,25 @@
-import Rari from "lib/rari-sdk/index";
-import { stringUsdFormatter, BN } from "utils/bigUtils";
+import { BigNumber } from "ethers";
+import { Vaults } from "rari-sdk-sharad-v2";
+import { stringUsdFormatter } from "utils/bigUtils";
+import { fromWei, toBN } from "./ethersUtils";
 
-export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
-  const [
-    stableInterest,
-    yieldInterest,
-    ethInterestInETH,
-    ethPriceBN,
-  ] = await Promise.all([
-    rari.pools.stable.balances.interestAccruedBy(address),
-    rari.pools.yield.balances.interestAccruedBy(address),
-    rari.pools.ethereum.balances.interestAccruedBy(address),
-    rari.getEthUsdPriceBN(),
-  ]);
+export const fetchPoolInterestEarned = async (
+  rari: Vaults,
+  address: string
+) => {
+  const [stableInterest, yieldInterest, ethInterestInETH, ethPriceBN] =
+    await Promise.all([
+      rari.pools.stable.balances.interestAccruedBy(address),
+      rari.pools.yield.balances.interestAccruedBy(address),
+      rari.pools.ethereum.balances.interestAccruedBy(address),
+      rari.getEthUsdPriceBN(),
+    ]);
 
-  const ethInterest = ethInterestInETH.mul(
-    ethPriceBN.div(rari.web3.utils.toBN(1e18))
-  );
+  const ethInterest = ethInterestInETH.mul(ethPriceBN.div(toBN(1e18)));
 
   return {
     totalFormattedEarnings: stringUsdFormatter(
-      rari.web3.utils.fromWei(
-        stableInterest.add(yieldInterest).add(ethInterest)
-      )
+      fromWei(stableInterest.add(yieldInterest).add(ethInterest))
     ),
     totalEarnings: stableInterest.add(yieldInterest).add(ethInterest),
     yieldPoolInterestEarned: yieldInterest,
@@ -34,9 +31,9 @@ export const fetchPoolInterestEarned = async (rari: Rari, address: string) => {
 
 export type PoolInterestEarned = {
   totalFormattedEarnings: string;
-  totalEarnings: BN;
-  yieldPoolInterestEarned: BN;
-  stablePoolInterestEarned: BN;
-  ethPoolInterestEarned: BN;
-  ethPoolInterestEarnedInETH: BN;
+  totalEarnings: BigNumber;
+  yieldPoolInterestEarned: BigNumber;
+  stablePoolInterestEarned: BigNumber;
+  ethPoolInterestEarned: BigNumber;
+  ethPoolInterestEarnedInETH: BigNumber;
 };

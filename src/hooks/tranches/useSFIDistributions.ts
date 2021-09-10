@@ -1,20 +1,19 @@
 import { useQuery } from "react-query";
-import { useRari } from "context/RariContext";
 import { useSaffronData } from "./useSaffronData";
 
 import { tranchePoolIndex, TranchePool } from "./useSaffronData";
+import { fromWei } from "utils/ethersUtils";
 
 export const useSFIDistributions = () => {
-  const { rari } = useRari();
   const { saffronStrategy } = useSaffronData();
 
   const { data: sfiDistributions } = useQuery("sfiDistributions", async () => {
-    const DAI = rari.web3.utils.fromWei(
+    const DAI = fromWei(
       await saffronStrategy.methods
         .pool_SFI_rewards(tranchePoolIndex(TranchePool.DAI))
         .call()
     );
-    const USDC = rari.web3.utils.fromWei(
+    const USDC = fromWei(
       await saffronStrategy.methods
         .pool_SFI_rewards(tranchePoolIndex(TranchePool.USDC))
         .call()

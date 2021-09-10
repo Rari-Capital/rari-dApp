@@ -8,6 +8,7 @@ import BigNumber from "bignumber.js";
 import { Mode } from "components/pages/Fuse/Modals/PoolModal";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { AmountSelectMode } from "components/shared/AmountSelectNew/AmountSelectNew";
+import { fromWei } from "utils/ethersUtils";
 
 const useUpdatedUserAssets = ({
   mode,
@@ -28,9 +29,7 @@ const useUpdatedUserAssets = ({
       async () => {
         if (!assets || !assets.length) return [];
 
-        const ethPrice: number = fuse.web3.utils.fromWei(
-          await rari.getEthUsdPriceBN()
-        ) as any;
+        const ethPrice: number = fromWei(await rari.getEthUsdPriceBN()) as any;
 
         const assetToBeUpdated = assets[index];
 

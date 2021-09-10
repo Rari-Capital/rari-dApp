@@ -4,6 +4,7 @@ import { useSaffronContracts } from "components/pages/Tranches/SaffronContext";
 
 import { smallUsdFormatter, smallStringUsdFormatter } from "utils/bigUtils";
 import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
+import { createContract, fromWei, toBN } from "utils/ethersUtils";
 
 export enum TranchePool {
   DAI = "DAI",
@@ -72,7 +73,6 @@ export const trancheRatingIndex = (trancheRating: TrancheRating): number => {
     : 2;
 };
 
-
 // Returns SFI price and all Saffron Pools
 export const useSaffronData = () => {
   const { data } = useQuery("saffronData", async () => {
@@ -138,29 +138,25 @@ export const usePrincipalBalance = () => {
     async () => {
       const currentEpoch = await fetchCurrentEpoch();
 
-      const sTranchePToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
+      const sTranchePToken = createContract(
         await saffronPool.methods
           .principal_token_addresses(currentEpoch, 0)
-          .call()
+          .call(),
+        ERC20ABI as any
       );
 
-      const aTranchePToken = new rari.web3.eth.Contract(
-        ERC20ABI as any,
+      const aTranchePToken = createContract(
         await saffronPool.methods
           .principal_token_addresses(currentEpoch, 2)
-          .call()
+          .call(),
+        ERC20ABI as any
       );
 
       return smallStringUsdFormatter(
-        rari.web3.utils.fromWei(
-          rari.web3.utils
-            .toBN(await sTranchePToken.methods.balanceOf(address).call())
-            .add(
-              rari.web3.utils.toBN(
-                await aTranchePToken.methods.balanceOf(address).call()
-              )
-            )
+        fromWei(
+          toBN(await sTranchePToken.methods.balanceOf(address).call()).add(
+            toBN(await aTranchePToken.methods.balanceOf(address).call())
+          )
         )
       );
     }

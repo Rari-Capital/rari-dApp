@@ -1,16 +1,17 @@
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import Rari from "lib/rari-sdk/index";
+import { fromWei } from "utils/ethersUtils";
+import { Vaults } from "rari-sdk-sharad-v2";
 
 export const fetchPool2UnclaimedRGT = async ({
   rari,
   address,
 }: {
-  rari: Rari;
+  rari: Vaults;
   address: string;
 }) => {
   return parseFloat(
-    rari.web3.utils.fromWei(
+    fromWei(
       await rari.governance.rgt.sushiSwapDistributions.getUnclaimed(address)
     )
   );
