@@ -11,6 +11,7 @@ import {
   Spinner,
   Avatar,
   Box,
+  Icon,
   Stack,
 } from "@chakra-ui/react";
 
@@ -32,6 +33,8 @@ import { ClaimRGTModal } from "./ClaimRGTModal";
 
 import MoonpayModal from "components/pages/MoonpayModal";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { HamburgerIcon } from "@chakra-ui/icons";
 
 export const AccountButton = memo(() => {
   const {
@@ -94,8 +97,7 @@ const Buttons = ({
 
   const { t } = useTranslation();
 
-  // const isMobile = useIsSmallScreen();
-  const isMobile = false;
+  const isMobile = useIsSmallScreen();
 
   const handleAccountButtonClick = useCallback(() => {
     if (isAuthed) {
@@ -160,7 +162,13 @@ const Buttons = ({
             )
           ) : (
             <Center>
-              <Stack border="transparent" w="100%" h="100%" direction="row" spacing={4} >
+              <Stack
+                border="transparent"
+                w="100%"
+                h="100%"
+                direction="row"
+                spacing={4}
+              >
                 <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
               </Stack>
               <Text ml={2} fontWeight="semibold">

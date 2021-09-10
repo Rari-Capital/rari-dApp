@@ -20,8 +20,6 @@ export const fetchTokensAPIDataAsMap = async (
 
   const tokenDatas = await fetchTokensAPIData(uniqueAddresses);
 
-  console.log({ tokenDatas });
-
   // construct a map for easy lookups
   const tokensDataMap: { [address: string]: RariApiTokenData } = {};
   for (let i: number = 0; i < uniqueAddresses.length; i++) {

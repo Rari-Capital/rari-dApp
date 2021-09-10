@@ -82,7 +82,7 @@ const TokenDetails = ({ token }: { token: TokenData }) => {
         >
           {/* Foursq */}
           {/* <Foursquare token={token}  mb={5}/> */}
-          {/* <AssetBorrowLend token={token} mb={5} /> */}
+          <AssetBorrowLend token={token} mb={5} />
 
           <TrendingOpportunities token={token} mb={5} />
 

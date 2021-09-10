@@ -4,12 +4,12 @@ import fetch from "node-fetch";
 import Web3 from "web3";
 import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 
-import { NowRequest, NowResponse } from "@vercel/node";
 import { providerURL } from "utils/web3Providers";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const web3 = new Web3(providerURL);
 
-export default async (request: NowRequest, response: NowResponse) => {
+export default async (request: NextApiRequest, response: NextApiResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
 

@@ -49,9 +49,7 @@ const AssetOpportunities = ({
         // bg="green"
         overflowY="scroll"
       >
-        {nav === OpportunityNav.FUSE && (
-          <FuseList token={token}/>
-        )}
+        {nav === OpportunityNav.FUSE && <FuseList token={token} />}
         {nav === OpportunityNav.TRANCHES && (
           <TrancheOpportunities token={token} />
         )}
@@ -86,13 +84,24 @@ const NavBar = ({ setNav, token }: { setNav: any; token: TokenData }) => {
     >
       <TabList borderRadius="2xl" bg="#252626" display="flex">
         <Row mainAxisAlignment="center" crossAxisAlignment="center">
-          {navItems.map((nav) => (
-            <Tab key={nav} borderRadius="2xl" _hover={{ color: "green.200" }}>
-              <Text fontSize="xs" color="white" _hover={{ color: "green.200" }}>
-                {nav}
-              </Text>
-            </Tab>
-          ))}
+          {navItems.map((nav) => {
+            if (
+              nav === OpportunityNav.EARN &&
+              !["DAI, USDC"].includes(token.symbol)
+            )
+              return;
+            return (
+              <Tab key={nav} borderRadius="2xl" _hover={{ color: "green.200" }}>
+                <Text
+                  fontSize="xs"
+                  color="white"
+                  _hover={{ color: "green.200" }}
+                >
+                  {nav}
+                </Text>
+              </Tab>
+            );
+          })}
         </Row>
       </TabList>
     </Tabs>
