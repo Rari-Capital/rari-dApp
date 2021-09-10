@@ -1,46 +1,37 @@
 import { createContext, memo, useContext, useState, useEffect } from "react";
 import { useRari } from "../../../context/RariContext";
-import { Contract } from "web3-eth-contract";
 import SaffronPoolABI from "./SaffronPoolABI.json";
 import SaffronStrategyABI from "./SaffronStrategyABI.json";
 import { SaffronStrategyAddress, SaffronPoolAddress } from "constants/saffron";
+import { createContract } from "utils/web3Utils";
+import { Contract } from "@ethersproject/contracts";
 
 interface SaffronContextType {
   saffronStrategy: Contract;
   saffronPool: Contract;
 }
 
-export const SaffronContext =
-  createContext<SaffronContextType | undefined>(undefined);
+export const SaffronContext = createContext<SaffronContextType | undefined>(
+  undefined
+);
 
 export const SaffronProvider = memo(({ children }) => {
   const { rari } = useRari();
 
   const [saffronStrategy, setSaffronStrategy] = useState(() => {
-    return new rari.web3.eth.Contract(
-      SaffronStrategyABI as any,
-      SaffronStrategyAddress
-    );
+    return createContract(SaffronStrategyAddress, SaffronStrategyABI);
   });
 
   const [saffronPool, setSaffronPool] = useState(() => {
-    return new rari.web3.eth.Contract(
-      SaffronPoolABI as any,
-      SaffronPoolAddress
-    );
+    return createContract(SaffronPoolAddress, SaffronPoolABI as any);
   });
 
   useEffect(() => {
     setSaffronStrategy(
-      new rari.web3.eth.Contract(
-        SaffronStrategyABI as any,
-        SaffronStrategyAddress
-      )
+      createContract(SaffronStrategyAddress, SaffronStrategyABI)
     );
 
-    setSaffronPool(
-      new rari.web3.eth.Contract(SaffronPoolABI as any, SaffronPoolAddress)
-    );
+    setSaffronPool(createContract(SaffronPoolAddress, SaffronPoolABI));
   }, [rari]);
 
   return (
