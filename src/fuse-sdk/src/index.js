@@ -1533,6 +1533,19 @@ export default class Fuse {
           return model;
       return null;
     };
+
+    this.deployRewardsDistributor = async function (rewardToken, options) {
+      var distributor = new this.web3.eth.Contract(
+        JSON.parse(contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi)
+      );
+      distributor = await distributor
+        .deploy({
+          data: "0x" + contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].bin,
+          arguments: [rewardToken]
+        })
+        .send(options);
+      rdAddress = distributor.options.address;
+    };
   }
 
   static Web3 = Web3;
