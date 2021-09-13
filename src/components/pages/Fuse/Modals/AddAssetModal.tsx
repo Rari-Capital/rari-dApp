@@ -102,9 +102,9 @@ export const useCTokenData = (
         cToken.methods.adminFeeMantissa().call(),
         cToken.methods.reserveFactorMantissa().call(),
         cToken.methods.interestRateModel().call(),
-        cToken.methods.admin().call(),
-        cToken.methods.pendingAdmin().call(),
-        cToken.methods.adminHasRights().call(),
+        "0x6997060D6bA220d8A0B102e0003Fe12796b874bd", // cToken.methods.admin().call(),
+        "0x6997060D6bA220d8A0B102e0003Fe12796b874bd", // cToken.methods.pendingAdmin().call(),
+        true, // cToken.methods.adminHasRights().call(),
         comptroller.methods.markets(cTokenAddress).call(),
         comptroller.methods.borrowGuardianPaused(cTokenAddress).call(),
       ]);

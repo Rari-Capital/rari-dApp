@@ -146,6 +146,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       setRari(rariInstance);
       setFuse(fuseInstance);
 
+      // (window as any).Fuse = Fuse
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         if (addresses.length === 0) {
           console.log("Address array was empty. Reloading!");

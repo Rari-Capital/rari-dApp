@@ -39,6 +39,7 @@ import { useTokenData } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
 import { handleGenericError } from "../../../utils/errorHandling";
 import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import AddRewardsDistributorModal from "./Modals/AddRewardsDistributorModal";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -105,6 +106,28 @@ export async function testForComptrollerErrorAndSend(
   return txObject.send({ from: caller });
 }
 
+const useRewardsDistributors = (comptrollerAddress?: string) => {
+  const { fuse } = useRari();
+
+  const { data } = useQuery(
+    comptrollerAddress + " rewardsDistributors",
+    async () => {
+      if (!comptrollerAddress) return [];
+      const comptroller = createComptroller(comptrollerAddress, fuse);
+
+      const rewardsDistributors: string[] = await comptroller.methods
+        .rewardsDistributors()
+        .call();
+
+      console.log({ rewardsDistributors });
+
+      return rewardsDistributors;
+    }
+  );
+
+  return data;
+};
+
 const FusePoolEditPage = memo(() => {
   const { isAuthed } = useRari();
 
@@ -116,13 +139,24 @@ const FusePoolEditPage = memo(() => {
     onClose: closeAddAssetModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isAddRewardsDistributorModalOpen,
+    onOpen: openAddRewardsDistributorModal,
+    onClose: closeAddRewardsDistributorModal,
+  } = useDisclosure();
+
   const authedOpenModal = useAuthedCallback(openAddAssetModal);
+  const authedOpenRewardsDistributorModal = useAuthedCallback(
+    openAddRewardsDistributorModal
+  );
 
   const { t } = useTranslation();
 
   const { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+
+  const rewardsDistributors = useRewardsDistributors(data?.comptroller);
 
   return (
     <>
@@ -134,6 +168,17 @@ const FusePoolEditPage = memo(() => {
           poolID={poolId}
           isOpen={isAddAssetModalOpen}
           onClose={closeAddAssetModal}
+        />
+      ) : null}
+
+      {data ? (
+        <AddRewardsDistributorModal
+          comptrollerAddress={data.comptroller}
+          existingAssets={data.assets}
+          poolName={data.name}
+          poolID={poolId}
+          isOpen={isAddRewardsDistributorModalOpen}
+          onClose={closeAddRewardsDistributorModal}
         />
       ) : null}
 
@@ -212,6 +257,33 @@ const FusePoolEditPage = memo(() => {
             </DashboardBox>
           </Box>
         </RowOrColumn>
+
+        {/* Rewards Distributor */}
+        <DashboardBox w="100%" h="200px" mt={4}>
+          <Row mainAxisAlignment="space-between" crossAxisAlignment="center">
+            <Heading size="sm" px={4} py={4}>
+              {t("Rewards Distributors:")}
+            </Heading>
+            <AddRewardsDistributorButton
+              openAddRewardsDistributorModal={openAddRewardsDistributorModal}
+              comptrollerAddress={data?.comptroller}
+            />
+          </Row>
+          <Column
+            expand
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+          >
+            <Text mb={4}>
+              {t("There are no RewardsDistributors for this pool.")}
+            </Text>
+            <AddRewardsDistributorButton
+              openAddRewardsDistributorModal={openAddRewardsDistributorModal}
+              comptrollerAddress={data?.comptroller}
+            />
+          </Column>
+          <ModalDivider />
+        </DashboardBox>
       </Column>
     </>
   );
@@ -764,6 +836,30 @@ const AddAssetButton = ({
       fontWeight="bold"
     >
       {t("Add Asset")}
+    </DashboardBox>
+  ) : null;
+};
+
+const AddRewardsDistributorButton = ({
+  openAddRewardsDistributorModal,
+  comptrollerAddress,
+}: {
+  openAddRewardsDistributorModal: () => any;
+  comptrollerAddress: string;
+}) => {
+  const { t } = useTranslation();
+
+  const isUpgradeable = useIsUpgradeable(comptrollerAddress);
+
+  return isUpgradeable ? (
+    <DashboardBox
+      onClick={openAddRewardsDistributorModal}
+      as="button"
+      py={1}
+      px={2}
+      fontWeight="bold"
+    >
+      {t("Add Rewards Distributor")}
     </DashboardBox>
   ) : null;
 };
