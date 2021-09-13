@@ -103,8 +103,8 @@ export default class Fuse {
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
 
-  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DaiInterestRateModelV2 NOT IN USE
-  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DaiInterestRateModelV2 NOT IN USE
+  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
+  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
 
   static UNISWAP_V2_FACTORY_ADDRESS =
     "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
@@ -764,7 +764,9 @@ export default class Fuse {
         [
           "WhitePaperInterestRateModel",
           "JumpRateModel",
-          "DAIInterestRateModelV2",
+          "JumpRateModelV2",
+          "ReactiveJumpRateModelV2",
+          "DAIInterestRateModelV2", // NOT IN USE
         ].indexOf(conf.interestRateModel) >= 0
       ) {
         try {
