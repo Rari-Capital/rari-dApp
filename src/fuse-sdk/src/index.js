@@ -826,7 +826,35 @@ export default class Fuse {
             conf.kink,
           ];
           break;
-        case "DAIInterestRateModelV2":
+        case "JumpRateModelV2":
+          if (!conf)
+            conf = {
+              baseRatePerYear: "20000000000000000",
+              multiplierPerYear: "200000000000000000",
+              jumpMultiplierPerYear: "2000000000000000000",
+              kink: "900000000000000000",
+              owner: options.from
+            };
+          deployArgs = [
+            conf.baseRatePerYear,
+            conf.multiplierPerYear,
+            conf.jumpMultiplierPerYear,
+            conf.kink,
+            conf.owner,
+          ];
+          break;
+        case "ReactiveJumpRateModelV2":
+          if (!conf) throw "No configuration passed to deployInterestRateModel.";
+          deployArgs = [
+            conf.baseRatePerYear,
+            conf.multiplierPerYear,
+            conf.jumpMultiplierPerYear,
+            conf.kink,
+            conf.owner,
+            conf.cToken,
+          ];
+          break;
+        case "DAIInterestRateModelV2": // NOT IN USE
           if (!conf)
             conf = {
               jumpMultiplierPerYear: "2000000000000000000",
