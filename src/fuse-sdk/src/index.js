@@ -103,8 +103,8 @@ export default class Fuse {
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
 
-  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DaiInterestRateModelV2 NOT IN USE
-  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DaiInterestRateModelV2 NOT IN USE
+  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
+  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
 
   static UNISWAP_V2_FACTORY_ADDRESS =
     "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
@@ -764,7 +764,9 @@ export default class Fuse {
         [
           "WhitePaperInterestRateModel",
           "JumpRateModel",
-          "DAIInterestRateModelV2",
+          "JumpRateModelV2",
+          "ReactiveJumpRateModelV2",
+          "DAIInterestRateModelV2", // NOT IN USE
         ].indexOf(conf.interestRateModel) >= 0
       ) {
         try {
@@ -826,7 +828,35 @@ export default class Fuse {
             conf.kink,
           ];
           break;
-        case "DAIInterestRateModelV2":
+        case "JumpRateModelV2":
+          if (!conf)
+            conf = {
+              baseRatePerYear: "20000000000000000",
+              multiplierPerYear: "200000000000000000",
+              jumpMultiplierPerYear: "2000000000000000000",
+              kink: "900000000000000000",
+              owner: options.from
+            };
+          deployArgs = [
+            conf.baseRatePerYear,
+            conf.multiplierPerYear,
+            conf.jumpMultiplierPerYear,
+            conf.kink,
+            conf.owner,
+          ];
+          break;
+        case "ReactiveJumpRateModelV2":
+          if (!conf) throw "No configuration passed to deployInterestRateModel.";
+          deployArgs = [
+            conf.baseRatePerYear,
+            conf.multiplierPerYear,
+            conf.jumpMultiplierPerYear,
+            conf.kink,
+            conf.owner,
+            conf.cToken,
+          ];
+          break;
+        case "DAIInterestRateModelV2": // NOT IN USE
           if (!conf)
             conf = {
               jumpMultiplierPerYear: "2000000000000000000",
@@ -1056,6 +1086,19 @@ export default class Fuse {
 
       // Return cToken proxy and implementation contract addresses
       return [cErc20DelegatorAddress, implementationAddress, receipt];
+    };
+
+    this.identifyPriceOracle = async function (priceOracleAddress) {
+      // Get PriceOracle type from runtime bytecode hash
+      var runtimeBytecodeHash = Web3.utils.sha3(
+        await this.web3.eth.getCode(priceOracleAddress)
+      );
+      
+      for (const oracleContractName of Object.keys(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES))
+        if (runtimeBytecodeHash == Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])
+          return oracleContractName;
+      
+      return null;
     };
 
     this.identifyInterestRateModel = async function (interestRateModelAddress) {
@@ -1534,7 +1577,7 @@ export default class Fuse {
       return null;
     };
 
-    this.deployRewardsDistributor = async function (rewardToken) {
+    this.deployRewardsDistributor = async function (rewardToken, options) {
       var distributor = new this.web3.eth.Contract(
         JSON.parse(contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi)
       );
@@ -1546,7 +1589,6 @@ export default class Fuse {
         .send(options);
       rdAddress = distributor.options.address;
     };
-
   }
 
   static Web3 = Web3;
