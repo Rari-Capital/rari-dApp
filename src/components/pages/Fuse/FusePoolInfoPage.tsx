@@ -45,7 +45,7 @@ import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
 import Footer from "components/shared/Footer";
 
-export const useExtraPoolInfo = (comptrollerAddress: string) => {
+export const useExtraPoolInfo = (comptrollerAddress: string, oracleAddress: string) => {
   const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
@@ -65,7 +65,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
         .getPoolOwnership(comptrollerAddress)
         .call({ gas: 1e18 }),
 
-      fuse.getPriceOracle(await comptroller.methods.oracle().call()),
+      fuse.getPriceOracle(oracleAddress),
 
       comptroller.methods.closeFactorMantissa().call(),
 
@@ -153,6 +153,7 @@ const FusePoolInfoPage = memo(() => {
                 totalBorrowedUSD={data.totalBorrowedUSD}
                 totalLiquidityUSD={data.totalLiquidityUSD}
                 comptrollerAddress={data.comptroller}
+                oracleAddress={data.oracle}
               />
             ) : (
               <Center expand>
@@ -195,6 +196,7 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD,
   totalLiquidityUSD,
   comptrollerAddress,
+  oracleAddress
 }: {
   assets: USDPricedFuseAsset[];
   name: string;
@@ -202,12 +204,13 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD: number;
   totalLiquidityUSD: number;
   comptrollerAddress: string;
+  oracleAddress: string
 }) => {
   let { poolId } = useParams();
 
   const { t } = useTranslation();
 
-  const data = useExtraPoolInfo(comptrollerAddress);
+  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
 
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
