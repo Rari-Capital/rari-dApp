@@ -1088,6 +1088,19 @@ export default class Fuse {
       return [cErc20DelegatorAddress, implementationAddress, receipt];
     };
 
+    this.identifyPriceOracle = async function (priceOracleAddress) {
+      // Get PriceOracle type from runtime bytecode hash
+      var runtimeBytecodeHash = Web3.utils.sha3(
+        await this.web3.eth.getCode(priceOracleAddress)
+      );
+      
+      for (const oracleContractName of Object.keys(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES))
+        if (runtimeBytecodeHash == Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])
+          return oracleContractName;
+      
+      return null;
+    };
+
     this.identifyInterestRateModel = async function (interestRateModelAddress) {
       // Get interest rate model type from runtime bytecode hash and init class
       var interestRateModels = {
