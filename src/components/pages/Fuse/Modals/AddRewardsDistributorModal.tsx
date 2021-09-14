@@ -59,20 +59,12 @@ const AssetSettings = ({
   poolID,
   tokenData,
   comptrollerAddress,
-  cTokenAddress,
-  existingAssets,
   closeModal,
 }: {
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   tokenData: TokenData;
-
-  // Only for editing mode
-  cTokenAddress?: string;
-
-  // Only for add asset modal
-  existingAssets?: USDPricedFuseAsset[];
   closeModal: () => any;
 }) => {
   const { t } = useTranslation();
@@ -103,7 +95,7 @@ const AssetSettings = ({
 
       <ModalDivider />
 
-      {/* <ConfigRow>
+      <ConfigRow>
         <SimpleTooltip
           label={t(
             "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels."
@@ -121,8 +113,7 @@ const AssetSettings = ({
           fontWeight="bold"
           _focus={{ outline: "none" }}
           width="260px"
-          value={interestRateModel.toLowerCase()}
-          onChange={(event) => setInterestRateModel(event.target.value)}
+          value={"poop".toLowerCase()}
         >
           {Object.entries(
             Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
@@ -138,17 +129,7 @@ const AssetSettings = ({
             );
           })}
         </Select>
-
-        {cTokenData &&
-        cTokenData.interestRateModelAddress.toLowerCase() !==
-          interestRateModel.toLowerCase() ? (
-          <SaveButton
-            height="40px"
-            borderRadius="7px"
-            onClick={updateInterestRateModel}
-          />
-        ) : null}
-      </ConfigRow> */}
+      </ConfigRow>
       {/* 
       <Box
         height="170px"
@@ -195,7 +176,6 @@ const AssetSettings = ({
         )}
       </Box> */}
 
-      {/* {cTokenAddress ? null : (
         <Box px={4} mt={4} width="100%">
           <Button
             fontWeight="bold"
@@ -212,8 +192,7 @@ const AssetSettings = ({
           >
             {t("Confirm")}
           </Button> */}
-      {/* </Box>
-      )} */}
+       </Box>
     </Column>
   );
 };
@@ -231,7 +210,6 @@ const AddRewardsDistributorModal = ({
   poolID: string;
   isOpen: boolean;
   onClose: () => any;
-  existingAssets: USDPricedFuseAsset[];
 }) => {
   const { t } = useTranslation();
 
@@ -309,25 +287,6 @@ const AddRewardsDistributorModal = ({
               _hover={{ bg: "#282727" }}
               bg="#282727"
             />
-
-            {!existingAssets.some(
-              // If ETH hasn't been added:
-              (asset) => asset.underlyingToken === ETH_TOKEN_DATA.address
-            ) ? (
-              <DashboardBox
-                flexShrink={0}
-                as="button"
-                ml={2}
-                height="40px"
-                borderRadius="10px"
-                px={2}
-                fontSize="sm"
-                fontWeight="bold"
-                onClick={() => _setTokenAddress(ETH_TOKEN_DATA.address)}
-              >
-                <Center expand>ETH</Center>
-              </DashboardBox>
-            ) : null}
           </Center>
 
           {tokenData?.symbol ? (
@@ -339,7 +298,6 @@ const AddRewardsDistributorModal = ({
                 closeModal={onClose}
                 poolName={poolName}
                 poolID={poolID}
-                existingAssets={existingAssets}
               />
             </>
           ) : null}

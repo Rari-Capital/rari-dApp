@@ -1578,16 +1578,16 @@ export default class Fuse {
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
-      var distributor = new this.web3.eth.Contract(
+      const distributor = new this.web3.eth.Contract(
         JSON.parse(contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi)
       );
-      distributor = await distributor
+      const deployedDistributor = await distributor
         .deploy({
           data: "0x" + contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].bin,
           arguments: [rewardToken]
         })
         .send(options);
-      rdAddress = distributor.options.address;
+      const rdAddress = deployedDistributor.options.address;
     };
   }
 
