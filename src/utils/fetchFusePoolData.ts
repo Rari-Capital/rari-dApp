@@ -35,6 +35,7 @@ export interface FuseAsset {
 
   adminFee: number;
   fuseFee: number;
+  oracle: string;
 
   borrowRatePerBlock: number;
   supplyRatePerBlock: number;
@@ -63,6 +64,7 @@ export interface FusePoolData {
   assets: USDPricedFuseAssetWithTokenData[] | USDPricedFuseAsset[];
   comptroller: any;
   name: any;
+  oracle: string;
   isPrivate: boolean;
   totalLiquidityUSD: any;
   totalSuppliedUSD: any;
@@ -113,7 +115,6 @@ export const fetchFusePoolData = async (
   rari?: Rari
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
-
   const {
     comptroller,
     name: _unfiliteredName,
@@ -145,9 +146,11 @@ export const fetchFusePoolData = async (
   ) as any;
 
   let promises = [];
+  const comptrollerContract = createComptroller(comptroller, fuse);
+
+  let oracle: string = await comptrollerContract.methods.oracle().call();
 
   for (let i = 0; i < assets.length; i++) {
-    const comptrollerContract = createComptroller(comptroller, fuse);
 
     let asset = assets[i];
 
@@ -189,6 +192,7 @@ export const fetchFusePoolData = async (
     comptroller,
     name,
     isPrivate,
+    oracle,
 
     totalLiquidityUSD,
 
