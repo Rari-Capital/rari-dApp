@@ -130,7 +130,7 @@ export default class Fuse {
     YVaultV2PriceOracle:
       "0x177c22cc7d05280cea84a36782303d17246783be7b8c0b6f9731bb9002ffcc68",
     MasterPriceOracle:
-      "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
+      "0xc6e3b221159f7b21c88316ace0ab2f3b5c18d4f14673aef48f0f28ca17ea960f",
     CurveLpTokenPriceOracle:
       "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
     CurveLiquidityGaugeV2PriceOracle:
