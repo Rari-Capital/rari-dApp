@@ -21,3 +21,12 @@ export const createUnitroller = (unitrollerAddress: string, fuse: Fuse) => {
 
   return unitroller;
 };
+
+export const createOracle = (oracleAddress: string, fuse: Fuse) => {
+  const oracle = new fuse.web3.eth.Contract(
+      fuse.oracleContracts.MasterPriceOracle.abi,
+      oracleAddress,
+  )
+
+  return oracle
+}
