@@ -1,3 +1,4 @@
+// Chakra and UI
 import {
   Heading,
   Modal,
@@ -13,42 +14,41 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center } from "utils/chakraUtils";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-
-import DashboardBox, {
-  DASHBOARD_BOX_PROPS,
-} from "../../../shared/DashboardBox";
+import DashboardBox, { DASHBOARD_BOX_PROPS, } from "../../../shared/DashboardBox";
 import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
-
-import {
-  ETH_TOKEN_DATA,
-  TokenData,
-  useTokenData,
-} from "../../../../hooks/useTokenData";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
-import { useRari } from "../../../../context/RariContext";
-import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
 import { SliderWithLabel } from "../../../shared/SliderWithLabel";
-import { convertIRMtoCurve } from "../FusePoolInfoPage";
-
-import Fuse from "../../../../fuse-sdk";
-import Chart from "react-apexcharts";
-import {
-  ConfigRow,
-  SaveButton,
-  testForComptrollerErrorAndSend,
-} from "../FusePoolEditPage";
-import { useQuery, useQueryClient } from "react-query";
+import { ConfigRow, SaveButton, testForComptrollerErrorAndSend } from "../FusePoolEditPage";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
-import BigNumber from "bignumber.js";
+
+// React
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from "react-query";
+
+// Rari
+import { useRari } from "../../../../context/RariContext";
+import Fuse from "../../../../fuse-sdk";
+
+// Hooks
+import { ETH_TOKEN_DATA, TokenData, useTokenData } from "../../../../hooks/useTokenData";
+import { convertIRMtoCurve } from "../FusePoolInfoPage";
+import { useOracleData, useGetOracleOptions } from "hooks/fuse/useOracleData";
+import { createOracle } from "../../../../utils/createComptroller";
+
+// Utils
+import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
+import { handleGenericError } from "../../../../utils/errorHandling";
+import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
 import { createComptroller } from "../../../../utils/createComptroller";
 import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 
-import { handleGenericError } from "../../../../utils/errorHandling";
-import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
+// Libraries
+import Chart from "react-apexcharts";
+import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
+
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -102,9 +102,9 @@ export const useCTokenData = (
         cToken.methods.adminFeeMantissa().call(),
         cToken.methods.reserveFactorMantissa().call(),
         cToken.methods.interestRateModel().call(),
-        cToken.methods.admin().call(),
-        cToken.methods.pendingAdmin().call(),
-        cToken.methods.adminHasRights().call(),
+        "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+        "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+        true,
         comptroller.methods.markets(cTokenAddress).call(),
         comptroller.methods.borrowGuardianPaused(cTokenAddress).call(),
       ]);
@@ -133,14 +133,23 @@ export const AssetSettings = ({
   poolID,
   tokenData,
   comptrollerAddress,
+  tokenAddress,
+  poolOracleAddress,
+  oracleModel,
+  oracleData,
   cTokenAddress,
   existingAssets,
   closeModal,
+  mode,
 }: {
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   tokenData: TokenData;
+  tokenAddress: string;
+  poolOracleAddress: string;
+  oracleModel: string | null;
+  oracleData: any
 
   // Only for editing mode
   cTokenAddress?: string;
@@ -148,6 +157,7 @@ export const AssetSettings = ({
   // Only for add asset modal
   existingAssets?: USDPricedFuseAsset[];
   closeModal: () => any;
+  mode: "Editing" | "Adding"
 }) => {
   const { t } = useTranslation();
   const { fuse, address } = useRari();
@@ -161,6 +171,7 @@ export const AssetSettings = ({
   const [adminFee, setAdminFee] = useState(0);
 
   const [isBorrowPaused, setIsBorrowPaused] = useState(false);
+  const [oracleAddress, _setOracleAddress] = useState<string>("")
 
   const scaleCollateralFactor = (_collateralFactor: number) => {
     return _collateralFactor / 1e16;
@@ -222,6 +233,36 @@ export const AssetSettings = ({
       });
 
       return;
+    }
+
+    if (oracleAddress === "") {
+      toast({
+        title: "Error!",
+        description: "Please choose a valid oracle for this asset",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right"
+      });
+
+      return;
+    }
+
+    const poolOracleContract = createOracle(poolOracleAddress, fuse)
+
+    try {
+        await poolOracleContract.methods.add([tokenAddress], [oracleAddress]).send({from: address})
+        
+        toast({
+            title: "You have successfully configured the oracle for this asset!",
+            description: "Oracle will now point to the new selected address. Now, lets add you asset to the pool.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+            position: "top-right",
+        });
+    } catch (e) {
+        handleGenericError(e, toast);
     }
 
     setIsDeploying(true);
@@ -517,6 +558,7 @@ export const AssetSettings = ({
       </ConfigRow>
 
       <ModalDivider />
+
       {cTokenAddress ? (
         <ConfigRow>
           <SimpleTooltip
@@ -654,6 +696,22 @@ export const AssetSettings = ({
       </ConfigRow>
 
       <ModalDivider />
+      
+      {oracleModel === "MasterPriceOracle" ?
+        (  <>
+              <OracleConfig 
+                  oracleData={oracleData} 
+                  tokenAddress={tokenAddress}
+                  oracleAddress={oracleAddress}
+                  _setOracleAddress={_setOracleAddress}
+                  poolOracleAddress={poolOracleAddress}
+                  mode={mode}
+                />
+
+              <ModalDivider />
+            </> 
+        )
+      : null }
 
       <ConfigRow>
         <SimpleTooltip
@@ -774,8 +832,165 @@ export const AssetSettings = ({
   );
 };
 
+const OracleConfig = ({
+  oracleData,
+  tokenAddress,
+  oracleAddress,
+  _setOracleAddress,
+  poolOracleAddress,
+  mode,
+} : { 
+  oracleData: any;
+  tokenAddress: string;
+  oracleAddress: string;
+  _setOracleAddress: any;
+  poolOracleAddress: string;
+  mode: "Editing" | "Adding"
+}) => {
+  const queryClient = useQueryClient()
+  const { fuse, address} = useRari()
+  const { t } = useTranslation()
+  const toast = useToast()
+
+  const [activeOracle, _setActiveOracle] = useState<string>("")
+
+  const isValidAddress = fuse.web3.utils.isAddress(tokenAddress)
+  const isUserAdmin = address === oracleData.admin
+
+  const options = useGetOracleOptions(oracleData, tokenAddress, fuse, isValidAddress)
+
+  useEffect(() => {
+    if (options && options["Master_Price_Oracle_Default"] && options["Master_Price_Oracle_Default"].length > 0 && !oracleData.adminOverwrite) {
+        _setOracleAddress(options["Master_Price_Oracle_Default"])
+        _setActiveOracle("Master_Price_Oracle_Default")
+    }
+  },[options, oracleData, _setActiveOracle, _setOracleAddress])
+
+  useEffect(() => {
+    if(mode === "Editing" && activeOracle === "" && options && options["Master_Price_Oracle_Default"]) _setActiveOracle("Master_Price_Oracle_Default")
+  },[mode, activeOracle, options])
+
+  useEffect(() => {
+      if(activeOracle.length > 0 && activeOracle !== "Custom_Oracle" && options) _setOracleAddress(options[activeOracle])
+  },[activeOracle, options, _setOracleAddress])
+
+  const updateOracle = async () => {
+    const poolOracleContract = createOracle(poolOracleAddress, fuse)
+
+    try {
+        if (options === null) return null
+        await poolOracleContract.methods.add([tokenAddress], [oracleAddress]).send({from: address})
+
+        queryClient.refetchQueries();
+        // Wait 2 seconds for refetch and then close modal.
+        // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        
+        toast({
+            title: "You have successfully updated the oracle to this asset!",
+            description: "Oracle will now point to the new selected address.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+            position: "top-right",
+        });
+    } catch (e) {
+        handleGenericError(e, toast);
+    }
+}
+
+  return (
+    <ConfigRow mainAxisAlignment="space-between">
+      {options ?
+          <>
+          <SimpleTooltip
+              label={isUserAdmin ? oracleData.adminOverwrite 
+                ? t("Choose the best price oracle for the asset.") 
+                : options.Master_Price_Oracle_Default === null 
+                ? t("Once the oracle is set you won't be able to change it") 
+                : t("Oracle has been set and can't be changed.")
+                : t("You're not the oracle admin.")
+              }
+          >
+              <Text fontWeight="bold">
+              {t("Price Oracle")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+          </SimpleTooltip>
+
+          <Box
+              width="260px"
+              alignItems="flex-end"
+          >
+              <Select
+                  {...DASHBOARD_BOX_PROPS}
+                  ml="auto"
+                  mb={2}
+                  borderRadius="7px"
+                  _focus={{ outline: "none" }}
+                  width="260px"
+                  placeholder={activeOracle.length === 0 ? t("Choose Oracle"): activeOracle.replaceAll("_", " ")}
+                  value={activeOracle.toLowerCase()}
+                  disabled={!isUserAdmin || ( !oracleData.adminOverwrite && !options.Master_Price_Oracle_Default === null)}
+                  onChange={(event) => _setActiveOracle(event.target.value)}
+              >
+                  {Object.entries(options).map(([key, value]) => 
+                      value !== null ? 
+                      <option
+                          className="black-bg-option"
+                          value={key}
+                          key={key}
+                      >
+                          {key.replaceAll('_', ' ')}
+                      </option> : null
+                  )}
+
+              </Select>
+
+              { activeOracle.length > 0 ? 
+                  <Input
+                      width="260px"
+                      textAlign="center"
+                      height="40px"
+                      variant="filled"
+                      size="sm"
+                      mt={2}
+                      value={oracleAddress}
+                      onChange={(event) => {
+                          const address = event.target.value;
+                          _setOracleAddress(address);
+                      }}
+                      disabled={activeOracle === "Custom_Oracle" ? false : true}
+                      {...DASHBOARD_BOX_PROPS}
+                      _placeholder={{ color: "#e0e0e0" }}
+                      _focus={{ bg: "#121212" }}
+                      _hover={{ bg: "#282727" }}
+                      bg="#282727"
+                  />
+              : null }
+          </Box>
+          {activeOracle !== "Master_Price_Oracle_Default" && mode === "Editing" ? (
+                <SaveButton 
+                  ml={3} 
+                  onClick={updateOracle} 
+                  fontSize="xs"
+                  altText={t("Update")}
+                />
+              ) : null
+          }
+          </>
+          
+          : null 
+
+      }
+    </ConfigRow>
+  )
+}
+
 const AddAssetModal = ({
   comptrollerAddress,
+  poolOracleAddress,
+  oracleModel,
   poolName,
   poolID,
   isOpen,
@@ -783,6 +998,8 @@ const AddAssetModal = ({
   existingAssets,
 }: {
   comptrollerAddress: string;
+  poolOracleAddress: string;
+  oracleModel: string | null;
   poolName: string;
   poolID: string;
   isOpen: boolean;
@@ -790,10 +1007,12 @@ const AddAssetModal = ({
   existingAssets: USDPricedFuseAsset[];
 }) => {
   const { t } = useTranslation();
+  const { fuse } = useRari()
 
   const [tokenAddress, _setTokenAddress] = useState<string>("");
 
   const tokenData = useTokenData(tokenAddress);
+  const oracleData = useOracleData(poolOracleAddress, fuse)
 
   const isEmpty = tokenAddress.trim() === "";
 
@@ -887,8 +1106,13 @@ const AddAssetModal = ({
             <>
               <ModalDivider mt={4} />
               <AssetSettings
+                mode="Adding"
                 comptrollerAddress={comptrollerAddress}
                 tokenData={tokenData}
+                tokenAddress={tokenAddress}
+                poolOracleAddress={poolOracleAddress}
+                oracleModel={oracleModel}
+                oracleData={oracleData}
                 closeModal={onClose}
                 poolName={poolName}
                 poolID={poolID}
