@@ -1,3 +1,4 @@
+// Chakra and UI
 import {
   AvatarGroup,
   Box,
@@ -10,35 +11,43 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
+import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
+import { ModalDivider } from "../../shared/Modal";
+import { SliderWithLabel } from "../../shared/SliderWithLabel";
+
+// Components
+import { Header } from "../../shared/Header";
+import FuseStatsBar from "./FuseStatsBar";
+import FuseTabBar from "./FuseTabBar";
+import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
+import { CTokenIcon } from "./FusePoolsPage";
+import { WhitelistInfo } from "./FusePoolCreatePage";
+import { useExtraPoolInfo } from "./FusePoolInfoPage";
+
+// React
 import { memo, ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-
-import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
-import { SliderWithLabel } from "../../shared/SliderWithLabel";
-import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { CTokenIcon } from "./FusePoolsPage";
-import {
-  createComptroller,
-  createUnitroller,
-} from "../../../utils/createComptroller";
 import { useQueryClient, useQuery } from "react-query";
-import { WhitelistInfo } from "./FusePoolCreatePage";
 
-import { useExtraPoolInfo } from "./FusePoolInfoPage";
-import BigNumber from "bignumber.js";
-import { useTokenData } from "../../../hooks/useTokenData";
-import LogRocket from "logrocket";
-import { handleGenericError } from "../../../utils/errorHandling";
+// Rari
+import { useRari } from "../../../context/RariContext";
+
+// Hooks
 import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
+import { useFusePoolData } from "../../../hooks/useFusePoolData";
+import { useTokenData } from "../../../hooks/useTokenData";
+import { useOracleData } from "hooks/fuse/useOracleData";
+
+// Utils
+import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
+import { createComptroller, createOracle, createUnitroller } from "../../../utils/createComptroller";
+import { handleGenericError } from "../../../utils/errorHandling";
+
+// Libraries
+import BigNumber from "bignumber.js";
+import LogRocket from "logrocket";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -129,6 +138,8 @@ const FusePoolEditPage = memo(() => {
       {data ? (
         <AddAssetModal
           comptrollerAddress={data.comptroller}
+          poolOracleAddress={data.oracle} 
+          oracleModel={data.oracleModel}
           existingAssets={data.assets}
           poolName={data.name}
           poolID={poolId}
@@ -166,6 +177,7 @@ const FusePoolEditPage = memo(() => {
               <PoolConfiguration
                 assets={data.assets}
                 comptrollerAddress={data.comptroller}
+                oracleAddress={data.oracle}
               />
             ) : (
               <Center expand>
@@ -185,6 +197,8 @@ const FusePoolEditPage = memo(() => {
                   <AssetConfiguration
                     openAddAssetModal={authedOpenModal}
                     assets={data.assets}
+                    poolOracleAddress={data.oracle}
+                    oracleModel={data.oracleModel}
                     comptrollerAddress={data.comptroller}
                     poolID={poolId}
                     poolName={data.name}
@@ -222,9 +236,11 @@ export default FusePoolEditPage;
 const PoolConfiguration = ({
   assets,
   comptrollerAddress,
+  oracleAddress
 }: {
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
+  oracleAddress: string;
 }) => {
   const { t } = useTranslation();
   const { poolId } = useParams();
@@ -285,7 +301,7 @@ const PoolConfiguration = ({
       await testForComptrollerErrorAndSend(
         comptroller.methods._setWhitelistStatuses(
           whitelist,
-          whitelist.map((user) => user !== removeUser)
+          whitelist.map((user: string) => user !== removeUser)
         ),
         address,
         ""
@@ -613,17 +629,22 @@ const AssetConfiguration = ({
   openAddAssetModal,
   assets,
   comptrollerAddress,
+  poolOracleAddress,
+  oracleModel,
   poolName,
   poolID,
 }: {
   openAddAssetModal: () => any;
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
+  poolOracleAddress: string;
+  oracleModel: string | null;
   poolName: string;
   poolID: string;
 }) => {
   const { t } = useTranslation();
-
+  const { fuse } = useRari();
+  const oracleData = useOracleData(poolOracleAddress, fuse)
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
 
   return (
@@ -681,6 +702,9 @@ const AssetConfiguration = ({
         cTokenAddress={selectedAsset.cToken}
         poolName={poolName}
         poolID={poolID}
+        poolOracleAddress={poolOracleAddress}
+        oracleModel={oracleModel}
+        oracleData={oracleData}
       />
     </Column>
   );
@@ -692,17 +716,29 @@ const ColoredAssetSettings = ({
   poolID,
   comptrollerAddress,
   cTokenAddress,
+  poolOracleAddress,
+  oracleModel,
+  oracleData
 }: {
   tokenAddress: string;
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   cTokenAddress: string;
+  poolOracleAddress: string,
+  oracleModel: string | null,
+  oracleData: any
+  
 }) => {
   const tokenData = useTokenData(tokenAddress);
 
   return tokenData ? (
     <AssetSettings
+      mode="Editing"
+      tokenAddress={tokenAddress}
+      poolOracleAddress={poolOracleAddress}
+      oracleModel={oracleModel}
+      oracleData={oracleData}
       closeModal={noop}
       comptrollerAddress={comptrollerAddress}
       poolName={poolName}
