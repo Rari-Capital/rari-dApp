@@ -65,6 +65,7 @@ export interface FusePoolData {
   comptroller: any;
   name: any;
   oracle: string;
+  oracleModel: string | null;
   isPrivate: boolean;
   totalLiquidityUSD: any;
   totalSuppliedUSD: any;
@@ -150,6 +151,8 @@ export const fetchFusePoolData = async (
 
   let oracle: string = await comptrollerContract.methods.oracle().call();
 
+  let oracleModel: string | null = await fuse.getPriceOracle(oracle)
+
   for (let i = 0; i < assets.length; i++) {
 
     let asset = assets[i];
@@ -193,6 +196,7 @@ export const fetchFusePoolData = async (
     name,
     isPrivate,
     oracle,
+    oracleModel,
 
     totalLiquidityUSD,
 
