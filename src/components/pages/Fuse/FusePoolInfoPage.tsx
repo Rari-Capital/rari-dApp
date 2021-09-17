@@ -45,7 +45,7 @@ import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
 import Footer from "components/shared/Footer";
 
-export const useExtraPoolInfo = (comptrollerAddress: string, oracleAddress: string) => {
+export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
@@ -209,7 +209,7 @@ const OracleAndInterestRates = ({
 
   const { t } = useTranslation();
 
-  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
+  const data = useExtraPoolInfo(comptrollerAddress);
 
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
