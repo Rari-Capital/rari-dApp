@@ -53,7 +53,6 @@ export const useExtraPoolInfo = (comptrollerAddress: string, oracleAddress: stri
 
     const [
       { 0: admin, 1: upgradeable },
-      oracle,
       closeFactor,
       liquidationIncentive,
       enforceWhitelist,
@@ -64,8 +63,6 @@ export const useExtraPoolInfo = (comptrollerAddress: string, oracleAddress: stri
       fuse.contracts.FusePoolLens.methods
         .getPoolOwnership(comptrollerAddress)
         .call({ gas: 1e18 }),
-
-      fuse.getPriceOracle(oracleAddress),
 
       comptroller.methods.closeFactorMantissa().call(),
 
@@ -98,7 +95,6 @@ export const useExtraPoolInfo = (comptrollerAddress: string, oracleAddress: stri
       whitelist: whitelist as string[],
       isPowerfulAdmin:
         admin.toLowerCase() === address.toLowerCase() && upgradeable,
-      oracle,
       closeFactor,
       liquidationIncentive,
       adminHasRights,
@@ -154,6 +150,7 @@ const FusePoolInfoPage = memo(() => {
                 totalLiquidityUSD={data.totalLiquidityUSD}
                 comptrollerAddress={data.comptroller}
                 oracleAddress={data.oracle}
+                oracleModel={data.oracleModel}
               />
             ) : (
               <Center expand>
@@ -196,7 +193,8 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD,
   totalLiquidityUSD,
   comptrollerAddress,
-  oracleAddress
+  oracleAddress,
+  oracleModel
 }: {
   assets: USDPricedFuseAsset[];
   name: string;
@@ -204,7 +202,8 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD: number;
   totalLiquidityUSD: number;
   comptrollerAddress: string;
-  oracleAddress: string
+  oracleAddress: string;
+  oracleModel: string | null;
 }) => {
   let { poolId } = useParams();
 
@@ -363,7 +362,7 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Oracle")}
-          statA={data ? data.oracle ?? t("Unrecognized Oracle") : "?"}
+          statA={data ? oracleModel ?? t("Unrecognized Oracle") : "?"}
           statBTitle={t("Whitelist")}
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
