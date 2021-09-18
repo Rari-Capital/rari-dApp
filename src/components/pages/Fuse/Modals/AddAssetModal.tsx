@@ -895,6 +895,8 @@ const OracleConfig = ({
             isClosable: true,
             position: "top-right",
         });
+        _setActiveOracle("Master_Price_Oracle_Default")
+        _setOracleAddress(options["Master_Price_Oracle_Default"])
     } catch (e) {
         handleGenericError(e, toast);
     }
