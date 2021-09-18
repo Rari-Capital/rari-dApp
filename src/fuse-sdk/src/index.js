@@ -32,9 +32,9 @@ export default class Fuse {
     "0x8dA38681826f4ABBe089643D2B3fE4C6e4730493";
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
+    "0x7bc06c482dead17c0e297afbc32f6e63d3846650"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
-    "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
+    "0xFD471836031dc5108809D173A067e8486B9047A3"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
 
@@ -262,6 +262,8 @@ export default class Fuse {
       options,
       whitelist
     ) {
+
+      console.log(priceOracle, "model", Fuse.ORACLES.indexOf(priceOracle))
       // Deploy new price oracle via SDK if requested
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
@@ -353,6 +355,7 @@ export default class Fuse {
     };
 
     this.deployPriceOracle = async function (model, conf, options) {
+      console.log(model, conf, options, "inside DeployPrice")
       if (!model) model = "ChainlinkPriceOracle";
       if (!conf) conf = {};
 
