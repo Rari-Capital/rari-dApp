@@ -10,12 +10,16 @@ import {
 } from "../utils/fetchFusePoolData";
 import { useAssetsMapWithTokenData } from "./useAssetsMap";
 
-export const useFusePoolData = (poolId: string | undefined): FusePoolData | undefined => {
+export const useFusePoolData = (
+  poolId: string | undefined
+): FusePoolData | undefined => {
   const { fuse, rari, address } = useRari();
 
-  const { data } = useQuery(poolId + " poolData " + address, () => {
+  const { data, error } = useQuery(poolId + " poolData " + address, () => {
     return fetchFusePoolData(poolId, address, fuse, rari);
   });
+
+  console.log({ data, error });
 
   return data;
 };
@@ -44,10 +48,10 @@ export const useFusePoolsData = (poolIds: number[]): FusePoolData[] | null => {
 
     poolsData.forEach(({ data }, i) => {
       if (!data) return null;
-      const _data = data as FusePoolData
+      const _data = data as FusePoolData;
       ret.push({
         ..._data,
-        id: poolIds[i]
+        id: poolIds[i],
       });
     });
 

@@ -40,6 +40,7 @@ export const useTokenDataWithContract = (address: string) => {
 
 export const fetchTokenData = async (address: string) => {
   let data;
+  if (!address) return undefined
 
   if (address !== ETH_TOKEN_DATA.address) {
     try {

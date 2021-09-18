@@ -69,6 +69,62 @@ const AssetSettings = ({
 }) => {
   const { t } = useTranslation();
   const { fuse, address } = useRari();
+  const toast = useToast();
+
+  const [isDeploying, setIsDeploying] = useState(false);
+  const deploy = async () => {
+    try {
+      const comptroller = await createComptroller(comptrollerAddress, fuse);
+
+      if (!comptroller || !comptroller.methods._addRewardsDistributor) {
+        throw new Error("Could not create Comptroller");
+      }
+      const deployedDistributor = await fuse.deployRewardsDistributor(
+        tokenData.address,
+        {
+          from: address,
+        }
+      );
+
+      toast({
+        title: "RewardsDistributor Deployed",
+        description: "RewardsDistributor for " + tokenData.symbol + " deployed",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+      
+
+      const rDAddress =  deployedDistributor.options.address;
+      console.log({ rDAddress });
+
+      // Add distributor to pool Comptroller
+      await comptroller.methods
+        ._addRewardsDistributor(rDAddress)
+        .send({ from: address });
+
+      toast({
+        title: "RewardsDistributor Added to Pool",
+        description: "",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error adding RewardsDistributor",
+        description: "",
+        status: "error",
+        duration: 10000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+  };
 
   return (
     <Column
@@ -79,57 +135,17 @@ const AssetSettings = ({
       height="100%"
     >
       <ConfigRow height="35px">
-        <Text>Hi</Text>
+        <Heading>Rewards Distributor</Heading>
       </ConfigRow>
 
       <ModalDivider />
 
       <ModalDivider />
 
-      <ConfigRow height="35px">
-        <Text>Hi</Text>
-      </ConfigRow>
       <ModalDivider />
 
       <ModalDivider />
 
-      <ModalDivider />
-
-      <ConfigRow>
-        <SimpleTooltip
-          label={t(
-            "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels."
-          )}
-        >
-          <Text fontWeight="bold">
-            {t("Interest Model")} <QuestionIcon ml={1} mb="4px" />
-          </Text>
-        </SimpleTooltip>
-
-        <Select
-          {...DASHBOARD_BOX_PROPS}
-          ml="auto"
-          borderRadius="7px"
-          fontWeight="bold"
-          _focus={{ outline: "none" }}
-          width="260px"
-          value={"poop".toLowerCase()}
-        >
-          {Object.entries(
-            Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-          ).map(([key, value]) => {
-            return (
-              <option
-                className="black-bg-option"
-                value={value.toLowerCase()}
-                key={key}
-              >
-                {key}
-              </option>
-            );
-          })}
-        </Select>
-      </ConfigRow>
       {/* 
       <Box
         height="170px"
@@ -176,23 +192,23 @@ const AssetSettings = ({
         )}
       </Box> */}
 
-        <Box px={4} mt={4} width="100%">
-          <Button
-            fontWeight="bold"
-            fontSize="2xl"
-            borderRadius="10px"
-            width="100%"
-            height="70px"
-            color={tokenData.overlayTextColor! ?? "#000"}
-            bg={tokenData.color! ?? "#FFF"}
-            _hover={{ transform: "scale(1.02)" }}
-            _active={{ transform: "scale(0.95)" }}
-            isLoading={isDeploying}
-            onClick={deploy}
-          >
-            {t("Confirm")}
-          </Button> */}
-       </Box>
+      <Box px={4} mt={4} width="100%">
+        <Button
+          fontWeight="bold"
+          fontSize="2xl"
+          borderRadius="10px"
+          width="100%"
+          height="70px"
+          color={tokenData.overlayTextColor! ?? "#000"}
+          bg={tokenData.color! ?? "#FFF"}
+          _hover={{ transform: "scale(1.02)" }}
+          _active={{ transform: "scale(0.95)" }}
+          isLoading={isDeploying}
+          onClick={deploy}
+        >
+          {t("Confirm")}
+        </Button>
+      </Box>
     </Column>
   );
 };
@@ -203,7 +219,6 @@ const AddRewardsDistributorModal = ({
   poolID,
   isOpen,
   onClose,
-  existingAssets,
 }: {
   comptrollerAddress: string;
   poolName: string;
@@ -213,7 +228,7 @@ const AddRewardsDistributorModal = ({
 }) => {
   const { t } = useTranslation();
 
-  const [tokenAddress, _setTokenAddress] = useState<string>("");
+  const [tokenAddress, _setTokenAddress] = useState<string>("0x6b3595068778dd592e39a122f4f5a5cf09c90fe2");
   const [nav, setNav] = useState<Nav>(Nav.ADD);
 
   const tokenData = useTokenData(tokenAddress);
@@ -287,6 +302,19 @@ const AddRewardsDistributorModal = ({
               _hover={{ bg: "#282727" }}
               bg="#282727"
             />
+            <DashboardBox
+              flexShrink={0}
+              as="button"
+              ml={2}
+              height="40px"
+              borderRadius="10px"
+              px={2}
+              fontSize="sm"
+              fontWeight="bold"
+              onClick={() => _setTokenAddress(ETH_TOKEN_DATA.address)}
+            >
+              <Center expand>ETH</Center>
+            </DashboardBox>
           </Center>
 
           {tokenData?.symbol ? (

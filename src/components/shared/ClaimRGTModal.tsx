@@ -11,6 +11,8 @@ import {
   NumberInputField,
   NumberInputStepper,
   Select,
+  Image,
+  Button,
 } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
 import { Column, Row } from "utils/chakraUtils";
@@ -26,6 +28,13 @@ import { AnimatedSmallLogo } from "./Logos";
 import { ModalDivider, ModalTitleWithCloseButton, MODAL_PROPS } from "./Modal";
 
 import { SimpleTooltip } from "./SimpleTooltip";
+import { useUnclaimedRewards } from "hooks/rewards/useUnclaimedRewards";
+import DashboardBox from "./DashboardBox";
+import { BN } from "utils/bigUtils";
+import { useTokenData } from "hooks/useTokenData";
+import { createRewardsDistributor } from "utils/createComptroller";
+
+type ClaimMode = "pool2" | "private" | "yieldagg" | "fuse";
 
 export const ClaimRGTModal = ({
   isOpen,
@@ -34,7 +43,7 @@ export const ClaimRGTModal = ({
 }: {
   isOpen: boolean;
   onClose: () => any;
-  defaultMode?: string;
+  defaultMode?: ClaimMode;
 }) => {
   const { t } = useTranslation();
 
@@ -75,7 +84,7 @@ export const ClaimRGTModal = ({
   // pool2
   // private
   // yieldagg
-  const [mode, setMode] = useState(defaultMode ?? "pool2");
+  const [mode, setMode] = useState<ClaimMode>(defaultMode ?? "pool2");
 
   const currentUnclaimed =
     mode === "pool2"
@@ -107,14 +116,6 @@ export const ClaimRGTModal = ({
       { from: address }
     );
   };
-
-  const { data: privateClaimFee } = useQuery("privateClaimFee", async () => {
-    const raw = rari.governance.rgt.vesting.getClaimFee(
-      Math.floor(Date.now() / 1000)
-    );
-
-    return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
-  });
 
   // const { data: claimFee } = useQuery("claimFee", async () => {
   //   const blockNumber = await rari.web3.eth.getBlockNumber();
@@ -160,13 +161,16 @@ export const ClaimRGTModal = ({
             size="md"
             mb={6}
             value={mode}
-            onChange={(event) => setMode(event.target.value)}
+            onChange={(event) => setMode(event.target.value as ClaimMode)}
           >
             <option value="pool2" className="black-bg-option">
               {t("Pool2 Rewards")}
             </option>
             <option value="yieldagg" className="black-bg-option">
               {t("Yield Aggregator Rewards")}
+            </option>
+            <option value="fuse" className="black-bg-option">
+              {t("Fuse Liquidity Mining Rewards")}
             </option>
             {mode === "private" ? (
               <option value="private" className="black-bg-option">
@@ -175,81 +179,211 @@ export const ClaimRGTModal = ({
             ) : null}
           </Select>
 
-          <AnimatedSmallLogo boxSize="50px" />
-          <Heading mt={4}>
-            {currentUnclaimed !== undefined
-              ? Math.floor(currentUnclaimed! * 10000) / 10000
-              : "?"}
-          </Heading>
+          {mode !== "fuse" ? (
+            <ClaimRGT
+              mode={mode}
+              currentUnclaimed={currentUnclaimed}
+              amount={amount}
+              setAmount={setAmount}
+            />
+          ) : (
+            <ClaimFuseRewards />
+          )}
 
-          <Row
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-            width="100%"
-            mb={6}
-          >
-            <Text
-              textTransform="uppercase"
-              letterSpacing="wide"
-              color="#858585"
-              fontSize="lg"
-            >
-              {t("Claimable RGT")}
-            </Text>
-          </Row>
-
-          <NumberInput
-            mb={4}
-            min={0}
-            max={currentUnclaimed ?? 0}
-            onChange={(value: any) => {
-              setAmount(value);
-            }}
-            value={amount}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-
-          {mode === "private" ? (
-            <Text
-              textTransform="uppercase"
-              letterSpacing="wide"
-              color="#858585"
-              fontSize="xs"
-              textAlign="center"
-            >
-              <SimpleTooltip
-                label={t(
-                  "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%."
-                )}
-              >
-                <span>
-                  {t(
-                    "Claiming private RGT now will result in a {{amount}}% burn/takeback",
-                    { amount: privateClaimFee ?? "?" }
-                  )}
-
-                  <InfoIcon mb="3px" color="#858585" ml={1} boxSize="9px" />
-                </span>
-              </SimpleTooltip>
-            </Text>
-          ) : null}
-
-          <GlowingButton
-            mt={3}
-            label={t("Claim RGT")}
-            fontSize="2xl"
-            disabled={amount <= 0 || amount > (currentUnclaimed ?? 0)}
-            onClick={claimRGT}
-            width="100%"
-            height="60px"
-          />
+          {mode !== "fuse" && (
+            <GlowingButton
+              mt={3}
+              label={t("Claim RGT")}
+              fontSize="2xl"
+              disabled={amount <= 0 || amount > (currentUnclaimed ?? 0)}
+              onClick={claimRGT}
+              width="100%"
+              height="60px"
+            />
+          )}
         </Column>
       </ModalContent>
     </Modal>
+  );
+};
+
+const ClaimRGT = ({
+  mode,
+  currentUnclaimed,
+  amount,
+  setAmount,
+}: {
+  mode: ClaimMode;
+  currentUnclaimed?: number;
+  amount: any;
+  setAmount: (x: any) => any;
+}) => {
+  const { rari } = useRari();
+  const { t } = useTranslation();
+
+  const { data: privateClaimFee } = useQuery("privateClaimFee", async () => {
+    const raw = rari.governance.rgt.vesting.getClaimFee(
+      Math.floor(Date.now() / 1000)
+    );
+
+    return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
+  });
+
+  return (
+    <>
+      <AnimatedSmallLogo boxSize="50px" />
+      <Heading mt={4}>
+        {currentUnclaimed !== undefined
+          ? Math.floor(currentUnclaimed! * 10000) / 10000
+          : "?"}
+      </Heading>
+
+      <Row
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        width="100%"
+        mb={6}
+      >
+        <Text
+          textTransform="uppercase"
+          letterSpacing="wide"
+          color="#858585"
+          fontSize="lg"
+        >
+          {t("Claimable RGT")}
+        </Text>
+      </Row>
+
+      <NumberInput
+        mb={4}
+        min={0}
+        max={currentUnclaimed ?? 0}
+        onChange={(value: any) => {
+          setAmount(value);
+        }}
+        value={amount}
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInput>
+
+      {mode === "private" ? (
+        <Text
+          textTransform="uppercase"
+          letterSpacing="wide"
+          color="#858585"
+          fontSize="xs"
+          textAlign="center"
+        >
+          <SimpleTooltip
+            label={t(
+              "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%."
+            )}
+          >
+            <span>
+              {t(
+                "Claiming private RGT now will result in a {{amount}}% burn/takeback",
+                { amount: privateClaimFee ?? "?" }
+              )}
+
+              <InfoIcon mb="3px" color="#858585" ml={1} boxSize="9px" />
+            </span>
+          </SimpleTooltip>
+        </Text>
+      ) : null}
+    </>
+  );
+};
+
+const ClaimFuseRewards = () => {
+  const {
+    rewardsDistributorsMap,
+    rewardTokensMap,
+    unclaimed: unclaimedRewards,
+  } = useUnclaimedRewards();
+
+  const { fuse, address } = useRari();
+  console.log({ rewardsDistributorsMap, rewardTokensMap, unclaimedRewards });
+
+  const claimRewardToken = (rewardToken: string) => {
+    // Look up rewardsDistributors by token
+    const rewardsDistributors = rewardTokensMap[rewardToken];
+
+    // for each RD, call claim
+    rewardsDistributors.forEach(async (rD) => {
+      const rdInstance = createRewardsDistributor(
+        rD.rewardsDistributorAddress,
+        fuse
+      );
+
+      await rdInstance.methods.claimRewards(address).send({ from: address });
+    });
+  };
+
+  return (
+    <Column
+      w="100%"
+      h="100%"
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="flex-start"
+    >
+      <Heading fontSize="sm">WE CLAIMING FUSE REWARDS BABY!</Heading>
+      {unclaimedRewards?.map((unclaimed, i) => {
+        return (
+          <ClaimableRow
+            unclaimed={unclaimed}
+            key={i}
+            claimRewardToken={claimRewardToken}
+          />
+        );
+      })}
+    </Column>
+  );
+};
+
+const ClaimableRow = ({
+  unclaimed,
+  claimRewardToken,
+}: {
+  unclaimed: { rewardToken: string; unclaimed: BN };
+  claimRewardToken: (rewardToken: string) => void;
+}) => {
+  const tokenData = useTokenData(unclaimed.rewardToken);
+
+  return (
+    <DashboardBox w="100%" h="50px">
+      <Row
+        expand
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
+        p={3}
+      >
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          <Image src={tokenData?.logoURL ?? ""} boxSize="30px" />
+          <Text fontWeight="bold" ml={3}>
+            {tokenData?.symbol}
+          </Text>
+        </Row>
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          <Text fontWeight="bold" ml={3}>
+            {(
+              parseFloat(unclaimed.unclaimed.toString()) /
+              ((tokenData?.decimals ?? 18) * 1e18)
+            ).toFixed(4)}{" "}
+            {tokenData?.symbol}
+          </Text>
+          <Button
+            ml={2}
+            bg="black"
+            onClick={() => claimRewardToken(unclaimed.rewardToken)}
+          >
+            Claim
+          </Button>
+        </Row>
+      </Row>
+    </DashboardBox>
   );
 };

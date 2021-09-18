@@ -122,14 +122,20 @@ export const fetchFusePoolData = async (
     .pools(poolId)
     .call({ from: address });
 
+
+
   // Remove any profanity from the pool name
   let name = filterPoolName(_unfiliteredName);
+
+  console.log({ name, comptroller, isPrivate });
 
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
       .getPoolAssetsWithData(comptroller)
       .call({ from: address, gas: 1e18 })
   ).map(filterOnlyObjectProperties);
+
+  console.log("yo", { assets });
 
   let totalLiquidityUSD = 0;
 

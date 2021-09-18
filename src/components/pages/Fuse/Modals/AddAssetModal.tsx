@@ -287,7 +287,9 @@ export const AssetSettings = ({
 
       closeModal();
     } catch (e) {
-      handleGenericError(e, toast);
+      console.log(e);
+     setIsDeploying(false);
+    handleGenericError(e, toast);
     }
   };
 

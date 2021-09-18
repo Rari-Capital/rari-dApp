@@ -5,3 +5,7 @@ export const convertMantissaToAPY = (mantissa: any, dayRange: number) => {
 export const convertMantissaToAPR = (mantissa: any) => {
   return (mantissa * 2372500) / 1e16;
 };
+
+
+// const convertSupplyRewardsSpeedToAPY= (rewardSupplySpeed, rewardEthPrice = 3500) => convertMantissaToAPY((rewardSupplySpeed * rewardEthPrice) / (totalSupply * underlyingEthPrice))
+// for borrow-side rewards apy: convertMantissaToAPY((rewardBorrowSpeed * rewardEthPrice) / (totalBorrow * underlyingEthPrice)

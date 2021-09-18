@@ -1587,7 +1587,8 @@ export default class Fuse {
           arguments: [rewardToken]
         })
         .send(options);
-      const rdAddress = deployedDistributor.options.address;
+      // const rdAddress = deployedDistributor.options.address;
+      return deployedDistributor
     };
   }
 
