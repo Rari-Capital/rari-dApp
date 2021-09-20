@@ -183,9 +183,7 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.BORROW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxBorrow } = await comptroller.methods
+    const { 0: err, 1: maxBorrow } = await fuse.contracts.FusePoolLens.methods
       .getMaxBorrow(address, asset.cToken)
       .call();
 
@@ -199,9 +197,7 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.WITHDRAW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxRedeem } = await comptroller.methods
+    const { 0: err, 1: maxRedeem } = await fuse.contracts.FusePoolLens.methods
       .getMaxRedeem(address, asset.cToken)
       .call();
 
