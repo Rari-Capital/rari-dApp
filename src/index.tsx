@@ -29,6 +29,7 @@ import LogRocket from "logrocket";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { version } from "../package.json";
+import { BalancesContextProvider } from "context/BalancesContext";
 export { version };
 
 if (process.env.NODE_ENV === "production") {
@@ -80,8 +81,10 @@ ReactDOM.render(
           <ReactQueryDevtools initialIsOpen={false} />
           <BrowserRouter>
             <RariProvider>
-              <ScrollToTop />
-              <App />
+              <BalancesContextProvider>
+                <ScrollToTop />
+                <App />
+              </BalancesContextProvider>
             </RariProvider>
           </BrowserRouter>
         </QueryClientProvider>

@@ -1,5 +1,6 @@
 import {
   AvatarGroup,
+  Badge,
   Box,
   Heading,
   Text,
@@ -11,6 +12,15 @@ import {
   Alert,
   AlertIcon,
   Image,
+  HStack,
+  Table,
+  TableCaption,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
 import {
@@ -45,12 +55,21 @@ import { WhitelistInfo } from "./FusePoolCreatePage";
 
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
 import BigNumber from "bignumber.js";
-import { useTokenData } from "../../../hooks/useTokenData";
+import { useTokenData, useTokensDataAsMap } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
 import { handleGenericError } from "../../../utils/errorHandling";
 import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 import AddRewardsDistributorModal from "./Modals/AddRewardsDistributorModal";
 import EditRewardsDistributorModal from "./Modals/EditRewardsDistributorModal";
+import { useTokenBalance } from "hooks/useTokenBalance";
+import {
+  useCTokensUnderlying,
+  usePoolIncentives,
+} from "hooks/rewards/usePoolIncentives";
+import {
+  RewardsDistributor,
+  useRewardsDistributors,
+} from "hooks/rewards/useRewardsDistributors";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -117,108 +136,6 @@ export async function testForComptrollerErrorAndSend(
   return txObject.send({ from: caller });
 }
 
-export interface RewardsDistributor {
-  address: string;
-  rewardToken: string;
-  admin: string;
-}
-
-const useRewardsDistributors = (
-  comptrollerAddress?: string
-): RewardsDistributor[] => {
-  const { fuse } = useRari();
-
-  const { data, error } = useQuery(
-    comptrollerAddress + " rewardsDistributors",
-    async () => {
-      if (!comptrollerAddress) return [];
-      const comptroller = createComptroller(comptrollerAddress, fuse);
-
-      const rewardsDistributors: string[] = await comptroller.methods
-        .getRewardsDistributors()
-        .call();
-
-      if (!rewardsDistributors.length) return [];
-
-      const distributors: RewardsDistributor[] = await Promise.all(
-        rewardsDistributors.map(async (addr) => {
-          const distributor = new fuse.web3.eth.Contract(
-            JSON.parse(
-              fuse.compoundContracts[
-                "contracts/RewardsDistributor.sol:RewardsDistributor"
-              ].abi
-            ),
-            addr
-          );
-
-          const ret = {
-            address: addr,
-            rewardToken: await distributor.methods.rewardToken().call(),
-            admin: await await distributor.methods.admin().call(),
-          };
-          return ret;
-        })
-      );
-
-      console.log({ distributors });
-
-      return distributors;
-    }
-  );
-
-  // const { data: poopData, error: poopError } = useQuery("poop", async () => {
-  //   if (!comptrollerAddress) return {};
-
-  //   const poop = await fuse.contracts.FusePoolLens.methods
-  //     .getRewardSpeedsByPool("0xBdaA41Fc74Db7d842D8158a830AE1ec8Ee238219")
-  //     .call({ gas: 1e18 });
-
-  //   const markets = poop[0];
-  //   const distributorAddrs = poop[1];
-  //   const rewardTokens = poop[2];
-  //   const supplySpeeds = poop[3];
-  //   const borrowSpeeds = poop[4];
-
-  //   const d = {
-  //     markets,
-  //     distributorAddrs,
-  //     rewardTokens,
-  //     supplySpeeds,
-  //     borrowSpeeds,
-  //   };
-
-  //   return d;
-  // });
-
-  // const { data: distributorBalances } = useQuery("poopBalances", async () => {
-  //   if (!comptrollerAddress) return {};
-
-  //   poopData?.distributorAddrs?.forEach(() => {})
-
-  //   const poop = await fuse.contracts.FusePoolLens.methods
-  //     .getRewardSpeedsByPool("0xBdaA41Fc74Db7d842D8158a830AE1ec8Ee238219")
-  //     .call({ gas: 1e18 });
-
-  //   const markets = poop[0];
-  //   const distributorAddrs = poop[1];
-  //   const rewardTokens = poop[2];
-  //   const supplySpeeds = poop[3];
-  //   const borrowSpeeds = poop[4];
-
-  //   const d = {
-  //     markets,
-  //     distributorAddrs,
-  //     rewardTokens,
-  //     supplySpeeds,
-  //     borrowSpeeds,
-  //   };
-
-  //   return d;
-  // });
-
-  return data ?? [];
-};
-
 export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
   const { fuse, address } = useRari();
 
@@ -284,13 +201,12 @@ const FusePoolEditPage = memo(() => {
   const { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+  const poolIncentives = usePoolIncentives(data?.comptroller);
 
   const rewardsDistributors = useRewardsDistributors(data?.comptroller);
   const [rewardsDistributor, setRewardsDistributor] = useState<
     RewardsDistributor | undefined
   >();
-
-  console.log({ comptroller: data?.comptroller });
 
   const isAdmin = useIsComptrollerAdmin(data?.comptroller);
   // console.log({ rewardsDistributors });
@@ -301,6 +217,14 @@ const FusePoolEditPage = memo(() => {
       openEditRewardsDistributorModal();
     },
     [setRewardsDistributor, openEditRewardsDistributorModal]
+  );
+
+  const getActiveCTokensForRewardsDistributor = useCallback(
+    async (rdAddress: string) => {
+      const { rewardsDistributorCtokens } = poolIncentives;
+      const cTokens = rewardsDistributorCtokens[rdAddress];
+    },
+    [poolIncentives]
   );
 
   return (
@@ -412,49 +336,60 @@ const FusePoolEditPage = memo(() => {
           </Box>
         </RowOrColumn>
 
-        {/* Rewards Distributor */}
-        <DashboardBox w="100%" h="200px" mt={4}>
-          <Row mainAxisAlignment="space-between" crossAxisAlignment="center">
-            <Heading size="sm" px={4} py={4}>
-              {t("Rewards Distributors:")}
-            </Heading>
+        {/* Rewards Distributors */}
+        <DashboardBox w="100%" h="100%" my={4}>
+          <Row mainAxisAlignment="flex-end" crossAxisAlignment="center" p={3}>
             <AddRewardsDistributorButton
               openAddRewardsDistributorModal={openAddRewardsDistributorModal}
               comptrollerAddress={data?.comptroller}
             />
           </Row>
-          <ModalDivider />
-          <Column
-            expand
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-          >
-            {!data ? (
-              <Spinner />
-            ) : rewardsDistributors.length ? (
-              rewardsDistributors.map((rD) => {
-                return (
-                  <RewardsDistributorRow
-                    key={rD.address}
-                    rewardsDistributor={rD}
-                    handleRowClick={handleRewardsRowClick}
+
+          <Table>
+            <Thead>
+              <Tr>
+                <Th color="white" size="sm">
+                  {t("Reward Token:")}
+                </Th>
+                <Th color="white">{t("Active CTokens:")}</Th>
+                <Th color="white">{t("Balance:")}</Th>
+                <Th color="white">{t("Admin?")}</Th>
+              </Tr>
+            </Thead>
+
+            <Tbody>
+              {!data ? (
+                <Spinner />
+              ) : rewardsDistributors.length ? (
+                rewardsDistributors.map((rD, i) => {
+                  return (
+                    <RewardsDistributorRow
+                      key={rD.address}
+                      rewardsDistributor={rD}
+                      handleRowClick={handleRewardsRowClick}
+                      hideModalDivider={i === rewardsDistributors.length - 1}
+                      activeCTokens={
+                        poolIncentives.rewardsDistributorCtokens[rD.address]
+                      }
+                    />
+                  );
+                })
+              ) : (
+                <>
+                  <Text mb={4}>
+                    {t("There are no RewardsDistributors for this pool.")}
+                  </Text>
+                  <AddRewardsDistributorButton
+                    openAddRewardsDistributorModal={
+                      openAddRewardsDistributorModal
+                    }
+                    comptrollerAddress={data?.comptroller}
                   />
-                );
-              })
-            ) : (
-              <>
-                <Text mb={4}>
-                  {t("There are no RewardsDistributors for this pool.")}
-                </Text>
-                <AddRewardsDistributorButton
-                  openAddRewardsDistributorModal={
-                    openAddRewardsDistributorModal
-                  }
-                  comptrollerAddress={data?.comptroller}
-                />
-              </>
-            )}
-          </Column>
+                </>
+              )}
+            </Tbody>
+          </Table>
+
           <ModalDivider />
         </DashboardBox>
       </Column>
@@ -467,32 +402,77 @@ export default FusePoolEditPage;
 const RewardsDistributorRow = ({
   rewardsDistributor,
   handleRowClick,
+  hideModalDivider,
+  activeCTokens,
 }: {
   rewardsDistributor: RewardsDistributor;
   handleRowClick: (rD: RewardsDistributor) => void;
+  hideModalDivider: boolean;
+  activeCTokens: string[];
 }) => {
+  const { address, fuse } = useRari();
+  const isAdmin = address === rewardsDistributor.admin;
+
   const tokenData = useTokenData(rewardsDistributor.rewardToken);
+  //   Balances
+  const { data: rDBalance } = useTokenBalance(
+    rewardsDistributor.rewardToken,
+    rewardsDistributor.address
+  );
+
+  const underlyingsMap = useCTokensUnderlying(activeCTokens);
+  const underlyings = Object.values(underlyingsMap);
 
   return (
     <>
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
+      <Tr
         _hover={{ background: "grey", cursor: "pointer" }}
-        w="100%"
         h="30px"
         p={5}
+        flexDir="row"
         onClick={() => handleRowClick(rewardsDistributor)}
       >
-        {tokenData?.logoURL ? (
-          <Image src={tokenData.logoURL} boxSize="30px" borderRadius="50%" />
-        ) : null}
-        <Heading fontSize="22px" color={tokenData?.color ?? "#FFF"} ml={2}>
-          {tokenData ? tokenData.name ?? "Invalid Address!" : "Loading..."}
-        </Heading>
-        {/* <Text>{rewardsDistributor.rewardToken}</Text> */}
-      </Row>
-      <ModalDivider />
+        <Td>
+          <HStack>
+            {tokenData?.logoURL ? (
+              <Image
+                src={tokenData.logoURL}
+                boxSize="30px"
+                borderRadius="50%"
+              />
+            ) : null}
+            <Heading fontSize="22px" color={tokenData?.color ?? "#FFF"} ml={2}>
+              {tokenData ? tokenData.name ?? "Invalid Address!" : "Loading..."}
+            </Heading>
+          </HStack>
+        </Td>
+
+        <Td>
+          <AvatarGroup size="xs" max={30}>
+            {underlyings.length ? (
+              underlyings.map((underlyingAddr) => (
+                <CTokenIcon key={underlyingAddr} address={underlyingAddr} />
+              ))
+            ) : (
+              <Badge colorScheme="red">
+                Inactive
+              </Badge>
+            )}
+          </AvatarGroup>
+        </Td>
+
+        <Td>
+          {(parseFloat(rDBalance?.toString() ?? "0") / 1e18).toFixed(3)}{" "}
+          {tokenData?.symbol}
+        </Td>
+
+        <Td>
+          <Badge colorScheme={isAdmin ? "green" : "red"}>
+            {isAdmin ? "Is Admin" : "Not Admin"}
+          </Badge>
+        </Td>
+      </Tr>
+      {/* {!hideModalDivider && <ModalDivider />} */}
     </>
   );
 };

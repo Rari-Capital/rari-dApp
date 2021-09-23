@@ -14,6 +14,9 @@ import {
   useToast,
   NumberInput,
   NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
 
@@ -27,7 +30,7 @@ import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 import { useRari } from "../../../../context/RariContext";
 
 import Fuse from "../../../../fuse-sdk";
-import { AdminAlert, RewardsDistributor } from "../FusePoolEditPage";
+import { AdminAlert } from "../FusePoolEditPage";
 import { useQuery, useQueryClient } from "react-query";
 
 import { handleGenericError } from "../../../../utils/errorHandling";
@@ -38,6 +41,7 @@ import {
 import { useTokenBalance } from "hooks/useTokenBalance";
 import DashboardBox from "../../../shared/DashboardBox";
 import { createRewardsDistributor } from "utils/createComptroller";
+import { RewardsDistributor } from "hooks/rewards/useRewardsDistributors";
 
 // Styles
 const activeStyle = { bg: "#FFF", color: "#000" };
@@ -49,20 +53,36 @@ const useRewardsDistributorInstance = (rDAddress: string) => {
 };
 
 // Gets Reward Speed of CToken
-const useRewardSpeedsOfCToken = (instance: any, cTokenAddress?: string) => {
+const useRewardSpeedsOfCToken = (rDAddress: any, cTokenAddress?: string) => {
   const { fuse } = useRari();
-  const [supplySpeeds, setSupplySpeeds] = useState<any>();
+  const instance = createRewardsDistributor(rDAddress, fuse);
+
+  const [supplySpeed, setSupplySpeed] = useState<any>();
+  const [borrowSpeed, setBorrowSpeed] = useState<any>();
+
   useEffect(() => {
     if (!cTokenAddress) return;
+
+    // Get Supply reward speed for this CToken from the mapping
     instance.methods
       .compSupplySpeeds(cTokenAddress)
       .call()
       .then((result: any) => {
         console.log({ result });
-        setSupplySpeeds(result);
+        setSupplySpeed(result);
+      });
+
+    // Get Borrow reward speed for this CToken from the mapping
+    instance.methods
+      .compBorrowSpeeds(cTokenAddress)
+      .call()
+      .then((result: any) => {
+        console.log({ result });
+        setBorrowSpeed(result);
       });
   }, [instance, fuse, cTokenAddress]);
-  return supplySpeeds;
+
+  return [supplySpeed, borrowSpeed];
 };
 
 const EditRewardsDistributorModal = ({
@@ -99,21 +119,21 @@ const EditRewardsDistributorModal = ({
   const [sendAmt, setSendAmt] = useState<number>(0);
 
   const [supplySpeed, setSupplySpeed] = useState<number>(0.001);
+  const [borrowSpeed, setBorrowSpeed] = useState<number>(0.001);
 
   //  Loading states
   const [fundingDistributor, setFundingDistributor] = useState(false);
   const [changingSpeed, setChangingSpeed] = useState(false);
+  const [changingBorrowSpeed, setChangingBorrowSpeed] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<
     USDPricedFuseAsset | undefined
   >(pool?.assets[0] ?? undefined);
 
   //   RewardsSpeeds
-  const supplySpeedForCToken = useRewardSpeedsOfCToken(
-    rewardsDistributorInstance,
+  const [supplySpeedForCToken, borrowSpeedForCToken] = useRewardSpeedsOfCToken(
+    rewardsDistributor.address,
     selectedAsset?.cToken
   );
-
-  console.log({ supplySpeedForCToken });
 
   // Sends tokens to distributor
   const fundDistributor = async () => {
@@ -131,7 +151,9 @@ const EditRewardsDistributorModal = ({
       await token.methods
         .transfer(
           rewardsDistributor.address,
-          Fuse.Web3.utils.toBN(sendAmt * 1e18)
+          Fuse.Web3.utils
+            .toBN(sendAmt)
+            .mul(Fuse.Web3.utils.toBN(10).pow(Fuse.Web3.utils.toBN(18)))
         )
         .send({
           from: address,
@@ -165,6 +187,27 @@ const EditRewardsDistributorModal = ({
     }
   };
 
+  //   Adds LM to supply side of a CToken in this fuse pool
+  const changeBorrowSpeed = async () => {
+    try {
+      if (!isAdmin) throw new Error("User is not admin of this Distributor!");
+
+      setChangingBorrowSpeed(true);
+
+      await rewardsDistributorInstance.methods
+        ._setCompBorrowSpeed(
+          selectedAsset?.cToken,
+          Fuse.Web3.utils.toBN(borrowSpeed * 1e18) // set supplySpeed to 0.001e18 for now
+        )
+        .send({ from: address });
+
+      setChangingBorrowSpeed(false);
+    } catch (err) {
+      handleGenericError(err, toast);
+      setChangingBorrowSpeed(false);
+    }
+  };
+
   return (
     <Modal
       motionPreset="slideInBottom"
@@ -180,7 +223,7 @@ const EditRewardsDistributorModal = ({
 
         <ModalDivider />
 
-        {/*  RewardToken data     */}
+        {/*  RewardToken data */}
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
@@ -204,6 +247,12 @@ const EditRewardsDistributorModal = ({
             >
               {tokenData ? tokenData.name ?? "Invalid Address!" : "Loading..."}
             </Heading>
+            <Text>
+              {balanceERC20
+                ? (parseFloat(balanceERC20?.toString()) / 1e18).toFixed(3)
+                : 0}{" "}
+              {tokenData?.symbol}
+            </Text>
           </>
         </Column>
 
@@ -303,6 +352,8 @@ const EditRewardsDistributorModal = ({
                 }
               )}
             </Row>
+
+            {/* Change Supply Speed */}
             <Column
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-start"
@@ -341,7 +392,58 @@ const EditRewardsDistributorModal = ({
                   bg="black"
                   disabled={changingSpeed}
                 >
-                  {fundingDistributor ? <Spinner /> : "Set"}
+                  {changingSpeed ? <Spinner /> : "Set"}
+                </Button>
+              </Row>
+            </Column>
+
+            {/* Change Borrow Speed */}
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              py={3}
+            >
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+              >
+                <Text>
+                  Borrow Speed: {parseFloat(borrowSpeedForCToken) / 1e18}
+                </Text>
+              </Row>
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+              >
+                <NumberInput
+                  onChange={(valueString) => {
+                    setBorrowSpeed(parseFloat(valueString));
+                  }}
+                  value={borrowSpeed.toString()}
+                  precision={3}
+                  step={0.001}
+                  min={0}
+                >
+                  <NumberInputField
+                    width="100%"
+                    textAlign="center"
+                    placeholder={"0 " + tokenData?.symbol}
+                  />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                {/* <NumberInputField
+                   
+                  />
+                </NumberInput> */}
+                <Button
+                  onClick={changeBorrowSpeed}
+                  bg="black"
+                  disabled={changingBorrowSpeed}
+                >
+                  {changingBorrowSpeed ? <Spinner /> : "Set"}
                 </Button>
               </Row>
             </Column>

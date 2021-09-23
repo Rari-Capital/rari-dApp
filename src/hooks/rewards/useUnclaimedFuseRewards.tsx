@@ -1,9 +1,33 @@
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
+import Web3 from "web3";
 import { createRewardsDistributor } from "utils/createComptroller";
+import { createCToken } from "components/pages/Fuse/Modals/AddAssetModal";
+import { string } from "mathjs";
 import { BN } from "utils/bigUtils";
 
-export function useUnclaimedRewards() {
+// export const fetchTokenBalance = async (
+//   tokenAddress: string,
+//   web3: Web3,
+//   address: string
+// ) => {
+//   let stringBalance;
+
+//   if (
+//     tokenAddress === ETH_TOKEN_DATA.address ||
+//     tokenAddress === "NO_ADDRESS_HERE_USE_WETH_FOR_ADDRESS"
+//   ) {
+//     stringBalance = await web3.eth.getBalance(address);
+//   } else {
+//     const contract = new web3.eth.Contract(ERC20ABI as any, tokenAddress);
+
+//     stringBalance = await contract.methods.balanceOf(address).call();
+//   }
+
+//   return web3.utils.toBN(stringBalance);
+// };
+
+export function useUnclaimedFuseRewards() {
   const { fuse, address } = useRari();
 
   // 1. Fetch all Fuse Pools User has supplied to + their Rewards Distribs.
@@ -101,6 +125,8 @@ export function useUnclaimedRewards() {
         .getUnclaimedRewardsByDistributors(address, uniqueRDs)
         .call();
 
+      console.log({ address, uniqueRDs, unclaimedResults });
+
       const rewardTokens = unclaimedResults[0];
       const unclaimedAmounts = unclaimedResults[1];
 
@@ -114,6 +140,7 @@ export function useUnclaimedRewards() {
             rewardToken,
             unclaimed,
           };
+
           results.push(x);
         }
 
@@ -121,33 +148,46 @@ export function useUnclaimedRewards() {
     }
   );
 
-  const unclaimed = _unclaimed as { rewardToken: string; unclaimed: BN }[];
+  // Filter by claimable balances greater than 0
+  const unclaimed: UnclaimedFuseReward[] =
+    _unclaimed?.filter((fuseUnclaimed) => {
+      if (parseFloat(fuseUnclaimed.unclaimed.toString()) > 0) {
+        return true;
+      }
+    }) ?? [];
 
-//   console.log("rewards2", {
-//     rewardsDistributorsByFusePool,
-//     uniqueRDs,
-//     rewardsDistributors,
-//     rewardsDistributorsMap,
-//     rewardTokensMap,
-//     unclaimed,
-//   });
+  console.log({ _unclaimed, unclaimed });
+
+  //   console.log("rewards2", {
+  //     rewardsDistributorsByFusePool,
+  //     uniqueRDs,
+  //     rewardsDistributors,
+  //     rewardsDistributorsMap,
+  //     rewardTokensMap,
+  //     unclaimed,
+  //   });
 
   //   handle generic err
   const oopsie = error || _rdError || unclaimedErr;
   if (oopsie) console.log({ oopsie });
 
-//   return uniqueRDs;
+  //   return uniqueRDs;
 
   return { rewardsDistributorsMap, rewardTokensMap, unclaimed };
 }
 
 // maps a rewardTtoken to an array of RD addresses
-type RewardsTokenMap = {
+export type RewardsTokenMap = {
   [rewardToken: string]: RewardsDistributor[];
 };
 
-interface RewardsDistributor {
+export interface RewardsDistributor {
   rewardToken: string;
   rewardsDistributorAddress: string;
   markets: string[];
+}
+
+export interface UnclaimedFuseReward {
+  rewardToken: string;
+  unclaimed: BN;
 }

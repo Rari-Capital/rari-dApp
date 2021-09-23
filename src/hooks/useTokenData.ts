@@ -16,13 +16,13 @@ export const ETH_TOKEN_DATA = {
 };
 
 export interface TokenData {
-  name: string | null;
-  symbol: string | null;
-  address: string | null;
-  decimals: number | null;
-  color: string | null;
-  overlayTextColor: string | null;
-  logoURL: string | null;
+  name: string;
+  symbol: string;
+  address: string;
+  decimals: number;
+  color: string;
+  overlayTextColor: string;
+  logoURL: string;
 }
 
 export const useTokenDataWithContract = (address: string) => {
@@ -40,7 +40,7 @@ export const useTokenDataWithContract = (address: string) => {
 
 export const fetchTokenData = async (address: string) => {
   let data;
-  if (!address) return undefined
+  if (!address) return undefined;
 
   if (address !== ETH_TOKEN_DATA.address) {
     try {
@@ -104,6 +104,34 @@ export const useTokensData = (addresses: string[]) => {
     });
 
     if (!ret.length) return null;
+
+    return ret;
+  }, [tokensData]);
+};
+
+export interface TokensDataMap {
+  [address: string]: TokenData;
+}
+
+export const useTokensDataAsMap = (addresses: string[]): TokensDataMap => {
+  const tokensData = useQueries(
+    addresses.map((address: string) => {
+      return {
+        queryKey: address + " tokenData",
+        queryFn: async () => await fetchTokenData(address),
+      };
+    })
+  );
+
+  return useMemo(() => {
+    const ret: TokensDataMap = {};
+    if (!tokensData.length) return {};
+    tokensData.forEach(({ data }) => {
+      const _data = data as TokenData;
+      if (_data && _data.address) {
+        ret[_data.address] = _data;
+      }
+    });
 
     return ret;
   }, [tokensData]);

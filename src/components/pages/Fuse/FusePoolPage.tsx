@@ -1,6 +1,7 @@
-import { memo, useEffect } from "react";
+import { memo, useEffect, useMemo } from "react";
 import {
   Avatar,
+  AvatarGroup,
   Box,
   Heading,
   Progress,
@@ -26,7 +27,7 @@ import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
-import { useTokenData } from "hooks/useTokenData";
+import { TokensDataMap, useTokenData, useTokensData } from "hooks/useTokenData";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
@@ -48,6 +49,14 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
+import {
+  CTokenRewardsDistributorIncentives,
+  IncentivesData,
+  CTokenIncentives,
+  usePoolIncentives,
+} from "hooks/rewards/usePoolIncentives";
+import { CTokenIcon } from "./FusePoolsPage";
+import { GlowingBox } from "components/shared/GlowingButton";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
@@ -58,6 +67,8 @@ const FusePoolPage = memo(() => {
 
   const data = useFusePoolData(poolId);
 
+  const incentivesData: IncentivesData = usePoolIncentives(data?.comptroller);
+
   return (
     <>
       <Column
@@ -65,8 +76,8 @@ const FusePoolPage = memo(() => {
         crossAxisAlignment="center"
         color="#FFFFFF"
         mx="auto"
-        width={isMobile ? "100%" : "1150px"}
-        px={isMobile ? 4 : 0}
+        width={isMobile ? "100%" : "1350px"}
+        px={isMobile ? 2 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
 
@@ -84,6 +95,13 @@ const FusePoolPage = memo(() => {
           ) : null
         }
 
+        <GlowingBox w="100%" h="50px">
+          <Box>
+            <Text>This pool has incentives</Text>
+            
+            </Box>{" "}
+        </GlowingBox>
+
         <RowOrColumn
           width="100%"
           mainAxisAlignment="flex-start"
@@ -97,6 +115,7 @@ const FusePoolPage = memo(() => {
                 assets={data.assets}
                 comptrollerAddress={data.comptroller}
                 supplyBalanceUSD={data.totalSupplyBalanceUSD}
+                incentivesData={incentivesData}
               />
             ) : (
               <Center height="200px">
@@ -115,6 +134,7 @@ const FusePoolPage = memo(() => {
                 comptrollerAddress={data.comptroller}
                 assets={data.assets}
                 borrowBalanceUSD={data.totalBorrowBalanceUSD}
+                incentivesData={incentivesData}
               />
             ) : (
               <Center height="200px">
@@ -210,10 +230,12 @@ const SupplyList = ({
   assets,
   supplyBalanceUSD,
   comptrollerAddress,
+  incentivesData,
 }: {
   assets: USDPricedFuseAsset[];
   supplyBalanceUSD: number;
   comptrollerAddress: string;
+  incentivesData: IncentivesData;
 }) => {
   const { t } = useTranslation();
 
@@ -281,12 +303,17 @@ const SupplyList = ({
         {assets.length > 0 ? (
           <>
             {suppliedAssets.map((asset, index) => {
+              const supplyIncentivesForAsset =
+                incentivesData?.incentives?.[asset.cToken] ?? [];
+
               return (
                 <AssetSupplyRow
                   comptrollerAddress={comptrollerAddress}
                   key={asset.underlyingToken}
                   assets={suppliedAssets}
                   index={index}
+                  supplyIncentives={supplyIncentivesForAsset}
+                  rewardTokensData={incentivesData.rewardTokensData}
                 />
               );
             })}
@@ -294,12 +321,17 @@ const SupplyList = ({
             {suppliedAssets.length > 0 ? <ModalDivider my={2} /> : null}
 
             {nonSuppliedAssets.map((asset, index) => {
+              const supplyIncentivesForAsset =
+                incentivesData?.incentives?.[asset.cToken] ?? [];
+
               return (
                 <AssetSupplyRow
                   comptrollerAddress={comptrollerAddress}
                   key={asset.underlyingToken}
                   assets={nonSuppliedAssets}
                   index={index}
+                  supplyIncentives={supplyIncentivesForAsset}
+                  rewardTokensData={incentivesData.rewardTokensData}
                 />
               );
             })}
@@ -318,10 +350,14 @@ const AssetSupplyRow = ({
   assets,
   index,
   comptrollerAddress,
+  supplyIncentives,
+  rewardTokensData,
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
   comptrollerAddress: string;
+  supplyIncentives: CTokenRewardsDistributorIncentives[];
+  rewardTokensData: TokensDataMap;
 }) => {
   const {
     isOpen: isModalOpen,
@@ -404,6 +440,13 @@ const AssetSupplyRow = ({
 
   const { t } = useTranslation();
 
+  const stuff = supplyIncentives
+    .map(
+      (supplyIncentive) => (supplyIncentive.supplySpeed / 1e18).toFixed() + "%"
+    )
+    .join(" + ");
+  console.log({ stuff });
+
   return (
     <>
       <PoolModal
@@ -423,27 +466,55 @@ const AssetSupplyRow = ({
         py={1.5}
         className="hover-row"
       >
-        <Row
+        {/* Underlying Token Data */}
+        <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="27%"
-          as="button"
-          onClick={authedOpenModal}
         >
-          <Avatar
-            bg="#FFF"
-            boxSize="37px"
-            name={asset.underlyingSymbol}
-            src={
-              tokenData?.logoURL ??
-              "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-            }
-          />
-          <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-            {tokenData?.symbol ?? asset.underlyingSymbol}
-          </Text>
-        </Row>
+          <Row
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            width="100%"
+            as="button"
+            onClick={authedOpenModal}
+          >
+            <Avatar
+              bg="#FFF"
+              boxSize="37px"
+              name={asset.underlyingSymbol}
+              src={
+                tokenData?.logoURL ??
+                "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+              }
+            />
+            <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
+              {tokenData?.symbol ?? asset.underlyingSymbol}
+            </Text>
+          </Row>
+          {/* 
+          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <AvatarGroup>
+              {supplyIncentives?.map((supplyIncentive) => {
+                return (
+                  <Avatar
+                    key={supplyIncentive.rewardToken}
+                    boxSize="20px"
+                    bg="#FFF"
+                    name={rewardTokensData[supplyIncentive.rewardToken]?.symbol}
+                    src={
+                      rewardTokensData[supplyIncentive.rewardToken].logoURL ??
+                      "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
+                    }
+                  />
+                );
+              })}
+            </AvatarGroup>
+            <Text ml={1}>{stuff} APY </Text>
+          </Row> */}
+        </Column>
 
+        {/* APY */}
         {isMobile ? null : (
           <Column
             mainAxisAlignment="flex-start"
@@ -472,8 +543,58 @@ const AssetSupplyRow = ({
             >
               <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
             </SimpleTooltip>
+
+            {/* Incentives under APY */}
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-end"
+              my={1}
+            >
+              {supplyIncentives?.map((supplyIncentive) => {
+                return (
+                  <Row
+                    mainAxisAlignment="space-between"
+                    crossAxisAlignment="center"
+                    w="100%"
+                  >
+                    <Avatar
+                      src={
+                        rewardTokensData[supplyIncentive.rewardToken].logoURL
+                      }
+                      boxSize="20px"
+                    />
+                    <Text
+                      ml={2}
+                      fontWeight="bold"
+                      color={
+                        rewardTokensData[supplyIncentive.rewardToken].color
+                      }
+                    >
+                      {(supplyIncentive.supplySpeed / 1e18).toString()}%
+                    </Text>
+                  </Row>
+                );
+              })}
+            </Column>
           </Column>
         )}
+
+        {/* Incentives */}
+        {/* <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+          {supplyIncentives?.map((supplyIncentive) => {
+            return (
+              <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+                <Avatar
+                  src={rewardTokensData[supplyIncentive.rewardToken].logoURL}
+                  boxSize="15px"
+                />
+                <Box>
+                  {(supplyIncentive.supplySpeed / 1e18).toString()}% APY
+                </Box>
+              </Row>
+            );
+          })}
+        </Column> */}
 
         <Column
           mainAxisAlignment="flex-start"
@@ -498,6 +619,7 @@ const AssetSupplyRow = ({
           </Text>
         </Column>
 
+        {/* Set As Collateral  */}
         <Row
           width={isMobile ? "34%" : "20%"}
           mainAxisAlignment="flex-end"
@@ -522,10 +644,12 @@ const BorrowList = ({
   assets,
   borrowBalanceUSD,
   comptrollerAddress,
+  incentivesData,
 }: {
   assets: USDPricedFuseAsset[];
   borrowBalanceUSD: number;
   comptrollerAddress: string;
+  incentivesData: IncentivesData;
 }) => {
   const { t } = useTranslation();
   const borrowedAssets = assets.filter((asset) => asset.borrowBalanceUSD > 1);
@@ -597,12 +721,17 @@ const BorrowList = ({
                 return null;
               }
 
+              const incentivesForAsset =
+                incentivesData?.incentives?.[asset.cToken] ?? [];
+
               return (
                 <AssetBorrowRow
                   comptrollerAddress={comptrollerAddress}
                   key={asset.underlyingToken}
                   assets={borrowedAssets}
                   index={index}
+                  borrowIncentives={incentivesForAsset}
+                  rewardTokensData={incentivesData.rewardTokensData}
                 />
               );
             })}
@@ -615,12 +744,17 @@ const BorrowList = ({
                 return null;
               }
 
+              const incentivesForAsset =
+                incentivesData?.incentives?.[asset.cToken] ?? [];
+
               return (
                 <AssetBorrowRow
                   comptrollerAddress={comptrollerAddress}
                   key={asset.underlyingToken}
                   assets={nonBorrowedAssets}
                   index={index}
+                  borrowIncentives={incentivesForAsset}
+                  rewardTokensData={incentivesData.rewardTokensData}
                 />
               );
             })}
@@ -639,10 +773,14 @@ const AssetBorrowRow = ({
   assets,
   index,
   comptrollerAddress,
+  borrowIncentives,
+  rewardTokensData,
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
   comptrollerAddress: string;
+  borrowIncentives: CTokenRewardsDistributorIncentives[];
+  rewardTokensData: TokensDataMap;
 }) => {
   const asset = assets[index];
 
@@ -725,6 +863,39 @@ const AssetBorrowRow = ({
                 {shortUsdFormatter(asset.totalSupplyUSD)} TVL
               </Text>
             </SimpleTooltip>
+
+            {/* Borrow Incentives under APY */}
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-end"
+              my={1}
+            >
+              {borrowIncentives?.map((borrowIncentive) => {
+                return (
+                  <Row
+                    mainAxisAlignment="space-between"
+                    crossAxisAlignment="center"
+                    w="100%"
+                  >
+                    <Avatar
+                      src={
+                        rewardTokensData[borrowIncentive.rewardToken].logoURL
+                      }
+                      boxSize="20px"
+                    />
+                    <Text
+                      ml={2}
+                      fontWeight="bold"
+                      color={
+                        rewardTokensData[borrowIncentive.rewardToken].color
+                      }
+                    >
+                      {(borrowIncentive.borrowSpeed / 1e18).toString()}%
+                    </Text>
+                  </Row>
+                );
+              })}
+            </Column>
           </Column>
         )}
 

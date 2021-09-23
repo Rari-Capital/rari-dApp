@@ -673,7 +673,7 @@ const AmountSelect = ({
               _hover={{ transform: "scale(1.02)" }}
               _active={{ transform: "scale(0.95)" }}
               onClick={onConfirm}
-              isDisabled={!amountIsValid}
+              isDisabled={false}
             >
               {depositOrWithdrawAlert ?? t("Confirm")}
             </Button>

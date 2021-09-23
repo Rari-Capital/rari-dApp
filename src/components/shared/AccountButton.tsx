@@ -23,13 +23,14 @@ import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
-import { GlowingButton } from "./GlowingButton";
+import { GlowingButton, DarkGlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
 import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+import { useBalances } from "context/BalancesContext";
 
 export const AccountButton = memo(() => {
   const {
@@ -99,6 +100,9 @@ const Buttons = ({
     } else login();
   }, [isAuthed, login, openModal]);
 
+  const { hasClaimableRewards } = useBalances();
+  console.log({ hasClaimableRewards });
+
   return (
     <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
@@ -114,18 +118,30 @@ const Buttons = ({
             <Center expand>{t("Buy Crypto")}</Center>
           </DashboardBox> */}
 
-          <DashboardBox
-            ml={1}
-            as="button"
-            height="40px"
-            flexShrink={0}
-            width="95px"
-            fontSize="15px"
-            onClick={openClaimRGTModal}
-            fontWeight="bold"
-          >
-            <Center expand>{t("Claim RGT")}</Center>
-          </DashboardBox>
+          {hasClaimableRewards ? (
+            <DarkGlowingButton
+              label={t("Claim")}
+              onClick={openClaimRGTModal}
+              height="40px"
+              flexShrink={0}
+              width="95px"
+              fontSize="15px"
+              fontWeight="bold"
+            />
+          ) : (
+            <DashboardBox
+              ml={1}
+              as="button"
+              height="40px"
+              flexShrink={0}
+              width="95px"
+              fontSize="15px"
+              fontWeight="bold"
+              onClick={openClaimRGTModal}
+            >
+              <Center expand>{t("Claim")}</Center>
+            </DashboardBox>
+          )}
         </>
       )}
 
