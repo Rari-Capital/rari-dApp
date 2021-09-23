@@ -108,8 +108,6 @@ const PoolConfiguration = () => {
 
     setIsCreating(true);
 
-    const maxAssets = "20";
-
     // 50% -> 0.5 * 1e18
     const bigCloseFactor = new BigNumber(closeFactor)
       .dividedBy(100)
