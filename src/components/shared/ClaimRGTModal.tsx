@@ -53,26 +53,6 @@ export const ClaimRGTModal = ({
   // yieldagg
   const [showPrivate, setShowPrivate] = useState<boolean>(true);
 
-  // const currentUnclaimed =
-  //   mode === "pool2"
-  //     ? pool2UnclaimedRGT
-  //     : mode === "private"
-  //     ? privateUnclaimedRGT
-  //     : unclaimedRGT;
-
-  // useEffect(() => {
-  //   if (currentUnclaimed !== undefined) {
-  //     setAmount(Math.floor(currentUnclaimed * 1000000) / 1000000);
-  //   }
-  // }, [currentUnclaimed]);
-
-  // const { data: claimFee } = useQuery("claimFee", async () => {
-  //   const blockNumber = await rari.web3.eth.getBlockNumber();
-  //   const raw = rari.governance.rgt.distributions.getClaimFee(blockNumber);
-
-  //   return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
-  // });
-
   // If user presses meta key or control key + slash they will toggle the private allocation claim mode.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

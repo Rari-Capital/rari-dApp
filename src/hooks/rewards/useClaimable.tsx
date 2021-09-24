@@ -22,6 +22,20 @@ export interface GenericClaimableReward {
   unclaimed: UnclaimedFuseReward;
 }
 
+// 1 type of reward = RGT rewards
+
+// 2nd type of reward = FUse Rewards
+export type FuseReward = {
+    comptroller: string;
+    rewardsDistibutors?:  string[] //addresses of RDs
+    unclaimedBalancesForPool: CTokenUnclaimedForPool[]
+    
+}
+
+interface CTokenUnclaimedForPool {
+
+}
+
 const RGT = "0xd291e7a03283640fdc51b121ac401383a46cc623";
 
 export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {

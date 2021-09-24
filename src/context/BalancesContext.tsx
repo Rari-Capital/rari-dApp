@@ -8,6 +8,7 @@ export const BalancesContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
+    
   const {
     unclaimedRGT,
     privateUnclaimedRGT,

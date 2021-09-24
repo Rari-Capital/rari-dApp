@@ -68,6 +68,7 @@ const FusePoolPage = memo(() => {
   const data = useFusePoolData(poolId);
 
   const incentivesData: IncentivesData = usePoolIncentives(data?.comptroller);
+  const hasIncentives = !!Object.keys(incentivesData.incentives).length;
 
   return (
     <>
@@ -95,12 +96,14 @@ const FusePoolPage = memo(() => {
           ) : null
         }
 
-        <GlowingBox w="100%" h="50px">
-          <Box>
-            <Text>This pool has incentives</Text>
-            
-            </Box>{" "}
-        </GlowingBox>
+        {hasIncentives && (
+          <GlowingBox w="100%" h="50px">
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" h="100%" w="100" p={2}>
+              <Heading fontSize="md "> 🎉 This pool is offering incentives</Heading>
+              
+            </Row>
+          </GlowingBox>
+        )}
 
         <RowOrColumn
           width="100%"
@@ -303,8 +306,9 @@ const SupplyList = ({
         {assets.length > 0 ? (
           <>
             {suppliedAssets.map((asset, index) => {
-              const supplyIncentivesForAsset =
-                incentivesData?.incentives?.[asset.cToken] ?? [];
+              const supplyIncentivesForAsset = (
+                incentivesData?.incentives?.[asset.cToken] ?? []
+              ).filter(({ supplySpeed }) => !!supplySpeed);
 
               return (
                 <AssetSupplyRow
@@ -321,8 +325,9 @@ const SupplyList = ({
             {suppliedAssets.length > 0 ? <ModalDivider my={2} /> : null}
 
             {nonSuppliedAssets.map((asset, index) => {
-              const supplyIncentivesForAsset =
-                incentivesData?.incentives?.[asset.cToken] ?? [];
+              const supplyIncentivesForAsset = (
+                incentivesData?.incentives?.[asset.cToken] ?? []
+              ).filter(({ supplySpeed }) => !!supplySpeed);
 
               return (
                 <AssetSupplyRow
@@ -445,7 +450,6 @@ const AssetSupplyRow = ({
       (supplyIncentive) => (supplyIncentive.supplySpeed / 1e18).toFixed() + "%"
     )
     .join(" + ");
-  console.log({ stuff });
 
   return (
     <>
@@ -721,8 +725,9 @@ const BorrowList = ({
                 return null;
               }
 
-              const incentivesForAsset =
-                incentivesData?.incentives?.[asset.cToken] ?? [];
+              const incentivesForAsset = (
+                incentivesData?.incentives?.[asset.cToken] ?? []
+              ).filter(({ borrowSpeed }) => !!borrowSpeed);
 
               return (
                 <AssetBorrowRow
@@ -744,8 +749,9 @@ const BorrowList = ({
                 return null;
               }
 
-              const incentivesForAsset =
-                incentivesData?.incentives?.[asset.cToken] ?? [];
+              const incentivesForAsset = (
+                incentivesData?.incentives?.[asset.cToken] ?? []
+              ).filter(({ borrowSpeed }) => !!borrowSpeed);
 
               return (
                 <AssetBorrowRow
