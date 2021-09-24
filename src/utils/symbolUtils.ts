@@ -15,7 +15,7 @@ export function getSymbol(tokenData: TokenData | undefined, asset: FuseAsset) {
   if (tokenData.symbol === "G-UNI") {
     // Parse the LP token symbols from the G-UNI name (like Gelato DAI/USDC LP -> USDC/DAI).
     const splitName = asset.underlyingName.split(" ");
-    return splitName[splitName.length - 2];
+    return "G-" + splitName[splitName.length - 2];
   }
 
   return tokenData.symbol!;
