@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   e2e-and-unit:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
