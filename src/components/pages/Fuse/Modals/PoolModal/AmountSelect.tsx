@@ -51,6 +51,7 @@ import {
   convertMantissaToAPR,
   convertMantissaToAPY,
 } from "../../../../../utils/apyUtils";
+import { getSymbol } from "utils/symbolUtils";
 
 enum UserAction {
   NO_ACTION,
@@ -522,6 +523,8 @@ const AmountSelect = ({
     }
   };
 
+  const symbol = getSymbol(tokenData, asset);
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -605,7 +608,7 @@ const AmountSelect = ({
                   <TokenNameAndMaxButton
                     comptrollerAddress={comptrollerAddress}
                     mode={mode}
-                    symbol={tokenData?.symbol ?? asset.underlyingSymbol}
+                    symbol={symbol}
                     logoURL={
                       tokenData?.logoURL ??
                       "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -618,7 +621,7 @@ const AmountSelect = ({
             </Column>
 
             <StatsColumn
-              symbol={tokenData?.symbol ?? assets[index].underlyingSymbol}
+              symbol={symbol}
               amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
               color={tokenData?.color ?? "#FFF"}
               assets={assets}
