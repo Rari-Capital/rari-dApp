@@ -219,14 +219,6 @@ const FusePoolEditPage = memo(() => {
     [setRewardsDistributor, openEditRewardsDistributorModal]
   );
 
-  const getActiveCTokensForRewardsDistributor = useCallback(
-    async (rdAddress: string) => {
-      const { rewardsDistributorCtokens } = poolIncentives;
-      const cTokens = rewardsDistributorCtokens[rdAddress];
-    },
-    [poolIncentives]
-  );
-
   return (
     <>
       {data ? (

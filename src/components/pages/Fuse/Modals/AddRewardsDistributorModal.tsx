@@ -8,8 +8,9 @@ import {
   Box,
   Text,
   Image,
-  Select,
-  Spinner,
+  RadioGroup,
+  Stack,
+  Radio,
   useToast,
 } from "@chakra-ui/react";
 import { Tab, TabList, Tabs } from "@chakra-ui/tabs";
@@ -30,48 +31,34 @@ import {
 } from "../../../../hooks/useTokenData";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 import { useRari } from "../../../../context/RariContext";
-import { FuseIRMDemoChartOptions } from "../../../../utils/chartOptions";
-import { SliderWithLabel } from "../../../shared/SliderWithLabel";
-import { convertIRMtoCurve } from "../FusePoolInfoPage";
 
-import Fuse from "../../../../fuse-sdk";
-import Chart from "react-apexcharts";
+import { ConfigRow } from "../FusePoolEditPage";
 import {
-  ConfigRow,
-  SaveButton,
-  testForComptrollerErrorAndSend,
-} from "../FusePoolEditPage";
-import { useQuery, useQueryClient } from "react-query";
-import { QuestionIcon } from "@chakra-ui/icons";
-import { SimpleTooltip } from "../../../shared/SimpleTooltip";
-import BigNumber from "bignumber.js";
-import { createComptroller } from "../../../../utils/createComptroller";
-import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
-
-import { handleGenericError } from "../../../../utils/errorHandling";
-import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
-import LogRocket from "logrocket";
-
-const formatPercentage = (value: number) => value.toFixed(0) + "%";
+  createComptroller,
+  createRewardsDistributor,
+} from "../../../../utils/createComptroller";
+import { useRewardsDistributors } from "hooks/rewards/useRewardsDistributors";
 
 const AssetSettings = ({
-  poolName,
-  poolID,
   tokenData,
   comptrollerAddress,
   closeModal,
+  nav,
+  rdAddress,
 }: {
-  poolName: string;
-  poolID: string;
   comptrollerAddress: string;
   tokenData: TokenData;
   closeModal: () => any;
+  nav: Nav;
+  rdAddress: string;
 }) => {
   const { t } = useTranslation();
   const { fuse, address } = useRari();
   const toast = useToast();
 
   const [isDeploying, setIsDeploying] = useState(false);
+
+  // Deploy new RD
   const deploy = async () => {
     try {
       const comptroller = await createComptroller(comptrollerAddress, fuse);
@@ -94,9 +81,8 @@ const AssetSettings = ({
         isClosable: true,
         position: "top-right",
       });
-      
 
-      const rDAddress =  deployedDistributor.options.address;
+      const rDAddress = deployedDistributor.options.address;
       console.log({ rDAddress });
 
       // Add distributor to pool Comptroller
@@ -126,6 +112,7 @@ const AssetSettings = ({
     }
   };
 
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -135,62 +122,8 @@ const AssetSettings = ({
       height="100%"
     >
       <ConfigRow height="35px">
-        <Heading>Rewards Distributor</Heading>
+        <Heading>{nav === Nav.CREATE ? 'Deploy New Rewards Distributor' : 'Add Rewards Distributor'}</Heading>
       </ConfigRow>
-
-      <ModalDivider />
-
-      <ModalDivider />
-
-      <ModalDivider />
-
-      <ModalDivider />
-
-      {/* 
-      <Box
-        height="170px"
-        width="100%"
-        color="#000000"
-        overflow="hidden"
-        pl={2}
-        pr={3}
-        className="hide-bottom-tooltip"
-        flexShrink={0}
-      >
-        {curves ? (
-          <Chart
-            options={
-              {
-                ...FuseIRMDemoChartOptions,
-                colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
-              } as any
-            }
-            type="line"
-            width="100%"
-            height="100%"
-            series={[
-              {
-                name: "Borrow Rate",
-                data: curves.borrowerRates,
-              },
-              {
-                name: "Deposit Rate",
-                data: curves.supplierRates,
-              },
-            ]}
-          />
-        ) : curves === undefined ? (
-          <Center expand color="#FFF">
-            <Spinner my={8} />
-          </Center>
-        ) : (
-          <Center expand color="#FFFFFF">
-            <Text>
-              {t("No graph is available for this asset's interest curves.")}
-            </Text>
-          </Center>
-        )}
-      </Box> */}
 
       <Box px={4} mt={4} width="100%">
         <Button
@@ -206,7 +139,7 @@ const AssetSettings = ({
           isLoading={isDeploying}
           onClick={deploy}
         >
-          {t("Confirm")}
+          {t("Deploy")}
         </Button>
       </Box>
     </Column>
@@ -226,14 +159,30 @@ const AddRewardsDistributorModal = ({
   isOpen: boolean;
   onClose: () => any;
 }) => {
+  const { fuse } = useRari();
   const { t } = useTranslation();
 
-  const [tokenAddress, _setTokenAddress] = useState<string>("0x6b3595068778dd592e39a122f4f5a5cf09c90fe2");
+  const [tokenAddress, _setTokenAddress] = useState<string>(
+    "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+  );
+
+  const [rdAddress, setRdAddress] = useState<string>("");
+
   const [nav, setNav] = useState<Nav>(Nav.ADD);
 
   const tokenData = useTokenData(tokenAddress);
 
   const isEmpty = tokenAddress.trim() === "";
+
+  useEffect(() => {
+    if (rdAddress) {
+      const rd = createRewardsDistributor(rdAddress, fuse);
+      rd.methods
+        .rewardToken()
+        .call()
+        .then((tokenAddr: string) => _setTokenAddress(tokenAddr));
+    }
+  }, [fuse, rdAddress]);
 
   return (
     <Modal
@@ -250,7 +199,12 @@ const AddRewardsDistributorModal = ({
 
         <ModalDivider />
 
-        <NavTabs setNav={setNav} />
+        <RadioGroup onChange={(value: Nav) => setNav(value)} value={nav}>
+          <Stack direction="row">
+            <Radio value={Nav.ADD}>Add</Radio>
+            <Radio value={Nav.CREATE}>Create</Radio>
+          </Stack>
+        </RadioGroup>
 
         <Column
           mainAxisAlignment="flex-start"
@@ -285,16 +239,23 @@ const AddRewardsDistributorModal = ({
             <Input
               width="100%"
               textAlign="center"
-              placeholder={t(
-                "Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-              )}
+              placeholder={
+                nav === Nav.CREATE
+                  ? t("Token Address: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                  : t("Rewards Distributor Address")
+              }
               height="40px"
               variant="filled"
               size="sm"
               value={tokenAddress}
               onChange={(event) => {
                 const address = event.target.value;
-                _setTokenAddress(address);
+
+                if (nav === Nav.CREATE) {
+                  _setTokenAddress(address);
+                } else {
+                  setRdAddress(address);
+                }
               }}
               {...DASHBOARD_BOX_PROPS}
               _placeholder={{ color: "#e0e0e0" }}
@@ -324,8 +285,8 @@ const AddRewardsDistributorModal = ({
                 comptrollerAddress={comptrollerAddress}
                 tokenData={tokenData}
                 closeModal={onClose}
-                poolName={poolName}
-                poolID={poolID}
+                nav={nav}
+                rdAddress={rdAddress}
               />
             </>
           ) : null}
@@ -341,37 +302,3 @@ enum Nav {
   CREATE = "Create",
   ADD = "ADD",
 }
-
-const navItems = [Nav.ADD, Nav.CREATE];
-
-const NavTabs = ({ setNav }: { setNav: (navItem: Nav) => any }) => {
-  return (
-    <Tabs
-      variant="soft-rounded"
-      colorScheme="nav"
-      isFitted
-      my={4}
-      onChange={(i: number) => setNav(navItems[i])}
-      size="sm"
-      width="50px"
-    >
-      <TabList borderRadius="2xl" bg="#252626" display="flex">
-        <Row mainAxisAlignment="center" crossAxisAlignment="center">
-          {navItems.map((nav) => {
-            return (
-              <Tab key={nav} borderRadius="2xl" _hover={{ color: "green.200" }}>
-                <Text
-                  fontSize="xs"
-                  color="white"
-                  _hover={{ color: "green.200" }}
-                >
-                  {nav}
-                </Text>
-              </Tab>
-            );
-          })}
-        </Row>
-      </TabList>
-    </Tabs>
-  );
-};
