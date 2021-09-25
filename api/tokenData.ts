@@ -67,7 +67,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/sOHM.png";
     }
 
-    if (name === "G-UNI") {
+    if (symbol === "G-UNI") {
       logoURL =
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png";
     }
