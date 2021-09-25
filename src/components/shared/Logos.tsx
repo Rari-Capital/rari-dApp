@@ -8,16 +8,16 @@ import Logo from "../../static/small-logo.png";
 import FuseLogo from "../../static/fuseicon.png";
 import TransparentLogo from "../../static/small-transparent-logo.png";
 
-import StatsPNGWhite from "static/icons/stats.png";
-import StatsPNGGreen from "static/icons/statsGreen.png";
-import EarnPNGWhite from "static/icons/earn.png";
-import EarnPNGGreen from "static/icons/earnGreen.png";
-import FusePNGWhite from "static/icons/fuse.png";
-import FusePNGGreen from "static/icons/fuseGreen.png";
-import Pool2PNGWhite from "static/icons/pool2.png";
-import Pool2PNGGreen from "static/icons/pool2Green.png";
-import TranchesPNGWhite from "static/icons/tranches.png";
-import TranchesPNGGreen from "static/icons/tranchesGreen.png";
+import StatsPNGWhite from "static/positionsIcons/stats.png";
+import StatsPNGGreen from "static/positionsIcons/statsGreen.png";
+import EarnPNGWhite from "static/positionsIcons/earn.png";
+import EarnPNGGreen from "static/positionsIcons/earnGreen.png";
+import FusePNGWhite from "static/positionsIcons/fuse.png";
+import FusePNGGreen from "static/positionsIcons/fuseGreen.png";
+import Pool2PNGWhite from "static/positionsIcons/pool2.png";
+import Pool2PNGGreen from "static/positionsIcons/pool2Green.png";
+import TranchesPNGWhite from "static/positionsIcons/tranches.png";
+import TranchesPNGGreen from "static/positionsIcons/tranchesGreen.png";
 
 import { usePoolInfoFromContext } from "../../hooks/usePoolInfo";
 
