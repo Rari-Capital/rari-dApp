@@ -46,7 +46,7 @@ export default class Fuse {
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
     ChainlinkPriceOracleV2: "0xb0602af43Ca042550ca9DA3c33bA3aC375d20Df4",
-    ChainlinkPriceOracleV3: "0xd7C26Cd931bc3B8f5912e5b8488D2c843627C090", // TODO: Set correct mainnet address after deployment
+    ChainlinkPriceOracleV3: "0xd161f5a7BeC13953D2B5F6D65Fac70a05Eb7b316", // TODO: Set correct mainnet address after deployment
     // PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
     // UniswapAnchoredView: "", // NOT IN USE
     // UniswapView: "", // NOT IN USE
