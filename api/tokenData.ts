@@ -39,6 +39,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     //////////////////
     // Edge cases: //
     /////////////////
+
     if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
@@ -46,7 +47,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       name = "linkCRV Gauge Deposit";
       symbol = "[G]linkCRV";
       logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png";
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/crvLINKGauge.png";
     }
 
     if (
@@ -55,7 +56,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     ) {
       name = "Wrapped Staked Ether";
       logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/wstETH.png";
     }
 
     if (
@@ -63,7 +64,12 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
     ) {
       logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/token_sOHM_2.png";
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/sOHM.png";
+    }
+
+    if (name === "G-UNI") {
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png";
     }
 
     // Fetch the logo from yearn if possible:
@@ -130,7 +136,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xaC14864ce5A98aF3248Ffbf549441b04421247D3")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/xSDT.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/xSDT.png";
   }
 
   // sd3Crv
@@ -139,7 +145,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xB17640796e4c27a39AF51887aff3F8DC0daF9567")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sd3Crv.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/sd3Crv.png";
   }
 
   // sdeursCRV
@@ -148,7 +154,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xCD6997334867728ba14d7922f72c893fcee70e84")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sdeursCRV.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/sdeursCRV.png";
   }
 
   const basicTokenInfo = {
