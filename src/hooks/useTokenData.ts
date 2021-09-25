@@ -107,3 +107,31 @@ export const useTokensData = (addresses: string[]) => {
     return ret;
   }, [tokensData]);
 };
+
+export interface TokensDataMap {
+  [address: string]: TokenData;
+}
+
+export const useTokensDataAsMap = (addresses: string[]): TokensDataMap => {
+  const tokensData = useQueries(
+    addresses.map((address: string) => {
+      return {
+        queryKey: address + " tokenData",
+        queryFn: async () => await fetchTokenData(address),
+      };
+    })
+  );
+
+  return useMemo(() => {
+    const ret: TokensDataMap = {};
+    if (!tokensData.length) return {};
+    tokensData.forEach(({ data }) => {
+      const _data = data as TokenData;
+      if (_data && _data.address) {
+        ret[_data.address] = _data;
+      }
+    });
+
+    return ret;
+  }, [tokensData]);
+};

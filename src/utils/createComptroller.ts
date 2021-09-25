@@ -26,6 +26,20 @@ export const createUnitroller = (unitrollerAddress: string, fuse: Fuse): Contrac
   return unitroller;
 };
 
+export const createRewardsDistributor = (distributorAddress: string, fuse: Fuse) => {
+  //   Create instance of contract
+  const rewardsDistributorInstance = new fuse.web3.eth.Contract(
+    JSON.parse(
+      fuse.compoundContracts[
+        "contracts/RewardsDistributor.sol:RewardsDistributor"
+      ].abi
+    ),
+    distributorAddress
+  );
+
+  return rewardsDistributorInstance
+};
+
 export const createOracle = (oracleAddress: string, fuse: Fuse, type: string): Contract => {
 
   const oracle = new fuse.web3.eth.Contract(
