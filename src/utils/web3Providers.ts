@@ -1,6 +1,6 @@
 import Fuse from "../fuse-sdk/src";
 
-export const alchemyURL = `http://135.181.216.35:21918`;
+export const alchemyURL = `http://135.181.216.35:21919`;
 
 export function chooseBestWeb3Provider() {
   if (typeof window === "undefined") {

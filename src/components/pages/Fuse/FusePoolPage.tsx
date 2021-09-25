@@ -97,10 +97,19 @@ const FusePoolPage = memo(() => {
         }
 
         {hasIncentives && (
-          <GlowingBox w="100%" h="50px">
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" h="100%" w="100" p={2}>
-              <Heading fontSize="md "> 🎉 This pool is offering incentives</Heading>
-              
+          <GlowingBox w="100%" h="50px" mt={4}>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" h="100%" w="100" p={3}>
+              <Heading fontSize="md" ml={2}> 🎉  This pool is offering incentives</Heading>
+               <AvatarGroup size="xs" max={30} ml={2} mr={2}>
+                  {Object.keys(incentivesData.rewardTokensData).map((rewardToken) => {
+                    return (
+                      <CTokenIcon
+                        key={rewardToken}
+                        address={rewardToken}
+                      />
+                    );
+                  })}
+                </AvatarGroup>
             </Row>
           </GlowingBox>
         )}

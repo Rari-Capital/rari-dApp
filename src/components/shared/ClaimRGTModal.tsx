@@ -132,8 +132,9 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
   return (
     <Column
       mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
+      crossAxisAlignment="center"
       expand
+      p={3}
     >
       {allClaimable.length ? (
         allClaimable.map((claimable) => {
@@ -149,7 +150,7 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
       ) : (
         <Heading>No Claimable Rewards.</Heading>
       )}
-      {allClaimable.length && (
+      {!!allClaimable.length && (
         <GlowingButton
           label={t("Claim All")}
           onClick={() => alert("Claiming All")}
