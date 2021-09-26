@@ -1062,15 +1062,11 @@ const RewardsDistributorRow = ({
         </Td>
 
         <Td>
-          <AvatarGroup size="xs" max={30}>
-            {underlyings.length ? (
-              underlyings.map((underlyingAddr) => (
-                <CTokenIcon key={underlyingAddr} address={underlyingAddr} />
-              ))
-            ) : (
-              <Badge colorScheme="red">Inactive</Badge>
-            )}
-          </AvatarGroup>
+          {!!underlyings.length ? (
+            <CTokenAvatarGroup tokenAddresses={underlyings} popOnHover={true} />
+          ) : (
+            <Badge colorScheme="red">Inactive</Badge>
+          )}
         </Td>
 
         <Td>

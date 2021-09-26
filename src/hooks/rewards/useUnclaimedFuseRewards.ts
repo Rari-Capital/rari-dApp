@@ -2,6 +2,12 @@ import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
 import { createRewardsDistributor } from "utils/createComptroller";
 
+export interface RewardsDistributorToPoolsMap {
+  [rD: string]: {
+    [comptroller: string]: number;
+  };
+}
+
 export function useUnclaimedFuseRewards() {
   const { fuse, address } = useRari();
 
@@ -27,6 +33,29 @@ export function useUnclaimedFuseRewards() {
   const rewardsDistributorsByFusePool: string[][] =
     _rewardsDistributorsByFusePool?.[2] ?? [];
 
+  const rewardsDistributorsToPoolsMap: RewardsDistributorToPoolsMap = {};
+
+  // 1.a Construct a map of rewardsDistributors to fuse pools
+  rewardsDistributorsByFusePool.forEach((rDs, i) => {
+    // rDs, poolIndex, comptroller all refer to the same fuse pool
+    const poolIndex = poolIndices[i];
+    const comptroller = poolComptrollers[i];
+    if (rDs.length) {
+      rDs.forEach((rD) => {
+        // If Rd doesnt exist in top level of map, set it and the nested first value
+        if (!rewardsDistributorsToPoolsMap[rD]) {
+          rewardsDistributorsToPoolsMap[rD] = {
+            [comptroller]: parseFloat(poolIndex),
+          };
+        } else {
+          // It exists already in the map
+          rewardsDistributorsToPoolsMap[rD][comptroller] =
+            parseFloat(poolIndex);
+        }
+      });
+    }
+  });
+
   // 2. Reduce this 2D array into a single deduped array of RewardsDistributors
   const uniqueRDs: string[] = [
     ...new Set(
@@ -35,8 +64,6 @@ export function useUnclaimedFuseRewards() {
       }, []) ?? []
     ),
   ];
-
-  console.log({ _rewardsDistributorsByFusePool, uniqueRDs });
 
   // 3. Create map of {[rewardToken: string] : RewardDistributor[] }
 
@@ -65,6 +92,12 @@ export function useUnclaimedFuseRewards() {
             rewardToken,
             rewardsDistributorAddress,
             markets: _markets,
+            pools: Object.values(
+              rewardsDistributorsToPoolsMap[rewardsDistributorAddress]
+            ),
+            comptrollers: Object.keys(
+              rewardsDistributorsToPoolsMap[rewardsDistributorAddress]
+            ),
           };
         })
       );
@@ -78,9 +111,7 @@ export function useUnclaimedFuseRewards() {
     _rewardsDistributors as RewardsDistributorUnclaimed[];
 
   // This is a one-to-one map of RewardsDistributors by rD address {rDaddress: RewardsDistributor}
-  const rewardsDistributorsMap: {
-    [rewardsDistributorAddr: string]: RewardsDistributorUnclaimed;
-  } = {};
+  const rewardsDistributorsMap: RewardsDistributorMap = {};
 
   rewardsDistributors?.length &&
     rewardsDistributors.forEach((rD) => {
@@ -157,7 +188,12 @@ export function useUnclaimedFuseRewards() {
 
   //   return uniqueRDs;
 
-  return { rewardsDistributorsMap, rewardTokensMap, unclaimed };
+  return {
+    rewardsDistributorsMap,
+    rewardTokensMap,
+    unclaimed,
+    rewardsDistributorsToPoolsMap,
+  };
 }
 
 // maps a rewardTtoken to an array of RD addresses
@@ -169,6 +205,12 @@ export interface RewardsDistributorUnclaimed {
   rewardToken: string;
   rewardsDistributorAddress: string;
   markets: string[];
+  pools: number[];
+  comptrollers: string[];
+}
+
+export interface RewardsDistributorMap {
+  [rewardsDistributorAddr: string]: RewardsDistributorUnclaimed;
 }
 
 export interface UnclaimedReward {
