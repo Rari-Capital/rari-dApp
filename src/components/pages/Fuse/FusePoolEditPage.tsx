@@ -54,6 +54,7 @@ import { OracleDataType, useOracleData } from "hooks/fuse/useOracleData";
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
+import { CTokenIcon } from "components/shared/CTokenIcon";
 import {
   createComptroller,
   createUnitroller,

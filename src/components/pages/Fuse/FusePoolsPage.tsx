@@ -21,6 +21,7 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
 import { memo } from "react";
+import { CTokenIcon } from "components/shared/CTokenIcon";
 
 export const useHasCreatedPools = () => {
   const { filteredPools } = useFusePools("created-pools");
@@ -240,26 +241,4 @@ const PoolRow = ({
   );
 };
 
-export const CTokenIcon = ({
-  address,
-  ...avatarProps
-}: {
-  address: string;
-  [key: string]: any;
-}) => {
-  const tokenData = useTokenData(address);
 
-  return (
-    <Avatar
-      {...avatarProps}
-      key={address}
-      bg="#FFF"
-      borderWidth="1px"
-      name={tokenData?.symbol ?? "Loading..."}
-      src={
-        tokenData?.logoURL ??
-        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-      }
-    />
-  );
-};

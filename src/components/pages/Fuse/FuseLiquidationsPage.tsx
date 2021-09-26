@@ -36,7 +36,7 @@ import { memo, useState } from "react";
 
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { CTokenIcon } from "./FusePoolsPage";
+import { CTokenIcon } from "components/shared/CTokenIcon";
 import { useQuery } from "react-query";
 
 export type LiquidatablePosition = {

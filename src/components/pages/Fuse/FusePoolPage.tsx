@@ -58,7 +58,9 @@ import {
   CTokenIncentives,
   usePoolIncentives,
 } from "hooks/rewards/usePoolIncentives";
-import { CTokenIcon } from "./FusePoolsPage";
+import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
+import { motion } from "framer-motion";
+
 import { GlowingBox } from "components/shared/GlowingButton";
 import { getSymbol } from "utils/symbolUtils";
 import { AdminAlert } from "components/shared/AdminAlert";
@@ -224,30 +226,34 @@ const FusePoolPage = memo(() => {
           <PendingAdminAlert comptroller={data?.comptroller} />
         )}
 
-                {hasIncentives && (
-          <GlowingBox w="100%" h="50px" mt={4}>
-            <Row
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              h="100%"
-              w="100"
-              p={3}
-            >
-              <Heading fontSize="md" ml={2}>
-                {" "}
-                🎉 This pool is offering rewards
-              </Heading>
-              <AvatarGroup size="xs" max={30} ml={2} mr={2}>
-                {Object.keys(incentivesData.rewardTokensData).map(
-                  (rewardToken) => {
-                    return (
-                      <CTokenIcon key={rewardToken} address={rewardToken} />
-                    );
-                  }
-                )}
-              </AvatarGroup>
-            </Row>
-          </GlowingBox>
+        {hasIncentives && (
+        <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{ width: "100%" }}
+          >
+            <GlowingBox w="100%" h="50px" mt={4}>
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                h="100%"
+                w="100"
+                p={3}
+              >
+                <Heading fontSize="md" ml={2}>
+                  {" "}
+                  🎉 This pool is offering rewards
+                </Heading>
+                <CTokenAvatarGroup
+                  tokenAddresses={Object.keys(incentivesData.rewardTokensData)}
+                  ml={2}
+                  mr={2}
+                  popOnHover={true}
+                />
+              </Row>
+            </GlowingBox>
+          </motion.div>
         )}
 
 
@@ -713,7 +719,7 @@ const AssetSupplyRow = ({
                   return (
                     <Row
                       ml={1}
-                      py={.5}
+                      py={0.5}
                       // mb={.5}
                       crossAxisAlignment="center"
                       mainAxisAlignment="flex-end"
