@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import {
   Avatar,
   AvatarGroup,
@@ -598,6 +598,25 @@ const AssetSupplyRow = ({
   const { t } = useTranslation();
 
   const hasSupplyIncentives = !!supplyIncentives.length;
+  const totalSupplyAPY =
+    supplyIncentives?.reduce((prev, incentive) => {
+      const apy = incentive.supplySpeed / 1e18;
+      return prev + apy;
+    }, 0) ?? 0;
+
+  const [hovered, setHovered] = useState<number>(-1);
+
+  const handleMouseEnter = (index: number) => setHovered(index);
+  const handleMouseLeave = () => setHovered(-1);
+
+
+
+  const displayedSupplyAPY =
+    hovered >= 0
+      ? supplyIncentives[hovered].supplySpeed / 1e18
+      : totalSupplyAPY;
+
+      console.log(({hovered, displayedSupplyAPY, }))
 
   return (
     <>
@@ -669,23 +688,26 @@ const AssetSupplyRow = ({
             </Text>
 
             {/* Demo Supply Incentives */}
-            {/* {hasSupplyIncentives && (
+            {hasSupplyIncentives && (
               <Row
                 // ml={1}
                 // mb={.5}
                 crossAxisAlignment="center"
                 mainAxisAlignment="flex-end"
                 py={1}
+
               >
                 <Text fontWeight="bold" mr={2}>
                   +
                 </Text>
-                <AvatarGroup size="xs" max={30} ml={2} mr={2}>
-                  {supplyIncentives?.map((supplyIncentive) => {
+                <AvatarGroup size="xs" max={30} ml={2} mr={2} spacing={1}>
+                  {supplyIncentives?.map((supplyIncentive, i) => {
                     return (
                       <CTokenIcon
                         address={supplyIncentive.rewardToken}
-                        boxSize="17px"
+                        boxSize="20px"
+                        onMouseEnter={() => handleMouseEnter(i)}
+                        onMouseLeave={() => handleMouseLeave()}
                         _hover={{
                           zIndex: 9,
                           border: ".5px solid white",
@@ -697,19 +719,19 @@ const AssetSupplyRow = ({
                 </AvatarGroup>
                 <Text
                   color={
-                    rewardTokensData[supplyIncentives[0].rewardToken].color ??
-                    "white"
+                    rewardTokensData[supplyIncentives?.[hovered]?.rewardToken]
+                      ?.color ?? "white"
                   }
                   fontWeight="bold"
                 >
-                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}% 
-                  24%
+                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}
+                  {displayedSupplyAPY}%
                 </Text>
               </Row>
-            )} */}
+            )}
 
             {/* Incentives */}
-            {hasSupplyIncentives && (
+            {/* {hasSupplyIncentives && (
               <Column
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="flex-end"
@@ -729,7 +751,7 @@ const AssetSupplyRow = ({
                       </Text>
                       <CTokenIcon
                         address={supplyIncentive.rewardToken}
-                        boxSize="17px"
+                        boxSize="20px"
                       />
                       <Text fontWeight="bold" mr={2}></Text>
                       <Text
@@ -745,7 +767,7 @@ const AssetSupplyRow = ({
                   );
                 })}
               </Column>
-            )}
+            )} */}
 
             <SimpleTooltip
               label={t(
@@ -772,7 +794,7 @@ const AssetSupplyRow = ({
                       src={
                         rewardTokensData[supplyIncentive.rewardToken].logoURL ?? ""
                       }
-                      boxSize="17px"
+                      boxSize="20px"
                     />
                     <Text
                       ml={2}
@@ -1017,6 +1039,22 @@ const AssetBorrowRow = ({
 
   const hasBorrowIncentives = !!borrowIncentives.length;
 
+  const totalBorrowAPY =
+    borrowIncentives?.reduce((prev, incentive) => {
+      const apy = incentive.borrowSpeed / 1e18;
+      return prev + apy;
+    }, 0) ?? 0;
+
+  const [hovered, setHovered] = useState<number>(-1);
+
+  const handleMouseEnter = (index: number) => setHovered(index);
+  const handleMouseLeave = () => setHovered(-1);
+
+  const displayedBorrowAPY =
+    hovered >= 0
+      ? borrowIncentives[hovered].borrowSpeed / 1e18
+      : totalBorrowAPY;
+
   return (
     <>
       <PoolModal
@@ -1072,7 +1110,7 @@ const AssetBorrowRow = ({
             </Text>
 
             {/* Demo Borrow Incentives */}
-            {/* {hasBorrowIncentives && (
+            {hasBorrowIncentives && (
               <Row
                 // ml={1}
                 // mb={.5}
@@ -1083,36 +1121,38 @@ const AssetBorrowRow = ({
                 <Text fontWeight="bold" mr={2}>
                   +
                 </Text>
-                <AvatarGroup size="xs" max={30} ml={2} mr={2}>
-                  {borrowIncentives?.map((borrowIncentive) => {
+                <AvatarGroup size="xs" max={30} ml={2} mr={2} spacing={1}>
+                  {borrowIncentives?.map((borrowIncentive, i) => {
                     return (
                       <CTokenIcon
                         address={borrowIncentive.rewardToken}
-                        boxSize="17px"
+                        boxSize="20px"
                         _hover={{
                           zIndex: 9,
                           border: ".5px solid white",
                           transform: "scale(1.3);",
                         }}
+                        onMouseEnter={() => handleMouseEnter(i)}
+                        onMouseLeave={handleMouseLeave}
                       />
                     );
                   })}
                 </AvatarGroup>
                 <Text
                   color={
-                    rewardTokensData[borrowIncentives?.[0]?.rewardToken]
+                    rewardTokensData[borrowIncentives?.[hovered]?.rewardToken]
                       ?.color ?? "white"
                   }
                   fontWeight="bold"
                 >
-                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}% 
-                  12%
+                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}
+                  {displayedBorrowAPY}%
                 </Text>
               </Row>
-            )} */}
+            )}
 
             {/* Borrow Incentives */}
-            {hasBorrowIncentives && (
+            {/* {hasBorrowIncentives && (
               <Column
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="flex-end"
@@ -1131,7 +1171,7 @@ const AssetBorrowRow = ({
                       </Text>
                       <CTokenIcon
                         address={borrowIncentive.rewardToken}
-                        boxSize="17px"
+                        boxSize="20px"
                       />
                       <Text fontWeight="bold" mr={2}></Text>
                       <Text
@@ -1147,7 +1187,7 @@ const AssetBorrowRow = ({
                   );
                 })}
               </Column>
-            )}
+            )} */}
 
             <SimpleTooltip
               label={t(
@@ -1177,7 +1217,7 @@ const AssetBorrowRow = ({
                         rewardTokensData[borrowIncentive.rewardToken].logoURL ??
                         ""
                       }
-                      boxSize="17px"
+                      boxSize="20px"
                     />
                     <Text
                       ml={2}

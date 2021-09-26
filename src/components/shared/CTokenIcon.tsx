@@ -41,7 +41,7 @@ export const CTokenAvatarGroup = ({
           <CTokenIcon
             key={tokenAddress}
             address={tokenAddress}
-            _hover={popOnHover ? { transform: "scale(1.1)", zIndex: 5 } : null}
+            _hover={popOnHover ? { transform: "scale(1.2)", zIndex: 5 } : null}
           />
         );
       })}
