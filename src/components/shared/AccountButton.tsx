@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
-import { GlowingButton } from "./GlowingButton";
+import { DarkGlowingButton, GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
@@ -114,18 +114,30 @@ const Buttons = ({
             <Center expand>{t("Buy Crypto")}</Center>
           </DashboardBox> */}
 
-          <DashboardBox
-            ml={1}
-            as="button"
-            height="40px"
-            flexShrink={0}
-            width="95px"
-            fontSize="15px"
-            onClick={openClaimRGTModal}
-            fontWeight="bold"
-          >
-            <Center expand>{t("Claim RGT")}</Center>
-          </DashboardBox>
+          {true ? (
+            <DarkGlowingButton
+              label={t("Claim")}
+              onClick={openClaimRGTModal}
+              height="40px"
+              flexShrink={0}
+              width="95px"
+              fontSize="15px"
+              fontWeight="bold"
+            />
+          ) : (
+            <DashboardBox
+              ml={1}
+              as="button"
+              height="40px"
+              flexShrink={0}
+              width="95px"
+              fontSize="15px"
+              fontWeight="bold"
+              onClick={openClaimRGTModal}
+            >
+              <Center expand>{t("Claim")}</Center>
+            </DashboardBox>
+          )}
         </>
       )}
 

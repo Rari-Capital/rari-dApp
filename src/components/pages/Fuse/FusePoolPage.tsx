@@ -662,36 +662,84 @@ const AssetSupplyRow = ({
               %
             </Text>
 
+            {/* Demo Supply Incentives */}
+            {/* {hasSupplyIncentives && (
+              <Row
+                // ml={1}
+                // mb={.5}
+                crossAxisAlignment="center"
+                mainAxisAlignment="flex-end"
+                py={1}
+              >
+                <Text fontWeight="bold" mr={2}>
+                  +
+                </Text>
+                <AvatarGroup size="xs" max={30} ml={2} mr={2}>
+                  {supplyIncentives?.map((supplyIncentive) => {
+                    return (
+                      <CTokenIcon
+                        address={supplyIncentive.rewardToken}
+                        boxSize="17px"
+                        _hover={{
+                          zIndex: 9,
+                          border: ".5px solid white",
+                          transform: "scale(1.3);",
+                        }}
+                      />
+                    );
+                  })}
+                </AvatarGroup>
+                <Text
+                  color={
+                    rewardTokensData[supplyIncentives[0].rewardToken].color ??
+                    "white"
+                  }
+                  fontWeight="bold"
+                >
+                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}% 
+                  24%
+                </Text>
+              </Row>
+            )} */}
+
             {/* Incentives */}
-            {hasSupplyIncentives &&
-              supplyIncentives?.map((supplyIncentive) => {
-                return (
-                  <Row
-                    ml={1}
-                    // mb={.5}
-                    crossAxisAlignment="center"
-                    mainAxisAlignment="flex-end"
-                  >
-                    <Text fontSize="bold" mr={1}>
-                      +
-                    </Text>
-                    <CTokenIcon
-                      address={supplyIncentive.rewardToken}
-                      boxSize="15px"
-                    />
-                    <Text fontWeight="bold" mr={1}></Text>
-                    <Text
-                      color={
-                        rewardTokensData[supplyIncentive.rewardToken].color ??
-                        "white"
-                      }
-                      fontWeight="bold"
+            {hasSupplyIncentives && (
+              <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-end"
+                py={1}
+              >
+                {supplyIncentives?.map((supplyIncentive) => {
+                  return (
+                    <Row
+                      ml={1}
+                      py={.5}
+                      // mb={.5}
+                      crossAxisAlignment="center"
+                      mainAxisAlignment="flex-end"
                     >
-                      {(supplyIncentive.supplySpeed / 1e18).toString()}%
-                    </Text>
-                  </Row>
-                );
-              })}
+                      <Text fontWeight="bold" mr={2}>
+                        +
+                      </Text>
+                      <CTokenIcon
+                        address={supplyIncentive.rewardToken}
+                        boxSize="17px"
+                      />
+                      <Text fontWeight="bold" mr={2}></Text>
+                      <Text
+                        color={
+                          rewardTokensData[supplyIncentive.rewardToken].color ??
+                          "white"
+                        }
+                        fontWeight="bold"
+                      >
+                        {(supplyIncentive.supplySpeed / 1e18).toString()}%
+                      </Text>
+                    </Row>
+                  );
+                })}
+              </Column>
+            )}
 
             <SimpleTooltip
               label={t(
@@ -718,7 +766,7 @@ const AssetSupplyRow = ({
                       src={
                         rewardTokensData[supplyIncentive.rewardToken].logoURL ?? ""
                       }
-                      boxSize="20px"
+                      boxSize="17px"
                     />
                     <Text
                       ml={2}
@@ -961,7 +1009,7 @@ const AssetBorrowRow = ({
 
   const isMobile = useIsMobile();
 
-  const hasBorrowIncentives = !!borrowIncentives;
+  const hasBorrowIncentives = !!borrowIncentives.length;
 
   return (
     <>
@@ -1017,36 +1065,83 @@ const AssetBorrowRow = ({
               {borrowAPR.toFixed(2)}%
             </Text>
 
-            {/* Incentives */}
-            {hasBorrowIncentives &&
-              borrowIncentives?.map((borrowIncentive) => {
-                return (
-                  <Row
-                    ml={1}
-                    // mb={.5}
-                    crossAxisAlignment="center"
-                    mainAxisAlignment="flex-end"
-                  >
-                    <Text fontSize="bold" mr={1}>
-                      +
-                    </Text>
-                    <CTokenIcon
-                      address={borrowIncentive.rewardToken}
-                      boxSize="15px"
-                    />
-                    <Text fontWeight="bold" mr={1}></Text>
-                    <Text
-                      color={
-                        rewardTokensData[borrowIncentive.rewardToken].color ??
-                        "white"
-                      }
-                      fontWeight="bold"
+            {/* Demo Borrow Incentives */}
+            {/* {hasBorrowIncentives && (
+              <Row
+                // ml={1}
+                // mb={.5}
+                crossAxisAlignment="center"
+                mainAxisAlignment="flex-end"
+                py={1}
+              >
+                <Text fontWeight="bold" mr={2}>
+                  +
+                </Text>
+                <AvatarGroup size="xs" max={30} ml={2} mr={2}>
+                  {borrowIncentives?.map((borrowIncentive) => {
+                    return (
+                      <CTokenIcon
+                        address={borrowIncentive.rewardToken}
+                        boxSize="17px"
+                        _hover={{
+                          zIndex: 9,
+                          border: ".5px solid white",
+                          transform: "scale(1.3);",
+                        }}
+                      />
+                    );
+                  })}
+                </AvatarGroup>
+                <Text
+                  color={
+                    rewardTokensData[borrowIncentives?.[0]?.rewardToken]
+                      ?.color ?? "white"
+                  }
+                  fontWeight="bold"
+                >
+                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}% 
+                  12%
+                </Text>
+              </Row>
+            )} */}
+
+            {/* Borrow Incentives */}
+            {hasBorrowIncentives && (
+              <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-end"
+                py={1}
+              >
+                {borrowIncentives?.map((borrowIncentive) => {
+                  return (
+                    <Row
+                      ml={1}
+                      // mb={.5}
+                      crossAxisAlignment="center"
+                      mainAxisAlignment="flex-end"
                     >
-                      {(borrowIncentive.borrowSpeed / 1e18).toString()}%
-                    </Text>
-                  </Row>
-                );
-              })}
+                      <Text fontWeight="bold" mr={2}>
+                        +
+                      </Text>
+                      <CTokenIcon
+                        address={borrowIncentive.rewardToken}
+                        boxSize="17px"
+                      />
+                      <Text fontWeight="bold" mr={2}></Text>
+                      <Text
+                        color={
+                          rewardTokensData[borrowIncentive.rewardToken].color ??
+                          "white"
+                        }
+                        fontWeight="bold"
+                      >
+                        {(borrowIncentive.borrowSpeed / 1e18).toString()}%
+                      </Text>
+                    </Row>
+                  );
+                })}
+              </Column>
+            )}
 
             <SimpleTooltip
               label={t(
@@ -1076,7 +1171,7 @@ const AssetBorrowRow = ({
                         rewardTokensData[borrowIncentive.rewardToken].logoURL ??
                         ""
                       }
-                      boxSize="20px"
+                      boxSize="17px"
                     />
                     <Text
                       ml={2}
