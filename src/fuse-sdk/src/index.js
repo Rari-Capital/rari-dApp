@@ -179,23 +179,26 @@ export default class Fuse {
   ];
 
   static PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES = {
-    WhitePaperInterestRateModel_Compound_ETH:
-      "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
-    WhitePaperInterestRateModel_Compound_WBTC:
-      "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
     JumpRateModel_Compound_Stables:
       "0x640dce7c7c6349e254b20eccfa2bb902b354c317",
     JumpRateModel_Compound_UNI: "0xc35DB333EF7ce4F246DE9DE11Cc1929d6AA11672",
     JumpRateModel_Cream_Stables_Majors:
       "0xb579d2761470bba14018959d6dffcc681c09c04b",
     JumpRateModel_Cream_Gov_Seeds: "0xcdC0a449E011249482824efFcfA05c883d36CfC7",
-    JumpRateModel_Cream_SLP: "",
-    JumpRateModel_ALCX: "0x58c3e7119ec200c09b2b3a9f8ce3bd77b6b47012",
+
+    WhitePaperInterestRateModel_Compound_ETH:
+      "0x14ee0270C80bEd60bDC117d4F218DeE0A4909F28",
+    WhitePaperInterestRateModel_Compound_WBTC:
+      "0x7ecAf96C79c2B263AFe4f486eC9a74F8e563E0a6",
+
     JumpRateModel_Fei_FEI: "0x8f47be5692180079931e2f983db6996647aba0a5",
     JumpRateModel_Fei_TRIBE: "0x075538650a9c69ac8019507a7dd1bd879b12c1d7",
     JumpRateModel_Fei_ETH: "0xbab47e4b692195bf064923178a90ef999a15f819",
     JumpRateModel_Fei_DAI: "0xede47399e2aa8f076d40dc52896331cba8bd40f7",
     JumpRateModel_Olympus_Majors: "0xe1d35fae219e4d74fe11cb4246990784a4fe6680",
+
+    Custom_JumpRateModel: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    Custom_JumpRateModel: "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
   };
 
   constructor(web3Provider) {
@@ -786,14 +789,15 @@ export default class Fuse {
 
       // Deploy new asset to existing pool via SDK
       try {
-        var [assetAddress, implementationAddress, receipt] = await this.deployCToken(
-          conf,
-          collateralFactor,
-          reserveFactor,
-          adminFee,
-          options,
-          bypassPriceFeedCheck
-        );
+        var [assetAddress, implementationAddress, receipt] =
+          await this.deployCToken(
+            conf,
+            collateralFactor,
+            reserveFactor,
+            adminFee,
+            options,
+            bypassPriceFeedCheck
+          );
       } catch (error) {
         throw (
           "Deployment of asset to Fuse pool failed: " +
@@ -801,7 +805,12 @@ export default class Fuse {
         );
       }
 
-      return [assetAddress, implementationAddress, conf.interestRateModel, receipt];
+      return [
+        assetAddress,
+        implementationAddress,
+        conf.interestRateModel,
+        receipt,
+      ];
     };
 
     this.deployInterestRateModel = async function (model, conf, options) {
@@ -836,7 +845,7 @@ export default class Fuse {
               multiplierPerYear: "200000000000000000",
               jumpMultiplierPerYear: "2000000000000000000",
               kink: "900000000000000000",
-              owner: options.from
+              owner: options.from,
             };
           deployArgs = [
             conf.baseRatePerYear,
@@ -847,7 +856,8 @@ export default class Fuse {
           ];
           break;
         case "ReactiveJumpRateModelV2":
-          if (!conf) throw "No configuration passed to deployInterestRateModel.";
+          if (!conf)
+            throw "No configuration passed to deployInterestRateModel.";
           deployArgs = [
             conf.baseRatePerYear,
             conf.multiplierPerYear,
@@ -997,7 +1007,19 @@ export default class Fuse {
         reserveFactor ? reserveFactor.toString() : 0,
         adminFee ? adminFee.toString() : 0,
       ];
-      var constructorData = this.web3.eth.abi.encodeParameters(["address", "address", "string", "string", "address", "bytes", "uint256", "uint256"], deployArgs);
+      var constructorData = this.web3.eth.abi.encodeParameters(
+        [
+          "address",
+          "address",
+          "string",
+          "string",
+          "address",
+          "bytes",
+          "uint256",
+          "uint256",
+        ],
+        deployArgs
+      );
       var comptroller = new this.web3.eth.Contract(
         JSON.parse(contracts["contracts/Comptroller.sol:Comptroller"].abi),
         conf.comptroller
@@ -1011,9 +1033,15 @@ export default class Fuse {
         .send(options);
       var cEtherDelegatorAddress = this.getCreate2Address(
         Fuse.FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS,
-        [conf.comptroller, "0x0000000000000000000000000000000000000000", receipt.blockNumber],
+        [
+          conf.comptroller,
+          "0x0000000000000000000000000000000000000000",
+          receipt.blockNumber,
+        ],
         this.web3.utils.sha3(
-          "0x" + contracts["contracts/CEtherDelegator.sol:CEtherDelegator"].bin + constructorData.substring(2)
+          "0x" +
+            contracts["contracts/CEtherDelegator.sol:CEtherDelegator"].bin +
+            constructorData.substring(2)
         )
       );
 
@@ -1042,17 +1070,28 @@ export default class Fuse {
 
       // Deploy CErc20Delegate implementation contract if necessary
       if (!implementationAddress) {
-        if (!conf.delegateContractName) conf.delegateContractName = "CErc20Delegate";
+        if (!conf.delegateContractName)
+          conf.delegateContractName = "CErc20Delegate";
         var cErc20Delegate = new this.web3.eth.Contract(
           JSON.parse(
-            contracts["contracts/" + conf.delegateContractName + ".sol:" + conf.delegateContractName].abi
+            contracts[
+              "contracts/" +
+                conf.delegateContractName +
+                ".sol:" +
+                conf.delegateContractName
+            ].abi
           )
         );
         cErc20Delegate = await cErc20Delegate
           .deploy({
             data:
               "0x" +
-              contracts["contracts/" + conf.delegateContractName + ".sol:" + conf.delegateContractName].bin,
+              contracts[
+                "contracts/" +
+                  conf.delegateContractName +
+                  ".sol:" +
+                  conf.delegateContractName
+              ].bin,
           })
           .send(options);
         implementationAddress = cErc20Delegate.options.address;
@@ -1069,19 +1108,30 @@ export default class Fuse {
         reserveFactor ? reserveFactor.toString() : 0,
         adminFee ? adminFee.toString() : 0,
       ];
-      var constructorData = this.web3.eth.abi.encodeParameters(["address", "address", "address", "string", "string", "address", "bytes", "uint256", "uint256"], deployArgs);
+      var constructorData = this.web3.eth.abi.encodeParameters(
+        [
+          "address",
+          "address",
+          "address",
+          "string",
+          "string",
+          "address",
+          "bytes",
+          "uint256",
+          "uint256",
+        ],
+        deployArgs
+      );
       var receipt = await comptroller.methods
-        ._deployMarket(
-          false,
-          constructorData,
-          collateralFactor
-        )
+        ._deployMarket(false, constructorData, collateralFactor)
         .send(options);
       var cErc20DelegatorAddress = this.getCreate2Address(
         Fuse.FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS,
         [conf.comptroller, conf.underlying, receipt.blockNumber],
         this.web3.utils.sha3(
-          "0x" + contracts["contracts/CErc20Delegator.sol:CErc20Delegator"].bin + constructorData.substring(2)
+          "0x" +
+            contracts["contracts/CErc20Delegator.sol:CErc20Delegator"].bin +
+            constructorData.substring(2)
         )
       );
 
@@ -1094,11 +1144,16 @@ export default class Fuse {
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
       );
-      
-      for (const oracleContractName of Object.keys(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES))
-        if (runtimeBytecodeHash == Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])
+
+      for (const oracleContractName of Object.keys(
+        Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
+      ))
+        if (
+          runtimeBytecodeHash ==
+          Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName]
+        )
           return oracleContractName;
-      
+
       return null;
     };
 
@@ -1580,12 +1635,17 @@ export default class Fuse {
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
       var distributor = new this.web3.eth.Contract(
-        JSON.parse(contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi)
+        JSON.parse(
+          contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi
+        )
       );
       distributor = await distributor
         .deploy({
-          data: "0x" + contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].bin,
-          arguments: [rewardToken]
+          data:
+            "0x" +
+            contracts["contracts/RewardsDistributor.sol:RewardsDistributor"]
+              .bin,
+          arguments: [rewardToken],
         })
         .send(options);
       rdAddress = distributor.options.address;
