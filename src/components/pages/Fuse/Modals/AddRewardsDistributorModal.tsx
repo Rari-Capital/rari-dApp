@@ -259,12 +259,14 @@ const AddRewardsDistributorModal = ({
               value={tokenAddress}
               onChange={(event) => {
                 const address = event.target.value;
+                _setTokenAddress(address);
 
-                if (nav === Nav.CREATE) {
-                  _setTokenAddress(address);
-                } else {
-                  setRdAddress(address);
-                }
+
+                // if (nav === Nav.CREATE) {
+                //   _setTokenAddress(address);
+                // } else {
+                //   setRdAddress(address);
+                // }
               }}
               {...DASHBOARD_BOX_PROPS}
               _placeholder={{ color: "#e0e0e0" }}

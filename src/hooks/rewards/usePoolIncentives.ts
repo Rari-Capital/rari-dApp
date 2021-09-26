@@ -1,9 +1,6 @@
 import { createCToken } from "utils/createComptroller";
 import { useRari } from "context/RariContext";
-import {
-  TokensDataMap,
-  useTokensDataAsMap,
-} from "hooks/useTokenData";
+import { TokensDataMap, useTokensDataAsMap } from "hooks/useTokenData";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
 
@@ -29,7 +26,7 @@ export interface IncentivesData {
   rewardTokensData: TokensDataMap;
 }
 
-export function usePoolIncentives(comptroller?: string) {
+export function usePoolIncentives(comptroller?: string): IncentivesData {
   const { fuse } = useRari();
 
   //   1. Make Call to FusePoolLens
