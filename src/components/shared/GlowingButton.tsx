@@ -3,7 +3,7 @@ import { Box, BoxProps, Button } from "@chakra-ui/react";
 import { ReactElement } from "react";
 
 export const GlowingButton = ({
-  label,
+  children,
   onClick,
   leftIcon,
   disabled,
@@ -11,7 +11,6 @@ export const GlowingButton = ({
 }: BoxProps & {
   leftIcon?: ReactElement;
   onClick: () => any;
-  label: string;
   disabled?: boolean;
 }) => {
   return (
@@ -30,7 +29,7 @@ export const GlowingButton = ({
         _disabled={{ cursor: "not-allowed" }}
         fontSize={boxProps.fontSize ?? "xl"}
       >
-        {label}
+        {children}
       </Button>
     </GlowingBox>
   );

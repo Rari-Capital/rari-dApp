@@ -54,7 +54,7 @@ import { OracleDataType, useOracleData } from "hooks/fuse/useOracleData";
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { CTokenIcon } from "components/shared/CTokenIcon";
+import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
 import {
   createComptroller,
   createUnitroller,
@@ -638,13 +638,12 @@ const PoolConfiguration = ({
 
             {assets.length > 0 ? (
               <>
-                <AvatarGroup size="xs" max={30}>
-                  {assets.map(({ underlyingToken, cToken }) => {
-                    return (
-                      <CTokenIcon key={cToken} address={underlyingToken} />
-                    );
-                  })}
-                </AvatarGroup>
+                <CTokenAvatarGroup
+                  tokenAddresses={assets.map(
+                    ({ underlyingToken }) => underlyingToken
+                  )}
+                  popOnHover={true}
+                />
 
                 <Text ml={2} flexShrink={0}>
                   {assets.map(({ underlyingSymbol }, index, array) => {

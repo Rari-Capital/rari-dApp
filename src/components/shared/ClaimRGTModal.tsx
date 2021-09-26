@@ -8,6 +8,8 @@ import {
   Heading,
   Image,
   Button,
+  useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import BigNumber from "bignumber.js";
 import { Column, Row } from "utils/chakraUtils";
@@ -25,9 +27,14 @@ import {
   useUnclaimedFuseRewards,
 } from "hooks/rewards/useUnclaimedFuseRewards";
 import DashboardBox from "./DashboardBox";
-import { useTokenData } from "hooks/useTokenData";
+import {
+  TokenData,
+  useTokenData,
+  useTokensDataAsMap,
+} from "hooks/useTokenData";
 import { createRewardsDistributor } from "utils/createComptroller";
 import { useClaimable } from "hooks/rewards/useClaimable";
+import { claimAllRewards } from "utils/rewards";
 
 export type ClaimMode = "pool2" | "private" | "yieldagg" | "fuse";
 
@@ -45,6 +52,8 @@ export const ClaimRGTModal = ({
   const { t } = useTranslation();
 
   const [amount, setAmount] = useState(0);
+
+  const { fuse } = useRari();
 
   // pool2
   // private
@@ -106,22 +115,72 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
   } = useUnclaimedFuseRewards();
 
   const { allClaimable } = useClaimable(showPrivate);
+  const toast = useToast();
+
+  const [claimingAll, setClaimingAll] = useState(false);
+  const [claimingToken, setClaimingToken] = useState<string | undefined>();
+
+  const rewardTokensData = useTokensDataAsMap(Object.keys(rewardTokensMap));
+
+  console.log({ rewardTokensData });
+
+  const handleClaimAll = useCallback(() => {
+    setClaimingAll(true);
+    claimAllRewards(fuse, address, Object.keys(rewardsDistributorsMap))
+      .then(() => {
+        setClaimingAll(false);
+        toast({
+          title: "Claimed All Rewards!",
+          description: "",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+          position: "top-right",
+        });
+      })
+      .catch((err) => {
+        setClaimingAll(false);
+        toast({
+          title: "Error claiming rewards.",
+          description: err.message,
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+          position: "top-right",
+        });
+      });
+  }, [fuse, address, rewardsDistributorsMap]);
 
   // Claims Fuse LM rewards
-  const claimFuseRewards = useCallback(
+  const handleClaimFuseRewardsForToken = useCallback(
     (rewardToken: string) => {
       const rDs = rewardTokensMap[rewardToken];
-      if (rDs && rDs.length) {
-        rDs.forEach(async (rDAddress) => {
-          const rewardsDistributor = createRewardsDistributor(
-            rDAddress.rewardsDistributorAddress,
-            fuse
-          );
-
-          await rewardsDistributor.methods
-            .claimRewards(address)
-            .send({ from: address });
-        });
+      const rDAddresses = rDs.map((rD) => rD.rewardsDistributorAddress);
+      if (!!rDs.length) {
+        setClaimingToken(rewardToken);
+        claimAllRewards(fuse, address, rDAddresses)
+          .then(() => {
+            setClaimingToken(undefined);
+            toast({
+              title: `Claimed All ${rewardTokensData[rewardToken].symbol} Rewards!`,
+              description: "",
+              status: "success",
+              duration: 2000,
+              isClosable: true,
+              position: "top-right",
+            });
+          })
+          .catch((err) => {
+            setClaimingToken(undefined);
+            toast({
+              title: "Error claiming rewards.",
+              description: err.message,
+              status: "error",
+              duration: 2000,
+              isClosable: true,
+              position: "top-right",
+            });
+          });
       }
     },
     [unclaimedFuseRewards, rewardsDistributorsMap, rewardTokensMap]
@@ -138,9 +197,13 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
         allClaimable.map((claimable) => {
           return (
             <ClaimableRow
-              claimFuseRewards={claimFuseRewards}
+              handleClaimFuseRewardsForToken={handleClaimFuseRewardsForToken}
               unclaimed={claimable.unclaimed}
+              rewardTokenData={
+                rewardTokensData[claimable.unclaimed.rewardToken]
+              }
               mode={claimable.mode}
+              claimingToken={claimingToken}
               my={1}
             />
           );
@@ -150,155 +213,37 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
       )}
       {!!allClaimable.length && (
         <GlowingButton
-          label={t("Claim All")}
-          onClick={() => alert("Claiming All")}
+          onClick={() => handleClaimAll()}
+          disabled={claimingAll}
           width="100%"
           height="51px"
           my={4}
-        />
+        >
+          {claimingAll ? <Spinner /> : t("Claim All")}
+        </GlowingButton>
       )}
     </Column>
   );
 };
 
-// const ClaimRGT = ({
-//   mode,
-//   currentUnclaimed,
-//   amount,
-//   setAmount,
-// }: {
-//   mode: ClaimMode;
-//   currentUnclaimed?: number;
-//   amount: any;
-//   setAmount: (x: any) => any;
-// }) => {
-//   const { rari } = useRari();
-//   const { t } = useTranslation();
-
-//   const { data: privateClaimFee } = useQuery("privateClaimFee", async () => {
-//     const raw = rari.governance.rgt.vesting.getClaimFee(
-//       Math.floor(Date.now() / 1000)
-//     );
-
-//     return (parseFloat(rari.web3.utils.fromWei(raw)) * 100).toFixed(2);
-//   });
-
-//   return (
-//     <>
-//       <AnimatedSmallLogo boxSize="50px" />
-//       <Heading mt={4}>
-//         {currentUnclaimed !== undefined
-//           ? Math.floor(currentUnclaimed! * 10000) / 10000
-//           : "?"}
-//       </Heading>
-
-//       <Row
-//         mainAxisAlignment="center"
-//         crossAxisAlignment="center"
-//         width="100%"
-//         mb={6}
-//       >
-//         <Text
-//           textTransform="uppercase"
-//           letterSpacing="wide"
-//           color="#858585"
-//           fontSize="lg"
-//         >
-//           {t("Claimable RGT")}
-//         </Text>
-//       </Row>
-
-//       <NumberInput
-//         mb={4}
-//         min={0}
-//         max={currentUnclaimed ?? 0}
-//         onChange={(value: any) => {
-//           setAmount(value);
-//         }}
-//         value={amount}
-//       >
-//         <NumberInputField />
-//         <NumberInputStepper>
-//           <NumberIncrementStepper />
-//           <NumberDecrementStepper />
-//         </NumberInputStepper>
-//       </NumberInput>
-
-//       {mode === "private" ? (
-//         <Text
-//           textTransform="uppercase"
-//           letterSpacing="wide"
-//           color="#858585"
-//           fontSize="xs"
-//           textAlign="center"
-//         >
-//           <SimpleTooltip
-//             label={t(
-//               "Claiming private RGT before October 20th, 2022 will result in a fraction of it being burned. This amount decreases from 100% linearly until the 20th when it will reach 0%."
-//             )}
-//           >
-//             <span>
-//               {t(
-//                 "Claiming private RGT now will result in a {{amount}}% burn/takeback",
-//                 { amount: privateClaimFee ?? "?" }
-//               )}
-
-//               <InfoIcon mb="3px" color="#858585" ml={1} boxSize="9px" />
-//             </span>
-//           </SimpleTooltip>
-//         </Text>
-//       ) : null}
-//     </>
-//   );
-// };
-
-// const ClaimFuseRewards = ({
-//   rewardsDistributorsMap,
-//   rewardTokensMap,
-//   unclaimed,
-// }: {
-//   rewardsDistributorsMap: {
-//     [rewardsDistributorAddr: string]: RewardsDistributor;
-//   };
-//   rewardTokensMap: RewardsTokenMap;
-//   unclaimed: UnclaimedFuseReward[] | undefined;
-// }) => {
-//   const { fuse, address } = useRari();
-//   console.log({ rewardsDistributorsMap, rewardTokensMap, unclaimed });
-
-//   return (
-//     <Column
-//       w="100%"
-//       h="100%"
-//       mainAxisAlignment="flex-start"
-//       crossAxisAlignment="flex-start"
-//     >
-//       {unclaimed?.map((_unclaimed, i) => {
-//         return (
-//           <ClaimableRow
-//             unclaimed={_unclaimed}
-//             key={i}
-//             claimFuseRewards={claimFuseRewards}
-//           />
-//         );
-//       })}
-//     </Column>
-//   );
-// };
-
 const ClaimableRow = ({
   unclaimed,
-  claimFuseRewards,
+  handleClaimFuseRewardsForToken,
+  rewardTokenData,
+  claimingToken,
   mode,
   ...rowProps
 }: {
   unclaimed: UnclaimedReward;
-  claimFuseRewards?: (rewardToken: string) => void;
+  handleClaimFuseRewardsForToken?: (rewardToken: string) => void;
+  rewardTokenData: TokenData;
+  claimingToken?: string;
   mode: ClaimMode;
   [x: string]: any;
 }) => {
-  const tokenData = useTokenData(unclaimed.rewardToken);
   const { rari, address } = useRari();
+
+  const isClaimingToken = claimingToken === unclaimed.rewardToken;
 
   const claimRewards = () => {
     // Old "claim RGT" code
@@ -322,8 +267,9 @@ const ClaimableRow = ({
     }
 
     // If claiming fuse rewards
-    if (mode === "fuse" && !!claimFuseRewards) {
-      claimFuseRewards(unclaimed.rewardToken);
+    console.log({ handleClaimFuseRewardsForToken });
+    if (mode === "fuse" && !!handleClaimFuseRewardsForToken) {
+      handleClaimFuseRewardsForToken(unclaimed.rewardToken);
     }
   };
 
@@ -342,21 +288,26 @@ const ClaimableRow = ({
           p={3}
         >
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Image src={tokenData?.logoURL ?? ""} boxSize="30px" />
+            <Image src={rewardTokenData?.logoURL ?? ""} boxSize="30px" />
             <Text fontWeight="bold" ml={3}>
-              {tokenData?.symbol}
+              {rewardTokenData?.symbol}
             </Text>
           </Row>
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
             <Text fontWeight="bold" ml={3}>
               {(
                 parseFloat(unclaimed.unclaimed.toString()) /
-                (1 * 10 ** (tokenData?.decimals ?? 18))
+                (1 * 10 ** (rewardTokenData?.decimals ?? 18))
               ).toFixed(3)}{" "}
-              {tokenData?.symbol}
+              {rewardTokenData?.symbol}
             </Text>
-            <Button ml={2} bg="black" onClick={() => claimRewards()}>
-              Claim
+            <Button
+              ml={2}
+              bg="black"
+              onClick={() => claimRewards()}
+              disabled={isClaimingToken}
+            >
+              {isClaimingToken ? <Spinner /> : "Claim"}
             </Button>
           </Row>
         </Row>

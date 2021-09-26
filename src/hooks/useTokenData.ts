@@ -112,7 +112,7 @@ export interface TokensDataMap {
   [address: string]: TokenData;
 }
 
-export const useTokensDataAsMap = (addresses: string[]): TokensDataMap => {
+export const useTokensDataAsMap = (addresses: string[] = []): TokensDataMap => {
   const tokensData = useQueries(
     addresses.map((address: string) => {
       return {

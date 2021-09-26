@@ -1,7 +1,6 @@
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
 import { createRewardsDistributor } from "utils/createComptroller";
-import { BN } from "utils/bigUtils";
 
 export function useUnclaimedFuseRewards() {
   const { fuse, address } = useRari();

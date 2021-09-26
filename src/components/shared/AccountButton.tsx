@@ -73,7 +73,7 @@ export const AccountButton = memo(() => {
 const Buttons = ({
   openModal,
   openClaimRGTModal,
-  hasClaimableRewards
+  hasClaimableRewards,
 }: {
   openModal: () => any;
   openClaimRGTModal: () => any;
@@ -207,13 +207,9 @@ export const SettingsModal = ({
           crossAxisAlignment="center"
           p={4}
         >
-          <GlowingButton
-            label={t("Claim RGT")}
-            onClick={onClaimRGT}
-            width="100%"
-            height="51px"
-            mb={4}
-          />
+          <GlowingButton onClick={onClaimRGT} width="100%" height="51px" mb={4}>
+            {t("Claim RGT")}
+          </GlowingButton>
 
           <Button
             bg={"whatsapp.500"}
