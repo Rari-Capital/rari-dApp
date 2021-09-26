@@ -27,7 +27,6 @@ import { DarkGlowingButton, GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
-import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 
@@ -48,31 +47,20 @@ export const AccountButton = memo(() => {
 
   const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal);
 
-  const {
-    isOpen: isMoonpayModalOpen,
-    onOpen: openMoonpayModal,
-    onClose: closeMoonpayModal,
-  } = useDisclosure();
-
-  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal);
-
   return (
     <>
       <SettingsModal
         isOpen={isSettingsModalOpen}
         onClose={closeSettingsModal}
         openClaimRGTModal={openClaimRGTModal}
-        openMoonpayModal={openMoonpayModal}
       />
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}
         onClose={closeClaimRGTModal}
       />
-      <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons
         openModal={authedOpenSettingsModal}
         openClaimRGTModal={authedOpenClaimRGTModal}
-        openMoonpayModal={authedOpenMoonpayModal}
       />
     </>
   );
@@ -81,11 +69,9 @@ export const AccountButton = memo(() => {
 const Buttons = ({
   openModal,
   openClaimRGTModal,
-  openMoonpayModal,
 }: {
   openModal: () => any;
   openClaimRGTModal: () => any;
-  openMoonpayModal: () => any;
 }) => {
   const { address, isAuthed, login, isAttemptingLogin } = useRari();
 
@@ -103,17 +89,7 @@ const Buttons = ({
     <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
-          {/* <DashboardBox
-            as="button"
-            flexShrink={0}
-            width="110px"
-            height="40px"
-            fontWeight="bold"
-            onClick={openMoonpayModal}
-          >
-            <Center expand>{t("Buy Crypto")}</Center>
-          </DashboardBox> */}
-
+      
           {true ? (
             <DarkGlowingButton
               label={t("Claim")}
@@ -183,12 +159,10 @@ export const SettingsModal = ({
   isOpen,
   onClose,
   openClaimRGTModal,
-  openMoonpayModal,
 }: {
   isOpen: boolean;
   onClose: () => any;
   openClaimRGTModal: () => any;
-  openMoonpayModal: () => any;
 }) => {
   const { t } = useTranslation();
 
@@ -235,21 +209,6 @@ export const SettingsModal = ({
             height="51px"
             mb={4}
           />
-
-          <Button
-            bg="facebook.500"
-            width="100%"
-            height="45px"
-            fontSize="xl"
-            borderRadius="7px"
-            fontWeight="bold"
-            onClick={openMoonpayModal}
-            _hover={{}}
-            _active={{}}
-            mb={4}
-          >
-            {t("Buy Crypto")}
-          </Button>
 
           <Button
             bg={"whatsapp.500"}
