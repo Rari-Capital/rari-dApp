@@ -3,7 +3,6 @@ import { useRari } from "../../context/RariContext";
 import { createRewardsDistributor } from "utils/createComptroller";
 import { BN } from "utils/bigUtils";
 
-
 export function useUnclaimedFuseRewards() {
   const { fuse, address } = useRari();
 
@@ -24,20 +23,21 @@ export function useUnclaimedFuseRewards() {
     }
   );
 
-  const rewardsDistributorsByFusePool = _rewardsDistributorsByFusePool as
-    | string[][]
-    | undefined;
+  const poolIndices: string[] = _rewardsDistributorsByFusePool?.[0] ?? [];
+  const poolComptrollers: string[] = _rewardsDistributorsByFusePool?.[1] ?? [];
+  const rewardsDistributorsByFusePool: string[][] =
+    _rewardsDistributorsByFusePool?.[2] ?? [];
 
   // 2. Reduce this 2D array into a single deduped array of RewardsDistributors
   const uniqueRDs: string[] = [
     ...new Set(
       rewardsDistributorsByFusePool?.reduce(function (prev, curr) {
         return prev.concat(curr);
-      }) ?? []
+      }, []) ?? []
     ),
   ];
 
-  console.log({ uniqueRDs });
+  console.log({ _rewardsDistributorsByFusePool, uniqueRDs });
 
   // 3. Create map of {[rewardToken: string] : RewardDistributor[] }
 
@@ -45,7 +45,7 @@ export function useUnclaimedFuseRewards() {
   const { data: _rewardsDistributors, error: _rdError } = useQuery(
     "rewardsDistributor data for " + address,
     async () => {
-      const stuff = await Promise.all(
+      const rewardDistributors = await Promise.all(
         uniqueRDs.map(async (rewardsDistributorAddress) => {
           const instance = createRewardsDistributor(
             rewardsDistributorAddress,
@@ -70,13 +70,15 @@ export function useUnclaimedFuseRewards() {
         })
       );
 
-      return stuff;
+      return rewardDistributors;
     }
   );
 
   // This is an array of RewardsDistributors we care about for this user
-  const rewardsDistributors = _rewardsDistributors as RewardsDistributorUnclaimed[];
-  // This is a map of RewardsDistributors {rDaddress: RewardsDistributor}
+  const rewardsDistributors =
+    _rewardsDistributors as RewardsDistributorUnclaimed[];
+
+  // This is a one-to-one map of RewardsDistributors by rD address {rDaddress: RewardsDistributor}
   const rewardsDistributorsMap: {
     [rewardsDistributorAddr: string]: RewardsDistributorUnclaimed;
   } = {};
@@ -86,7 +88,7 @@ export function useUnclaimedFuseRewards() {
       rewardsDistributorsMap[rD.rewardsDistributorAddress] = rD;
     });
 
-  //   3b. Construct the map
+  //   3b. Construct a one-to-many map of rewardTokenAddr => RewardDistributorUnclaimed[]
   const rewardTokensMap: RewardsTokenMap = {};
   rewardsDistributors?.length &&
     rewardsDistributors.forEach((rD) => {
@@ -113,12 +115,12 @@ export function useUnclaimedFuseRewards() {
       const rewardTokens = unclaimedResults[0];
       const unclaimedAmounts = unclaimedResults[1];
 
-      const results: { rewardToken: string; unclaimed: BN }[] = [];
+      const results: { rewardToken: string; unclaimed: number }[] = [];
 
       if (rewardTokens.length)
         for (let i = 0; i < rewardTokens.length; i++) {
           const rewardToken = rewardTokens[i];
-          const unclaimed = fuse.web3.utils.toBN(unclaimedAmounts[i]);
+          const unclaimed = parseFloat(unclaimedAmounts[i]);
           const x = {
             rewardToken,
             unclaimed,
@@ -132,7 +134,7 @@ export function useUnclaimedFuseRewards() {
   );
 
   // Filter by claimable balances greater than 0
-  const unclaimed: UnclaimedFuseReward[] =
+  const unclaimed: UnclaimedReward[] =
     _unclaimed?.filter((fuseUnclaimed) => {
       if (parseFloat(fuseUnclaimed.unclaimed.toString()) > 0) {
         return true;
@@ -170,7 +172,7 @@ export interface RewardsDistributorUnclaimed {
   markets: string[];
 }
 
-export interface UnclaimedFuseReward {
+export interface UnclaimedReward {
   rewardToken: string;
-  unclaimed: BN;
+  unclaimed: number;
 }

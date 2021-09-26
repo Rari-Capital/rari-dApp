@@ -29,6 +29,7 @@ import { version } from "../..";
 
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+import { useClaimable } from "hooks/rewards/useClaimable";
 
 export const AccountButton = memo(() => {
   const {
@@ -47,6 +48,8 @@ export const AccountButton = memo(() => {
 
   const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal);
 
+  const { hasClaimableRewards } = useClaimable();
+
   return (
     <>
       <SettingsModal
@@ -61,6 +64,7 @@ export const AccountButton = memo(() => {
       <Buttons
         openModal={authedOpenSettingsModal}
         openClaimRGTModal={authedOpenClaimRGTModal}
+        hasClaimableRewards={hasClaimableRewards}
       />
     </>
   );
@@ -69,9 +73,11 @@ export const AccountButton = memo(() => {
 const Buttons = ({
   openModal,
   openClaimRGTModal,
+  hasClaimableRewards
 }: {
   openModal: () => any;
   openClaimRGTModal: () => any;
+  hasClaimableRewards: boolean;
 }) => {
   const { address, isAuthed, login, isAttemptingLogin } = useRari();
 
@@ -89,8 +95,7 @@ const Buttons = ({
     <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
-      
-          {true ? (
+          {hasClaimableRewards ? (
             <DarkGlowingButton
               label={t("Claim")}
               onClick={openClaimRGTModal}

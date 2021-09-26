@@ -1,9 +1,6 @@
-
 import { useMemo } from "react";
-import { toBN } from "utils/bigUtils";
-import Web3 from "web3";
 import {
-  UnclaimedFuseReward,
+  UnclaimedReward,
   useUnclaimedFuseRewards,
 } from "./useUnclaimedFuseRewards";
 import { useUnclaimedRGT } from "./useUnclaimedRGT";
@@ -14,29 +11,26 @@ export interface UseClaimableReturn {
   unclaimedRGT?: number;
   privateUnclaimedRGT?: number;
   pool2UnclaimedRGT?: number;
-  unclaimedFuseRewards?: UnclaimedFuseReward[];
+  unclaimedFuseRewards?: UnclaimedReward[];
   hasClaimableRewards: boolean;
   allClaimable: GenericClaimableReward[];
 }
 
 export interface GenericClaimableReward {
   mode: ClaimMode;
-  unclaimed: UnclaimedFuseReward;
+  unclaimed: UnclaimedReward;
 }
 
 // 1 type of reward = RGT rewards
 
 // 2nd type of reward = FUse Rewards
 export type FuseReward = {
-    comptroller: string;
-    rewardsDistibutors?:  string[] //addresses of RDs
-    unclaimedBalancesForPool: CTokenUnclaimedForPool[]
-    
-}
+  comptroller: string;
+  rewardsDistibutors?: string[]; //addresses of RDs
+  unclaimedBalancesForPool: CTokenUnclaimedForPool[];
+};
 
-interface CTokenUnclaimedForPool {
-
-}
+interface CTokenUnclaimedForPool {}
 
 const RGT = "0xd291e7a03283640fdc51b121ac401383a46cc623";
 
@@ -45,8 +39,6 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
 
   const { unclaimedRGT, privateUnclaimedRGT, pool2UnclaimedRGT } =
     useUnclaimedRGT();
-
-  console.log({ unclaimedFuseRewards });
 
   const hasClaimableRewards: boolean = useMemo(() => {
     if (
@@ -86,7 +78,7 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
         mode,
         unclaimed: {
           rewardToken: RGT,
-          unclaimed: toBN(amount),
+          unclaimed: amount,
         },
       };
       return reward;
