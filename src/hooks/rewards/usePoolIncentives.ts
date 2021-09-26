@@ -2,13 +2,10 @@ import { createCToken } from "utils/createComptroller";
 import { useRari } from "context/RariContext";
 import {
   TokensDataMap,
-  useTokensData,
   useTokensDataAsMap,
 } from "hooks/useTokenData";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
-import { TokensDataHash } from "utils/tokenUtils";
-import { RewardsDistributor } from "./useUnclaimedFuseRewards";
 
 export interface CTokenRewardsDistributorIncentives {
   rewardsDistributorAddress: string;

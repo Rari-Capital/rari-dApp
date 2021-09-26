@@ -1,5 +1,6 @@
 // Fuse
 import Fuse from "../fuse-sdk";
+import ERC20ABI from "rari-sdk/abi/ERC20.json";
 
 // Web3
 import { Contract } from "web3-eth-contract"
@@ -26,7 +27,10 @@ export const createUnitroller = (unitrollerAddress: string, fuse: Fuse): Contrac
   return unitroller;
 };
 
-export const createRewardsDistributor = (distributorAddress: string, fuse: Fuse) => {
+export const createRewardsDistributor = (
+  distributorAddress: string,
+  fuse: Fuse
+) => {
   //   Create instance of contract
   const rewardsDistributorInstance = new fuse.web3.eth.Contract(
     JSON.parse(
@@ -37,7 +41,7 @@ export const createRewardsDistributor = (distributorAddress: string, fuse: Fuse)
     distributorAddress
   );
 
-  return rewardsDistributorInstance
+  return rewardsDistributorInstance;
 };
 
 export const createOracle = (oracleAddress: string, fuse: Fuse, type: string): Contract => {
@@ -59,4 +63,9 @@ export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
   );
 
   return cErc20Delegate;
+};
+
+export const createERC20 = (fuse: Fuse, cTokenAddress: string) => {
+  const erc20 = new fuse.web3.eth.Contract(ERC20ABI as any, cTokenAddress);
+  return erc20;
 };

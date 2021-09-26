@@ -75,10 +75,10 @@ export function useUnclaimedFuseRewards() {
   );
 
   // This is an array of RewardsDistributors we care about for this user
-  const rewardsDistributors = _rewardsDistributors as RewardsDistributor[];
+  const rewardsDistributors = _rewardsDistributors as RewardsDistributorUnclaimed[];
   // This is a map of RewardsDistributors {rDaddress: RewardsDistributor}
   const rewardsDistributorsMap: {
-    [rewardsDistributorAddr: string]: RewardsDistributor;
+    [rewardsDistributorAddr: string]: RewardsDistributorUnclaimed;
   } = {};
 
   rewardsDistributors?.length &&
@@ -161,10 +161,10 @@ export function useUnclaimedFuseRewards() {
 
 // maps a rewardTtoken to an array of RD addresses
 export type RewardsTokenMap = {
-  [rewardToken: string]: RewardsDistributor[];
+  [rewardToken: string]: RewardsDistributorUnclaimed[];
 };
 
-export interface RewardsDistributor {
+export interface RewardsDistributorUnclaimed {
   rewardToken: string;
   rewardsDistributorAddress: string;
   markets: string[];

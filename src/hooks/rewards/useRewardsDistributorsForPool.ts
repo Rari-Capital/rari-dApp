@@ -23,6 +23,8 @@ export const useRewardsDistributorsForPool = (
         .getRewardsDistributors()
         .call();
 
+      console.log({ rewardsDistributors });
+
       if (!rewardsDistributors.length) return [];
 
       const distributors: RewardsDistributor[] = await Promise.all(

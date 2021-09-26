@@ -1754,13 +1754,12 @@ export default class Fuse {
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
-      // Deploy RewardsDistributorDelegator proxy contract
-      var distributor = new this.web3.eth.Contract(
+      const distributor = new this.web3.eth.Contract(
         JSON.parse(
           contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"].abi
         )
       );
-      distributor = await distributor
+      const deployedDistributor = await distributor
         .deploy({
           data:
             "0x" +
@@ -1774,10 +1773,11 @@ export default class Fuse {
           ],
         })
         .send(options);
-      return distributor.options.address;
+      // const rdAddress = distributor.options.address;
+      return deployedDistributor;
     };
 
-    this.checkCardinality = async function (uniswapV3Pool) {
+        this.checkCardinality = async function (uniswapV3Pool) {
       var uniswapV3PoolContract = new this.web3.eth.Contract(
         uniswapV3PoolAbiSlim,
         uniswapV3Pool
@@ -1797,6 +1797,7 @@ export default class Fuse {
         .increaseObservationCardinalityNext(64)
         .send(options);
     };
+
 
     this.identifyInterestRateModelName = (irmAddress) => {
       let name = "";
