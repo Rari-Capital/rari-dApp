@@ -2,10 +2,7 @@ import { NowRequest, NowResponse } from "@vercel/node";
 
 import Rari from "../src/rari-sdk/index";
 
-import {
-  turboGethURL,
-  initFuseWithProviders,
-} from "../src/utils/web3Providers";
+import { alchemyURL, initFuseWithProviders } from "../src/utils/web3Providers";
 
 import { perPoolTVL } from "../src/utils/fetchTVL";
 import {
@@ -15,7 +12,7 @@ import {
 } from "../src/utils/fetchPoolAPY";
 import { Pool } from "../src/utils/poolUtils";
 
-const rari = new Rari(turboGethURL);
+const rari = new Rari(alchemyURL);
 const fuse = initFuseWithProviders();
 
 const mantissaToFloat = (BN: any) => {

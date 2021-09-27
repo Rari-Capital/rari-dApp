@@ -4,10 +4,7 @@ import { variance, median } from "mathjs";
 import fetch from "node-fetch";
 
 import { fetchFusePoolData } from "../src/utils/fetchFusePoolData";
-import {
-  initFuseWithProviders,
-  turboGethURL,
-} from "../src/utils/web3Providers";
+import { initFuseWithProviders, alchemyURL } from "../src/utils/web3Providers";
 
 function clamp(num, min, max) {
   return num <= min ? min : num >= max ? max : num;
@@ -22,7 +19,7 @@ const weightedCalculation = async (
   return clamp((await calculation()) ?? 0, 0, 1) * weight;
 };
 
-const fuse = initFuseWithProviders(turboGethURL);
+const fuse = initFuseWithProviders(alchemyURL);
 
 async function computeAssetRSS(address: string): Promise<{
   liquidityUSD: number;

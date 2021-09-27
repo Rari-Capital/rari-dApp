@@ -51,6 +51,7 @@ import {
   convertMantissaToAPR,
   convertMantissaToAPY,
 } from "../../../../../utils/apyUtils";
+import { getSymbol } from "utils/symbolUtils";
 
 enum UserAction {
   NO_ACTION,
@@ -154,8 +155,7 @@ async function fetchMaxAmount(
   mode: Mode,
   fuse: Fuse,
   address: string,
-  asset: USDPricedFuseAsset,
-  comptrollerAddress: string
+  asset: USDPricedFuseAsset
 ) {
   if (mode === Mode.SUPPLY) {
     const balance = await fetchTokenBalance(
@@ -183,33 +183,21 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.BORROW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxBorrow } = await comptroller.methods
+    const maxBorrow = await fuse.contracts.FusePoolLens.methods
       .getMaxBorrow(address, asset.cToken)
       .call();
 
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(
-        new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
-      );
-    } else {
-      throw new Error("Could not fetch your max borrow amount! Code: " + err);
-    }
+    return fuse.web3.utils.toBN(
+      new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
+    );
   }
 
   if (mode === Mode.WITHDRAW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxRedeem } = await comptroller.methods
+    const maxRedeem = await fuse.contracts.FusePoolLens.methods
       .getMaxRedeem(address, asset.cToken)
       .call();
 
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(maxRedeem);
-    } else {
-      throw new Error("Could not fetch your max withdraw amount! Code: " + err);
-    }
+    return fuse.web3.utils.toBN(maxRedeem);
   }
 }
 
@@ -283,13 +271,7 @@ const AmountSelect = ({
       }
 
       try {
-        const max = await fetchMaxAmount(
-          mode,
-          fuse,
-          address,
-          asset,
-          comptrollerAddress
-        );
+        const max = await fetchMaxAmount(mode, fuse, address, asset);
 
         return amount.lte(max!.toString());
       } catch (e) {
@@ -526,6 +508,8 @@ const AmountSelect = ({
     }
   };
 
+  const symbol = getSymbol(tokenData, asset);
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -609,7 +593,7 @@ const AmountSelect = ({
                   <TokenNameAndMaxButton
                     comptrollerAddress={comptrollerAddress}
                     mode={mode}
-                    symbol={tokenData?.symbol ?? asset.underlyingSymbol}
+                    symbol={symbol}
                     logoURL={
                       tokenData?.logoURL ??
                       "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
@@ -622,7 +606,7 @@ const AmountSelect = ({
             </Column>
 
             <StatsColumn
-              symbol={tokenData?.symbol ?? assets[index].underlyingSymbol}
+              symbol={symbol}
               amount={parseInt(amount?.toFixed(0) ?? "0") ?? 0}
               color={tokenData?.color ?? "#FFF"}
               assets={assets}
@@ -1117,13 +1101,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
 
     try {
-      const maxBN = await fetchMaxAmount(
-        mode,
-        fuse,
-        address,
-        asset,
-        comptrollerAddress
-      );
+      const maxBN = await fetchMaxAmount(mode, fuse, address, asset);
 
       if (maxBN!.isNeg() || maxBN!.isZero()) {
         updateAmount("");

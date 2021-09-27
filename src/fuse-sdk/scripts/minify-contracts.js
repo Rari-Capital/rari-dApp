@@ -17,31 +17,33 @@ var usedContractAbiKeys = [
   "contracts/CTokenInterfaces.sol:CTokenInterface",
   "contracts/WhitePaperInterestRateModel.sol:WhitePaperInterestRateModel",
   "contracts/JumpRateModel.sol:JumpRateModel",
-  "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2",
-  "contracts/SimplePriceOracle.sol:SimplePriceOracle",
+  "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2", // DAIInterestRateModelV2 NOT IN USE
   "contracts/RewardsDistributor.sol:RewardsDistributor",
   "contracts/JumpRateModelV2.sol:JumpRateModelV2",
   "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
 ];
+if (process.env.NODE_ENV === "development") usedContractAbiKeys.push("contracts/SimplePriceOracle.sol:SimplePriceOracle");
 for (const contractKey of usedContractAbiKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
   minContracts[contractKey].abi = compoundContracts[contractKey].abi;
 }
 var usedContractBinKeys = [
+  "contracts/WhitePaperInterestRateModel.sol:WhitePaperInterestRateModel",
+  "contracts/JumpRateModel.sol:JumpRateModel",
+  "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2", // DAIInterestRateModelV2 NOT IN USE
+  "contracts/RewardsDistributor.sol:RewardsDistributor",
+  "contracts/JumpRateModelV2.sol:JumpRateModelV2",
+  "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
+];
+if (process.env.NODE_ENV === "development") usedContractBinKeys = usedContractBinKeys.concat([
   "contracts/Comptroller.sol:Comptroller",
   "contracts/Unitroller.sol:Unitroller",
   "contracts/CEtherDelegate.sol:CEtherDelegate",
   "contracts/CEtherDelegator.sol:CEtherDelegator",
   "contracts/CErc20Delegate.sol:CErc20Delegate",
   "contracts/CErc20Delegator.sol:CErc20Delegator",
-  "contracts/WhitePaperInterestRateModel.sol:WhitePaperInterestRateModel",
-  "contracts/JumpRateModel.sol:JumpRateModel",
-  "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2",
   "contracts/SimplePriceOracle.sol:SimplePriceOracle",
-  "contracts/RewardsDistributor.sol:RewardsDistributor",
-  "contracts/JumpRateModelV2.sol:JumpRateModelV2",
-  "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
-];
+]);
 for (const contractKey of usedContractBinKeys) {
   if (!minContracts[contractKey]) minContracts[contractKey] = {};
   minContracts[contractKey].bin = compoundContracts[contractKey].bin;
@@ -80,9 +82,9 @@ fs.readdirSync(__dirname + "/../src/contracts/oracles/").forEach((file) => {
     fs.readFileSync(__dirname + "/../src/contracts/oracles/" + file)
   );
   minContracts[contract.contractName] = {
-    abi: contract.abi,
-    bin: contract.bytecode,
+    abi: contract.abi
   };
+  if (contract.contractName === "MasterPriceOracle" || process.env.NODE_ENV === "development") minContracts[contract.contractName].bin = contract.bytecode;
 });
 fs.writeFileSync(
   __dirname + "/../src/contracts/oracles.min.json",

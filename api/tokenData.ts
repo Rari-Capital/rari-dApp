@@ -5,9 +5,9 @@ import Web3 from "web3";
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { turboGethURL } from "../src/utils/web3Providers";
+import { alchemyURL } from "../src/utils/web3Providers";
 
-const web3 = new Web3(turboGethURL);
+const web3 = new Web3(alchemyURL);
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
@@ -39,32 +39,6 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     //////////////////
     // Edge cases: //
     /////////////////
-    if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
-    ) {
-      name = "linkCRV Gauge Deposit";
-      symbol = "[G]linkCRV";
-      logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png";
-    }
-
-    if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0")
-    ) {
-      name = "Wrapped Staked Ether";
-      logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
-    }
-
-    if (
-      web3.utils.toChecksumAddress(address) ===
-      web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
-    ) {
-      logoURL =
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/token_sOHM_2.png";
-    }
 
     // Fetch the logo from yearn if possible:
     const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
@@ -130,7 +104,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xaC14864ce5A98aF3248Ffbf549441b04421247D3")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/xSDT.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/xSDT.png";
   }
 
   // sd3Crv
@@ -139,7 +113,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xB17640796e4c27a39AF51887aff3F8DC0daF9567")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sd3Crv.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/sd3Crv.png";
   }
 
   // sdeursCRV
@@ -148,7 +122,39 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xCD6997334867728ba14d7922f72c893fcee70e84")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/logos/stakedao/sdeursCRV.png";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/sdeursCRV.png";
+  }
+
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
+  ) {
+    name = "linkCRV Gauge Deposit";
+    symbol = "[G]linkCRV";
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/crvLINKGauge.png";
+  }
+
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0")
+  ) {
+    name = "Wrapped Staked Ether";
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/wstETH.png";
+  }
+
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/sOHM.png";
+  }
+
+  if (symbol === "G-UNI") {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png";
   }
 
   const basicTokenInfo = {
