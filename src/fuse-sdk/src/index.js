@@ -32,11 +32,11 @@ export default class Fuse {
     "0x8dA38681826f4ABBe089643D2B3fE4C6e4730493";
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
+    "0x2bdCC0de6bE1f7D2ee689a0342D76F52E8EFABa3"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
-    "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
+    "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
-    "0xc351628EB244ec633d5f21fBD6621e1a683B1181"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
+    "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
@@ -103,8 +103,8 @@ export default class Fuse {
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
 
-  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DaiInterestRateModelV2 NOT IN USE
-  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DaiInterestRateModelV2 NOT IN USE
+  static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
+  static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
 
   static UNISWAP_V2_FACTORY_ADDRESS =
     "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
@@ -764,7 +764,9 @@ export default class Fuse {
         [
           "WhitePaperInterestRateModel",
           "JumpRateModel",
-          "DAIInterestRateModelV2",
+          "JumpRateModelV2",
+          "ReactiveJumpRateModelV2",
+          "DAIInterestRateModelV2", // NOT IN USE
         ].indexOf(conf.interestRateModel) >= 0
       ) {
         try {
@@ -826,7 +828,35 @@ export default class Fuse {
             conf.kink,
           ];
           break;
-        case "DAIInterestRateModelV2":
+        case "JumpRateModelV2":
+          if (!conf)
+            conf = {
+              baseRatePerYear: "20000000000000000",
+              multiplierPerYear: "200000000000000000",
+              jumpMultiplierPerYear: "2000000000000000000",
+              kink: "900000000000000000",
+              owner: options.from
+            };
+          deployArgs = [
+            conf.baseRatePerYear,
+            conf.multiplierPerYear,
+            conf.jumpMultiplierPerYear,
+            conf.kink,
+            conf.owner,
+          ];
+          break;
+        case "ReactiveJumpRateModelV2":
+          if (!conf) throw "No configuration passed to deployInterestRateModel.";
+          deployArgs = [
+            conf.baseRatePerYear,
+            conf.multiplierPerYear,
+            conf.jumpMultiplierPerYear,
+            conf.kink,
+            conf.owner,
+            conf.cToken,
+          ];
+          break;
+        case "DAIInterestRateModelV2": // NOT IN USE
           if (!conf)
             conf = {
               jumpMultiplierPerYear: "2000000000000000000",
@@ -1056,6 +1086,19 @@ export default class Fuse {
 
       // Return cToken proxy and implementation contract addresses
       return [cErc20DelegatorAddress, implementationAddress, receipt];
+    };
+
+    this.identifyPriceOracle = async function (priceOracleAddress) {
+      // Get PriceOracle type from runtime bytecode hash
+      var runtimeBytecodeHash = Web3.utils.sha3(
+        await this.web3.eth.getCode(priceOracleAddress)
+      );
+      
+      for (const oracleContractName of Object.keys(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES))
+        if (runtimeBytecodeHash == Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])
+          return oracleContractName;
+      
+      return null;
     };
 
     this.identifyInterestRateModel = async function (interestRateModelAddress) {
@@ -1532,6 +1575,19 @@ export default class Fuse {
         )
           return model;
       return null;
+    };
+
+    this.deployRewardsDistributor = async function (rewardToken, options) {
+      var distributor = new this.web3.eth.Contract(
+        JSON.parse(contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi)
+      );
+      distributor = await distributor
+        .deploy({
+          data: "0x" + contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].bin,
+          arguments: [rewardToken]
+        })
+        .send(options);
+      rdAddress = distributor.options.address;
     };
   }
 
