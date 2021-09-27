@@ -720,35 +720,37 @@ const OracleConfig = ({
   poolOracleAddress: string;
   mode: "Editing" | "Adding"
 }) => {
-  const queryClient = useQueryClient()
-  const { fuse, address} = useRari()
-  const { t } = useTranslation()
   const toast = useToast()
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
 
+  const { fuse, address } = useRari()
+
+  // Active Oracle will store oracle model. i.e. Rari Master Price Oracle, Custome Oracle, etc.
   const [activeOracle, _setActiveOracle] = useState<string>("")
+
+  // Used only by UniswapV3TwapOracle
   const [feeTier, setFeeTier] = useState<number>(0)
 
   const isValidAddress = fuse.web3.utils.isAddress(tokenAddress)
   const isUserAdmin = address === oracleData.admin
 
+  // We get all oracle options
   const options = useGetOracleOptions(oracleData, tokenAddress, fuse, isValidAddress)
 
-  useEffect(() => {
-    if (options && options["Master_Price_Oracle_Default"] && options["Master_Price_Oracle_Default"].length > 0 && !oracleData.adminOverwrite) {
-        _setOracleAddress(options["Master_Price_Oracle_Default"])
-        _setActiveOracle("Master_Price_Oracle_Default")
-    }
-  },[options, oracleData, _setActiveOracle, _setOracleAddress])
-
+  // If we're editing the asset, show master price oracle as a default
   useEffect(() => {
     if(mode === "Editing" && activeOracle === "" && options && options["Master_Price_Oracle_Default"]) 
       _setActiveOracle("Master_Price_Oracle_Default")
   },[mode, activeOracle, options])
 
+  // This will update the oracle address, after user chooses which options they want to use.
+  // If option is Custom_Oracle or Uniswap_V3_Oracle, oracle address is changed differently so we dont trigger this.
   useEffect(() => {
       if(activeOracle.length > 0 && activeOracle !== "Custom_Oracle" && activeOracle !== "Uniswap_V3_Oracle" && options) 
         _setOracleAddress(options[activeOracle])
   },[activeOracle, options, _setOracleAddress])
+
 
   const updateOracle = async () => {
     const poolOracleContract = createOracle(poolOracleAddress, fuse, "MasterPriceOracle")
@@ -758,10 +760,15 @@ const OracleConfig = ({
         if (options === null) return null
 
         if (activeOracle === "Uniswap_V3_Twap_Oracle") {
-          oracleAddressToUse = await fuse.deployPriceOracle("UniswapV3TwapPriceOracle", {oracleAddress, feeTier})
+          // Check for observation cardinality and fix if necessary
+          await fuse.primeUniswapV3Oracle(oracleAddress, {from: address})
+
+          // Deploy oracle
+          oracleAddressToUse = await fuse.deployPriceOracle("UniswapV3TwapPriceOracleV2", {uniswapV3Factory: oracleAddress, feeTier, baseToken: tokenAddress}, {from: address})
         }
 
-        await poolOracleContract.methods.add([tokenAddress], [oracleAddressToUse]).send()
+        // Add oracle to Master Price Oracle
+        await poolOracleContract.methods.add([tokenAddress], [oracleAddressToUse]).send({from: address})
 
         queryClient.refetchQueries();
         // Wait 2 seconds for refetch and then close modal.
