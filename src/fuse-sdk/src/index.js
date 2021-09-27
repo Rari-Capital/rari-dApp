@@ -105,9 +105,9 @@ export default class Fuse {
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0x219b36c26005B8a697c52c78eb70d4FD2f93c28b"; // TODO: Set correct mainnet address after deployment
+    "0x5A0E963C31415a3e360C224071A47642A5181857"; // TODO: Set correct mainnet address after deployment
   static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0xB39d141C972C1B9B968ba432CE860eEeBb35E757"; // TODO: Set correct mainnet address after deployment
+    "0xe604B7f4b835837C032a78BFfb0ea45858bFB82c"; // TODO: Set correct mainnet address after deployment
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
