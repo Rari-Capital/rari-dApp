@@ -28,6 +28,9 @@ for (const contractKey of usedContractAbiKeys) {
   minContracts[contractKey].abi = compoundContracts[contractKey].abi;
 }
 var usedContractBinKeys = [
+  "contracts/Unitroller.sol:Unitroller",
+  "contracts/CEtherDelegator.sol:CEtherDelegator",
+  "contracts/CErc20Delegator.sol:CErc20Delegator",
   "contracts/WhitePaperInterestRateModel.sol:WhitePaperInterestRateModel",
   "contracts/JumpRateModel.sol:JumpRateModel",
   "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2", // DAIInterestRateModelV2 NOT IN USE
@@ -37,11 +40,8 @@ var usedContractBinKeys = [
 ];
 if (process.env.NODE_ENV === "development") usedContractBinKeys = usedContractBinKeys.concat([
   "contracts/Comptroller.sol:Comptroller",
-  "contracts/Unitroller.sol:Unitroller",
   "contracts/CEtherDelegate.sol:CEtherDelegate",
-  "contracts/CEtherDelegator.sol:CEtherDelegator",
   "contracts/CErc20Delegate.sol:CErc20Delegate",
-  "contracts/CErc20Delegator.sol:CErc20Delegator",
   "contracts/SimplePriceOracle.sol:SimplePriceOracle",
 ]);
 for (const contractKey of usedContractBinKeys) {
