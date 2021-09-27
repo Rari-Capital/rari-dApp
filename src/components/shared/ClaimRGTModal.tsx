@@ -195,6 +195,12 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
     >
       {allClaimable.length ? (
         allClaimable.map((claimable) => {
+          const pools = rewardTokensMap[claimable.unclaimed.rewardToken].reduce(
+            (agg: number[], rD) => {
+              return [...new Set([...agg, ...rD.pools])];
+            },
+            []
+          );
           return (
             <ClaimableRow
               handleClaimFuseRewardsForToken={handleClaimFuseRewardsForToken}
@@ -204,12 +210,13 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
               }
               mode={claimable.mode}
               claimingToken={claimingToken}
+              pools={pools}
               my={1}
             />
           );
         })
       ) : (
-        <Heading>No Claimable Rewards.</Heading>
+        <Heading textAlign="center" size="lg">No Claimable Rewards.</Heading>
       )}
       {!!allClaimable.length && (
         <GlowingButton
@@ -232,6 +239,7 @@ const ClaimableRow = ({
   rewardTokenData,
   claimingToken,
   mode,
+  pools = [],
   ...rowProps
 }: {
   unclaimed: UnclaimedReward;
@@ -239,6 +247,7 @@ const ClaimableRow = ({
   rewardTokenData: TokenData;
   claimingToken?: string;
   mode: ClaimMode;
+  pools?: number[];
   [x: string]: any;
 }) => {
   const { rari, address } = useRari();
@@ -267,7 +276,6 @@ const ClaimableRow = ({
     }
 
     // If claiming fuse rewards
-    console.log({ handleClaimFuseRewardsForToken });
     if (mode === "fuse" && !!handleClaimFuseRewardsForToken) {
       handleClaimFuseRewardsForToken(unclaimed.rewardToken);
     }
@@ -280,37 +288,53 @@ const ClaimableRow = ({
       exit={{ opacity: 0 }}
       style={{ width: "100%" }}
     >
-      <DashboardBox w="100%" h="50px" {...rowProps}>
-        <Row
+      <DashboardBox w="100%" h="100%" maxH="100px" {...rowProps}>
+        <Column
           expand
-          mainAxisAlignment="space-between"
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           p={3}
         >
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Image src={rewardTokenData?.logoURL ?? ""} boxSize="30px" />
-            <Text fontWeight="bold" ml={3}>
-              {rewardTokenData?.symbol}
-            </Text>
+          <Row
+            expand
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+          >
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <Image src={rewardTokenData?.logoURL ?? ""} boxSize="30px" />
+              <Text fontWeight="bold" ml={3}>
+                {rewardTokenData?.symbol}
+              </Text>
+            </Row>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <Text fontWeight="bold" ml={3}>
+                {(
+                  parseFloat(unclaimed.unclaimed.toString()) /
+                  (1 * 10 ** (rewardTokenData?.decimals ?? 18))
+                ).toFixed(3)}{" "}
+                {rewardTokenData?.symbol}
+              </Text>
+              <Button
+                ml={2}
+                bg="black"
+                onClick={() => claimRewards()}
+                disabled={isClaimingToken}
+              >
+                {isClaimingToken ? <Spinner /> : "Claim"}
+              </Button>
+            </Row>
           </Row>
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-            <Text fontWeight="bold" ml={3}>
-              {(
-                parseFloat(unclaimed.unclaimed.toString()) /
-                (1 * 10 ** (rewardTokenData?.decimals ?? 18))
-              ).toFixed(3)}{" "}
-              {rewardTokenData?.symbol}
-            </Text>
-            <Button
-              ml={2}
-              bg="black"
-              onClick={() => claimRewards()}
-              disabled={isClaimingToken}
-            >
-              {isClaimingToken ? <Spinner /> : "Claim"}
-            </Button>
+          <Row
+            expand
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            pl={6}
+          >
+            {pools.map((p) => (
+              <Text>Pool {p}</Text>
+            ))}
           </Row>
-        </Row>
+        </Column>
       </DashboardBox>
     </motion.div>
   );

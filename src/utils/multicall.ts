@@ -5,8 +5,6 @@ export const createMultiCall = (web3: Web3) => {
     MultiCallAbi as any,
     MULTICALL_ADDRESS
   );
-  console.log(multicallContract);
-
   return multicallContract;
 };
 

@@ -697,7 +697,7 @@ const AssetSupplyRow = ({
                 py={1}
 
               >
-                <Text fontWeight="bold" mr={2}>
+                <Text fontWeight="bold" mr={1}>
                   +
                 </Text>
                 <AvatarGroup size="xs" max={30} ml={2} mr={2} spacing={1}>
@@ -723,6 +723,7 @@ const AssetSupplyRow = ({
                       ?.color ?? "white"
                   }
                   fontWeight="bold"
+                  pl={1}
                 >
                   {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}
                   {displayedSupplyAPY}%
@@ -1118,7 +1119,7 @@ const AssetBorrowRow = ({
                 mainAxisAlignment="flex-end"
                 py={1}
               >
-                <Text fontWeight="bold" mr={2}>
+                <Text fontWeight="bold" mr={1}>
                   +
                 </Text>
                 <AvatarGroup size="xs" max={30} ml={2} mr={2} spacing={1}>
@@ -1143,6 +1144,7 @@ const AssetBorrowRow = ({
                     rewardTokensData[borrowIncentives?.[hovered]?.rewardToken]
                       ?.color ?? "white"
                   }
+                  pl={1}
                   fontWeight="bold"
                 >
                   {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}

@@ -69,3 +69,11 @@ export const createERC20 = (fuse: Fuse, cTokenAddress: string) => {
   const erc20 = new fuse.web3.eth.Contract(ERC20ABI as any, cTokenAddress);
   return erc20;
 };
+
+export const createMasterPriceOracle = (fuse: Fuse) => {
+  const masterPriceOracle = new fuse.web3.eth.Contract(
+    fuse.oracleContracts["MasterPriceOracle"].abi,
+    Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle
+  );
+  return masterPriceOracle;
+};
