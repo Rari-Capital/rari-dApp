@@ -759,7 +759,7 @@ const OracleConfig = ({
     try {
         if (options === null) return null
 
-        if (activeOracle === "Uniswap_V3_Twap_Oracle") {
+        if (activeOracle === "Uniswap_V3_Oracle") {
           // Check for observation cardinality and fix if necessary
           await fuse.primeUniswapV3Oracle(oracleAddress, {from: address})
 
