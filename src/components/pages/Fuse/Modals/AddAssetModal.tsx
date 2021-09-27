@@ -12,8 +12,9 @@ import {
   Select,
   Spinner,
   useToast,
+  Link
 } from "@chakra-ui/react";
-import { Column, Center } from "utils/chakraUtils";
+import { Column, Center, Row } from "utils/chakraUtils";
 import DashboardBox, { DASHBOARD_BOX_PROPS, } from "../../../shared/DashboardBox";
 import { ModalDivider, MODAL_PROPS } from "../../../shared/Modal";
 import SmallWhiteCircle from "../../../../static/small-white-circle.png";
@@ -30,6 +31,9 @@ import { useQuery, useQueryClient } from "react-query";
 // Rari
 import { useRari } from "../../../../context/RariContext";
 import Fuse from "../../../../fuse-sdk";
+
+// Axios
+import axios from "axios";
 
 // Hooks
 import { ETH_TOKEN_DATA, TokenData, useTokenData } from "../../../../hooks/useTokenData";
@@ -48,6 +52,8 @@ import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 import Chart from "react-apexcharts";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
+import { toLocaleString } from "fuse-sdk/webpack.config";
+import { smallUsdFormatter } from "utils/bigUtils";
 
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
@@ -248,7 +254,7 @@ export const AssetSettings = ({
       return;
     }
 
-    const poolOracleContract = createOracle(poolOracleAddress, fuse)
+    const poolOracleContract = createOracle(poolOracleAddress, fuse, "MasterPriceOracle")
 
     try {
         await poolOracleContract.methods.add([tokenAddress], [oracleAddress]).send({from: address})
@@ -697,7 +703,7 @@ export const AssetSettings = ({
 
       <ModalDivider />
       
-      {oracleModel === "MasterPriceOracle" ?
+      {oracleModel === "MasterPriceOracle" && oracleData !== undefined?
         (  <>
               <OracleConfig 
                   oracleData={oracleData} 
@@ -853,6 +859,7 @@ const OracleConfig = ({
   const toast = useToast()
 
   const [activeOracle, _setActiveOracle] = useState<string>("")
+  const [feeTier, setFeeTier] = useState<number>(0)
 
   const isValidAddress = fuse.web3.utils.isAddress(tokenAddress)
   const isUserAdmin = address === oracleData.admin
@@ -867,19 +874,27 @@ const OracleConfig = ({
   },[options, oracleData, _setActiveOracle, _setOracleAddress])
 
   useEffect(() => {
-    if(mode === "Editing" && activeOracle === "" && options && options["Master_Price_Oracle_Default"]) _setActiveOracle("Master_Price_Oracle_Default")
+    if(mode === "Editing" && activeOracle === "" && options && options["Master_Price_Oracle_Default"]) 
+      _setActiveOracle("Master_Price_Oracle_Default")
   },[mode, activeOracle, options])
 
   useEffect(() => {
-      if(activeOracle.length > 0 && activeOracle !== "Custom_Oracle" && options) _setOracleAddress(options[activeOracle])
+      if(activeOracle.length > 0 && activeOracle !== "Custom_Oracle" && activeOracle !== "Uniswap_V3_Oracle" && options) 
+        _setOracleAddress(options[activeOracle])
   },[activeOracle, options, _setOracleAddress])
 
   const updateOracle = async () => {
-    const poolOracleContract = createOracle(poolOracleAddress, fuse)
+    const poolOracleContract = createOracle(poolOracleAddress, fuse, "MasterPriceOracle")
+    let oracleAddressToUse = oracleAddress
 
     try {
         if (options === null) return null
-        await poolOracleContract.methods.add([tokenAddress], [oracleAddress]).send({from: address})
+
+        if (activeOracle === "Uniswap_V3_Twap_Oracle") {
+          oracleAddressToUse = await fuse.deployPriceOracle("UniswapV3TwapPriceOracle", {oracleAddress, feeTier})
+        }
+
+        await poolOracleContract.methods.add([tokenAddress], [oracleAddressToUse]).send()
 
         queryClient.refetchQueries();
         // Wait 2 seconds for refetch and then close modal.
@@ -937,7 +952,7 @@ const OracleConfig = ({
                   onChange={(event) => _setActiveOracle(event.target.value)}
               >
                   {Object.entries(options).map(([key, value]) => 
-                      value !== null ? 
+                      value !== null && value !== undefined ? 
                       <option
                           className="black-bg-option"
                           value={key}
@@ -957,6 +972,7 @@ const OracleConfig = ({
                       variant="filled"
                       size="sm"
                       mt={2}
+                      mb={2}
                       value={oracleAddress}
                       onChange={(event) => {
                           const address = event.target.value;
@@ -970,10 +986,21 @@ const OracleConfig = ({
                       bg="#282727"
                   />
               : null }
+
+              { activeOracle === "Uniswap_V3_Oracle" ? 
+                <UniswapV3PriceOracleConfigurator 
+                  _setOracleAddress={_setOracleAddress} 
+                  tokenAddress={tokenAddress.toLocaleLowerCase()} 
+                /> 
+                : null 
+              }
+
+
           </Box>
+
           {activeOracle !== "Master_Price_Oracle_Default" && mode === "Editing" ? (
                 <SaveButton 
-                  ml={3} 
+                  ml={1} 
                   onClick={updateOracle} 
                   fontSize="xs"
                   altText={t("Update")}
@@ -984,8 +1011,150 @@ const OracleConfig = ({
           
           : null 
 
-      }
+        }
     </ConfigRow>
+  )
+}
+
+
+const UniswapV3PriceOracleConfigurator = (
+  {
+    tokenAddress, 
+    _setOracleAddress
+  }: {
+    tokenAddress: string, 
+    _setOracleAddress: (value: React.SetStateAction<string>) => void}
+) => {
+  const { t } = useTranslation();
+
+  // This will be used to index whitelistPools array (fetched from the graph.)
+  // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
+  const [activePool, setActivePool] = useState<string>("");
+
+  // We get a list of whitelistedPools from uniswap-v3's the graph.
+  const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for " + tokenAddress, async () =>
+    (await axios.post(
+        "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+        {
+          query:
+          `{
+            token(id:"${tokenAddress}") {
+              whitelistPools {
+                id,
+                feeTier,
+                totalValueLockedUSD,
+                token0 {
+                  name
+                },
+                token1 {
+                  name
+                }
+              }
+            }
+          }`,
+        }
+      )).data
+  , {refetchOnMount: false})
+
+  // When user selects an option this function will be called.
+  // Active pool is updated and we set the oracle address to the address of the pool we chose.
+  const updateBoth = (value: string) => {
+     setActivePool(value)
+    _setOracleAddress(liquidity.data.token.whitelistPools[value].id)
+  }
+
+  // If liquidity is undefined, theres an error or theres no token found return nothing.
+  if (liquidity === undefined || error || liquidity.data.token === null) return null
+
+  // Sort whitelisted pools by TVL. Greatest to smallest.
+  const liquiditySorted = liquidity.data.token.whitelistPools.sort((a: any, b: any): any => parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1)
+  
+  return (
+    <>
+    <Row
+      crossAxisAlignment="center"
+      mainAxisAlignment="space-between"
+      width="260px"
+      my={2}
+    >
+      <SimpleTooltip label={t("This field will determine which pool your oracle reads from. Its safer with more liquidity.")}>
+        <Text fontWeight="bold">
+          {t("Pool:")} <QuestionIcon ml={1} mb="4px" />
+        </Text>
+      </SimpleTooltip>
+      <Select
+        {...DASHBOARD_BOX_PROPS}
+        ml={2}
+        mb={2}
+        borderRadius="7px"
+        _focus={{ outline: "none" }}
+        width="180px"
+        placeholder={activePool.length === 0 ? t("Choose Pool"): activePool}
+        value={activePool}
+        onChange={(event) => { 
+          updateBoth(event.target.value)}}
+        >
+        {typeof liquidity !== undefined
+          ? Object.entries(liquiditySorted).map(([key, value]: any[]) => 
+              value.totalValueLockedUSD !== null && value.totalValueLockedUSD !== undefined && value.totalValueLockedUSD !== "0" 
+              ? ( 
+                <option
+                    className="black-bg-option"
+                    value={key}
+                    key={value.id}
+                >
+                    {`${value.token0.name} / ${value.token1.name}`}
+                </option> 
+              ) : null)
+        : null }
+      </Select>
+    </Row>
+
+    {activePool.length > 0 ?
+      <>
+        <Row
+          crossAxisAlignment="center"
+          mainAxisAlignment="space-between"
+          width="260px"
+          my={2}
+        >
+          <SimpleTooltip label={t("TVL in pool as of this moment.")}>
+              <Text fontWeight="bold">
+                {t("Liquidity:")} <QuestionIcon ml={1} mb="4px" />
+            </Text>
+          </SimpleTooltip>
+          <h1>
+            {activePool !== "" ? smallUsdFormatter(liquidity.data.token.whitelistPools[activePool].totalValueLockedUSD) : null}
+          </h1>
+        </Row>
+        <Row
+          crossAxisAlignment="center"
+          mainAxisAlignment="space-between"
+          width="260px"
+          my={4}
+        >
+          <SimpleTooltip label={t("The fee percentage for the pool on Uniswap (0.05%, 0.3%, 1%)")}>
+            <Text fontWeight="bold">
+              {t("Fee Tier:")} <QuestionIcon ml={1} mb="4px" />
+            </Text>
+          </SimpleTooltip>
+          <Text>
+            %{activePool !== "" ? liquidity.data.token.whitelistPools[activePool].feeTier / 10000 : null}
+          </Text>
+        </Row>
+        <Row
+        crossAxisAlignment="center"
+        mainAxisAlignment="center"
+        width="260px"
+        my={0}
+        >
+          <Link href={`https://info.uniswap.org/#/pools/${liquidity.data.token.whitelistPools[activePool].id}`} isExternal  >
+            Visit Pool in Uniswap
+          </Link>
+        </Row>
+      </>
+    : null }
+    </>
   )
 }
 
