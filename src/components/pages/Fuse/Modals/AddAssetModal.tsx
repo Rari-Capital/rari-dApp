@@ -1,5 +1,7 @@
 // Chakra and UI
 import {
+  Alert,
+  AlertIcon,
   Heading,
   Modal,
   ModalContent,
@@ -23,8 +25,11 @@ import { ConfigRow, SaveButton, testForComptrollerErrorAndSend } from "../FusePo
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
 
+import { CTokenIcon } from "../FusePoolsPage";
+
+
 // React
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "react-query";
 
@@ -170,6 +175,31 @@ export const AssetSettings = ({
   const [isBorrowPaused, setIsBorrowPaused] = useState(false);
   const [oracleAddress, _setOracleAddress] = useState<string>("")
 
+  // Sharad - univ3 base token oracle check
+  const [uniV3BaseTokenOracle, setUniV3BaseTokenOracle] = useState<string>("")  // this is the oracle we choose for the univ3BaseToken if it doesn't already exist
+  const [uniV3BaseToken, setUniV3BaseToken] = useState<string>("")  // if you choose univ3 pool for your token oracle, this is ur base token (pair token on the unvi3 pool)
+  const [uniV3BaseTokenHasOracle, setUniV3BaseTokenHasOracle] = useState<boolean>(false)
+
+  // If you typed in a univ3Basetoken AND it doesn't have an oracle in the MasterPriceOracle, then show the form
+  const shouldShowUniV3BaseTokenOracleForm = useMemo(() => !!uniV3BaseToken && !uniV3BaseTokenHasOracle,[uniV3BaseTokenHasOracle, uniV3BaseToken])
+
+  // If you are using a univ3oracle, check the basetoken for an oracle
+  useEffect(() => {
+    if (!!uniV3BaseToken) {
+    // check if masterpriceoracle has a oracle for basetoken
+    oracleData.oracleContract.methods.oracles(uniV3BaseToken).call().then((address: string) => {
+      console.log("oracle address for basetoken", {uniV3BaseToken, address})
+      return address === "0x0000000000000000000000000000000000000000" ? setUniV3BaseTokenHasOracle(false) : setUniV3BaseTokenHasOracle(true)
+    } )
+  }
+  }, [uniV3BaseToken, oracleData, setUniV3BaseTokenHasOracle])
+
+  // Active Oracle will store oracle model. i.e. Rari Master Price Oracle, Custome Oracle, etc.
+  const [activeOracle, _setActiveOracle] = useState<string>("")
+
+  // Used only by UniswapV3TwapOracle
+  const [feeTier, setFeeTier] = useState<number>(0)
+
   const scaleCollateralFactor = (_collateralFactor: number) => {
     return _collateralFactor / 1e16;
   };
@@ -212,6 +242,7 @@ export const AssetSettings = ({
   );
 
   const deploy = async () => {
+    let oracleAddressToUse = oracleAddress
     // If pool already contains this asset:
     if (
       existingAssets!.some(
@@ -243,10 +274,27 @@ export const AssetSettings = ({
       return;
     }
 
+    setIsDeploying(true);
+
     const poolOracleContract = createOracle(poolOracleAddress, fuse, "MasterPriceOracle")
 
+    if (activeOracle === "Uniswap_V3_Oracle") {
+
+      // If this oracle is set in the optional form (only if u have a univ3pair and the base token isnt in the oracle)
+      // Then u have to deploy the base token )
+      // await poolOracleContract.methods.add([tokenAddress, uniV3BaseToken], [oracleAddressToUse, uniV3BaseTokenOracle]).send({from: address})
+
+      // Check for observation cardinality and fix if necessary
+      await fuse.primeUniswapV3Oracle(oracleAddress, {from: address})
+
+      // Deploy oracle
+      oracleAddressToUse = await fuse.deployPriceOracle("UniswapV3TwapPriceOracleV2", {feeTier, baseToken: uniV3BaseToken}, {from: address})
+    } 
+
+    console.log({tokenAddress, uniV3BaseToken, oracleAddressToUse, uniV3BaseTokenOracle})
+
     try {
-        await poolOracleContract.methods.add([tokenAddress], [oracleAddress]).send({from: address})
+        await poolOracleContract.methods.add([tokenAddress, uniV3BaseToken], [oracleAddressToUse, uniV3BaseTokenOracle]).send({from: address})
         
         toast({
             title: "You have successfully configured the oracle for this asset!",
@@ -260,10 +308,9 @@ export const AssetSettings = ({
         handleGenericError(e, toast);
     }
 
-    setIsDeploying(true);
 
     // 50% -> 0.5 * 1e18
-    const bigCollateralFacotr = new BigNumber(collateralFactor)
+    const bigCollateralFactor = new BigNumber(collateralFactor)
       .dividedBy(100)
       .multipliedBy(1e18)
       .toFixed(0);
@@ -293,10 +340,12 @@ export const AssetSettings = ({
       decimals: 8,
     };
 
+    console.log({conf, bigCollateralFactor,  bigReserveFactor, bigAdminFee, address })
+
     try {
       await fuse.deployAsset(
         conf,
-        bigCollateralFacotr,
+        bigCollateralFactor,
         bigReserveFactor,
         bigAdminFee,
         { from: address },
@@ -573,18 +622,49 @@ export const AssetSettings = ({
     {oracleModel === "MasterPriceOracle" && oracleData !== undefined?
         (  <>
               <OracleConfig 
-                  oracleData={oracleData} 
-                  tokenAddress={tokenAddress}
-                  oracleAddress={oracleAddress}
+                  oracleData={oracleData} // pool oracle data (?)
+                  tokenAddress={tokenAddress} // asset you want to add
+                  activeOracle={activeOracle} // name of the current token's pricefeed oracle : UniswapV3 / ChainLink / MasterPriceOracle etc
+                  feeTier={feeTier} // only used for uniswapv3. 
+                  oracleAddress={oracleAddress}   // address of the asset's oracle
+                  poolOracleAddress={poolOracleAddress} // pool oracle address
+                  mode={mode} // Editing or Adding
+                  _setActiveOracle={_setActiveOracle}
+                  setFeeTier={setFeeTier}
                   _setOracleAddress={_setOracleAddress}
-                  poolOracleAddress={poolOracleAddress}
-                  mode={mode}
+                  uniV3BaseTokenOracle={uniV3BaseTokenOracle} // base token ORACLE
+                  setUniV3BaseTokenOracle={setUniV3BaseTokenOracle} // base token ORACLE
+                  setUniV3BaseToken={setUniV3BaseToken} // base token address
+                  uniV3BaseToken={uniV3BaseToken} // base token address
                 />
 
               <ModalDivider />
+              
             </> 
         )
       : null }
+
+      {shouldShowUniV3BaseTokenOracleForm && (
+        <>
+        <Alert colorScheme="yellow" borderRadius={5} my={1}>
+        <AlertIcon />
+        <span style={{ color: "#2F855A" }}>
+          {"This UniV3 Pair needs an oracle for the BaseToken."}
+        </span>
+      </Alert>
+        <BaseTokenOracleConfig 
+        oracleData={oracleData}
+        poolOracleAddress={poolOracleAddress}
+        baseTokenAddress={uniV3BaseToken}
+        uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+        setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+        uniV3BaseToken={uniV3BaseToken}
+        mode={mode}
+        />
+        </>
+      )}
+
+      <ModalDivider />
       
       <ConfigRow>
         <SimpleTooltip
@@ -712,25 +792,35 @@ const OracleConfig = ({
   _setOracleAddress,
   poolOracleAddress,
   mode,
+  setFeeTier,
+  feeTier,
+  activeOracle,
+  _setActiveOracle,
+  uniV3BaseTokenOracle, // base token ORACLE
+  setUniV3BaseTokenOracle, // base token ORACLE
+  setUniV3BaseToken, // base token address
+  uniV3BaseToken, // base token address
 } : { 
   oracleData: any;
   tokenAddress: string;
   oracleAddress: string;
-  _setOracleAddress: any;
+  _setOracleAddress:  React.Dispatch<React.SetStateAction<string>>;
+  uniV3BaseTokenOracle: string;
+  setUniV3BaseTokenOracle:  React.Dispatch<React.SetStateAction<string>>;
+  setUniV3BaseToken:  React.Dispatch<React.SetStateAction<string>>
+  uniV3BaseToken: string;
+  _setActiveOracle:  React.Dispatch<React.SetStateAction<string>>;
+  setFeeTier:  React.Dispatch<React.SetStateAction<number>>;
+  feeTier: number;
+  activeOracle: string;
   poolOracleAddress: string;
-  mode: "Editing" | "Adding"
+  mode: "Editing" | "Adding";
 }) => {
   const toast = useToast()
   const { t } = useTranslation()
   const queryClient = useQueryClient()
 
   const { fuse, address } = useRari()
-
-  // Active Oracle will store oracle model. i.e. Rari Master Price Oracle, Custome Oracle, etc.
-  const [activeOracle, _setActiveOracle] = useState<string>("")
-
-  // Used only by UniswapV3TwapOracle
-  const [feeTier, setFeeTier] = useState<number>(0)
 
   const isValidAddress = fuse.web3.utils.isAddress(tokenAddress)
   const isUserAdmin = address === oracleData.admin
@@ -742,7 +832,7 @@ const OracleConfig = ({
   useEffect(() => {
     if(mode === "Editing" && activeOracle === "" && options && options["Master_Price_Oracle_Default"]) 
       _setActiveOracle("Master_Price_Oracle_Default")
-  },[mode, activeOracle, options])
+  },[mode, activeOracle, options, _setActiveOracle])
 
   // This will update the oracle address, after user chooses which options they want to use.
   // If option is Custom_Oracle or Uniswap_V3_Oracle, oracle address is changed differently so we dont trigger this.
@@ -765,7 +855,7 @@ const OracleConfig = ({
 
           // Deploy oracle
           oracleAddressToUse = await fuse.deployPriceOracle("UniswapV3TwapPriceOracleV2", {uniswapV3Factory: oracleAddress, feeTier, baseToken: tokenAddress}, {from: address})
-        }
+        } 
 
         // Add oracle to Master Price Oracle
         await poolOracleContract.methods.add([tokenAddress], [oracleAddressToUse]).send({from: address})
@@ -864,6 +954,7 @@ const OracleConfig = ({
               { activeOracle === "Uniswap_V3_Oracle" ? 
                 <UniswapV3PriceOracleConfigurator 
                   _setOracleAddress={_setOracleAddress} 
+                  setUniV3BaseToken={setUniV3BaseToken}
                   tokenAddress={tokenAddress.toLocaleLowerCase()}
                   setFeeTier={setFeeTier}
                 /> 
@@ -896,10 +987,12 @@ const UniswapV3PriceOracleConfigurator = (
   {
     tokenAddress, 
     _setOracleAddress,
+    setUniV3BaseToken,
     setFeeTier
   }: {
     tokenAddress: string, 
     _setOracleAddress: (value: React.SetStateAction<string>) => void,
+    setUniV3BaseToken:  React.Dispatch<React.SetStateAction<string>>,
     setFeeTier: React.Dispatch<React.SetStateAction<number>>
   }
 ) => {
@@ -922,10 +1015,12 @@ const UniswapV3PriceOracleConfigurator = (
                 feeTier,
                 totalValueLockedUSD,
                 token0 {
-                  name
+                  name,
+                  id
                 },
                 token1 {
-                  name
+                  name,
+                  id
                 }
               }
             }
@@ -937,9 +1032,12 @@ const UniswapV3PriceOracleConfigurator = (
   // When user selects an option this function will be called.
   // Active pool is updated and we set the oracle address to the address of the pool we chose.
   const updateBoth = (value: string) => {
+    console.log("updateBoth", {value, liquidity})
+    const uniPool = liquidity.data.token.whitelistPools[value]
      setActivePool(value)
-     setFeeTier(liquidity.data.token.whitelistPools[value].feeTier)
-    _setOracleAddress(liquidity.data.token.whitelistPools[value].id)
+     setFeeTier(uniPool.feeTier)
+    _setOracleAddress(uniPool.id)
+    setUniV3BaseToken(uniPool.token0.id === tokenAddress ? uniPool.token1.id : uniPool.token0.id )
   }
 
   // If liquidity is undefined, theres an error or theres no token found return nothing.
@@ -1177,3 +1275,177 @@ const AddAssetModal = ({
 };
 
 export default AddAssetModal;
+
+
+
+const BaseTokenOracleConfig = ({
+  oracleData,
+  baseTokenAddress,
+  setUniV3BaseTokenOracle,
+  poolOracleAddress,
+  mode,
+  uniV3BaseTokenOracle, // base token ORACLE
+  uniV3BaseToken, // base token address
+} : { 
+  oracleData: any;
+  poolOracleAddress: string;
+  baseTokenAddress: string;
+  uniV3BaseTokenOracle: string;
+  setUniV3BaseTokenOracle:  React.Dispatch<React.SetStateAction<string>>;
+  uniV3BaseToken: string;
+  mode: "Editing" | "Adding";
+}) => {
+  const toast = useToast()
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+
+  const { fuse, address } = useRari()
+
+  const isValidAddress = fuse.web3.utils.isAddress(uniV3BaseToken)
+  const isUserAdmin = address === oracleData.admin
+
+  const [activeOracleName, setActiveOracleName] = useState<string>("")
+
+  // We get all oracle options
+  const options = useGetOracleOptions(oracleData, uniV3BaseToken, fuse, isValidAddress)
+
+  // If we're editing the asset, show master price oracle as a default
+  useEffect(() => {
+    if(mode === "Editing" && activeOracleName === "" && options && options["Master_Price_Oracle_Default"]) 
+      setActiveOracleName("Master_Price_Oracle_Default")
+  },[mode, activeOracleName, options, setActiveOracleName])
+
+  // This will update the oracle address, after user chooses which options they want to use.
+  // If option is Custom_Oracle or Uniswap_V3_Oracle, oracle address is changed differently so we dont trigger this.
+  useEffect(() => {
+      if(!!activeOracleName && activeOracleName !== "Custom_Oracle" && options) 
+        setUniV3BaseTokenOracle(options[activeOracleName])
+  },[activeOracleName, options, setUniV3BaseTokenOracle])
+
+
+  const updateOracle = async () => {
+    const poolOracleContract = createOracle(poolOracleAddress, fuse, "MasterPriceOracle")
+    let oracleAddressToUse = uniV3BaseTokenOracle
+
+    try {
+        if (options === null) return null
+
+        // Removed uniswapv3 option for oracle
+
+        // Add oracle to Master Price Oracle
+        await poolOracleContract.methods.add([uniV3BaseTokenOracle], [oracleAddressToUse]).send({from: address})
+
+        queryClient.refetchQueries();
+        // Wait 2 seconds for refetch and then close modal.
+        // We do this instead of waiting the refetch because some refetches take a while or error out and we want to close now.
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        
+        toast({
+            title: "You have successfully updated the oracle to this asset!",
+            description: "Oracle will now point to the new selected address.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+            position: "top-right",
+        });
+        setActiveOracleName("Master_Price_Oracle_Default")
+        setUniV3BaseTokenOracle(options["Master_Price_Oracle_Default"])
+    } catch (e) {
+        handleGenericError(e, toast);
+    }
+}
+
+  return (
+    <ConfigRow mainAxisAlignment="space-between">
+      {options ?
+          <>
+          <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          <CTokenIcon address={baseTokenAddress} boxSize={"15px"} />
+          <SimpleTooltip
+              label={isUserAdmin ? oracleData.adminOverwrite 
+                ? t("Choose the best price oracle for this BaseToken.") 
+                : options.Master_Price_Oracle_Default === null 
+                ? t("Once the oracle is set you won't be able to change it") 
+                : t("Oracle has been set and can't be changed.")
+                : t("You're not the oracle admin.")
+              }
+          >
+              <Text fontWeight="bold">
+              {t("BaseToken Price Oracle")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+          </SimpleTooltip>
+          </Column>
+
+          <Box
+              width="260px"
+              alignItems="flex-end"
+          >
+              <Select
+                  {...DASHBOARD_BOX_PROPS}
+                  ml="auto"
+                  mb={2}
+                  borderRadius="7px"
+                  _focus={{ outline: "none" }}
+                  width="260px"
+                  placeholder={activeOracleName.length === 0 ? t("Choose Oracle"): activeOracleName.replaceAll("_", " ")}
+                  value={activeOracleName.toLowerCase()}
+                  disabled={!isUserAdmin || ( !oracleData.adminOverwrite && !options.Master_Price_Oracle_Default === null)}
+                  onChange={(event) => setActiveOracleName(event.target.value)}
+              >
+                  {Object.entries(options).map(([key, value]) => 
+                      value !== null && value !== undefined  && key !== "Uniswap_V3_Oracle" ? 
+                      <option
+                          className="black-bg-option"
+                          value={key}
+                          key={key}
+                      >
+                          {key.replaceAll('_', ' ')}
+                      </option> : null
+                  )}
+
+              </Select>
+
+              { activeOracleName.length > 0 ? 
+                  <Input
+                      width="260px"
+                      textAlign="center"
+                      height="40px"
+                      variant="filled"
+                      size="sm"
+                      mt={2}
+                      mb={2}
+                      value={uniV3BaseTokenOracle}
+                      onChange={(event) => {
+                          const address = event.target.value;
+                          setUniV3BaseTokenOracle(address);
+                      }}
+                      disabled={activeOracleName === "Custom_Oracle" ? false : true}
+                      {...DASHBOARD_BOX_PROPS}
+                      _placeholder={{ color: "#e0e0e0" }}
+                      _focus={{ bg: "#121212" }}
+                      _hover={{ bg: "#282727" }}
+                      bg="#282727"
+                  />
+              : null }
+
+          </Box>
+
+          {/* This can only happen if you are the admin and you are editing (not creating) */}
+          {activeOracleName !== "Master_Price_Oracle_Default" && mode === "Editing" ? (
+                <SaveButton 
+                  ml={1} 
+                  onClick={updateOracle} 
+                  fontSize="xs"
+                  altText={t("Update")}
+                />
+              ) : null
+          }
+          </>
+          
+          : null 
+
+        }
+    </ConfigRow>
+  )
+}
