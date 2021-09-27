@@ -27,12 +27,15 @@ import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 import { handleGenericError } from "../../../utils/errorHandling";
 import LogRocket from "logrocket";
+import { Header } from "components/shared/Header";
+import FuseStatsBar from "./FuseStatsBar";
+import FuseTabBar from "./FuseTabBar";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
 const FusePoolCreatePage = memo(() => {
   const isMobile = useIsSemiSmallScreen();
-
+  const { isAuthed } = useRari();
 
   return (
     <>
@@ -44,11 +47,11 @@ const FusePoolCreatePage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        {/* <Header isAuthed={isAuthed} isFuse />
+        <Header isAuthed={isAuthed} isFuse />
 
         <FuseStatsBar />
 
-        <FuseTabBar /> */}
+        <FuseTabBar />
 
         <PoolConfiguration />
       </Column>
