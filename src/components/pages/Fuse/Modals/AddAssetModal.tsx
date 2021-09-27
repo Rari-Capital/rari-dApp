@@ -99,18 +99,12 @@ export const useCTokenData = (
         adminFeeMantissa,
         reserveFactorMantissa,
         interestRateModelAddress,
-        admin,
-        pendingAdmin,
-        adminHasRights,
         { collateralFactorMantissa },
         isPaused,
       ] = await Promise.all([
         cToken.methods.adminFeeMantissa().call(),
         cToken.methods.reserveFactorMantissa().call(),
         cToken.methods.interestRateModel().call(),
-        "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
-        "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
-        true,
         comptroller.methods.markets(cTokenAddress).call(),
         comptroller.methods.borrowGuardianPaused(cTokenAddress).call(),
       ]);
@@ -120,10 +114,7 @@ export const useCTokenData = (
         adminFeeMantissa,
         collateralFactorMantissa,
         interestRateModelAddress,
-        admin,
-        pendingAdmin,
         cTokenAddress,
-        adminHasRights,
         isPaused,
       };
     } else {
@@ -195,8 +186,6 @@ export const AssetSettings = ({
     Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
       .JumpRateModel_Cream_Stables_Majors
   );
-
-  const [admin, setAdmin] = useState(address);
 
   const { data: curves } = useQuery(
     interestRateModel + adminFee + reserveFactor + " irm",
@@ -302,7 +291,6 @@ export const AssetSettings = ({
       // Ex: fUSDC-456
       symbol: "f" + tokenData.symbol + "-" + poolID,
       decimals: 8,
-      admin,
     };
 
     try {
@@ -349,7 +337,6 @@ export const AssetSettings = ({
       setCollateralFactor(cTokenData.collateralFactorMantissa / 1e16);
       setReserveFactor(cTokenData.reserveFactorMantissa / 1e16);
       setAdminFee(cTokenData.adminFeeMantissa / 1e16);
-      setAdmin(cTokenData.admin);
       setInterestRateModel(cTokenData.interestRateModelAddress);
       setIsBorrowPaused(cTokenData.isPaused);
     }
@@ -456,65 +443,6 @@ export const AssetSettings = ({
       );
 
       LogRocket.track("Fuse-UpdateInterestRateModel");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const updateAdmin = async () => {
-    const cToken = createCToken(fuse, cTokenAddress!);
-
-    if (!fuse.web3.utils.isAddress(admin)) {
-      handleGenericError({ message: "This is not a valid address." }, toast);
-      return;
-    }
-
-    try {
-      await testForCTokenErrorAndSend(
-        cToken.methods._setPendingAdmin(admin),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-UpdateAdmin");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const acceptAdmin = async () => {
-    const cToken = createCToken(fuse, cTokenAddress!);
-
-    try {
-      await testForCTokenErrorAndSend(
-        cToken.methods._acceptAdmin(),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-AcceptAdmin");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const revokeRights = async () => {
-    const cToken = createCToken(fuse, cTokenAddress!);
-
-    try {
-      await testForCTokenErrorAndSend(
-        cToken.methods._renounceAdminRights(),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-RevokeRights");
 
       queryClient.refetchQueries();
     } catch (e) {
@@ -637,67 +565,6 @@ export const AssetSettings = ({
           setValue={setAdminFee}
           formatValue={formatPercentage}
           max={30}
-        />
-      </ConfigRow>
-
-      <ModalDivider />
-
-      <ConfigRow height="35px">
-        <SimpleTooltip
-          label={t(
-            "The admin address receives admin fees earned on this asset and if they have admin rights, they have the ability to update the parameters of the asset."
-          )}
-        >
-          <Text fontWeight="bold">
-            {t("Admin")} <QuestionIcon ml={1} mb="4px" />
-          </Text>
-        </SimpleTooltip>
-
-        {cTokenData &&
-        admin.toLowerCase() !== cTokenData.admin.toLowerCase() ? (
-          <SaveButton ml={3} onClick={updateAdmin} />
-        ) : cTokenData &&
-          address.toLowerCase() === cTokenData.pendingAdmin.toLowerCase() ? (
-          <SaveButton
-            ml={3}
-            onClick={acceptAdmin}
-            fontSize="xs"
-            altText={t("Become Admin")}
-          />
-        ) : cTokenData &&
-          cTokenData.adminHasRights &&
-          address.toLowerCase() === cTokenData.admin.toLowerCase() ? (
-          <SaveButton
-            ml={3}
-            onClick={revokeRights}
-            fontSize="xs"
-            altText={t("Revoke Rights")}
-          />
-        ) : null}
-
-        <Input
-          isDisabled={
-            cTokenData
-              ? !cTokenData.adminHasRights ||
-                cTokenData.admin.toLowerCase() !== address
-              : false
-          }
-          ml="auto"
-          width="320px"
-          height="100%"
-          textAlign="center"
-          variant="filled"
-          size="sm"
-          value={admin}
-          onChange={(event) => {
-            const address = event.target.value;
-            setAdmin(address);
-          }}
-          {...DASHBOARD_BOX_PROPS}
-          _placeholder={{ color: "#e0e0e0" }}
-          _focus={{ bg: "#121212" }}
-          _hover={{ bg: "#282727" }}
-          bg="#282727"
         />
       </ConfigRow>
 

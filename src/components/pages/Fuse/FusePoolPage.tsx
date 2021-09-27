@@ -48,6 +48,7 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
+import { getSymbol } from "utils/symbolUtils";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
@@ -404,6 +405,8 @@ const AssetSupplyRow = ({
 
   const { t } = useTranslation();
 
+  const symbol = getSymbol(tokenData, asset);
+
   return (
     <>
       <PoolModal
@@ -433,14 +436,14 @@ const AssetSupplyRow = ({
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={asset.underlyingSymbol}
+            name={symbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
           />
           <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Row>
 
@@ -494,7 +497,7 @@ const AssetSupplyRow = ({
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Column>
 
@@ -503,10 +506,10 @@ const AssetSupplyRow = ({
           mainAxisAlignment="flex-end"
           crossAxisAlignment="center"
         >
-          <SwitchCSS symbol={asset.underlyingSymbol} color={tokenData?.color} />
+          <SwitchCSS symbol={symbol} color={tokenData?.color} />
           <Switch
             isChecked={asset.membership}
-            className={asset.underlyingSymbol + "-switch"}
+            className={symbol + "-switch"}
             onChange={onToggleCollateral}
             size="md"
             mt={1}
@@ -662,6 +665,8 @@ const AssetBorrowRow = ({
 
   const isMobile = useIsMobile();
 
+  const symbol = getSymbol(tokenData, asset);
+
   return (
     <>
       <PoolModal
@@ -691,14 +696,14 @@ const AssetBorrowRow = ({
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={asset.underlyingSymbol}
+            name={symbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
           />
           <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Row>
 
@@ -745,7 +750,7 @@ const AssetBorrowRow = ({
             {smallUsdFormatter(
               asset.borrowBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Column>
 
@@ -772,7 +777,7 @@ const AssetBorrowRow = ({
                 {shortUsdFormatter(
                   asset.liquidity / 10 ** asset.underlyingDecimals
                 ).replace("$", "")}{" "}
-                {tokenData?.symbol}
+                {symbol}
               </Text>
             </Column>
           </Box>
