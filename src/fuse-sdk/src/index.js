@@ -103,6 +103,10 @@ export default class Fuse {
     "0xa170dba2cd1f68cdd7567cf70184d5492d2e8138";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
+  static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
+    "0x219b36c26005B8a697c52c78eb70d4FD2f93c28b"; // TODO: Set correct mainnet address after deployment
+  static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
+    "0xB39d141C972C1B9B968ba432CE860eEeBb35E757"; // TODO: Set correct mainnet address after deployment
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
@@ -111,6 +115,10 @@ export default class Fuse {
     "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
   static UNISWAP_V2_PAIR_INIT_CODE_HASH =
     "0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f";
+  static SUSHISWAP_FACTORY_ADDRESS =
+    "0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac";
+  static UNISWAP_V3_FACTORY_ADDRESS =
+    "0x1f98431c8ad98523631ae4a59f267346ea31f984";
   static WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
   static PRICE_ORACLE_RUNTIME_BYTECODE_HASHES = {
@@ -573,24 +581,19 @@ export default class Fuse {
             .send(options);
           break;
         case "UniswapTwapPriceOracleV2": // Uniswap V2 TWAPs
+          var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapTwapPriceOracleV2Factory.abi, Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
+          var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
+          
+          if (oracle == "0x0000000000000000000000000000000000000000") {
+              await oracleFactory.methods.deploy(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).send(options);
+              oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
+          }
+
           var priceOracle = new this.web3.eth.Contract(
-            oracleContracts["UniswapTwapPriceOracleV2"].abi
+            [],
+            oracle
           );
-          var deployArgs = [
-            conf.rootOracle
-              ? conf.rootOracle
-              : Fuse.UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS,
-            conf.uniswapV2Factory
-              ? conf.uniswapV2Factory
-              : "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
-            conf.baseToken ? conf.baseToken : Fuse.WETH_ADDRESS,
-          ]; // Default to official Uniswap V2 factory
-          priceOracle = await priceOracle
-            .deploy({
-              data: oracleContracts["UniswapTwapPriceOracleV2"].bin,
-              arguments: deployArgs,
-            })
-            .send(options);
+
           break;
         case "ChainlinkPriceOracleV2":
           var priceOracle = new this.web3.eth.Contract(
@@ -629,22 +632,20 @@ export default class Fuse {
         case "UniswapV3TwapPriceOracleV2":
           if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0)
             throw "Invalid fee tier passed to UniswapV3TwapPriceOracleV2 deployment.";
+          
+          var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapV3TwapPriceOracleV2Factory.abi, Fuse.UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
+          var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).call();
+          
+          if (oracle == "0x0000000000000000000000000000000000000000") {
+              await oracleFactory.methods.deploy(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).send(options)
+              oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).call();
+          }
+
           var priceOracle = new this.web3.eth.Contract(
-            oracleContracts["UniswapV3TwapPriceOracleV2"].abi
+            [],
+            oracle
           );
-          var deployArgs = [
-            conf.uniswapV3Factory
-              ? conf.uniswapV3Factory
-              : "0x1f98431c8ad98523631ae4a59f267346ea31f984",
-            conf.feeTier,
-            conf.baseToken,
-          ]; // Default to official Uniswap V3 factory
-          priceOracle = await priceOracle
-            .deploy({
-              data: oracleContracts["UniswapV3TwapPriceOracleV2"].bin,
-              arguments: deployArgs,
-            })
-            .send(options);
+
           break;
         case "FixedTokenPriceOracle":
           var priceOracle = new this.web3.eth.Contract(
