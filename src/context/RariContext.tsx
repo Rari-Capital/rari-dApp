@@ -20,7 +20,7 @@ import Fuse from "../fuse-sdk/src";
 import {
   chooseBestWeb3Provider,
   initFuseWithProviders,
-  turboGethURL,
+  alchemyURL,
 } from "../utils/web3Providers";
 import { useLocation } from "react-router-dom";
 
@@ -44,7 +44,7 @@ async function launchModalLazy(
       package: WalletConnectProvider.default,
       options: {
         rpc: {
-          1: turboGethURL,
+          1: alchemyURL,
         },
       },
       display: {
