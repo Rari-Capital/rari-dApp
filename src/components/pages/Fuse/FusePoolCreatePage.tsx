@@ -7,8 +7,6 @@ import {
   Spinner,
   IconButton,
   useToast,
-  AvatarGroup,
-  Box
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "utils/chakraUtils";
 import { memo, ReactNode, useState } from "react";
@@ -16,13 +14,9 @@ import { useTranslation } from "react-i18next";
 
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-import { CTokenIcon } from "./FusePoolsPage";
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
-import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
@@ -39,7 +33,6 @@ const formatPercentage = (value: number) => value.toFixed(0) + "%";
 const FusePoolCreatePage = memo(() => {
   const isMobile = useIsSemiSmallScreen();
 
-  const { isAuthed } = useRari();
 
   return (
     <>
@@ -111,19 +104,6 @@ const PoolConfiguration = () => {
       return;
     }
 
-    if(oracle === "MasterPriceOracle" && (asset === "" || assetOracle === "")) {
-      toast({
-        title: "Error!",
-        description: "You must specify a token and its oracle to deploy a custom oracle",
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-        position: "top-right",
-      });
-
-      return;
-    }
-
     setIsCreating(true);
 
     // 50% -> 0.5 * 1e18
@@ -148,7 +128,7 @@ const PoolConfiguration = () => {
         bigCloseFactor,
         bigLiquidationIncentive,
         oracle,
-        oracle === "MasterPriceOracle" ? {underlyings: [asset], oracles: [assetOracle], canAdminOverwrite: true} : { reporter },
+        oracle === "MasterPriceOracle" ? {underlyings: [], oracles: [], canAdminOverwrite: true} : { reporter },
         { from: address },
         isWhitelisted ? whitelist : null
       );
@@ -172,6 +152,8 @@ const PoolConfiguration = () => {
           event.returnValues.pool.comptroller.toLowerCase() ===
           poolAddress.toLowerCase()
       )[0];
+
+      console.log(event, "heyy")
 
       LogRocket.track("Fuse-CreatePool");
 
@@ -246,57 +228,6 @@ const PoolConfiguration = () => {
           </OptionRow>
 
           <ModalDivider />
-
-          { oracle === "MasterPriceOracle" ?
-            <>
-              <OptionRow>
-                <SimpleTooltip
-                    label={t(
-                      "If enabled you will be able to limit the ability to supply to the pool to a select group of addresses. The pool will not show up on the 'all pools' list."
-                    )}
-                  >
-                    <Text fontWeight="bold">
-                      {t("Underlying Token")} <QuestionIcon ml={1} mb="4px" />
-                    </Text>
-                </SimpleTooltip>
-
-                <Box width="25%" display="flex" alignItems="center" justifyContent="space-around" >
-                  { fuse.web3.utils.isAddress(asset) ?
-                  <AvatarGroup size="md" max={30}>
-                        <CTokenIcon address={asset} />
-                  </AvatarGroup> : null
-                  }
-                  <Input
-                    width="75%"
-                    value={asset}
-                    onChange={(event) => setAsset(event.target.value)}
-                  />
-                </Box>
-              </OptionRow>
-
-              <ModalDivider />
-
-              <OptionRow>
-                <SimpleTooltip
-                    label={t(
-                      "If enabled you will be able to limit the ability to supply to the pool to a select group of addresses. The pool will not show up on the 'all pools' list."
-                    )}
-                  >
-                    <Text fontWeight="bold">
-                      {t("Token Oracle")} <QuestionIcon ml={1} mb="4px" />
-                    </Text>
-                </SimpleTooltip>
-                <Input
-                  width="20%"
-                  value={assetOracle}
-                  onChange={(event) => setAssetOracle(event.target.value)}
-                />
-              </OptionRow>
-
-              <ModalDivider /> 
-            </>
-
-          : null }
 
           <OptionRow>
             <SimpleTooltip
