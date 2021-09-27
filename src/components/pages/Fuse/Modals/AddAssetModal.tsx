@@ -569,8 +569,8 @@ export const AssetSettings = ({
       </ConfigRow>
 
       <ModalDivider />
-      
-      {oracleModel === "MasterPriceOracle" && oracleData !== undefined?
+
+    {oracleModel === "MasterPriceOracle" && oracleData !== undefined?
         (  <>
               <OracleConfig 
                   oracleData={oracleData} 
@@ -585,7 +585,7 @@ export const AssetSettings = ({
             </> 
         )
       : null }
-
+      
       <ConfigRow>
         <SimpleTooltip
           label={t(
