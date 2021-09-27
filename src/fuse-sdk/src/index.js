@@ -563,16 +563,17 @@ export default class Fuse {
             .send(options);
           break; */
         case "UniswapTwapPriceOracle": // Uniswap V2 TWAPs
+          // Input validation
+          if (!conf.uniswapV2Factory)
+            conf.uniswapV2Factory = Fuse.UNISWAP_V2_FACTORY_ADDRESS;
+
+          // Deploy oracle
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["UniswapTwapPriceOracle"].abi
           );
           var deployArgs = [
-            conf.rootOracle
-              ? conf.rootOracle
-              : Fuse.UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS,
+            Fuse.UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS,
             conf.uniswapV2Factory
-              ? conf.uniswapV2Factory
-              : "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
           ]; // Default to official Uniswap V2 factory
           priceOracle = await priceOracle
             .deploy({
@@ -582,6 +583,10 @@ export default class Fuse {
             .send(options);
           break;
         case "UniswapTwapPriceOracleV2": // Uniswap V2 TWAPs
+          // Input validation
+          if (!conf.uniswapV2Factory)
+            conf.uniswapV2Factory = Fuse.UNISWAP_V2_FACTORY_ADDRESS;
+
           // Check for existing oracle
           var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapTwapPriceOracleV2Factory.abi, Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
           var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
@@ -615,15 +620,18 @@ export default class Fuse {
             .send(options);
           break;
         case "UniswapV3TwapPriceOracle": // Uniswap V3 TWAPs
+          // Input validation
+          if (!conf.uniswapV3Factory)
+            conf.uniswapV3Factory = Fuse.UNISWAP_V3_FACTORY_ADDRESS;
           if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0)
             throw "Invalid fee tier passed to UniswapV3TwapPriceOracle deployment.";
+
+          // Deploy oracle
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["UniswapV3TwapPriceOracle"].abi
           );
           var deployArgs = [
-            conf.uniswapV3Factory
-              ? conf.uniswapV3Factory
-              : "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+            conf.uniswapV3Factory,
             conf.feeTier,
           ]; // Default to official Uniswap V3 factory
           priceOracle = await priceOracle
@@ -635,17 +643,19 @@ export default class Fuse {
           break;
         case "UniswapV3TwapPriceOracleV2": // Uniswap V3 TWAPs
           // Input validation
+          if (!conf.uniswapV3Factory)
+            conf.uniswapV3Factory = Fuse.UNISWAP_V3_FACTORY_ADDRESS;
           if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0)
             throw "Invalid fee tier passed to UniswapV3TwapPriceOracleV2 deployment.";
           
           // Check for existing oracle
           var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapV3TwapPriceOracleV2Factory.abi, Fuse.UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
-          var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).call();
+          var oracle = await oracleFactory.methods.oracles(conf.uniswapV3Factory, conf.feeTier, conf.baseToken).call();
           
           // Deploy if oracle does not exist
           if (oracle == "0x0000000000000000000000000000000000000000") {
-              await oracleFactory.methods.deploy(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).send(options)
-              oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).call();
+              await oracleFactory.methods.deploy(conf.uniswapV3Factory, conf.feeTier, conf.baseToken).send(options)
+              oracle = await oracleFactory.methods.oracles(conf.uniswapV3Factory, conf.feeTier, conf.baseToken).call();
           }
 
           // Instantiate contract
