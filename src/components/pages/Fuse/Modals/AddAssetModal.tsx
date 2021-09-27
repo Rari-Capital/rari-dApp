@@ -864,7 +864,8 @@ const OracleConfig = ({
               { activeOracle === "Uniswap_V3_Oracle" ? 
                 <UniswapV3PriceOracleConfigurator 
                   _setOracleAddress={_setOracleAddress} 
-                  tokenAddress={tokenAddress.toLocaleLowerCase()} 
+                  tokenAddress={tokenAddress.toLocaleLowerCase()}
+                  setFeeTier={setFeeTier}
                 /> 
                 : null 
               }
@@ -894,10 +895,13 @@ const OracleConfig = ({
 const UniswapV3PriceOracleConfigurator = (
   {
     tokenAddress, 
-    _setOracleAddress
+    _setOracleAddress,
+    setFeeTier
   }: {
     tokenAddress: string, 
-    _setOracleAddress: (value: React.SetStateAction<string>) => void}
+    _setOracleAddress: (value: React.SetStateAction<string>) => void,
+    setFeeTier: React.Dispatch<React.SetStateAction<number>>
+  }
 ) => {
   const { t } = useTranslation();
 
@@ -934,6 +938,7 @@ const UniswapV3PriceOracleConfigurator = (
   // Active pool is updated and we set the oracle address to the address of the pool we chose.
   const updateBoth = (value: string) => {
      setActivePool(value)
+     setFeeTier(liquidity.data.token.whitelistPools[value].feeTier)
     _setOracleAddress(liquidity.data.token.whitelistPools[value].id)
   }
 
