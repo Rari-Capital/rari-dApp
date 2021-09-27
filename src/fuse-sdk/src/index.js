@@ -210,6 +210,52 @@ export default class Fuse {
     Custom_JumpRateModel: "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
   };
 
+  static COMPTROLLER_ERROR_CODES = [
+    NO_ERROR,
+    UNAUTHORIZED,
+    COMPTROLLER_MISMATCH,
+    INSUFFICIENT_SHORTFALL,
+    INSUFFICIENT_LIQUIDITY,
+    INVALID_CLOSE_FACTOR,
+    INVALID_COLLATERAL_FACTOR,
+    INVALID_LIQUIDATION_INCENTIVE,
+    MARKET_NOT_ENTERED, // no longer possible
+    MARKET_NOT_LISTED,
+    MARKET_ALREADY_LISTED,
+    MATH_ERROR,
+    NONZERO_BORROW_BALANCE,
+    PRICE_ERROR,
+    REJECTION,
+    SNAPSHOT_ERROR,
+    TOO_MANY_ASSETS,
+    TOO_MUCH_REPAY,
+    SUPPLIER_NOT_WHITELISTED,
+    BORROW_BELOW_MIN,
+    SUPPLY_ABOVE_MAX,
+    NONZERO_TOTAL_SUPPLY
+  ];
+
+  static CTOKEN_ERROR_CODES = [
+    NO_ERROR,
+    UNAUTHORIZED,
+    BAD_INPUT,
+    COMPTROLLER_REJECTION,
+    COMPTROLLER_CALCULATION_ERROR,
+    INTEREST_RATE_MODEL_ERROR,
+    INVALID_ACCOUNT_PAIR,
+    INVALID_CLOSE_AMOUNT_REQUESTED,
+    INVALID_COLLATERAL_FACTOR,
+    MATH_ERROR,
+    MARKET_NOT_FRESH,
+    MARKET_NOT_LISTED,
+    TOKEN_INSUFFICIENT_ALLOWANCE,
+    TOKEN_INSUFFICIENT_BALANCE,
+    TOKEN_INSUFFICIENT_CASH,
+    TOKEN_TRANSFER_IN_FAILED,
+    TOKEN_TRANSFER_OUT_FAILED,
+    UTILIZATION_ABOVE_MAX
+  ];
+
   constructor(web3Provider) {
     this.web3 = new Web3(web3Provider);
 
@@ -1043,6 +1089,14 @@ export default class Fuse {
         JSON.parse(contracts["contracts/Comptroller.sol:Comptroller"].abi),
         conf.comptroller
       );
+      var errorCode = await comptroller.methods
+        ._deployMarket(
+          "0x0000000000000000000000000000000000000000",
+          constructorData,
+          collateralFactor
+        )
+        .call(options);
+      if (errorCode != 0) throw "Failed to deploy market with error code: " + Fuse.COMPTROLLER_ERROR_CODES[errorCode];
       var receipt = await comptroller.methods
         ._deployMarket(
           "0x0000000000000000000000000000000000000000",
@@ -1141,6 +1195,10 @@ export default class Fuse {
         ],
         deployArgs
       );
+      var errorCode = await comptroller.methods
+        ._deployMarket(false, constructorData, collateralFactor)
+        .call(options);
+      if (errorCode != 0) throw "Failed to deploy market with error code: " + Fuse.COMPTROLLER_ERROR_CODES[errorCode];
       var receipt = await comptroller.methods
         ._deployMarket(false, constructorData, collateralFactor)
         .send(options);
