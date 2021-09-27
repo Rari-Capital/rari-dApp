@@ -12,6 +12,7 @@ var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
+var uniswapV3PoolAbiSlim = require(__dirname + "/abi/UniswapV3Pool.slim.json");
 var contracts = require(__dirname +
   "/contracts/compound-protocol.min.json").contracts;
 /* var openOracleContracts = require(__dirname + "/contracts/open-oracle.min.json")
@@ -581,14 +582,17 @@ export default class Fuse {
             .send(options);
           break;
         case "UniswapTwapPriceOracleV2": // Uniswap V2 TWAPs
+          // Check for existing oracle
           var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapTwapPriceOracleV2Factory.abi, Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
           var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
           
+          // Deploy if oracle does not exist
           if (oracle == "0x0000000000000000000000000000000000000000") {
               await oracleFactory.methods.deploy(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).send(options);
               oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
           }
 
+          // Instantiate contract
           var priceOracle = new this.web3.eth.Contract(
             [],
             oracle
@@ -610,7 +614,7 @@ export default class Fuse {
             })
             .send(options);
           break;
-        case "UniswapV3TwapPriceOracle":
+        case "UniswapV3TwapPriceOracle": // Uniswap V3 TWAPs
           if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0)
             throw "Invalid fee tier passed to UniswapV3TwapPriceOracle deployment.";
           var priceOracle = new this.web3.eth.Contract(
@@ -629,18 +633,22 @@ export default class Fuse {
             })
             .send(options);
           break;
-        case "UniswapV3TwapPriceOracleV2":
+        case "UniswapV3TwapPriceOracleV2": // Uniswap V3 TWAPs
+          // Input validation
           if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0)
             throw "Invalid fee tier passed to UniswapV3TwapPriceOracleV2 deployment.";
           
+          // Check for existing oracle
           var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapV3TwapPriceOracleV2Factory.abi, Fuse.UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
           var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).call();
           
+          // Deploy if oracle does not exist
           if (oracle == "0x0000000000000000000000000000000000000000") {
               await oracleFactory.methods.deploy(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).send(options)
               oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V3_FACTORY_ADDRESS, conf.feeTier, conf.baseToken).call();
           }
 
+          // Instantiate contract
           var priceOracle = new this.web3.eth.Contract(
             [],
             oracle
@@ -1650,6 +1658,17 @@ export default class Fuse {
         })
         .send(options);
       rdAddress = distributor.options.address;
+    };
+
+    this.primeUniswapV3Oracle = async function (uniswapV3Pool, options) {
+      var uniswapV3PoolContract = new this.web3.eth.Contract(
+        JSON.parse(
+          uniswapV3PoolAbiSlim,
+          uniswapV3Pool
+        )
+      );
+      if ((await uniswapV3PoolContract.methods.slot0().call()).observationCardinalityNext < 64)
+        await uniswapV3PoolContract.methods.increaseObservationCardinalityNext(64).send(options);
     };
   }
 
