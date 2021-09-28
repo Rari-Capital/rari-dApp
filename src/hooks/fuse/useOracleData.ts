@@ -1,10 +1,23 @@
+// Rari
 import Fuse from '../../fuse-sdk/src/index'
-import { useQuery } from 'react-query'
-import { createOracle } from '../../utils/createComptroller'
-import Rari from 'rari-sdk'
-import axios from 'axios'
 
-export const useOracleData = (oracleAddress: string, fuse: Fuse) => {
+// Hooks
+import { createOracle } from '../../utils/createComptroller'
+
+// Web3
+import { Contract } from "web3-eth-contract"
+
+// Libraries
+import axios from 'axios'
+import { useQuery } from 'react-query'
+
+export type OracleDataType = {
+  admin: string // Address of Oracle's admin
+  adminOverwrite: boolean // Will tell us if admin can overwrite existing oracle-token pairs
+  oracleContract: Contract
+}
+
+export const useOracleData = (oracleAddress: string, fuse: Fuse): OracleDataType | undefined => {
     const { data } = useQuery("Oracle info" + oracleAddress, async () => {
       const oracleContract = createOracle(oracleAddress, fuse, "MasterPriceOracle")
   
@@ -57,7 +70,7 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
   // We mount this hook to get data from cache. 
   // We need this because if there's no whitelisted uniswap pool, 
   // we shouldn't return Uniswap_V3_Oracle as an option
-  const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for  " + tokenAddress, async () =>
+  const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for  " + tokenAddress, async () => 
     (await axios.post(
         "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
         {
@@ -78,7 +91,7 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
             }
           }`,
         }
-      )).data
+      )).data.data.pairs
   ,{refetchOnMount: false})
 
   // If theres no whitelisted pool for the asset, or if there was an error return null
@@ -88,15 +101,86 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
               (liquidity?.data.token === null || error) 
               ? null
               : ''
-  
+
+  const {SushiPairs, SushiError, UniV2Pairs, univ2Error} = useSushiOrUniswapV2Pairs(tokenAddress)
+
+  // If theres no whitelisted pool for the asset, or if there was an error return null
+  // Otherwise its return ''
+  // In the UniswapV3PriceOracleConfigurator, we will mount the hook above to get info 
+  const Uniswap_V2_Oracle = 
+        (UniV2Pairs === null || UniV2Pairs === undefined || UniV2Pairs.length === 0 || univ2Error )
+        ? null
+        : ''
+
+  const SushiSwap_Oracle =
+        (SushiPairs === null || SushiPairs === undefined || SushiPairs.length === 0 || SushiError )
+        ? null
+        : ''
 
   // If tokenAddress is not a valid address return null. 
   // If tokenAddress is valid and oracle admin can overwrite or if admin can't overwrite but there's no preset, return all options
   // If tokenAddress is valid but oracle admin can't overwrite, return the preset oracle address,
   const Data = !isValidAddress ? null 
                   : oracleData.adminOverwrite ||  Master_Price_Oracle_Default === null  
-                  ? { Master_Price_Oracle_Default, Rari_Default_Oracle, Chainlink_Oracle, Uniswap_V3_Oracle, Custom_Oracle: " "} 
+                  ? { Master_Price_Oracle_Default, Rari_Default_Oracle, Chainlink_Oracle, Uniswap_V3_Oracle, Uniswap_V2_Oracle, SushiSwap_Oracle, Custom_Oracle: " "} 
                   : { Master_Price_Oracle_Default }
 
   return Data
+}
+
+export const useSushiOrUniswapV2Pairs = (tokenAddress: string) => {
+
+  const {data: UniV2Pairs, error: univ2Error} = useQuery("UniswapV2 pairs for  " + tokenAddress, async () => {
+   const pairs = await axios.post(
+      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+      {
+        query:
+        `{
+          pairs(first: 10, orderBy: totalSupply, orderDirection: desc, where: { token0: "${tokenAddress.toLocaleLowerCase()}" } ) {
+            id,
+           token0 {
+             id,
+             symbol
+           },
+           token1 {
+             id,
+             symbol
+           }
+           totalSupply
+          }
+         }`,
+      }
+    )
+    return pairs !== undefined && pairs.data !== undefined && pairs.data.data.pairs !== undefined ? pairs.data.data.pairs.filter((pair: any) => pair.totalSupply > 10000) : null
+  }
+  ,{refetchOnMount: false})
+
+  const {data: SushiPairs, error: SushiError} = useQuery("SushiSwap pairs for  " + tokenAddress, async () => {
+    const pairs = await axios.post(
+      "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
+      {
+        query:
+        `{
+          pairs(first: 10, orderBy: totalSupply, orderDirection: desc, where: { token0: "${tokenAddress.toLocaleLowerCase()}" } ) {
+            id,
+           token0 {
+             id,
+             symbol
+           },
+           token1 {
+             id,
+             symbol
+           }
+           totalSupply
+          }
+         }`,
+      }
+    )
+
+
+    return pairs !== undefined && pairs.data !== undefined && pairs.data.data.pairs !== undefined ? pairs.data.data.pairs.filter((pair: any) => pair.totalSupply > 10000) : null
+  },{refetchOnMount: false})
+
+
+  return {SushiPairs, SushiError, UniV2Pairs, univ2Error}
 }

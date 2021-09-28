@@ -637,7 +637,7 @@ export default class Fuse {
             conf.uniswapV2Factory = Fuse.UNISWAP_V2_FACTORY_ADDRESS;
 
           // Check for existing oracle
-          var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapTwapPriceOracleV2Factory.abi, Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
+          var oracleFactory = new this.web3.eth.Contract(this.oracleContracts.UniswapTwapPriceOracleV2Factory.abi, Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
           var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
           
           // Deploy if oracle does not exist
