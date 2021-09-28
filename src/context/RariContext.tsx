@@ -116,17 +116,17 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (netId !== 1 || chainId !== 1) {
-          setTimeout(() => {
-            toast({
-              title: "Wrong network!",
-              description:
-                "You are on the wrong network! Switch to the mainnet and reload this page!",
-              status: "warning",
-              position: "top-right",
-              duration: 300000,
-              isClosable: true,
-            });
-          }, 1500);
+          // setTimeout(() => {
+          //   toast({
+          //     title: "Wrong network!",
+          //     description:
+          //       "You are on the wrong network! Switch to the mainnet and reload this page!",
+          //     status: "warning",
+          //     position: "top-right",
+          //     duration: 300000,
+          //     isClosable: true,
+          //   });
+          // }, 1500);
         }
       }
     );

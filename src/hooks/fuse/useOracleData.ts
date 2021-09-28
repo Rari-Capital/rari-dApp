@@ -10,12 +10,24 @@ import { Contract } from "web3-eth-contract"
 // Libraries
 import axios from 'axios'
 import { useQuery } from 'react-query'
+import { useRari } from 'context/RariContext'
 
 export type OracleDataType = {
   admin: string // Address of Oracle's admin
   adminOverwrite: boolean // Will tell us if admin can overwrite existing oracle-token pairs
   oracleContract: Contract
 }
+
+export const useIdentifyOracle = (oracleAddr: string) => {
+  const { fuse }  = useRari()
+
+  const { data } = useQuery("Identifying Oracle " + oracleAddr, async () => {
+    return await fuse.identifyPriceOracle(oracleAddr)
+  }) 
+
+  return data ?? ""
+
+} 
 
 export const useOracleData = (oracleAddress: string, fuse: Fuse): OracleDataType | undefined => {
     const { data } = useQuery("Oracle info" + oracleAddress, async () => {

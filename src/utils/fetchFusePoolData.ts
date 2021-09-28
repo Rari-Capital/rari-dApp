@@ -5,6 +5,7 @@ import Rari from "../rari-sdk/index";
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
 import { createComptroller } from "./createComptroller";
+
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -108,7 +109,7 @@ export const filterPoolName = (name: string) => {
     return "Yearn Soup Pot of Yield";
   }
 
-  return filter.clean(name);
+ return filter.clean(name + "professorswagonomics9001@protonmail.com").replace('professorswagonomics9001@protonmail.com', '')
 };
 
 export const fetchFusePoolData = async (
@@ -161,8 +162,6 @@ export const fetchFusePoolData = async (
   const isAdminWhitelisted = await fuse.contracts.FusePoolDirectory.methods
     .adminWhitelist(admin)
     .call();
-
-  console.log({ isAdminWhitelisted });
 
   for (let i = 0; i < assets.length; i++) {
     let asset = assets[i];

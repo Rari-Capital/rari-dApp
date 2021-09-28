@@ -127,7 +127,7 @@ const FusePoolInfoPage = memo(() => {
       >
         <Header isAuthed={isAuthed} isFuse />
 
-        <FuseStatsBar />
+        <FuseStatsBar data={data} />
 
         <FuseTabBar />
 
