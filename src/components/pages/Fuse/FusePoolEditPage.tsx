@@ -67,6 +67,7 @@ export enum ComptrollerErrorCodes {
   SUPPLIER_NOT_WHITELISTED,
   BORROW_BELOW_MIN,
   SUPPLY_ABOVE_MAX,
+  NONZERO_TOTAL_SUPPLY
 }
 
 export const useIsUpgradeable = (comptrollerAddress: string) => {
