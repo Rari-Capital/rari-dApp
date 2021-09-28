@@ -14,7 +14,9 @@ import {
   Select,
   Spinner,
   useToast,
-  Link
+  Link,
+  Checkbox,
+  Stack
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "utils/chakraUtils";
 import DashboardBox, { DASHBOARD_BOX_PROPS, } from "../../../shared/DashboardBox";
@@ -43,7 +45,7 @@ import axios from "axios";
 // Hooks
 import { ETH_TOKEN_DATA, TokenData, useTokenData } from "../../../../hooks/useTokenData";
 import { convertIRMtoCurve } from "../FusePoolInfoPage";
-import { useOracleData, useGetOracleOptions } from "hooks/fuse/useOracleData";
+import { useOracleData, useGetOracleOptions, useSushiOrUniswapV2Pairs } from "hooks/fuse/useOracleData";
 import { createOracle } from "../../../../utils/createComptroller";
 
 // Utils
@@ -188,10 +190,7 @@ export const AssetSettings = ({
   // Or if the baseToken is weth then dont show form because we already have a hardcoded oracle for it
   const shouldShowUniV3BaseTokenOracleForm = useMemo(() => 
     ( !!uniV3BaseToken && !uniV3BaseTokenHasOracle ) 
-    || isTokenETHOrWETH(uniV3BaseToken)
   ,[uniV3BaseTokenHasOracle, uniV3BaseToken])
-
-  console.log("yo", isTokenETHOrWETH(uniV3BaseToken), { uniV3BaseToken , ETH_AND_WETH})
 
   // If you are using a univ3oracle, check the basetoken for an oracle
   useEffect(() => {
@@ -294,7 +293,6 @@ export const AssetSettings = ({
 
       // If this oracle is set in the optional form (only if u have a univ3pair and the base token isnt in the oracle)
       // Then u have to deploy the base token )
-      // await poolOracleContract.methods.add([tokenAddress, uniV3BaseToken], [oracleAddressToUse, uniV3BaseTokenOracle]).send({from: address})
 
       // Check for observation cardinality and fix if necessary
       await fuse.primeUniswapV3Oracle(oracleAddress, {from: address})
@@ -303,10 +301,18 @@ export const AssetSettings = ({
       oracleAddressToUse = await fuse.deployPriceOracle("UniswapV3TwapPriceOracleV2", {feeTier, baseToken: uniV3BaseToken}, {from: address})
     } 
 
+    if (activeOracle === "Uniswap_V2_Oracle") {
+      // Deploy Oracle
+      oracleAddressToUse = await fuse.deployPriceOracle("UniswapTwapPriceOracleV2", {baseToken: uniV3BaseToken}, {from: address})
+    }
+
     console.log({tokenAddress, uniV3BaseToken, oracleAddressToUse, uniV3BaseTokenOracle})
 
     try {
-        await poolOracleContract.methods.add([tokenAddress, uniV3BaseToken], [oracleAddressToUse, uniV3BaseTokenOracle]).send({from: address})
+        const tokenArray = shouldShowUniV3BaseTokenOracleForm ? [tokenAddress, uniV3BaseToken] : [tokenAddress]
+        const oracleAddress = shouldShowUniV3BaseTokenOracleForm ? [oracleAddressToUse, uniV3BaseTokenOracle] : [oracleAddressToUse]
+
+        await poolOracleContract.methods.add(tokenArray, oracleAddress).send({from: address})
         
         toast({
             title: "You have successfully configured the oracle for this asset!",
@@ -655,14 +661,21 @@ export const AssetSettings = ({
             </> 
         ) }
 
-      {shouldShowUniV3BaseTokenOracleForm && (
+      {shouldShowUniV3BaseTokenOracleForm ? (
         <>
-        <Alert colorScheme="yellow" borderRadius={5} my={1}>
-        <AlertIcon />
-        <span style={{ color: "#2F855A" }}>
-          {"This UniV3 Pair needs an oracle for the BaseToken."}
-        </span>
-      </Alert>
+        <Row
+          crossAxisAlignment="center"
+          mainAxisAlignment="center"
+          width="100%"
+          my={2}
+        >
+          <Alert status="info" width="80%" borderRadius={5} my={1}>
+              <AlertIcon/>
+              <Text fontSize="sm" align="center" color="black">
+                {"This UniV3 Pair needs an oracle for the BaseToken."}
+              </Text>
+          </Alert>
+        </Row>
         <BaseTokenOracleConfig 
         oracleData={oracleData}
         poolOracleAddress={poolOracleAddress}
@@ -673,7 +686,7 @@ export const AssetSettings = ({
         mode={mode}
         />
         </>
-      )}
+      ) : null }
 
       <ModalDivider />
       
@@ -848,7 +861,7 @@ const OracleConfig = ({
   // This will update the oracle address, after user chooses which options they want to use.
   // If option is Custom_Oracle or Uniswap_V3_Oracle, oracle address is changed differently so we dont trigger this.
   useEffect(() => {
-      if(activeOracle.length > 0 && activeOracle !== "Custom_Oracle" && activeOracle !== "Uniswap_V3_Oracle" && options) 
+      if(activeOracle.length > 0 && activeOracle !== "Custom_Oracle" && activeOracle !== "Uniswap_V3_Oracle" && activeOracle !== "Uniswap_V2_Oracle" && options) 
         _setOracleAddress(options[activeOracle])
   },[activeOracle, options, _setOracleAddress])
 
@@ -972,6 +985,27 @@ const OracleConfig = ({
                 : null 
               }
 
+              { activeOracle === "Uniswap_V2_Oracle" ?
+                <UniswapV2OrSushiPriceOracleConfigurator 
+                  _setOracleAddress={_setOracleAddress} 
+                  setUniV3BaseToken={setUniV3BaseToken}
+                  tokenAddress={tokenAddress.toLocaleLowerCase()}
+                  type="UniswapV2"
+                />
+                : null 
+              }
+
+
+              { activeOracle === "SushiSwap_Oracle" ?
+                <UniswapV2OrSushiPriceOracleConfigurator 
+                  _setOracleAddress={_setOracleAddress} 
+                  setUniV3BaseToken={setUniV3BaseToken}
+                  tokenAddress={tokenAddress.toLocaleLowerCase()}
+                  type="Sushiswap"
+                />
+                : null 
+              }
+
 
           </Box>
 
@@ -1002,7 +1036,7 @@ const UniswapV3PriceOracleConfigurator = (
     setFeeTier
   }: {
     tokenAddress: string, 
-    _setOracleAddress: (value: React.SetStateAction<string>) => void,
+    _setOracleAddress: React.Dispatch<React.SetStateAction<string>>,
     setUniV3BaseToken:  React.Dispatch<React.SetStateAction<string>>,
     setFeeTier: React.Dispatch<React.SetStateAction<number>>
   }
@@ -1014,7 +1048,7 @@ const UniswapV3PriceOracleConfigurator = (
   const [activePool, setActivePool] = useState<string>("");
 
   // We get a list of whitelistedPools from uniswap-v3's the graph.
-  const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for " + tokenAddress, async () =>
+  const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for " + tokenAddress, async () => 
     (await axios.post(
         "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
         {
@@ -1043,10 +1077,9 @@ const UniswapV3PriceOracleConfigurator = (
   // When user selects an option this function will be called.
   // Active pool is updated and we set the oracle address to the address of the pool we chose.
   const updateBoth = (value: string) => {
-    console.log("updateBoth", {value, liquidity})
     const uniPool = liquidity.data.token.whitelistPools[value]
-     setActivePool(value)
-     setFeeTier(uniPool.feeTier)
+    setActivePool(value)
+    setFeeTier(uniPool.feeTier)
     _setOracleAddress(uniPool.id)
     setUniV3BaseToken(uniPool.token0.id === tokenAddress ? uniPool.token1.id : uniPool.token0.id )
   }
@@ -1084,7 +1117,7 @@ const UniswapV3PriceOracleConfigurator = (
         >
         {typeof liquidity !== undefined
           ? Object.entries(liquiditySorted).map(([key, value]: any[]) => 
-              value.totalValueLockedUSD !== null && value.totalValueLockedUSD !== undefined && value.totalValueLockedUSD !== 100 
+              value.totalValueLockedUSD !== null && value.totalValueLockedUSD !== undefined && value.totalValueLockedUSD >= 100 
               ? ( 
                 <option
                     className="black-bg-option"
@@ -1142,6 +1175,142 @@ const UniswapV3PriceOracleConfigurator = (
         </Row>
       </>
     : null }
+    </>
+  )
+}
+
+const UniswapV2OrSushiPriceOracleConfigurator = (
+  {
+    tokenAddress,
+    _setOracleAddress,
+    setUniV3BaseToken,
+    type,
+  } : {
+    tokenAddress: string
+    _setOracleAddress: React.Dispatch<React.SetStateAction<string>>,
+    setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>,
+    type: string
+  }) => { 
+
+    const { t } = useTranslation()
+    
+    // This will be used to index whitelistPools array (fetched from the graph.)
+    // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
+    const [activePool, setActivePool] = useState<string>("");
+    const [checked, setChecked] = useState<boolean>(false)
+    const [checkedStepTwo, setCheckedStepTwo] = useState<boolean>(false)
+    
+    const {SushiPairs, SushiError, UniV2Pairs, univ2Error} = useSushiOrUniswapV2Pairs(tokenAddress)
+
+    const Pairs = type === "UniswapV2" ? UniV2Pairs : SushiPairs
+    const Error = type === "UniswapV2" ? univ2Error : SushiError
+
+    const updateInfo = (value: string) => {
+      const pair = Pairs[value]
+      setActivePool(value)
+      _setOracleAddress(pair.id)
+      setUniV3BaseToken(pair.token1.id === tokenAddress ? pair.token0.id : pair.token1.id)
+    }
+
+  if (Pairs === undefined || Error || Pairs === null) return null
+  
+  return (
+    <>
+    <Row 
+      crossAxisAlignment="center"
+      mainAxisAlignment="space-between"
+      width="260px"
+      my={3}
+    >
+     <Checkbox
+        isChecked={checked}
+        onChange={() => setChecked(!checked)}
+     >
+       <Text fontSize="xs" align="center">
+         Using this type of oracle requires you to run a TWAP bot.
+       </Text>
+     </Checkbox> 
+    </Row>
+
+    { checked ?
+      <Row 
+        crossAxisAlignment="center"
+        mainAxisAlignment="space-between"
+        width="260px"
+        my={3}
+      >
+        <Stack direction="row" spacing={4}>
+          <Button colorScheme="teal">
+            Check
+          </Button>
+
+          <Text fontSize="xs" align="center">
+            After deploying your oracle, you have to wait about 15 - 25 minutes for the oracle to be set.
+          </Text>
+        </Stack>
+
+      </Row> 
+    : null }
+
+    { true ? 
+      <Row
+        crossAxisAlignment="center"
+        mainAxisAlignment="space-between"
+        width="260px"
+        my={2}
+      >
+        <SimpleTooltip label={t("This field will determine which pool your oracle reads from. Its safer with more liquidity.")}>
+          <Text fontWeight="bold">
+            {t("Pool:")} <QuestionIcon ml={1} mb="4px" />
+          </Text>
+        </SimpleTooltip>
+        <Select
+          {...DASHBOARD_BOX_PROPS}
+          ml={2}
+          mb={2}
+          borderRadius="7px"
+          _focus={{ outline: "none" }}
+          width="180px"
+          placeholder={activePool.length === 0 ? t("Choose Pool"): activePool}
+          value={activePool}
+          disabled={!checked}
+          onChange={(event) => { 
+            updateInfo(event.target.value)}}
+          >
+          {typeof Pairs !== undefined
+            ? Object.entries(Pairs).map(([key, value]: any[]) => 
+                value.totalSupply !== null && value.totalSupply !== undefined && value.totalSupply >= 100
+                ? ( 
+                  <option
+                      className="black-bg-option"
+                      value={key}
+                      key={value.id}
+                  >
+                      {`${value.token0.symbol} / ${value.token1.symbol} (${shortUsdFormatter(value.totalSupply)})`}
+                  </option> 
+                ) : null)
+          : null }
+        </Select>
+      </Row> 
+    : null }
+
+     {activePool.length > 0 ?
+        <Row
+          crossAxisAlignment="center"
+          mainAxisAlignment="space-between"
+          width="260px"
+          my={2}
+        >
+          <SimpleTooltip label={t("TVL in pool as of this moment.")}>
+              <Text fontWeight="bold">
+                {t("Liquidity:")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+          </SimpleTooltip>
+          <h1>
+            {activePool !== "" ? smallUsdFormatter(Pairs[activePool].totalSupply) : null}
+          </h1>
+        </Row>
+      : null }
     </>
   )
 }
@@ -1287,8 +1456,6 @@ const AddAssetModal = ({
 
 export default AddAssetModal;
 
-
-
 const BaseTokenOracleConfig = ({
   oracleData,
   baseTokenAddress,
@@ -1405,7 +1572,7 @@ const BaseTokenOracleConfig = ({
                   onChange={(event) => setActiveOracleName(event.target.value)}
               >
                   {Object.entries(options).map(([key, value]) => 
-                      value !== null && value !== undefined  && key !== "Uniswap_V3_Oracle" ? 
+                      value !== null && value !== undefined  && key !== "Uniswap_V3_Oracle" && key!== "Uniswap_V2_Oracle" ? 
                       <option
                           className="black-bg-option"
                           value={key}
