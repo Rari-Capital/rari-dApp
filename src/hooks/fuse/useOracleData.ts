@@ -1,10 +1,23 @@
+// Rari
 import Fuse from '../../fuse-sdk/src/index'
-import { useQuery } from 'react-query'
-import { createOracle } from '../../utils/createComptroller'
-import Rari from 'rari-sdk'
-import axios from 'axios'
 
-export const useOracleData = (oracleAddress: string, fuse: Fuse) => {
+// Hooks
+import { createOracle } from '../../utils/createComptroller'
+
+// Web3
+import { Contract } from "web3-eth-contract"
+
+// Libraries
+import axios from 'axios'
+import { useQuery } from 'react-query'
+
+export type OracleDataType = {
+  admin: string // Address of Oracle's admin
+  adminOverwrite: boolean // Will tell us if admin can overwrite existing oracle-token pairs
+  oracleContract: Contract
+}
+
+export const useOracleData = (oracleAddress: string, fuse: Fuse): OracleDataType | undefined => {
     const { data } = useQuery("Oracle info" + oracleAddress, async () => {
       const oracleContract = createOracle(oracleAddress, fuse, "MasterPriceOracle")
   
