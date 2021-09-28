@@ -95,16 +95,6 @@ const FuseTabBar = () => {
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
         <TabLink route="/fuse" text={t("All Pools")} />
         <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
-        <TabExternalLink
-          route="https://rari.grafana.net/goto/61kctV_Gk"
-          text={t("Metrics")}
-        />
-
-        {/* Show the liquidations link if is on mobile, large screen or not on a pool page. We do this to prevent the buttons from overflowing the tab bar on medium screens. */}
-        {isMobile || !isMediumScreen || !poolId ? (
-          <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
-        ) : null}
-
         {poolId ? (
           <>
             <DashboardBox

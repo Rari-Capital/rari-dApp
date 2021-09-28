@@ -142,6 +142,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = initFuseWithProviders(modalProvider);
+      window.Fuse = Fuse as any;
 
       setRari(rariInstance);
       setFuse(fuseInstance);

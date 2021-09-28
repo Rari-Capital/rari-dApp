@@ -1,5 +1,5 @@
-import { Heading } from "@chakra-ui/react";
-import { RowOrColumn, Column, Center } from "utils/chakraUtils";
+import { Heading, Skeleton, Text, Icon } from "@chakra-ui/react";
+import { RowOrColumn, Column, Center, Row } from "utils/chakraUtils";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
@@ -12,8 +12,11 @@ import { useFuseTVL, fetchFuseNumberTVL } from "hooks/fuse/useFuseTVL";
 import { useFuseTotalBorrowAndSupply } from "hooks/fuse/useFuseTotalBorrowAndSupply";
 
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+import { FusePoolData } from "utils/fetchFusePoolData";
+import { CheckCircleIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-const FuseStatsBar = () => {
+const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
   const isMobile = useIsSmallScreen();
 
   const { t } = useTranslation();
@@ -30,10 +33,11 @@ const FuseStatsBar = () => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       height={isMobile ? "auto" : "125px"}
-    >
+    > 
       <DashboardBox
         width={isMobile ? "100%" : "100%"}
         height={isMobile ? "auto" : "100%"}
+        flexBasis="60%"
       >
         <Column
           expand
@@ -43,69 +47,91 @@ const FuseStatsBar = () => {
           p={4}
           fontSize="sm"
         >
-          <Heading size="lg" mb="2px">
-            {t("Fuse")}
-          </Heading>
+          <Row
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            mb="2px"
+          >
+            {/* Title */}
+            {!!data ? (
+              <WhitelistedIcon isWhitelisted={data.isAdminWhitelisted} />
+            ) : null}
+            <Heading size="lg" isTruncated>
+              {data?.name ?? "Fuse"}
+            </Heading>
+          </Row>
 
-          {t(
-            "There's {{tvl}} supplied to Fuse, the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.",
-            { tvl: fuseTVL ? smallUsdFormatter(fuseTVL) : "?" }
-          )}
+          {/* Description */}
+          <Text>
+            {!!data
+              ? t(
+                  "This pool has {{tvl}} supplied across {{numAssets}} assets. Fuse is the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.",
+                  {
+                    tvl: smallUsdFormatter(data.totalSuppliedUSD),
+                    numAssets: data.assets.length,
+                  }
+                )
+              : t(
+                  "Fuse is the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility."
+                )}
+          </Text>
         </Column>
       </DashboardBox>
 
-      {isAuthed &&
-      totalBorrowAndSupply &&
-      totalBorrowAndSupply.totalSuppliedUSD > 0 ? (
-        <>
-          <StatBox>
-            <CaptionedStat
-              crossAxisAlignment="center"
-              captionFirst={false}
-              statSize="3xl"
-              captionSize="sm"
-              stat={
-                totalBorrowAndSupply
-                  ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
-                  : "$?"
-              }
-              caption={t("Your Supply Balance")}
-            />
-          </StatBox>
+      <RowOrColumn isRow={!isMobile} mainAxisAlignment="flex-start" crossAxisAlignment="flex-start" flexBasis="40%" h="100%" w="100%">
+        {isAuthed &&
+        totalBorrowAndSupply &&
+        totalBorrowAndSupply.totalSuppliedUSD > 0 ? (
+          <>
+            <StatBox>
+              <CaptionedStat
+                crossAxisAlignment="center"
+                captionFirst={false}
+                statSize="3xl"
+                captionSize="sm"
+                stat={
+                  totalBorrowAndSupply
+                    ? smallUsdFormatter(totalBorrowAndSupply.totalSuppliedUSD)
+                    : "$?"
+                }
+                caption={t("Your Supply Balance")}
+              />
+            </StatBox>
 
-          <StatBox>
-            <CaptionedStat
+            <StatBox>
+              <CaptionedStat
+                crossAxisAlignment="center"
+                captionFirst={false}
+                statSize="3xl"
+                captionSize="sm"
+                stat={
+                  totalBorrowAndSupply
+                    ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
+                    : "$?"
+                }
+                caption={t("Your Borrow Balance")}
+              />
+            </StatBox>
+          </>
+        ) : (
+          <StatBox width={isMobile ? "100%" : "100%"}>
+            <APYWithRefreshMovingStat
+              formatStat={smallUsdFormatter}
+              fetchInterval={40000}
+              loadingPlaceholder="$?"
+              apyInterval={100}
+              fetch={() => fetchFuseNumberTVL(rari, fuse)}
+              queryKey={"fuseTVL"}
+              apy={0.15}
+              statSize="3xl"
+              captionSize="xs"
+              caption={t("Total Value Supplied Across Fuse")}
               crossAxisAlignment="center"
               captionFirst={false}
-              statSize="3xl"
-              captionSize="sm"
-              stat={
-                totalBorrowAndSupply
-                  ? smallUsdFormatter(totalBorrowAndSupply.totalBorrowedUSD)
-                  : "$?"
-              }
-              caption={t("Your Borrow Balance")}
             />
           </StatBox>
-        </>
-      ) : (
-        <StatBox width={isMobile ? "100%" : "496px"}>
-          <APYWithRefreshMovingStat
-            formatStat={smallUsdFormatter}
-            fetchInterval={40000}
-            loadingPlaceholder="$?"
-            apyInterval={100}
-            fetch={() => fetchFuseNumberTVL(rari, fuse)}
-            queryKey={"fuseTVL"}
-            apy={0.15}
-            statSize="3xl"
-            captionSize="xs"
-            caption={t("Total Value Supplied Across Fuse")}
-            crossAxisAlignment="center"
-            captionFirst={false}
-          />
-        </StatBox>
-      )}
+        )}
+      </RowOrColumn>
     </RowOrColumn>
   );
 };
@@ -123,9 +149,9 @@ const StatBox = ({
 
   return (
     <DashboardBox
-      width={isMobile ? "100%" : "240px"}
+      width={isMobile ? "100%" : "100%"}
       height={isMobile ? "auto" : "100%"}
-      flexShrink={0}
+      flexShrink={1}
       mt={isMobile ? 4 : 0}
       ml={isMobile ? 0 : 4}
       {...others}
@@ -134,5 +160,30 @@ const StatBox = ({
         {children}
       </Center>
     </DashboardBox>
+  );
+};
+
+export const WhitelistedIcon = ({
+  isWhitelisted,
+}: {
+  isWhitelisted: boolean;
+}) => {
+  return (
+    <>
+      <SimpleTooltip
+        label={
+          isWhitelisted
+            ? "This pool is from a Whitelisted Admin"
+            : "This pool is not from a whitelisted admin. Use with caution!"
+        }
+        placement="bottom-end"
+      >
+        {isWhitelisted ? (
+          <CheckCircleIcon boxSize="20px" mr={3} />
+        ) : (
+          <WarningTwoIcon boxSize="20px" mr={3} color="orange.300" />
+        )}
+      </SimpleTooltip>
+    </>
   );
 };

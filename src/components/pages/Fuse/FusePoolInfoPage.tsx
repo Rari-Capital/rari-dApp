@@ -44,6 +44,7 @@ import { createComptroller } from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
 import Footer from "components/shared/Footer";
+import { useIdentifyOracle } from "hooks/fuse/useOracleData";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -194,7 +195,7 @@ const OracleAndInterestRates = ({
   totalLiquidityUSD,
   comptrollerAddress,
   oracleAddress,
-  oracleModel
+  oracleModel,
 }: {
   assets: USDPricedFuseAsset[];
   name: string;
@@ -440,6 +441,8 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
 
   const isMobile = useIsMobile();
 
+  const oracleIdentity = useIdentifyOracle(selectedAsset.oracle);
+
   return (
     <Column
       mainAxisAlignment="flex-start"
@@ -592,6 +595,21 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           captionFirst={true}
         />
 
+        <Link
+          href={`https://etherscan.io/address/${selectedAsset.oracle}`}
+          isExternal
+          _hover={{ pointer: "cursor", color:"blue" }}
+        >
+          <CaptionedStat
+            stat={oracleIdentity}
+            statSize="md"
+            captionSize="xs"
+            caption={t("Oracle")}
+            crossAxisAlignment="center"
+            captionFirst={true}
+          />
+        </Link>
+
         <CaptionedStat
           stat={(selectedAsset.reserveFactor / 1e16).toFixed(0) + "%"}
           statSize="lg"
@@ -649,6 +667,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           captionFirst={true}
         />
       </Row>
+      <ModalDivider />
     </Column>
   );
 };

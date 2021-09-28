@@ -36,3 +36,5 @@ cypress.env.json
 .env
 
 .eslintcache
+
+public

@@ -35,40 +35,71 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
       if (!isValidAddress) return null
 
       // Get Oracle address for asset from the pools MasterPriceOracle
-      const oracleAddress = await oracleData.oracleContract.methods.oracles(tokenAddress).call()
-      
-      // If oracleAddress is empty return null
-      if (oracleAddress === "0x0000000000000000000000000000000000000000" ) return null
-      return oracleAddress
-  })
+      const oracleAddress = await oracleData.oracleContract.methods
+        .oracles(tokenAddress)
+        .call();
 
-  const { data: Rari_Default_Oracle } = useQuery("RariMasterPriceOracle price feed check for " + tokenAddress, async () => {
-      if (!isValidAddress ||  ( !oracleData.adminOverwrite && !Master_Price_Oracle_Default === null )) return null
+      // If oracleAddress is empty return null
+      if (oracleAddress === "0x0000000000000000000000000000000000000000")
+        return null;
+      return oracleAddress;
+    }
+  );
+
+  const { data: Rari_Default_Oracle } = useQuery(
+    "RariMasterPriceOracle price feed check for " + tokenAddress,
+    async () => {
+      if (
+        !isValidAddress ||
+        (!oracleData.adminOverwrite && !Master_Price_Oracle_Default === null)
+      )
+        return null;
 
       // If address is valid and admin can overwrite, get Oracle address for the asset from RariMasterPriceOracle
-      const oracleContract = createOracle(Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle, fuse, "MasterPriceOracle")
-      const oracleAddress =  await oracleContract.methods.oracles(tokenAddress).call()
+      const oracleContract = createOracle(
+        Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle,
+        fuse,
+        "MasterPriceOracle"
+      );
+      const oracleAddress = await oracleContract.methods
+        .oracles(tokenAddress)
+        .call();
 
       // If oracleAddress is empty return null
-      if (oracleAddress === "0x0000000000000000000000000000000000000000" ) return null
-      return oracleAddress
-  })
+      if (oracleAddress === "0x0000000000000000000000000000000000000000")
+        return null;
+      return oracleAddress;
+    }
+  );
 
-  const {data: Chainlink_Oracle } = useQuery("Chainlink price feed check for: " + tokenAddress, async () => {
-    if(!isValidAddress || ( !oracleData.adminOverwrite && !Master_Price_Oracle_Default === null )) return null
+  const { data: Chainlink_Oracle } = useQuery(
+    "Chainlink price feed check for: " + tokenAddress,
+    async () => {
+      if (
+        !isValidAddress ||
+        (!oracleData.adminOverwrite && !Master_Price_Oracle_Default === null)
+      )
+        return null;
 
-    // If address is valid and admin can overwrite, get price for the asset from ChainlinkPriceOracle
-    const oracleContract = createOracle(Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.ChainlinkPriceOracleV3, fuse, "ChainlinkPriceOracle")
-    const oraclePrice = await oracleContract.methods.price(tokenAddress).call()
+      // If address is valid and admin can overwrite, get price for the asset from ChainlinkPriceOracle
+      const oracleContract = createOracle(
+        Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.ChainlinkPriceOracleV3,
+        fuse,
+        "ChainlinkPriceOracle"
+      );
+      const oraclePrice = await oracleContract.methods
+        .price(tokenAddress)
+        .call();
 
-    // If price is zero, this means theres no pricefeed for the asset so return null
-    // If we receive a price, return ChainlinkPriceOracle address
-    if (oraclePrice <= 0) return null
-    return Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.ChainlinkPriceOracleV3
-  })
+      // If price is zero, this means theres no pricefeed for the asset so return null
+      // If we receive a price, return ChainlinkPriceOracle address
+      if (oraclePrice <= 0) return null;
+      return Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.ChainlinkPriceOracleV3;
+    }
+  );
 
-  // We mount this hook to get data from cache. 
-  // We need this because if there's no whitelisted uniswap pool, 
+  // We mount this hook to get data from cache.
+  // We need this because if there's no whitelisted uniswap pool,
   // we shouldn't return Uniswap_V3_Oracle as an option
   const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for  " + tokenAddress, async () => 
     (await axios.post(

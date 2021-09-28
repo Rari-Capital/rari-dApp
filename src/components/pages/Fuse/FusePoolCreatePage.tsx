@@ -76,28 +76,11 @@ const PoolConfiguration = () => {
   
   const [isCreating, setIsCreating] = useState(false);
 
-  const [oracle, setOracle] = useState("");
-  const [asset, setAsset] = useState("");
-  const [assetOracle, setAssetOracle] = useState("");
-
   const onDeploy = async () => {
     if (name === "") {
       toast({
         title: "Error!",
         description: "You must specify a name for your Fuse pool!",
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-        position: "top-right",
-      });
-
-      return;
-    }
-
-    if (oracle === "") {
-      toast({
-        title: "Error!",
-        description: "You must select an oracle.",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -130,8 +113,8 @@ const PoolConfiguration = () => {
         isWhitelisted,
         bigCloseFactor,
         bigLiquidationIncentive,
-        oracle,
-        oracle === "MasterPriceOracle" ? {underlyings: [], oracles: [], canAdminOverwrite: true} : { reporter },
+        "MasterPriceOracle", // we hardcode MasterPriceOracle as only option
+        {underlyings: [], oracles: [], canAdminOverwrite: true},
         { from: address },
         isWhitelisted ? whitelist : null
       );
@@ -189,46 +172,6 @@ const PoolConfiguration = () => {
           </OptionRow>
 
           <ModalDivider />
-
-          <OptionRow>
-            <Text fontWeight="bold" mr={4}>
-              {t("Oracle")}
-            </Text>
-            <Select
-              width="20%"
-              value={oracle}
-              onChange={(event) => setOracle(event.target.value)}
-              placeholder="Select Oracle"
-            >
-              <option
-                className="black-bg-option"
-                value={
-                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES
-                    .ChainlinkPriceOracle
-                }
-              >
-                ChainlinkPriceOracle
-              </option>
-
-              <option
-                className="black-bg-option"
-                value={
-                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle
-                }
-              >
-                Rari MasterPriceOracle
-              </option>
-
-              <option
-                className="black-bg-option"
-                value={
-                  "MasterPriceOracle"
-                }
-                >
-                  Custom Price Oracle
-                </option>
-            </Select>
-          </OptionRow>
 
           <ModalDivider />
 
