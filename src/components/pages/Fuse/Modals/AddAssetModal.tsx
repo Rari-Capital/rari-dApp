@@ -672,7 +672,7 @@ export const AssetSettings = ({
           <Alert status="info" width="80%" borderRadius={5} my={1}>
               <AlertIcon/>
               <Text fontSize="sm" align="center" color="black">
-                {"This UniV3 Pair needs an oracle for the BaseToken."}
+                {"This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."}
               </Text>
           </Alert>
         </Row>
@@ -1535,24 +1535,25 @@ const BaseTokenOracleConfig = ({
 }
 
   return (
-    <ConfigRow mainAxisAlignment="space-between">
+    <Row 
+      mainAxisAlignment="space-between"
+      crossAxisAlignment="center"
+      my={4}
+      mx={4}
+    >
       {options ?
           <>
-          <Column mainAxisAlignment="flex-start" crossAxisAlignment="center">
-          <CTokenIcon address={baseTokenAddress} boxSize={"15px"} />
-          <SimpleTooltip
-              label={isUserAdmin ? oracleData.adminOverwrite 
-                ? t("Choose the best price oracle for this BaseToken.") 
-                : options.Master_Price_Oracle_Default === null 
-                ? t("Once the oracle is set you won't be able to change it") 
-                : t("Oracle has been set and can't be changed.")
-                : t("You're not the oracle admin.")
-              }
-          >
-              <Text fontWeight="bold">
-              {t("BaseToken Price Oracle")} <QuestionIcon ml={1} mb="4px" />
-              </Text>
-          </SimpleTooltip>
+          <Column mainAxisAlignment="center" crossAxisAlignment="center">
+            <Stack direction="column" spacing={3} align="center">
+            <CTokenIcon address={baseTokenAddress} boxSize={"50px"} />
+            <SimpleTooltip
+                label={t("Choose the best price oracle for this BaseToken.") }
+            >
+                <Text fontWeight="bold" fontSize="sm" align="center">
+                  {t("BaseToken Price Oracle")} <QuestionIcon ml={1} mb="4px" />
+                </Text>
+            </SimpleTooltip>
+            </Stack>
           </Column>
 
           <Box
@@ -1624,6 +1625,6 @@ const BaseTokenOracleConfig = ({
           : null 
 
         }
-    </ConfigRow>
+    </Row>
   )
 }
