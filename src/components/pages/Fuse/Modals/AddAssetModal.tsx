@@ -16,7 +16,7 @@ import {
   useToast,
   Link,
   Checkbox,
-  Stack
+  Circle
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "utils/chakraUtils";
 import DashboardBox, { DASHBOARD_BOX_PROPS, } from "../../../shared/DashboardBox";
@@ -26,6 +26,7 @@ import { SliderWithLabel } from "../../../shared/SliderWithLabel";
 import { ConfigRow, SaveButton, testForComptrollerErrorAndSend } from "../FusePoolEditPage";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
+
 
 // Components
 import { CTokenIcon } from "../FusePoolsPage";
@@ -148,14 +149,14 @@ export const AssetSettings = ({
   poolOracleAddress,
   comptrollerAddress,
 }: {
-  poolID: string; // Fuse pool's ID.
-  poolName: string; // Fuse pool's name.
-  tokenData: TokenData; // Token's data i.e. symbol, logo, css color, etc.
-  tokenAddress: string; // Underlying token's addres. i.e. USDC, DAI, etc.
-  poolOracleAddress: string; // Fuse pool's oracle address
-  oracleData: OracleDataType; // Fuse pool's oracle contract, admin, overwriting permissions.
-  oracleModel: string | null; // Fuse pool's oracle model name. i.e MasterPrice, Chainlink, etc.
   comptrollerAddress: string; // Fuse pool's comptroller address
+  poolOracleAddress: string; // Fuse pool's oracle address
+  tokenAddress: string; // Underlying token's addres. i.e. USDC, DAI, etc.
+  oracleModel: string | null; // Fuse pool's oracle model name. i.e MasterPrice, Chainlink, etc.
+  oracleData: OracleDataType; // Fuse pool's oracle contract, admin, overwriting permissions.
+  tokenData: TokenData; // Token's data i.e. symbol, logo, css color, etc.
+  poolName: string; // Fuse pool's name.
+  poolID: string; // Fuse pool's ID.
 
   // Only for editing mode
   cTokenAddress?: string; // CToken for Underlying token. i.e f-USDC-4
@@ -529,128 +530,74 @@ export const AssetSettings = ({
     }
   }, [cTokenData]);
 
+
+  const args = {
+      cTokenData,
+    collateralFactor,
+    scaleCollateralFactor,
+    updateCollateralFactor,
+    setCollateralFactor,
+    liquidationIncentiveMantissa,
+    cTokenAddress,
+    togglePause,
+    isBorrowPaused,
+    reserveFactor,
+    scaleReserveFactor,
+    adminFee,
+    scaleAdminFee,
+    setAdminFee,
+    updateAdminFee,
+    oracleModel,
+    oracleData,
+    tokenAddress,
+    mode ,
+    setFeeTier,
+    activeOracle,
+    oracleAddress,
+    _setActiveOracle,
+    setReserveFactor,
+    feeTier,
+    _setOracleAddress,
+    setUniV3BaseToken,
+    poolOracleAddress,
+    shouldShowUniV3BaseTokenOracleForm,
+    uniV3BaseToken,
+    uniV3BaseTokenOracle,
+    setUniV3BaseTokenOracle,
+    setInterestRateModel,
+    interestRateModel,
+    updateInterestRateModel,
+    curves,
+    tokenData,
+    updateReserveFactor
+  }
+
+  console.log(mode, "mode", tokenAddress)
+
   return (
     cTokenAddress ? cTokenData?.cTokenAddress === cTokenAddress : true
   ) ? (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      overflowY="auto"
-      width="100%"
-      height="100%"
-    >
-      <ConfigRow height="35px">
-        <SimpleTooltip
-          label={t(
-            "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset."
-          )}
-        >
-          <Text fontWeight="bold">
-            {t("Collateral Factor")} <QuestionIcon ml={1} mb="4px" />
-          </Text>
-        </SimpleTooltip>
-
-        {cTokenData &&
-        collateralFactor !==
-          scaleCollateralFactor(cTokenData.collateralFactorMantissa) ? (
-          <SaveButton ml={3} onClick={updateCollateralFactor} />
-        ) : null}
-
-        <SliderWithLabel
-          ml="auto"
-          value={collateralFactor}
-          setValue={setCollateralFactor}
-          formatValue={formatPercentage}
-          max={
-            liquidationIncentiveMantissa
-              ? // 100% CF - Liquidation Incentive (ie: 8%) - 5% buffer
-                100 - (liquidationIncentiveMantissa.toString() / 1e16 - 100) - 5
-              : 90
-          }
-        />
-      </ConfigRow>
-
-      <ModalDivider />
-
-      {cTokenAddress ? (
-        <ConfigRow>
-          <SimpleTooltip
-            label={t("If enabled borrowing this asset will be disabled.")}
-          >
-            <Text fontWeight="bold">
-              {t("Pause Borrowing")} <QuestionIcon ml={1} mb="4px" />
-            </Text>
-          </SimpleTooltip>
-
-          <SaveButton
-            ml="auto"
-            onClick={togglePause}
-            fontSize="xs"
-            altText={
-              isBorrowPaused ? t("Enable Borrowing") : t("Pause Borrowing")
-            }
+    <> 
+      { // If user is editing, we show everything in column. If user is adding a new asset 
+        // The configuration is shown in two columns because its a modal.
+        mode === "Editing" 
+        ? <AssetConfig
+            {...args}
           />
-        </ConfigRow>
-      ) : null}
-
-      <ModalDivider />
-
-      <ConfigRow height="35px">
-        <SimpleTooltip
-          label={t(
-            "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction."
-          )}
-        >
-          <Text fontWeight="bold">
-            {t("Reserve Factor")} <QuestionIcon ml={1} mb="4px" />
-          </Text>
-        </SimpleTooltip>
-
-        {cTokenData &&
-        reserveFactor !==
-          scaleReserveFactor(cTokenData.reserveFactorMantissa) ? (
-          <SaveButton ml={3} onClick={updateReserveFactor} />
-        ) : null}
-
-        <SliderWithLabel
-          ml="auto"
-          value={reserveFactor}
-          setValue={setReserveFactor}
-          formatValue={formatPercentage}
-          max={50}
-        />
-      </ConfigRow>
-      <ModalDivider />
-
-      <ConfigRow height="35px">
-        <SimpleTooltip
-          label={t(
-            "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee."
-          )}
-        >
-          <Text fontWeight="bold">
-            {t("Admin Fee")} <QuestionIcon ml={1} mb="4px" />
-          </Text>
-        </SimpleTooltip>
-
-        {cTokenData &&
-        adminFee !== scaleAdminFee(cTokenData.adminFeeMantissa) ? (
-          <SaveButton ml={3} onClick={updateAdminFee} />
-        ) : null}
-
-        <SliderWithLabel
-          ml="auto"
-          value={adminFee}
-          setValue={setAdminFee}
-          formatValue={formatPercentage}
-          max={30}
-        />
-      </ConfigRow>
-
-      <ModalDivider />
-
-      {oracleModel === "MasterPriceOracle" && oracleData !== undefined  && !isTokenETHOrWETH(tokenAddress) &&
-        (  <>
+        : (
+          <Box
+            d="flex"
+            flexDirection="row"
+          >
+            <AssetConfig {...args}/>
+            {oracleModel === "MasterPriceOracle" && oracleData !== undefined  && !isTokenETHOrWETH(tokenAddress) && mode === "Adding" &&
+            ( <Column
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="flex-start"
+                overflowY="auto"
+                width="100%"
+                height="100%"
+            >
               <OracleConfig 
                   mode={mode}
                   feeTier={feeTier} 
@@ -664,158 +611,413 @@ export const AssetSettings = ({
                   setUniV3BaseToken={setUniV3BaseToken}
                   poolOracleAddress={poolOracleAddress}
                 />
-
-              <ModalDivider />
-              
-            </> 
-        ) }
-
-      {shouldShowUniV3BaseTokenOracleForm ? (
-        <>
-          <Row
-            crossAxisAlignment="center"
-            mainAxisAlignment="center"
-            width="100%"
-            my={2}
-          >
-            <Alert status="info" width="80%" borderRadius={5} my={1}>
-                <AlertIcon/>
-                <Text fontSize="sm" align="center" color="black">
-                  {"This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."}
-                </Text>
-            </Alert>
-          </Row>
-          <BaseTokenOracleConfig 
-            mode={mode}
-            oracleData={oracleData}
-            uniV3BaseToken={uniV3BaseToken}
-            baseTokenAddress={uniV3BaseToken}
-            uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-            setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-          />
-        </>
-      ) : null }
-
-      <ModalDivider />
-      
-      <ConfigRow>
-        <SimpleTooltip
-          label={t(
-            "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels."
-          )}
-        >
-          <Text fontWeight="bold">
-            {t("Interest Model")} <QuestionIcon ml={1} mb="4px" />
-          </Text>
-        </SimpleTooltip>
-
-        <Select
-          {...DASHBOARD_BOX_PROPS}
-          ml="auto"
-          borderRadius="7px"
-          fontWeight="bold"
-          _focus={{ outline: "none" }}
-          width="260px"
-          value={interestRateModel.toLowerCase()}
-          onChange={(event) => setInterestRateModel(event.target.value)}
-        >
-          {Object.entries(
-            Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-          ).map(([key, value]) => {
-            return (
-              <option
-                className="black-bg-option"
-                value={value.toLowerCase()}
-                key={key}
-              >
-                {key}
-              </option>
-            );
-          })}
-        </Select>
-
-        {cTokenData &&
-        cTokenData.interestRateModelAddress.toLowerCase() !==
-          interestRateModel.toLowerCase() ? (
-          <SaveButton
-            height="40px"
-            borderRadius="7px"
-            onClick={updateInterestRateModel}
-          />
-        ) : null}
-      </ConfigRow>
-
-      <Box
-        height="170px"
-        width="100%"
-        color="#000000"
-        overflow="hidden"
-        pl={2}
-        pr={3}
-        className="hide-bottom-tooltip"
-        flexShrink={0}
-      >
-        {curves ? (
-          <Chart
-            options={
-              {
-                ...FuseIRMDemoChartOptions,
-                colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
-              } as any
-            }
-            type="line"
-            width="100%"
-            height="100%"
-            series={[
-              {
-                name: "Borrow Rate",
-                data: curves.borrowerRates,
-              },
-              {
-                name: "Deposit Rate",
-                data: curves.supplierRates,
-              },
-            ]}
-          />
-        ) : curves === undefined ? (
-          <Center expand color="#FFF">
-            <Spinner my={8} />
-          </Center>
-        ) : (
-          <Center expand color="#FFFFFF">
-            <Text>
-              {t("No graph is available for this asset's interest curves.")}
-            </Text>
-          </Center>
-        )}
-      </Box>
-
-      {cTokenAddress ? null : (
-        <Box px={4} mt={4} width="100%">
-          <Button
-            fontWeight="bold"
-            fontSize="2xl"
-            borderRadius="10px"
-            width="100%"
-            height="70px"
-            color={tokenData.overlayTextColor! ?? "#000"}
-            bg={tokenData.color! ?? "#FFF"}
-            _hover={{ transform: "scale(1.02)" }}
-            _active={{ transform: "scale(0.95)" }}
-            isLoading={isDeploying}
-            onClick={deploy}
-          >
-            {t("Confirm")}
-          </Button>
-        </Box>
-      )}
-    </Column>
-  ) : (
+             {shouldShowUniV3BaseTokenOracleForm ? (
+                <>
+                  <Row
+                    crossAxisAlignment="center"
+                    mainAxisAlignment="center"
+                    width="100%"
+                    my={2}
+                  >
+                    <Alert status="info" width="80%" borderRadius={5} my={1}>
+                        <AlertIcon/>
+                        <Text fontSize="sm" align="center" color="black">
+                          {"This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."}
+                        </Text>
+                    </Alert>
+                  </Row>
+                  <BaseTokenOracleConfig 
+                    mode={mode}
+                    oracleData={oracleData}
+                    uniV3BaseToken={uniV3BaseToken}
+                    baseTokenAddress={uniV3BaseToken}
+                    uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+                    setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+                  />
+                </>
+              ) : null }
+            </Column> )
+          }
+          </Box>
+        )
+      }
+      {
+        cTokenAddress ? null : (
+          <Box px={4} mt={4} width="100%">
+            <Button
+              fontWeight="bold"
+              fontSize="2xl"
+              borderRadius="10px"
+              width="100%"
+              height="70px"
+              color={tokenData.overlayTextColor! ?? "#000"}
+              bg={tokenData.color! ?? "#FFF"}
+              _hover={{ transform: "scale(1.02)" }}
+              _active={{ transform: "scale(0.95)" }}
+              isLoading={isDeploying}
+              onClick={deploy}
+            >
+              {t("Confirm")}
+            </Button>
+          </Box>
+        )
+      }
+    </>
+  ) : 
+   (
     <Center expand>
       <Spinner my={8} />
     </Center>
   );
 };
+
+
+const AssetConfig = ({
+  cTokenData,
+  collateralFactor,
+  scaleCollateralFactor,
+  updateCollateralFactor,
+  setCollateralFactor,
+  liquidationIncentiveMantissa,
+  cTokenAddress,
+  togglePause,
+  isBorrowPaused,
+  reserveFactor,
+  scaleReserveFactor,
+  adminFee,
+  scaleAdminFee,
+  setAdminFee,
+  updateAdminFee,
+  oracleModel,
+  oracleData,
+  tokenAddress,
+  mode ,
+  setFeeTier,
+  activeOracle,
+  oracleAddress,
+  _setActiveOracle,
+  feeTier,
+  _setOracleAddress,
+  setUniV3BaseToken,
+  poolOracleAddress,
+  shouldShowUniV3BaseTokenOracleForm,
+  uniV3BaseToken,
+  uniV3BaseTokenOracle,
+  setUniV3BaseTokenOracle,
+  setInterestRateModel,
+  interestRateModel,
+  updateInterestRateModel,
+  curves,
+  tokenData,
+  updateReserveFactor,
+  setReserveFactor
+}: {
+  cTokenData: any
+  collateralFactor: any
+  scaleCollateralFactor: any
+  updateCollateralFactor: any
+  setCollateralFactor: any
+  liquidationIncentiveMantissa: any
+  cTokenAddress: any
+  togglePause: any
+  isBorrowPaused: any
+  reserveFactor: any
+  scaleReserveFactor: any
+  adminFee: any
+  scaleAdminFee: any
+  setAdminFee: any
+  updateAdminFee: any
+  oracleModel: any
+  oracleData: any
+  tokenAddress : any
+  mode : any
+  setFeeTier: any
+  activeOracle: any
+  oracleAddress: any
+  _setActiveOracle: any
+  feeTier: any
+  _setOracleAddress: any
+  setUniV3BaseToken: any
+  poolOracleAddress: any
+  shouldShowUniV3BaseTokenOracleForm: any
+  uniV3BaseToken: any
+  uniV3BaseTokenOracle: any
+  setUniV3BaseTokenOracle: any
+  setInterestRateModel: any
+  interestRateModel: any
+  updateInterestRateModel: any
+  curves: any
+  tokenData: any
+  updateReserveFactor: any
+  setReserveFactor: any
+}) => {
+  const { t } = useTranslation()
+
+
+  return (
+    <>
+    <Column
+    mainAxisAlignment="flex-start"
+    crossAxisAlignment="flex-start"
+    overflowY="auto"
+    width="100%"
+    height="100%"
+  >
+    <ConfigRow height="35px">
+      <SimpleTooltip
+        label={t(
+          "Collateral factor can range from 0-90%, and represents the proportionate increase in liquidity (borrow limit) that an account receives by depositing the asset."
+        )}
+      >
+        <Text fontWeight="bold">
+          {t("Collateral Factor")} <QuestionIcon ml={1} mb="4px" />
+        </Text>
+      </SimpleTooltip>
+
+      {cTokenData !== undefined &&
+      collateralFactor !==
+        scaleCollateralFactor(cTokenData?.collateralFactorMantissa) ? (
+        <SaveButton ml={3} onClick={updateCollateralFactor} />
+      ) : null}
+
+      <SliderWithLabel
+        ml="auto"
+        value={collateralFactor}
+        setValue={setCollateralFactor}
+        formatValue={formatPercentage}
+        max={
+          liquidationIncentiveMantissa
+            ? // 100% CF - Liquidation Incentive (ie: 8%) - 5% buffer
+              100 - (liquidationIncentiveMantissa.toString() / 1e16 - 100) - 5
+            : 90
+        }
+      />
+    </ConfigRow>
+
+    <ModalDivider />
+
+    {cTokenAddress ? (
+      <ConfigRow>
+        <SimpleTooltip
+          label={t("If enabled borrowing this asset will be disabled.")}
+        >
+          <Text fontWeight="bold">
+            {t("Pause Borrowing")} <QuestionIcon ml={1} mb="4px" />
+          </Text>
+        </SimpleTooltip>
+
+        <SaveButton
+          ml="auto"
+          onClick={togglePause}
+          fontSize="xs"
+          altText={
+            isBorrowPaused ? t("Enable Borrowing") : t("Pause Borrowing")
+          }
+        />
+      </ConfigRow>
+    ) : null}
+
+    <ModalDivider />
+
+    <ConfigRow height="35px">
+      <SimpleTooltip
+        label={t(
+          "The fraction of interest generated on a given asset that is routed to the asset's Reserve Pool. The Reserve Pool protects lenders against borrower default and liquidation malfunction."
+        )}
+      >
+        <Text fontWeight="bold">
+          {t("Reserve Factor")} <QuestionIcon ml={1} mb="4px" />
+        </Text>
+      </SimpleTooltip>
+
+      {cTokenData &&
+      reserveFactor !==
+        scaleReserveFactor(cTokenData.reserveFactorMantissa) ? (
+        <SaveButton ml={3} onClick={updateReserveFactor} />
+      ) : null}
+
+      <SliderWithLabel
+        ml="auto"
+        value={reserveFactor}
+        setValue={setReserveFactor}
+        formatValue={formatPercentage}
+        max={50}
+      />
+    </ConfigRow>
+    <ModalDivider />
+
+    <ConfigRow height="35px">
+      <SimpleTooltip
+        label={t(
+          "The fraction of interest generated on a given asset that is routed to the asset's admin address as a fee."
+        )}
+      >
+        <Text fontWeight="bold">
+          {t("Admin Fee")} <QuestionIcon ml={1} mb="4px" />
+        </Text>
+      </SimpleTooltip>
+
+      {cTokenData &&
+      adminFee !== scaleAdminFee(cTokenData.adminFeeMantissa) ? (
+        <SaveButton ml={3} onClick={updateAdminFee} />
+      ) : null}
+
+      <SliderWithLabel
+        ml="auto"
+        value={adminFee}
+        setValue={setAdminFee}
+        formatValue={formatPercentage}
+        max={30}
+      />
+    </ConfigRow>
+
+    <ModalDivider />
+
+    {oracleModel === "MasterPriceOracle" && oracleData !== undefined  && !isTokenETHOrWETH(tokenAddress) && mode === "Editing" &&
+      (  <>
+            <OracleConfig 
+                mode={mode}
+                feeTier={feeTier} 
+                setFeeTier={setFeeTier}
+                oracleData={oracleData}
+                tokenAddress={tokenAddress}
+                activeOracle={activeOracle}
+                oracleAddress={oracleAddress}
+                _setActiveOracle={_setActiveOracle}
+                _setOracleAddress={_setOracleAddress}
+                setUniV3BaseToken={setUniV3BaseToken}
+                poolOracleAddress={poolOracleAddress}
+              />
+
+            <ModalDivider />
+            
+          </> 
+      ) }
+
+    {shouldShowUniV3BaseTokenOracleForm && mode === "Editing" ? (
+      <>
+        <Row
+          crossAxisAlignment="center"
+          mainAxisAlignment="center"
+          width="100%"
+          my={2}
+        >
+          <Alert status="info" width="80%" borderRadius={5} my={1}>
+              <AlertIcon/>
+              <Text fontSize="sm" align="center" color="black">
+                {"This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."}
+              </Text>
+          </Alert>
+        </Row>
+        <BaseTokenOracleConfig 
+          mode={mode}
+          oracleData={oracleData}
+          uniV3BaseToken={uniV3BaseToken}
+          baseTokenAddress={uniV3BaseToken}
+          uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+          setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+        />
+      </>
+    ) : null }
+
+    <ModalDivider />
+    
+    <ConfigRow>
+      <SimpleTooltip
+        label={t(
+          "The interest rate model chosen for an asset defines the rates of interest for borrowers and suppliers at different utilization levels."
+        )}
+      >
+        <Text fontWeight="bold">
+          {t("Interest Model")} <QuestionIcon ml={1} mb="4px" />
+        </Text>
+      </SimpleTooltip>
+
+      <Select
+        {...DASHBOARD_BOX_PROPS}
+        ml="auto"
+        borderRadius="7px"
+        fontWeight="bold"
+        _focus={{ outline: "none" }}
+        width="260px"
+        value={interestRateModel.toLowerCase()}
+        onChange={(event) => setInterestRateModel(event.target.value)}
+      >
+        {Object.entries(
+          Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+        ).map(([key, value]) => {
+          return (
+            <option
+              className="black-bg-option"
+              value={value.toLowerCase()}
+              key={key}
+            >
+              {key}
+            </option>
+          );
+        })}
+      </Select>
+
+      {cTokenData &&
+      cTokenData.interestRateModelAddress.toLowerCase() !==
+        interestRateModel.toLowerCase() ? (
+        <SaveButton
+          height="40px"
+          borderRadius="7px"
+          onClick={updateInterestRateModel}
+        />
+      ) : null}
+    </ConfigRow>
+
+    <Box
+      height="170px"
+      width="100%"
+      color="#000000"
+      overflow="hidden"
+      pl={2}
+      pr={3}
+      className="hide-bottom-tooltip"
+      flexShrink={0}
+    >
+      {curves ? (
+        <Chart
+          options={
+            {
+              ...FuseIRMDemoChartOptions,
+              colors: ["#FFFFFF", tokenData.color! ?? "#282727"],
+            } as any
+          }
+          type="line"
+          width="100%"
+          height="100%"
+          series={[
+            {
+              name: "Borrow Rate",
+              data: curves.borrowerRates,
+            },
+            {
+              name: "Deposit Rate",
+              data: curves.supplierRates,
+            },
+          ]}
+        />
+      ) : curves === undefined ? (
+        <Center expand color="#FFF">
+          <Spinner my={8} />
+        </Center>
+      ) : (
+        <Center expand color="#FFFFFF">
+          <Text>
+            {t("No graph is available for this asset's interest curves.")}
+          </Text>
+        </Center>
+      )}
+    </Box>
+  </Column>
+  </>
+  )
+
+}
 
 const OracleConfig = ({
   mode,
@@ -1278,7 +1480,6 @@ const UniswapV2OrSushiPriceOracleConfigurator = (
         width="260px"
         my={3}
       >
-        <Stack direction="row" spacing={4}>
           <Button colorScheme="teal">
             Check
           </Button>
@@ -1286,7 +1487,6 @@ const UniswapV2OrSushiPriceOracleConfigurator = (
           <Text fontSize="xs" align="center">
             After deploying your oracle, you have to wait about 15 - 25 minutes for the oracle to be set.
           </Text>
-        </Stack>
 
       </Row> 
     : null }
@@ -1392,10 +1592,10 @@ const AddAssetModal = ({
       motionPreset="slideInBottom"
       isOpen={isOpen}
       onClose={onClose}
-      isCentered
+      isCentered= {isEmpty ? true : false}
     >
       <ModalOverlay />
-      <ModalContent {...MODAL_PROPS}>
+      <ModalContent {...MODAL_PROPS} maxWidth="auto" width="auto">
         <Heading fontSize="27px" my={4} textAlign="center">
           {t("Add Asset")}
         </Heading>
@@ -1552,7 +1752,6 @@ const BaseTokenOracleConfig = ({
       {options ?
           <>
           <Column mainAxisAlignment="center" crossAxisAlignment="center">
-            <Stack direction="column" spacing={3} align="center">
             <CTokenIcon address={baseTokenAddress} boxSize={"50px"} />
             <SimpleTooltip
                 label={t("Choose the best price oracle for this BaseToken.") }
@@ -1561,7 +1760,6 @@ const BaseTokenOracleConfig = ({
                   {t("BaseToken Price Oracle")} <QuestionIcon ml={1} mb="4px" />
                 </Text>
             </SimpleTooltip>
-            </Stack>
           </Column>
 
           <Box
@@ -1622,3 +1820,69 @@ const BaseTokenOracleConfig = ({
     </Row>
   )
 }
+
+const SimpleDeployment = [
+  { description: "Configuring Master Price Oracle"},
+  { description: "Deploying Asset"},
+]
+
+const UniSwapV3DeploymentSimple = [
+  { description: "Checking for pair's cardinality"},
+  { description: "Increasing Cardinality"},
+  { description: "Configuring your Fuse pool's Master Price Oracle"},
+  { description: "Configuring your Fuse pool to support new asset market"}
+]
+
+
+export const TransactionStepper = ({activeOracle}: {activeOracle: string}): JSX.Element => {
+  const [activeStep, setActiveStep] = useState<number>(1)
+
+  const steps = activeOracle === "Rari_Default_Oracle" || activeOracle === "Chainlink_Oracle" 
+    ? SimpleDeployment 
+    : activeOracle === "Uniswap_V3_Oracle"
+    ? UniSwapV3DeploymentSimple
+    : SimpleDeployment
+
+  return (
+    <Box
+      width="100%"
+      d="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Row
+        width="100%"
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        my={4}
+      >
+          <Row
+            mainAxisAlignment="space-around"
+            crossAxisAlignment="center"
+            width="90%"
+            my={4}
+          >
+            {steps.map((step, index) => (
+              <Circle size="50px" color="white" bg={activeStep > index ? "gray" : "blue"}>
+                { activeStep === index ? 
+                  <Spinner />
+                  : index + 1 
+                }
+              </Circle>
+            ))}
+          </Row>
+      </Row>
+      <Row
+        width="100%"
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        my={4}
+      >
+        <Text size="md" >
+            {steps[activeStep].description}
+        </Text>
+      </Row>
+    </Box>
+  )
+} 
