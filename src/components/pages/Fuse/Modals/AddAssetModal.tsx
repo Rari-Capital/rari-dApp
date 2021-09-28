@@ -58,10 +58,14 @@ import Chart from "react-apexcharts";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { toLocaleString } from "fuse-sdk/webpack.config";
-import { smallUsdFormatter } from "utils/bigUtils";
+import { smallUsdFormatter, shortUsdFormatter } from "utils/bigUtils";
 
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
+
+const ETH_AND_WETH = ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0x0000000000000000000000000000000000000000"]
+const isTokenETHOrWETH = (tokenAddress: string) => ETH_AND_WETH.includes(tokenAddress.toLowerCase())
+
 
 export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
   const cErc20Delegate = new fuse.web3.eth.Contract(
@@ -181,7 +185,13 @@ export const AssetSettings = ({
   const [uniV3BaseTokenHasOracle, setUniV3BaseTokenHasOracle] = useState<boolean>(false)
 
   // If you typed in a univ3Basetoken AND it doesn't have an oracle in the MasterPriceOracle, then show the form
-  const shouldShowUniV3BaseTokenOracleForm = useMemo(() => !!uniV3BaseToken && !uniV3BaseTokenHasOracle,[uniV3BaseTokenHasOracle, uniV3BaseToken])
+  // Or if the baseToken is weth then dont show form because we already have a hardcoded oracle for it
+  const shouldShowUniV3BaseTokenOracleForm = useMemo(() => 
+    ( !!uniV3BaseToken && !uniV3BaseTokenHasOracle ) 
+    || isTokenETHOrWETH(uniV3BaseToken)
+  ,[uniV3BaseTokenHasOracle, uniV3BaseToken])
+
+  console.log("yo", isTokenETHOrWETH(uniV3BaseToken), { uniV3BaseToken , ETH_AND_WETH})
 
   // If you are using a univ3oracle, check the basetoken for an oracle
   useEffect(() => {
@@ -189,6 +199,8 @@ export const AssetSettings = ({
     // check if masterpriceoracle has a oracle for basetoken
     oracleData.oracleContract.methods.oracles(uniV3BaseToken).call().then((address: string) => {
       console.log("oracle address for basetoken", {uniV3BaseToken, address})
+
+      // if address  is EmptyAddress then there is no oracle for this token
       return address === "0x0000000000000000000000000000000000000000" ? setUniV3BaseTokenHasOracle(false) : setUniV3BaseTokenHasOracle(true)
     } )
   }
@@ -619,7 +631,7 @@ export const AssetSettings = ({
 
       <ModalDivider />
 
-    {oracleModel === "MasterPriceOracle" && oracleData !== undefined?
+    {oracleModel === "MasterPriceOracle" && oracleData !== undefined  && !isTokenETHOrWETH(tokenAddress) &&
         (  <>
               <OracleConfig 
                   oracleData={oracleData} // pool oracle data (?)
@@ -641,8 +653,7 @@ export const AssetSettings = ({
               <ModalDivider />
               
             </> 
-        )
-      : null }
+        ) }
 
       {shouldShowUniV3BaseTokenOracleForm && (
         <>
@@ -1015,11 +1026,11 @@ const UniswapV3PriceOracleConfigurator = (
                 feeTier,
                 totalValueLockedUSD,
                 token0 {
-                  name,
+                  symbol,
                   id
                 },
                 token1 {
-                  name,
+                  symbol,
                   id
                 }
               }
@@ -1073,14 +1084,14 @@ const UniswapV3PriceOracleConfigurator = (
         >
         {typeof liquidity !== undefined
           ? Object.entries(liquiditySorted).map(([key, value]: any[]) => 
-              value.totalValueLockedUSD !== null && value.totalValueLockedUSD !== undefined && value.totalValueLockedUSD !== "0" 
+              value.totalValueLockedUSD !== null && value.totalValueLockedUSD !== undefined && value.totalValueLockedUSD !== 100 
               ? ( 
                 <option
                     className="black-bg-option"
                     value={key}
                     key={value.id}
                 >
-                    {`${value.token0.name} / ${value.token1.name}`}
+                    {`${value.token0.symbol} / ${value.token1.symbol} (${shortUsdFormatter(value.totalValueLockedUSD)})`}
                 </option> 
               ) : null)
         : null }
