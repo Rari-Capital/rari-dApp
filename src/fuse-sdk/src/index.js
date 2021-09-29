@@ -38,6 +38,8 @@ export default class Fuse {
     "0x7969c5eD335650692Bc04293B07F5BF2e7A673C0"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
+  static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
+    ""; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
@@ -1717,21 +1719,22 @@ export default class Fuse {
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
+      // Deploy RewardsDistributorDelegator proxy contract
       var distributor = new this.web3.eth.Contract(
         JSON.parse(
-          contracts["contracts/RewardsDistributor.sol:RewardsDistributor"].abi
+          contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"].abi
         )
       );
       distributor = await distributor
         .deploy({
           data:
             "0x" +
-            contracts["contracts/RewardsDistributor.sol:RewardsDistributor"]
+            contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"]
               .bin,
-          arguments: [rewardToken],
+          arguments: [options.from, rewardToken, Fuse.REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS],
         })
         .send(options);
-      rdAddress = distributor.options.address;
+      return distributor.options.address;
     };
 
     this.primeUniswapV3Oracle = async function (uniswapV3Pool, options) {
