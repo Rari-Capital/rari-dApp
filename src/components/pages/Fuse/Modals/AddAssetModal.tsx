@@ -793,7 +793,7 @@ const DeployButton = ({
         justifyContent="space-around"
       >
         {stage !== 1 &&
-          stage === 3 &&
+          stage < 4 &&
           !isDeploying && (
             <Button
               width="45%"
