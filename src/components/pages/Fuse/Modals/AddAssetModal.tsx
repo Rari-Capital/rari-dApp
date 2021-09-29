@@ -600,25 +600,28 @@ export const AssetSettings = ({
       mainAxisAlignment="center"
       crossAxisAlignment="center"
       alignItems="center"
-      justifyContent="center"
-      height="90%"
+      justifyContent={stage === 2 ? "flex-start" : "center"}
+      height="100%"
+      // bg="pink"
     >
-      <Fade in={stage === 1}>
-        <Heading> IRM and fToken Config </Heading>
+      <Fade in={stage === 1} unmountOnExit>
+        <Heading my={1}> IRM Config </Heading>
       </Fade>
-      <Fade in={stage === 2}>
-        <Heading> Oracle Config </Heading>
+      <Fade in={stage === 2} unmountOnExit>
+        <Heading my={1}> Oracle Config </Heading>
       </Fade>
-      <Fade in={stage === 3}>
+      <Fade in={stage === 3} unmountOnExit>
         <Heading> Asset Config Summary </Heading>
       </Fade>
       <Box
         d="flex"
-        maxHeight="80%"
+        maxHeight="90%"
         flexDirection="row"
         alignItems={stage < 3 ? "flex-start" : "center"}
         justifyContent={stage < 3 ? undefined : "center"}
-        height={isDeploying ? "65%" : "80%"}
+        height={isDeploying ? "65%" : "70%"}
+        width="100%"
+        // bg="yellow"
       >
         {stage < 3 ? (
           <>
@@ -628,12 +631,13 @@ export const AssetSettings = ({
                   ? "50%"
                   : "100%"
               }
-              height="90%"
+              height="100%"
               d="flex"
               mainAxisAlignment="center"
               crossAxisAlignment="center"
               alignItems="center"
               justifyContent="center"
+              // bg="pink"
             >
               <Screen1
                 stage={stage}
@@ -735,9 +739,15 @@ const Screen1 = ({
         width="100%"
         maxWidth="100%"
         p={3}
+        // bg="green"
       >
         <Fade in={stage === 1} unmountOnExit>
-          <Column mainAxisAlignment="center" crossAxisAlignment="center" p={3}>
+          <Column
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            // bg="red"
+            h="100%"
+          >
             <AssetConfig {...args} />
           </Column>
         </Fade>
@@ -1157,6 +1167,7 @@ const AssetConfig = ({
         overflowY="auto"
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
+        // bg="turquoise"
       >
         <ConfigRow height="35px">
           <SimpleTooltip
