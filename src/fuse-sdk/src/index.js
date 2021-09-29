@@ -1760,15 +1760,20 @@ export default class Fuse {
       return distributor.options.address;
     };
 
+    this.checkCardinality = async function (uniswapV3Pool) {
+      var uniswapV3PoolContract = new this.web3.eth.Contract(
+        uniswapV3PoolAbiSlim,
+        uniswapV3Pool
+      );
+      const shouldPrime = (await uniswapV3PoolContract.methods.slot0().call()).observationCardinalityNext < 64
+      return shouldPrime
+    }
+
     this.primeUniswapV3Oracle = async function (uniswapV3Pool, options) {
       var uniswapV3PoolContract = new this.web3.eth.Contract(
         uniswapV3PoolAbiSlim,
         uniswapV3Pool
       );
-      if (
-        (await uniswapV3PoolContract.methods.slot0().call())
-          .observationCardinalityNext < 64
-      )
         await uniswapV3PoolContract.methods
           .increaseObservationCardinalityNext(64)
           .send(options);

@@ -292,10 +292,9 @@ export const AssetSettings = ({
 
   // Transaction Stepper
   const [activeStep, setActiveStep] = useState<number>(0);
-
   const [stage, setStage] = useState<number>(1);
 
-  const steps =
+  const steps: string[] =
     activeOracle === "Rari_Default_Oracle" ||
     activeOracle === "Chainlink_Oracle"
       ? SimpleDeployment
@@ -303,6 +302,12 @@ export const AssetSettings = ({
       ? UniSwapV3DeploymentSimple
       : SimpleDeployment;
 
+
+  const increaseActiveStep = (step: string) => {
+    console.log("setting to: ", step)
+    setActiveStep(steps.indexOf(step))
+    console.log("done", steps.indexOf(step))
+  }
   // Deploy Asset!
   const deploy = async () => {
     let oracleAddressToUse = oracleAddress;
@@ -352,7 +357,24 @@ export const AssetSettings = ({
       // Then u have to deploy the base token )
 
       // Check for observation cardinality and fix if necessary
-      await fuse.primeUniswapV3Oracle(oracleAddress, { from: address });
+      console.log("Going into sdk to check cardinality")
+      const shouldPrime = await fuse.checkCardinality(oracleAddress);
+      console.log("Should increase?", shouldPrime)
+
+      if (shouldPrime) {
+        console.log("Into SDK to increase")
+
+        increaseActiveStep("Increasing Uniswap V3 pair cardinality")
+        
+        await fuse.primeUniswapV3Oracle(oracleAddress, { from: address });
+        console.log("Back from increase")
+
+        increaseActiveStep("Deploying Uniswap V3 Twap Oracle")
+      }
+
+      if(!shouldPrime) {
+        increaseActiveStep("Deploying Uniswap V3 Twap Oracle")
+      }
 
       // Deploy oracle
       oracleAddressToUse = await fuse.deployPriceOracle(
@@ -361,6 +383,8 @@ export const AssetSettings = ({
         { from: address }
       );
     }
+    
+    increaseActiveStep("Configuring your Fuse pool's Master Price Oracle")
 
     if (activeOracle === "Uniswap_V2_Oracle") {
       // Deploy Oracle
@@ -371,12 +395,6 @@ export const AssetSettings = ({
       );
     }
 
-    console.log({
-      tokenAddress,
-      uniV3BaseToken,
-      oracleAddressToUse,
-      uniV3BaseTokenOracle,
-    });
     if (!isTokenETHOrWETH(tokenAddress)) {
       try {
         const tokenArray = shouldShowUniV3BaseTokenOracleForm
@@ -389,6 +407,8 @@ export const AssetSettings = ({
         await poolOracleContract.methods
           .add(tokenArray, oracleAddress)
           .send({ from: address });
+        increaseActiveStep("Configuring your Fuse pool to support new asset market")
+
 
         toast({
           title: "You have successfully configured the oracle for this asset!",
@@ -453,6 +473,8 @@ export const AssetSettings = ({
         // TODO: Disable this. This bypasses the price feed check. Only using now because only trusted partners are deploying assets.
         true
       );
+      
+      increaseActiveStep("All Done!")
 
       LogRocket.track("Fuse-DeployAsset");
 
@@ -586,7 +608,6 @@ export const AssetSettings = ({
         activeStep={activeStep}
         isDeploying={isDeploying}
         activeOracle={activeOracle}
-        setActiveStep={setActiveStep}
       />
     </>
   ) : (
@@ -713,9 +734,7 @@ const DeployButton = ({
   activeStep,
   isDeploying,
   activeOracle,
-  setActiveStep,
 }: {
-  setActiveStep: any;
   activeOracle: any;
   isDeploying: any;
   activeStep: any;
@@ -736,7 +755,6 @@ const DeployButton = ({
           steps={steps}
           activeOracle={activeOracle}
           activeStep={activeStep}
-          setActiveStep={setActiveStep}
         />
       ) : null}
       <Box
@@ -801,7 +819,7 @@ const DeployButton = ({
             _active={{ transform: "scale(0.95)" }}
             color={tokenData.overlayTextColor! ?? "#000"}
           >
-            {isDeploying ? steps[activeStep].description : t("Confirm")}
+            {isDeploying ? steps[activeStep] : t("Confirm")}
           </Button>
         )}
       </Box>
@@ -2187,27 +2205,27 @@ const BaseTokenOracleConfig = ({
 };
 
 const SimpleDeployment = [
-  { description: "Configuring Master Price Oracle" },
-  { description: "Deploying Asset" },
+  "Configuring Master Price Oracle",
+  "Deploying Asset",
 ];
 
 const UniSwapV3DeploymentSimple = [
-  { description: "Checking for pair's cardinality" },
-  { description: "Increasing Uniswap V3 pair cardinality" },
-  { description: "Configuring your Fuse pool's Master Price Oracle" },
-  { description: "Configuring your Fuse pool to support new asset market" },
+  "Checking for pair's cardinality",
+  "Increasing Uniswap V3 pair cardinality" ,
+  "Deploying Uniswap V3 Twap Oracle",
+  "Configuring your Fuse pool's Master Price Oracle" ,
+  "Configuring your Fuse pool to support new asset market" ,
+  "All Done!"
 ];
 
 export const TransactionStepper = ({
   activeOracle,
   activeStep,
-  setActiveStep,
   steps,
   tokenData,
 }: {
   activeOracle: string;
   activeStep: number;
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
   steps: { [key: string]: any }[];
   tokenData: any;
 }): JSX.Element => {
