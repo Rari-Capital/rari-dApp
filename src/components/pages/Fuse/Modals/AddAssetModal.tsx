@@ -1963,8 +1963,8 @@ const AddAssetModal = ({
       <ModalOverlay />
       <ModalContent
         {...MODAL_PROPS}
-        width="50%"
-        height="85%"
+        width={isEmpty ? "25%" : "50%"}
+        height={isEmpty ? "auto" : "85%"}
         maxWidth="50%"
         maxHeight="85%"
         overflowY="hidden"
