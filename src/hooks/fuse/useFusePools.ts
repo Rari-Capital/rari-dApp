@@ -116,7 +116,6 @@ export const fetchPools = async ({
     merged.push(mergedPool);
   }
 
-  console.log({ merged });
   return merged;
 };
 
@@ -144,8 +143,7 @@ export const useFusePools = (
   );
 
   const filteredPools = useMemo(() => {
-    console.log({ pools });
-    
+
     if (!pools?.length) {
       return [];
     }

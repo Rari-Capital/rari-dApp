@@ -389,6 +389,8 @@ export const AssetSettings = ({
       return;
     }
 
+    if (!isTokenETHOrWETH(tokenAddress)) {
+
     if (oracleAddress === "") {
       toast({
         title: "Error!",
@@ -401,10 +403,13 @@ export const AssetSettings = ({
 
       return;
     }
+  }
+
 
     setIsDeploying(true);
 
     const poolOracleContract = createOracle(poolOracleAddress, fuse, "MasterPriceOracle")
+
 
     if (activeOracle === "Uniswap_V3_Oracle") {
 
@@ -424,6 +429,7 @@ export const AssetSettings = ({
     }
 
     console.log({tokenAddress, uniV3BaseToken, oracleAddressToUse, uniV3BaseTokenOracle})
+    if (!isTokenETHOrWETH(tokenAddress)) {
 
     try {
         const tokenArray = shouldShowUniV3BaseTokenOracleForm ? [tokenAddress, uniV3BaseToken] : [tokenAddress]
@@ -442,6 +448,7 @@ export const AssetSettings = ({
     } catch (e) {
         handleGenericError(e, toast);
     }
+  }
 
 
     // 50% -> 0.5 * 1e18
