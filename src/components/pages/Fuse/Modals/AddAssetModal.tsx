@@ -704,12 +704,12 @@ const Screen2 = ({
             crossAxisAlignment="center"
           >
             <IRMChart curves={curves} tokenData={tokenData} />
-            <Text>{identifyInterestRateModel(interestRateModel)}</Text>
+            <Text>{identifyInterestRateModel(interestRateModel).replace("_", " ")}</Text>
           </Column>
         )}
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
-        {shouldShowUniV3BaseTokenOracleForm && mode == "Adding" && (
+        {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
           <BaseTokenOracleConfig
             mode={mode}
             oracleData={oracleData}
@@ -2209,9 +2209,11 @@ const BaseTokenOracleConfig = ({
   );
 };
 
+
 const SimpleDeployment = [
-  "Configuring Master Price Oracle",
-  "Deploying Asset",
+  "Configuring your Fuse pool's Master Price Oracle",
+  "Configuring your Fuse pool to support new asset market",
+  "All Done!"
 ];
 
 const UniSwapV3DeploymentSimple = [
