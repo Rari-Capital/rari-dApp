@@ -562,14 +562,30 @@ export const AssetSettings = ({
   return (
     cTokenAddress ? cTokenData?.cTokenAddress === cTokenAddress : true
   ) ? (
-    <>
+    <Column
+      d="flex"
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      alignItems="center"
+      justifyContent="center"
+      height="90%"
+    >
+      <Fade in={stage === 1}>
+        <Heading> IRM and fToken Config </Heading>
+      </Fade>
+      <Fade in={stage === 2}>
+        <Heading> Oracle Config </Heading>
+      </Fade>
+      <Fade in={stage === 3}>
+        <Heading> Asset Config Summary </Heading>
+      </Fade>
       <Box
         d="flex"
-        maxHeight="90%"
+        maxHeight="80%"
         flexDirection="row"
         alignItems={stage < 3 ? "flex-start" : "center"}
         justifyContent={stage < 3 ? undefined : "center"}
-        height={isDeploying ? "65%" : "90%"}
+        height={isDeploying ? "65%" : "80%"}
       >
         {stage < 3 ? (
           <>
@@ -582,6 +598,7 @@ export const AssetSettings = ({
               alignItems="center"
               justifyContent="center"
             >
+
               <Screen1
                 stage={stage}
                 args={args}
@@ -598,7 +615,7 @@ export const AssetSettings = ({
                 alignItems="center"
                 justifyContent="center"
               >
-              <Fade in={stage === 1 || shouldShowUniV3BaseTokenOracleForm}>
+              <Fade in={stage === 1 || shouldShowUniV3BaseTokenOracleForm} unmountOnExit>
                   <Screen2
                     stage={stage}
                     mode={mode}
@@ -618,7 +635,7 @@ export const AssetSettings = ({
             </Column>
           </>
         ) : (
-          <h1>hello</h1>
+          <Screen3/>
         )}
       </Box>
       <DeployButton
@@ -632,7 +649,7 @@ export const AssetSettings = ({
         isDeploying={isDeploying}
         activeOracle={activeOracle}
       />
-    </>
+    </Column>
   ) : (
     <Center expand>
       <Spinner my={8} />
@@ -655,7 +672,7 @@ const Screen1 = ({
   return (
     <>
       <Column
-        mainAxisAlignment={stage === 1 ? "flex-start" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
+        mainAxisAlignment={stage === 1 ? "center" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
         crossAxisAlignment={stage === 1 ? "flex-start" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
         overflowY="scroll"
         maxHeight="100%"
@@ -665,7 +682,13 @@ const Screen1 = ({
         p={3}
       >
         <Fade in={stage === 1} unmountOnExit>
+        <Column
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            p={3}
+          >
           <AssetConfig {...args} />
+        </Column>
         </Fade>
 
         <Fade in={stage === 2} unmountOnExit>
@@ -674,7 +697,6 @@ const Screen1 = ({
             crossAxisAlignment="flex-start"
             p={3}
           >
-            <Heading> Oracle Config </Heading>
             <OracleConfig {...OracleConfigArgs} />
           </Column>
         </Fade>
@@ -751,6 +773,22 @@ const Screen2 = ({
   );
 };
 
+const Screen3 = () => {
+  return (
+    <Column
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      overflowY="scroll"
+      maxHeight="100%"
+      height="95%"
+      width="100%"
+      maxWidth="100%"
+    >
+      <h2>Under construction :) </h2>
+    </Column>
+  )
+}
+
 const DeployButton = ({
   mode,
   steps,
@@ -796,7 +834,7 @@ const DeployButton = ({
           stage < 4 &&
           !isDeploying && (
             <Button
-              width="45%"
+              width={stage === 3 ? "20%" : "45%"}
               height="70px"
               fontSize="2xl"
               onClick={() => setStage(stage - 1)}
@@ -832,7 +870,7 @@ const DeployButton = ({
 
         {stage === 3 && (
           <Button
-            width="100%"
+            width="75%"
             height="70px"
             fontSize="2xl"
             onClick={() => deploy()}
@@ -2057,7 +2095,8 @@ const AddAssetModal = ({
                 maxHeight="75%"
                 width="100%"
                 flexDirection="column"
-                justifyContent="flex-start"
+                justifyContent="center"
+                alignContent="center"
               >
                 <AssetSettings
                   mode="Adding"
