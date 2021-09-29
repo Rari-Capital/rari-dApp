@@ -573,26 +573,49 @@ export const AssetSettings = ({
       >
         {stage < 3 ? (
           <>
-            <Screen1
-              stage={stage}
-              args={args}
-              OracleConfigArgs={OracleConfigArgs}
-            />
-            <Screen2
-              stage={stage}
-              mode={mode}
-              curves={curves}
-              oracleData={oracleData}
-              tokenData={tokenData}
-              uniV3BaseToken={uniV3BaseToken}
-              baseTokenAddress={uniV3BaseToken}
-              uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-              setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-              shouldShowUniV3BaseTokenOracleForm={
-                shouldShowUniV3BaseTokenOracleForm
-              }
-              interestRateModel={interestRateModel}
-            />
+            <Column
+              width={ shouldShowUniV3BaseTokenOracleForm || stage === 1 ?"50%" : "100%"}
+              height="90%"
+              d="flex"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Screen1
+                stage={stage}
+                args={args}
+                OracleConfigArgs={OracleConfigArgs}
+                shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
+              />
+            </Column>
+            <Column
+                width={ shouldShowUniV3BaseTokenOracleForm || stage === 1 ?"50%" : "0%"}
+                height="90%"
+                d="flex"
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                alignItems="center"
+                justifyContent="center"
+              >
+              <Fade in={stage === 1 || shouldShowUniV3BaseTokenOracleForm}>
+                  <Screen2
+                    stage={stage}
+                    mode={mode}
+                    curves={curves}
+                    oracleData={oracleData}
+                    tokenData={tokenData}
+                    uniV3BaseToken={uniV3BaseToken}
+                    baseTokenAddress={uniV3BaseToken}
+                    uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+                    setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+                    shouldShowUniV3BaseTokenOracleForm={
+                      shouldShowUniV3BaseTokenOracleForm
+                    }
+                    interestRateModel={interestRateModel}
+                  />
+              </Fade>
+            </Column>
           </>
         ) : (
           <h1>hello</h1>
@@ -621,22 +644,24 @@ const Screen1 = ({
   stage,
   args,
   OracleConfigArgs,
+  shouldShowUniV3BaseTokenOracleForm
 }: {
   stage: number;
   args: any;
   OracleConfigArgs: any;
+  shouldShowUniV3BaseTokenOracleForm: boolean;
 }) => {
   console.log({ stage });
   return (
     <>
       <Column
-        mainAxisAlignment={stage === 1 ? "flex-start" : "flex-start"}
-        crossAxisAlignment={stage === 1 ? "flex-start" : "flex-start"}
+        mainAxisAlignment={stage === 1 ? "flex-start" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
+        crossAxisAlignment={stage === 1 ? "flex-start" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
         overflowY="scroll"
         maxHeight="100%"
         height="95%"
-        width="50%"
-        maxWidth="50%"
+        width="100%"
+        maxWidth="100%"
         p={3}
       >
         <Fade in={stage === 1} unmountOnExit>
@@ -650,7 +675,6 @@ const Screen1 = ({
             p={3}
           >
             <Heading> Oracle Config </Heading>
-            <h2>Oracle Config help description</h2>
             <OracleConfig {...OracleConfigArgs} />
           </Column>
         </Fade>
@@ -688,18 +712,19 @@ const Screen2 = ({
 }) => {
   return (
     <Column
-      mainAxisAlignment={stage === 2 ? "flex-start" : "center"}
-      crossAxisAlignment={stage === 2 ? "flex-start" : "center"}
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
       overflowY="scroll"
       maxHeight="100%"
       height="95%"
-      width="50%"
-      maxWidth="50%"
+      width="100%"
+      maxWidth="100%"
     >
       <Fade in={stage === 1} unmountOnExit>
         {mode === "Adding" && (
           <Column
             w="100%"
+            height="100%"
             mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
           >
@@ -709,6 +734,7 @@ const Screen2 = ({
         )}
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
+        <Column width="100%" height="100%" mainAxisAlignment="center"crossAxisAlignment="center">
         {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
           <BaseTokenOracleConfig
             mode={mode}
@@ -718,7 +744,8 @@ const Screen2 = ({
             uniV3BaseTokenOracle={uniV3BaseTokenOracle}
             setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
           />
-        )}
+          )}
+          </Column>
       </Fade>
     </Column>
   );
