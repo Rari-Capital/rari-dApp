@@ -767,7 +767,7 @@ const DeployButton = ({
       >
         {stage !== 1 &&
           stage === 3 &&
-          !isDeploying(
+          !isDeploying && (
             <Button
               width="45%"
               height="70px"
@@ -790,9 +790,7 @@ const DeployButton = ({
             width="45%"
             height="70px"
             fontSize="2xl"
-            onClick={() =>
-              stage === "Confirm" ? deploy() : setStage(stage + 1)
-            }
+            onClick={() => setStage(stage + 1)}
             fontWeight="bold"
             borderRadius="10px"
             disabled={isDeploying}
