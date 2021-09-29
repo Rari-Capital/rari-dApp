@@ -307,6 +307,24 @@ export const AssetSettings = ({
   const [activeStep, setActiveStep] = useState<number>(0);
   const [stage, setStage] = useState<number>(1);
 
+  const handleSetStage = (incr: number) => {
+    const newStage = stage + incr;
+
+    // increment stage
+    if (incr > 0) {
+      if (isTokenETHOrWETH(tokenAddress) && newStage == 2) {
+        setStage(3);
+      } else setStage(newStage);
+    }
+
+    // decrement (previous page)
+    else if (incr < 0) {
+      if (isTokenETHOrWETH(tokenAddress) && newStage == 2) {
+        setStage(1);
+      } else setStage(newStage);
+    }
+  };
+
   const steps: string[] =
     activeOracle === "Rari_Default_Oracle" ||
     activeOracle === "Chainlink_Oracle"
@@ -617,7 +635,6 @@ export const AssetSettings = ({
               alignItems="center"
               justifyContent="center"
             >
-
               <Screen1
                 stage={stage}
                 args={args}
@@ -628,43 +645,48 @@ export const AssetSettings = ({
               />
             </Column>
             <Column
-                width={ shouldShowUniV3BaseTokenOracleForm || stage === 1 ?"50%" : "0%"}
-                height="90%"
-                d="flex"
-                mainAxisAlignment="center"
-                crossAxisAlignment="center"
-                alignItems="center"
-                justifyContent="center"
+              width={
+                shouldShowUniV3BaseTokenOracleForm || stage === 1 ? "50%" : "0%"
+              }
+              height="90%"
+              d="flex"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Fade
+                in={stage === 1 || shouldShowUniV3BaseTokenOracleForm}
+                unmountOnExit
               >
-              <Fade in={stage === 1 || shouldShowUniV3BaseTokenOracleForm} unmountOnExit>
-                  <Screen2
-                    stage={stage}
-                    mode={mode}
-                    curves={curves}
-                    oracleData={oracleData}
-                    tokenData={tokenData}
-                    uniV3BaseToken={uniV3BaseToken}
-                    baseTokenAddress={uniV3BaseToken}
-                    uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-                    setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-                    shouldShowUniV3BaseTokenOracleForm={
-                      shouldShowUniV3BaseTokenOracleForm
-                    }
-                    interestRateModel={interestRateModel}
-                  />
+                <Screen2
+                  stage={stage}
+                  mode={mode}
+                  curves={curves}
+                  oracleData={oracleData}
+                  tokenData={tokenData}
+                  uniV3BaseToken={uniV3BaseToken}
+                  baseTokenAddress={uniV3BaseToken}
+                  uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+                  setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+                  shouldShowUniV3BaseTokenOracleForm={
+                    shouldShowUniV3BaseTokenOracleForm
+                  }
+                  interestRateModel={interestRateModel}
+                />
               </Fade>
             </Column>
           </>
         ) : (
-          <Screen3/>
+          <Screen3 />
         )}
-      </HStack>
+      </Box>
       <DeployButton
         mode={mode}
         steps={steps}
         stage={stage}
         deploy={deploy}
-        setStage={setStage}
+        handleSetStage={handleSetStage}
         tokenData={tokenData}
         activeStep={activeStep}
         isDeploying={isDeploying}
@@ -693,8 +715,20 @@ const Screen1 = ({
   return (
     <>
       <Column
-        mainAxisAlignment={stage === 1 ? "center" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
-        crossAxisAlignment={stage === 1 ? "flex-start" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
+        mainAxisAlignment={
+          stage === 1
+            ? "center"
+            : shouldShowUniV3BaseTokenOracleForm
+            ? "flex-start"
+            : "center"
+        }
+        crossAxisAlignment={
+          stage === 1
+            ? "flex-start"
+            : shouldShowUniV3BaseTokenOracleForm
+            ? "flex-start"
+            : "center"
+        }
         overflowY="scroll"
         maxHeight="100%"
         height="95%"
@@ -703,13 +737,9 @@ const Screen1 = ({
         p={3}
       >
         <Fade in={stage === 1} unmountOnExit>
-        <Column
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-            p={3}
-          >
-          <AssetConfig {...args} />
-        </Column>
+          <Column mainAxisAlignment="center" crossAxisAlignment="center" p={3}>
+            <AssetConfig {...args} />
+          </Column>
         </Fade>
 
         <Fade in={stage === 2} unmountOnExit>
@@ -814,15 +844,15 @@ const Screen3 = () => {
     >
       <h2>Under construction :) </h2>
     </Column>
-  )
-}
+  );
+};
 
 const DeployButton = ({
   mode,
   steps,
   stage,
   deploy,
-  setStage,
+  handleSetStage,
   tokenData,
   activeStep,
   isDeploying,
@@ -832,7 +862,7 @@ const DeployButton = ({
   isDeploying: any;
   activeStep: any;
   tokenData: any;
-  setStage: any;
+  handleSetStage: any;
   deploy: any;
   stage: any;
   steps: any;
@@ -860,32 +890,30 @@ const DeployButton = ({
         alignContent="center"
         justifyContent="space-around"
       >
-        {stage !== 1 &&
-          stage < 4 &&
-          !isDeploying && (
-            <Button
-              width={stage === 3 ? "20%" : "45%"}
-              height="70px"
-              fontSize="2xl"
-              onClick={() => setStage(stage - 1)}
-              fontWeight="bold"
-              borderRadius="10px"
-              disabled={isDeploying}
-              bg={tokenData.color! ?? "#FFF"}
-              _hover={{ transform: "scale(1.02)" }}
-              _active={{ transform: "scale(0.95)" }}
-              color={tokenData.overlayTextColor! ?? "#000"}
-            >
-              {t("Previous")}
-            </Button>
-          )}
+        {stage !== 1 && stage < 4 && !isDeploying && (
+          <Button
+            width={stage === 3 ? "20%" : "45%"}
+            height="70px"
+            fontSize="2xl"
+            onClick={() => handleSetStage(-1)}
+            fontWeight="bold"
+            borderRadius="10px"
+            disabled={isDeploying}
+            bg={tokenData.color! ?? "#FFF"}
+            _hover={{ transform: "scale(1.02)" }}
+            _active={{ transform: "scale(0.95)" }}
+            color={tokenData.overlayTextColor! ?? "#000"}
+          >
+            {t("Previous")}
+          </Button>
+        )}
 
         {stage < 3 && (
           <Button
             width="45%"
             height="70px"
             fontSize="2xl"
-            onClick={() => setStage(stage + 1)}
+            onClick={() => handleSetStage(1)}
             fontWeight="bold"
             borderRadius="10px"
             disabled={isDeploying}
@@ -1427,7 +1455,6 @@ const OracleConfig = ({
 
   // Will update oracle for the asset. This is used only if user is editing asset.
   const updateOracle = async () => {
-
     const poolOracleContract = createOracle(
       poolOracleAddress,
       fuse,
