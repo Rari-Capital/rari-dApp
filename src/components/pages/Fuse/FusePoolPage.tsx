@@ -125,20 +125,29 @@ const PendingAdminAlert = ({ comptroller }: { comptroller?: string }) => {
     }
   };
 
-  console.log({ address });
-
   return (
-    <AdminAlert
-      isAdmin={isPendingAdmin}
-      isAdminText="You are the pending admin of this Fuse Pool! Click to Accept Admin"
-      rightAdornment={
-        <Button h="100%" p={3} ml="auto" color="black" onClick={acceptAdmin}>
-          <HStack>
-            <Text fontWeight="bold">Accept Admin </Text>
-          </HStack>
-        </Button>
-      }
-    />
+    <>
+      {isPendingAdmin && (
+        <AdminAlert
+          isAdmin={isPendingAdmin}
+          isAdminText="You are the pending admin of this Fuse Pool! Click to Accept Admin"
+          rightAdornment={
+            <Button
+              h="100%"
+              p={3}
+              ml="auto"
+              color="black"
+              onClick={acceptAdmin}
+              disabled={isAccepting}
+            >
+              <HStack>
+                <Text fontWeight="bold">{isAccepting} ? Accepting... : Accept Admin </Text>
+              </HStack>
+            </Button>
+          }
+        />
+      )}
+    </>
   );
 };
 
@@ -200,7 +209,7 @@ const FusePoolPage = memo(() => {
           />
         )}
 
-        {!!data && !isAdmin && isAuthed && (
+        {!!data && isAuthed && (
           <PendingAdminAlert comptroller={data?.comptroller} />
         )}
 
