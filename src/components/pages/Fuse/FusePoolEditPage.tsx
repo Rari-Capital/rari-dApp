@@ -42,7 +42,7 @@ import { useOracleData } from "hooks/fuse/useOracleData";
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller, createOracle, createUnitroller } from "../../../utils/createComptroller";
+import { createComptroller, createUnitroller } from "../../../utils/createComptroller";
 import { handleGenericError } from "../../../utils/errorHandling";
 
 // Libraries

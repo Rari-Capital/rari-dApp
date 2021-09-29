@@ -109,7 +109,7 @@ export const filterPoolName = (name: string) => {
     return "Yearn Soup Pot of Yield";
   }
 
- return filter.clean(name + "professorswagonomics9001@protonmail.com").replace('professorswagonomics9001@protonmail.com', '')
+ return filter.clean(name + "T1T$OR@$$").replace('T1T$OR@$$', '')
 };
 
 export const fetchFusePoolData = async (

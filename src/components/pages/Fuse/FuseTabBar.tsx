@@ -1,27 +1,28 @@
 import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
-import { RowOrColumn, Row, Center, useWindowSize } from "utils/chakraUtils";
+import { RowOrColumn, Row, Center } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { Link as RouterLink } from "react-router-dom";
+import { useHasCreatedPools } from "./FusePoolsPage";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 
 const noop = {};
 
 export function useFilter() {
-  return new URLSearchParams(useLocation().search).get("filter");
+  return new URLSearchParams(useLocation().search).get("filter") ?? undefined;
 }
 
-function useIsMediumScreen() {
-  const { width } = useWindowSize();
-  return width < 1150;
-}
+// function useIsMediumScreen() {
+//   const { width } = useWindowSize();
+//   return width < 1150;
+// }
+
 const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();
-  const isMediumScreen = useIsMediumScreen();
 
   const { t } = useTranslation();
 
@@ -31,6 +32,8 @@ const FuseTabBar = () => {
 
   const filter = useFilter();
   const location = useLocation();
+
+  const hasCreatedPools = useHasCreatedPools();
 
   return (
     <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "65px"}>
@@ -93,8 +96,17 @@ const FuseTabBar = () => {
         </ButtonGroup>
 
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
-        <TabLink route="/fuse" text={t("All Pools")} />
-        <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
+        <TabLink route="/fuse" text={t("Pools")} />
+        <TabLink
+          route="/fuse?filter=unverified-pools"
+          text={t("Unverified Pools")}
+        />
+        {hasCreatedPools && (
+          <TabLink
+            route="/fuse?filter=created-pools"
+            text={t("Created Pools")}
+          />
+        )}
         {poolId ? (
           <>
             <DashboardBox

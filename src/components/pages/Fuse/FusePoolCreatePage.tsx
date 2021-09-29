@@ -1,6 +1,5 @@
 import {
   Heading,
-  Select,
   Text,
   Switch,
   Input,
@@ -21,7 +20,6 @@ import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
-import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
@@ -104,8 +102,6 @@ const PoolConfiguration = () => {
       .plus(1)
       .multipliedBy(1e18)
       .toFixed(0);
-
-    let reporter = null;
 
     try {
       const [poolAddress] = await fuse.deployPool(

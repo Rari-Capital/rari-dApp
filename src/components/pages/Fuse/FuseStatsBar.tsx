@@ -1,4 +1,4 @@
-import { Heading, Skeleton, Text, Icon } from "@chakra-ui/react";
+import { Heading, Text } from "@chakra-ui/react";
 import { RowOrColumn, Column, Center, Row } from "utils/chakraUtils";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,7 @@ import { smallUsdFormatter } from "utils/bigUtils";
 import CaptionedStat from "components/shared/CaptionedStat";
 import DashboardBox from "components/shared/DashboardBox";
 
-import { useFuseTVL, fetchFuseNumberTVL } from "hooks/fuse/useFuseTVL";
+import { fetchFuseNumberTVL } from "hooks/fuse/useFuseTVL";
 import { useFuseTotalBorrowAndSupply } from "hooks/fuse/useFuseTotalBorrowAndSupply";
 
 import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
@@ -23,7 +23,6 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
 
   const { isAuthed, fuse, rari } = useRari();
 
-  const { data: fuseTVL } = useFuseTVL();
   const { data: totalBorrowAndSupply } = useFuseTotalBorrowAndSupply();
 
   return (
@@ -165,8 +164,10 @@ const StatBox = ({
 
 export const WhitelistedIcon = ({
   isWhitelisted,
+  ...boxProps
 }: {
   isWhitelisted: boolean;
+  [x:string]: any;
 }) => {
   return (
     <>
@@ -179,9 +180,9 @@ export const WhitelistedIcon = ({
         placement="bottom-end"
       >
         {isWhitelisted ? (
-          <CheckCircleIcon boxSize="20px" mr={3} />
+          <CheckCircleIcon boxSize="20px" mr={3} {...boxProps} />
         ) : (
-          <WarningTwoIcon boxSize="20px" mr={3} color="orange.300" />
+          <WarningTwoIcon boxSize="20px" mr={3} color="orange.300" {...boxProps} />
         )}
       </SimpleTooltip>
     </>

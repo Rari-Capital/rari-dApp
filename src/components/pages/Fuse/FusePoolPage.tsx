@@ -9,8 +9,6 @@ import {
   Text,
   useDisclosure,
   useToast,
-  Alert,
-  AlertIcon
 } from "@chakra-ui/react";
 import {
   Column,
