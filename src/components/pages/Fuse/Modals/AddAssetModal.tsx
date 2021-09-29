@@ -335,7 +335,6 @@ export const AssetSettings = ({
         return;
       }
     }
-
     setIsDeploying(true);
 
     const poolOracleContract = createOracle(
