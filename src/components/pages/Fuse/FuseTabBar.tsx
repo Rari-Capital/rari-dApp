@@ -1,6 +1,6 @@
 import { DeleteIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ButtonGroup, Input, Link, Text } from "@chakra-ui/react";
-import { RowOrColumn, Row, Center } from "utils/chakraUtils";
+import { RowOrColumn, Row, Center, useWindowSize } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
@@ -16,10 +16,10 @@ export function useFilter() {
   return new URLSearchParams(useLocation().search).get("filter") ?? undefined;
 }
 
-// function useIsMediumScreen() {
-//   const { width } = useWindowSize();
-//   return width < 1150;
-// }
+export function useIsMediumScreen() {
+  const { width } = useWindowSize();
+  return width < 1150;
+}
 
 const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();

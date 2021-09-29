@@ -32,7 +32,7 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
       height={isMobile ? "auto" : "125px"}
-    > 
+    >
       <DashboardBox
         width={isMobile ? "100%" : "100%"}
         height={isMobile ? "auto" : "100%"}
@@ -61,23 +61,36 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
           </Row>
 
           {/* Description */}
-          <Text>
-            {!!data
-              ? t(
-                  "This pool has {{tvl}} supplied across {{numAssets}} assets. Fuse is the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility.",
-                  {
-                    tvl: smallUsdFormatter(data.totalSuppliedUSD),
-                    numAssets: data.assets.length,
-                  }
-                )
-              : t(
-                  "Fuse is the first truly open interest rate protocol. Lend, borrow, and create isolated lending markets with unlimited flexibility."
-                )}
-          </Text>
+          {!!data ? (
+            <Text>
+              This pool has{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {smallUsdFormatter(data.totalSuppliedUSD)} supplied{" "}
+              </span>
+              across{" "}
+              <span style={{ fontWeight: "bold" }}>{data.assets.length} </span>
+              assets. Fuse is the first truly open interest rate protocol. Lend,
+              borrow, and create isolated lending markets with unlimited
+              flexibility."
+            </Text>
+          ) : (
+            <Text>
+              Fuse is the first truly open interest rate protocol. Lend, borrow,
+              and create isolated lending markets with unlimited flexibility.
+            </Text>
+          )}
+          
         </Column>
       </DashboardBox>
 
-      <RowOrColumn isRow={!isMobile} mainAxisAlignment="flex-start" crossAxisAlignment="flex-start" flexBasis="40%" h="100%" w="100%">
+      <RowOrColumn
+        isRow={!isMobile}
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        flexBasis="40%"
+        h="100%"
+        w="100%"
+      >
         {isAuthed &&
         totalBorrowAndSupply &&
         totalBorrowAndSupply.totalSuppliedUSD > 0 ? (
@@ -167,7 +180,7 @@ export const WhitelistedIcon = ({
   ...boxProps
 }: {
   isWhitelisted: boolean;
-  [x:string]: any;
+  [x: string]: any;
 }) => {
   return (
     <>
@@ -182,7 +195,12 @@ export const WhitelistedIcon = ({
         {isWhitelisted ? (
           <CheckCircleIcon boxSize="20px" mr={3} {...boxProps} />
         ) : (
-          <WarningTwoIcon boxSize="20px" mr={3} color="orange.300" {...boxProps} />
+          <WarningTwoIcon
+            boxSize="20px"
+            mr={3}
+            color="orange.300"
+            {...boxProps}
+          />
         )}
       </SimpleTooltip>
     </>

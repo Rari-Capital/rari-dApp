@@ -20,7 +20,13 @@ import {
   Checkbox,
   Circle,
 } from "@chakra-ui/react";
-import { Column, Center, Row } from "utils/chakraUtils";
+import {
+  Column,
+  Center,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 import DashboardBox, {
   DASHBOARD_BOX_PROPS,
 } from "../../../shared/DashboardBox";
@@ -80,6 +86,7 @@ import Chart from "react-apexcharts";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { emitKeypressEvents } from "readline";
+import { useIsMediumScreen } from "../FuseTabBar";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -244,6 +251,7 @@ export const AssetSettings = ({
   const { t } = useTranslation();
   const { fuse, address } = useRari();
   const queryClient = useQueryClient();
+  const isMobile = useIsMediumScreen();
 
   // Component state
   const [isDeploying, setIsDeploying] = useState(false);
@@ -613,21 +621,23 @@ export const AssetSettings = ({
       <Fade in={stage === 3} unmountOnExit>
         <Heading> Asset Config Summary </Heading>
       </Fade>
-      <Box
-        d="flex"
+      <RowOrColumn
         maxHeight="90%"
-        flexDirection="row"
-        alignItems={stage < 3 ? "flex-start" : "center"}
-        justifyContent={stage < 3 ? undefined : "center"}
+        isRow={!isMobile}
+        crossAxisAlignment={stage < 3 ? "flex-start" : "center"}
+        mainAxisAlignment={stage < 3 ? "flex-start" : "center"}
         height={isDeploying ? "65%" : "70%"}
         width="100%"
-        // bg="yellow"
+        overflowY="auto"
+        // bg="red.100"
       >
         {stage < 3 ? (
           <>
             <Column
               width={
-                shouldShowUniV3BaseTokenOracleForm || stage === 1
+                isMobile
+                  ? "100%"
+                  : shouldShowUniV3BaseTokenOracleForm || stage === 1 
                   ? "50%"
                   : "100%"
               }
@@ -650,14 +660,19 @@ export const AssetSettings = ({
             </Column>
             <Column
               width={
-                shouldShowUniV3BaseTokenOracleForm || stage === 1 ? "50%" : "0%"
+                isMobile
+                  ? "100%"
+                  : shouldShowUniV3BaseTokenOracleForm || stage === 1
+                  ? "50%"
+                  : "0%"
               }
-              height="90%"
+              height="100%"
               d="flex"
               mainAxisAlignment="center"
               crossAxisAlignment="center"
               alignItems="center"
               justifyContent="center"
+              // bg="aqua"
             >
               <Fade
                 in={stage === 1 || shouldShowUniV3BaseTokenOracleForm}
@@ -684,7 +699,7 @@ export const AssetSettings = ({
         ) : (
           <Screen3 />
         )}
-      </Box>
+      </RowOrColumn>
       <DeployButton
         mode={mode}
         steps={steps}
@@ -715,7 +730,6 @@ const Screen1 = ({
   OracleConfigArgs: any;
   shouldShowUniV3BaseTokenOracleForm: boolean;
 }) => {
-  console.log({ stage });
   return (
     <>
       <Column
@@ -1431,13 +1445,13 @@ const OracleConfig = ({
   useEffect(() => {
     // @ts-ignore
     let oracleForCToken = OracleIdentityMap[oracleIdentity];
-    console.log({
-      options,
-      activeOracle,
-      oracleForCToken,
-      OracleIdentityMap,
-      oracleIdentity,
-    });
+    // console.log({
+    //   options,
+    //   activeOracle,
+    //   oracleForCToken,
+    //   OracleIdentityMap,
+    //   oracleIdentity,
+    // });
 
     // Map oracleIdentity to whatever the type of `activeOracle` can be
 
@@ -1485,7 +1499,7 @@ const OracleConfig = ({
         // Check for observation cardinality and fix if necessary
         await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });
 
-        console.log({ uniV3BaseToken });
+        // console.log({ uniV3BaseToken });
 
         // Deploy oracle
         oracleAddressToUse = await fuse.deployPriceOracle(
@@ -2281,8 +2295,6 @@ const BaseTokenOracleConfig = ({
     if (!!activeOracleName && activeOracleName !== "Custom_Oracle" && options)
       setUniV3BaseTokenOracle(options[activeOracleName]);
   }, [activeOracleName, options, setUniV3BaseTokenOracle]);
-
-  console.log({ options });
 
   return (
     <Box

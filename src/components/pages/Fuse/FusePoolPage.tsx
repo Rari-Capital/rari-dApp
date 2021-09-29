@@ -29,7 +29,7 @@ import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
-import { useTokenData } from "hooks/useTokenData";
+import { ETH_TOKEN_DATA, useTokenData } from "hooks/useTokenData";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
@@ -76,7 +76,7 @@ export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
 export const useIsComptrollerPendingAdmin = (
   comptrollerAddress?: string
 ): boolean => {
-  const { fuse, address } = useRari();
+  const { fuse, address, isAuthed } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " pending admin", async () => {
     if (!comptrollerAddress) return undefined;
@@ -88,6 +88,7 @@ export const useIsComptrollerPendingAdmin = (
     return pendingAdmin;
   });
 
+  if (!isAuthed) return false;
   return address === data;
 };
 
@@ -123,6 +124,8 @@ const PendingAdminAlert = ({ comptroller }: { comptroller?: string }) => {
       handleGenericError(e, toast);
     }
   };
+
+  console.log({ address });
 
   return (
     <AdminAlert
@@ -197,8 +200,9 @@ const FusePoolPage = memo(() => {
           />
         )}
 
-
-        {!!data && !isAdmin &&  <PendingAdminAlert comptroller={data?.comptroller} />}
+        {!!data && !isAdmin && isAuthed && (
+          <PendingAdminAlert comptroller={data?.comptroller} />
+        )}
 
         <RowOrColumn
           width="100%"
