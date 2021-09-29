@@ -86,6 +86,8 @@ const ETH_AND_WETH = [
 const isTokenETHOrWETH = (tokenAddress: string) =>
   ETH_AND_WETH.includes(tokenAddress.toLowerCase());
 
+type EditMode = "Editing" | "Adding";
+
 export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
   const cErc20Delegate = new fuse.web3.eth.Contract(
     JSON.parse(
@@ -548,14 +550,25 @@ export const AssetSettings = ({
       >
         {stage < 3 ? (
           <>
-            <Screen1 stage={stage} args={args} />
+            <Screen1
+              stage={stage}
+              args={args}
+              OracleConfigArgs={OracleConfigArgs}
+            />
             <Screen2
               stage={stage}
-              OracleConfigArgs={OracleConfigArgs}
               mode={mode}
               curves={curves}
+              oracleData={oracleData}
               tokenData={tokenData}
-              />
+              uniV3BaseToken={uniV3BaseToken}
+              baseTokenAddress={uniV3BaseToken}
+              uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+              setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+              shouldShowUniV3BaseTokenOracleForm={
+                shouldShowUniV3BaseTokenOracleForm
+              }
+            />
           </>
         ) : (
           <h1>hello</h1>
@@ -581,25 +594,42 @@ export const AssetSettings = ({
   );
 };
 
-const Screen1 = ({ stage, args }: { stage: number; args: any }) => {
+const Screen1 = ({
+  stage,
+  args,
+  OracleConfigArgs,
+}: {
+  stage: number;
+  args: any;
+  OracleConfigArgs: any;
+}) => {
   console.log({ stage });
   return (
     <>
       <Column
-        mainAxisAlignment={stage === 1 ? "flex-start" : "center"}
-        crossAxisAlignment={stage === 1 ? "flex-start" : "center"}
+        mainAxisAlignment={stage === 1 ? "flex-start" : "flex-start"}
+        crossAxisAlignment={stage === 1 ? "flex-start" : "flex-start"}
         overflowY="scroll"
         maxHeight="100%"
         height="95%"
         width="50%"
         maxWidth="50%"
+        p={3}
       >
         <Fade in={stage === 1} unmountOnExit>
           <AssetConfig {...args} />
         </Fade>
 
         <Fade in={stage === 2} unmountOnExit>
-          <h1>Oracle Config help description</h1>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            p={3}
+          >
+            <Heading> Oracle Config </Heading>
+            <h2>Oracle Config help description</h2>
+            <OracleConfig {...OracleConfigArgs} />
+          </Column>
         </Fade>
       </Column>
     </>
@@ -608,16 +638,28 @@ const Screen1 = ({ stage, args }: { stage: number; args: any }) => {
 
 const Screen2 = ({
   stage,
-  OracleConfigArgs,
+  // OracleConfigArgs,
   mode,
   curves,
   tokenData,
+  oracleData,
+  uniV3BaseToken,
+  baseTokenAddress,
+  uniV3BaseTokenOracle,
+  setUniV3BaseTokenOracle,
+  shouldShowUniV3BaseTokenOracleForm,
 }: {
   stage: number;
-  OracleConfigArgs: any;
+  // OracleConfigArgs: any;
   mode: "Editing" | "Adding";
   curves: any;
   tokenData: TokenData;
+  oracleData: any;
+  uniV3BaseToken: string;
+  baseTokenAddress: string;
+  uniV3BaseTokenOracle: string;
+  setUniV3BaseTokenOracle: any;
+  shouldShowUniV3BaseTokenOracleForm: boolean;
 }) => {
   return (
     <Column
@@ -629,15 +671,28 @@ const Screen2 = ({
       width="50%"
       maxWidth="50%"
     >
-      <Fade in={stage === 2} unmountOnExit>
-        <OracleConfig {...OracleConfigArgs} />
-      </Fade>
       <Fade in={stage === 1} unmountOnExit>
         {mode === "Adding" && (
-          <Column w="100%" mainAxisAlignment="flex-start" crossAxisAlignment="center">
-          <IRMChart curves={curves} tokenData={tokenData} />
+          <Column
+            w="100%"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+          >
+            <IRMChart curves={curves} tokenData={tokenData} />
             <Text>name of IRM</Text>
           </Column>
+        )}
+      </Fade>
+      <Fade in={stage === 2} unmountOnExit>
+        {shouldShowUniV3BaseTokenOracleForm && mode == "Adding" && (
+          <BaseTokenOracleConfig
+            mode={mode}
+            oracleData={oracleData}
+            uniV3BaseToken={uniV3BaseToken}
+            baseTokenAddress={uniV3BaseToken}
+            uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+            setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+          />
         )}
       </Fade>
     </Column>
@@ -688,40 +743,61 @@ const DeployButton = ({
         alignContent="center"
         justifyContent="space-around"
       >
-        <Button
-          width="45%"
-          height="70px"
-          fontSize="2xl"
-          onClick={() => setStage(stage - 1)}
-          fontWeight="bold"
-          borderRadius="10px"
-          disabled={isDeploying}
-          bg={tokenData.color! ?? "#FFF"}
-          _hover={{ transform: "scale(1.02)" }}
-          _active={{ transform: "scale(0.95)" }}
-          color={tokenData.overlayTextColor! ?? "#000"}
-        >
-          {t("Previous")}
-        </Button>
-        <Button
-          width="45%"
-          height="70px"
-          fontSize="2xl"
-          onClick={() => (stage === "Confirm" ? deploy() : setStage(stage + 1))}
-          fontWeight="bold"
-          borderRadius="10px"
-          disabled={isDeploying}
-          bg={tokenData.color! ?? "#FFF"}
-          _hover={{ transform: "scale(1.02)" }}
-          _active={{ transform: "scale(0.95)" }}
-          color={tokenData.overlayTextColor! ?? "#000"}
-        >
-          {isDeploying
-            ? steps[activeStep].description
-            : stage === 3
-            ? t("Confirm")
-            : t("Next")}
-        </Button>
+        {stage !== 1 && stage === 3 &&  (
+          <Button
+            width="45%"
+            height="70px"
+            fontSize="2xl"
+            onClick={() => setStage(stage - 1)}
+            fontWeight="bold"
+            borderRadius="10px"
+            disabled={isDeploying}
+            bg={tokenData.color! ?? "#FFF"}
+            _hover={{ transform: "scale(1.02)" }}
+            _active={{ transform: "scale(0.95)" }}
+            color={tokenData.overlayTextColor! ?? "#000"}
+          >
+            {t("Previous")}
+          </Button>
+        )}
+
+        {stage < 3 && (
+          <Button
+            width="45%"
+            height="70px"
+            fontSize="2xl"
+            onClick={() =>
+              stage === "Confirm" ? deploy() : setStage(stage + 1)
+            }
+            fontWeight="bold"
+            borderRadius="10px"
+            disabled={isDeploying}
+            bg={tokenData.color! ?? "#FFF"}
+            _hover={{ transform: "scale(1.02)" }}
+            _active={{ transform: "scale(0.95)" }}
+            color={tokenData.overlayTextColor! ?? "#000"}
+          >
+            {t("Next")}
+          </Button>
+        )}
+
+        {stage === 3 && (
+          <Button
+            width="100%"
+            height="70px"
+            fontSize="2xl"
+            onClick={() => deploy()}
+            fontWeight="bold"
+            borderRadius="10px"
+            disabled={isDeploying}
+            bg={tokenData.color! ?? "#FFF"}
+            _hover={{ transform: "scale(1.02)" }}
+            _active={{ transform: "scale(0.95)" }}
+            color={tokenData.overlayTextColor! ?? "#000"}
+          >
+            {isDeploying ? steps[activeStep].description : t("Confirm")}
+          </Button>
+        )}
       </Box>
     </>
   );
@@ -1275,7 +1351,7 @@ const OracleConfig = ({
         mainAxisAlignment="space-between"
         alignItems="center"
         crossAxisAlignment="center"
-        width="90%"
+        width="100%"
       >
         <SimpleTooltip label={t("Choose the best price oracle for the asset.")}>
           <Text fontWeight="bold">
@@ -1379,7 +1455,7 @@ const OracleConfig = ({
         ) : null}
       </Row>
 
-      {shouldShowUniV3BaseTokenOracleForm && mode === "Editing" ? (
+      {shouldShowUniV3BaseTokenOracleForm && mode == "Editing" ? (
         <>
           <Row
             crossAxisAlignment="center"
@@ -1993,6 +2069,8 @@ const BaseTokenOracleConfig = ({
     if (!!activeOracleName && activeOracleName !== "Custom_Oracle" && options)
       setUniV3BaseTokenOracle(options[activeOracleName]);
   }, [activeOracleName, options, setUniV3BaseTokenOracle]);
+
+  console.log({ options });
 
   return (
     <Box
