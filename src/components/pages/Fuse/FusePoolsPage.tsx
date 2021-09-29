@@ -114,6 +114,7 @@ const PoolList = () => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         width="100%"
+        minHeight="100px"
       >
         {filteredPools ? (
           filteredPools.map((pool, index) => {

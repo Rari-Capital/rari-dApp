@@ -85,7 +85,7 @@ export const fetchPools = async ({
         .getPublicPoolsByVerificationWithData(false)
         .call({ gas: 1e18 })
     : fuse.contracts.FusePoolLens.methods
-        .getPublicPoolsWithData()
+        .getPublicPoolsByVerificationWithData(true)
         .call({ gas: 1e18 });
 
   const {

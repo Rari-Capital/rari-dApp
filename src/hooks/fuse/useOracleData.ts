@@ -11,6 +11,7 @@ import { Contract } from "web3-eth-contract"
 import axios from 'axios'
 import { useQuery } from 'react-query'
 import { useRari } from 'context/RariContext'
+import { ETH_TOKEN_DATA } from 'hooks/useTokenData'
 
 export type OracleDataType = {
   admin: string // Address of Oracle's admin
@@ -18,10 +19,12 @@ export type OracleDataType = {
   oracleContract: Contract
 }
 
-export const useIdentifyOracle = (oracleAddr: string) => {
+export const useIdentifyOracle = (oracleAddr: string, tokenAddr?: string) => {
   const { fuse }  = useRari()
 
+
   const { data } = useQuery("Identifying Oracle " + oracleAddr, async () => {
+  if (tokenAddr && tokenAddr === ETH_TOKEN_DATA.address) return "MasterPriceOracle"
     return await fuse.identifyPriceOracle(oracleAddr)
   }) 
 
@@ -150,22 +153,28 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
   // If theres no whitelisted pool for the asset, or if there was an error return null
   // Otherwise its return ''
   // In the UniswapV3PriceOracleConfigurator, we will mount the hook above to get info 
-  const Uniswap_V2_Oracle = 
-        (UniV2Pairs === null || UniV2Pairs === undefined || UniV2Pairs.length === 0 || univ2Error )
-        ? null
-        : ''
+  // const Uniswap_V2_Oracle = 
+  //       (UniV2Pairs === null || UniV2Pairs === undefined || UniV2Pairs.length === 0 || univ2Error )
+  //       ? null
+  //       : ''
 
-  const SushiSwap_Oracle =
-        (SushiPairs === null || SushiPairs === undefined || SushiPairs.length === 0 || SushiError )
-        ? null
-        : ''
+  // const SushiSwap_Oracle =
+  //       (SushiPairs === null || SushiPairs === undefined || SushiPairs.length === 0 || SushiError )
+  //       ? null
+  //       : ''
 
   // If tokenAddress is not a valid address return null. 
   // If tokenAddress is valid and oracle admin can overwrite or if admin can't overwrite but there's no preset, return all options
   // If tokenAddress is valid but oracle admin can't overwrite, return the preset oracle address,
   const Data = !isValidAddress ? null 
                   : oracleData.adminOverwrite ||  Master_Price_Oracle_Default === null  
-                  ? { Master_Price_Oracle_Default, Rari_Default_Oracle, Chainlink_Oracle, Uniswap_V3_Oracle, Uniswap_V2_Oracle, SushiSwap_Oracle, Custom_Oracle: " "} 
+                  ? { 
+                    Master_Price_Oracle_Default, 
+                    Rari_Default_Oracle, Chainlink_Oracle, 
+                    Uniswap_V3_Oracle, 
+                    // Uniswap_V2_Oracle, 
+                    // SushiSwap_Oracle, 
+                    Custom_Oracle: " "} 
                   : { Master_Price_Oracle_Default }
 
   return Data

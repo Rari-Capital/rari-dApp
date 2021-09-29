@@ -42,12 +42,17 @@ import { useOracleData } from "hooks/fuse/useOracleData";
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller, createUnitroller } from "../../../utils/createComptroller";
+import {
+  createComptroller,
+  createUnitroller,
+} from "../../../utils/createComptroller";
 import { handleGenericError } from "../../../utils/errorHandling";
 
 // Libraries
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
+import { useIsComptrollerAdmin } from "./FusePoolPage";
+import { AdminAlert } from "components/shared/AdminAlert";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -76,7 +81,7 @@ export enum ComptrollerErrorCodes {
   SUPPLIER_NOT_WHITELISTED,
   BORROW_BELOW_MIN,
   SUPPLY_ABOVE_MAX,
-  NONZERO_TOTAL_SUPPLY
+  NONZERO_TOTAL_SUPPLY,
 }
 
 export const useIsUpgradeable = (comptrollerAddress: string) => {
@@ -133,13 +138,14 @@ const FusePoolEditPage = memo(() => {
   const { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+  const isAdmin = useIsComptrollerAdmin(data?.comptroller);
 
   return (
     <>
       {data ? (
         <AddAssetModal
           comptrollerAddress={data.comptroller}
-          poolOracleAddress={data.oracle} 
+          poolOracleAddress={data.oracle}
           oracleModel={data.oracleModel}
           existingAssets={data.assets}
           poolName={data.name}
@@ -162,6 +168,12 @@ const FusePoolEditPage = memo(() => {
         <FuseStatsBar data={data} />
 
         <FuseTabBar />
+
+        <AdminAlert
+          isAdmin={isAdmin}
+          isAdminText="You are the admin of this Fuse Pool!"
+          isNotAdminText="You are not the admin of this Fuse Pool!"
+        />
 
         <RowOrColumn
           width="100%"
@@ -237,7 +249,7 @@ export default FusePoolEditPage;
 const PoolConfiguration = ({
   assets,
   comptrollerAddress,
-  oracleAddress
+  oracleAddress,
 }: {
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
@@ -645,7 +657,7 @@ const AssetConfiguration = ({
 }) => {
   const { t } = useTranslation();
   const { fuse } = useRari();
-  const oracleData = useOracleData(poolOracleAddress, fuse)
+  const oracleData = useOracleData(poolOracleAddress, fuse);
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
 
   return (
@@ -719,17 +731,16 @@ const ColoredAssetSettings = ({
   cTokenAddress,
   poolOracleAddress,
   oracleModel,
-  oracleData
+  oracleData,
 }: {
   tokenAddress: string;
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   cTokenAddress: string;
-  poolOracleAddress: string,
-  oracleModel: string | null,
-  oracleData: any
-  
+  poolOracleAddress: string;
+  oracleModel: string | null;
+  oracleData: any;
 }) => {
   const tokenData = useTokenData(tokenAddress);
 

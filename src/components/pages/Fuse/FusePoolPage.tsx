@@ -3,12 +3,14 @@ import {
   Avatar,
   Box,
   Heading,
+  Link,
   Progress,
   Spinner,
   Switch,
   Text,
   useDisclosure,
   useToast,
+  HStack
 } from "@chakra-ui/react";
 import {
   Column,
@@ -21,7 +23,7 @@ import {
 // Hooks
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "react-query";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
@@ -49,6 +51,24 @@ import PoolModal, { Mode } from "./Modals/PoolModal";
 import LogRocket from "logrocket";
 import Footer from "components/shared/Footer";
 import { getSymbol } from "utils/symbolUtils";
+import { AdminAlert } from "components/shared/AdminAlert";
+import { EditIcon } from "@chakra-ui/icons";
+
+export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
+  const { fuse, address } = useRari();
+
+  const { data } = useQuery(comptrollerAddress + " admin", async () => {
+    if (!comptrollerAddress) return undefined;
+
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const admin = await comptroller.methods.admin().call();
+
+    return admin;
+  });
+
+  return address === data;
+};
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
@@ -58,6 +78,8 @@ const FusePoolPage = memo(() => {
   let { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+
+  const isAdmin = useIsComptrollerAdmin(data?.comptroller);
 
   return (
     <>
@@ -84,6 +106,27 @@ const FusePoolPage = memo(() => {
             />
           ) : null
         }
+
+        {isAdmin && (
+          <AdminAlert
+            isAdmin={isAdmin}
+            isAdminText="You are the admin of this Fuse Pool!"
+            rightAdornment={
+              <Box h="100%" ml="auto"  color="black">
+                <Link
+                  /* @ts-ignore */
+                  as={RouterLink}
+                  to="./edit"
+                >
+                  <HStack>
+                    <Text fontWeight="bold">Edit </Text>
+                    <EditIcon />
+                  </HStack>
+                </Link>
+              </Box>
+            }
+          />
+        )}
 
         <RowOrColumn
           width="100%"
