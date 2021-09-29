@@ -107,7 +107,7 @@ const FusePoolPage = memo(() => {
           ) : null
         }
 
-        {isAdmin && (
+        {!!data && isAdmin && (
           <AdminAlert
             isAdmin={isAdmin}
             isAdminText="You are the admin of this Fuse Pool!"

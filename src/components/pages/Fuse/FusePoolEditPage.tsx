@@ -169,11 +169,13 @@ const FusePoolEditPage = memo(() => {
 
         <FuseTabBar />
 
-        <AdminAlert
-          isAdmin={isAdmin}
-          isAdminText="You are the admin of this Fuse Pool!"
-          isNotAdminText="You are not the admin of this Fuse Pool!"
-        />
+        {!!data && (
+          <AdminAlert
+            isAdmin={isAdmin}
+            isAdminText="You are the admin of this Fuse Pool!"
+            isNotAdminText="You are not the admin of this Fuse Pool!"
+          />
+        )}
 
         <RowOrColumn
           width="100%"

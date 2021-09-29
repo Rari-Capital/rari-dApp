@@ -46,7 +46,7 @@ export const useOracleData = (oracleAddress: string, fuse: Fuse): OracleDataType
 }
 
 export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse: Fuse, isValidAddress: boolean): {[key: string]: any} | null => {
-  const { data: Master_Price_Oracle_Default } = useQuery("MasterOracle " + oracleData.oracleContract.options.address + " check price feed for " + tokenAddress, async () => {
+  const { data: Active_Price_Oracle } = useQuery("MasterOracle " + oracleData.oracleContract.options.address + " check price feed for " + tokenAddress, async () => {
       if (!isValidAddress) return null
 
       // Get Oracle address for asset from the pools MasterPriceOracle
@@ -61,12 +61,12 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
     }
   );
 
-  const { data: Rari_Default_Oracle } = useQuery(
+  const { data: Rari_MasterPriceOracle } = useQuery(
     "RariMasterPriceOracle price feed check for " + tokenAddress,
     async () => {
       if (
         !isValidAddress ||
-        (!oracleData.adminOverwrite && !Master_Price_Oracle_Default === null)
+        (!oracleData.adminOverwrite && !Active_Price_Oracle === null)
       )
         return null;
 
@@ -80,10 +80,10 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
         .oracles(tokenAddress)
         .call();
 
-      // If oracleAddress is empty return null
+      // If oracleAddress is empty return null, else return the RARI MASTER PRICE ORACLE
       if (oracleAddress === "0x0000000000000000000000000000000000000000")
         return null;
-      return oracleAddress;
+      return Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle;
     }
   );
 
@@ -92,7 +92,7 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
     async () => {
       if (
         !isValidAddress ||
-        (!oracleData.adminOverwrite && !Master_Price_Oracle_Default === null)
+        (!oracleData.adminOverwrite && !Active_Price_Oracle === null)
       )
         return null;
 
@@ -167,15 +167,15 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
   // If tokenAddress is valid and oracle admin can overwrite or if admin can't overwrite but there's no preset, return all options
   // If tokenAddress is valid but oracle admin can't overwrite, return the preset oracle address,
   const Data = !isValidAddress ? null 
-                  : oracleData.adminOverwrite ||  Master_Price_Oracle_Default === null  
+                  : oracleData.adminOverwrite ||  Active_Price_Oracle === null  
                   ? { 
-                    Master_Price_Oracle_Default, 
-                    Rari_Default_Oracle, Chainlink_Oracle, 
+                    Active_Price_Oracle, 
+                    Rari_MasterPriceOracle, Chainlink_Oracle, 
                     Uniswap_V3_Oracle, 
                     // Uniswap_V2_Oracle, 
                     // SushiSwap_Oracle, 
                     Custom_Oracle: " "} 
-                  : { Master_Price_Oracle_Default }
+                  : { Active_Price_Oracle }
 
   return Data
 }
