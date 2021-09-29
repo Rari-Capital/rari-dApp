@@ -83,7 +83,7 @@ export const fetchPools = async ({
     : isNonWhitelistedPools
     ? fuse.contracts.FusePoolLens.methods
         .getPublicPoolsByVerificationWithData(false)
-        .call({ gas: 1e18 })
+        .call({ gas: 1e18 })  
     : fuse.contracts.FusePoolLens.methods
         .getPublicPoolsByVerificationWithData(true)
         .call({ gas: 1e18 });

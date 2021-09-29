@@ -1,7 +1,8 @@
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   Avatar,
   Box,
+  Button,
   Heading,
   Link,
   Progress,
@@ -10,7 +11,7 @@ import {
   Text,
   useDisclosure,
   useToast,
-  HStack
+  HStack,
 } from "@chakra-ui/react";
 import {
   Column,
@@ -34,7 +35,7 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 // Utils
 import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
-import { createComptroller } from "utils/createComptroller";
+import { createComptroller, createUnitroller } from "utils/createComptroller";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Components
@@ -53,6 +54,8 @@ import Footer from "components/shared/Footer";
 import { getSymbol } from "utils/symbolUtils";
 import { AdminAlert } from "components/shared/AdminAlert";
 import { EditIcon } from "@chakra-ui/icons";
+import { testForComptrollerErrorAndSend } from "./FusePoolEditPage";
+import { handleGenericError } from "utils/errorHandling";
 
 export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
   const { fuse, address } = useRari();
@@ -68,6 +71,72 @@ export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
   });
 
   return address === data;
+};
+
+export const useIsComptrollerPendingAdmin = (
+  comptrollerAddress?: string
+): boolean => {
+  const { fuse, address } = useRari();
+
+  const { data } = useQuery(comptrollerAddress + " pending admin", async () => {
+    if (!comptrollerAddress) return undefined;
+
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const pendingAdmin = await comptroller.methods.pendingAdmin().call();
+
+    return pendingAdmin;
+  });
+
+  return address === data;
+};
+
+const PendingAdminAlert = ({ comptroller }: { comptroller?: string }) => {
+  const { address, fuse } = useRari();
+
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  const [isAccepting, setIsAccepting] = useState(false);
+
+  const isPendingAdmin = useIsComptrollerPendingAdmin(comptroller);
+
+  const acceptAdmin = async () => {
+    if (!comptroller) return;
+    const unitroller = createUnitroller(comptroller, fuse);
+    setIsAccepting(true);
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._acceptAdmin(),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-AcceptAdmin");
+
+      queryClient.refetchQueries();
+      setIsAccepting(false);
+    } catch (e) {
+      setIsAccepting(false);
+
+      handleGenericError(e, toast);
+    }
+  };
+
+  return (
+    <AdminAlert
+      isAdmin={isPendingAdmin}
+      isAdminText="You are the pending admin of this Fuse Pool! Click to Accept Admin"
+      rightAdornment={
+        <Button h="100%" p={3} ml="auto" color="black" onClick={acceptAdmin}>
+          <HStack>
+            <Text fontWeight="bold">Accept Admin </Text>
+          </HStack>
+        </Button>
+      }
+    />
+  );
 };
 
 const FusePoolPage = memo(() => {
@@ -112,7 +181,7 @@ const FusePoolPage = memo(() => {
             isAdmin={isAdmin}
             isAdminText="You are the admin of this Fuse Pool!"
             rightAdornment={
-              <Box h="100%" ml="auto"  color="black">
+              <Box h="100%" ml="auto" color="black">
                 <Link
                   /* @ts-ignore */
                   as={RouterLink}
@@ -127,6 +196,9 @@ const FusePoolPage = memo(() => {
             }
           />
         )}
+
+
+        {!!data && !isAdmin &&  <PendingAdminAlert comptroller={data?.comptroller} />}
 
         <RowOrColumn
           width="100%"

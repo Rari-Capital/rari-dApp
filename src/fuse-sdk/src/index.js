@@ -139,6 +139,8 @@ export default class Fuse {
       "0xb300f7f64110b952340e896d33f133482de6715f1b8b7e0acbd2416e0e6593c1",
     UniswapV3TwapPriceOracleV2_Uniswap_10000_USDC:
       "0xc301f891f1f905e68d1c5df5202cf0eec2ee8abcf3a510d5bd00d46f7dea01b4",
+    UniswapV3TwapPriceOracleV2:
+      "0xdbb426d944f8b99a8a5507b90f29c4f9d4b2219506dcc7aa5283a19a7ab969f8",
     YVaultV1PriceOracle:
       "0xd0dda181a4eb699a966b23edb883cff43377297439822b1b0f99b06af2002cc3",
     YVaultV2PriceOracle:

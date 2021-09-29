@@ -1427,6 +1427,7 @@ const OracleConfig = ({
 
   // Will update oracle for the asset. This is used only if user is editing asset.
   const updateOracle = async () => {
+
     const poolOracleContract = createOracle(
       poolOracleAddress,
       fuse,
@@ -1436,8 +1437,6 @@ const OracleConfig = ({
     // This variable will change if we deploy an oracle. (i.e TWAP Oracles)
     // If we're using an option that has been deployed it stays the same.
     let oracleAddressToUse = oracleAddress;
-
-    console.log({ poolOracleContract, oracleAddressToUse });
 
     try {
       console.log(0);
@@ -1454,7 +1453,6 @@ const OracleConfig = ({
         oracleAddressToUse = await fuse.deployPriceOracle(
           "UniswapV3TwapPriceOracleV2",
           {
-            uniswapV3Factory: oracleAddressToUse,
             feeTier,
             baseToken: uniV3BaseToken,
           },
