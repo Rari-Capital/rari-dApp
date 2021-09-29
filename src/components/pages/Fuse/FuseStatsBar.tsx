@@ -53,7 +53,7 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
           >
             {/* Title */}
             {!!data ? (
-              <WhitelistedIcon isWhitelisted={data.isAdminWhitelisted} />
+              <WhitelistedIcon isWhitelisted={data.isAdminWhitelisted} mb={1} />
             ) : null}
             <Heading size="lg" isTruncated>
               {data?.name ?? "Fuse"}
@@ -71,7 +71,7 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
               <span style={{ fontWeight: "bold" }}>{data.assets.length} </span>
               assets. Fuse is the first truly open interest rate protocol. Lend,
               borrow, and create isolated lending markets with unlimited
-              flexibility."
+              flexibility.
             </Text>
           ) : (
             <Text>
