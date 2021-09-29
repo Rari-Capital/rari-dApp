@@ -1334,19 +1334,26 @@ const OracleConfig = ({
       // If activeOracle if a TWAP Oracle
       if (activeOracle === "Uniswap_V3_Oracle") {
         // Check for observation cardinality and fix if necessary
-        await fuse.primeUniswapV3Oracle(oracleAddress, { from: address });
+        await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });        
 
         // Deploy oracle
         oracleAddressToUse = await fuse.deployPriceOracle(
           "UniswapV3TwapPriceOracleV2",
-          { uniswapV3Factory: oracleAddress, feeTier, baseToken: tokenAddress },
+          { uniswapV3Factory: oracleAddressToUse, feeTier, baseToken: tokenAddress },
           { from: address }
         );
       }
 
+      const tokenArray = shouldShowUniV3BaseTokenOracleForm
+      ? [tokenAddress, uniV3BaseToken]
+      : [tokenAddress];
+     const oracleAddressArray = shouldShowUniV3BaseTokenOracleForm
+      ? [oracleAddressToUse, uniV3BaseTokenOracle]
+      : [oracleAddressToUse];
+
       // Add oracle to Master Price Oracle
       await poolOracleContract.methods
-        .add([tokenAddress], [oracleAddressToUse])
+        .add([tokenArray], [oracleAddressArray])
         .send({ from: address });
 
       queryClient.refetchQueries();
