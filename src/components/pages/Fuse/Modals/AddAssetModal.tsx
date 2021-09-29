@@ -76,6 +76,7 @@ import { smallUsdFormatter, shortUsdFormatter } from "utils/bigUtils";
 import Chart from "react-apexcharts";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
+import { emitKeypressEvents } from "readline";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -568,6 +569,7 @@ export const AssetSettings = ({
               shouldShowUniV3BaseTokenOracleForm={
                 shouldShowUniV3BaseTokenOracleForm
               }
+              interestRateModel={interestRateModel}
             />
           </>
         ) : (
@@ -648,6 +650,7 @@ const Screen2 = ({
   uniV3BaseTokenOracle,
   setUniV3BaseTokenOracle,
   shouldShowUniV3BaseTokenOracleForm,
+  interestRateModel,
 }: {
   stage: number;
   // OracleConfigArgs: any;
@@ -660,6 +663,7 @@ const Screen2 = ({
   uniV3BaseTokenOracle: string;
   setUniV3BaseTokenOracle: any;
   shouldShowUniV3BaseTokenOracleForm: boolean;
+  interestRateModel: string;
 }) => {
   return (
     <Column
@@ -679,7 +683,7 @@ const Screen2 = ({
             crossAxisAlignment="center"
           >
             <IRMChart curves={curves} tokenData={tokenData} />
-            <Text>name of IRM</Text>
+            <Text>{identifyInterestRateModel(interestRateModel)}</Text>
           </Column>
         )}
       </Fade>
@@ -743,23 +747,25 @@ const DeployButton = ({
         alignContent="center"
         justifyContent="space-around"
       >
-        {stage !== 1 && stage === 3 &&  (
-          <Button
-            width="45%"
-            height="70px"
-            fontSize="2xl"
-            onClick={() => setStage(stage - 1)}
-            fontWeight="bold"
-            borderRadius="10px"
-            disabled={isDeploying}
-            bg={tokenData.color! ?? "#FFF"}
-            _hover={{ transform: "scale(1.02)" }}
-            _active={{ transform: "scale(0.95)" }}
-            color={tokenData.overlayTextColor! ?? "#000"}
-          >
-            {t("Previous")}
-          </Button>
-        )}
+        {stage !== 1 &&
+          stage === 3 &&
+          !isDeploying(
+            <Button
+              width="45%"
+              height="70px"
+              fontSize="2xl"
+              onClick={() => setStage(stage - 1)}
+              fontWeight="bold"
+              borderRadius="10px"
+              disabled={isDeploying}
+              bg={tokenData.color! ?? "#FFF"}
+              _hover={{ transform: "scale(1.02)" }}
+              _active={{ transform: "scale(0.95)" }}
+              color={tokenData.overlayTextColor! ?? "#000"}
+            >
+              {t("Previous")}
+            </Button>
+          )}
 
         {stage < 3 && (
           <Button
@@ -1261,13 +1267,23 @@ const OracleConfig = ({
   // If user's editing the asset's properties, show master price oracle as a default.
   // Should run only once, when component is rendered
   useEffect(() => {
-    if (
-      mode === "Editing" &&
-      activeOracle === "" &&
-      options &&
-      options["Master_Price_Oracle_Default"]
-    )
-      _setActiveOracle("Master_Price_Oracle_Default");
+    console.log({ options, activeOracle });
+    let oracleForCtoken = "Master_Price_Oracle_Default";
+    Object.entries(options ?? {}).forEach(([key, value]) => {
+      console.log({ key, value });
+      if (
+        !!value?.trim() &&
+        key !== "Master_Price_Oracle_Default" &&
+        mode === "Editing"
+      ) {
+        oracleForCtoken = key;
+      }
+    });
+
+    console.log({ oracleForCtoken });
+
+    if (mode === "Editing" && options && options["Master_Price_Oracle_Default"])
+      _setActiveOracle(oracleForCtoken);
   }, [mode, activeOracle, options, _setActiveOracle]);
 
   // Update the oracle address, after user chooses which option they want to use.
@@ -2285,4 +2301,17 @@ const IRMChart = ({
       )}
     </Box>
   );
+};
+
+const identifyInterestRateModel = (irmAddress: string) => {
+  let name = "";
+
+  Object.entries(Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES).forEach(
+    ([key, value]) => {
+      if (value === irmAddress) {
+        name = key;
+      }
+    }
+  );
+  return name;
 };
