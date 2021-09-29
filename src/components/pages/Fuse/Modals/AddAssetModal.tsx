@@ -198,13 +198,12 @@ const useIRMCurves = ({
   return curves;
 };
 
-
 // Maps the return of useOracleidentity to the options returned by `getOracleOPtions`
-const OracleIdentityMap = { 
-  "ChainlinkPriceOracleV3": "Chainlink_Oracle",
-  "MasterPriceOracleV1" : "Rari_MasterPriceOracle",
-  "UNISWAPV3" : "Uniswap_V3_Oracle"
-} 
+const OracleIdentityMap = {
+  ChainlinkPriceOracleV3: "Chainlink_Oracle",
+  MasterPriceOracleV1: "Rari_MasterPriceOracle",
+  UNISWAPV3: "Uniswap_V3_Oracle",
+};
 
 // This component will handle deployment,
 // Also conditional rendering. Either Editing or Deploying and asset
@@ -282,6 +281,7 @@ export const AssetSettings = ({
     () =>
       !!uniV3BaseToken &&
       !uniV3BaseTokenHasOracle &&
+      !isTokenETHOrWETH(uniV3BaseToken) &&
       (activeOracle === "Uniswap_V3_Oracle" ||
         activeOracle === "Uniswap_V2_Oracle" ||
         activeOracle === "SushiSwap_Oracle"),
@@ -289,7 +289,7 @@ export const AssetSettings = ({
   );
 
   useEffect(() => {
-    if (!!uniV3BaseToken) {
+    if (!!uniV3BaseToken && !isTokenETHOrWETH(uniV3BaseToken)) {
       // check if fuse pool's oracle has an oracle for uniV3BaseToken
       oracleData.oracleContract.methods
         .oracles(uniV3BaseToken)
@@ -605,7 +605,11 @@ export const AssetSettings = ({
         {stage < 3 ? (
           <>
             <Column
-              width={ shouldShowUniV3BaseTokenOracleForm || stage === 1 ?"50%" : "100%"}
+              width={
+                shouldShowUniV3BaseTokenOracleForm || stage === 1
+                  ? "50%"
+                  : "100%"
+              }
               height="90%"
               d="flex"
               mainAxisAlignment="center"
@@ -618,7 +622,9 @@ export const AssetSettings = ({
                 stage={stage}
                 args={args}
                 OracleConfigArgs={OracleConfigArgs}
-                shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
+                shouldShowUniV3BaseTokenOracleForm={
+                  shouldShowUniV3BaseTokenOracleForm
+                }
               />
             </Column>
             <Column
@@ -676,7 +682,7 @@ const Screen1 = ({
   stage,
   args,
   OracleConfigArgs,
-  shouldShowUniV3BaseTokenOracleForm
+  shouldShowUniV3BaseTokenOracleForm,
 }: {
   stage: number;
   args: any;
@@ -766,23 +772,30 @@ const Screen2 = ({
             crossAxisAlignment="center"
           >
             <IRMChart curves={curves} tokenData={tokenData} />
-            <Text>{identifyInterestRateModel(interestRateModel).replace("_", " ")}</Text>
+            <Text>
+              {identifyInterestRateModel(interestRateModel).replace("_", " ")}
+            </Text>
           </Column>
         )}
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
-        <Column width="100%" height="100%" mainAxisAlignment="center"crossAxisAlignment="center">
-        {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
-          <BaseTokenOracleConfig
-            mode={mode}
-            oracleData={oracleData}
-            uniV3BaseToken={uniV3BaseToken}
-            baseTokenAddress={uniV3BaseToken}
-            uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-            setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-          />
+        <Column
+          width="100%"
+          height="100%"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+        >
+          {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
+            <BaseTokenOracleConfig
+              mode={mode}
+              oracleData={oracleData}
+              uniV3BaseToken={uniV3BaseToken}
+              baseTokenAddress={uniV3BaseToken}
+              uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+              setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+            />
           )}
-          </Column>
+        </Column>
       </Fade>
     </Column>
   );
@@ -1373,14 +1386,19 @@ const OracleConfig = ({
   );
 
   // Identify token oracle address
-  const oracleIdentity = useIdentifyOracle(oracleAddress)
+  const oracleIdentity = useIdentifyOracle(oracleAddress);
 
   // If user's editing the asset's properties, show the Ctoken's active Oracle
   useEffect(() => {
-
     // @ts-ignore
-    let oracleForCToken = OracleIdentityMap[oracleIdentity] 
-    console.log({ options, activeOracle, oracleForCToken, OracleIdentityMap, oracleIdentity });
+    let oracleForCToken = OracleIdentityMap[oracleIdentity];
+    console.log({
+      options,
+      activeOracle,
+      oracleForCToken,
+      OracleIdentityMap,
+      oracleIdentity,
+    });
 
     // Map oracleIdentity to whatever the type of `activeOracle` can be
 
@@ -1419,41 +1437,46 @@ const OracleConfig = ({
     // If we're using an option that has been deployed it stays the same.
     let oracleAddressToUse = oracleAddress;
 
-    console.log({poolOracleContract, oracleAddressToUse})
+    console.log({ poolOracleContract, oracleAddressToUse });
 
     try {
-      console.log(0)
+      console.log(0);
       if (options === null) return null;
 
       // If activeOracle if a TWAP Oracle
       if (activeOracle === "Uniswap_V3_Oracle") {
         // Check for observation cardinality and fix if necessary
-        await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });        
+        await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });
+
+        console.log({ uniV3BaseToken });
 
         // Deploy oracle
         oracleAddressToUse = await fuse.deployPriceOracle(
           "UniswapV3TwapPriceOracleV2",
-          { uniswapV3Factory: oracleAddressToUse, feeTier, baseToken: tokenAddress },
+          {
+            uniswapV3Factory: oracleAddressToUse,
+            feeTier,
+            baseToken: uniV3BaseToken,
+          },
           { from: address }
         );
       }
 
+      const tokenArray =
+        shouldShowUniV3BaseTokenOracleForm && !isTokenETHOrWETH(uniV3BaseToken)
+          ? [tokenAddress, uniV3BaseToken]
+          : [tokenAddress];
+      const oracleAddressArray =
+        shouldShowUniV3BaseTokenOracleForm && !isTokenETHOrWETH(uniV3BaseToken)
+          ? [oracleAddressToUse, uniV3BaseTokenOracle]
+          : [oracleAddressToUse];
 
-      const tokenArray = shouldShowUniV3BaseTokenOracleForm
-      ? [tokenAddress, uniV3BaseToken]
-      : [tokenAddress];
-     const oracleAddressArray = shouldShowUniV3BaseTokenOracleForm
-      ? [oracleAddressToUse, uniV3BaseTokenOracle]
-      : [oracleAddressToUse];
-
-
-    console.log({tokenArray, oracleAddressArray})
+      console.log({ tokenArray, oracleAddressArray });
 
       // Add oracle to Master Price Oracle
       await poolOracleContract.methods
         .add(tokenArray, oracleAddressArray)
         .send({ from: address });
-
 
       queryClient.refetchQueries();
 
@@ -1530,8 +1553,10 @@ const OracleConfig = ({
                 !options.Active_Price_Oracle === null)
             }
           >
-            {Object.entries(options).map(([key, value]) => 
-              value !== null && value !== undefined && key !== "Active_Price_Oracle"  ? (
+            {Object.entries(options).map(([key, value]) =>
+              value !== null &&
+              value !== undefined &&
+              key !== "Active_Price_Oracle" ? (
                 <option key={key} value={key} className="black-bg-option">
                   {key.replaceAll("_", " ")}
                 </option>
@@ -1562,6 +1587,9 @@ const OracleConfig = ({
               disabled={activeOracle === "Custom_Oracle" ? false : true}
             />
           ) : null}
+          <Text color="grey" fontSize="sm" textAlign="center">
+            {oracleIdentity}
+          </Text>
         </Box>
       </ConfigRow>
 
@@ -1731,8 +1759,9 @@ const UniswapV3PriceOracleConfigurator = ({
       <Row
         crossAxisAlignment="center"
         mainAxisAlignment="space-between"
-        width="260px"
+        width="100%"
         my={2}
+        px={4}
       >
         <SimpleTooltip
           label={t(
@@ -2222,6 +2251,7 @@ const BaseTokenOracleConfig = ({
   return (
     <Box
       d="flex"
+      w="100%"
       alignContent="center"
       flexDirection="column"
       justifyContent="center"
@@ -2309,11 +2339,10 @@ const BaseTokenOracleConfig = ({
   );
 };
 
-
 const SimpleDeployment = [
   "Configuring your Fuse pool's Master Price Oracle",
   "Configuring your Fuse pool to support new asset market",
-  "All Done!"
+  "All Done!",
 ];
 
 const UniSwapV3DeploymentSimple = [
