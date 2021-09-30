@@ -93,13 +93,12 @@ const BaseTokenOracleConfig = ({
         <Column
           my={4}
           width="100%"
-          mx={mode === "Adding" ? 0 : 4}
           crossAxisAlignment="center"
           mainAxisAlignment="space-between"
         >
           {options ? (
             <>
-              <Column mainAxisAlignment="center" crossAxisAlignment="center">
+              <Column mainAxisAlignment="center" crossAxisAlignment="center" height="50%" justifyContent="space-around">
                 <CTokenIcon address={baseTokenAddress} boxSize={"50px"} />
                 <SimpleTooltip
                   label={t("Choose the best price oracle for this BaseToken.")}
@@ -110,7 +109,7 @@ const BaseTokenOracleConfig = ({
                 </SimpleTooltip>
               </Column>
   
-              <Box alignItems="center">
+              <Box alignItems="center" height="50%">
                 <Select
                   {...DASHBOARD_BOX_PROPS}
                   ml="auto"

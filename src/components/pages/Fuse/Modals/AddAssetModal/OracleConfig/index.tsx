@@ -215,6 +215,9 @@ const OracleConfig = ({
           alignItems="center"
           crossAxisAlignment="center"
           width="100%"
+          pt={mode === "Editing" ? 4 : 0 }
+          pb={mode === "Editing" ? 1 : 0 }
+          px={mode === "Editing" ? 2 : 0 }
         >
           <SimpleTooltip label={t("Choose the best price oracle for the asset.")}>
             <Text fontWeight="bold">
@@ -368,8 +371,8 @@ const OracleConfig = ({
         {activeOracle !== "Active_Price_Oracle" && mode === "Editing" ? (
           <SaveButton
             ml={"auto"}
-            mb={1}
-            mr={1}
+            mb={3}
+            mr={2}
             fontSize="xs"
             altText={t("Update")}
             onClick={updateOracle}
