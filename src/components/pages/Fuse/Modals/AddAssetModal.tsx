@@ -570,13 +570,13 @@ export const AssetSettings = ({
       justifyContent="center"
       height="90%"
     >
-      <Fade in={stage === 1}>
+      <Fade in={stage === 1} unmountOnExit>
         <Heading> IRM and fToken Config </Heading>
       </Fade>
-      <Fade in={stage === 2}>
+      <Fade in={stage === 2} unmountOnExit>
         <Heading> Oracle Config </Heading>
       </Fade>
-      <Fade in={stage === 3}>
+      <Fade in={stage === 3} unmountOnExit>
         <Heading> Asset Config Summary </Heading>
       </Fade>
       <Box
@@ -586,6 +586,7 @@ export const AssetSettings = ({
         alignItems={stage < 3 ? "flex-start" : "center"}
         justifyContent={stage < 3 ? undefined : "center"}
         height={isDeploying ? "65%" : "80%"}
+        width="100%"
       >
         {stage < 3 ? (
           <>
@@ -635,7 +636,27 @@ export const AssetSettings = ({
             </Column>
           </>
         ) : (
-          <Screen3/>
+          <Column
+            width="100%"
+            height="90%"
+            d="flex"
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Fade in={stage === 3} unmountOnExit>
+              <Screen3 
+                curves={curves}
+                tokenData={tokenData}
+                collateralFactor={collateralFactor}
+                reserveFactor={reserveFactor}
+                activeOracle={activeOracle}
+                adminFee={adminFee}
+                shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
+              />
+            </Fade>
+          </Column>
         )}
       </Box>
       <DeployButton
@@ -773,7 +794,23 @@ const Screen2 = ({
   );
 };
 
-const Screen3 = () => {
+const Screen3 = ({
+  curves,
+  adminFee,
+  tokenData,
+  activeOracle,
+  reserveFactor,
+  collateralFactor,
+  shouldShowUniV3BaseTokenOracleForm,
+} : {
+  shouldShowUniV3BaseTokenOracleForm: boolean
+  collateralFactor: number
+  reserveFactor: number
+  activeOracle: string
+  tokenData: any,
+  adminFee: number,
+  curves: any
+}) => {
   return (
     <Column
       mainAxisAlignment="center"
@@ -784,7 +821,52 @@ const Screen3 = () => {
       width="100%"
       maxWidth="100%"
     >
-      <h2>Under construction :) </h2>
+      <Box
+        d="flex"
+        maxHeight="80%"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+      >
+        <Column
+          width="50%"
+          height="90%"
+          d="flex"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <h2>Under construction :) </h2>
+
+          <h2>Collateral Factor: {collateralFactor}</h2>
+          <h2>Reserve Factor: {reserveFactor}</h2>
+          <h2>Admin Fee: {adminFee}</h2>
+
+          <h2>Oracle would be: {activeOracle}</h2>
+          
+          { shouldShowUniV3BaseTokenOracleForm ?
+          <>
+            <h2>You're using a Uniswap V3 Twap Oracle, we need to set an oracle for the base token</h2>
+            <h2> Base token oracle would be: Rari Master Price</h2>
+          </>
+            : null
+          }
+          
+        </Column>
+        <Column
+          width="50%"
+          height="90%"
+          d="flex"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <IRMChart curves={curves} tokenData={tokenData}/>
+        </Column>
+      </Box>
     </Column>
   )
 }
