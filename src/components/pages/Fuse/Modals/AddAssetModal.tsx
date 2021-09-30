@@ -2,6 +2,8 @@
 import {
   Alert,
   AlertIcon,
+  Divider,
+  HStack,
   Heading,
   Modal,
   ModalContent,
@@ -18,7 +20,13 @@ import {
   Checkbox,
   Circle,
 } from "@chakra-ui/react";
-import { Column, Center, Row } from "utils/chakraUtils";
+import {
+  Column,
+  Center,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "utils/chakraUtils";
 import DashboardBox, {
   DASHBOARD_BOX_PROPS,
 } from "../../../shared/DashboardBox";
@@ -61,6 +69,7 @@ import {
   useGetOracleOptions,
   useSushiOrUniswapV2Pairs,
   OracleDataType,
+  useIdentifyOracle,
 } from "hooks/fuse/useOracleData";
 import { createOracle } from "../../../../utils/createComptroller";
 
@@ -77,6 +86,7 @@ import Chart from "react-apexcharts";
 import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { emitKeypressEvents } from "readline";
+import { useIsMediumScreen } from "../FuseTabBar";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -195,6 +205,13 @@ const useIRMCurves = ({
   return curves;
 };
 
+// Maps the return of useOracleidentity to the options returned by `getOracleOPtions`
+const OracleIdentityMap = {
+  ChainlinkPriceOracleV3: "Chainlink_Oracle",
+  MasterPriceOracleV1: "Rari_MasterPriceOracle",
+  UNISWAPV3: "Uniswap_V3_Oracle",
+};
+
 // This component will handle deployment,
 // Also conditional rendering. Either Editing or Deploying and asset
 export const AssetSettings = ({
@@ -234,6 +251,7 @@ export const AssetSettings = ({
   const { t } = useTranslation();
   const { fuse, address } = useRari();
   const queryClient = useQueryClient();
+  const isMobile = useIsMediumScreen();
 
   // Component state
   const [isDeploying, setIsDeploying] = useState(false);
@@ -244,6 +262,8 @@ export const AssetSettings = ({
   const [isBorrowPaused, setIsBorrowPaused] = useState(false);
   const [collateralFactor, setCollateralFactor] = useState(50);
   const [oracleAddress, _setOracleAddress] = useState<string>("");
+
+  const [oracleTouched, setOracleTouched] = useState(false);
 
   const [interestRateModel, setInterestRateModel] = useState(
     Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
@@ -269,6 +289,7 @@ export const AssetSettings = ({
     () =>
       !!uniV3BaseToken &&
       !uniV3BaseTokenHasOracle &&
+      !isTokenETHOrWETH(uniV3BaseToken) &&
       (activeOracle === "Uniswap_V3_Oracle" ||
         activeOracle === "Uniswap_V2_Oracle" ||
         activeOracle === "SushiSwap_Oracle"),
@@ -276,7 +297,7 @@ export const AssetSettings = ({
   );
 
   useEffect(() => {
-    if (!!uniV3BaseToken) {
+    if (!!uniV3BaseToken && !isTokenETHOrWETH(uniV3BaseToken)) {
       // check if fuse pool's oracle has an oracle for uniV3BaseToken
       oracleData.oracleContract.methods
         .oracles(uniV3BaseToken)
@@ -294,6 +315,24 @@ export const AssetSettings = ({
   const [activeStep, setActiveStep] = useState<number>(0);
   const [stage, setStage] = useState<number>(1);
 
+  const handleSetStage = (incr: number) => {
+    const newStage = stage + incr;
+
+    // increment stage
+    if (incr > 0) {
+      if (isTokenETHOrWETH(tokenAddress) && newStage == 2) {
+        setStage(3);
+      } else setStage(newStage);
+    }
+
+    // decrement (previous page)
+    else if (incr < 0) {
+      if (isTokenETHOrWETH(tokenAddress) && newStage == 2) {
+        setStage(1);
+      } else setStage(newStage);
+    }
+  };
+
   const steps: string[] =
     activeOracle === "Rari_Default_Oracle" ||
     activeOracle === "Chainlink_Oracle"
@@ -302,12 +341,11 @@ export const AssetSettings = ({
       ? UniSwapV3DeploymentSimple
       : SimpleDeployment;
 
-
   const increaseActiveStep = (step: string) => {
-    console.log("setting to: ", step)
-    setActiveStep(steps.indexOf(step))
-    console.log("done", steps.indexOf(step))
-  }
+    console.log("setting to: ", step);
+    setActiveStep(steps.indexOf(step));
+    console.log("done", steps.indexOf(step));
+  };
   // Deploy Asset!
   const deploy = async () => {
     let oracleAddressToUse = oracleAddress;
@@ -357,23 +395,23 @@ export const AssetSettings = ({
       // Then u have to deploy the base token )
 
       // Check for observation cardinality and fix if necessary
-      console.log("Going into sdk to check cardinality")
+      console.log("Going into sdk to check cardinality");
       const shouldPrime = await fuse.checkCardinality(oracleAddress);
-      console.log("Should increase?", shouldPrime)
+      console.log("Should increase?", shouldPrime);
 
       if (shouldPrime) {
-        console.log("Into SDK to increase")
+        console.log("Into SDK to increase");
 
-        increaseActiveStep("Increasing Uniswap V3 pair cardinality")
-        
+        increaseActiveStep("Increasing Uniswap V3 pair cardinality");
+
         await fuse.primeUniswapV3Oracle(oracleAddress, { from: address });
-        console.log("Back from increase")
+        console.log("Back from increase");
 
-        increaseActiveStep("Deploying Uniswap V3 Twap Oracle")
+        increaseActiveStep("Deploying Uniswap V3 Twap Oracle");
       }
 
-      if(!shouldPrime) {
-        increaseActiveStep("Deploying Uniswap V3 Twap Oracle")
+      if (!shouldPrime) {
+        increaseActiveStep("Deploying Uniswap V3 Twap Oracle");
       }
 
       // Deploy oracle
@@ -383,8 +421,8 @@ export const AssetSettings = ({
         { from: address }
       );
     }
-    
-    increaseActiveStep("Configuring your Fuse pool's Master Price Oracle")
+
+    increaseActiveStep("Configuring your Fuse pool's Master Price Oracle");
 
     if (activeOracle === "Uniswap_V2_Oracle") {
       // Deploy Oracle
@@ -407,8 +445,9 @@ export const AssetSettings = ({
         await poolOracleContract.methods
           .add(tokenArray, oracleAddress)
           .send({ from: address });
-        increaseActiveStep("Configuring your Fuse pool to support new asset market")
-
+        increaseActiveStep(
+          "Configuring your Fuse pool to support new asset market"
+        );
 
         toast({
           title: "You have successfully configured the oracle for this asset!",
@@ -473,8 +512,8 @@ export const AssetSettings = ({
         // TODO: Disable this. This bypasses the price feed check. Only using now because only trusted partners are deploying assets.
         true
       );
-      
-      increaseActiveStep("All Done!")
+
+      increaseActiveStep("All Done!");
 
       LogRocket.track("Fuse-DeployAsset");
 
@@ -540,6 +579,8 @@ export const AssetSettings = ({
     uniV3BaseTokenOracle,
     setUniV3BaseTokenOracle,
     shouldShowUniV3BaseTokenOracleForm,
+    setOracleTouched,
+    oracleTouched,
   };
 
   const OracleConfigArgs = {
@@ -567,71 +608,91 @@ export const AssetSettings = ({
       mainAxisAlignment="center"
       crossAxisAlignment="center"
       alignItems="center"
-      justifyContent="center"
-      height="90%"
+      justifyContent={stage === 2 ? "flex-start" : "center"}
+      height="100%"
+      // bg="pink"
     >
       <Fade in={stage === 1} unmountOnExit>
-        <Heading> IRM and fToken Config </Heading>
+        <Heading my={1}> IRM Config </Heading>
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
-        <Heading> Oracle Config </Heading>
+        <Heading my={1}> Oracle Config </Heading>
       </Fade>
       <Fade in={stage === 3} unmountOnExit>
         <Heading> Asset Config Summary </Heading>
       </Fade>
-      <Box
-        d="flex"
-        maxHeight="80%"
-        flexDirection="row"
-        alignItems={stage < 3 ? "flex-start" : "center"}
-        justifyContent={stage < 3 ? undefined : "center"}
-        height={isDeploying ? "65%" : "80%"}
+      <RowOrColumn
+        maxHeight="90%"
+        isRow={!isMobile}
+        crossAxisAlignment={stage < 3 ? "flex-start" : "center"}
+        mainAxisAlignment={stage < 3 ? "flex-start" : "center"}
+        height={isDeploying ? "65%" : "70%"}
         width="100%"
+        overflowY="auto"
+        // bg="red.100"
       >
         {stage < 3 ? (
           <>
             <Column
-              width={ shouldShowUniV3BaseTokenOracleForm || stage === 1 ?"50%" : "100%"}
-              height="90%"
+              width={
+                isMobile
+                  ? "100%"
+                  : shouldShowUniV3BaseTokenOracleForm || stage === 1 
+                  ? "50%"
+                  : "100%"
+              }
+              height="100%"
               d="flex"
               mainAxisAlignment="center"
               crossAxisAlignment="center"
               alignItems="center"
               justifyContent="center"
+              // bg="pink"
             >
-
               <Screen1
                 stage={stage}
                 args={args}
                 OracleConfigArgs={OracleConfigArgs}
-                shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
+                shouldShowUniV3BaseTokenOracleForm={
+                  shouldShowUniV3BaseTokenOracleForm
+                }
               />
             </Column>
             <Column
-                width={ shouldShowUniV3BaseTokenOracleForm || stage === 1 ?"50%" : "0%"}
-                height="90%"
-                d="flex"
-                mainAxisAlignment="center"
-                crossAxisAlignment="center"
-                alignItems="center"
-                justifyContent="center"
+              width={
+                isMobile
+                  ? "100%"
+                  : shouldShowUniV3BaseTokenOracleForm || stage === 1
+                  ? "50%"
+                  : "0%"
+              }
+              height="100%"
+              d="flex"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              alignItems="center"
+              justifyContent="center"
+              // bg="aqua"
+            >
+              <Fade
+                in={stage === 1 || shouldShowUniV3BaseTokenOracleForm}
+                unmountOnExit
               >
-              <Fade in={stage === 1 || shouldShowUniV3BaseTokenOracleForm} unmountOnExit>
-                  <Screen2
-                    stage={stage}
-                    mode={mode}
-                    curves={curves}
-                    oracleData={oracleData}
-                    tokenData={tokenData}
-                    uniV3BaseToken={uniV3BaseToken}
-                    baseTokenAddress={uniV3BaseToken}
-                    uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-                    setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-                    shouldShowUniV3BaseTokenOracleForm={
-                      shouldShowUniV3BaseTokenOracleForm
-                    }
-                    interestRateModel={interestRateModel}
-                  />
+                <Screen2
+                  stage={stage}
+                  mode={mode}
+                  curves={curves}
+                  oracleData={oracleData}
+                  tokenData={tokenData}
+                  uniV3BaseToken={uniV3BaseToken}
+                  baseTokenAddress={uniV3BaseToken}
+                  uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+                  setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+                  shouldShowUniV3BaseTokenOracleForm={
+                    shouldShowUniV3BaseTokenOracleForm
+                  }
+                  interestRateModel={interestRateModel}
+                />
               </Fade>
             </Column>
           </>
@@ -658,13 +719,13 @@ export const AssetSettings = ({
             </Fade>
           </Column>
         )}
-      </Box>
+      </RowOrColumn>
       <DeployButton
         mode={mode}
         steps={steps}
         stage={stage}
         deploy={deploy}
-        setStage={setStage}
+        handleSetStage={handleSetStage}
         tokenData={tokenData}
         activeStep={activeStep}
         isDeploying={isDeploying}
@@ -682,34 +743,47 @@ const Screen1 = ({
   stage,
   args,
   OracleConfigArgs,
-  shouldShowUniV3BaseTokenOracleForm
+  shouldShowUniV3BaseTokenOracleForm,
 }: {
   stage: number;
   args: any;
   OracleConfigArgs: any;
   shouldShowUniV3BaseTokenOracleForm: boolean;
 }) => {
-  console.log({ stage });
   return (
     <>
       <Column
-        mainAxisAlignment={stage === 1 ? "center" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
-        crossAxisAlignment={stage === 1 ? "flex-start" : shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"}
+        mainAxisAlignment={
+          stage === 1
+            ? "center"
+            : shouldShowUniV3BaseTokenOracleForm
+            ? "flex-start"
+            : "center"
+        }
+        crossAxisAlignment={
+          stage === 1
+            ? "flex-start"
+            : shouldShowUniV3BaseTokenOracleForm
+            ? "flex-start"
+            : "center"
+        }
         overflowY="scroll"
         maxHeight="100%"
         height="95%"
         width="100%"
         maxWidth="100%"
         p={3}
+        // bg="green"
       >
         <Fade in={stage === 1} unmountOnExit>
-        <Column
+          <Column
             mainAxisAlignment="center"
             crossAxisAlignment="center"
-            p={3}
+            // bg="red"
+            h="100%"
           >
-          <AssetConfig {...args} />
-        </Column>
+            <AssetConfig {...args} />
+          </Column>
         </Fade>
 
         <Fade in={stage === 2} unmountOnExit>
@@ -772,23 +846,30 @@ const Screen2 = ({
             crossAxisAlignment="center"
           >
             <IRMChart curves={curves} tokenData={tokenData} />
-            <Text>{identifyInterestRateModel(interestRateModel).replace("_", " ")}</Text>
+            <Text>
+              {identifyInterestRateModel(interestRateModel).replace("_", " ")}
+            </Text>
           </Column>
         )}
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
-        <Column width="100%" height="100%" mainAxisAlignment="center"crossAxisAlignment="center">
-        {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
-          <BaseTokenOracleConfig
-            mode={mode}
-            oracleData={oracleData}
-            uniV3BaseToken={uniV3BaseToken}
-            baseTokenAddress={uniV3BaseToken}
-            uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-            setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-          />
+        <Column
+          width="100%"
+          height="100%"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+        >
+          {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
+            <BaseTokenOracleConfig
+              mode={mode}
+              oracleData={oracleData}
+              uniV3BaseToken={uniV3BaseToken}
+              baseTokenAddress={uniV3BaseToken}
+              uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+              setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+            />
           )}
-          </Column>
+        </Column>
       </Fade>
     </Column>
   );
@@ -868,15 +949,15 @@ const Screen3 = ({
         </Column>
       </Box>
     </Column>
-  )
-}
+  );
+};
 
 const DeployButton = ({
   mode,
   steps,
   stage,
   deploy,
-  setStage,
+  handleSetStage,
   tokenData,
   activeStep,
   isDeploying,
@@ -886,13 +967,15 @@ const DeployButton = ({
   isDeploying: any;
   activeStep: any;
   tokenData: any;
-  setStage: any;
+  handleSetStage: any;
   deploy: any;
   stage: any;
   steps: any;
   mode: any;
 }) => {
   const { t } = useTranslation();
+
+  const shouldShowPrevious = stage === 2 || (stage === 3 && !isDeploying);
 
   return (
     <>
@@ -912,32 +995,30 @@ const DeployButton = ({
         alignContent="center"
         justifyContent="space-around"
       >
-        {stage !== 1 &&
-          stage < 4 &&
-          !isDeploying && (
-            <Button
-              width={stage === 3 ? "20%" : "45%"}
-              height="70px"
-              fontSize="2xl"
-              onClick={() => setStage(stage - 1)}
-              fontWeight="bold"
-              borderRadius="10px"
-              disabled={isDeploying}
-              bg={tokenData.color! ?? "#FFF"}
-              _hover={{ transform: "scale(1.02)" }}
-              _active={{ transform: "scale(0.95)" }}
-              color={tokenData.overlayTextColor! ?? "#000"}
-            >
-              {t("Previous")}
-            </Button>
-          )}
+        {stage !== 1 && stage < 4 && !isDeploying && (
+          <Button
+            width={stage === 3 ? "20%" : "45%"}
+            height="70px"
+            fontSize="2xl"
+            onClick={() => handleSetStage(-1)}
+            fontWeight="bold"
+            borderRadius="10px"
+            disabled={isDeploying}
+            bg={tokenData.color! ?? "#FFF"}
+            _hover={{ transform: "scale(1.02)" }}
+            _active={{ transform: "scale(0.95)" }}
+            color={tokenData.overlayTextColor! ?? "#000"}
+          >
+            {t("Previous")}
+          </Button>
+        )}
 
         {stage < 3 && (
           <Button
             width="45%"
             height="70px"
             fontSize="2xl"
-            onClick={() => setStage(stage + 1)}
+            onClick={() => handleSetStage(1)}
             fontWeight="bold"
             borderRadius="10px"
             disabled={isDeploying}
@@ -1002,6 +1083,8 @@ const AssetConfig = ({
   setReserveFactor,
   reserveFactor,
   comptrollerAddress,
+  setOracleTouched,
+  oracleTouched,
 }: {
   mode: any;
   feeTier: any;
@@ -1032,6 +1115,8 @@ const AssetConfig = ({
   setInterestRateModel: any;
   setUniV3BaseTokenOracle: any;
   shouldShowUniV3BaseTokenOracleForm: any;
+  setOracleTouched: any;
+  oracleTouched: any;
 }) => {
   const queryClient = useQueryClient();
   const { fuse, address } = useRari();
@@ -1177,6 +1262,7 @@ const AssetConfig = ({
         overflowY="auto"
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
+        // bg="turquoise"
       >
         <ConfigRow height="35px">
           <SimpleTooltip
@@ -1314,6 +1400,8 @@ const AssetConfig = ({
                 uniV3BaseTokenOracle={uniV3BaseTokenOracle}
                 setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
                 uniV3BaseToken={uniV3BaseToken}
+                setOracleTouched={setOracleTouched}
+                oracleTouched={oracleTouched}
               />
 
               <ModalDivider />
@@ -1393,6 +1481,8 @@ const OracleConfig = ({
   uniV3BaseTokenOracle,
   setUniV3BaseTokenOracle,
   shouldShowUniV3BaseTokenOracleForm,
+  setOracleTouched,
+  oracleTouched,
 }: {
   shouldShowUniV3BaseTokenOracleForm: any;
   uniV3BaseTokenOracle: any;
@@ -1409,6 +1499,8 @@ const OracleConfig = ({
   oracleData: any; // Stores Fuse pool's Oracle dat.
   feeTier: number; // Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
   mode: "Editing" | "Adding"; // Modal config
+  setOracleTouched: React.Dispatch<React.SetStateAction<boolean>>;
+  oracleTouched: boolean;
 }) => {
   const toast = useToast();
   const { t } = useTranslation();
@@ -1427,27 +1519,31 @@ const OracleConfig = ({
     isValidAddress
   );
 
-  // If user's editing the asset's properties, show master price oracle as a default.
-  // Should run only once, when component is rendered
+  // Identify token oracle address
+  const oracleIdentity = useIdentifyOracle(oracleAddress);
+
+  // If user's editing the asset's properties, show the Ctoken's active Oracle
   useEffect(() => {
-    console.log({ options, activeOracle });
-    let oracleForCtoken = "Master_Price_Oracle_Default";
-    Object.entries(options ?? {}).forEach(([key, value]) => {
-      console.log({ key, value });
-      if (
-        !!value?.trim() &&
-        key !== "Master_Price_Oracle_Default" &&
-        mode === "Editing"
-      ) {
-        oracleForCtoken = key;
-      }
-    });
+    // @ts-ignore
+    let oracleForCToken = OracleIdentityMap[oracleIdentity];
+    // console.log({
+    //   options,
+    //   activeOracle,
+    //   oracleForCToken,
+    //   OracleIdentityMap,
+    //   oracleIdentity,
+    // });
 
-    console.log({ oracleForCtoken });
+    // Map oracleIdentity to whatever the type of `activeOracle` can be
 
-    if (mode === "Editing" && options && options["Master_Price_Oracle_Default"])
-      _setActiveOracle(oracleForCtoken);
-  }, [mode, activeOracle, options, _setActiveOracle]);
+    if (
+      mode === "Editing" &&
+      options &&
+      options["Active_Price_Oracle"] &&
+      !oracleTouched
+    )
+      _setActiveOracle("Active_Price_Oracle");
+  }, [mode, activeOracle, options, _setActiveOracle, oracleIdentity]);
 
   // Update the oracle address, after user chooses which option they want to use.
   // If option is Custom_Oracle or Uniswap_V3_Oracle, oracle address is changed differently so we dont trigger this.
@@ -1476,31 +1572,41 @@ const OracleConfig = ({
     let oracleAddressToUse = oracleAddress;
 
     try {
+      console.log(0);
       if (options === null) return null;
 
       // If activeOracle if a TWAP Oracle
       if (activeOracle === "Uniswap_V3_Oracle") {
         // Check for observation cardinality and fix if necessary
-        await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });        
+        await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });
+
+        // console.log({ uniV3BaseToken });
 
         // Deploy oracle
         oracleAddressToUse = await fuse.deployPriceOracle(
           "UniswapV3TwapPriceOracleV2",
-          { uniswapV3Factory: oracleAddressToUse, feeTier, baseToken: tokenAddress },
+          {
+            feeTier,
+            baseToken: uniV3BaseToken,
+          },
           { from: address }
         );
       }
 
-      const tokenArray = shouldShowUniV3BaseTokenOracleForm
-      ? [tokenAddress, uniV3BaseToken]
-      : [tokenAddress];
-     const oracleAddressArray = shouldShowUniV3BaseTokenOracleForm
-      ? [oracleAddressToUse, uniV3BaseTokenOracle]
-      : [oracleAddressToUse];
+      const tokenArray =
+        shouldShowUniV3BaseTokenOracleForm && !isTokenETHOrWETH(uniV3BaseToken)
+          ? [tokenAddress, uniV3BaseToken]
+          : [tokenAddress];
+      const oracleAddressArray =
+        shouldShowUniV3BaseTokenOracleForm && !isTokenETHOrWETH(uniV3BaseToken)
+          ? [oracleAddressToUse, uniV3BaseTokenOracle]
+          : [oracleAddressToUse];
+
+      console.log({ tokenArray, oracleAddressArray });
 
       // Add oracle to Master Price Oracle
       await poolOracleContract.methods
-        .add([tokenArray], [oracleAddressArray])
+        .add(tokenArray, oracleAddressArray)
         .send({ from: address });
 
       queryClient.refetchQueries();
@@ -1517,8 +1623,8 @@ const OracleConfig = ({
         isClosable: true,
         position: "top-right",
       });
-      _setActiveOracle("Master_Price_Oracle_Default");
-      _setOracleAddress(options["Master_Price_Oracle_Default"]);
+      _setActiveOracle("Active_Price_Oracle");
+      _setOracleAddress(options["Active_Price_Oracle"]);
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -1545,6 +1651,7 @@ const OracleConfig = ({
           </Text>
         </SimpleTooltip>
 
+        {/* Oracles */}
         <Box
           width="100%"
           alignItems="flex-end"
@@ -1560,7 +1667,12 @@ const OracleConfig = ({
             borderRadius="7px"
             _focus={{ outline: "none" }}
             value={activeOracle.toLowerCase()}
-            onChange={(event) => _setActiveOracle(event.target.value)}
+            onChange={(event) => {
+              if (mode === "Editing") {
+                setOracleTouched(true);
+              }
+              _setActiveOracle(event.target.value);
+            }}
             placeholder={
               activeOracle.length === 0
                 ? t("Choose Oracle")
@@ -1569,11 +1681,13 @@ const OracleConfig = ({
             disabled={
               !isUserAdmin ||
               (!oracleData.adminOverwrite &&
-                !options.Master_Price_Oracle_Default === null)
+                !options.Active_Price_Oracle === null)
             }
           >
             {Object.entries(options).map(([key, value]) =>
-              value !== null && value !== undefined ? (
+              value !== null &&
+              value !== undefined &&
+              key !== "Active_Price_Oracle" ? (
                 <option key={key} value={key} className="black-bg-option">
                   {key.replaceAll("_", " ")}
                 </option>
@@ -1604,6 +1718,9 @@ const OracleConfig = ({
               disabled={activeOracle === "Custom_Oracle" ? false : true}
             />
           ) : null}
+          <Text color="grey" fontSize="sm" textAlign="center">
+            {oracleIdentity}
+          </Text>
         </Box>
       </ConfigRow>
 
@@ -1675,9 +1792,11 @@ const OracleConfig = ({
         </>
       ) : null}
 
-      {activeOracle !== "Master_Price_Oracle_Default" && mode === "Editing" ? (
+      {activeOracle !== "Active_Price_Oracle" && mode === "Editing" ? (
         <SaveButton
-          ml={1}
+          ml={"auto"}
+          mb={1}
+          mr={1}
           fontSize="xs"
           altText={t("Update")}
           onClick={updateOracle}
@@ -1771,8 +1890,9 @@ const UniswapV3PriceOracleConfigurator = ({
       <Row
         crossAxisAlignment="center"
         mainAxisAlignment="space-between"
-        width="260px"
+        width="100%"
         my={2}
+        px={4}
       >
         <SimpleTooltip
           label={t(
@@ -2245,9 +2365,9 @@ const BaseTokenOracleConfig = ({
       mode === "Editing" &&
       activeOracleName === "" &&
       options &&
-      options["Master_Price_Oracle_Default"]
+      options["Active_Price_Oracle"]
     )
-      setActiveOracleName("Master_Price_Oracle_Default");
+      setActiveOracleName("Active_Price_Oracle");
   }, [mode, activeOracleName, options, setActiveOracleName]);
 
   // This will update the oracle address, after user chooses which options they want to use.
@@ -2257,23 +2377,14 @@ const BaseTokenOracleConfig = ({
       setUniV3BaseTokenOracle(options[activeOracleName]);
   }, [activeOracleName, options, setUniV3BaseTokenOracle]);
 
-  console.log({ options });
-
   return (
     <Box
       d="flex"
+      w="100%"
       alignContent="center"
       flexDirection="column"
       justifyContent="center"
     >
-      <Row crossAxisAlignment="center" mainAxisAlignment="center" width="100%">
-        <Alert my={1} width="80%" status="info" borderRadius={5}>
-          <AlertIcon />
-          <Text fontSize="sm" align="center" color="black">
-            {"This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."}
-          </Text>
-        </Alert>
-      </Row>
       <Column
         my={4}
         width="100%"
@@ -2311,7 +2422,7 @@ const BaseTokenOracleConfig = ({
                 disabled={
                   !isUserAdmin ||
                   (!oracleData.adminOverwrite &&
-                    !options.Master_Price_Oracle_Default === null)
+                    !options.Active_Price_Oracle === null)
                 }
                 onChange={(event) => setActiveOracleName(event.target.value)}
               >
@@ -2357,20 +2468,19 @@ const BaseTokenOracleConfig = ({
   );
 };
 
-
 const SimpleDeployment = [
   "Configuring your Fuse pool's Master Price Oracle",
   "Configuring your Fuse pool to support new asset market",
-  "All Done!"
+  "All Done!",
 ];
 
 const UniSwapV3DeploymentSimple = [
   "Checking for pair's cardinality",
-  "Increasing Uniswap V3 pair cardinality" ,
+  "Increasing Uniswap V3 pair cardinality",
   "Deploying Uniswap V3 Twap Oracle",
-  "Configuring your Fuse pool's Master Price Oracle" ,
-  "Configuring your Fuse pool to support new asset market" ,
-  "All Done!"
+  "Configuring your Fuse pool's Master Price Oracle",
+  "Configuring your Fuse pool to support new asset market",
+  "All Done!",
 ];
 
 export const TransactionStepper = ({

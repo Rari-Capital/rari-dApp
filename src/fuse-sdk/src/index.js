@@ -129,6 +129,8 @@ export default class Fuse {
       "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
     ChainlinkPriceOracleV2:
       "0x8d2bcaa1429031ae2b19a4516e5fdc68fb9346f158efb642fcf9590c09de2175",
+    ChainlinkPriceOracleV3:
+      "0xe96918ee6343f531c961e989c12142b0b0acb5ab447fc9f8aa5027cfd90c6191",
     UniswapTwapPriceOracle_Uniswap:
       "0xa2537dcbd2b55b1a690db3b83fa1042f86b21ec3e1557f918bc3930b6bbb9244",
     UniswapTwapPriceOracle_SushiSwap:
@@ -137,6 +139,8 @@ export default class Fuse {
       "0xb300f7f64110b952340e896d33f133482de6715f1b8b7e0acbd2416e0e6593c1",
     UniswapV3TwapPriceOracleV2_Uniswap_10000_USDC:
       "0xc301f891f1f905e68d1c5df5202cf0eec2ee8abcf3a510d5bd00d46f7dea01b4",
+    UniswapV3TwapPriceOracleV2:
+      "0xdbb426d944f8b99a8a5507b90f29c4f9d4b2219506dcc7aa5283a19a7ab969f8",
     YVaultV1PriceOracle:
       "0xd0dda181a4eb699a966b23edb883cff43377297439822b1b0f99b06af2002cc3",
     YVaultV2PriceOracle:
@@ -1240,11 +1244,12 @@ export default class Fuse {
     };
 
     this.identifyPriceOracle = async function (priceOracleAddress) {
-
       // Get PriceOracle type from runtime bytecode hash
       const runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
       );
+
+      console.log({ priceOracleAddress, runtimeBytecodeHash });
 
       for (const oracleContractName of Object.keys(
         Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
@@ -1745,16 +1750,23 @@ export default class Fuse {
       // Deploy RewardsDistributorDelegator proxy contract
       var distributor = new this.web3.eth.Contract(
         JSON.parse(
-          contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"].abi
+          contracts[
+            "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"
+          ].abi
         )
       );
       distributor = await distributor
         .deploy({
           data:
             "0x" +
-            contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"]
-              .bin,
-          arguments: [options.from, rewardToken, Fuse.REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS],
+            contracts[
+              "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"
+            ].bin,
+          arguments: [
+            options.from,
+            rewardToken,
+            Fuse.REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS,
+          ],
         })
         .send(options);
       return distributor.options.address;
@@ -1765,18 +1777,20 @@ export default class Fuse {
         uniswapV3PoolAbiSlim,
         uniswapV3Pool
       );
-      const shouldPrime = (await uniswapV3PoolContract.methods.slot0().call()).observationCardinalityNext < 64
-      return shouldPrime
-    }
+      const shouldPrime =
+        (await uniswapV3PoolContract.methods.slot0().call())
+          .observationCardinalityNext < 64;
+      return shouldPrime;
+    };
 
     this.primeUniswapV3Oracle = async function (uniswapV3Pool, options) {
       var uniswapV3PoolContract = new this.web3.eth.Contract(
         uniswapV3PoolAbiSlim,
         uniswapV3Pool
       );
-        await uniswapV3PoolContract.methods
-          .increaseObservationCardinalityNext(64)
-          .send(options);
+      await uniswapV3PoolContract.methods
+        .increaseObservationCardinalityNext(64)
+        .send(options);
     };
   }
 
