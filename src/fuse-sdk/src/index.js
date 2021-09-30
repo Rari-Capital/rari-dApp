@@ -1792,6 +1792,19 @@ export default class Fuse {
         .increaseObservationCardinalityNext(64)
         .send(options);
     };
+
+    this.identifyInterestRateModelName = (irmAddress) => {
+      let name = "";
+
+      Object.entries(Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES).forEach(
+        ([key, value]) => {
+          if (value === irmAddress) {
+            name = key;
+          }
+        }
+      );
+      return name;
+    }
   }
 
   static Web3 = Web3;

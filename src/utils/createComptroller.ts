@@ -35,3 +35,14 @@ export const createOracle = (oracleAddress: string, fuse: Fuse, type: string): C
 
   return oracle
 }
+
+export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
+  const cErc20Delegate = new fuse.web3.eth.Contract(
+    JSON.parse(
+      fuse.compoundContracts["contracts/CErc20Delegate.sol:CErc20Delegate"].abi
+    ),
+    cTokenAddress
+  );
+
+  return cErc20Delegate;
+};

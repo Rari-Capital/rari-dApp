@@ -19,7 +19,8 @@ import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import { Header } from "../../shared/Header";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
-import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
+import AddAssetModal from "./Modals/AddAssetModal";
+import AssetSettings from "./Modals/AddAssetModal/AssetSettings";
 import { CTokenIcon } from "./FusePoolsPage";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
@@ -818,7 +819,8 @@ const AddAssetButton = ({
   ) : null;
 };
 
-export const ConfigRow = ({
+export const 
+ConfigRow = ({
   children,
   ...others
 }: {
