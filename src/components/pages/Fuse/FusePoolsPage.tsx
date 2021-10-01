@@ -23,7 +23,7 @@ import Footer from "components/shared/Footer";
 import { memo } from "react";
 
 export const useHasCreatedPools = () => {
-  const { filteredPools } = useFusePools("my-pools");
+  const { filteredPools } = useFusePools("created-pools");
   return !!filteredPools.length;
 };
 
