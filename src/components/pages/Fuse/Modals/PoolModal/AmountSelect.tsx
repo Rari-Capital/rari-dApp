@@ -183,7 +183,7 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.BORROW) {
-    const maxBorrow = await fuse.contracts.FusePoolLens.methods
+    const maxBorrow = await fuse.contracts.FusePoolLensSecondary.methods
       .getMaxBorrow(address, asset.cToken)
       .call();
 
@@ -193,7 +193,7 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.WITHDRAW) {
-    const maxRedeem = await fuse.contracts.FusePoolLens.methods
+    const maxRedeem = await fuse.contracts.FusePoolLensSecondary.methods
       .getMaxRedeem(address, asset.cToken)
       .call();
 
