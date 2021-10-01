@@ -83,6 +83,8 @@ const AssetConfig = ({
     baseTokenActiveOracleName, 
     setBaseTokenActiveOracleName,
     oracleTouched,
+    activeUniSwapPair,
+    setActiveUniSwapPair
   }: {
     mode: any;
     feeTier: any;
@@ -109,6 +111,8 @@ const AssetConfig = ({
     poolOracleAddress: any;
     comptrollerAddress: any;
     setCollateralFactor: any;
+    activeUniSwapPair: string | number;
+    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string | number>>;
     uniV3BaseTokenOracle: any;
     setInterestRateModel: any;
     setUniV3BaseTokenOracle: any;
@@ -396,6 +400,8 @@ const AssetConfig = ({
                   shouldShowUniV3BaseTokenOracleForm={
                     shouldShowUniV3BaseTokenOracleForm
                   }
+                  setActiveUniSwapPair={setActiveUniSwapPair}
+                  activeUniSwapPair={activeUniSwapPair}
                   uniV3BaseTokenOracle={uniV3BaseTokenOracle}
                   setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
                   uniV3BaseToken={uniV3BaseToken}

@@ -107,19 +107,19 @@ import {
     const [reserveFactor, setReserveFactor] = useState(10);
     const [isBorrowPaused, setIsBorrowPaused] = useState(false);
     const [collateralFactor, setCollateralFactor] = useState(50);
-    const [oracleAddress, _setOracleAddress] = useState<string>("");
-  
+    
     const [oracleTouched, setOracleTouched] = useState(false);
-  
+    
     const [interestRateModel, setInterestRateModel] = useState(
       Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-        .JumpRateModel_Cream_Stables_Majors
-    );
-  
+      .JumpRateModel_Cream_Stables_Majors
+      );
+      
     const curves = useIRMCurves({ interestRateModel, adminFee, reserveFactor });
-  
+      
     // Asset's Oracle Configuration
     const [activeOracle, _setActiveOracle] = useState<string>(""); // Will store the oracle's model selected for this asset. i.e. Rari Master Price Oracle, Custome Oracle, etc.
+    const [oracleAddress, _setOracleAddress] = useState<string>(""); // Will store the actual address of the oracle.
   
     // Uniswap V3 base token oracle config - these following lines are used only
     // if you choose Uniswap V3 Twap Oracle as the asset's oracle.
@@ -129,6 +129,10 @@ import {
     const [baseTokenActiveOracleName, setBaseTokenActiveOracleName] = useState<string>("");
     const [uniV3BaseTokenHasOracle, setUniV3BaseTokenHasOracle] =
       useState<boolean>(false); // Will let us know if fuse pool's oracle has a price feed for the pair's base token.
+    
+    // This will be used to index whitelistPools array (fetched from the graph.)
+    // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
+    const [activeUniSwapPair, setActiveUniSwapPair] = useState<string | number>("");
   
     // If univ3Basetoken doesn't have an oracle in the fuse pool's oracle, then show the form
     // Or if the baseToken is weth then dont show form because we already have a hardcoded oracle for it
@@ -424,7 +428,9 @@ import {
       setUniV3BaseToken,
       comptrollerAddress,
       setCollateralFactor,
+      setActiveUniSwapPair,
       setInterestRateModel,
+      activeUniSwapPair,
       uniV3BaseTokenOracle,
       setUniV3BaseTokenOracle,
       shouldShowUniV3BaseTokenOracleForm,
@@ -460,15 +466,7 @@ import {
         justifyContent="center"
         height="100%"
       >
-        <Fade in={stage === 1} unmountOnExit>
-          <Heading> IRM Config </Heading>
-        </Fade>
-        <Fade in={stage === 2} unmountOnExit>
-          <Heading> Oracle Config </Heading>
-        </Fade>
-        <Fade in={stage === 3} unmountOnExit>
-          <Heading> Asset Config Summary </Heading>
-        </Fade>
+        <Title stage={stage}/>
         <RowOrColumn
           maxHeight="90%"
           isRow={!isMobile}
@@ -477,7 +475,6 @@ import {
           height={isDeploying ? "65%" : "70%"}
           width="100%"
           overflowY="auto"
-          // bg="red.100"
         >
           {stage < 3 ? (
             <>
@@ -568,7 +565,9 @@ import {
           tokenData={tokenData}
           activeStep={activeStep}
           isDeploying={isDeploying}
-          activeOracle={activeOracle}
+          oracleAddress={oracleAddress}
+          shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
+          uniV3BaseTokenOracle ={uniV3BaseTokenOracle}
         />
       </Column>
     ) : (
@@ -577,4 +576,21 @@ import {
       </Center>
     );
   };
+
 export default AssetSettings
+
+const Title = ({stage}: {stage: number}) => {
+  return (
+    <>
+    <Fade in={stage === 1} unmountOnExit>
+      <Heading> IRM Config </Heading>
+    </Fade>
+    <Fade in={stage === 2} unmountOnExit>
+      <Heading> Oracle Config </Heading>
+    </Fade>
+    <Fade in={stage === 3} unmountOnExit>
+      <Heading> Asset Config Summary </Heading>
+    </Fade>
+    </>
+  )
+}
