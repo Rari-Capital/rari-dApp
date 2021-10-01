@@ -258,7 +258,7 @@ const OracleConfig = ({
                 </option>
               ) : null
             )}
-            <option disabled={true}>Loading...</option>
+            {/* <option disabled={true}>Loading...</option> */}
           </Select>
 
           {activeOracle.length > 0 ? (
