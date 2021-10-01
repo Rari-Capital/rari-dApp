@@ -19,7 +19,7 @@ import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import { Header } from "../../shared/Header";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
-import AddAssetModal from "./Modals/AddAssetModal";
+import AddAssetModal from "./Modals/AddAssetModal/AddAssetModal";
 import AssetSettings from "./Modals/AddAssetModal/AssetSettings";
 import { CTokenIcon } from "./FusePoolsPage";
 import { WhitelistInfo } from "./FusePoolCreatePage";
