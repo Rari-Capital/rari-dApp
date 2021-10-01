@@ -2,6 +2,9 @@
 import { Button } from "@chakra-ui/button";
 import { Box } from "@chakra-ui/layout";
 
+// Rari
+import { useRari } from "../../../../../context/RariContext";
+
 // Hooks
 import { useTranslation } from "react-i18next";
 
@@ -16,11 +19,15 @@ const DeployButton = ({
     tokenData,
     activeStep,
     isDeploying,
-    activeOracle,
+    oracleAddress,
     handleSetStage,
+    uniV3BaseTokenOracle,
+    shouldShowUniV3BaseTokenOracleForm
   }: {
+    shouldShowUniV3BaseTokenOracleForm: boolean;
+    uniV3BaseTokenOracle: string;
     handleSetStage: any;
-    activeOracle: any;
+    oracleAddress: string;
     isDeploying: any;
     activeStep: any;
     tokenData: any;
@@ -30,15 +37,26 @@ const DeployButton = ({
     mode: any;
   }) => {
     const { t } = useTranslation();
-  
+    const { fuse } = useRari();
+
+    const checkUserOracleConfigurationState = (oracleAddress: string, shouldShowUniV3BaseTokenOracleForm: boolean, uniV3BaseTokenOracle: string ) => {
+      console.log(oracleAddress, shouldShowUniV3BaseTokenOracleForm, uniV3BaseTokenOracle)
+      if (shouldShowUniV3BaseTokenOracleForm) {
+        return fuse.web3.utils.isAddress(uniV3BaseTokenOracle)
+      }
+
+      return fuse.web3.utils.isAddress(oracleAddress)
+    }
+
+    const shouldNextButtonBeDisabled = !checkUserOracleConfigurationState(oracleAddress, shouldShowUniV3BaseTokenOracleForm, uniV3BaseTokenOracle)
+    console.log({shouldNextButtonBeDisabled})
     return (
       <>
         {isDeploying ? (
           <TransactionStepper
+            activeStep={activeStep}
             tokenData={tokenData}
             steps={steps}
-            activeOracle={activeOracle}
-            activeStep={activeStep}
           />
         ) : null}
         <Box
@@ -75,7 +93,7 @@ const DeployButton = ({
               onClick={() => handleSetStage(1)}
               fontWeight="bold"
               borderRadius="10px"
-              disabled={activeOracle.length === 0 && stage === 2}
+              disabled={stage === 2 ? shouldNextButtonBeDisabled : false}
               bg={tokenData.color! ?? "#FFF"}
               _hover={{ transform: "scale(1.02)" }}
               _active={{ transform: "scale(0.95)" }}

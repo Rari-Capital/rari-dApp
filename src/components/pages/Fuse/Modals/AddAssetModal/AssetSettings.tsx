@@ -107,19 +107,19 @@ import {
     const [reserveFactor, setReserveFactor] = useState(10);
     const [isBorrowPaused, setIsBorrowPaused] = useState(false);
     const [collateralFactor, setCollateralFactor] = useState(50);
-    const [oracleAddress, _setOracleAddress] = useState<string>("");
-  
+    
     const [oracleTouched, setOracleTouched] = useState(false);
-  
+    
     const [interestRateModel, setInterestRateModel] = useState(
       Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
-        .JumpRateModel_Cream_Stables_Majors
-    );
-  
+      .JumpRateModel_Cream_Stables_Majors
+      );
+      
     const curves = useIRMCurves({ interestRateModel, adminFee, reserveFactor });
-  
+      
     // Asset's Oracle Configuration
     const [activeOracle, _setActiveOracle] = useState<string>(""); // Will store the oracle's model selected for this asset. i.e. Rari Master Price Oracle, Custome Oracle, etc.
+    const [oracleAddress, _setOracleAddress] = useState<string>(""); // Will store the actual address of the oracle.
   
     // Uniswap V3 base token oracle config - these following lines are used only
     // if you choose Uniswap V3 Twap Oracle as the asset's oracle.
@@ -568,7 +568,9 @@ import {
           tokenData={tokenData}
           activeStep={activeStep}
           isDeploying={isDeploying}
-          activeOracle={activeOracle}
+          oracleAddress={oracleAddress}
+          shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
+          uniV3BaseTokenOracle ={uniV3BaseTokenOracle}
         />
       </Column>
     ) : (
