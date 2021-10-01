@@ -96,7 +96,7 @@ const FuseTabBar = () => {
         </ButtonGroup>
 
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
-        <TabLink route="/fuse" text={t("Pools")} />
+        <TabLink route="/fuse" text={t("Verified Pools")} />
         <TabLink
           route="/fuse?filter=unverified-pools"
           text={t("Unverified Pools")}
