@@ -20,8 +20,8 @@ var usedContractAbiKeys = [
   "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2", // DAIInterestRateModelV2 NOT IN USE
   "contracts/RewardsDistributorDelegate.sol:RewardsDistributorDelegate",
   "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator",
-  "contracts/JumpRateModelV2.sol:JumpRateModelV2",
-  "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
+  // "contracts/JumpRateModelV2.sol:JumpRateModelV2",
+  // "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
 ];
 if (process.env.NODE_ENV === "development") usedContractAbiKeys.push("contracts/SimplePriceOracle.sol:SimplePriceOracle");
 for (const contractKey of usedContractAbiKeys) {
@@ -36,8 +36,8 @@ var usedContractBinKeys = [
   "contracts/JumpRateModel.sol:JumpRateModel",
   "contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2", // DAIInterestRateModelV2 NOT IN USE
   "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator",
-  "contracts/JumpRateModelV2.sol:JumpRateModelV2",
-  "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
+  // "contracts/JumpRateModelV2.sol:JumpRateModelV2",
+  // "contracts/ReactiveJumpRateModelV2.sol:ReactiveJumpRateModelV2",
 ];
 if (process.env.NODE_ENV === "development") usedContractBinKeys = usedContractBinKeys.concat([
   "contracts/Comptroller.sol:Comptroller",
