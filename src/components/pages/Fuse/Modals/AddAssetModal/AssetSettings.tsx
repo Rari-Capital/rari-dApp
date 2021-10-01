@@ -187,9 +187,7 @@ const AssetSettings = ({
       : SimpleDeployment;
 
   const increaseActiveStep = (step: string) => {
-    console.log("setting to: ", step);
     setActiveStep(steps.indexOf(step));
-    console.log("done", steps.indexOf(step));
   };
   // Deploy Asset!
   const deploy = async () => {
@@ -240,17 +238,13 @@ const AssetSettings = ({
       // Then u have to deploy the base token )
 
       // Check for observation cardinality and fix if necessary
-      console.log("Going into sdk to check cardinality");
       const shouldPrime = await fuse.checkCardinality(oracleAddress);
-      console.log("Should increase?", shouldPrime);
 
       if (shouldPrime) {
-        console.log("Into SDK to increase");
 
         increaseActiveStep("Increasing Uniswap V3 pair cardinality");
 
         await fuse.primeUniswapV3Oracle(oracleAddress, { from: address });
-        console.log("Back from increase");
 
         increaseActiveStep("Deploying Uniswap V3 Twap Oracle");
       }
@@ -338,14 +332,6 @@ const AssetSettings = ({
       symbol: "f" + tokenData.symbol + "-" + poolID,
       decimals: 8,
     };
-
-    console.log({
-      conf,
-      bigCollateralFactor,
-      bigReserveFactor,
-      bigAdminFee,
-      address,
-    });
 
     try {
       await fuse.deployAsset(

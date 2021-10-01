@@ -14,7 +14,6 @@ import {
   import { SimpleTooltip } from "../../../../../shared/SimpleTooltip";
   
   // React
-  import { useState } from "react";
   import { useTranslation } from "react-i18next";
   import { useQuery } from "react-query";
   
