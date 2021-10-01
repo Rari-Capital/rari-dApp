@@ -26,9 +26,11 @@ import Chart from "react-apexcharts";
 const IRMChart = ({
     curves,
     tokenData,
+    modal
   }: {
     curves: any;
     tokenData: TokenData;
+    modal?: boolean;
   }) => {
     const { t } = useTranslation();
     return (
@@ -37,8 +39,7 @@ const IRMChart = ({
         width="100%"
         color="#000000"
         overflow="hidden"
-        pl={2}
-        pr={3}
+        px={modal ? 0 : 3}
         className="hide-bottom-tooltip"
         flexShrink={0}
       >

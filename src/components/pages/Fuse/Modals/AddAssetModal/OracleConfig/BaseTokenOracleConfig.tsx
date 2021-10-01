@@ -42,14 +42,14 @@ const BaseTokenOracleConfig = ({
     baseTokenActiveOracleName, 
     setBaseTokenActiveOracleName
   }: {
+    setBaseTokenActiveOracleName: React.Dispatch<React.SetStateAction<string>>; // Sets Base token oracle model name
+    baseTokenActiveOracleName: string; // Base token oracle model. i.e Rari Master Price, Chainlink Oracle, etc.
     setUniV3BaseTokenOracle: React.Dispatch<React.SetStateAction<string>>; // Sets oracle address for base token
     uniV3BaseTokenOracle: string; // Oracle address chosen for the base token
     baseTokenAddress: string; // Base token address.
     uniV3BaseToken: string; // Base token address.
     oracleData: any; // Fuse Pool's Oracle data. i.e contract, admin, overwrite permissions.
     mode: "Editing" | "Adding";
-    baseTokenActiveOracleName: any; 
-    setBaseTokenActiveOracleName: any;
   }) => {
     const { t } = useTranslation();
   
@@ -139,7 +139,7 @@ const BaseTokenOracleConfig = ({
                 <Select
                   {...DASHBOARD_BOX_PROPS}
                   ml="auto"
-                  mb={2}
+                  my={2}
                   borderRadius="7px"
                   _focus={{ outline: "none" }}
                   width="260px"

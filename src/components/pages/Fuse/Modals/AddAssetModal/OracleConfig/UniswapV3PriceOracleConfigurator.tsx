@@ -30,6 +30,8 @@ const UniswapV3PriceOracleConfigurator = ({
     tokenAddress,
     _setOracleAddress,
     setUniV3BaseToken,
+    activeUniSwapPair,
+    setActiveUniSwapPair
   }: {
     // Assets Address. i.e DAI, USDC
     tokenAddress: string;
@@ -43,12 +45,12 @@ const UniswapV3PriceOracleConfigurator = ({
   
     // Will update FeeTier Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
     setFeeTier: React.Dispatch<React.SetStateAction<number>>;
+
+    // Will store the uniswap pair index.
+    activeUniSwapPair: string | number;
+    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string | number>>;
   }) => {
     const { t } = useTranslation();
-  
-    // This will be used to index whitelistPools array (fetched from the graph.)
-    // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
-    const [activePool, setActivePool] = useState<string>("");
   
     // We get a list of whitelistedPools from uniswap-v3's the graph.
     const { data: liquidity, error } = useQuery(
@@ -80,13 +82,14 @@ const UniswapV3PriceOracleConfigurator = ({
         ).data,
       { refetchOnMount: false }
     );
-  
+
+    
     // When user selects an option this function will be called.
     // Active pool, fee Tier, and base token are updated and we set the oracle address to the address of the pool we chose.
     const updateBoth = (value: string) => {
       const uniPool = liquidity.data.token.whitelistPools[value];
+
   
-      setActivePool(value);
       setFeeTier(uniPool.feeTier);
       _setOracleAddress(uniPool.id);
       setUniV3BaseToken(
@@ -128,9 +131,9 @@ const UniswapV3PriceOracleConfigurator = ({
             mb={2}
             width="180px"
             borderRadius="7px"
-            value={activePool}
+            value={activeUniSwapPair}
             _focus={{ outline: "none" }}
-            placeholder={activePool.length === 0 ? t("Choose Pool") : activePool}
+            placeholder={activeUniSwapPair === '' ? t("Choose Pool") : liquidity.data.token.whitelistPools[activeUniSwapPair]}
             onChange={(event) => {
               updateBoth(event.target.value);
             }}
@@ -155,7 +158,7 @@ const UniswapV3PriceOracleConfigurator = ({
           </Select>
         </Row>
   
-        {activePool.length > 0 ? (
+        {activeUniSwapPair === '' ? (
           <>
             <Row
               crossAxisAlignment="center"
@@ -169,9 +172,9 @@ const UniswapV3PriceOracleConfigurator = ({
                 </Text>
               </SimpleTooltip>
               <h1>
-                {activePool !== ""
+                {activeUniSwapPair !== ""
                   ? smallUsdFormatter(
-                      liquidity.data.token.whitelistPools[activePool]
+                      liquidity.data.token.whitelistPools[activeUniSwapPair]
                         .totalValueLockedUSD
                     )
                   : null}
@@ -194,8 +197,8 @@ const UniswapV3PriceOracleConfigurator = ({
               </SimpleTooltip>
               <Text>
                 %
-                {activePool !== ""
-                  ? liquidity.data.token.whitelistPools[activePool].feeTier /
+                {activeUniSwapPair !== ""
+                  ? liquidity.data.token.whitelistPools[activeUniSwapPair].feeTier /
                     10000
                   : null}
               </Text>
@@ -207,7 +210,7 @@ const UniswapV3PriceOracleConfigurator = ({
               my={0}
             >
               <Link
-                href={`https://info.uniswap.org/#/pools/${liquidity.data.token.whitelistPools[activePool].id}`}
+                href={`https://info.uniswap.org/#/pools/${liquidity.data.token.whitelistPools[activeUniSwapPair].id}`}
                 isExternal
               >
                 Visit Pool in Uniswap

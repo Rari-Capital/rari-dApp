@@ -5,16 +5,14 @@ import { Circle } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 
 const TransactionStepper = ({
-    activeOracle,
     activeStep,
-    steps,
     tokenData,
+    steps,
   }: {
-    activeOracle: string;
-    activeStep: number;
     steps: string[];
     tokenData: any;
-  }): JSX.Element => {
+    activeStep: number;
+  }) => {
     return (
       <Box
         width="100%"
