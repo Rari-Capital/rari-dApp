@@ -55,10 +55,12 @@ const OracleConfig = ({
     oracleTouched,
     uniV3BaseToken,
     setOracleTouched,
+    activeUniSwapPair,
     _setActiveOracle,
     _setOracleAddress,
     setUniV3BaseToken,
     poolOracleAddress,
+    setActiveUniSwapPair,
     uniV3BaseTokenOracle,
     setUniV3BaseTokenOracle,
     baseTokenActiveOracleName, 
@@ -84,6 +86,8 @@ const OracleConfig = ({
     setFeeTier: React.Dispatch<React.SetStateAction<number>>;
     feeTier: number; // Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
     mode: "Editing" | "Adding"; // Modal config
+    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string | number>>;
+    activeUniSwapPair: string | number;
   }) => {
     const toast = useToast();
     const { t } = useTranslation();
@@ -308,6 +312,8 @@ const OracleConfig = ({
               _setOracleAddress={_setOracleAddress}
               setUniV3BaseToken={setUniV3BaseToken}
               tokenAddress={tokenAddress.toLocaleLowerCase()}
+              setActiveUniSwapPair={setActiveUniSwapPair}
+              activeUniSwapPair={activeUniSwapPair}
             />
           ) : null}
   

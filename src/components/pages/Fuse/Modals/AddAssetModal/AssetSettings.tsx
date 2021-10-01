@@ -129,6 +129,10 @@ import {
     const [baseTokenActiveOracleName, setBaseTokenActiveOracleName] = useState<string>("");
     const [uniV3BaseTokenHasOracle, setUniV3BaseTokenHasOracle] =
       useState<boolean>(false); // Will let us know if fuse pool's oracle has a price feed for the pair's base token.
+    
+    // This will be used to index whitelistPools array (fetched from the graph.)
+    // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
+    const [activeUniSwapPair, setActiveUniSwapPair] = useState<string | number>("");
   
     // If univ3Basetoken doesn't have an oracle in the fuse pool's oracle, then show the form
     // Or if the baseToken is weth then dont show form because we already have a hardcoded oracle for it
@@ -424,7 +428,9 @@ import {
       setUniV3BaseToken,
       comptrollerAddress,
       setCollateralFactor,
+      setActiveUniSwapPair,
       setInterestRateModel,
+      activeUniSwapPair,
       uniV3BaseTokenOracle,
       setUniV3BaseTokenOracle,
       shouldShowUniV3BaseTokenOracleForm,
