@@ -39,20 +39,20 @@ const Screen3 = ({
         overflowY="scroll"
         maxHeight="100%"
         height="95%"
-        width="100%"
+        width="95%"
         maxWidth="100%"
       >
         <Box
           d="flex"
           maxHeight="80%"
-          width="90%"
+          width="100%"
           flexDirection="row"
           alignItems="center"
-          justifyContent="center"
+          justifyContent="space-around"
           height="100%"
         >
             <Column
-                width="50%"
+                width="47%"
                 height="90%"
                 d="flex"
                 mainAxisAlignment="center"
@@ -63,10 +63,10 @@ const Screen3 = ({
             <Text>
                 {fuse.identifyInterestRateModelName(interestRateModel).replace("_", " ")}
             </Text>
-            <IRMChart curves={curves} tokenData={tokenData}/>
+            <IRMChart modal curves={curves} tokenData={tokenData}/>
           </Column>
           <Column
-            width="50%"
+            width="47%"
             height="90%"
             d="flex"
             mainAxisAlignment="center"
