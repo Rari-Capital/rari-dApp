@@ -10,6 +10,7 @@ import BigNumber from "bignumber.js";
 
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
+var fusePoolLensSecondaryAbi = require(__dirname + "/abi/FusePoolLensSecondary.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
 var uniswapV3PoolAbiSlim = require(__dirname + "/abi/UniswapV3Pool.slim.json");
@@ -30,16 +31,18 @@ export default class Fuse {
   static FUSE_FEE_DISTRIBUTOR_CONTRACT_ADDRESS =
     "0xa731585ab05fC9f83555cf9Bff8F58ee94e18F85";
   static FUSE_POOL_LENS_CONTRACT_ADDRESS =
-    "0x8dA38681826f4ABBe089643D2B3fE4C6e4730493";
+    "0x6Dc585Ad66A10214Ef0502492B0CC02F0e836eec";
+  static FUSE_POOL_LENS_SECONDARY_CONTRACT_ADDRESS =
+    "0xc76190E04012f26A364228Cfc41690429C44165d";
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
+    "0xe16db319d9da7ce40b666dd2e365a4b8b3c18217"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
-    "0x1fA02b2d6A771842690194Cf62D91bdd92BfE28d"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
+    "0x67db14e73c2dce786b5bbbfa4d010deab4bbfcf9"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
-    "0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
+    "0xd77e28a1b9a9cfe1fc2eee70e391c05d25853cbf"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
   static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
-    "0x04C89607413713Ec9775E14b954286519d836FEf"; // TODO: Set correct mainnet address after deployment
+    ""; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
@@ -49,7 +52,7 @@ export default class Fuse {
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
     ChainlinkPriceOracleV2: "0xb0602af43Ca042550ca9DA3c33bA3aC375d20Df4",
-    ChainlinkPriceOracleV3: "0xd161f5a7BeC13953D2B5F6D65Fac70a05Eb7b316", // TODO: Set correct mainnet address after deployment
+    ChainlinkPriceOracleV3: "0x058c345D3240001088b6280e008F9e78b3B2112d",
     // PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
     // UniswapAnchoredView: "", // NOT IN USE
     // UniswapView: "", // NOT IN USE
@@ -107,9 +110,9 @@ export default class Fuse {
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0x5A0E963C31415a3e360C224071A47642A5181857"; // TODO: Set correct mainnet address after deployment
+    ""; // TODO: Set correct mainnet address after deployment
   static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0xe604B7f4b835837C032a78BFfb0ea45858bFB82c"; // TODO: Set correct mainnet address after deployment
+    "0x8Eed20f31E7d434648fF51114446b3CfFD1FF9F1"; // TODO: Set correct mainnet address after deployment
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
@@ -289,6 +292,10 @@ export default class Fuse {
       FusePoolLens: new this.web3.eth.Contract(
         fusePoolLensAbi,
         Fuse.FUSE_POOL_LENS_CONTRACT_ADDRESS
+      ),
+      FusePoolLensSecondary: new this.web3.eth.Contract(
+        fusePoolLensSecondaryAbi,
+        Fuse.FUSE_POOL_LENS_SECONDARY_CONTRACT_ADDRESS
       ),
       FuseSafeLiquidator: new this.web3.eth.Contract(
         fuseSafeLiquidatorAbi,
