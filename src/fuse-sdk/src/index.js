@@ -1750,9 +1750,7 @@ export default class Fuse {
       // Deploy RewardsDistributorDelegator proxy contract
       var distributor = new this.web3.eth.Contract(
         JSON.parse(
-          contracts[
-            "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"
-          ].abi
+          contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"].abi
         )
       );
       distributor = await distributor
