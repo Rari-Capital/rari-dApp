@@ -42,7 +42,7 @@ export default class Fuse {
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0xd77e28a1b9a9cfe1fc2eee70e391c05d25853cbf"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
   static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
-    "0x220f93183a69d1598e8405310cb361cff504146f"; // TODO: Set correct mainnet address after deployment
+    "0x220f93183a69d1598e8405310cb361cff504146f";
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
