@@ -52,7 +52,7 @@ export default class Fuse {
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
     ChainlinkPriceOracleV2: "0xb0602af43Ca042550ca9DA3c33bA3aC375d20Df4",
-    ChainlinkPriceOracleV3: "0xd161f5a7BeC13953D2B5F6D65Fac70a05Eb7b316", // TODO: Set correct mainnet address after deployment
+    ChainlinkPriceOracleV3: "0x058c345D3240001088b6280e008F9e78b3B2112d",
     // PreferredPriceOracle: "", // TODO: Set correct mainnet address after deployment
     // UniswapAnchoredView: "", // NOT IN USE
     // UniswapView: "", // NOT IN USE
@@ -110,9 +110,9 @@ export default class Fuse {
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0x5A0E963C31415a3e360C224071A47642A5181857"; // TODO: Set correct mainnet address after deployment
+    ""; // TODO: Set correct mainnet address after deployment
   static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0xe604B7f4b835837C032a78BFfb0ea45858bFB82c"; // TODO: Set correct mainnet address after deployment
+    "0x8Eed20f31E7d434648fF51114446b3CfFD1FF9F1"; // TODO: Set correct mainnet address after deployment
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
