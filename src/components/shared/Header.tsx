@@ -143,6 +143,11 @@ export const UtilsLink = ({
               name={t("Interest Rates")}
               link="/utils/interest-rates"
             />
+            <SubMenuItem
+              name={t("Metrics")}
+              link="https://rari.grafana.net/goto/61kctV_Gk"
+            />
+            <SubMenuItem name={t("Liquidations")} link="/fuse/liquidations" />
           </MenuList>
         </Portal>
       </Menu>

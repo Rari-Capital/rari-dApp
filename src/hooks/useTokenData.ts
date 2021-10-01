@@ -49,7 +49,7 @@ export const fetchTokenData = async (address: string) => {
           // just fetch this data from the live site in development:
           (process.env.NODE_ENV === "development"
             ? "https://app.rari.capital"
-            : "") +
+            : "https://app.rari.capital") +
             "/api/tokenData?address=" +
             address
         ).then((res) => res.json())),

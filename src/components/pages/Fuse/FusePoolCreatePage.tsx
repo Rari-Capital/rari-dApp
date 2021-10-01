@@ -1,6 +1,5 @@
 import {
   Heading,
-  Select,
   Text,
   Switch,
   Input,
@@ -14,29 +13,26 @@ import { useTranslation } from "react-i18next";
 
 import { useRari } from "../../../context/RariContext";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
-import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
 import BigNumber from "bignumber.js";
 import { useNavigate } from "react-router-dom";
-import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
 
 import { handleGenericError } from "../../../utils/errorHandling";
 import LogRocket from "logrocket";
+import { Header } from "components/shared/Header";
+import FuseStatsBar from "./FuseStatsBar";
+import FuseTabBar from "./FuseTabBar";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
 const FusePoolCreatePage = memo(() => {
   const isMobile = useIsSemiSmallScreen();
-
   const { isAuthed } = useRari();
 
   return (
@@ -70,13 +66,12 @@ const PoolConfiguration = () => {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
-  const [oracle, setOracle] = useState("");
   const [isWhitelisted, setIsWhitelisted] = useState(false);
   const [whitelist, setWhitelist] = useState<string[]>([]);
-
+  
   const [closeFactor, setCloseFactor] = useState(50);
   const [liquidationIncentive, setLiquidationIncentive] = useState(8);
-
+  
   const [isCreating, setIsCreating] = useState(false);
 
   const onDeploy = async () => {
@@ -84,19 +79,6 @@ const PoolConfiguration = () => {
       toast({
         title: "Error!",
         description: "You must specify a name for your Fuse pool!",
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-        position: "top-right",
-      });
-
-      return;
-    }
-
-    if (oracle === "") {
-      toast({
-        title: "Error!",
-        description: "You must select an oracle.",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -121,16 +103,14 @@ const PoolConfiguration = () => {
       .multipliedBy(1e18)
       .toFixed(0);
 
-    let reporter = null;
-
     try {
       const [poolAddress] = await fuse.deployPool(
         name,
         isWhitelisted,
         bigCloseFactor,
         bigLiquidationIncentive,
-        oracle,
-        { reporter },
+        "MasterPriceOracle", // we hardcode MasterPriceOracle as only option
+        {underlyings: [], oracles: [], canAdminOverwrite: true},
         { from: address },
         isWhitelisted ? whitelist : null
       );
@@ -154,6 +134,8 @@ const PoolConfiguration = () => {
           event.returnValues.pool.comptroller.toLowerCase() ===
           poolAddress.toLowerCase()
       )[0];
+
+      console.log(event, "heyy")
 
       LogRocket.track("Fuse-CreatePool");
 
@@ -186,37 +168,6 @@ const PoolConfiguration = () => {
           </OptionRow>
 
           <ModalDivider />
-
-          <OptionRow>
-            <Text fontWeight="bold" mr={4}>
-              {t("Oracle")}
-            </Text>
-            <Select
-              width="20%"
-              value={oracle}
-              onChange={(event) => setOracle(event.target.value)}
-              placeholder="Select Oracle"
-            >
-              <option
-                className="black-bg-option"
-                value={
-                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES
-                    .ChainlinkPriceOracle
-                }
-              >
-                ChainlinkPriceOracle
-              </option>
-
-              <option
-                className="black-bg-option"
-                value={
-                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle
-                }
-              >
-                Rari MasterPriceOracle
-              </option>
-            </Select>
-          </OptionRow>
 
           <ModalDivider />
 

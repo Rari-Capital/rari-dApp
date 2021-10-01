@@ -129,6 +129,8 @@ export default class Fuse {
       "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
     ChainlinkPriceOracleV2:
       "0x8d2bcaa1429031ae2b19a4516e5fdc68fb9346f158efb642fcf9590c09de2175",
+    ChainlinkPriceOracleV3:
+      "0xe96918ee6343f531c961e989c12142b0b0acb5ab447fc9f8aa5027cfd90c6191",
     UniswapTwapPriceOracle_Uniswap:
       "0xa2537dcbd2b55b1a690db3b83fa1042f86b21ec3e1557f918bc3930b6bbb9244",
     UniswapTwapPriceOracle_SushiSwap:
@@ -137,14 +139,16 @@ export default class Fuse {
       "0xb300f7f64110b952340e896d33f133482de6715f1b8b7e0acbd2416e0e6593c1",
     UniswapV3TwapPriceOracleV2_Uniswap_10000_USDC:
       "0xc301f891f1f905e68d1c5df5202cf0eec2ee8abcf3a510d5bd00d46f7dea01b4",
+    UniswapV3TwapPriceOracleV2:
+      "0xdbb426d944f8b99a8a5507b90f29c4f9d4b2219506dcc7aa5283a19a7ab969f8",
     YVaultV1PriceOracle:
       "0xd0dda181a4eb699a966b23edb883cff43377297439822b1b0f99b06af2002cc3",
     YVaultV2PriceOracle:
       "0x177c22cc7d05280cea84a36782303d17246783be7b8c0b6f9731bb9002ffcc68",
-    MasterPriceOracle: [
+    MasterPriceOracleV1:
       "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
-      "0xdfa5aa37efea3b16d143a12c4ae7006f3e29768b3e375b59842c7ecd3809f1d1"
-    ],
+    MasterPriceOracle:
+      "0xdfa5aa37efea3b16d143a12c4ae7006f3e29768b3e375b59842c7ecd3809f1d1",
     CurveLpTokenPriceOracle:
       "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
     CurveLiquidityGaugeV2PriceOracle:
@@ -236,7 +240,7 @@ export default class Fuse {
     "SUPPLIER_NOT_WHITELISTED",
     "BORROW_BELOW_MIN",
     "SUPPLY_ABOVE_MAX",
-    "NONZERO_TOTAL_SUPPLY"
+    "NONZERO_TOTAL_SUPPLY",
   ];
 
   static CTOKEN_ERROR_CODES = [
@@ -257,7 +261,7 @@ export default class Fuse {
     "TOKEN_INSUFFICIENT_CASH",
     "TOKEN_TRANSFER_IN_FAILED",
     "TOKEN_TRANSFER_OUT_FAILED",
-    "UTILIZATION_ABOVE_MAX"
+    "UTILIZATION_ABOVE_MAX",
   ];
 
   constructor(web3Provider) {
@@ -325,6 +329,7 @@ export default class Fuse {
       options,
       whitelist
     ) {
+      console.log(priceOracle, "model", Fuse.ORACLES.indexOf(priceOracle));
       // Deploy new price oracle via SDK if requested
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
@@ -416,6 +421,7 @@ export default class Fuse {
     };
 
     this.deployPriceOracle = async function (model, conf, options) {
+      console.log(model, conf, options, "inside DeployPrice");
       if (!model) model = "ChainlinkPriceOracle";
       if (!conf) conf = {};
 
@@ -623,7 +629,7 @@ export default class Fuse {
           );
           var deployArgs = [
             Fuse.UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS,
-            conf.uniswapV2Factory
+            conf.uniswapV2Factory,
           ]; // Default to official Uniswap V2 factory
           priceOracle = await priceOracle
             .deploy({
@@ -638,20 +644,26 @@ export default class Fuse {
             conf.uniswapV2Factory = Fuse.UNISWAP_V2_FACTORY_ADDRESS;
 
           // Check for existing oracle
-          var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapTwapPriceOracleV2Factory.abi, Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
-          var oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
-          
+          var oracleFactory = new this.web3.eth.Contract(
+            this.oracleContracts.UniswapTwapPriceOracleV2Factory.abi,
+            Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS
+          );
+          var oracle = await oracleFactory.methods
+            .oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken)
+            .call();
+
           // Deploy if oracle does not exist
           if (oracle == "0x0000000000000000000000000000000000000000") {
-              await oracleFactory.methods.deploy(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).send(options);
-              oracle = await oracleFactory.methods.oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken).call();
+            await oracleFactory.methods
+              .deploy(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken)
+              .send(options);
+            oracle = await oracleFactory.methods
+              .oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken)
+              .call();
           }
 
           // Instantiate contract
-          var priceOracle = new this.web3.eth.Contract(
-            [],
-            oracle
-          );
+          var priceOracle = new this.web3.eth.Contract([], oracle);
 
           break;
         case "ChainlinkPriceOracleV2":
@@ -680,10 +692,7 @@ export default class Fuse {
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["UniswapV3TwapPriceOracle"].abi
           );
-          var deployArgs = [
-            conf.uniswapV3Factory,
-            conf.feeTier,
-          ]; // Default to official Uniswap V3 factory
+          var deployArgs = [conf.uniswapV3Factory, conf.feeTier]; // Default to official Uniswap V3 factory
           priceOracle = await priceOracle
             .deploy({
               data: oracleContracts["UniswapV3TwapPriceOracle"].bin,
@@ -697,22 +706,28 @@ export default class Fuse {
             conf.uniswapV3Factory = Fuse.UNISWAP_V3_FACTORY_ADDRESS;
           if ([500, 3000, 10000].indexOf(parseInt(conf.feeTier)) < 0)
             throw "Invalid fee tier passed to UniswapV3TwapPriceOracleV2 deployment.";
-          
+
           // Check for existing oracle
-          var oracleFactory = new fuse.web3.eth.Contract(fuse.oracleContracts.UniswapV3TwapPriceOracleV2Factory.abi, Fuse.UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS);
-          var oracle = await oracleFactory.methods.oracles(conf.uniswapV3Factory, conf.feeTier, conf.baseToken).call();
-          
+          var oracleFactory = new this.web3.eth.Contract(
+            this.oracleContracts.UniswapV3TwapPriceOracleV2Factory.abi,
+            Fuse.UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS
+          );
+          var oracle = await oracleFactory.methods
+            .oracles(conf.uniswapV3Factory, conf.feeTier, conf.baseToken)
+            .call();
+
           // Deploy if oracle does not exist
           if (oracle == "0x0000000000000000000000000000000000000000") {
-              await oracleFactory.methods.deploy(conf.uniswapV3Factory, conf.feeTier, conf.baseToken).send(options)
-              oracle = await oracleFactory.methods.oracles(conf.uniswapV3Factory, conf.feeTier, conf.baseToken).call();
+            await oracleFactory.methods
+              .deploy(conf.uniswapV3Factory, conf.feeTier, conf.baseToken)
+              .send(options);
+            oracle = await oracleFactory.methods
+              .oracles(conf.uniswapV3Factory, conf.feeTier, conf.baseToken)
+              .call();
           }
 
           // Instantiate contract
-          var priceOracle = new this.web3.eth.Contract(
-            [],
-            oracle
-          );
+          var priceOracle = new this.web3.eth.Contract([], oracle);
 
           break;
         case "FixedTokenPriceOracle":
@@ -1100,7 +1115,11 @@ export default class Fuse {
           collateralFactor
         )
         .call(options);
-      if (errorCode != 0) throw "Failed to deploy market with error code: " + Fuse.COMPTROLLER_ERROR_CODES[errorCode];
+      if (errorCode != 0)
+        throw (
+          "Failed to deploy market with error code: " +
+          Fuse.COMPTROLLER_ERROR_CODES[errorCode]
+        );
       var receipt = await comptroller.methods
         ._deployMarket(
           "0x0000000000000000000000000000000000000000",
@@ -1202,7 +1221,11 @@ export default class Fuse {
       var errorCode = await comptroller.methods
         ._deployMarket(false, constructorData, collateralFactor)
         .call(options);
-      if (errorCode != 0) throw "Failed to deploy market with error code: " + Fuse.COMPTROLLER_ERROR_CODES[errorCode];
+      if (errorCode != 0)
+        throw (
+          "Failed to deploy market with error code: " +
+          Fuse.COMPTROLLER_ERROR_CODES[errorCode]
+        );
       var receipt = await comptroller.methods
         ._deployMarket(false, constructorData, collateralFactor)
         .send(options);
@@ -1222,20 +1245,25 @@ export default class Fuse {
 
     this.identifyPriceOracle = async function (priceOracleAddress) {
       // Get PriceOracle type from runtime bytecode hash
-      var runtimeBytecodeHash = Web3.utils.sha3(
+      const runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
       );
+
+      console.log({ priceOracleAddress, runtimeBytecodeHash });
 
       for (const oracleContractName of Object.keys(
         Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
       )) {
-        if (Array.isArray(Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])) {
-          for (const potentialHash of Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])
-            if (runtimeBytecodeHash == potentialHash)
-              return oracleContractName;
+        const valueOrArr =
+          Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName];
+
+        if (Array.isArray(valueOrArr)) {
+          console.log("ISARRAY", { valueOrArr });
+          for (const potentialHash of valueOrArr)
+            console.log("ISARRAY", { potentialHash, runtimeBytecodeHash });
+          if (runtimeBytecodeHash == potentialHash) return oracleContractName;
         } else {
-          if (runtimeBytecodeHash == Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName])
-            return oracleContractName;
+          if (runtimeBytecodeHash == valueOrArr) return oracleContractName;
         }
       }
 
@@ -1729,24 +1757,52 @@ export default class Fuse {
         .deploy({
           data:
             "0x" +
-            contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"]
-              .bin,
-          arguments: [options.from, rewardToken, Fuse.REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS],
+            contracts[
+              "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"
+            ].bin,
+          arguments: [
+            options.from,
+            rewardToken,
+            Fuse.REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS,
+          ],
         })
         .send(options);
       return distributor.options.address;
     };
 
+    this.checkCardinality = async function (uniswapV3Pool) {
+      var uniswapV3PoolContract = new this.web3.eth.Contract(
+        uniswapV3PoolAbiSlim,
+        uniswapV3Pool
+      );
+      const shouldPrime =
+        (await uniswapV3PoolContract.methods.slot0().call())
+          .observationCardinalityNext < 64;
+      return shouldPrime;
+    };
+
     this.primeUniswapV3Oracle = async function (uniswapV3Pool, options) {
       var uniswapV3PoolContract = new this.web3.eth.Contract(
-        JSON.parse(
-          uniswapV3PoolAbiSlim,
-          uniswapV3Pool
-        )
+        uniswapV3PoolAbiSlim,
+        uniswapV3Pool
       );
-      if ((await uniswapV3PoolContract.methods.slot0().call()).observationCardinalityNext < 64)
-        await uniswapV3PoolContract.methods.increaseObservationCardinalityNext(64).send(options);
+      await uniswapV3PoolContract.methods
+        .increaseObservationCardinalityNext(64)
+        .send(options);
     };
+
+    this.identifyInterestRateModelName = (irmAddress) => {
+      let name = "";
+
+      Object.entries(Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES).forEach(
+        ([key, value]) => {
+          if (value === irmAddress) {
+            name = key;
+          }
+        }
+      );
+      return name;
+    }
   }
 
   static Web3 = Web3;

@@ -6,22 +6,23 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useIsSmallScreen } from "../../../hooks/useIsSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { Link as RouterLink } from "react-router-dom";
+import { useHasCreatedPools } from "./FusePoolsPage";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 
 const noop = {};
 
 export function useFilter() {
-  return new URLSearchParams(useLocation().search).get("filter");
+  return new URLSearchParams(useLocation().search).get("filter") ?? undefined;
 }
 
-function useIsMediumScreen() {
+export function useIsMediumScreen() {
   const { width } = useWindowSize();
   return width < 1150;
 }
+
 const FuseTabBar = () => {
   const isMobile = useIsSmallScreen();
-  const isMediumScreen = useIsMediumScreen();
 
   const { t } = useTranslation();
 
@@ -31,6 +32,8 @@ const FuseTabBar = () => {
 
   const filter = useFilter();
   const location = useLocation();
+
+  const hasCreatedPools = useHasCreatedPools();
 
   return (
     <DashboardBox width="100%" mt={4} height={isMobile ? "auto" : "65px"}>
@@ -93,18 +96,17 @@ const FuseTabBar = () => {
         </ButtonGroup>
 
         <TabLink route="/fuse?filter=my-pools" text={t("My Pools")} />
-        <TabLink route="/fuse" text={t("All Pools")} />
-        <TabLink route="/fuse?filter=created-pools" text={t("Created Pools")} />
-        <TabExternalLink
-          route="https://rari.grafana.net/goto/61kctV_Gk"
-          text={t("Metrics")}
+        <TabLink route="/fuse" text={t("Pools")} />
+        <TabLink
+          route="/fuse?filter=unverified-pools"
+          text={t("Unverified Pools")}
         />
-
-        {/* Show the liquidations link if is on mobile, large screen or not on a pool page. We do this to prevent the buttons from overflowing the tab bar on medium screens. */}
-        {isMobile || !isMediumScreen || !poolId ? (
-          <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
-        ) : null}
-
+        {hasCreatedPools && (
+          <TabLink
+            route="/fuse?filter=created-pools"
+            text={t("Created Pools")}
+          />
+        )}
         {poolId ? (
           <>
             <DashboardBox

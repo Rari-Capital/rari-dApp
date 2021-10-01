@@ -10,7 +10,7 @@ import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
 import { Link as RouterLink } from "react-router-dom";
-import FuseStatsBar from "./FuseStatsBar";
+import FuseStatsBar, { WhitelistedIcon } from "./FuseStatsBar";
 import FuseTabBar, { useFilter } from "./FuseTabBar";
 import { useTokenData } from "hooks/useTokenData";
 
@@ -21,6 +21,11 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
 import { memo } from "react";
+
+export const useHasCreatedPools = () => {
+  const { filteredPools } = useFusePools("my-pools");
+  return !!filteredPools.length;
+};
 
 const FusePoolsPage = memo(() => {
   const { isAuthed } = useRari();
@@ -60,6 +65,8 @@ const PoolList = () => {
 
   const { filteredPools } = useFusePools(filter);
   const isMobile = useIsMobile();
+
+  console.log({ filteredPools });
 
   return (
     <Column
@@ -107,6 +114,7 @@ const PoolList = () => {
         mainAxisAlignment="flex-start"
         crossAxisAlignment="center"
         width="100%"
+        minHeight="100px"
       >
         {filteredPools ? (
           filteredPools.map((pool, index) => {
@@ -114,7 +122,7 @@ const PoolList = () => {
               <PoolRow
                 key={pool.id}
                 poolNumber={pool.id}
-                name={filterPoolName(pool.pool.name)}
+                name={filterPoolName(pool.name)}
                 tvl={pool.suppliedUSD}
                 borrowed={pool.borrowedUSD}
                 tokens={pool.underlyingTokens.map((address, index) => ({
@@ -122,6 +130,7 @@ const PoolList = () => {
                   address,
                 }))}
                 noBottomDivider={index === filteredPools.length - 1}
+                isWhitelisted={pool.whitelistedAdmin}
               />
             );
           })
@@ -140,6 +149,7 @@ const PoolRow = ({
   borrowed,
   name,
   noBottomDivider,
+  isWhitelisted,
 }: {
   tokens: { symbol: string; address: string }[];
   poolNumber: number;
@@ -147,6 +157,7 @@ const PoolRow = ({
   borrowed: number;
   name: string;
   noBottomDivider?: boolean;
+  isWhitelisted: boolean;
 }) => {
   const isEmpty = tokens.length === 0;
 
@@ -191,7 +202,10 @@ const PoolRow = ({
               </SimpleTooltip>
             )}
 
-            <Text mt={isEmpty ? 0 : 2}>{name}</Text>
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+              <WhitelistedIcon isWhitelisted={isWhitelisted} mr={2} boxSize={"15px"}/>
+              <Text mt={isEmpty ? 0 : 2}>{name}</Text>
+            </Row>
           </Column>
 
           {isMobile ? null : (

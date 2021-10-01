@@ -17,7 +17,7 @@ type FuseMarket = {
 
 export default function useFuseMarkets() {
   const { rari, fuse, address } = useRari();
-  const { pools } = useFusePools(null);
+  const { pools } = useFusePools();
   const [markets, setMarkets] = useState<FuseMarket>({});
 
   useEffect(() => {
