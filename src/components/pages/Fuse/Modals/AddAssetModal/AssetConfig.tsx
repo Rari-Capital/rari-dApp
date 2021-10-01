@@ -45,7 +45,7 @@ import LogRocket from "logrocket";
 
 // Components
 import IRMChart from "./IRMChart";
-import OracleConfig from "./OracleConfig";
+import OracleConfig from "./OracleConfig/OracleConfig";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 

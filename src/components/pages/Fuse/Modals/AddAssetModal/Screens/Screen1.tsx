@@ -3,7 +3,7 @@ import { Column } from "utils/chakraUtils";
 import { Fade } from "@chakra-ui/transition";
 
 // Components
-import OracleConfig from "../OracleConfig";
+import OracleConfig from "../OracleConfig/OracleConfig";
 import AssetConfig from "../AssetConfig";
 
 const Screen1 = ({
