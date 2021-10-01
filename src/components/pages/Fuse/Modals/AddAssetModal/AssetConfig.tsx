@@ -111,8 +111,8 @@ const AssetConfig = ({
     poolOracleAddress: any;
     comptrollerAddress: any;
     setCollateralFactor: any;
-    activeUniSwapPair: string | number;
-    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string | number>>;
+    activeUniSwapPair: string;
+    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
     uniV3BaseTokenOracle: any;
     setInterestRateModel: any;
     setUniV3BaseTokenOracle: any;

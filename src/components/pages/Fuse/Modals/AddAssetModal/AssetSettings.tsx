@@ -124,7 +124,7 @@ const AssetSettings = ({
 
   // This will be used to index whitelistPools array (fetched from the graph.)
   // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
-  const [activeUniSwapPair, setActiveUniSwapPair] = useState<string | number>(
+  const [activeUniSwapPair, setActiveUniSwapPair] = useState<string>(
     ""
   );
 
@@ -440,6 +440,8 @@ const AssetSettings = ({
     tokenAddress,
     activeOracle,
     oracleAddress,
+    setActiveUniSwapPair,
+    activeUniSwapPair,
     _setActiveOracle,
     _setOracleAddress,
     setUniV3BaseToken,
