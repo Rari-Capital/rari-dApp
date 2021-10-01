@@ -55,15 +55,12 @@ const BaseTokenOracleConfig = ({
   
     const { fuse, address } = useRari();
   
-    const isValidAddress = fuse.web3.utils.isAddress(uniV3BaseToken);
     const isUserAdmin = address === oracleData.admin;
   
     // We get all oracle options.
     const options = useGetOracleOptions(
       oracleData,
       uniV3BaseToken,
-      fuse,
-      isValidAddress
     );
   
     // If we're editing the asset, show master price oracle as a default.
@@ -73,9 +70,9 @@ const BaseTokenOracleConfig = ({
         mode === "Editing" &&
         baseTokenActiveOracleName === "" &&
         options &&
-        options["Active_Price_Oracle"]
+        options["Current_Price_Oracle"]
       )
-        setBaseTokenActiveOracleName("Active_Price_Oracle");
+        setBaseTokenActiveOracleName("Current_Price_Oracle");
     }, [mode, baseTokenActiveOracleName, options, setBaseTokenActiveOracleName]);
   
     // This will update the oracle address, after user chooses which options they want to use.
@@ -152,7 +149,7 @@ const BaseTokenOracleConfig = ({
                   disabled={
                     !isUserAdmin ||
                     (!oracleData.adminOverwrite &&
-                      !options.Active_Price_Oracle === null)
+                      !options.Current_Price_Oracle === null)
                   }
                   onChange={(event) => setBaseTokenActiveOracleName(event.target.value)}
                 >

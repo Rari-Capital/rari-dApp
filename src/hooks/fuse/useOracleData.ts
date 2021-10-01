@@ -1,53 +1,72 @@
 // Rari
-import Fuse from '../../fuse-sdk/src/index'
+import Fuse from "../../fuse-sdk/src/index";
 
 // Hooks
-import { createOracle } from '../../utils/createComptroller'
+import { createOracle } from "../../utils/createComptroller";
 
 // Web3
-import { Contract } from "web3-eth-contract"
+import { Contract } from "web3-eth-contract";
 
 // Libraries
-import axios from 'axios'
-import { useQuery } from 'react-query'
-import { useRari } from 'context/RariContext'
-import { ETH_TOKEN_DATA } from 'hooks/useTokenData'
+import axios from "axios";
+import { useQuery } from "react-query";
+import { useRari } from "context/RariContext";
+import { ETH_TOKEN_DATA } from "hooks/useTokenData";
 
 export type OracleDataType = {
-  admin: string // Address of Oracle's admin
-  adminOverwrite: boolean // Will tell us if admin can overwrite existing oracle-token pairs
-  oracleContract: Contract
-}
+  admin: string; // Address of Oracle's admin
+  adminOverwrite: boolean; // Will tell us if admin can overwrite existing oracle-token pairs
+  oracleContract: Contract;
+};
 
 export const useIdentifyOracle = (oracleAddr: string, tokenAddr?: string) => {
-  const { fuse }  = useRari()
-
+  const { fuse } = useRari();
 
   const { data } = useQuery("Identifying Oracle " + oracleAddr, async () => {
-  if (tokenAddr && tokenAddr === ETH_TOKEN_DATA.address) return "MasterPriceOracle"
-    return await fuse.identifyPriceOracle(oracleAddr)
-  }) 
+    if (tokenAddr && tokenAddr === ETH_TOKEN_DATA.address)
+      return "MasterPriceOracle";
+    return await fuse.identifyPriceOracle(oracleAddr);
+  });
 
-  return data ?? ""
+  return data ?? "";
+};
 
-} 
+export const useOracleData = (
+  oracleAddress: string,
+  fuse: Fuse
+): OracleDataType | undefined => {
+  const { data } = useQuery("Oracle info" + oracleAddress, async () => {
+    const oracleContract = createOracle(
+      oracleAddress,
+      fuse,
+      "MasterPriceOracle"
+    );
 
-export const useOracleData = (oracleAddress: string, fuse: Fuse): OracleDataType | undefined => {
-    const { data } = useQuery("Oracle info" + oracleAddress, async () => {
-      const oracleContract = createOracle(oracleAddress, fuse, "MasterPriceOracle")
-  
-      const admin = await oracleContract.methods.admin().call()
-      const adminOverwrite = await oracleContract.methods.canAdminOverwrite().call()
-  
-      return {admin, adminOverwrite, oracleContract}
-    }) 
-  
-    return data
-}
+    const admin = await oracleContract.methods.admin().call();
+    const adminOverwrite = await oracleContract.methods
+      .canAdminOverwrite()
+      .call();
 
-export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse: Fuse, isValidAddress: boolean): {[key: string]: any} | null => {
-  const { data: Active_Price_Oracle } = useQuery("MasterOracle " + oracleData.oracleContract.options.address + " check price feed for " + tokenAddress, async () => {
-      if (!isValidAddress) return null
+    return { admin, adminOverwrite, oracleContract };
+  });
+
+  return data;
+};
+
+export const useGetOracleOptions = (
+  oracleData: any,
+  tokenAddress: string,
+): { [key: string]: any } | null => {
+  const { fuse } = useRari();
+  const isValidAddress = fuse.web3.utils.isAddress(tokenAddress);
+
+  const { data: Current_Price_Oracle } = useQuery(
+    "MasterOracle " +
+      oracleData.oracleContract.options.address +
+      " check price feed for " +
+      tokenAddress,
+    async () => {
+      if (!isValidAddress) return null;
 
       // Get Oracle address for asset from the pools MasterPriceOracle
       const oracleAddress = await oracleData.oracleContract.methods
@@ -66,7 +85,7 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
     async () => {
       if (
         !isValidAddress ||
-        (!oracleData.adminOverwrite && !Active_Price_Oracle === null)
+        (!oracleData.adminOverwrite && !Current_Price_Oracle === null)
       )
         return null;
 
@@ -92,7 +111,7 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
     async () => {
       if (
         !isValidAddress ||
-        (!oracleData.adminOverwrite && !Active_Price_Oracle === null)
+        (!oracleData.adminOverwrite && !Current_Price_Oracle === null)
       )
         return null;
 
@@ -116,12 +135,14 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
   // We mount this hook to get data from cache.
   // We need this because if there's no whitelisted uniswap pool,
   // we shouldn't return Uniswap_V3_Oracle as an option
-  const {data: liquidity, error} = useQuery("UniswapV3 pool liquidity for  " + tokenAddress, async () => 
-    (await axios.post(
-        "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-        {
-          query:
-          `{
+  const { data: liquidity, error } = useQuery(
+    "UniswapV3 pool liquidity for  " + tokenAddress,
+    async () =>
+      (
+        await axios.post(
+          "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+          {
+            query: `{
             token(id:"${tokenAddress.toLocaleLowerCase()}") {
               whitelistPools {
                 id,
@@ -136,24 +157,24 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
               }
             }
           }`,
-        }
-      )).data.data.pairs
-  ,{refetchOnMount: false})
+          }
+        )
+      ).data.data.pairs,
+    { refetchOnMount: false }
+  );
 
   // If theres no whitelisted pool for the asset, or if there was an error return null
   // Otherwise its return ''
-  // In the UniswapV3PriceOracleConfigurator, we will mount the hook above to get info 
-  const Uniswap_V3_Oracle = 
-              (liquidity?.data.token === null || error) 
-              ? null
-              : ''
+  // In the UniswapV3PriceOracleConfigurator, we will mount the hook above to get info
+  const Uniswap_V3_Oracle = liquidity?.data.token === null || error ? null : "";
 
-  const {SushiPairs, SushiError, UniV2Pairs, univ2Error} = useSushiOrUniswapV2Pairs(tokenAddress)
+  const { SushiPairs, SushiError, UniV2Pairs, univ2Error } =
+    useSushiOrUniswapV2Pairs(tokenAddress);
 
   // If theres no whitelisted pool for the asset, or if there was an error return null
   // Otherwise its return ''
-  // In the UniswapV3PriceOracleConfigurator, we will mount the hook above to get info 
-  // const Uniswap_V2_Oracle = 
+  // In the UniswapV3PriceOracleConfigurator, we will mount the hook above to get info
+  // const Uniswap_V2_Oracle =
   //       (UniV2Pairs === null || UniV2Pairs === undefined || UniV2Pairs.length === 0 || univ2Error )
   //       ? null
   //       : ''
@@ -163,31 +184,34 @@ export const useGetOracleOptions = (oracleData: any, tokenAddress: string, fuse:
   //       ? null
   //       : ''
 
-  // If tokenAddress is not a valid address return null. 
+  // If tokenAddress is not a valid address return null.
   // If tokenAddress is valid and oracle admin can overwrite or if admin can't overwrite but there's no preset, return all options
   // If tokenAddress is valid but oracle admin can't overwrite, return the preset oracle address,
-  const Data = !isValidAddress ? null 
-                  : oracleData.adminOverwrite ||  Active_Price_Oracle === null  
-                  ? { 
-                    Active_Price_Oracle, 
-                    Rari_MasterPriceOracle, Chainlink_Oracle, 
-                    Uniswap_V3_Oracle, 
-                    // Uniswap_V2_Oracle, 
-                    // SushiSwap_Oracle, 
-                    Custom_Oracle: " "} 
-                  : { Active_Price_Oracle }
+  const Data = !isValidAddress
+    ? null
+    : oracleData.adminOverwrite || Current_Price_Oracle === null
+    ? {
+        Current_Price_Oracle,
+        Rari_MasterPriceOracle,
+        Chainlink_Oracle,
+        Uniswap_V3_Oracle,
+        // Uniswap_V2_Oracle,
+        // SushiSwap_Oracle,
+        Custom_Oracle: " ",
+      }
+    : { Current_Price_Oracle };
 
-  return Data
-}
+  return Data;
+};
 
 export const useSushiOrUniswapV2Pairs = (tokenAddress: string) => {
-
-  const {data: UniV2Pairs, error: univ2Error} = useQuery("UniswapV2 pairs for  " + tokenAddress, async () => {
-   const pairs = await axios.post(
-      "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
-      {
-        query:
-        `{
+  const { data: UniV2Pairs, error: univ2Error } = useQuery(
+    "UniswapV2 pairs for  " + tokenAddress,
+    async () => {
+      const pairs = await axios.post(
+        "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+        {
+          query: `{
           pairs(first: 10, orderBy: totalSupply, orderDirection: desc, where: { token0: "${tokenAddress.toLocaleLowerCase()}" } ) {
             id,
            token0 {
@@ -201,18 +225,24 @@ export const useSushiOrUniswapV2Pairs = (tokenAddress: string) => {
            totalSupply
           }
          }`,
-      }
-    )
-    return pairs !== undefined && pairs.data !== undefined && pairs.data.data.pairs !== undefined ? pairs.data.data.pairs.filter((pair: any) => pair.totalSupply > 10000) : null
-  }
-  ,{refetchOnMount: false})
+        }
+      );
+      return pairs !== undefined &&
+        pairs.data !== undefined &&
+        pairs.data.data.pairs !== undefined
+        ? pairs.data.data.pairs.filter((pair: any) => pair.totalSupply > 10000)
+        : null;
+    },
+    { refetchOnMount: false }
+  );
 
-  const {data: SushiPairs, error: SushiError} = useQuery("SushiSwap pairs for  " + tokenAddress, async () => {
-    const pairs = await axios.post(
-      "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
-      {
-        query:
-        `{
+  const { data: SushiPairs, error: SushiError } = useQuery(
+    "SushiSwap pairs for  " + tokenAddress,
+    async () => {
+      const pairs = await axios.post(
+        "https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork",
+        {
+          query: `{
           pairs(first: 10, orderBy: totalSupply, orderDirection: desc, where: { token0: "${tokenAddress.toLocaleLowerCase()}" } ) {
             id,
            token0 {
@@ -226,13 +256,17 @@ export const useSushiOrUniswapV2Pairs = (tokenAddress: string) => {
            totalSupply
           }
          }`,
-      }
-    )
+        }
+      );
 
+      return pairs !== undefined &&
+        pairs.data !== undefined &&
+        pairs.data.data.pairs !== undefined
+        ? pairs.data.data.pairs.filter((pair: any) => pair.totalSupply > 10000)
+        : null;
+    },
+    { refetchOnMount: false }
+  );
 
-    return pairs !== undefined && pairs.data !== undefined && pairs.data.data.pairs !== undefined ? pairs.data.data.pairs.filter((pair: any) => pair.totalSupply > 10000) : null
-  },{refetchOnMount: false})
-
-
-  return {SushiPairs, SushiError, UniV2Pairs, univ2Error}
-}
+  return { SushiPairs, SushiError, UniV2Pairs, univ2Error };
+};

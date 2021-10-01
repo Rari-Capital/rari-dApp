@@ -39,7 +39,7 @@ import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useTokenData } from "../../../hooks/useTokenData";
-import { useOracleData } from "hooks/fuse/useOracleData";
+import { OracleDataType, useOracleData } from "hooks/fuse/useOracleData";
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
@@ -743,7 +743,7 @@ const ColoredAssetSettings = ({
   cTokenAddress: string;
   poolOracleAddress: string;
   oracleModel: string | null;
-  oracleData: any;
+  oracleData?: OracleDataType;
 }) => {
   const tokenData = useTokenData(tokenAddress);
 
@@ -819,8 +819,7 @@ const AddAssetButton = ({
   ) : null;
 };
 
-export const 
-ConfigRow = ({
+export const ConfigRow = ({
   children,
   ...others
 }: {
