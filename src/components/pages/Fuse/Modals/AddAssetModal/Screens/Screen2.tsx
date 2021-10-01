@@ -46,9 +46,9 @@ const Screen2 = ({
     shouldShowUniV3BaseTokenOracleForm: boolean;
     
   }) => {
-
     const { fuse } = useRari()
-    return (
+
+    if (stage === 1) return (
       <Column
         mainAxisAlignment="center"
         crossAxisAlignment="center"
@@ -58,42 +58,32 @@ const Screen2 = ({
         width="100%"
         maxWidth="100%"
       >
-        <Fade in={stage === 1} unmountOnExit>
-          {mode === "Adding" && (
-            <Column
-              w="100%"
-              height="100%"
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-            >
-              <IRMChart curves={curves} tokenData={tokenData} />
-              <Text>
-                {fuse.identifyInterestRateModelName(interestRateModel).replace("_", " ")}
-              </Text>
-            </Column>
-          )}
-        </Fade>
-        <Fade in={stage === 2} unmountOnExit>
-          <Column
-            width="100%"
-            height="100%"
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-          >
-            {shouldShowUniV3BaseTokenOracleForm && mode === "Adding" && (
-              <BaseTokenOracleConfig
-                mode={mode}
-                oracleData={oracleData}
-                uniV3BaseToken={uniV3BaseToken}
-                baseTokenAddress={uniV3BaseToken}
-                uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-                setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-                baseTokenActiveOracleName={baseTokenActiveOracleName} 
-                setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
-              />
-            )}
-          </Column>
-        </Fade>
+        <IRMChart curves={curves} tokenData={tokenData} />
+          <Text>
+            {fuse.identifyInterestRateModelName(interestRateModel).replace("_", " ")}
+          </Text>
+
+      </Column>
+
+    )
+
+    return (
+      <Column
+        width="100%"
+        height="100%"
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+      >
+        <BaseTokenOracleConfig
+          mode={mode}
+          oracleData={oracleData}
+          uniV3BaseToken={uniV3BaseToken}
+          baseTokenAddress={uniV3BaseToken}
+          uniV3BaseTokenOracle={uniV3BaseTokenOracle}
+          setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
+          baseTokenActiveOracleName={baseTokenActiveOracleName} 
+          setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
+        />
       </Column>
     );
   };
