@@ -460,15 +460,7 @@ import {
         justifyContent="center"
         height="100%"
       >
-        <Fade in={stage === 1} unmountOnExit>
-          <Heading> IRM Config </Heading>
-        </Fade>
-        <Fade in={stage === 2} unmountOnExit>
-          <Heading> Oracle Config </Heading>
-        </Fade>
-        <Fade in={stage === 3} unmountOnExit>
-          <Heading> Asset Config Summary </Heading>
-        </Fade>
+        <Title stage={stage}/>
         <RowOrColumn
           maxHeight="90%"
           isRow={!isMobile}
@@ -477,7 +469,6 @@ import {
           height={isDeploying ? "65%" : "70%"}
           width="100%"
           overflowY="auto"
-          // bg="red.100"
         >
           {stage < 3 ? (
             <>
@@ -579,4 +570,21 @@ import {
       </Center>
     );
   };
+
 export default AssetSettings
+
+const Title = ({stage}: {stage: number}) => {
+  return (
+    <>
+    <Fade in={stage === 1} unmountOnExit>
+      <Heading> IRM Config </Heading>
+    </Fade>
+    <Fade in={stage === 2} unmountOnExit>
+      <Heading> Oracle Config </Heading>
+    </Fade>
+    <Fade in={stage === 3} unmountOnExit>
+      <Heading> Asset Config Summary </Heading>
+    </Fade>
+    </>
+  )
+}
