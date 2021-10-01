@@ -30,7 +30,14 @@ import UniswapV3PriceOracleConfigurator from "./UniswapV3PriceOracleConfigurator
 import UniswapV2OrSushiPriceOracleConfigurator from "./UniswapV2OrSushiPriceOracleConfigurator";
 import BaseTokenOracleConfig from "./BaseTokenOracleConfig";
 
-const useOraclesLoading = (options: any) => {};
+// const useOraclesLoading = (options: any) => {
+//   const [isLoading, setIsLoading] = useState(false)
+  
+//   Object.keys(options).filter((option) => {
+
+//   })
+
+// };
 
 const OracleConfig = ({
   mode,

@@ -3,19 +3,24 @@ import Fuse from "../fuse-sdk";
 import BigNumber from "bignumber.js";
 
 export const fetchFuseTVL = async (fuse: Fuse) => {
+  console.log('fetchFuseTVL')
+
   const {
     2: totalSuppliedETH,
   } = await fuse.contracts.FusePoolLens.methods
-    .getPublicPoolsWithData()
+    .getPublicPoolsByVerificationWithData(true)
     .call({ gas: 1e18 });
 
-  return fuse.web3.utils.toBN(
+
+  const ethTotal = fuse.web3.utils.toBN(
     new BigNumber(
       totalSuppliedETH
         .reduce((a: number, b: string) => a + parseInt(b), 0)
         .toString()
     ).toFixed(0)
   );
+
+  return ethTotal
 };
 
 export const perPoolTVL = async (rari: Rari, fuse: Fuse) => {
