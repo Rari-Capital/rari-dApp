@@ -63,7 +63,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       adminHasRights,
       pendingAdmin,
     ] = await Promise.all([
-      fuse.contracts.FusePoolLens.methods
+      fuse.contracts.FusePoolLensSecondary.methods
         .getPoolOwnership(comptrollerAddress)
         .call({ gas: 1e18 }),
 
@@ -91,6 +91,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       comptroller.methods.pendingAdmin().call(),
     ]);
 
+
     return {
       admin,
       upgradeable,
@@ -104,6 +105,8 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       pendingAdmin,
     };
   });
+
+  console.log({ comptrollerAddress, data });
 
   return data;
 };
