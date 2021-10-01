@@ -4,9 +4,12 @@ import {
     Box,
     Text,
     Select,
+    Alert,
+    AlertIcon
   } from "@chakra-ui/react";
   import {
     Column,
+    Row
   } from "utils/chakraUtils";
   import {
     DASHBOARD_BOX_PROPS,
@@ -83,9 +86,32 @@ const BaseTokenOracleConfig = ({
     }, [baseTokenActiveOracleName, options, setUniV3BaseTokenOracle]);
   
     return (
+      <>
+      <Row
+        crossAxisAlignment="center"
+        mainAxisAlignment="center"
+        width="100%"
+        my={2}
+      >
+        <Alert
+          status="info"
+          width="80%"
+          height="50px"
+          borderRadius={5}
+          my={1}
+        >
+          <AlertIcon />
+          <Text fontSize="sm" align="center" color="black">
+            {
+              "This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."
+            }
+          </Text>
+        </Alert>
+      </Row>
       <Box
         d="flex"
         w="100%"
+        height="100%"
         alignContent="center"
         flexDirection="column"
         justifyContent="center"
@@ -169,6 +195,7 @@ const BaseTokenOracleConfig = ({
           ) : null}
         </Column>
       </Box>
+    </>
     );
   };
 

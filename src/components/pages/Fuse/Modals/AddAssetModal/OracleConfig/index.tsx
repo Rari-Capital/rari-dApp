@@ -217,7 +217,7 @@ const OracleConfig = ({
           width="100%"
           pt={mode === "Editing" ? 4 : 0 }
           pb={mode === "Editing" ? 1 : 0 }
-          px={mode === "Editing" ? 2 : 0 }
+          px={mode === "Editing" ? 4 : 0 }
         >
           <SimpleTooltip label={t("Choose the best price oracle for the asset.")}>
             <Text fontWeight="bold">
@@ -227,7 +227,7 @@ const OracleConfig = ({
   
           {/* Oracles */}
           <Box
-            width="100%"
+            width={mode === "Editing" ? "50%" : "100%" }
             alignItems="flex-end"
             flexDirection="column"
             alignContent="center"
@@ -333,28 +333,6 @@ const OracleConfig = ({
         </Row>
   
         {shouldShowUniV3BaseTokenOracleForm && mode === "Editing" ? (
-          <>
-            <Row
-              crossAxisAlignment="center"
-              mainAxisAlignment="center"
-              width="100%"
-              my={2}
-            >
-              <Alert
-                status="info"
-                width="80%"
-                height="50px"
-                borderRadius={5}
-                my={1}
-              >
-                <AlertIcon />
-                <Text fontSize="sm" align="center" color="black">
-                  {
-                    "This Uniswap V3 TWAP Oracle needs an oracle for the BaseToken."
-                  }
-                </Text>
-              </Alert>
-            </Row>
             <BaseTokenOracleConfig
               mode={mode}
               oracleData={oracleData}
@@ -365,14 +343,13 @@ const OracleConfig = ({
               baseTokenActiveOracleName={baseTokenActiveOracleName} 
               setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
             />
-          </>
         ) : null}
   
         {activeOracle !== "Active_Price_Oracle" && mode === "Editing" ? (
           <SaveButton
             ml={"auto"}
             mb={3}
-            mr={2}
+            mr={4}
             fontSize="xs"
             altText={t("Update")}
             onClick={updateOracle}
