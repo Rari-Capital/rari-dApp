@@ -2,7 +2,6 @@
 // Chakra and UI
 import { Text } from "@chakra-ui/layout";
 import { Column } from "utils/chakraUtils";
-import { Fade } from "@chakra-ui/transition";
 
 // Rari
 import { useRari } from "../../../../../../context/RariContext";

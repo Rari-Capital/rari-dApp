@@ -1,7 +1,5 @@
 // Chakra and UI
 import {
-    Alert,
-    AlertIcon,
     Input,
     Box,
     Text,
