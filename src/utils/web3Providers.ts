@@ -18,10 +18,10 @@ export function chooseBestWeb3Provider() {
 }
 
 export const initFuseWithProviders = (provider = chooseBestWeb3Provider()) => {
-  const fuse = new Fuse(testnetURL);
+  const fuse = new Fuse(provider);
 
   // @ts-ignore We have to do this to avoid Infura ratelimits on our large calls.
-  fuse.contracts.FusePoolLens.setProvider(testnetURL);
+  fuse.contracts.FusePoolLens.setProvider(provider);
 
   return fuse;
 };
