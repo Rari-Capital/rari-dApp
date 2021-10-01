@@ -51,6 +51,20 @@ const Screen3 = ({
           justifyContent="center"
           height="100%"
         >
+            <Column
+                width="50%"
+                height="90%"
+                d="flex"
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                alignItems="center"
+                justifyContent="center"
+            >
+            <Text>
+                {fuse.identifyInterestRateModelName(interestRateModel).replace("_", " ")}
+            </Text>
+            <IRMChart curves={curves} tokenData={tokenData}/>
+          </Column>
           <Column
             width="50%"
             height="90%"
@@ -98,20 +112,6 @@ const Screen3 = ({
               : null
             }
             
-          </Column>
-          <Column
-            width="50%"
-            height="90%"
-            d="flex"
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text>
-                {fuse.identifyInterestRateModelName(interestRateModel).replace("_", " ")}
-            </Text>
-            <IRMChart curves={curves} tokenData={tokenData}/>
           </Column>
         </Box>
       </Column>
