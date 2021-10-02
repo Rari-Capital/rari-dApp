@@ -329,7 +329,7 @@ const PoolCards = () => {
       crossAxisAlignment="center"
       width="100%"
     >
-      {Object.values(Pool).map((pool: Pool, index: number, array: Pool[]) => {
+      {Object.values(Pool).slice(0,2).map((pool: Pool, index: number, array: Pool[]) => {
         return (
           <DashboardBox
             key={pool}
@@ -342,6 +342,7 @@ const PoolCards = () => {
               base: 0,
             }}
             mt={4}
+            flexGrow={1}
           >
             <PoolDetailCard pool={pool} />
           </DashboardBox>
