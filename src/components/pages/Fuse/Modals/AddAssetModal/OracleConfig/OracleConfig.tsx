@@ -122,7 +122,6 @@ const OracleConfig = ({
       options
     )
       _setOracleAddress(options[activeOracle]);
-      console.log(activeUniSwapPair, 's')
     if (activeUniSwapPair === '' && (activeOracle === "Custom_Oracle" ||
     activeOracle === "Uniswap_V3_Oracle" ||
     activeOracle === "Uniswap_V2_Oracle" ||
