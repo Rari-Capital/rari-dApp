@@ -135,8 +135,6 @@ const PoolConfiguration = () => {
           poolAddress.toLowerCase()
       )[0];
 
-      console.log(event, "heyy")
-
       LogRocket.track("Fuse-CreatePool");
 
       let id = event.returnValues.index;
