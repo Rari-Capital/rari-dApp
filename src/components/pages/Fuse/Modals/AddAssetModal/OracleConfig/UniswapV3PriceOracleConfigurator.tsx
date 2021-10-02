@@ -47,8 +47,8 @@ const UniswapV3PriceOracleConfigurator = ({
     setFeeTier: React.Dispatch<React.SetStateAction<number>>;
 
     // Will store the uniswap pair index.
-    activeUniSwapPair: string | number;
-    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string | number>>;
+    activeUniSwapPair: string;
+    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
   }) => {
     const { t } = useTranslation();
   
@@ -89,7 +89,7 @@ const UniswapV3PriceOracleConfigurator = ({
     const updateBoth = (value: string) => {
       const uniPool = liquidity.data.token.whitelistPools[value];
 
-  
+      setActiveUniSwapPair(value)
       setFeeTier(uniPool.feeTier);
       _setOracleAddress(uniPool.id);
       setUniV3BaseToken(
@@ -107,6 +107,7 @@ const UniswapV3PriceOracleConfigurator = ({
         parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1
     );
   
+    console.log({activeUniSwapPair})
     return (
       <>
         <Row
@@ -133,7 +134,7 @@ const UniswapV3PriceOracleConfigurator = ({
             borderRadius="7px"
             value={activeUniSwapPair}
             _focus={{ outline: "none" }}
-            placeholder={activeUniSwapPair === '' ? t("Choose Pool") : liquidity.data.token.whitelistPools[activeUniSwapPair]}
+            placeholder={activeUniSwapPair === '' ? t("Choose Pool") : activeUniSwapPair}
             onChange={(event) => {
               updateBoth(event.target.value);
             }}
@@ -158,7 +159,7 @@ const UniswapV3PriceOracleConfigurator = ({
           </Select>
         </Row>
   
-        {activeUniSwapPair === '' ? (
+        {activeUniSwapPair !== '' ? (
           <>
             <Row
               crossAxisAlignment="center"

@@ -81,8 +81,8 @@ const OracleConfig = ({
   setFeeTier: React.Dispatch<React.SetStateAction<number>>;
   feeTier: number; // Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
   mode: "Editing" | "Adding"; // Modal config
-  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string | number>>;
-  activeUniSwapPair: string | number;
+  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
+  activeUniSwapPair: string;
 }) => {
   const toast = useToast();
   const { t } = useTranslation();
