@@ -122,7 +122,13 @@ const OracleConfig = ({
       options
     )
       _setOracleAddress(options[activeOracle]);
-  }, [activeOracle, options, _setOracleAddress]);
+      console.log(activeUniSwapPair, 's')
+    if (activeUniSwapPair === '' && (activeOracle === "Custom_Oracle" ||
+    activeOracle === "Uniswap_V3_Oracle" ||
+    activeOracle === "Uniswap_V2_Oracle" ||
+    activeOracle === "SushiSwap_Oracle"))
+      _setOracleAddress('')
+},[activeOracle, options, _setOracleAddress, activeUniSwapPair]);
 
   // Will update oracle for the asset. This is used only if user is editing asset.
   const updateOracle = async () => {
