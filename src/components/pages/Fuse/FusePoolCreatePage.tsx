@@ -1,3 +1,4 @@
+// Chakra  and UI
 import {
   Heading,
   Text,
@@ -8,24 +9,32 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Column, Center, Row } from "utils/chakraUtils";
-import { memo, ReactNode, useState } from "react";
-import { useTranslation } from "react-i18next";
-
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import DashboardBox from "../../shared/DashboardBox";
 import { ModalDivider } from "../../shared/Modal";
-
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
-
-import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
-
-import { handleGenericError } from "../../../utils/errorHandling";
-import LogRocket from "logrocket";
 import { Header } from "components/shared/Header";
+
+// React
+import { memo, ReactNode, useState } from "react";
+
+// Rari
+import { useRari } from "../../../context/RariContext";
+
+// Hooks
+import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import BigNumber from "bignumber.js";
+import LogRocket from "logrocket";
+
+// Utils
+import { handleGenericError } from "../../../utils/errorHandling";
+
+// Components
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 
@@ -264,7 +273,7 @@ const PoolConfiguration = () => {
         py={3}
         fontSize="xl"
         as="button"
-        onClick={onDeploy}
+        onClick={useAuthedCallback(onDeploy)}
       >
         <Center expand fontWeight="bold">
           {isCreating ? <Spinner /> : t("Create")}
