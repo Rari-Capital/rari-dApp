@@ -1,5 +1,6 @@
 // Chakra and UI
 import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/modal";
+import { CloseButton } from "@chakra-ui/react"
 import { ModalDivider, MODAL_PROPS } from "../../../../shared/Modal";
 import { Column, Center } from "utils/chakraUtils";
 import SmallWhiteCircle from "../../../../../static/small-white-circle.png";
@@ -67,6 +68,7 @@ const AddAssetModal = ({
         onClose={onClose}
         motionPreset="slideInBottom"
         isCentered={isEmpty ? true : false}
+        closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent
@@ -77,9 +79,17 @@ const AddAssetModal = ({
           maxHeight="85%"
           overflowY="hidden"
         >
-          <Heading my={4} fontSize="27px" textAlign="center">
-            {t("Add Asset")}
-          </Heading>
+            <Box d="flex" flexDirection="row" width="100%" justifyContent="center" alignItems="center">
+              <Box flexBasis="10%"/>
+
+              <Heading my={4} fontSize="27px" textAlign="center">
+                  {t("Add Asset")}
+              </Heading>
+              
+              <Box flexBasis="10%" d="flex" justifyContent="center" onClick={onClose}>
+                <CloseButton/>
+              </Box>
+            </Box>
   
           <ModalDivider />
   
