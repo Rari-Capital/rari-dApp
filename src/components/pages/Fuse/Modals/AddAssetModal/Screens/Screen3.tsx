@@ -11,111 +11,111 @@ import { useRari } from "context/RariContext";
 import IRMChart from "../IRMChart";
 
 const Screen3 = ({
-    curves,
-    adminFee,
-    tokenData,
-    activeOracle,
-    reserveFactor,
-    collateralFactor,
-    interestRateModel,
-    baseTokenActiveOracle,
-    shouldShowUniV3BaseTokenOracleForm,
-  } : {
-    shouldShowUniV3BaseTokenOracleForm: boolean
-    baseTokenActiveOracle: any
-    interestRateModel: any
-    collateralFactor: number
-    reserveFactor: number
-    activeOracle: string
-    tokenData: any,
-    adminFee: number,
-    curves: any
-  }) => {
-      const { fuse } = useRari()
-    return (
-      <Column
-        mainAxisAlignment="center"
-        crossAxisAlignment="center"
-        overflowY="scroll"
-        maxHeight="100%"
-        height="95%"
-        width="95%"
-        maxWidth="100%"
+  curves,
+  adminFee,
+  tokenData,
+  activeOracle,
+  reserveFactor,
+  collateralFactor,
+  interestRateModel,
+  baseTokenActiveOracle,
+  shouldShowUniV3BaseTokenOracleForm,
+}: {
+  shouldShowUniV3BaseTokenOracleForm: boolean;
+  baseTokenActiveOracle: any;
+  interestRateModel: any;
+  collateralFactor: number;
+  reserveFactor: number;
+  activeOracle: string;
+  tokenData: any;
+  adminFee: number;
+  curves: any;
+}) => {
+  const { fuse } = useRari();
+  return (
+    <Column
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      overflowY="scroll"
+      maxHeight="100%"
+      height="100%"
+      width="95%"
+      maxWidth="100%"
+      // bg="yellow"
+    >
+      <Box
+        d="flex"
+        width="100%"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-around"
+        height="100%"
+        // bg="red"
       >
-        <Box
+        <Column
+          width="47%"
+          height="90%"
           d="flex"
-          maxHeight="80%"
-          width="100%"
-          flexDirection="row"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
           alignItems="center"
-          justifyContent="space-around"
-          height="100%"
+          justifyContent="center"
         >
-            <Column
-                width="47%"
-                height="90%"
-                d="flex"
-                mainAxisAlignment="center"
-                crossAxisAlignment="center"
-                alignItems="center"
-                justifyContent="center"
-            >
-            <Text>
-                {fuse.identifyInterestRateModelName(interestRateModel).replace("_", " ")}
-            </Text>
-            <IRMChart modal curves={curves} tokenData={tokenData}/>
-          </Column>
-          <Column
-            width="47%"
-            height="90%"
-            d="flex"
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-            alignItems="center"
-            justifyContent="center"
-          > 
-  
-            <ConfigRow height="35px" mainAxisAlignment="space-between">
-              <Text>Collateral Factor:</Text> 
-              <Text>{collateralFactor}%</Text>
-            </ConfigRow>
-  
-            <ModalDivider/>
-            
-            <ConfigRow height="35px" mainAxisAlignment="space-between">
-              <Text>Reserve Factor:</Text> 
-              <Text>{reserveFactor}%</Text>
-            </ConfigRow>
-  
-            <ModalDivider/>
-  
-            <ConfigRow height="35px" mainAxisAlignment="space-between">
-              <Text>Admin Fee: </Text>
-              <Text>{adminFee}%</Text>
-            </ConfigRow>
-            
-            <ModalDivider/>
-  
-            <ConfigRow height="35px" mainAxisAlignment="space-between">
-              <Text>Oracle:</Text>
-              <Text>{activeOracle.replace('_', ' ')}</Text>
-            </ConfigRow>
-            
-            { shouldShowUniV3BaseTokenOracleForm ?
+          <Text>
+            {fuse
+              .identifyInterestRateModelName(interestRateModel)
+              .replace("_", " ")}
+          </Text>
+          <IRMChart modal curves={curves} tokenData={tokenData} />
+        </Column>
+        <Column
+          width="47%"
+          height="90%"
+          d="flex"
+          mainAxisAlignment="center"
+          crossAxisAlignment="center"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <ConfigRow height="35px" mainAxisAlignment="space-between">
+            <Text>Collateral Factor:</Text>
+            <Text>{collateralFactor}%</Text>
+          </ConfigRow>
+
+          <ModalDivider />
+
+          <ConfigRow height="35px" mainAxisAlignment="space-between">
+            <Text>Reserve Factor:</Text>
+            <Text>{reserveFactor}%</Text>
+          </ConfigRow>
+
+          <ModalDivider />
+
+          <ConfigRow height="35px" mainAxisAlignment="space-between">
+            <Text>Admin Fee: </Text>
+            <Text>{adminFee}%</Text>
+          </ConfigRow>
+
+          <ModalDivider />
+
+          <ConfigRow height="35px" mainAxisAlignment="space-between">
+            <Text>Oracle:</Text>
+            <Text>{activeOracle.replace("_", " ")}</Text>
+          </ConfigRow>
+
+          {shouldShowUniV3BaseTokenOracleForm ? (
             <>
-              <ModalDivider/>
+              <ModalDivider />
               <ConfigRow height="35px" mainAxisAlignment="space-between">
-                <Text> Base token oracle:  </Text> 
+                <Text> Base token oracle: </Text>
                 <Text>{baseTokenActiveOracle}</Text>
               </ConfigRow>
             </>
-              : null
-            }
-            
-          </Column>
-        </Box>
-      </Column>
-    );
-  };
+          ) : null}
+        </Column>
+      </Box>
+    </Column>
+  );
+};
 
-export default Screen3
+export default Screen3;

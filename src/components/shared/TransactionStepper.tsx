@@ -16,20 +16,22 @@ const TransactionStepper = ({
     return (
       <Box
         width="100%"
+        h="10%"
         d="flex"
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
+        // bg="pink"
       >
           <Row
             mainAxisAlignment="space-around"
             crossAxisAlignment="center"
             width="90%"
-            my={4}
+            p={4}
           >
             {steps.map((step, index) => (
               <Circle
-                size="50px"
+                size="40px"
                 color="white"
                 key={index}
                 opacity={activeStep === index ? "1" : "0.7"}
