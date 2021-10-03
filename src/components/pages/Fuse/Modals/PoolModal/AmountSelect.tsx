@@ -192,7 +192,7 @@ async function fetchMaxAmount(
 
     if (err !== 0) {
       return fuse.web3.utils.toBN(
-        new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
+        new BigNumber(maxBorrow).multipliedBy(0.95).toFixed(0)
       );
     } else {
       throw new Error("Could not fetch your max borrow amount! Code: " + err);
