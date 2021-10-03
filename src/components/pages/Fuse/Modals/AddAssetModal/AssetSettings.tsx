@@ -291,16 +291,15 @@ const AssetSettings = ({
           .oracles(tokenAddr)
           .call();
 
-        console.log({ address });
 
         // if address  is EmptyAddress then there is no oracle for this token
-        return address === "0x0000000000000000000000000000000000000000";
+        return !(address === "0x0000000000000000000000000000000000000000");
       })
     );
 
-    const mpoNeedsUpdating = hasOracles.some((x) => !x);
+    //const mpoNeedsUpdating = hasOracles.some((x) => !x);
 
-    if (mpoNeedsUpdating) {
+    if (hasOracles) {
       await poolOracleContract.methods
         .add(tokenArray, oracleAddress)
         .send({ from: address });
@@ -423,6 +422,7 @@ const AssetSettings = ({
       if (_retryFlag === 4) {
         setNeedsRetry(false);
         if (!isTokenETHOrWETH(tokenAddress)) {
+          console.log('hey')
           await addOraclesToMasterPriceOracle(oracleAddressToUse);
         }
         _retryFlag = 5;
