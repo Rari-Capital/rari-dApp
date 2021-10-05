@@ -13,6 +13,7 @@ var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fusePoolLensSecondaryAbi = require(__dirname + "/abi/FusePoolLensSecondary.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
+var initializableClonesAbi = require(__dirname + "/abi/InitializableClones.json");
 var uniswapV3PoolAbiSlim = require(__dirname + "/abi/UniswapV3Pool.slim.json");
 var contracts = require(__dirname +
   "/contracts/compound-protocol.min.json").contracts;
@@ -42,6 +43,11 @@ export default class Fuse {
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0xd77e28a1b9a9cfe1fc2eee70e391c05d25853cbf"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
   static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
+    "0x220f93183a69d1598e8405310cb361cff504146f";
+  
+  static MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS =
+    ""; // TODO: Set correct mainnet address after deployment
+  static INITIALIZABLE_CLONES_CONTRACT_ADDRESS =
     ""; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
@@ -750,21 +756,26 @@ export default class Fuse {
             .send(options);
           break;
         case "MasterPriceOracle":
-          var priceOracle = new this.web3.eth.Contract(
+          var initializableClones = new this.web3.eth.Contract(
+            initializableClonesAbi,
+            Fuse.INITIALIZABLE_CLONES_CONTRACT_ADDRESS
+          );
+          var masterPriceOracle = new this.web3.eth.Contract(
             oracleContracts["MasterPriceOracle"].abi
           );
           var deployArgs = [
             conf.underlyings ? conf.underlyings : [],
             conf.oracles ? conf.oracles : [],
+            conf.defaultOracle ? conf.defaultOracle : "0x0000000000000000000000000000000000000000",
             conf.admin ? conf.admin : options.from,
             conf.canAdminOverwrite ? true : false,
           ];
-          priceOracle = await priceOracle
-            .deploy({
-              data: oracleContracts["MasterPriceOracle"].bin,
-              arguments: deployArgs,
-            })
-            .send(options);
+          var initializerData = masterPriceOracle.methods.initialize(...deployArgs).encodeABI();
+          var receipt = await initializableClones.methods.clone(Fuse.MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS, initializerData).send(options);
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["MasterPriceOracle"].abi,
+            receipt.events["Deployed"].returnValues.instance
+          );
           break;
         case "SimplePriceOracle":
           var priceOracle = new this.web3.eth.Contract(

@@ -86,7 +86,7 @@ fs.readdirSync(__dirname + "/../src/contracts/oracles/").forEach((file) => {
   minContracts[contract.contractName] = {
     abi: contract.abi
   };
-  if (contract.contractName === "MasterPriceOracle" || process.env.NODE_ENV === "development") minContracts[contract.contractName].bin = contract.bytecode;
+  if (process.env.NODE_ENV === "development") minContracts[contract.contractName].bin = contract.bytecode;
 });
 fs.writeFileSync(
   __dirname + "/../src/contracts/oracles.min.json",
