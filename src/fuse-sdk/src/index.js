@@ -46,9 +46,9 @@ export default class Fuse {
     "0x220f93183a69d1598e8405310cb361cff504146f";
   
   static MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS =
-    ""; // TODO: Set correct mainnet address after deployment
+    "0xce103d6D89eA4588d909f5f728ca8C14C94Bb3D6"; // TODO: Set correct mainnet address after deployment
   static INITIALIZABLE_CLONES_CONTRACT_ADDRESS =
-    ""; // TODO: Set correct mainnet address after deployment
+    "0x4084A1CEb13516eEaa03a047679cE64DF5c7476A"; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
