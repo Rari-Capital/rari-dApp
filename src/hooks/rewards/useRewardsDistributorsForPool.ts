@@ -32,7 +32,7 @@ export const useRewardsDistributorsForPool = (
           const distributor = new fuse.web3.eth.Contract(
             JSON.parse(
               fuse.compoundContracts[
-                "contracts/RewardsDistributor.sol:RewardsDistributor"
+                "contracts/RewardsDistributorDelegate.sol:RewardsDistributorDelegate"
               ].abi
             ),
             addr

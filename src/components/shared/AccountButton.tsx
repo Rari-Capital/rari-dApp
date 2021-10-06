@@ -208,7 +208,7 @@ export const SettingsModal = ({
           p={4}
         >
           <GlowingButton onClick={onClaimRGT} width="100%" height="51px" mb={4}>
-            {t("Claim RGT")}
+            {t("Claim")}
           </GlowingButton>
 
           <Button

@@ -14,6 +14,7 @@ export interface UseClaimableReturn {
   unclaimedFuseRewards?: UnclaimedReward[];
   hasClaimableRewards: boolean;
   allClaimable: GenericClaimableReward[];
+  allRewardsTokens: string[]
 }
 
 export interface GenericClaimableReward {
@@ -35,7 +36,8 @@ interface CTokenUnclaimedForPool {}
 const RGT = "0xd291e7a03283640fdc51b121ac401383a46cc623";
 
 export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
-  const { unclaimed: unclaimedFuseRewards } = useUnclaimedFuseRewards();
+  const { unclaimed: unclaimedFuseRewards, rewardTokensMap } =
+    useUnclaimedFuseRewards();
 
   const { unclaimedRGT, privateUnclaimedRGT, pool2UnclaimedRGT } =
     useUnclaimedRGT();
@@ -100,6 +102,17 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
     pool2UnclaimedRGT,
   ]);
 
+  const allRewardsTokens = useMemo(
+    () => [
+      ...new Set(
+        allClaimable.reduce((arr: string[], claimable) => {
+          return [...arr, claimable.unclaimed.rewardToken];
+        }, [])
+      ),
+    ],
+    [allClaimable]
+  );
+
   return {
     unclaimedRGT,
     privateUnclaimedRGT,
@@ -107,5 +120,6 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
     unclaimedFuseRewards,
     hasClaimableRewards,
     allClaimable,
+    allRewardsTokens
   };
 }

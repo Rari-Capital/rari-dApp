@@ -35,7 +35,7 @@ export const createRewardsDistributor = (
   const rewardsDistributorInstance = new fuse.web3.eth.Contract(
     JSON.parse(
       fuse.compoundContracts[
-        "contracts/RewardsDistributor.sol:RewardsDistributor"
+        "contracts/RewardsDistributorDelegate.sol:RewardsDistributorDelegate"
       ].abi
     ),
     distributorAddress

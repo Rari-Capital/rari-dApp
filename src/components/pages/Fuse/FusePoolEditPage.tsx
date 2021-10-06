@@ -176,11 +176,11 @@ const FusePoolEditPage = memo(() => {
 
   // RewardsDistributor stuff
   const poolIncentives = usePoolIncentives(data?.comptroller);
-
   const rewardsDistributors = useRewardsDistributorsForPool(data?.comptroller);
   const [rewardsDistributor, setRewardsDistributor] = useState<
     RewardsDistributor | undefined
   >();
+
 
   console.log({ rewardsDistributors, poolIncentives });
 
@@ -1024,7 +1024,6 @@ const RewardsDistributorRow = ({
         p={5}
         flexDir="row"
         onClick={() => handleRowClick(rewardsDistributor)}
-        bg="aqua"
       >
         <Td>
           <HStack>
@@ -1036,7 +1035,7 @@ const RewardsDistributorRow = ({
               />
             ) : null}
             <Heading fontSize="22px" color={tokenData?.color ?? "#FFF"} ml={2}>
-              {tokenData ? tokenData.name ?? "Invalid Address!" : "Loading..."}
+              {tokenData ? tokenData.symbol ?? "Invalid Address!" : "Loading..."}
             </Heading>
           </HStack>
         </Td>
