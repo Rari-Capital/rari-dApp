@@ -1,4 +1,3 @@
-import { InfoIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import {
   Modal,
@@ -216,7 +215,7 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
           );
         })
       ) : (
-        <Heading textAlign="center" size="lg">No Claimable Rewards.</Heading>
+        <Heading textAlign="center" size="md">No Claimable Rewards.</Heading>
       )}
       {!!allClaimable.length && (
         <GlowingButton

@@ -32,7 +32,6 @@ import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import AddAssetModal from "./Modals/AddAssetModal/AddAssetModal";
 import AssetSettings from "./Modals/AddAssetModal/AssetSettings";
-import { CTokenIcon } from "./FusePoolsPage";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
 
@@ -46,7 +45,6 @@ import { useQueryClient, useQuery } from "react-query";
 import { useRari } from "../../../context/RariContext";
 
 // Hooks
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import { useTokenData } from "../../../hooks/useTokenData";
@@ -59,7 +57,7 @@ import {
   createComptroller,
   createUnitroller,
 } from "../../../utils/createComptroller";
-import { handleGenericError } from "../../../utils/errorHandling";
+import { handleGenericError } from "utils/errorHandling";
 
 // Libraries
 import BigNumber from "bignumber.js";
@@ -67,8 +65,7 @@ import LogRocket from "logrocket";
 import { useIsComptrollerAdmin } from "./FusePoolPage";
 import { AdminAlert } from "components/shared/AdminAlert";
 
-import { handleGenericError } from "../../../utils/errorHandling";
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
 import {
   useCTokensUnderlying,
   usePoolIncentives,
@@ -108,22 +105,6 @@ export enum ComptrollerErrorCodes {
   SUPPLY_ABOVE_MAX,
   NONZERO_TOTAL_SUPPLY,
 }
-
-export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
-  const { fuse, address } = useRari();
-
-  const { data } = useQuery(comptrollerAddress + " admin", async () => {
-    if (!comptrollerAddress) return undefined;
-
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const admin = await comptroller.methods.admin().call();
-
-    return admin;
-  });
-
-  return address === data;
-};
 
 export const useIsUpgradeable = (comptrollerAddress: string) => {
   const { fuse } = useRari();
@@ -202,8 +183,6 @@ const FusePoolEditPage = memo(() => {
   >();
 
   console.log({ rewardsDistributors, poolIncentives });
-
-  const isAdmin = useIsComptrollerAdmin(data?.comptroller);
 
   const handleRewardsRowClick = useCallback(
     (rD: RewardsDistributor) => {
@@ -355,7 +334,7 @@ const FusePoolEditPage = memo(() => {
               </Tr>
             </Thead>
 
-            <Tbody>
+            <Tbody minHeight="50px">
               {!data ? (
                 <Spinner />
               ) : rewardsDistributors.length ? (
@@ -1045,6 +1024,7 @@ const RewardsDistributorRow = ({
         p={5}
         flexDir="row"
         onClick={() => handleRowClick(rewardsDistributor)}
+        bg="aqua"
       >
         <Td>
           <HStack>

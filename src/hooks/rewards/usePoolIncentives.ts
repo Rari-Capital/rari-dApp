@@ -35,7 +35,7 @@ export function usePoolIncentives(comptroller?: string): IncentivesData {
     async () => {
       if (!comptroller) return [];
 
-      const result = await fuse.contracts.FusePoolLens.methods
+      const result = await fuse.contracts.FusePoolLensSecondary.methods
         .getRewardSpeedsByPool(comptroller)
         .call();
 

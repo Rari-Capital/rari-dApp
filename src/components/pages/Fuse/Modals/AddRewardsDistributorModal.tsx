@@ -68,6 +68,8 @@ const AssetSettings = ({
 
       setIsDeploying(true);
 
+      console.log({ tokenData });
+
       const deployedDistributor = await fuse.deployRewardsDistributor(
         tokenData.address,
         {
@@ -260,7 +262,6 @@ const AddRewardsDistributorModal = ({
               onChange={(event) => {
                 const address = event.target.value;
                 _setTokenAddress(address);
-
 
                 // if (nav === Nav.CREATE) {
                 //   _setTokenAddress(address);

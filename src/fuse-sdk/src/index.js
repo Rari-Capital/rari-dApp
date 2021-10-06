@@ -10,7 +10,8 @@ import BigNumber from "bignumber.js";
 
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
-var fusePoolLensSecondaryAbi = require(__dirname + "/abi/FusePoolLensSecondary.json");
+var fusePoolLensSecondaryAbi = require(__dirname +
+  "/abi/FusePoolLensSecondary.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
 var uniswapV3PoolAbiSlim = require(__dirname + "/abi/UniswapV3Pool.slim.json");
@@ -41,8 +42,7 @@ export default class Fuse {
     "0x67db14e73c2dce786b5bbbfa4d010deab4bbfcf9"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0xd77e28a1b9a9cfe1fc2eee70e391c05d25853cbf"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
-  static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
-    ""; // TODO: Set correct mainnet address after deployment
+  static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS = ""; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
@@ -109,8 +109,7 @@ export default class Fuse {
     "0xa170dba2cd1f68cdd7567cf70184d5492d2e8138";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
-  static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    ""; // TODO: Set correct mainnet address after deployment
+  static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS = ""; // TODO: Set correct mainnet address after deployment
   static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
     "0x8Eed20f31E7d434648fF51114446b3CfFD1FF9F1"; // TODO: Set correct mainnet address after deployment
 
@@ -1756,9 +1755,13 @@ export default class Fuse {
     this.deployRewardsDistributor = async function (rewardToken, options) {
       const distributor = new this.web3.eth.Contract(
         JSON.parse(
-          contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"].abi
+          contracts[
+            "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"
+          ].abi
         )
       );
+      console.log({ options, rewardToken });
+
       const deployedDistributor = await distributor
         .deploy({
           data:
@@ -1777,7 +1780,7 @@ export default class Fuse {
       return deployedDistributor;
     };
 
-        this.checkCardinality = async function (uniswapV3Pool) {
+    this.checkCardinality = async function (uniswapV3Pool) {
       var uniswapV3PoolContract = new this.web3.eth.Contract(
         uniswapV3PoolAbiSlim,
         uniswapV3Pool
@@ -1798,19 +1801,18 @@ export default class Fuse {
         .send(options);
     };
 
-
     this.identifyInterestRateModelName = (irmAddress) => {
       let name = "";
 
-      Object.entries(Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES).forEach(
-        ([key, value]) => {
-          if (value === irmAddress) {
-            name = key;
-          }
+      Object.entries(
+        Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+      ).forEach(([key, value]) => {
+        if (value === irmAddress) {
+          name = key;
         }
-      );
+      });
       return name;
-    }
+    };
   }
 
   static Web3 = Web3;
