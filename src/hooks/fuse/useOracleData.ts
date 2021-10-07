@@ -21,6 +21,7 @@ export type OracleDataType = {
   defaultOracle: undefined | string;
 };
 
+// Return a string of what we want to call this oracle
 export const useIdentifyOracle = (
   oracleAddr: string,
   tokenAddr?: string
@@ -34,7 +35,9 @@ export const useIdentifyOracle = (
     // If no oracle address provided, return empty string
     if (!oracleAddr) return "";
 
-    return await fuse.identifyPriceOracle(oracleAddr);
+    const identity = await fuse.identifyPriceOracle(oracleAddr);
+    if (identity === "MasterPriceOracleV1") return "RariMasterPriceOracle";
+    return identity;
   });
 
   return data ?? "";

@@ -9,6 +9,14 @@ import {
   Spinner,
   useToast,
   Input,
+  Link,
+  // Table
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
 import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
@@ -38,8 +46,16 @@ import { useRari } from "../../../context/RariContext";
 import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { useTokenData } from "../../../hooks/useTokenData";
-import { OracleDataType, useOracleData } from "hooks/fuse/useOracleData";
+import {
+  TokenData,
+  useTokenData,
+  useTokensData,
+} from "../../../hooks/useTokenData";
+import {
+  OracleDataType,
+  useIdentifyOracle,
+  useOracleData,
+} from "hooks/fuse/useOracleData";
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
@@ -54,6 +70,8 @@ import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { useIsComptrollerAdmin } from "./FusePoolPage";
 import { AdminAlert } from "components/shared/AdminAlert";
+import useOraclesForPool from "hooks/fuse/useOraclesForPool";
+import { shortAddress } from "utils/shortAddress";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -267,6 +285,14 @@ const PoolConfiguration = ({
   const toast = useToast();
 
   const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
+
+  // Maps underlying to oracle
+  const oraclesMap = useOraclesForPool(
+    oracleAddress,
+    assets.map((asset: USDPricedFuseAsset) => asset.underlyingToken) ?? []
+  );
+
+  console.log({ oraclesMap });
 
   const changeWhitelistStatus = async (enforce: boolean) => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
@@ -630,6 +656,31 @@ const PoolConfiguration = ({
                 max={50}
               />
             </ConfigRow>
+            <ModalDivider />
+
+            {/* OraclesTable */}
+            <OraclesTable oraclesMap={oraclesMap} data={data} />
+            {/* <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              expand
+            >
+              <ConfigRow height="35px">
+                <Text fontWeight="bold">{t("Oracles")}:</Text>
+              </ConfigRow>
+
+              {!!data.defaultOracle && (
+                <OracleRow
+                  oracle={data.defaultOracle}
+                  underlyings={[]}
+                  isDefault={true}
+                />
+              )}
+              {Object.keys(oraclesMap).map((oracle) => {
+                const underlyings = oraclesMap[oracle];
+                return <OracleRow oracle={oracle} underlyings={underlyings} />;
+              })}
+            </Column> */}
           </Column>
         </Column>
       ) : (
@@ -638,6 +689,83 @@ const PoolConfiguration = ({
         </Center>
       )}
     </Column>
+  );
+};
+
+const OraclesTable = ({
+  data,
+  oraclesMap,
+}: {
+  data: any;
+  oraclesMap: {
+    [oracleAddr: string]: string[];
+  };
+}) => {
+  return (
+    <Table variant="unstyled">
+      <Thead>
+        <Tr>
+          <Th color="white">Oracle:</Th>
+          <Th color="white">Assets</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {!!data.defaultOracle && (
+          <OracleRow
+            oracle={data.defaultOracle}
+            underlyings={[]}
+            isDefault={true}
+          />
+        )}
+        {Object.keys(oraclesMap).map((oracle) => {
+          const underlyings = oraclesMap[oracle];
+          return <OracleRow oracle={oracle} underlyings={underlyings} />;
+        })}
+      </Tbody>
+    </Table>
+  );
+};
+
+const OracleRow = ({
+  oracle,
+  underlyings,
+  isDefault = false,
+}: {
+  oracle: string;
+  underlyings: string[];
+  isDefault?: boolean;
+}) => {
+  const oracleIdentity = useIdentifyOracle(oracle);
+
+  const displayedOracle = !!oracleIdentity
+    ? oracleIdentity
+    : shortAddress(oracle);
+
+  return (
+    <>
+      <Tr>
+        <Td>
+          <Link
+            href={`https://etherscan.io/address/${oracle}`}
+            isExternal
+            _hover={{ pointer: "cursor", color: "#21C35E" }}
+          >
+            <Text fontWeight="bold">{displayedOracle}</Text>
+          </Link>
+        </Td>
+        <Td>
+          {isDefault ? (
+            <span style={{ fontWeight: "bold" }}>DEFAULT</span>
+          ) : (
+            <AvatarGroup size="xs" max={30} mr={2}>
+              {underlyings.map((underlying) => {
+                return <CTokenIcon key={underlying} address={underlying} />;
+              })}
+            </AvatarGroup>
+          )}
+        </Td>
+      </Tr>
+    </>
   );
 };
 

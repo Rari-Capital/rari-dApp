@@ -368,9 +368,11 @@ const AssetSettings = ({
     //const mpoNeedsUpdating = hasOracles.some((x) => !x);
 
     if (hasOracles) {
-      await poolOracleContract.methods
+      const tx = await poolOracleContract.methods
         .add(tokenArray, oracleAddress)
         .send({ from: address });
+
+      console.log({ tx });
 
       toast({
         title: "You have successfully configured the oracle for this asset!",
