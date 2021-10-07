@@ -654,13 +654,13 @@ const AssetConfiguration = ({
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
   poolOracleAddress: string;
-  oracleModel: string | null;
+  oracleModel: string | undefined;
   poolName: string;
   poolID: string;
 }) => {
   const { t } = useTranslation();
   const { fuse } = useRari();
-  const oracleData = useOracleData(poolOracleAddress, fuse);
+  const oracleData = useOracleData(poolOracleAddress, fuse, oracleModel);
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
 
   return (
@@ -742,8 +742,8 @@ const ColoredAssetSettings = ({
   comptrollerAddress: string;
   cTokenAddress: string;
   poolOracleAddress: string;
-  oracleModel: string | null;
-  oracleData?: OracleDataType;
+  oracleModel: string | undefined;
+  oracleData?: OracleDataType | string | undefined;
 }) => {
   const tokenData = useTokenData(tokenAddress);
 

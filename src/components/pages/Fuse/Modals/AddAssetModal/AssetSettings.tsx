@@ -71,8 +71,8 @@ const AssetSettings = ({
   comptrollerAddress: string; // Fuse pool's comptroller address
   poolOracleAddress: string; // Fuse pool's oracle address
   tokenAddress: string; // Underlying token's addres. i.e. USDC, DAI, etc.
-  oracleModel: string | null; // Fuse pool's oracle model name. i.e MasterPrice, Chainlink, etc.
-  oracleData?: OracleDataType; // Fuse pool's oracle contract, admin, overwriting permissions.
+  oracleModel: string | undefined; // Fuse pool's oracle model name. i.e MasterPrice, Chainlink, etc.
+  oracleData?: OracleDataType | string | undefined; // Fuse pool's oracle contract, admin, overwriting permissions.
   tokenData: TokenData; // Token's data i.e. symbol, logo, css color, etc.
   poolName: string; // Fuse pool's name.
   poolID: string; // Fuse pool's ID.
@@ -143,7 +143,7 @@ const AssetSettings = ({
 
   // If you choose a UniV3 Pool as the oracle, check if fuse pool's oracle has an oracle for uniV3BaseToken
   useEffect(() => {
-    if (!!uniV3BaseToken && !isTokenETHOrWETH(uniV3BaseToken) && !!oracleData) {
+    if (!!uniV3BaseToken && !isTokenETHOrWETH(uniV3BaseToken) && !!oracleData && typeof oracleData !== "string") {
       oracleData.oracleContract.methods
         .oracles(uniV3BaseToken)
         .call()
@@ -245,6 +245,7 @@ const AssetSettings = ({
       await fuse.primeUniswapV3Oracle(oracleAddress, { from: address });
     }
   };
+
 
   const deployUniV3Oracle = async () => {
     increaseActiveStep("Deploying Uniswap V3 Twap Oracle");
@@ -385,7 +386,6 @@ const AssetSettings = ({
     setIsDeploying(true);
 
     let _retryFlag = retryFlag;
-    console.log({ _retryFlag, retryFlag });
 
     try {
       // It should be 1 if we haven't had to retry anything
@@ -394,7 +394,9 @@ const AssetSettings = ({
       if (_retryFlag === 1) {
         setNeedsRetry(false);
         if (activeOracle === "Uniswap_V3_Oracle") {
+          console.log('preCheck')
           await checkUniV3Oracle();
+          console.log('postCheck')
         }
         _retryFlag = 2; // set it to two after we fall through step 1
       }
@@ -403,7 +405,9 @@ const AssetSettings = ({
       if (_retryFlag === 2) {
         setNeedsRetry(false);
         if (activeOracle === "Uniswap_V3_Oracle") {
+          console.log('predeploy')
           oracleAddressToUse = await deployUniV3Oracle();
+          console.log('postDeploy')
         }
         _retryFlag = 3;
       }
@@ -419,10 +423,11 @@ const AssetSettings = ({
 
       /**  CONFIGURE MASTERPRICEORACLE **/
       // You only need to Configure an Oracle if your asset is not ETH / WETH
+
+      console.log(oracleModel)
       if (_retryFlag === 4) {
         setNeedsRetry(false);
-        if (!isTokenETHOrWETH(tokenAddress)) {
-          console.log('hey')
+        if (!isTokenETHOrWETH(tokenAddress) && ( oracleModel === "MasterPriceOracleV3" || oracleModel === "MasterPriceOracleV2")) {
           await addOraclesToMasterPriceOracle(oracleAddressToUse);
         }
         _retryFlag = 5;
@@ -512,23 +517,6 @@ const AssetSettings = ({
     oracleTouched,
   };
 
-  const OracleConfigArgs = {
-    mode,
-    feeTier,
-    setFeeTier,
-    oracleData,
-    tokenAddress,
-    activeOracle,
-    oracleAddress,
-    setActiveUniSwapPair,
-    activeUniSwapPair,
-    _setActiveOracle,
-    _setOracleAddress,
-    setUniV3BaseToken,
-    poolOracleAddress,
-    shouldShowUniV3BaseTokenOracleForm,
-  };
-
   if (mode === "Editing") return <AssetConfig {...args} />;
 
   return (
@@ -540,64 +528,41 @@ const AssetSettings = ({
       height="100%"
       minHeight="100%"
     >
-      <Column
-        crossAxisAlignment={"flex-start"}
-        mainAxisAlignment={"flex-start"}
-        h="100%"
-        w="100%"
-        // bg="yellow"
-      >
         <Row
           mainAxisAlignment={"center"}
           crossAxisAlignment={"flex-start"}
           w="100%"
-          // bg="aqua"
+          height="10%"
         >
           <Title stage={stage} />
         </Row>
         <RowOrColumn
-          maxHeight="90%"
+          maxHeight="70%"
           isRow={!isMobile}
           crossAxisAlignment={stage < 3 ? "flex-start" : "center"}
           mainAxisAlignment={stage < 3 ? "flex-start" : "center"}
-          height={isDeploying ? "65%" : "70%"}
+          height={!isDeploying ? "70%" : "60%"}
           width="100%"
           overflowY="auto"
         >
-          {stage < 3 ? (
-            <>
+          {stage === 1 ? (
               <Column
-                width={
-                  isMobile
-                    ? "100%"
-                    : shouldShowUniV3BaseTokenOracleForm || stage === 1
-                    ? "50%"
-                    : "100%"
-                }
+                width="100%"
                 height="100%"
                 d="flex"
+                direction="row"
                 mainAxisAlignment="center"
                 crossAxisAlignment="center"
                 alignItems="center"
                 justifyContent="center"
               >
                 <Screen1
-                  stage={stage}
                   args={args}
-                  OracleConfigArgs={OracleConfigArgs}
-                  shouldShowUniV3BaseTokenOracleForm={
-                    shouldShowUniV3BaseTokenOracleForm
-                  }
                 />
               </Column>
-              <Column
-                width={
-                  isMobile
-                    ? "100%"
-                    : shouldShowUniV3BaseTokenOracleForm || stage === 1
-                    ? "50%"
-                    : "0%"
-                }
+            ) : stage === 2 ? (
+              <Row
+                width="100%"
                 height="100%"
                 d="flex"
                 mainAxisAlignment="center"
@@ -606,30 +571,31 @@ const AssetSettings = ({
                 justifyContent="center"
                 // bg="aqua"
               >
-                <Fade
-                  in={stage === 1 || shouldShowUniV3BaseTokenOracleForm}
-                  unmountOnExit
-                >
                   <Screen2
-                    stage={stage}
-                    mode={mode}
-                    curves={curves}
+                    mode="Adding"
+                    feeTier={feeTier}
+                    oracleModel={oracleModel}
                     oracleData={oracleData}
-                    tokenData={tokenData}
+                    setFeeTier={setFeeTier}
+                    activeOracle={activeOracle}
+                    tokenAddress={tokenAddress}
+                    oracleAddress={oracleAddress}
+                    oracleTouched={oracleTouched}
                     uniV3BaseToken={uniV3BaseToken}
-                    baseTokenAddress={uniV3BaseToken}
+                    setOracleTouched={setOracleTouched}
+                    activeUniSwapPair={activeUniSwapPair}
+                    _setActiveOracle={_setActiveOracle}
+                    _setOracleAddress={_setOracleAddress}
+                    setUniV3BaseToken={setUniV3BaseToken}
+                    poolOracleAddress={poolOracleAddress}
+                    setActiveUniSwapPair={setActiveUniSwapPair}
                     uniV3BaseTokenOracle={uniV3BaseTokenOracle}
                     setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-                    shouldShowUniV3BaseTokenOracleForm={
-                      shouldShowUniV3BaseTokenOracleForm
-                    }
-                    interestRateModel={interestRateModel}
                     baseTokenActiveOracleName={baseTokenActiveOracleName}
                     setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
+                    shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
                   />
-                </Fade>
-              </Column>
-            </>
+              </Row>
           ) : (
             <Screen3
               curves={curves}
@@ -664,7 +630,6 @@ const AssetSettings = ({
         />
         {/* {needsRetry && <Button onClick={deploy}>Retry</Button>} */}
       </Column>
-    </Column>
   ) : (
     <Center expand>
       <Spinner my={8} />

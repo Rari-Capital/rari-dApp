@@ -18,6 +18,7 @@ const TransactionStepper = ({
         width="100%"
         h="10%"
         d="flex"
+        mb={4}
         flexDirection="column"
         alignItems="center"
         justifyContent="center"

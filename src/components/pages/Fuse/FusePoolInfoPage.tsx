@@ -106,8 +106,6 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
     };
   });
 
-  console.log({ comptrollerAddress, data });
-
   return data;
 };
 
@@ -212,7 +210,7 @@ const OracleAndInterestRates = ({
   totalLiquidityUSD: number;
   comptrollerAddress: string;
   oracleAddress: string;
-  oracleModel: string | null;
+  oracleModel: string | undefined;
 }) => {
   let { poolId } = useParams();
 

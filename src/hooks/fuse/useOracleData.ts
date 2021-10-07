@@ -33,9 +33,11 @@ export const useIdentifyOracle = (oracleAddr: string, tokenAddr?: string) => {
 
 export const useOracleData = (
   oracleAddress: string,
-  fuse: Fuse
-): OracleDataType | undefined => {
+  fuse: Fuse,
+  oracleModel: string | undefined,
+): OracleDataType | undefined | string => {
   const { data } = useQuery("Oracle info" + oracleAddress, async () => {
+    if (oracleModel !== "MasterPriceOracleV2" && oracleModel !== "MasterPriceOracleV3") return oracleModel
     const oracleContract = createOracle(
       oracleAddress,
       fuse,
@@ -54,7 +56,7 @@ export const useOracleData = (
 };
 
 export const useGetOracleOptions = (
-  oracleData: any,
+  oracleData: OracleDataType,
   tokenAddress: string,
 ): { [key: string]: any } | null => {
   const { fuse } = useRari();

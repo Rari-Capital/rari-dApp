@@ -42,7 +42,7 @@ const AddAssetModal = ({
   comptrollerAddress: string; // Pool's comptroller address.
   poolOracleAddress: string; // Pool's oracle address.
   existingAssets: USDPricedFuseAsset[]; // List of exising assets in fuse pool.
-  oracleModel: string | null; // Pool's oracle model name.
+  oracleModel: string | undefined; // Pool's oracle model name.
   poolName: string; // Used to name assets at deployment. i.e f-USDC-koan.
   poolID: string; // Fuse pool ID.
   isOpen: boolean; // Modal config.
@@ -58,7 +58,7 @@ const AddAssetModal = ({
   const tokenData = useTokenData(tokenAddress);
 
   // Get fuse pool's oracle data. i.e contract, admin, overwriting permissions
-  const oracleData = useOracleData(poolOracleAddress, fuse);
+  const oracleData = useOracleData(poolOracleAddress, fuse, oracleModel);
 
   const isEmpty = tokenAddress.trim() === "";
 
@@ -172,7 +172,7 @@ const AddAssetModal = ({
             ) : null}
           </Center>
 
-          {tokenData?.symbol && oracleData ? (
+          {tokenData?.symbol ? (
             <>
               <ModalDivider mt={4} />
               <Box
