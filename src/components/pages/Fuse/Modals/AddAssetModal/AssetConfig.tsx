@@ -380,7 +380,7 @@ const AssetConfig = ({
   
           <ModalDivider />
   
-          {oracleModel === "MasterPriceOracle" &&
+          {(oracleModel === "MasterPriceOracleV2" || oracleModel === "MasterPriceOracleV3") &&
             oracleData !== undefined &&
             !isTokenETHOrWETH(tokenAddress) &&
             mode === "Editing" && (

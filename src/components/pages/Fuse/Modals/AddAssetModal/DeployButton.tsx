@@ -1,6 +1,6 @@
 // Chakra and UI
 import { Button } from "@chakra-ui/button";
-import { Center } from "@chakra-ui/react";
+import { Center} from "@chakra-ui/react";
 import { Box } from "@chakra-ui/layout";
 
 // Rari
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 // Components
 import TransactionStepper from "components/shared/TransactionStepper";
-import { useIsMobile } from "utils/chakraUtils";
+import { Row, useIsMobile } from "utils/chakraUtils";
 import { useIsMediumScreen } from "../../FuseTabBar";
 
 const DeployButton = ({
@@ -27,6 +27,12 @@ const DeployButton = ({
   uniV3BaseTokenOracle,
   shouldShowUniV3BaseTokenOracleForm,
   needsRetry,
+  // New stuff
+  hasPriceForAsset,
+  hasDefaultOracle,
+  hasCustomOracleForToken,
+  defaultOracle,
+  customOracleForToken,
 }: {
   shouldShowUniV3BaseTokenOracleForm: boolean;
   uniV3BaseTokenOracle: string;
@@ -40,20 +46,43 @@ const DeployButton = ({
   steps: any;
   mode: any;
   needsRetry: boolean;
+  // New stuff - Oracle skip
+  hasPriceForAsset: boolean;
+  hasDefaultOracle: boolean;
+  hasCustomOracleForToken: boolean;
+  defaultOracle: string;
+  customOracleForToken: string;
 }) => {
   const { t } = useTranslation();
   const { fuse } = useRari();
 
+  // If user hasnt edited the form and we have a default oracle price for this asset
+  const hasDefaultOraclePriceAndHasntEdited =
+    hasDefaultOracle && hasPriceForAsset && ( oracleAddress === defaultOracle );
+
+  // This checks whether the user can proceed in the Oracle Configuration step.
   const checkUserOracleConfigurationState = (
     oracleAddress: string,
     shouldShowUniV3BaseTokenOracleForm: boolean,
     uniV3BaseTokenOracle: string
   ) => {
-
+    // If the user needs to configure a BaseToken Oracle for their Univ3 Pair, then disable until its set
     if (shouldShowUniV3BaseTokenOracleForm) {
       return fuse.web3.utils.isAddress(uniV3BaseTokenOracle);
     }
 
+    // NEW: If this Fuse pool has a default oracle and price
+    // AND if the oracle is not set yet in the UI, let them continue
+    console.log("checkUserOracleConfigurationState", {
+      hasDefaultOracle,
+      hasPriceForAsset,
+      oracleAddress,
+      hasDefaultOraclePriceAndHasntEdited,
+    });
+    
+    if (hasDefaultOraclePriceAndHasntEdited) return true;
+
+    // If the oracle address is not set at all, then disable until it is set.
     return fuse.web3.utils.isAddress(oracleAddress);
   };
 

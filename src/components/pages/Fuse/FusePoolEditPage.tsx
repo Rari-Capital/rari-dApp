@@ -266,7 +266,7 @@ const PoolConfiguration = ({
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const data = useExtraPoolInfo(comptrollerAddress);
+  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
 
   const changeWhitelistStatus = async (enforce: boolean) => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
