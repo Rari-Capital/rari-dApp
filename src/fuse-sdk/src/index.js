@@ -138,6 +138,8 @@ export default class Fuse {
       "0x7a2a5633a99e8abb759f0b52e87875181704b8e29f6567d4a92f12c3f956d313",
     ChainlinkPriceOracleV2:
       "0x8d2bcaa1429031ae2b19a4516e5fdc68fb9346f158efb642fcf9590c09de2175",
+    ChainlinkPriceOracleV3:
+      "0x4b3bef9f57e381dc6b6e32bff270ce8a72d8aae541cb7c686b09555de3526d39",
     UniswapTwapPriceOracle_Uniswap:
       "0xa2537dcbd2b55b1a690db3b83fa1042f86b21ec3e1557f918bc3930b6bbb9244",
     UniswapTwapPriceOracle_SushiSwap:
