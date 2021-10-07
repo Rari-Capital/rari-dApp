@@ -344,7 +344,6 @@ export default class Fuse {
       options,
       whitelist
     ) {
-      console.log(priceOracle, "model", Fuse.ORACLES.indexOf(priceOracle));
       // Deploy new price oracle via SDK if requested
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
@@ -1763,7 +1762,7 @@ export default class Fuse {
           Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model]
         )
           return model;
-      return null;
+      return undefined;
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
