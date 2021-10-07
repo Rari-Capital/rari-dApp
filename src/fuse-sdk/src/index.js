@@ -46,9 +46,9 @@ export default class Fuse {
     "0x220f93183a69d1598e8405310cb361cff504146f";
   
   static MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0xce103d6D89eA4588d909f5f728ca8C14C94Bb3D6"; // TODO: Set correct mainnet address after deployment
+    "0x77157556cd422e369c35f914fd8ddcd35e59ea9c";
   static INITIALIZABLE_CLONES_CONTRACT_ADDRESS =
-    "0x4084A1CEb13516eEaa03a047679cE64DF5c7476A"; // TODO: Set correct mainnet address after deployment
+    "0x91ce5566dc3170898c5aee4ae4dd314654b47415";
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
@@ -159,7 +159,7 @@ export default class Fuse {
     MasterPriceOracleV2: // fuse-contracts@v1.2.0
       "0xdfa5aa37efea3b16d143a12c4ae7006f3e29768b3e375b59842c7ecd3809f1d1",
     MasterPriceOracleV3: // fuse-contracts@v1.2.1
-      "0xfbacbf056d9d0d0677c3d00ce5b175e7d274bcb3cc82d114a30f675814e9eb2a",
+      "0x558a60874f6a0cda193d6bc6eaaeba567426ec9350f1f6332544f1d35cdaddbe",
     CurveLpTokenPriceOracle:
       "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
     CurveLiquidityGaugeV2PriceOracle:
