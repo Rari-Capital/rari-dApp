@@ -7,12 +7,19 @@ import {
 
 import Fuse from "fuse-sdk";
 import { useTokensDataAsMap } from "hooks/useTokenData";
+import { useAssetPricesInEth } from "./useRewardAPY";
 
 export interface RewardsDistributorToPoolsMap {
   [rD: string]: {
     [comptroller: string]: number;
   };
 }
+
+/**
+ *
+ * Unclaimed Rewards won't tell you the APY, only the unclaimed amt.
+ *
+ * **/
 
 export function useUnclaimedFuseRewards() {
   const { fuse, address } = useRari();
@@ -142,14 +149,17 @@ export function useUnclaimedFuseRewards() {
   const { data: _unclaimed, error: unclaimedErr } = useQuery(
     "unclaimed for " + address,
     async () => {
-      const unclaimedResults = await fuse.contracts.FusePoolLensSecondary.methods
-        .getUnclaimedRewardsByDistributors(address, uniqueRDs)
-        .call();
+      const unclaimedResults =
+        await fuse.contracts.FusePoolLensSecondary.methods
+          .getUnclaimedRewardsByDistributors(address, uniqueRDs)
+          .call();
 
       console.log({ address, uniqueRDs, unclaimedResults });
 
       const rewardTokens = unclaimedResults[0];
       const unclaimedAmounts = unclaimedResults[1];
+
+      console.log({ unclaimedAmounts });
 
       const results: { rewardToken: string; unclaimed: number }[] = [];
 
@@ -170,7 +180,7 @@ export function useUnclaimedFuseRewards() {
   );
 
   // Get asset Prices in ETH
-  const assetPrices = useAssetPricesInEth(fuse, Object.keys(rewardTokensMap));
+  const assetPrices = useAssetPricesInEth(Object.keys(rewardTokensMap));
   console.log({ assetPrices });
 
   // Filter by claimable balances greater than 0
@@ -227,50 +237,6 @@ export interface UnclaimedReward {
   rewardToken: string;
   unclaimed: number;
 }
-
-
-// Todo - handle situation where oracle cant find the price
-const useAssetPricesInEth = (fuse: Fuse, tokenAddresses: string[]) => {
-  const masterPriceOracle = createMasterPriceOracle(fuse);
-
-  const tokensData = useTokensDataAsMap(tokenAddresses);
-
-  const { data } = useQuery(
-    "asset prices for " +
-      tokenAddresses.join(",") +
-      " " +
-      Object.keys(tokensData).join(","),
-    async () => {
-      const [ethUSDBN, ...tokenPricesInEth] = await Promise.all([
-        fuse.getEthUsdPriceBN(),
-        ...tokenAddresses.map(
-          async (t) => await masterPriceOracle.methods.price(t).call()
-        ),
-      ]);
-
-      const ethUSD = parseFloat(ethUSDBN.toString()) / 1e18;
-      const tokenUSDPrices = [];
-
-      // Calc usd prices
-      for (let i = 0; i < tokenAddresses.length; i++) {
-        const priceInEth = parseFloat(tokenPricesInEth[i]);
-        const tokenData = tokensData[tokenAddresses[i]];
-        const decimals = tokenData.decimals;
-
-        const price = (priceInEth / 10 ** (decimals ?? 18)) * ethUSD;
-
-        tokenUSDPrices.push(price);
-      }
-
-      return { tokenPricesInEth, ethUSD, tokenUSDPrices };
-    }
-  );
-
-  const { tokenPricesInEth, ethUSD } = data ?? {};
-
-  console.log({ data, tokensData, masterPriceOracle });
-  return data;
-};
 
 // const fetchTokenPriceFromOracleWithFallback = async (oracleInstance: any, tokenAddress: string) => {
 //   const tokenPrice = await oracleInstance.methods.price(tokenAddress).call()

@@ -9,9 +9,9 @@ export function useUnclaimedRGT() {
     address + " unclaimed RGT",
     async () => {
       return parseFloat(
-        rari.web3.utils.fromWei(
+        (
           await rari.governance.rgt.distributions.getUnclaimed(address)
-        )
+        ).toString()
       );
     }
   );
@@ -20,9 +20,7 @@ export function useUnclaimedRGT() {
     address + " privateUnclaimed RGT",
     async () => {
       return parseFloat(
-        rari.web3.utils.fromWei(
-          await rari.governance.rgt.vesting.getUnclaimed(address)
-        )
+        (await rari.governance.rgt.vesting.getUnclaimed(address)).toString()
       );
     }
   );
@@ -31,9 +29,9 @@ export function useUnclaimedRGT() {
     address + " pool2Unclaimed RGT",
     async () => {
       return parseFloat(
-        rari.web3.utils.fromWei(
+        (
           await rari.governance.rgt.sushiSwapDistributions.getUnclaimed(address)
-        )
+        ).toString()
       );
     }
   );

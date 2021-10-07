@@ -3,6 +3,7 @@ import { useRari } from "context/RariContext";
 import { TokensDataMap, useTokensDataAsMap } from "hooks/useTokenData";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
+import { useCTokensDataForRewards } from "./useRewardAPY";
 
 export interface CTokenRewardsDistributorIncentives {
   rewardsDistributorAddress: string;
@@ -11,17 +12,18 @@ export interface CTokenRewardsDistributorIncentives {
   supplySpeed: number;
 }
 
-export interface CTokenIncentives {
+export interface CTokenIncentivesMap {
   [cTokenAddress: string]: CTokenRewardsDistributorIncentives[];
 }
 
-// Maps to a ctokenaddress
+// Maps a rewardsDistributor to an array of all its ctokenaddresses
 export interface RewardsDistributorCTokensMap {
   [rewardsDistributorAddress: string]: string[];
 }
 
 export interface IncentivesData {
-  incentives: CTokenIncentives;
+  hasIncentives: boolean;
+  incentives: CTokenIncentivesMap;
   rewardsDistributorCtokens: RewardsDistributorCTokensMap;
   rewardTokensData: TokensDataMap;
 }
@@ -29,7 +31,7 @@ export interface IncentivesData {
 export function usePoolIncentives(comptroller?: string): IncentivesData {
   const { fuse } = useRari();
 
-  //   1. Make Call to FusePoolLens
+  // 1. Make Call to FusePoolLens
   const { data } = useQuery(
     "Pool incentives for comptroller " + comptroller,
     async () => {
@@ -56,10 +58,10 @@ export function usePoolIncentives(comptroller?: string): IncentivesData {
   ////  rewardsDistributors & rewardTokens are ordered by matching indexes
   ////  supplySpeeds/borrowSpeeds is a 2d array where the first level is ordered by matching indices with `cTokens`, and each nested array has matching indices with `rewardDistributors`;
   const [incentives, rewardsDistributorCtokens]: [
-    CTokenIncentives,
+    CTokenIncentivesMap,
     RewardsDistributorCTokensMap
   ] = useMemo(() => {
-    const poolIncentives: CTokenIncentives = {};
+    const poolIncentives: CTokenIncentivesMap = {};
     const rewardsDistributorCTokensMap: RewardsDistributorCTokensMap = {};
 
     // Loop through the data and construct the final object
@@ -107,7 +109,25 @@ export function usePoolIncentives(comptroller?: string): IncentivesData {
     return [poolIncentives, rewardsDistributorCTokensMap];
   }, [cTokens, rewardsDistributors, rewardTokens, supplySpeeds, borrowSpeeds]);
 
-  return { incentives, rewardTokensData, rewardsDistributorCtokens };
+  const hasIncentives = useMemo(
+    () => !!Object.keys(incentives).length,
+    [incentives]
+  );
+  // const map = useCTokensDataForRewards(Object.keys(incentives));
+  // const  = useAssetPricesInEth(
+
+  if (hasIncentives) {
+    console.log({ incentives });
+  }
+
+  // console.log({ map });
+
+  return {
+    hasIncentives,
+    incentives,
+    rewardTokensData,
+    rewardsDistributorCtokens,
+  };
 }
 
 export interface CTokensUnderlyingMap {

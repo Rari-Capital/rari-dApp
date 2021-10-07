@@ -5,6 +5,13 @@ import {
 } from "./useUnclaimedFuseRewards";
 import { useUnclaimedRGT } from "./useUnclaimedRGT";
 
+
+/**
+ *
+ * Claimable Rewards won't tell you the APY, only the claimable amt.
+ *
+ * **/
+
 export type ClaimMode = "pool2" | "private" | "yieldagg" | "fuse";
 
 export interface UseClaimableReturn {
@@ -14,7 +21,7 @@ export interface UseClaimableReturn {
   unclaimedFuseRewards?: UnclaimedReward[];
   hasClaimableRewards: boolean;
   allClaimable: GenericClaimableReward[];
-  allRewardsTokens: string[]
+  allRewardsTokens: string[];
 }
 
 export interface GenericClaimableReward {
@@ -35,6 +42,12 @@ interface CTokenUnclaimedForPool {}
 
 const RGT = "0xd291e7a03283640fdc51b121ac401383a46cc623";
 
+const DUST_THRESHOLD = 0.5;
+
+const amountIsNotDust = (amount: number, decimals = 18) => {
+  return amount / 10 ** decimals > DUST_THRESHOLD;
+};
+
 export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
   const { unclaimed: unclaimedFuseRewards, rewardTokensMap } =
     useUnclaimedFuseRewards();
@@ -42,11 +55,13 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
   const { unclaimedRGT, privateUnclaimedRGT, pool2UnclaimedRGT } =
     useUnclaimedRGT();
 
+  // console.log({ unclaimedRGT, privateUnclaimedRGT, pool2UnclaimedRGT });
+
   const hasClaimableRewards: boolean = useMemo(() => {
     if (
-      (!!pool2UnclaimedRGT && pool2UnclaimedRGT > 0) ||
-      (!!privateUnclaimedRGT && privateUnclaimedRGT > 0) ||
-      (!!unclaimedRGT && unclaimedRGT > 0)
+      (!!pool2UnclaimedRGT && amountIsNotDust(pool2UnclaimedRGT)) ||
+      (!!privateUnclaimedRGT && amountIsNotDust(privateUnclaimedRGT)) ||
+      (!!unclaimedRGT && amountIsNotDust(DUST_THRESHOLD))
     )
       return true;
 
@@ -86,11 +101,11 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
       return reward;
     };
 
-    if (showPrivate && privateUnclaimedRGT)
+    if (showPrivate && privateUnclaimedRGT && amountIsNotDust(privateUnclaimedRGT))
       rgtRewards.push(constructReward("private", privateUnclaimedRGT));
-    if (unclaimedRGT)
+    if (unclaimedRGT && amountIsNotDust(unclaimedRGT))
       rgtRewards.push(constructReward("yieldagg", unclaimedRGT));
-    if (pool2UnclaimedRGT)
+    if (pool2UnclaimedRGT && amountIsNotDust(pool2UnclaimedRGT))
       rgtRewards.push(constructReward("pool2", pool2UnclaimedRGT));
 
     return [...rgtRewards, ...fuseRewards];
@@ -120,6 +135,6 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
     unclaimedFuseRewards,
     hasClaimableRewards,
     allClaimable,
-    allRewardsTokens
+    allRewardsTokens,
   };
 }

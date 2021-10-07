@@ -2,7 +2,7 @@ import Fuse from "fuse-sdk";
 import { createRewardsDistributor } from "./createComptroller";
 import { sendWithMultiCall } from "./multicall";
 
-export const claimAllRewards = async (
+export const claimRewardsFromRewardsDistributors = async (
   fuse: Fuse,
   address: string,
   rewardsDistributors: string[]

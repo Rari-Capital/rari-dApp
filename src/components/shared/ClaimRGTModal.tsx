@@ -33,8 +33,11 @@ import {
 } from "hooks/useTokenData";
 import { createRewardsDistributor } from "utils/createComptroller";
 import { useClaimable } from "hooks/rewards/useClaimable";
-import { claimAllRewards } from "utils/rewards";
+import { claimRewardsFromRewardsDistributors } from "utils/rewards";
 import { SimpleTooltip } from "./SimpleTooltip";
+
+import { useQueryClient } from "react-query";
+
 
 export type ClaimMode = "pool2" | "private" | "yieldagg" | "fuse";
 
@@ -124,11 +127,20 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
 
   console.log({ allClaimable, rewardTokensData });
 
+  const queryClient = useQueryClient();
+
   // Claims all Fuse LM rewards at once
   const handleClaimAll = useCallback(() => {
     setClaimingAll(true);
-    claimAllRewards(fuse, address, Object.keys(rewardsDistributorsMap))
+
+    // Claim from ALL available RDs
+    claimRewardsFromRewardsDistributors(
+      fuse,
+      address,
+      Object.keys(rewardsDistributorsMap)
+    )
       .then(() => {
+        queryClient.refetchQueries()
         setClaimingAll(false);
         toast({
           title: "Claimed All Rewards!",
@@ -156,10 +168,10 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
   const handleClaimFuseRewardsForToken = useCallback(
     (rewardToken: string) => {
       const rDs = rewardTokensMap[rewardToken];
-      const rDAddresses = rDs.map((rD) => rD.rewardsDistributorAddress);
+      const rDAddresses = rDs.map((rD) => rD.rewardsDistributorAddress); // all rewardsdistributors for this token
       if (!!rDs.length) {
         setClaimingToken(rewardToken);
-        claimAllRewards(fuse, address, rDAddresses)
+        claimRewardsFromRewardsDistributors(fuse, address, rDAddresses)
           .then(() => {
             setClaimingToken(undefined);
             toast({
@@ -258,24 +270,31 @@ const ClaimableRow = ({
 
   const isClaimingToken = claimingToken === unclaimed.rewardToken;
 
-  const claimRewards = () => {
+  const claimRewards = async () => {
+    let claimMethod;
+
     // Old "claim RGT" code
     if (mode !== "fuse") {
-      const claimMethod =
-        mode === "private"
-          ? rari.governance.rgt.vesting.claim
-          : mode === "yieldagg"
-          ? rari.governance.rgt.distributions.claim
-          : rari.governance.rgt.sushiSwapDistributions.claim;
+      switch (mode) {
+        case "private":
+          claimMethod = rari.governance.rgt.vesting.claim;
+          break;
+        case "yieldagg":
+          claimMethod = rari.governance.rgt.distributions.claim;
+          break;
+        case "pool2":
+          claimMethod = rari.governance.rgt.sushiSwapDistributions.claim;
+          break;
+        default:
+          claimMethod = rari.governance.rgt.sushiSwapDistributions.claim;
+      }
+
+      console.log({ mode, claimMethod });
 
       // Could do something with the receipt but notify.js is watching the account and will send a notification for us.
-      claimMethod(
-        rari.web3.utils.toBN(
-          //@ts-ignore
-          new BigNumber(amount).multipliedBy(1e18).decimalPlaces(0)
-        ),
-        { from: address }
-      );
+      await claimMethod(rari.web3.utils.toBN(unclaimed.unclaimed), {
+        from: address,
+      });
       return;
     }
 
@@ -297,27 +316,90 @@ const ClaimableRow = ({
       style={{ width: "100%", height: "100%" }}
     >
       <DashboardBox w="100%" h="100%" {...rowProps}>
-        <Column
+        <Row
           expand
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           p={3}
         >
-          <Row
+          {/* Token and Pools */}
+          <Column
             expand
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+            py={2}
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <Image src={rewardTokenData?.logoURL ?? ""} boxSize="30px" />
+              <Image src={rewardTokenData?.logoURL ?? ""} boxSize="30px" />{" "}
               <Text fontWeight="bold" ml={3}>
-                {rewardTokenData?.symbol}
-              </Text>
+                {rewardTokenData?.symbol}{" "}
+              </Text>{" "}
             </Row>
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <SimpleTooltip label={`${unclaimedAmount.toString()}`}>
+            {!!pools.length && (
+              <Row
+                expand
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                px={6}
+                py={4}
+                // bg="aqua"
+              >
+                <ul>
+                  {pools.map((p) => (
+                    <>
+                      <motion.li
+                        initial={{ opacity: 0, x: 40 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <Text>Pool {p}</Text>
+                      </motion.li>
+                    </>
+                  ))}
+                </ul>
+              </Row>
+            )}
+            {mode === "pool2" ? (
+              <Row
+                expand
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                px={6}
+                py={2}
+                // bg="aqua"
+              >
+                <ul>
+                  <motion.li
+                    initial={{ opacity: 0, x: 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <Text>Pool 2 Rewards</Text>
+                  </motion.li>
+                </ul>
+              </Row>
+            ) : null}
+          </Column>
+          {/* Reward amt and claim btn */}
+          <Column
+            expand
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            h="100%"
+          >
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              // bg="pink"
+              h="100%"
+            >
+              <SimpleTooltip
+                label={`${unclaimedAmount.toString()} ${
+                  rewardTokenData?.symbol
+                }`}
+              >
                 <Text fontWeight="bold" ml={3}>
-                  {unclaimedAmount.toFixed(4)} {rewardTokenData?.symbol}
+                  {unclaimedAmount.toFixed(3)} {rewardTokenData?.symbol}
                 </Text>
               </SimpleTooltip>
               <Button
@@ -329,32 +411,8 @@ const ClaimableRow = ({
                 {isClaimingToken ? <Spinner /> : "Claim"}
               </Button>
             </Row>
-          </Row>
-          {!!pools.length && (
-            <Row
-              expand
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              px={8}
-              py={4}
-              // bg="aqua"
-            >
-              <ul>
-                {pools.map((p) => (
-                  <>
-                    <motion.li
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <Text>Pool {p}</Text>
-                    </motion.li>
-                  </>
-                ))}
-              </ul>
-            </Row>
-          )}
-        </Column>
+          </Column>
+        </Row>
       </DashboardBox>
     </motion.div>
   );

@@ -30,7 +30,12 @@ import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
 import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
-import { ETH_TOKEN_DATA, TokensDataMap, useTokenData, useTokensData } from "hooks/useTokenData";
+import {
+  ETH_TOKEN_DATA,
+  TokensDataMap,
+  useTokenData,
+  useTokensData,
+} from "hooks/useTokenData";
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
@@ -55,7 +60,6 @@ import Footer from "components/shared/Footer";
 import {
   CTokenRewardsDistributorIncentives,
   IncentivesData,
-  CTokenIncentives,
   usePoolIncentives,
 } from "hooks/rewards/usePoolIncentives";
 import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
@@ -152,7 +156,9 @@ const PendingAdminAlert = ({ comptroller }: { comptroller?: string }) => {
               disabled={isAccepting}
             >
               <HStack>
-                <Text fontWeight="bold">{isAccepting} ? Accepting... : Accept Admin </Text>
+                <Text fontWeight="bold">
+                  {isAccepting} ? Accepting... : Accept Admin{" "}
+                </Text>
               </HStack>
             </Button>
           }
@@ -172,7 +178,7 @@ const FusePoolPage = memo(() => {
   const data = useFusePoolData(poolId);
 
   const incentivesData: IncentivesData = usePoolIncentives(data?.comptroller);
-  const hasIncentives = !!Object.keys(incentivesData.incentives).length;
+  const { hasIncentives } = incentivesData;
   const isAdmin = useIsComptrollerAdmin(data?.comptroller);
 
   return (
@@ -227,7 +233,7 @@ const FusePoolPage = memo(() => {
         )}
 
         {hasIncentives && (
-        <motion.div
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
@@ -255,7 +261,6 @@ const FusePoolPage = memo(() => {
             </GlowingBox>
           </motion.div>
         )}
-
 
         <RowOrColumn
           width="100%"
@@ -609,14 +614,12 @@ const AssetSupplyRow = ({
   const handleMouseEnter = (index: number) => setHovered(index);
   const handleMouseLeave = () => setHovered(-1);
 
-
-
   const displayedSupplyAPY =
     hovered >= 0
       ? supplyIncentives[hovered].supplySpeed / 1e18
       : totalSupplyAPY;
 
-      console.log(({hovered, displayedSupplyAPY, }))
+  console.log({ hovered, displayedSupplyAPY });
 
   return (
     <>
@@ -695,7 +698,6 @@ const AssetSupplyRow = ({
                 crossAxisAlignment="center"
                 mainAxisAlignment="flex-end"
                 py={1}
-
               >
                 <Text fontWeight="bold" mr={1}>
                   +
