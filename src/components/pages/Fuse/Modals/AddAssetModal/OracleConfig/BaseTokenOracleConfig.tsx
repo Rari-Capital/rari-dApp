@@ -51,7 +51,7 @@ const BaseTokenOracleConfig = ({
   }) => {
     const { t } = useTranslation();
   
-    const { fuse, address } = useRari();
+    const { address } = useRari();
   
     const isUserAdmin = address === oracleData.admin;
   

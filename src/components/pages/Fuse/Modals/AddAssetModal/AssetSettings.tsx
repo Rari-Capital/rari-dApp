@@ -1,5 +1,5 @@
 // Chakra and UI
-import { Heading, Spinner, useToast, Button } from "@chakra-ui/react";
+import { Heading, Spinner, useToast } from "@chakra-ui/react";
 import { Column, Center, RowOrColumn, Row } from "utils/chakraUtils";
 import { Fade } from "@chakra-ui/react";
 

@@ -1,20 +1,14 @@
-
 // Chakra and UI
-import { Text } from "@chakra-ui/layout";
 import { Column } from "utils/chakraUtils";
 
 // Rari
 import { useRari } from "../../../../../../context/RariContext";
 
-// Utils
-import { TokenData } from "../../../../../../hooks/useTokenData";
-
 // Components
 import BaseTokenOracleConfig from "../OracleConfig/BaseTokenOracleConfig";
-import IRMChart from "../IRMChart";
 import OracleConfig from "../OracleConfig/OracleConfig";
 import { OracleDataType } from "hooks/fuse/useOracleData";
-import { useQuery, UseQueryResult } from "react-query";
+import { useQuery } from "react-query";
 import { createOracle } from "utils/createComptroller";
 import { Spinner } from "@chakra-ui/spinner";
 
