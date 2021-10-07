@@ -49,11 +49,7 @@ const DeployButton = ({
     shouldShowUniV3BaseTokenOracleForm: boolean,
     uniV3BaseTokenOracle: string
   ) => {
-    console.log(
-      oracleAddress,
-      shouldShowUniV3BaseTokenOracleForm,
-      uniV3BaseTokenOracle
-    );
+
     if (shouldShowUniV3BaseTokenOracleForm) {
       return fuse.web3.utils.isAddress(uniV3BaseTokenOracle);
     }
@@ -84,9 +80,6 @@ const DeployButton = ({
         flexDir="column"
         alignContent="center"
         justifyContent="center"
-        flexGrow={1}
-        // bg="red"
-        ml="auto"
       >
         <Center>
           {stage !== 1 && !isDeploying && (

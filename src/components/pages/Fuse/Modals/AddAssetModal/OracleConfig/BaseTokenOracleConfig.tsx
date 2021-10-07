@@ -36,7 +36,6 @@ const BaseTokenOracleConfig = ({
     mode,
     oracleData,
     uniV3BaseToken,
-    baseTokenAddress,
     uniV3BaseTokenOracle,
     setUniV3BaseTokenOracle,
     baseTokenActiveOracleName, 
@@ -46,14 +45,13 @@ const BaseTokenOracleConfig = ({
     baseTokenActiveOracleName: string; // Base token oracle model. i.e Rari Master Price, Chainlink Oracle, etc.
     setUniV3BaseTokenOracle: React.Dispatch<React.SetStateAction<string>>; // Sets oracle address for base token
     uniV3BaseTokenOracle: string; // Oracle address chosen for the base token
-    baseTokenAddress: string; // Base token address.
     uniV3BaseToken: string; // Base token address.
     oracleData: any; // Fuse Pool's Oracle data. i.e contract, admin, overwrite permissions.
     mode: "Editing" | "Adding";
   }) => {
     const { t } = useTranslation();
   
-    const { fuse, address } = useRari();
+    const { address } = useRari();
   
     const isUserAdmin = address === oracleData.admin;
   
@@ -63,6 +61,7 @@ const BaseTokenOracleConfig = ({
       uniV3BaseToken,
     );
   
+    console.log('helo there', {options})
     // If we're editing the asset, show master price oracle as a default.
     // Should run only once, when component renders.
     useEffect(() => {
@@ -119,10 +118,8 @@ const BaseTokenOracleConfig = ({
           crossAxisAlignment="center"
           mainAxisAlignment="space-between"
         >
-          {options ? (
-            <>
               <Column mainAxisAlignment="center" crossAxisAlignment="center" height="50%" justifyContent="space-around">
-                <CTokenIcon address={baseTokenAddress} boxSize={"50px"} />
+                <CTokenIcon address={uniV3BaseToken} boxSize={"50px"} />
                 <SimpleTooltip
                   label={t("Choose the best price oracle for this BaseToken.")}
                 >
@@ -132,6 +129,7 @@ const BaseTokenOracleConfig = ({
                 </SimpleTooltip>
               </Column>
   
+            {options ? (
               <Box alignItems="center" height="50%">
                 <Select
                   {...DASHBOARD_BOX_PROPS}
@@ -188,7 +186,6 @@ const BaseTokenOracleConfig = ({
                   />
                 ) : null}
               </Box>
-            </>
           ) : null}
         </Column>
       </Box>

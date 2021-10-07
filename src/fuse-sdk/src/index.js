@@ -13,6 +13,7 @@ var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
 var fusePoolLensSecondaryAbi = require(__dirname + "/abi/FusePoolLensSecondary.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
+var initializableClonesAbi = require(__dirname + "/abi/InitializableClones.json");
 var uniswapV3PoolAbiSlim = require(__dirname + "/abi/UniswapV3Pool.slim.json");
 var contracts = require(__dirname +
   "/contracts/compound-protocol.min.json").contracts;
@@ -42,7 +43,12 @@ export default class Fuse {
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0xd77e28a1b9a9cfe1fc2eee70e391c05d25853cbf"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
   static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
-    ""; // TODO: Set correct mainnet address after deployment
+    "0x220f93183a69d1598e8405310cb361cff504146f";
+  
+  static MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS =
+    "0xce103d6D89eA4588d909f5f728ca8C14C94Bb3D6"; // TODO: Set correct mainnet address after deployment
+  static INITIALIZABLE_CLONES_CONTRACT_ADDRESS =
+    "0x4084A1CEb13516eEaa03a047679cE64DF5c7476A"; // TODO: Set correct mainnet address after deployment
 
   static OPEN_ORACLE_PRICE_DATA_CONTRACT_ADDRESS =
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
@@ -148,10 +154,12 @@ export default class Fuse {
       "0xd0dda181a4eb699a966b23edb883cff43377297439822b1b0f99b06af2002cc3",
     YVaultV2PriceOracle:
       "0x177c22cc7d05280cea84a36782303d17246783be7b8c0b6f9731bb9002ffcc68",
-    MasterPriceOracleV1:
+    MasterPriceOracleV1: // fuse-contracts@v1.0.0
       "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
-    MasterPriceOracle:
+    MasterPriceOracleV2: // fuse-contracts@v1.2.0
       "0xdfa5aa37efea3b16d143a12c4ae7006f3e29768b3e375b59842c7ecd3809f1d1",
+    MasterPriceOracleV3: // fuse-contracts@v1.2.1
+      "0xfbacbf056d9d0d0677c3d00ce5b175e7d274bcb3cc82d114a30f675814e9eb2a",
     CurveLpTokenPriceOracle:
       "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
     CurveLiquidityGaugeV2PriceOracle:
@@ -336,7 +344,6 @@ export default class Fuse {
       options,
       whitelist
     ) {
-      console.log(priceOracle, "model", Fuse.ORACLES.indexOf(priceOracle));
       // Deploy new price oracle via SDK if requested
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
@@ -750,21 +757,26 @@ export default class Fuse {
             .send(options);
           break;
         case "MasterPriceOracle":
-          var priceOracle = new this.web3.eth.Contract(
+          var initializableClones = new this.web3.eth.Contract(
+            initializableClonesAbi,
+            Fuse.INITIALIZABLE_CLONES_CONTRACT_ADDRESS
+          );
+          var masterPriceOracle = new this.web3.eth.Contract(
             oracleContracts["MasterPriceOracle"].abi
           );
           var deployArgs = [
             conf.underlyings ? conf.underlyings : [],
             conf.oracles ? conf.oracles : [],
+            conf.defaultOracle ? conf.defaultOracle : "0x0000000000000000000000000000000000000000",
             conf.admin ? conf.admin : options.from,
             conf.canAdminOverwrite ? true : false,
           ];
-          priceOracle = await priceOracle
-            .deploy({
-              data: oracleContracts["MasterPriceOracle"].bin,
-              arguments: deployArgs,
-            })
-            .send(options);
+          var initializerData = masterPriceOracle.methods.initialize(...deployArgs).encodeABI();
+          var receipt = await initializableClones.methods.clone(Fuse.MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS, initializerData).send(options);
+          var priceOracle = new this.web3.eth.Contract(
+            oracleContracts["MasterPriceOracle"].abi,
+            receipt.events["Deployed"].returnValues.instance
+          );
           break;
         case "SimplePriceOracle":
           var priceOracle = new this.web3.eth.Contract(
@@ -1750,7 +1762,7 @@ export default class Fuse {
           Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model]
         )
           return model;
-      return null;
+      return undefined;
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {

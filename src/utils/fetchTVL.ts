@@ -3,8 +3,7 @@ import Fuse from "../fuse-sdk";
 import BigNumber from "bignumber.js";
 
 export const fetchFuseTVL = async (fuse: Fuse) => {
-  console.log('fetchFuseTVL')
-
+  
   const {
     2: totalSuppliedETH,
   } = await fuse.contracts.FusePoolLens.methods

@@ -90,7 +90,7 @@ const OracleConfig = ({
 
   const { fuse, address } = useRari();
 
-  const isUserAdmin = address === oracleData.admin;
+  const isUserAdmin = oracleData !== undefined ? address === oracleData.admin : undefined;
 
   // Available oracle options for asset
   const options = useGetOracleOptions(oracleData, tokenAddress);
@@ -204,6 +204,8 @@ const OracleConfig = ({
     }
   };
 
+  console.log("heyr", {uniV3BaseToken})
+
   if (!options)
     return (
       <Center>
@@ -217,7 +219,7 @@ const OracleConfig = ({
         mainAxisAlignment="space-between"
         alignItems="center"
         crossAxisAlignment="center"
-        width="100%"
+        width="50%"
         pt={mode === "Editing" ? 4 : 0}
         pb={mode === "Editing" ? 1 : 0}
         px={mode === "Editing" ? 4 : 0}
@@ -348,7 +350,6 @@ const OracleConfig = ({
           mode={mode}
           oracleData={oracleData}
           uniV3BaseToken={uniV3BaseToken}
-          baseTokenAddress={uniV3BaseToken}
           uniV3BaseTokenOracle={uniV3BaseTokenOracle}
           setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
           baseTokenActiveOracleName={baseTokenActiveOracleName}

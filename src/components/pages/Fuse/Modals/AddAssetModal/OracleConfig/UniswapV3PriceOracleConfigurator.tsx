@@ -88,14 +88,13 @@ const UniswapV3PriceOracleConfigurator = ({
     const updateBoth = (value: string) => {
       const uniPool = liquidity.data.token.whitelistPools[value];
 
+      const baseToken: string = uniPool.token0.id.toLowerCase() === tokenAddress.toLocaleLowerCase() ? uniPool.token1.id : uniPool.token0.id
       setActiveUniSwapPair(value)
       setFeeTier(uniPool.feeTier);
       _setOracleAddress(uniPool.id);
-      setUniV3BaseToken(
-        uniPool.token0.id === tokenAddress ? uniPool.token1.id : uniPool.token0.id
-      );
+      setUniV3BaseToken(baseToken);
     };
-  
+
     // If liquidity is undefined, theres an error or theres no token found return nothing.
     if (liquidity === undefined || error || liquidity.data.token === null)
       return null;
@@ -106,13 +105,12 @@ const UniswapV3PriceOracleConfigurator = ({
         parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1
     );
   
-    console.log({activeUniSwapPair})
     return (
       <>
         <Row
           crossAxisAlignment="center"
           mainAxisAlignment="space-between"
-          width="100%"
+          width="50%"
           my={2}
           px={4}
         >
