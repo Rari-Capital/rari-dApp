@@ -392,11 +392,7 @@ const OracleAndInterestRates = ({
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
       { oracleModel === "MasterPriceOracleV3" ?
-        <SimpleTooltip
-        label={t(
-          "Your pool's oracle will read prices from this address by default, saving you some gas. If the token is not supported or if you want to assign an oracle of your choice, you can do so in asset settings."
-        )}
-      >
+
           <StatRow
             statATitle={t("Default Oracle")}
             statA={
@@ -405,7 +401,6 @@ const OracleAndInterestRates = ({
                 : "?"
             }
         />
-        </SimpleTooltip>
       : null }
       </Column>
     </Column>
