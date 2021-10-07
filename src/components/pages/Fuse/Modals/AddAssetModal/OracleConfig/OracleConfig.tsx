@@ -114,7 +114,6 @@ const OracleConfig = ({
       _setActiveOracle("Current_Price_Oracle");
     }
 
-
     // if avaiable, set to "Default_Price_Oracle" if you are adding
     if (
       mode === "Adding" &&
@@ -283,7 +282,11 @@ const OracleConfig = ({
             }
           >
             {Object.entries(options).map(([key, value]) =>
-              value !== null && value !== undefined && key !== activeOracle ? ( // dont show the selected choice in the list
+              value !== null &&
+              value !== undefined &&
+              key !== activeOracle &&
+              (mode === "Adding" ? key !== "Current_Price_Oracle" : true) ? (
+                // dont show the selected choice in the list
                 <option key={key} value={key} className="black-bg-option">
                   {key.replaceAll("_", " ")}
                 </option>
