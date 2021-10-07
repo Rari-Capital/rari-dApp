@@ -38,6 +38,8 @@ import { handleGenericError } from "../../../utils/errorHandling";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 
+import Fuse from "fuse-sdk";
+
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
 const FusePoolCreatePage = memo(() => {
@@ -77,10 +79,10 @@ const PoolConfiguration = () => {
   const [name, setName] = useState("");
   const [isWhitelisted, setIsWhitelisted] = useState(false);
   const [whitelist, setWhitelist] = useState<string[]>([]);
-  
+
   const [closeFactor, setCloseFactor] = useState(50);
   const [liquidationIncentive, setLiquidationIncentive] = useState(8);
-  
+
   const [isCreating, setIsCreating] = useState(false);
 
   const onDeploy = async () => {
@@ -118,8 +120,14 @@ const PoolConfiguration = () => {
         isWhitelisted,
         bigCloseFactor,
         bigLiquidationIncentive,
-        "MasterPriceOracle", // we hardcode MasterPriceOracle as only option
-        {underlyings: [], oracles: [], canAdminOverwrite: true},
+        "MasterPriceOracle", // we hardcode MasterPriceOracle as only option - this deploys MasterPriceOracleV3
+        {
+          underlyings: [],
+          oracles: [],
+          canAdminOverwrite: true,
+          defaultOracle:
+            Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle, // We give the MasterPriceOracle a default "fallback" oracle of the Rari MasterPriceOracle
+        },
         { from: address },
         isWhitelisted ? whitelist : null
       );

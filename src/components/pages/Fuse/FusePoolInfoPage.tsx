@@ -40,7 +40,10 @@ import { ETH_TOKEN_DATA, useTokenData } from "../../../hooks/useTokenData";
 import { CTokenIcon } from "./FusePoolsPage";
 import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller } from "../../../utils/createComptroller";
+import {
+  createComptroller,
+  createOracle,
+} from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
 import Footer from "components/shared/Footer";
@@ -48,11 +51,23 @@ import { useIdentifyOracle } from "hooks/fuse/useOracleData";
 import { truncate } from "utils/stringUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-export const useExtraPoolInfo = (comptrollerAddress: string) => {
+export const useExtraPoolInfo = (
+  comptrollerAddress: string,
+  oracleAddress: string
+) => {
   const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    const poolOracle = createOracle(oracleAddress, fuse, "MasterPriceOracle");
+
+    let defaultOracle = undefined;
+    try {
+      defaultOracle = await poolOracle.methods.defaultOracle().call();
+    } catch (err) {
+      console.error("Error querying for defaultOracle");
+    }
 
     const [
       { 0: admin, 1: upgradeable },
@@ -91,7 +106,6 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       comptroller.methods.pendingAdmin().call(),
     ]);
 
-
     return {
       admin,
       upgradeable,
@@ -103,6 +117,7 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       liquidationIncentive,
       adminHasRights,
       pendingAdmin,
+      defaultOracle,
     };
   });
 
@@ -216,7 +231,10 @@ const OracleAndInterestRates = ({
 
   const { t } = useTranslation();
 
-  const data = useExtraPoolInfo(comptrollerAddress);
+  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
+  const defaultOracleIdentity = useIdentifyOracle(data?.defaultOracle);
+
+  console.log(data?.defaultOracle, { defaultOracleIdentity });
 
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
@@ -373,6 +391,15 @@ const OracleAndInterestRates = ({
           statBTitle={t("Whitelist")}
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
+
+        <StatRow
+          statATitle={t("Default Oracle")}
+          statA={
+            defaultOracleIdentity
+              ? defaultOracleIdentity ?? t("Unrecognized Oracle")
+              : "?"
+          }
+        />
       </Column>
     </Column>
   );
@@ -387,8 +414,8 @@ const StatRow = ({
 }: {
   statATitle: string;
   statA: string;
-  statBTitle: string;
-  statB: string;
+  statBTitle?: string;
+  statB?: string;
   [key: string]: any;
 }) => {
   return (
@@ -403,9 +430,11 @@ const StatRow = ({
         {statATitle}: <b>{statA}</b>
       </Text>
 
-      <Text width="50%" textAlign="center">
-        {statBTitle}: <b>{statB}</b>
-      </Text>
+      {statBTitle && statB && (
+        <Text width="50%" textAlign="center">
+          {statBTitle}: <b>{statB}</b>
+        </Text>
+      )}
     </RowOnDesktopColumnOnMobile>
   );
 };
