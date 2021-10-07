@@ -237,7 +237,7 @@ const OracleConfig = ({
         mainAxisAlignment="space-between"
         alignItems="center"
         crossAxisAlignment="center"
-        width="50%"
+        width={mode === "Editing" ? "100%" : "50%"}
         pt={mode === "Editing" ? 4 : 0}
         pb={mode === "Editing" ? 1 : 0}
         px={mode === "Editing" ? 4 : 0}
@@ -333,7 +333,9 @@ const OracleConfig = ({
         mainAxisAlignment="center"
         crossAxisAlignment="center"
         flexDirection="column"
-        width="100%"
+        width="50%"
+        // bg="pink"
+        ml={mode === "Editing" ? "auto" : ""}
       >
         {activeOracle === "Uniswap_V3_Oracle" ? (
           <UniswapV3PriceOracleConfigurator

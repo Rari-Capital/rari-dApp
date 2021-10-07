@@ -77,38 +77,38 @@ const Screen3 = ({
           alignItems="center"
           justifyContent="center"
         >
-          <ConfigRow height="35px" mainAxisAlignment="space-between">
-            <Text>Collateral Factor:</Text>
-            <Text>{collateralFactor}%</Text>
+          <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
+            <Text size="sm">Collateral Factor:</Text>
+            <Text size="sm">{collateralFactor}%</Text>
           </ConfigRow>
 
           <ModalDivider />
 
-          <ConfigRow height="35px" mainAxisAlignment="space-between">
-            <Text>Reserve Factor:</Text>
-            <Text>{reserveFactor}%</Text>
+          <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
+            <Text size="sm">Reserve Factor:</Text>
+            <Text size="sm">{reserveFactor}%</Text>
           </ConfigRow>
 
           <ModalDivider />
 
-          <ConfigRow height="35px" mainAxisAlignment="space-between">
-            <Text>Admin Fee: </Text>
-            <Text>{adminFee}%</Text>
+          <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
+            <Text size="sm">Admin Fee: </Text>
+            <Text size="sm">{adminFee}%</Text>
           </ConfigRow>
 
           <ModalDivider />
 
-          <ConfigRow height="35px" mainAxisAlignment="space-between">
-            <Text>Oracle:</Text>
-            <Text>{activeOracle.replace("_", " ")}</Text>
+          <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
+            <Text size="sm">Oracle:</Text>
+            <Text size="sm">{activeOracle.replace("_", " ")}</Text>
           </ConfigRow>
 
           {shouldShowUniV3BaseTokenOracleForm ? (
             <>
               <ModalDivider />
-              <ConfigRow height="35px" mainAxisAlignment="space-between">
-                <Text> Base token oracle: </Text>
-                <Text>{baseTokenActiveOracle}</Text>
+              <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
+                <Text size="sm"> Base token oracle: </Text>
+                <Text size="sm">{baseTokenActiveOracle}</Text>
               </ConfigRow>
             </>
           ) : null}

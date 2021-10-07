@@ -732,13 +732,13 @@ const Title = ({ stage }: { stage: number }) => {
   return (
     <>
       <Fade in={stage === 1} unmountOnExit>
-        <Heading size="lg"> Configure Interest Rate Model </Heading>
+        <Heading size="md"> Configure Interest Rate Model </Heading>
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
-        <Heading> Configure Oracle </Heading>
+        <Heading size="md"> Configure Oracle </Heading>
       </Fade>
       <Fade in={stage === 3} unmountOnExit>
-        <Heading> Asset Config Summary </Heading>
+        <Heading size="md"> Asset Config Summary </Heading>
       </Fade>
     </>
   );
