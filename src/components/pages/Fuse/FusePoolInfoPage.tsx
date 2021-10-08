@@ -391,15 +391,17 @@ const OracleAndInterestRates = ({
           statBTitle={t("Whitelist")}
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
+      { oracleModel === "MasterPriceOracleV3" ?
 
-        <StatRow
-          statATitle={t("Default Oracle")}
-          statA={
-            defaultOracleIdentity
-              ? defaultOracleIdentity ?? t("Unrecognized Oracle")
-              : "?"
-          }
+          <StatRow
+            statATitle={t("Default Oracle")}
+            statA={
+              defaultOracleIdentity
+                ? defaultOracleIdentity ?? t("Unrecognized Oracle")
+                : "?"
+            }
         />
+      : null }
       </Column>
     </Column>
   );

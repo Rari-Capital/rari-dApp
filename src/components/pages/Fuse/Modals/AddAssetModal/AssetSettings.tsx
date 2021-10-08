@@ -160,7 +160,7 @@ const AssetSettings = ({
         })
         .catch((err: any) => {
           console.log("Could not fetch price using pool's oracle");
-          console.error(err);
+          setUniV3BaseTokenHasOracle(false)
         });
     }
   }, [uniV3BaseToken, oracleData, setUniV3BaseTokenHasOracle]);
@@ -188,15 +188,6 @@ const AssetSettings = ({
     () => !!priceForAsset && priceForAsset > 0,
     [priceForAsset]
   );
-
-  console.log({
-    defaultOracle,
-    customOracleForToken,
-    priceForAsset,
-    hasDefaultOracle,
-    hasCustomOracleForToken,
-    hasPriceForAsset,
-  });
 
   // For this asset, check for a defaultOracle, customOracle, and Pool MPO price for this token
   useEffect(() => {
@@ -515,9 +506,7 @@ const AssetSettings = ({
       if (_retryFlag === 5) {
         setNeedsRetry(false);
 
-        console.log("HELLO");
         await deployAssetToPool();
-        console.log("GOODBYe");
 
         LogRocket.track("Fuse-DeployAsset");
 
@@ -608,9 +597,10 @@ const AssetSettings = ({
     >
       <Row
         mainAxisAlignment={"center"}
-        crossAxisAlignment={"flex-start"}
+        crossAxisAlignment={"center"}
         w="100%"
-        height="10%"
+        flexBasis={"10%"}
+        // bg="green"
       >
         <Title stage={stage} />
       </Row>
@@ -622,6 +612,9 @@ const AssetSettings = ({
         height={!isDeploying ? "70%" : "60%"}
         width="100%"
         overflowY="auto"
+        flexBasis={"80%"}
+        flexGrow={1}
+        // bg="red"
       >
         {stage === 1 ? (
           <Column
@@ -731,13 +724,25 @@ export default AssetSettings;
 const Title = ({ stage }: { stage: number }) => {
   return (
     <>
-      <Fade in={stage === 1} unmountOnExit>
+      <Fade
+        in={stage === 1}
+        unmountOnExit
+        style={{ background: "transparent" }}
+      >
         <Heading size="md"> Configure Interest Rate Model </Heading>
       </Fade>
-      <Fade in={stage === 2} unmountOnExit>
+      <Fade
+        in={stage === 2}
+        unmountOnExit
+        style={{ background: "transparent" }}
+      >
         <Heading size="md"> Configure Oracle </Heading>
       </Fade>
-      <Fade in={stage === 3} unmountOnExit>
+      <Fade
+        in={stage === 3}
+        unmountOnExit
+        style={{ background: "transparent" }}
+      >
         <Heading size="md"> Asset Config Summary </Heading>
       </Fade>
     </>

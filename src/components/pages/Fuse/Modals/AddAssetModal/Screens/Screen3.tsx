@@ -61,7 +61,7 @@ const Screen3 = ({
           alignItems="center"
           justifyContent="center"
         >
-          <Text>
+          <Text mb={1}>
             {fuse
               .identifyInterestRateModelName(interestRateModel)
               .replace("_", " ")}

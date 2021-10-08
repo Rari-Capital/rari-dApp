@@ -159,7 +159,7 @@ export default class Fuse {
     MasterPriceOracleV2: // fuse-contracts@v1.2.0
       "0xdfa5aa37efea3b16d143a12c4ae7006f3e29768b3e375b59842c7ecd3809f1d1",
     MasterPriceOracleV3: // fuse-contracts@v1.2.1
-      "0x558a60874f6a0cda193d6bc6eaaeba567426ec9350f1f6332544f1d35cdaddbe",
+      "0xe4199a03b164ca492d19d655b85fdf8cc14cf2da6ddedd236712552b7676b03d",
     CurveLpTokenPriceOracle:
       "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
     CurveLiquidityGaugeV2PriceOracle:
