@@ -12,9 +12,6 @@ import {
   Input,
   Link,
   // Table
-  Table,
-  Thead,
-  Tbody,
   Image,
   HStack,
   Table,
