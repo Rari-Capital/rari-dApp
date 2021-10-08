@@ -38,7 +38,6 @@ import { SimpleTooltip } from "./SimpleTooltip";
 
 import { useQueryClient } from "react-query";
 
-
 export type ClaimMode = "pool2" | "private" | "yieldagg" | "fuse";
 
 const RGT = "0xd291e7a03283640fdc51b121ac401383a46cc623";
@@ -140,7 +139,7 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
       Object.keys(rewardsDistributorsMap)
     )
       .then(() => {
-        queryClient.refetchQueries()
+        queryClient.refetchQueries();
         setClaimingAll(false);
         toast({
           title: "Claimed All Rewards!",
@@ -169,6 +168,7 @@ const ClaimRewards = ({ showPrivate }: { showPrivate: boolean }) => {
     (rewardToken: string) => {
       const rDs = rewardTokensMap[rewardToken];
       const rDAddresses = rDs.map((rD) => rD.rewardsDistributorAddress); // all rewardsdistributors for this token
+
       if (!!rDs.length) {
         setClaimingToken(rewardToken);
         claimRewardsFromRewardsDistributors(fuse, address, rDAddresses)
