@@ -122,7 +122,6 @@ const Screen2 = ({
         crossAxisAlignment="flex-start"
         h="100%"
         w="100%"
-        bg="aqua"
       >
         <Column
           mainAxisAlignment="flex-start"
@@ -131,7 +130,6 @@ const Screen2 = ({
           height="100%"
           maxWidth="100%"
           width={"100%"}
-          bg="pink"
         >
           <OracleConfig
             mode={mode}
