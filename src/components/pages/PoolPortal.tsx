@@ -1069,11 +1069,8 @@ const DepositButton = (
   const { t } = useTranslation();
 
   return (
-    <GlowingButton
-      label={t("Deposit")}
-      width="170px"
-      height="50px"
-      {...props}
-    />
+    <GlowingButton width="170px" height="50px" {...props}>
+      {t("Deposit")}
+    </GlowingButton>
   );
 };

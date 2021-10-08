@@ -10,7 +10,8 @@ import BigNumber from "bignumber.js";
 
 var fusePoolDirectoryAbi = require(__dirname + "/abi/FusePoolDirectory.json");
 var fusePoolLensAbi = require(__dirname + "/abi/FusePoolLens.json");
-var fusePoolLensSecondaryAbi = require(__dirname + "/abi/FusePoolLensSecondary.json");
+var fusePoolLensSecondaryAbi = require(__dirname +
+  "/abi/FusePoolLensSecondary.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
 var initializableClonesAbi = require(__dirname + "/abi/InitializableClones.json");
@@ -115,8 +116,7 @@ export default class Fuse {
     "0xa170dba2cd1f68cdd7567cf70184d5492d2e8138";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_ROOT_CONTRACT_ADDRESS =
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
-  static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    ""; // TODO: Set correct mainnet address after deployment
+  static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS = ""; // TODO: Set correct mainnet address after deployment
   static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
     "0x8Eed20f31E7d434648fF51114446b3CfFD1FF9F1"; // TODO: Set correct mainnet address after deployment
 
@@ -1766,13 +1766,16 @@ export default class Fuse {
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
-      // Deploy RewardsDistributorDelegator proxy contract
-      var distributor = new this.web3.eth.Contract(
+      const distributor = new this.web3.eth.Contract(
         JSON.parse(
-          contracts["contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"].abi
+          contracts[
+            "contracts/RewardsDistributorDelegator.sol:RewardsDistributorDelegator"
+          ].abi
         )
       );
-      distributor = await distributor
+      console.log({ options, rewardToken });
+
+      const deployedDistributor = await distributor
         .deploy({
           data:
             "0x" +
@@ -1786,7 +1789,8 @@ export default class Fuse {
           ],
         })
         .send(options);
-      return distributor.options.address;
+      // const rdAddress = distributor.options.address;
+      return deployedDistributor;
     };
 
     this.checkCardinality = async function (uniswapV3Pool) {
@@ -1813,15 +1817,15 @@ export default class Fuse {
     this.identifyInterestRateModelName = (irmAddress) => {
       let name = "";
 
-      Object.entries(Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES).forEach(
-        ([key, value]) => {
-          if (value === irmAddress) {
-            name = key;
-          }
+      Object.entries(
+        Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
+      ).forEach(([key, value]) => {
+        if (value === irmAddress) {
+          name = key;
         }
-      );
+      });
       return name;
-    }
+    };
   }
 
   static Web3 = Web3;

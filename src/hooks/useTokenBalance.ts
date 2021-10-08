@@ -26,10 +26,12 @@ export const fetchTokenBalance = async (
   return web3.utils.toBN(stringBalance);
 };
 
-export function useTokenBalance(tokenAddress: string) {
+export function useTokenBalance(tokenAddress: string, customAddress?: string) {
   const { rari, address } = useRari();
 
-  return useQuery(tokenAddress + " balanceOf " + address, () =>
-    fetchTokenBalance(tokenAddress, rari.web3, address)
+  const addressToCheck = customAddress ?? address
+
+  return useQuery(tokenAddress + " balanceOf " + addressToCheck, () =>
+    fetchTokenBalance(tokenAddress, rari.web3, addressToCheck)
   );
 }

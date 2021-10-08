@@ -21,6 +21,8 @@ import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import Footer from "components/shared/Footer";
 import { memo } from "react";
+import { CTokenIcon } from "components/shared/CTokenIcon";
+import { usePoolIncentives } from "hooks/rewards/usePoolIncentives";
 
 export const useHasCreatedPools = () => {
   const { filteredPools } = useFusePools("created-pools");
@@ -66,7 +68,6 @@ const PoolList = () => {
   const { filteredPools } = useFusePools(filter);
   const isMobile = useIsMobile();
 
-  console.log({ filteredPools });
 
   return (
     <Column
@@ -131,6 +132,7 @@ const PoolList = () => {
                 }))}
                 noBottomDivider={index === filteredPools.length - 1}
                 isWhitelisted={pool.whitelistedAdmin}
+                comptroller={pool.comptroller}
               />
             );
           })
@@ -150,6 +152,7 @@ const PoolRow = ({
   name,
   noBottomDivider,
   isWhitelisted,
+  comptroller,
 }: {
   tokens: { symbol: string; address: string }[];
   poolNumber: number;
@@ -158,6 +161,7 @@ const PoolRow = ({
   name: string;
   noBottomDivider?: boolean;
   isWhitelisted: boolean;
+  comptroller: string;
 }) => {
   const isEmpty = tokens.length === 0;
 
@@ -166,6 +170,12 @@ const PoolRow = ({
   const rssScore = rss ? letterScore(rss.totalScore) : "?";
 
   const isMobile = useIsMobile();
+
+  const poolIncentives = usePoolIncentives(comptroller);
+  const { hasIncentives } = poolIncentives;
+  if (hasIncentives) {
+    console.log({ poolNumber, poolIncentives });
+  }
 
   return (
     <>
@@ -202,9 +212,18 @@ const PoolRow = ({
               </SimpleTooltip>
             )}
 
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <WhitelistedIcon isWhitelisted={isWhitelisted} mr={2} boxSize={"15px"}/>
-              <Text mt={isEmpty ? 0 : 2}>{name}</Text>
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              mt={isEmpty ? 0 : 3}
+            >
+              <WhitelistedIcon
+                isWhitelisted={isWhitelisted}
+                mr={2}
+                mb="3px"
+                boxSize={"15px"}
+              />
+              <Text>{name}</Text>
             </Row>
           </Column>
 
@@ -237,29 +256,5 @@ const PoolRow = ({
 
       {noBottomDivider ? null : <ModalDivider />}
     </>
-  );
-};
-
-export const CTokenIcon = ({
-  address,
-  ...avatarProps
-}: {
-  address: string;
-  [key: string]: any;
-}) => {
-  const tokenData = useTokenData(address);
-
-  return (
-    <Avatar
-      {...avatarProps}
-      key={address}
-      bg="#FFF"
-      borderWidth="1px"
-      name={tokenData?.symbol ?? "Loading..."}
-      src={
-        tokenData?.logoURL ??
-        "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
-      }
-    />
   );
 };

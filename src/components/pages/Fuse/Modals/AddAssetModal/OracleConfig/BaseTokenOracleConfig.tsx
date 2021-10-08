@@ -5,6 +5,34 @@ import { DASHBOARD_BOX_PROPS } from "../../../../../shared/DashboardBox";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../../../shared/SimpleTooltip";
 
+import {
+    Input,
+    Box,
+    Text,
+    Select,
+    Alert,
+    AlertIcon
+  } from "@chakra-ui/react";
+  import {
+    Column,
+    Row
+  } from "utils/chakraUtils";
+  import {
+    DASHBOARD_BOX_PROPS,
+  } from "components/shared/DashboardBox";
+  import { QuestionIcon } from "@chakra-ui/icons";
+  import { SimpleTooltip } from "components/shared/SimpleTooltip";
+  
+  // Components
+  import { CTokenIcon } from "components/shared/CTokenIcon";
+  
+  // React
+  import { useEffect } from "react";
+  import { useTranslation } from "react-i18next";
+  
+  // Rari
+  import { useRari } from "context/RariContext";
+
 // Components
 import { CTokenIcon } from "../../../FusePoolsPage";
 

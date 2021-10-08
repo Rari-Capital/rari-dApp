@@ -2,6 +2,7 @@
 import {
   AvatarGroup,
   Box,
+  Badge,
   Heading,
   Text,
   Switch,
@@ -14,6 +15,13 @@ import {
   Table,
   Thead,
   Tbody,
+  Image,
+  HStack,
+  Table,
+  TableCaption,
+  Thead,
+  Tbody,
+  Tfoot,
   Tr,
   Th,
   Td,
@@ -29,12 +37,11 @@ import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import AddAssetModal from "./Modals/AddAssetModal/AddAssetModal";
 import AssetSettings from "./Modals/AddAssetModal/AssetSettings";
-import { CTokenIcon } from "./FusePoolsPage";
 import { WhitelistInfo } from "./FusePoolCreatePage";
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
 
 // React
-import { memo, ReactNode, useEffect, useState } from "react";
+import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useQueryClient, useQuery } from "react-query";
@@ -43,7 +50,6 @@ import { useQueryClient, useQuery } from "react-query";
 import { useRari } from "../../../context/RariContext";
 
 // Hooks
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 import {
@@ -59,11 +65,12 @@ import {
 
 // Utils
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
+import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
 import {
   createComptroller,
   createUnitroller,
 } from "../../../utils/createComptroller";
-import { handleGenericError } from "../../../utils/errorHandling";
+import { handleGenericError } from "utils/errorHandling";
 
 // Libraries
 import BigNumber from "bignumber.js";
@@ -72,6 +79,17 @@ import { useIsComptrollerAdmin } from "./FusePoolPage";
 import { AdminAlert } from "components/shared/AdminAlert";
 import useOraclesForPool from "hooks/fuse/useOraclesForPool";
 import { shortAddress } from "utils/shortAddress";
+
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import {
+  useCTokensUnderlying,
+  usePoolIncentives,
+} from "hooks/rewards/usePoolIncentives";
+import { useRewardsDistributorsForPool } from "hooks/rewards/useRewardsDistributorsForPool";
+import { RewardsDistributor } from "hooks/rewards/useRewardsDistributorsForPool";
+import { useTokenBalance } from "hooks/useTokenBalance";
+import AddRewardsDistributorModal from "./Modals/AddRewardsDistributorModal";
+import EditRewardsDistributorModal from "./Modals/EditRewardsDistributorModal";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -150,6 +168,18 @@ const FusePoolEditPage = memo(() => {
     onClose: closeAddAssetModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isAddRewardsDistributorModalOpen,
+    onOpen: openAddRewardsDistributorModal,
+    onClose: closeAddRewardsDistributorModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditRewardsDistributorModalOpen,
+    onOpen: openEditRewardsDistributorModal,
+    onClose: closeEditRewardsDistributorModal,
+  } = useDisclosure();
+
   const authedOpenModal = useAuthedCallback(openAddAssetModal);
 
   const { t } = useTranslation();
@@ -158,6 +188,24 @@ const FusePoolEditPage = memo(() => {
 
   const data = useFusePoolData(poolId);
   const isAdmin = useIsComptrollerAdmin(data?.comptroller);
+
+  // RewardsDistributor stuff
+  const poolIncentives = usePoolIncentives(data?.comptroller);
+  const rewardsDistributors = useRewardsDistributorsForPool(data?.comptroller);
+  const [rewardsDistributor, setRewardsDistributor] = useState<
+    RewardsDistributor | undefined
+  >();
+
+
+  console.log({ rewardsDistributors, poolIncentives });
+
+  const handleRewardsRowClick = useCallback(
+    (rD: RewardsDistributor) => {
+      setRewardsDistributor(rD);
+      openEditRewardsDistributorModal();
+    },
+    [setRewardsDistributor, openEditRewardsDistributorModal]
+  );
 
   return (
     <>
@@ -171,6 +219,25 @@ const FusePoolEditPage = memo(() => {
           poolID={poolId}
           isOpen={isAddAssetModalOpen}
           onClose={closeAddAssetModal}
+        />
+      ) : null}
+
+      {data ? (
+        <AddRewardsDistributorModal
+          comptrollerAddress={data.comptroller}
+          poolName={data.name}
+          poolID={poolId}
+          isOpen={isAddRewardsDistributorModalOpen}
+          onClose={closeAddRewardsDistributorModal}
+        />
+      ) : null}
+
+      {data && !!rewardsDistributor ? (
+        <EditRewardsDistributorModal
+          rewardsDistributor={rewardsDistributor}
+          pool={data}
+          isOpen={isEditRewardsDistributorModalOpen}
+          onClose={closeEditRewardsDistributorModal}
         />
       ) : null}
 
@@ -260,6 +327,63 @@ const FusePoolEditPage = memo(() => {
             </DashboardBox>
           </Box>
         </RowOrColumn>
+
+        {/* Rewards Distributors */}
+        <DashboardBox w="100%" h="100%" my={4}>
+          <Row mainAxisAlignment="flex-end" crossAxisAlignment="center" p={3}>
+            <AddRewardsDistributorButton
+              openAddRewardsDistributorModal={openAddRewardsDistributorModal}
+              comptrollerAddress={data?.comptroller}
+            />
+          </Row>
+
+          <Table>
+            <Thead>
+              <Tr>
+                <Th color="white" size="sm">
+                  {t("Reward Token:")}
+                </Th>
+                <Th color="white">{t("Active CTokens:")}</Th>
+                <Th color="white">{t("Balance:")}</Th>
+                <Th color="white">{t("Admin?")}</Th>
+              </Tr>
+            </Thead>
+
+            <Tbody minHeight="50px">
+              {!data ? (
+                <Spinner />
+              ) : rewardsDistributors.length ? (
+                rewardsDistributors.map((rD, i) => {
+                  return (
+                    <RewardsDistributorRow
+                      key={rD.address}
+                      rewardsDistributor={rD}
+                      handleRowClick={handleRewardsRowClick}
+                      hideModalDivider={i === rewardsDistributors.length - 1}
+                      activeCTokens={
+                        poolIncentives.rewardsDistributorCtokens[rD.address]
+                      }
+                    />
+                  );
+                })
+              ) : (
+                <>
+                  <Text mb={4}>
+                    {t("There are no RewardsDistributors for this pool.")}
+                  </Text>
+                  <AddRewardsDistributorButton
+                    openAddRewardsDistributorModal={
+                      openAddRewardsDistributorModal
+                    }
+                    comptrollerAddress={data?.comptroller}
+                  />
+                </>
+              )}
+            </Tbody>
+          </Table>
+
+          <ModalDivider />
+        </DashboardBox>
       </Column>
     </>
   );
@@ -514,13 +638,12 @@ const PoolConfiguration = ({
 
             {assets.length > 0 ? (
               <>
-                <AvatarGroup size="xs" max={30}>
-                  {assets.map(({ underlyingToken, cToken }) => {
-                    return (
-                      <CTokenIcon key={cToken} address={underlyingToken} />
-                    );
-                  })}
-                </AvatarGroup>
+                <CTokenAvatarGroup
+                  tokenAddresses={assets.map(
+                    ({ underlyingToken }) => underlyingToken
+                  )}
+                  popOnHover={true}
+                />
 
                 <Text ml={2} flexShrink={0}>
                   {assets.map(({ underlyingSymbol }, index, array) => {
@@ -965,5 +1088,101 @@ export const ConfigRow = ({
     >
       {children}
     </Row>
+  );
+};
+
+const AddRewardsDistributorButton = ({
+  openAddRewardsDistributorModal,
+  comptrollerAddress,
+}: {
+  openAddRewardsDistributorModal: () => any;
+  comptrollerAddress: string;
+}) => {
+  const { t } = useTranslation();
+
+  const isUpgradeable = useIsUpgradeable(comptrollerAddress);
+
+  return isUpgradeable ? (
+    <DashboardBox
+      onClick={openAddRewardsDistributorModal}
+      as="button"
+      py={1}
+      px={2}
+      fontWeight="bold"
+    >
+      {t("Add Rewards Distributor")}
+    </DashboardBox>
+  ) : null;
+};
+
+const RewardsDistributorRow = ({
+  rewardsDistributor,
+  handleRowClick,
+  hideModalDivider,
+  activeCTokens,
+}: {
+  rewardsDistributor: RewardsDistributor;
+  handleRowClick: (rD: RewardsDistributor) => void;
+  hideModalDivider: boolean;
+  activeCTokens: string[];
+}) => {
+  const { address, fuse } = useRari();
+  const isAdmin = address === rewardsDistributor.admin;
+
+  const tokenData = useTokenData(rewardsDistributor.rewardToken);
+  //   Balances
+  const { data: rDBalance } = useTokenBalance(
+    rewardsDistributor.rewardToken,
+    rewardsDistributor.address
+  );
+
+  const underlyingsMap = useCTokensUnderlying(activeCTokens);
+  const underlyings = Object.values(underlyingsMap);
+
+  return (
+    <>
+      <Tr
+        _hover={{ background: "grey", cursor: "pointer" }}
+        h="30px"
+        p={5}
+        flexDir="row"
+        onClick={() => handleRowClick(rewardsDistributor)}
+      >
+        <Td>
+          <HStack>
+            {tokenData?.logoURL ? (
+              <Image
+                src={tokenData.logoURL}
+                boxSize="30px"
+                borderRadius="50%"
+              />
+            ) : null}
+            <Heading fontSize="22px" color={tokenData?.color ?? "#FFF"} ml={2}>
+              {tokenData ? tokenData.symbol ?? "Invalid Address!" : "Loading..."}
+            </Heading>
+          </HStack>
+        </Td>
+
+        <Td>
+          {!!underlyings.length ? (
+            <CTokenAvatarGroup tokenAddresses={underlyings} popOnHover={true} />
+          ) : (
+            <Badge colorScheme="red">Inactive</Badge>
+          )}
+        </Td>
+
+        <Td>
+          {(parseFloat(rDBalance?.toString() ?? "0") / 1e18).toFixed(3)}{" "}
+          {tokenData?.symbol}
+        </Td>
+
+        <Td>
+          <Badge colorScheme={isAdmin ? "green" : "red"}>
+            {isAdmin ? "Is Admin" : "Not Admin"}
+          </Badge>
+        </Td>
+      </Tr>
+      {/* {!hideModalDivider && <ModalDivider />} */}
+    </>
   );
 };
