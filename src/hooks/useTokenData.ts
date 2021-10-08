@@ -49,7 +49,7 @@ export const fetchTokenData = async (address: string) => {
           // just fetch this data from the live site in development:
           (process.env.NODE_ENV === "development"
             ? "https://app.rari.capital"
-            : "") +
+            : "https://app.rari.capital") +
             "/api/tokenData?address=" +
             address
         ).then((res) => res.json())),
@@ -94,15 +94,15 @@ export const useTokensData = (addresses: string[]) => {
   return useMemo(() => {
     const ret: any[] = [];
 
-    if (!tokensData.length) return null;
+    if (!tokensData.length) return [];
 
     // Return null altogether
     tokensData.forEach(({ data }) => {
-      if (!data) return null;
+      if (!data) return [];
       ret.push(data);
     });
 
-    if (!ret.length) return null;
+    if (!ret.length) return [];
 
     return ret;
   }, [tokensData]);

@@ -5,6 +5,7 @@ import Rari from "../rari-sdk/index";
 import Filter from "bad-words";
 import { TokenData } from "hooks/useTokenData";
 import { createComptroller } from "./createComptroller";
+
 export const filter = new Filter({ placeHolder: " " });
 filter.addWords(...["R1", "R2", "R3", "R4", "R5", "R6", "R7"]);
 
@@ -35,6 +36,7 @@ export interface FuseAsset {
 
   adminFee: number;
   fuseFee: number;
+  oracle: string;
 
   borrowRatePerBlock: number;
   supplyRatePerBlock: number;
@@ -63,6 +65,8 @@ export interface FusePoolData {
   assets: USDPricedFuseAssetWithTokenData[] | USDPricedFuseAsset[];
   comptroller: any;
   name: any;
+  oracle: string;
+  oracleModel: string | undefined;
   isPrivate: boolean;
   totalLiquidityUSD: any;
   totalSuppliedUSD: any;
@@ -70,6 +74,8 @@ export interface FusePoolData {
   totalSupplyBalanceUSD: any;
   totalBorrowBalanceUSD: any;
   id?: number;
+  admin: string;
+  isAdminWhitelisted: boolean;
 }
 
 export enum FusePoolMetric {
@@ -103,7 +109,7 @@ export const filterPoolName = (name: string) => {
     return "Yearn Soup Pot of Yield";
   }
 
-  return filter.clean(name);
+ return filter.clean(name + "T1T$OR@$$").replace('T1T$OR@$$', '')
 };
 
 export const fetchFusePoolData = async (
@@ -113,7 +119,6 @@ export const fetchFusePoolData = async (
   rari?: Rari
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
-
   const {
     comptroller,
     name: _unfiliteredName,
@@ -145,10 +150,20 @@ export const fetchFusePoolData = async (
   ) as any;
 
   let promises = [];
+  const comptrollerContract = createComptroller(comptroller, fuse);
+
+  let oracle: string = await comptrollerContract.methods.oracle().call();
+
+  let oracleModel: string | undefined = await fuse.getPriceOracle(oracle);
+
+  const admin = await comptrollerContract.methods.admin().call();
+
+  // Whitelisted (Verified)
+  const isAdminWhitelisted = await fuse.contracts.FusePoolDirectory.methods
+    .adminWhitelist(admin)
+    .call();
 
   for (let i = 0; i < assets.length; i++) {
-    const comptrollerContract = createComptroller(comptroller, fuse);
-
     let asset = assets[i];
 
     promises.push(
@@ -189,6 +204,9 @@ export const fetchFusePoolData = async (
     comptroller,
     name,
     isPrivate,
+    oracle,
+    oracleModel,
+    admin,
 
     totalLiquidityUSD,
 
@@ -197,5 +215,6 @@ export const fetchFusePoolData = async (
 
     totalSupplyBalanceUSD,
     totalBorrowBalanceUSD,
+    isAdminWhitelisted,
   };
 };

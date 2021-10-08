@@ -20,6 +20,15 @@ export interface TokensDataHash {
   [address: string]: TokenData;
 }
 
+
+const ETH_AND_WETH = [
+  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "0x0000000000000000000000000000000000000000",
+];
+
+export const isTokenETHOrWETH = (tokenAddress: string) =>
+ETH_AND_WETH.includes(tokenAddress.toLowerCase());
+
 export const createAssetsMap = (assetsArray: USDPricedFuseAsset[][]) => {
   const assetsMap: AssetHash = {};
 

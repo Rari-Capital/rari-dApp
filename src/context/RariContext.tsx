@@ -20,7 +20,7 @@ import Fuse from "../fuse-sdk/src";
 import {
   chooseBestWeb3Provider,
   initFuseWithProviders,
-  turboGethURL,
+  alchemyURL,
 } from "../utils/web3Providers";
 import { useLocation } from "react-router-dom";
 
@@ -44,7 +44,7 @@ async function launchModalLazy(
       package: WalletConnectProvider.default,
       options: {
         rpc: {
-          1: turboGethURL,
+          1: alchemyURL,
         },
       },
       display: {
@@ -116,17 +116,17 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (netId !== 1 || chainId !== 1) {
-          setTimeout(() => {
-            toast({
-              title: "Wrong network!",
-              description:
-                "You are on the wrong network! Switch to the mainnet and reload this page!",
-              status: "warning",
-              position: "top-right",
-              duration: 300000,
-              isClosable: true,
-            });
-          }, 1500);
+          // setTimeout(() => {
+          //   toast({
+          //     title: "Wrong network!",
+          //     description:
+          //       "You are on the wrong network! Switch to the mainnet and reload this page!",
+          //     status: "warning",
+          //     position: "top-right",
+          //     duration: 300000,
+          //     isClosable: true,
+          //   });
+          // }, 1500);
         }
       }
     );
@@ -142,6 +142,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = initFuseWithProviders(modalProvider);
+      window.Fuse = Fuse as any;
 
       setRari(rariInstance);
       setFuse(fuseInstance);

@@ -95,7 +95,7 @@ export async function testForCTokenErrorAndSend(
     if (response >= 1000) {
       const comptrollerResponse = response - 1000;
 
-      let msg = ComptrollerErrorCodes[comptrollerResponse];
+      let msg = ComptrollerErrorCodes[comptrollerResponse] ?? response;
 
       if (msg === "BORROW_BELOW_MIN") {
         msg =
@@ -155,8 +155,7 @@ async function fetchMaxAmount(
   mode: Mode,
   fuse: Fuse,
   address: string,
-  asset: USDPricedFuseAsset,
-  comptrollerAddress: string
+  asset: USDPricedFuseAsset
 ) {
   if (mode === Mode.SUPPLY) {
     const balance = await fetchTokenBalance(
@@ -184,33 +183,21 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.BORROW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxBorrow } = await comptroller.methods
+    const maxBorrow = await fuse.contracts.FusePoolLensSecondary.methods
       .getMaxBorrow(address, asset.cToken)
       .call();
 
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(
-        new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
-      );
-    } else {
-      throw new Error("Could not fetch your max borrow amount! Code: " + err);
-    }
+    return fuse.web3.utils.toBN(
+      new BigNumber(maxBorrow).multipliedBy(0.75).toFixed(0)
+    );
   }
 
   if (mode === Mode.WITHDRAW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxRedeem } = await comptroller.methods
+    const maxRedeem = await fuse.contracts.FusePoolLensSecondary.methods
       .getMaxRedeem(address, asset.cToken)
       .call();
 
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(maxRedeem);
-    } else {
-      throw new Error("Could not fetch your max withdraw amount! Code: " + err);
-    }
+    return fuse.web3.utils.toBN(maxRedeem);
   }
 }
 
@@ -284,13 +271,7 @@ const AmountSelect = ({
       }
 
       try {
-        const max = await fetchMaxAmount(
-          mode,
-          fuse,
-          address,
-          asset,
-          comptrollerAddress
-        );
+        const max = await fetchMaxAmount(mode, fuse, address, asset);
 
         return amount.lte(max!.toString());
       } catch (e) {
@@ -1120,13 +1101,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
 
     try {
-      const maxBN = await fetchMaxAmount(
-        mode,
-        fuse,
-        address,
-        asset,
-        comptrollerAddress
-      );
+      const maxBN = await fetchMaxAmount(mode, fuse, address, asset);
 
       if (maxBN!.isNeg() || maxBN!.isZero()) {
         updateAmount("");

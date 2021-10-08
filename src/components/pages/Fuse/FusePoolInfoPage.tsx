@@ -36,34 +36,51 @@ import FuseTabBar from "./FuseTabBar";
 import { useQuery } from "react-query";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 
-import { useTokenData } from "../../../hooks/useTokenData";
+import { ETH_TOKEN_DATA, useTokenData } from "../../../hooks/useTokenData";
 import { CTokenIcon } from "./FusePoolsPage";
 import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller } from "../../../utils/createComptroller";
+import {
+  createComptroller,
+  createOracle,
+} from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
 import Footer from "components/shared/Footer";
+import { useIdentifyOracle } from "hooks/fuse/useOracleData";
+import { truncate } from "utils/stringUtils";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-export const useExtraPoolInfo = (comptrollerAddress: string) => {
+export const useExtraPoolInfo = (
+  comptrollerAddress: string,
+  oracleAddress: string
+) => {
   const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
+    const poolOracle = createOracle(oracleAddress, fuse, "MasterPriceOracle");
+
+    let defaultOracle = undefined;
+    try {
+      defaultOracle = await poolOracle.methods.defaultOracle().call();
+    } catch (err) {
+      console.error("Error querying for defaultOracle");
+    }
+
     const [
       { 0: admin, 1: upgradeable },
-      oracle,
       closeFactor,
       liquidationIncentive,
       enforceWhitelist,
       whitelist,
+      adminHasRights,
+      pendingAdmin,
     ] = await Promise.all([
-      fuse.contracts.FusePoolLens.methods
+      fuse.contracts.FusePoolLensSecondary.methods
         .getPoolOwnership(comptrollerAddress)
         .call({ gas: 1e18 }),
-
-      fuse.getPriceOracle(await comptroller.methods.oracle().call()),
 
       comptroller.methods.closeFactorMantissa().call(),
 
@@ -84,6 +101,9 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
           return [];
         }
       })(),
+
+      comptroller.methods.adminHasRights().call(),
+      comptroller.methods.pendingAdmin().call(),
     ]);
 
     return {
@@ -93,9 +113,11 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       whitelist: whitelist as string[],
       isPowerfulAdmin:
         admin.toLowerCase() === address.toLowerCase() && upgradeable,
-      oracle,
       closeFactor,
       liquidationIncentive,
+      adminHasRights,
+      pendingAdmin,
+      defaultOracle,
     };
   });
 
@@ -123,7 +145,7 @@ const FusePoolInfoPage = memo(() => {
       >
         <Header isAuthed={isAuthed} isFuse />
 
-        <FuseStatsBar />
+        <FuseStatsBar data={data} />
 
         <FuseTabBar />
 
@@ -146,6 +168,8 @@ const FusePoolInfoPage = memo(() => {
                 totalBorrowedUSD={data.totalBorrowedUSD}
                 totalLiquidityUSD={data.totalLiquidityUSD}
                 comptrollerAddress={data.comptroller}
+                oracleAddress={data.oracle}
+                oracleModel={data.oracleModel}
               />
             ) : (
               <Center expand>
@@ -162,7 +186,10 @@ const FusePoolInfoPage = memo(() => {
           >
             {data ? (
               data.assets.length > 0 ? (
-                <AssetAndOtherInfo assets={data.assets} />
+                <AssetAndOtherInfo
+                  assets={data.assets}
+                  poolOracle={data.oracle}
+                />
               ) : (
                 <Center expand>{t("There are no assets in this pool.")}</Center>
               )
@@ -188,6 +215,8 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD,
   totalLiquidityUSD,
   comptrollerAddress,
+  oracleAddress,
+  oracleModel,
 }: {
   assets: USDPricedFuseAsset[];
   name: string;
@@ -195,12 +224,17 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD: number;
   totalLiquidityUSD: number;
   comptrollerAddress: string;
+  oracleAddress: string;
+  oracleModel: string | undefined;
 }) => {
   let { poolId } = useParams();
 
   const { t } = useTranslation();
 
-  const data = useExtraPoolInfo(comptrollerAddress);
+  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
+  const defaultOracleIdentity = useIdentifyOracle(data?.defaultOracle);
+
+  console.log(data?.defaultOracle, { defaultOracleIdentity });
 
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
@@ -353,10 +387,21 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Oracle")}
-          statA={data ? data.oracle ?? t("Unrecognized Oracle") : "?"}
+          statA={data ? oracleModel ?? t("Unrecognized Oracle") : "?"}
           statBTitle={t("Whitelist")}
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
+      { oracleModel === "MasterPriceOracleV3" ?
+
+          <StatRow
+            statATitle={t("Default Oracle")}
+            statA={
+              defaultOracleIdentity
+                ? defaultOracleIdentity ?? t("Unrecognized Oracle")
+                : "?"
+            }
+        />
+      : null }
       </Column>
     </Column>
   );
@@ -371,8 +416,8 @@ const StatRow = ({
 }: {
   statATitle: string;
   statA: string;
-  statBTitle: string;
-  statB: string;
+  statBTitle?: string;
+  statB?: string;
   [key: string]: any;
 }) => {
   return (
@@ -387,14 +432,22 @@ const StatRow = ({
         {statATitle}: <b>{statA}</b>
       </Text>
 
-      <Text width="50%" textAlign="center">
-        {statBTitle}: <b>{statB}</b>
-      </Text>
+      {statBTitle && statB && (
+        <Text width="50%" textAlign="center">
+          {statBTitle}: <b>{statB}</b>
+        </Text>
+      )}
     </RowOnDesktopColumnOnMobile>
   );
 };
 
-const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
+const AssetAndOtherInfo = ({
+  assets,
+  poolOracle,
+}: {
+  assets: USDPricedFuseAsset[];
+  poolOracle: string;
+}) => {
   let { poolId } = useParams();
 
   const { fuse } = useRari();
@@ -430,6 +483,17 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
   });
 
   const isMobile = useIsMobile();
+
+  const oracleIdentity = useIdentifyOracle(
+    selectedAsset.oracle,
+    selectedAsset.underlyingToken
+  );
+
+  // Link to MPO if asset is ETH
+  const oracleAddress =
+    selectedAsset.underlyingToken === ETH_TOKEN_DATA.address
+      ? poolOracle
+      : selectedAsset.oracle;
 
   return (
     <Column
@@ -583,6 +647,23 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           captionFirst={true}
         />
 
+        <SimpleTooltip label={oracleIdentity}>
+          <Link
+            href={`https://etherscan.io/address/${oracleAddress}`}
+            isExternal
+            _hover={{ pointer: "cursor", color: "#21C35E" }}
+          >
+            <CaptionedStat
+              stat={truncate(oracleIdentity, 20)}
+              statSize="md"
+              captionSize="xs"
+              caption={t("Oracle")}
+              crossAxisAlignment="center"
+              captionFirst={true}
+            />
+          </Link>
+        </SimpleTooltip>
+
         <CaptionedStat
           stat={(selectedAsset.reserveFactor / 1e16).toFixed(0) + "%"}
           statSize="lg"
@@ -640,6 +721,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           captionFirst={true}
         />
       </Row>
+      <ModalDivider />
     </Column>
   );
 };
