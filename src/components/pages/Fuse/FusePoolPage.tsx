@@ -66,11 +66,11 @@ import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
 import { motion } from "framer-motion";
 
 import { GlowingBox } from "components/shared/GlowingButton";
-import { getSymbol } from "utils/symbolUtils";
 import { AdminAlert } from "components/shared/AdminAlert";
 import { EditIcon } from "@chakra-ui/icons";
 import { testForComptrollerErrorAndSend } from "./FusePoolEditPage";
 import { handleGenericError } from "utils/errorHandling";
+import { CTokenRewardsDistributorIncentivesWithRates } from "hooks/rewards/useRewardAPY";
 
 export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
   const { fuse, address } = useRari();
@@ -518,7 +518,7 @@ const AssetSupplyRow = ({
   assets: USDPricedFuseAsset[];
   index: number;
   comptrollerAddress: string;
-  supplyIncentives: CTokenRewardsDistributorIncentives[];
+  supplyIncentives: CTokenRewardsDistributorIncentivesWithRates[];
   rewardTokensData: TokensDataMap;
 }) => {
   const {
@@ -603,10 +603,10 @@ const AssetSupplyRow = ({
   const { t } = useTranslation();
 
   const hasSupplyIncentives = !!supplyIncentives.length;
-  const totalSupplyAPY =
+  const totalSupplyAPR =
     supplyIncentives?.reduce((prev, incentive) => {
-      const apy = incentive.supplySpeed / 1e18;
-      return prev + apy;
+      const apr = incentive.supplyAPR;
+      return prev + apr;
     }, 0) ?? 0;
 
   const [hovered, setHovered] = useState<number>(-1);
@@ -614,12 +614,27 @@ const AssetSupplyRow = ({
   const handleMouseEnter = (index: number) => setHovered(index);
   const handleMouseLeave = () => setHovered(-1);
 
-  const displayedSupplyAPY =
-    hovered >= 0
-      ? supplyIncentives[hovered].supplySpeed / 1e18
-      : totalSupplyAPY;
+  console.log({ supplyIncentives });
 
-  console.log({ hovered, displayedSupplyAPY });
+  const displayedSupplyAPR =
+    hovered >= 0 ? supplyIncentives[hovered].supplyAPR : totalSupplyAPR;
+
+  const displayedSupplyAPRLabel =
+    hovered >= 0
+      ? `${supplyIncentives[hovered].supplyAPR.toFixed(2)} % APR in ${
+          rewardTokensData[supplyIncentives[hovered].rewardToken].symbol
+        } distributions.`
+      : `${displayedSupplyAPR.toFixed(2)}% total APR `;
+
+  console.log({ hovered, displayedSupplyAPR });
+
+  const _hovered = hovered > 0 ? hovered : 0;
+
+  const color =
+    rewardTokensData[supplyIncentives?.[_hovered]?.rewardToken]?.color ??
+    "white";
+
+  console.log({ rewardTokensData, hovered, _hovered, supplyIncentives, color });
 
   return (
     <>
@@ -697,39 +712,36 @@ const AssetSupplyRow = ({
                 // mb={.5}
                 crossAxisAlignment="center"
                 mainAxisAlignment="flex-end"
-                py={1}
+                py={2}
               >
                 <Text fontWeight="bold" mr={1}>
                   +
                 </Text>
-                <AvatarGroup size="xs" max={30} ml={2} mr={2} spacing={1}>
+                <AvatarGroup size="xs" max={30} ml={2} mr={1} spacing={1}>
                   {supplyIncentives?.map((supplyIncentive, i) => {
                     return (
-                      <CTokenIcon
-                        address={supplyIncentive.rewardToken}
-                        boxSize="20px"
-                        onMouseEnter={() => handleMouseEnter(i)}
-                        onMouseLeave={() => handleMouseLeave()}
-                        _hover={{
-                          zIndex: 9,
-                          border: ".5px solid white",
-                          transform: "scale(1.3);",
-                        }}
-                      />
+                      <SimpleTooltip label={displayedSupplyAPRLabel}>
+                        <CTokenIcon
+                          address={supplyIncentive.rewardToken}
+                          boxSize="20px"
+                          onMouseEnter={() => handleMouseEnter(i)}
+                          onMouseLeave={() => handleMouseLeave()}
+                          _hover={{
+                            zIndex: 9,
+                            border: ".5px solid white",
+                            transform: "scale(1.3);",
+                          }}
+                        />
+                      </SimpleTooltip>
                     );
                   })}
                 </AvatarGroup>
-                <Text
-                  color={
-                    rewardTokensData[supplyIncentives?.[hovered]?.rewardToken]
-                      ?.color ?? "white"
-                  }
-                  fontWeight="bold"
-                  pl={1}
-                >
-                  {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}
-                  {displayedSupplyAPY}%
-                </Text>
+                <SimpleTooltip label={displayedSupplyAPRLabel}>
+                  <Text color={color} fontWeight="bold" pl={1}>
+                    {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}
+                    {displayedSupplyAPR.toFixed(2)}%
+                  </Text>
+                </SimpleTooltip>
               </Row>
             )}
 
