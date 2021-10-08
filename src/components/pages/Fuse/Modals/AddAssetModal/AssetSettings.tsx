@@ -188,16 +188,7 @@ const AssetSettings = ({
     () => !!priceForAsset && priceForAsset > 0,
     [priceForAsset]
   );
-
-  console.log({
-    defaultOracle,
-    customOracleForToken,
-    priceForAsset,
-    hasDefaultOracle,
-    hasCustomOracleForToken,
-    hasPriceForAsset,
-  });
-
+  
   // For this asset, check for a defaultOracle, customOracle, and Pool MPO price for this token
   useEffect(() => {
     // If its a legacy oracle (type === string) then we cant create a MasterPriceOracle isntance for it and the user wont even be able to configure the oracle.
@@ -515,9 +506,7 @@ const AssetSettings = ({
       if (_retryFlag === 5) {
         setNeedsRetry(false);
 
-        console.log("HELLO");
         await deployAssetToPool();
-        console.log("GOODBYe");
 
         LogRocket.track("Fuse-DeployAsset");
 
