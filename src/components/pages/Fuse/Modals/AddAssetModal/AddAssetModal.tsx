@@ -127,7 +127,7 @@ const AddAssetModal = ({
             </>
           ) : null}
 
-          <Center px={4} mt={isEmpty ? 4 : 0} width="100%">
+          <Center p={4} mt={isEmpty ? 4 : 0} width="100%">
             <Input
               width="100%"
               textAlign="center"

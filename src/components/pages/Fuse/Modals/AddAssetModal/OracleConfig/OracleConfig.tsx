@@ -234,8 +234,14 @@ const OracleConfig = ({
       <Row
         mainAxisAlignment={mode === "Editing" ? "space-between" : "flex-start"}
         // background="gold"
-        crossAxisAlignment="center"
-        width={mode === "Editing" ? "100%" : "50%"}
+        crossAxisAlignment={"center"}
+        width={
+          mode === "Editing"
+            ? !shouldShowUniV3BaseTokenOracleForm
+              ? "100%"
+              : "50%"
+            : "100%"
+        }
         flexGrow={1}
         pt={mode === "Editing" ? 4 : 0}
         pb={mode === "Editing" ? 1 : 0}
@@ -333,7 +339,11 @@ const OracleConfig = ({
         mainAxisAlignment={mode === "Editing" ? "center" : "center"}
         crossAxisAlignment={mode === "Editing" ? "flex-start" : "center"}
         flexDirection="column"
-        width={(mode === "Adding") && shouldShowUniV3BaseTokenOracleForm  ? "50%" : "100%"}
+        width={
+          mode === "Adding" && shouldShowUniV3BaseTokenOracleForm
+            ? "100%"
+            : "50%"
+        }
         // bg="pink"
         ml={mode === "Editing" ? "auto" : ""}
         px={mode === "Editing" ? 4 : 0}

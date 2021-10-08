@@ -66,12 +66,14 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
               This pool has{" "}
               <span style={{ fontWeight: "bold" }}>
                 {smallUsdFormatter(data.totalSuppliedUSD)} supplied{" "}
-              </span>
+              </span>{" "}
               across{" "}
-              <span style={{ fontWeight: "bold" }}>{data.assets.length} </span>
-              assets. Fuse is the first truly open interest rate protocol. Lend,
-              borrow, and create isolated lending markets with unlimited
-              flexibility.
+              <span style={{ fontWeight: "bold" }}>
+                {data.assets.length} {" "}
+                assets.
+              </span>{" "}
+              Fuse is the first truly open interest rate protocol. Lend, borrow,
+              and create isolated lending markets with unlimited flexibility.
             </Text>
           ) : (
             <Text>
@@ -79,7 +81,6 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
               and create isolated lending markets with unlimited flexibility.
             </Text>
           )}
-          
         </Column>
       </DashboardBox>
 

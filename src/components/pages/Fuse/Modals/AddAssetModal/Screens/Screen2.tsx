@@ -118,18 +118,20 @@ const Screen2 = ({
         </Row>
       )}
       <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
+        mainAxisAlignment={mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm ? "center" : "flex-start"}
+        crossAxisAlignment={mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm ? "center" : "flex-start"}
         h="100%"
         w="100%"
       >
         <Column
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
+          crossAxisAlignment={
+            shouldShowUniV3BaseTokenOracleForm ? "flex-start" : "center"
+          }
           maxHeight="100%"
           height="100%"
           maxWidth="100%"
-          width={"100%"}
+          width={mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm ? "50%" : "100%"}
         >
           <OracleConfig
             mode={mode}

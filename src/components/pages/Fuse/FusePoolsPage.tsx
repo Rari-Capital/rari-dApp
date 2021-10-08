@@ -211,13 +211,14 @@ const PoolRow = ({
               </SimpleTooltip>
             )}
 
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" mt={isEmpty ? 0 : 2}>
               <WhitelistedIcon
                 isWhitelisted={isWhitelisted}
                 mr={2}
                 boxSize={"15px"}
+                mb="2px"
               />
-              <Text mt={isEmpty ? 0 : 2}>{name}</Text>
+              <Text >{name}</Text>
             </Row>
           </Column>
 

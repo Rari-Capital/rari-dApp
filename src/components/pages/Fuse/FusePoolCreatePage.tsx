@@ -9,7 +9,8 @@ import {
   useToast,
   useDisclosure,
   Box,
-  Button
+  Button,
+  CloseButton,
 } from "@chakra-ui/react";
 
 import { Column, Center, Row } from "utils/chakraUtils";
@@ -82,11 +83,7 @@ const PoolConfiguration = () => {
   const { fuse, address } = useRari();
   const navigate = useNavigate();
 
-  const {
-    isOpen,
-    onOpen,
-    onClose,
-  } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [name, setName] = useState("");
   const [isWhitelisted, setIsWhitelisted] = useState(false);
@@ -97,8 +94,8 @@ const PoolConfiguration = () => {
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const [activeStep, setActiveStep] = useState<number>(0)
-  
+  const [activeStep, setActiveStep] = useState<number>(0);
+
   const increaseActiveStep = (step: string) => {
     setActiveStep(steps.indexOf(step));
   };
@@ -106,13 +103,18 @@ const PoolConfiguration = () => {
   const [needsRetry, setNeedsRetry] = useState<boolean>(false);
   const [retryFlag, setRetryFlag] = useState<number>(1);
 
-  const [ deployedPriceOracle, setDeployedPriceOracle ] = useState<string>('')
+  const [deployedPriceOracle, setDeployedPriceOracle] = useState<string>("");
 
   const postDeploymentHandle = (priceOracle: string) => {
-    setDeployedPriceOracle(priceOracle)
-  }
+    setDeployedPriceOracle(priceOracle);
+  };
 
-  const deployPool = async (bigCloseFactor: string, bigLiquidationIncentive: string, options: any, priceOracle: string) => {
+  const deployPool = async (
+    bigCloseFactor: string,
+    bigLiquidationIncentive: string,
+    options: any,
+    priceOracle: string
+  ) => {
     const [poolAddress] = await fuse.deployPool(
       name,
       isWhitelisted,
@@ -124,12 +126,11 @@ const PoolConfiguration = () => {
       isWhitelisted ? whitelist : null
     );
 
-    return poolAddress
-  }
-  
+    return poolAddress;
+  };
 
   const onDeploy = async () => {
-    let priceOracle = deployedPriceOracle
+    let priceOracle = deployedPriceOracle;
     if (name === "") {
       toast({
         title: "Error!",
@@ -159,40 +160,48 @@ const PoolConfiguration = () => {
       .multipliedBy(1e18)
       .toFixed(0);
 
-    let _retryFlag = retryFlag
-    
+    let _retryFlag = retryFlag;
+
     try {
-      const options = { from: address }
-      
-      setNeedsRetry(false)
-      
-      if (_retryFlag === 1)  {
-          priceOracle = await fuse.deployPriceOracle(
-            "MasterPriceOracle", 
-            {
-              underlyings: [],
-              oracles: [],
-              canAdminOverwrite: true,
-              defaultOracle:
-                Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle, // We give the MasterPriceOracle a default "fallback" oracle of the Rari MasterPriceOracle
-            },
-            options
-          )
-          postDeploymentHandle(priceOracle)
-          increaseActiveStep("Deploying Pool!")
-          _retryFlag = 2
+      const options = { from: address };
+
+      setNeedsRetry(false);
+
+      if (_retryFlag === 1) {
+        priceOracle = await fuse.deployPriceOracle(
+          "MasterPriceOracle",
+          {
+            underlyings: [],
+            oracles: [],
+            canAdminOverwrite: true,
+            defaultOracle:
+              Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle, // We give the MasterPriceOracle a default "fallback" oracle of the Rari MasterPriceOracle
+          },
+          options
+        );
+        postDeploymentHandle(priceOracle);
+        increaseActiveStep("Deploying Pool!");
+        _retryFlag = 2;
       }
 
-      let poolAddress: string
+      let poolAddress: string;
 
       if (_retryFlag === 2) {
-        poolAddress = await deployPool(bigCloseFactor, bigLiquidationIncentive, options, priceOracle)
+        poolAddress = await deployPool(
+          bigCloseFactor,
+          bigLiquidationIncentive,
+          options,
+          priceOracle
+        );
 
         const event = (
-          await fuse.contracts.FusePoolDirectory.getPastEvents("PoolRegistered", {
-            fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
-            toBlock: "latest",
-          })
+          await fuse.contracts.FusePoolDirectory.getPastEvents(
+            "PoolRegistered",
+            {
+              fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
+              toBlock: "latest",
+            }
+          )
         ).filter(
           (event) =>
             event.returnValues.pool.comptroller.toLowerCase() ===
@@ -211,22 +220,25 @@ const PoolConfiguration = () => {
         });
 
         let id = event.returnValues.index;
-        onClose()
+        onClose();
         navigate(`/fuse/pool/${id}/edit`);
       }
-
     } catch (e) {
       handleGenericError(e, toast);
       setRetryFlag(_retryFlag);
-      setNeedsRetry(true)
+      setNeedsRetry(true);
     }
   };
 
-
-
   return (
     <>
-      <TransactionStepperModal handleRetry={onDeploy} needsRetry={needsRetry} activeStep={activeStep} isOpen={isOpen} onClose={onClose}/>
+      <TransactionStepperModal
+        handleRetry={onDeploy}
+        needsRetry={needsRetry}
+        activeStep={activeStep}
+        isOpen={isOpen}
+        onClose={onClose}
+      />
       <DashboardBox width="100%" mt={4}>
         <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
           <Heading size="sm" px={4} py={4}>
@@ -355,53 +367,68 @@ const PoolConfiguration = () => {
   );
 };
 
-
-const steps = [
-  "Deploying Oracle",
-  "Deploying Pool!"
-]
-
+const steps = ["Deploying Oracle", "Deploying Pool!"];
 
 const TransactionStepperModal = ({
   isOpen,
   onClose,
   activeStep,
   needsRetry,
-  handleRetry
-} : {
-  isOpen: boolean
-  onClose: () => void
-  activeStep: number,
-  needsRetry: boolean,
-  handleRetry: () => void
+  handleRetry,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  activeStep: number;
+  needsRetry: boolean;
+  handleRetry: () => void;
 }) => {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      closeOnOverlayClick={false}
-    >
-      <ModalOverlay >
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <ModalOverlay>
         <ModalContent
-           {...MODAL_PROPS}
-           display="flex"
-           alignSelf="center"
-           alignItems="center"
-           justifyContent="center"
-           height="25%"
-           width="25%"
+          {...MODAL_PROPS}
+          display="flex"
+          alignSelf="center"
+          alignItems="center"
+          justifyContent="center"
+          height="25%"
+          width="25%"
         >
-            <Box mb={6} alignItems="center" alignContent="center" justifyContent="center">
-              <Text textAlign="center" fontSize="20px">{steps[activeStep]}</Text>
-              {steps[activeStep] === "Deploying Pool!" ? <Text fontSize="13px" opacity="0.8">Will take two transactions, please wait.</Text> : null}
+          <Row
+            mb={6}
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            w="100%"
+            px={4}
+          >
+            <Box mx="auto">
+              <Text textAlign="center" fontSize="20px">
+                {steps[activeStep]}
+              </Text>
+              {steps[activeStep] === "Deploying Pool!" ? (
+                <Text fontSize="13px" opacity="0.8">
+                  Will take two transactions, please wait.
+                </Text>
+              ) : null}
             </Box>
-            <TransactionStepper steps={steps} activeStep={activeStep} tokenData={{color: 'lightgray'}}/>
-            {needsRetry ? <Button onClick={() => handleRetry()} mx={3}> Retry </Button> : null }
+           
+          </Row>
+          <TransactionStepper
+            steps={steps}
+            activeStep={activeStep}
+            tokenData={{ color: "#21C35E" }}
+          />
+          {needsRetry ? (
+            <Button onClick={() => handleRetry()} mx={3} bg="#21C35E">
+              {" "}
+              Retry{" "}
+            </Button>
+          ) : null}
         </ModalContent>
       </ModalOverlay>
     </Modal>
-  )
-}
+  );
+};
 
 const OptionRow = ({
   children,
