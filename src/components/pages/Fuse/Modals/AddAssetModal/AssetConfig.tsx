@@ -260,12 +260,12 @@ const AssetConfig = ({
     return (
       <>
         <Column
-          width="100%"
-          maxWidth="100%"
+          width={mode === "Editing" ? "100%" : "50%"}
+          maxWidth={mode === "Editing" ? "100%" : "50%"}
           height="100%"
           overflowY="auto"
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
+          mainAxisAlignment={ mode === "Adding" ? "center" : "flex-start"}
+          crossAxisAlignment={ mode === "Adding" ? "center" : "flex-start"}
         >
           <ConfigRow height="35px">
             <SimpleTooltip
@@ -380,7 +380,7 @@ const AssetConfig = ({
   
           <ModalDivider />
   
-          {oracleModel === "MasterPriceOracle" &&
+          {(oracleModel === "MasterPriceOracleV2" || oracleModel === "MasterPriceOracleV3") &&
             oracleData !== undefined &&
             !isTokenETHOrWETH(tokenAddress) &&
             mode === "Editing" && (
@@ -468,6 +468,18 @@ const AssetConfig = ({
             <IRMChart curves={curves} tokenData={tokenData} />
           )}
         </Column>
+
+        {mode === "Adding" ?
+        <Column
+          width="50%"
+          height="100%"
+          overflowY="auto"
+          mainAxisAlignment={ mode === "Adding" ? "center" : "flex-start"}
+          crossAxisAlignment={ mode === "Adding" ? "center" : "flex-start"}
+        >
+          <IRMChart curves={curves} tokenData={tokenData}/>
+        </Column>
+        : null }
       </>
     );
   };

@@ -94,15 +94,15 @@ export const useTokensData = (addresses: string[]) => {
   return useMemo(() => {
     const ret: any[] = [];
 
-    if (!tokensData.length) return null;
+    if (!tokensData.length) return [];
 
     // Return null altogether
     tokensData.forEach(({ data }) => {
-      if (!data) return null;
+      if (!data) return [];
       ret.push(data);
     });
 
-    if (!ret.length) return null;
+    if (!ret.length) return [];
 
     return ret;
   }, [tokensData]);

@@ -1,65 +1,56 @@
 // Chakra and UI
-import {
-    Text,
-    Select,
-    Link,
-  } from "@chakra-ui/react";
-  import {
-    Row,
-  } from "utils/chakraUtils";
-  import {
-    DASHBOARD_BOX_PROPS,
-  } from "../../../../../shared/DashboardBox";
-  import { QuestionIcon } from "@chakra-ui/icons";
-  import { SimpleTooltip } from "../../../../../shared/SimpleTooltip";
-  
-  // React
-  import { useTranslation } from "react-i18next";
-  import { useQuery } from "react-query";
-  
-  // Axios
-  import axios from "axios";
+import { Text, Select, Link } from "@chakra-ui/react";
+import { Column, Row } from "utils/chakraUtils";
+import { DASHBOARD_BOX_PROPS } from "../../../../../shared/DashboardBox";
+import { QuestionIcon } from "@chakra-ui/icons";
+import { SimpleTooltip } from "../../../../../shared/SimpleTooltip";
 
-  // Utils
-  import { smallUsdFormatter, shortUsdFormatter } from "utils/bigUtils";
-  
+// React
+import { useTranslation } from "react-i18next";
+import { useQuery } from "react-query";
+
+// Axios
+import axios from "axios";
+
+// Utils
+import {  shortUsdFormatter } from "utils/bigUtils";
 
 const UniswapV3PriceOracleConfigurator = ({
-    setFeeTier,
-    tokenAddress,
-    _setOracleAddress,
-    setUniV3BaseToken,
-    activeUniSwapPair,
-    setActiveUniSwapPair
-  }: {
-    // Assets Address. i.e DAI, USDC
-    tokenAddress: string;
-  
-    // Will update the oracle address that we use when adding, editing an asset
-    _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
-  
-    // Will update BaseToken address. This is used in component: AssetSettings (see top of this page).
-    // Helps us know if oracle has a price feed for this asset. If it doesn't we need to add one.
-    setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>;
-  
-    // Will update FeeTier Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
-    setFeeTier: React.Dispatch<React.SetStateAction<number>>;
+  setFeeTier,
+  tokenAddress,
+  _setOracleAddress,
+  setUniV3BaseToken,
+  activeUniSwapPair,
+  setActiveUniSwapPair,
+}: {
+  // Assets Address. i.e DAI, USDC
+  tokenAddress: string;
 
-    // Will store the uniswap pair index.
-    activeUniSwapPair: string;
-    setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
-  }) => {
-    const { t } = useTranslation();
-  
-    // We get a list of whitelistedPools from uniswap-v3's the graph.
-    const { data: liquidity, error } = useQuery(
-      "UniswapV3 pool liquidity for " + tokenAddress,
-      async () =>
-        (
-          await axios.post(
-            "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-            {
-              query: `{
+  // Will update the oracle address that we use when adding, editing an asset
+  _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
+
+  // Will update BaseToken address. This is used in component: AssetSettings (see top of this page).
+  // Helps us know if oracle has a price feed for this asset. If it doesn't we need to add one.
+  setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>;
+
+  // Will update FeeTier Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
+  setFeeTier: React.Dispatch<React.SetStateAction<number>>;
+
+  // Will store the uniswap pair index.
+  activeUniSwapPair: string;
+  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  const { t } = useTranslation();
+
+  // We get a list of whitelistedPools from uniswap-v3's the graph.
+  const { data: liquidity, error } = useQuery(
+    "UniswapV3 pool liquidity for " + tokenAddress,
+    async () =>
+      (
+        await axios.post(
+          "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+          {
+            query: `{
               token(id:"${tokenAddress}") {
                 whitelistPools {
                   id,
@@ -76,45 +67,53 @@ const UniswapV3PriceOracleConfigurator = ({
                 }
               }
             }`,
-            }
-          )
-        ).data,
-      { refetchOnMount: false }
-    );
+          }
+        )
+      ).data,
+    { refetchOnMount: false }
+  );
 
-    
-    // When user selects an option this function will be called.
-    // Active pool, fee Tier, and base token are updated and we set the oracle address to the address of the pool we chose.
-    const updateBoth = (value: string) => {
-      const uniPool = liquidity.data.token.whitelistPools[value];
+  // When user selects an option this function will be called.
+  // Active pool, fee Tier, and base token are updated and we set the oracle address to the address of the pool we chose.
+  const updateBoth = (value: string) => {
+    const uniPool = liquidity.data.token.whitelistPools[value];
 
-      setActiveUniSwapPair(value)
-      setFeeTier(uniPool.feeTier);
-      _setOracleAddress(uniPool.id);
-      setUniV3BaseToken(
-        uniPool.token0.id === tokenAddress ? uniPool.token1.id : uniPool.token0.id
-      );
-    };
-  
-    // If liquidity is undefined, theres an error or theres no token found return nothing.
-    if (liquidity === undefined || error || liquidity.data.token === null)
-      return null;
-  
-    // Sort whitelisted pools by TVL. Greatest to smallest. Greater TVL is safer for users so we show it first.
-    const liquiditySorted = liquidity.data.token.whitelistPools.sort(
-      (a: any, b: any): any =>
-        parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1
-    );
-  
-    console.log({activeUniSwapPair})
-    return (
-      <>
+    const baseToken: string =
+      uniPool.token0.id.toLowerCase() === tokenAddress.toLocaleLowerCase()
+        ? uniPool.token1.id
+        : uniPool.token0.id;
+    setActiveUniSwapPair(value);
+    setFeeTier(uniPool.feeTier);
+    _setOracleAddress(uniPool.id);
+    setUniV3BaseToken(baseToken);
+  };
+
+  // If liquidity is undefined, theres an error or theres no token found return nothing.
+  if (liquidity === undefined || error || liquidity.data.token === null)
+    return null;
+
+  // Sort whitelisted pools by TVL. Greatest to smallest. Greater TVL is safer for users so we show it first.
+  const liquiditySorted = liquidity.data.token.whitelistPools.sort(
+    (a: any, b: any): any =>
+      parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1
+  );
+
+  return (
+    <>
+      <Column
+        crossAxisAlignment="flex-start"
+        mainAxisAlignment="flex-start"
+        width={"100%"}
+        my={2}
+        px={4}
+        ml={"auto"}
+        // bg="aqua"
+      >
         <Row
           crossAxisAlignment="center"
           mainAxisAlignment="space-between"
-          width="100%"
-          my={2}
-          px={4}
+          w="100%"
+          // bg="green"
         >
           <SimpleTooltip
             label={t(
@@ -133,7 +132,9 @@ const UniswapV3PriceOracleConfigurator = ({
             borderRadius="7px"
             value={activeUniSwapPair}
             _focus={{ outline: "none" }}
-            placeholder={activeUniSwapPair === '' ? t("Choose Pool") : activeUniSwapPair}
+            placeholder={
+              activeUniSwapPair === "" ? t("Choose Pool") : activeUniSwapPair
+            }
             onChange={(event) => {
               updateBoth(event.target.value);
             }}
@@ -157,14 +158,15 @@ const UniswapV3PriceOracleConfigurator = ({
               : null}
           </Select>
         </Row>
-  
-        {activeUniSwapPair !== '' ? (
+
+        {activeUniSwapPair !== "" ? (
           <>
             <Row
-              crossAxisAlignment="center"
               mainAxisAlignment="space-between"
-              width="260px"
+              crossAxisAlignment="center"
               my={2}
+              w="100%"
+              // bg="pink"
             >
               <SimpleTooltip label={t("TVL in pool as of this moment.")}>
                 <Text fontWeight="bold">
@@ -173,7 +175,7 @@ const UniswapV3PriceOracleConfigurator = ({
               </SimpleTooltip>
               <h1>
                 {activeUniSwapPair !== ""
-                  ? smallUsdFormatter(
+                  ? shortUsdFormatter(
                       liquidity.data.token.whitelistPools[activeUniSwapPair]
                         .totalValueLockedUSD
                     )
@@ -181,10 +183,11 @@ const UniswapV3PriceOracleConfigurator = ({
               </h1>
             </Row>
             <Row
-              crossAxisAlignment="center"
               mainAxisAlignment="space-between"
-              width="260px"
-              my={4}
+              crossAxisAlignment="center"
+              my={2}
+              w="100%"
+              // bg="pink"
             >
               <SimpleTooltip
                 label={t(
@@ -198,8 +201,8 @@ const UniswapV3PriceOracleConfigurator = ({
               <Text>
                 %
                 {activeUniSwapPair !== ""
-                  ? liquidity.data.token.whitelistPools[activeUniSwapPair].feeTier /
-                    10000
+                  ? liquidity.data.token.whitelistPools[activeUniSwapPair]
+                      .feeTier / 10000
                   : null}
               </Text>
             </Row>
@@ -218,8 +221,9 @@ const UniswapV3PriceOracleConfigurator = ({
             </Row>
           </>
         ) : null}
-      </>
-    );
-  };
+      </Column>
+    </>
+  );
+};
 
-export default UniswapV3PriceOracleConfigurator
+export default UniswapV3PriceOracleConfigurator;

@@ -32,7 +32,7 @@ import BaseTokenOracleConfig from "./BaseTokenOracleConfig";
 
 // const useOraclesLoading = (options: any) => {
 //   const [isLoading, setIsLoading] = useState(false)
-  
+
 //   Object.keys(options).filter((option) => {
 
 //   })
@@ -90,10 +90,12 @@ const OracleConfig = ({
 
   const { fuse, address } = useRari();
 
-  const isUserAdmin = address === oracleData.admin;
+  const isUserAdmin =
+    oracleData !== undefined ? address === oracleData.admin : undefined;
 
   // Available oracle options for asset
   const options = useGetOracleOptions(oracleData, tokenAddress);
+  console.log({ options });
 
   // Identify token oracle address
   const oracleIdentity = useIdentifyOracle(oracleAddress);
@@ -101,13 +103,26 @@ const OracleConfig = ({
   // If user's editing the asset's properties, show the Ctoken's active Oracle
   useEffect(() => {
     // Map oracleIdentity to whatever the type of `activeOracle` can be
+
+    // "Current_Price_Oracle" would only be avialable if you are editing
     if (
       mode === "Editing" &&
       options &&
       options["Current_Price_Oracle"] &&
       !oracleTouched
-    )
+    ) {
       _setActiveOracle("Current_Price_Oracle");
+    }
+
+    // if avaiable, set to "Default_Price_Oracle" if you are adding
+    if (
+      mode === "Adding" &&
+      options &&
+      !!options["Default_Price_Oracle"] &&
+      !oracleTouched
+    ) {
+      _setActiveOracle("Default_Price_Oracle");
+    }
   }, [
     mode,
     activeOracle,
@@ -129,12 +144,15 @@ const OracleConfig = ({
       options
     )
       _setOracleAddress(options[activeOracle]);
-    if (activeUniSwapPair === '' && (activeOracle === "Custom_Oracle" ||
-    activeOracle === "Uniswap_V3_Oracle" ||
-    activeOracle === "Uniswap_V2_Oracle" ||
-    activeOracle === "SushiSwap_Oracle"))
-      _setOracleAddress('')
-},[activeOracle, options, _setOracleAddress, activeUniSwapPair]);
+    if (
+      activeUniSwapPair === "" &&
+      (activeOracle === "Custom_Oracle" ||
+        activeOracle === "Uniswap_V3_Oracle" ||
+        activeOracle === "Uniswap_V2_Oracle" ||
+        activeOracle === "SushiSwap_Oracle")
+    )
+      _setOracleAddress("");
+  }, [activeOracle, options, _setOracleAddress, activeUniSwapPair]);
 
   // Will update oracle for the asset. This is used only if user is editing asset.
   const updateOracle = async () => {
@@ -204,6 +222,7 @@ const OracleConfig = ({
     }
   };
 
+
   if (!options)
     return (
       <Center>
@@ -217,7 +236,7 @@ const OracleConfig = ({
         mainAxisAlignment="space-between"
         alignItems="center"
         crossAxisAlignment="center"
-        width="100%"
+        width={"100%"}
         pt={mode === "Editing" ? 4 : 0}
         pb={mode === "Editing" ? 1 : 0}
         px={mode === "Editing" ? 4 : 0}
@@ -245,9 +264,9 @@ const OracleConfig = ({
             _focus={{ outline: "none" }}
             value={activeOracle.toLowerCase()}
             onChange={(event) => {
-              if (mode === "Editing") {
-                setOracleTouched(true);
-              }
+              // if (mode === "Editing") {
+              // }
+              setOracleTouched(true);
               _setActiveOracle(event.target.value);
             }}
             placeholder={
@@ -264,7 +283,9 @@ const OracleConfig = ({
             {Object.entries(options).map(([key, value]) =>
               value !== null &&
               value !== undefined &&
-              key !== "Current_Price_Oracle" ? (
+              key !== activeOracle &&
+              (mode === "Adding" ? key !== "Current_Price_Oracle" : true) ? (
+                // dont show the selected choice in the list
                 <option key={key} value={key} className="black-bg-option">
                   {key.replaceAll("_", " ")}
                 </option>
@@ -311,7 +332,9 @@ const OracleConfig = ({
         mainAxisAlignment="center"
         crossAxisAlignment="center"
         flexDirection="column"
-        width="100%"
+        width="100%%"
+        // bg="pink"
+        ml={mode === "Editing" ? "auto" : ""}
       >
         {activeOracle === "Uniswap_V3_Oracle" ? (
           <UniswapV3PriceOracleConfigurator
@@ -348,7 +371,6 @@ const OracleConfig = ({
           mode={mode}
           oracleData={oracleData}
           uniV3BaseToken={uniV3BaseToken}
-          baseTokenAddress={uniV3BaseToken}
           uniV3BaseTokenOracle={uniV3BaseTokenOracle}
           setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
           baseTokenActiveOracleName={baseTokenActiveOracleName}

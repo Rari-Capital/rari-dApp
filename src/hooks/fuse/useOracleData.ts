@@ -12,20 +12,32 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
 import { ETH_TOKEN_DATA } from "hooks/useTokenData";
+import UniswapV3PriceOracleConfigurator from "components/pages/Fuse/Modals/AddAssetModal/OracleConfig/UniswapV3PriceOracleConfigurator";
 
 export type OracleDataType = {
   admin: string; // Address of Oracle's admin
   adminOverwrite: boolean; // Will tell us if admin can overwrite existing oracle-token pairs
   oracleContract: Contract;
+  defaultOracle: undefined | string;
 };
 
-export const useIdentifyOracle = (oracleAddr: string, tokenAddr?: string) => {
+// Return a string of what we want to call this oracle
+export const useIdentifyOracle = (
+  oracleAddr: string,
+  tokenAddr?: string
+): string => {
   const { fuse } = useRari();
 
   const { data } = useQuery("Identifying Oracle " + oracleAddr, async () => {
     if (tokenAddr && tokenAddr === ETH_TOKEN_DATA.address)
       return "MasterPriceOracle";
-    return await fuse.identifyPriceOracle(oracleAddr);
+
+    // If no oracle address provided, return empty string
+    if (!oracleAddr) return "";
+
+    const identity = await fuse.identifyPriceOracle(oracleAddr);
+    if (identity === "MasterPriceOracleV1") return "RariMasterPriceOracle";
+    return identity;
   });
 
   return data ?? "";
@@ -33,9 +45,18 @@ export const useIdentifyOracle = (oracleAddr: string, tokenAddr?: string) => {
 
 export const useOracleData = (
   oracleAddress: string,
-  fuse: Fuse
-): OracleDataType | undefined => {
+  fuse: Fuse,
+  oracleModel: string | undefined
+): OracleDataType | undefined | string => {
+  
   const { data } = useQuery("Oracle info" + oracleAddress, async () => {
+    // If its not v2 or v3 (it is  a legacy oracle), then just return the string of the oracleModel
+    if (
+      oracleModel !== "MasterPriceOracleV2" &&
+      oracleModel !== "MasterPriceOracleV3"
+    )
+      return oracleModel;
+
     const oracleContract = createOracle(
       oracleAddress,
       fuse,
@@ -47,45 +68,128 @@ export const useOracleData = (
       .canAdminOverwrite()
       .call();
 
-    return { admin, adminOverwrite, oracleContract };
+    let defaultOracle = undefined;
+    try {
+      defaultOracle = await oracleContract.methods.defaultOracle().call();
+    } catch (err) {
+      console.log("Error fetching default oracle for Pool Oracle");
+      console.error(err);
+    }
+
+    return { admin, adminOverwrite, oracleContract, defaultOracle };
   });
 
-  return data;
+  return data ;
 };
 
 export const useGetOracleOptions = (
-  oracleData: any,
-  tokenAddress: string,
+  oracleData: OracleDataType,
+  tokenAddress: string
 ): { [key: string]: any } | null => {
   const { fuse } = useRari();
   const isValidAddress = fuse.web3.utils.isAddress(tokenAddress);
 
-  const { data: Current_Price_Oracle } = useQuery(
-    "MasterOracle " +
-      oracleData.oracleContract.options.address +
+
+  const { defaultOracle, oracleContract, adminOverwrite } = oracleData ?? {};
+  const oracleAddress = oracleContract?.options?.address ?? undefined;
+
+  // If the pool has a default price oracle (RariMasterPriceOracle), query that oracle's price for this token.
+  // If it has an available price, we can let the user choose "Default Price Oracle"
+  // We should also set this value initially if it is available and if "Current_Price_Oracle" is null.
+  const { data: Default_Price_Oracle } = useQuery(
+    "Pool Default Price Oracle " +
+      (defaultOracle ?? "") +
       " check price feed for " +
       tokenAddress,
     async () => {
-      if (!isValidAddress) return null;
+      if (!defaultOracle) return null;
 
-      // Get Oracle address for asset from the pools MasterPriceOracle
-      const oracleAddress = await oracleData.oracleContract.methods
-        .oracles(tokenAddress)
-        .call();
+      // If defaultOracle address is empty return null
+      if (defaultOracle === ETH_TOKEN_DATA.address) return null;
 
-      // If oracleAddress is empty return null
-      if (oracleAddress === "0x0000000000000000000000000000000000000000")
+      const oracleContract = createOracle(
+        defaultOracle,
+        fuse,
+        "MasterPriceOracle"
+      );
+
+      // Call the defaultOracle's price to make sure we have a price for this token
+      try {
+        const price = await oracleContract.methods.price(tokenAddress).call();
+        console.log("Default_Price_Oracle", { price });
+        if (parseFloat(price) > 0) return defaultOracle;
+      } catch (err) {
+        console.log("Default_Price_Oracle: could not fetch price");
+        console.error(err);
         return null;
-      return oracleAddress;
+      }
     }
   );
 
+  // If it has a custom oracle set, show this option and show it by default
+  // If it doesn't have a custom oracle, then query for the default oracle and show that as the "Current oracle"
+  const { data: Current_Price_Oracle } = useQuery(
+    "MasterOracle " + oracleAddress ??
+      "" +
+        " check price feed for " +
+        tokenAddress +
+        " and default oracle " +
+        defaultOracle,
+    async () => {
+      if (!isValidAddress) return null;
+      if (!oracleContract) return null;
+
+      // Get custom Oracle address for asset from the pools MasterPriceOracle
+      const customOracleAddress = await oracleData.oracleContract.methods
+        .oracles(tokenAddress)
+        .call();
+
+      // If we have a custom oracle address set, retur that
+      if (customOracleAddress !== ETH_TOKEN_DATA.address)
+        return customOracleAddress;
+      // If custom oracleAddress is empty
+      //  -- If there isnt a defaultOracle, return null
+      //  -- If there is a defaultOracle price for this asset, return the defaultOracle
+      //  -- If there isnt a default oracle price, then return null
+      // -
+      else {
+        if (!oracleData.defaultOracle) return null;
+        // This is copied from the DefaultOracle query
+        else {
+          const oracleContract = createOracle(
+            oracleData.defaultOracle,
+            fuse,
+            "MasterPriceOracle"
+          );
+
+          // Call the defaultOracle's price to make sure we have a price for this token
+          try {
+            const price = await oracleContract.methods
+              .price(tokenAddress)
+              .call();
+            if (parseFloat(price) > 0) return oracleData.defaultOracle;
+          } catch (err) {
+            console.log(
+              "Current_Price_Oracle: Default_Price_Oracle: could not fetch price"
+            );
+            console.error(err);
+            return null;
+          }
+        }
+      }
+    }
+  );
+
+  // If the pool does not have a default oracle (RariMasterPriceOracle) then show this option.
+  // If the pool already has a default oracle (RariMasterPriceOracle) then we don't have to show this.
+  // In case the Pool's default RariMasterPriceOracle cannot fetch the price for this asset, there would be no point in choosing this option.
   const { data: Rari_MasterPriceOracle } = useQuery(
     "RariMasterPriceOracle price feed check for " + tokenAddress,
     async () => {
       if (
         !isValidAddress ||
-        (!oracleData.adminOverwrite && !Current_Price_Oracle === null)
+        (!adminOverwrite && !Current_Price_Oracle === null) ||
+        !!defaultOracle // our defaultOracle IS RariMasterPriceOracle.
       )
         return null;
 
@@ -95,6 +199,7 @@ export const useGetOracleOptions = (
         fuse,
         "MasterPriceOracle"
       );
+
       const oracleAddress = await oracleContract.methods
         .oracles(tokenAddress)
         .call();
@@ -111,7 +216,7 @@ export const useGetOracleOptions = (
     async () => {
       if (
         !isValidAddress ||
-        (!oracleData.adminOverwrite && !Current_Price_Oracle === null)
+        (!adminOverwrite && !Current_Price_Oracle === null)
       )
         return null;
 
@@ -189,8 +294,9 @@ export const useGetOracleOptions = (
   // If tokenAddress is valid but oracle admin can't overwrite, return the preset oracle address,
   const Data = !isValidAddress
     ? null
-    : oracleData.adminOverwrite || Current_Price_Oracle === null
+    : adminOverwrite || Current_Price_Oracle === null
     ? {
+        Default_Price_Oracle,
         Current_Price_Oracle,
         Rari_MasterPriceOracle,
         Chainlink_Oracle,
