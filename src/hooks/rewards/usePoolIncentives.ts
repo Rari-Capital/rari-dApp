@@ -3,7 +3,10 @@ import { useRari } from "context/RariContext";
 import { TokensDataMap, useTokensDataAsMap } from "hooks/useTokenData";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
-import { useCTokensDataForRewards } from "./useRewardAPY";
+import {
+  CTokenRewardsDistributorIncentivesWithRatesMap,
+  useIncentivesWithRates,
+} from "./useRewardAPY";
 
 export interface CTokenRewardsDistributorIncentives {
   rewardsDistributorAddress: string;
@@ -23,7 +26,7 @@ export interface RewardsDistributorCTokensMap {
 
 export interface IncentivesData {
   hasIncentives: boolean;
-  incentives: CTokenIncentivesMap;
+  incentives: CTokenRewardsDistributorIncentivesWithRatesMap;
   rewardsDistributorCtokens: RewardsDistributorCTokensMap;
   rewardTokensData: TokensDataMap;
 }
@@ -113,18 +116,17 @@ export function usePoolIncentives(comptroller?: string): IncentivesData {
     () => !!Object.keys(incentives).length,
     [incentives]
   );
-  // const map = useCTokensDataForRewards(Object.keys(incentives));
+
+  const incentivesWithRates = useIncentivesWithRates(incentives, rewardTokens);
   // const  = useAssetPricesInEth(
 
   if (hasIncentives) {
     console.log({ incentives });
   }
 
-  // console.log({ map });
-
   return {
     hasIncentives,
-    incentives,
+    incentives: incentivesWithRates,
     rewardTokensData,
     rewardsDistributorCtokens,
   };

@@ -326,7 +326,7 @@ const FusePoolEditPage = memo(() => {
         </RowOrColumn>
 
         {/* Rewards Distributors */}
-        <DashboardBox w="100%" h="100%" my={4}>
+        {/* <DashboardBox w="100%" h="100%" my={4}>
           <Row mainAxisAlignment="flex-end" crossAxisAlignment="center" p={3}>
             <AddRewardsDistributorButton
               openAddRewardsDistributorModal={openAddRewardsDistributorModal}
@@ -380,7 +380,7 @@ const FusePoolEditPage = memo(() => {
           </Table>
 
           <ModalDivider />
-        </DashboardBox>
+        </DashboardBox> */}
       </Column>
     </>
   );

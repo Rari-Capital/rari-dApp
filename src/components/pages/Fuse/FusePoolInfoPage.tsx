@@ -630,7 +630,9 @@ const AssetAndOtherInfo = ({
                 },
               ]}
             />
-            <Text position="absolute" zIndex={4} top={4} left={4} color="white"> {IRMidentity?.replace("_", " ") ?? ""} </Text>
+            <Text position="absolute" zIndex={4} top={4} left={4} color="white"> {IRMidentity?.replace("_", " ") ?? ""}
+            
+             </Text>
             </>
           )
         ) : (
