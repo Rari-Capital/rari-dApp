@@ -470,17 +470,26 @@ const AssetAndOtherInfo = ({
           ).toFixed(0)
         );
 
-  const { data } = useQuery(selectedAsset.cToken + " curves", async () => {
+  const { data: curveData  } = useQuery(selectedAsset.cToken + " curves", async () => {
     const interestRateModel = await fuse.getInterestRateModel(
       selectedAsset.cToken
     );
 
-    if (interestRateModel === null) {
+        if (interestRateModel === null) {
       return { borrowerRates: null, supplierRates: null };
     }
 
-    return convertIRMtoCurve(interestRateModel, fuse);
+    const IRMidentity = await fuse.identifyInterestRateModelName(interestRateModel)
+
+    const curve = convertIRMtoCurve(interestRateModel, fuse);
+    
+    return { curve, IRMidentity}
+
   });
+
+  const { curve: data, IRMidentity } = curveData ?? {}
+  console.log({data, IRMidentity})
+
 
   const isMobile = useIsMobile();
 
@@ -553,6 +562,7 @@ const AssetAndOtherInfo = ({
         px={3}
         className="hide-bottom-tooltip"
         flexShrink={0}
+        // bg="red"
       >
         {data ? (
           data.supplierRates === null ? (
@@ -562,6 +572,7 @@ const AssetAndOtherInfo = ({
               </Text>
             </Center>
           ) : (
+            <>
             <Chart
               options={
                 {
@@ -619,6 +630,8 @@ const AssetAndOtherInfo = ({
                 },
               ]}
             />
+            <Text position="absolute" zIndex={4} top={4} left={4} color="white"> {IRMidentity?.replace("_", " ") ?? ""} </Text>
+            </>
           )
         ) : (
           <Center expand color="#FFFFFF">
