@@ -36,8 +36,8 @@ import FuseTabBar from "./FuseTabBar";
 import { useQuery } from "react-query";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 
-import { ETH_TOKEN_DATA, useTokenData } from "../../../hooks/useTokenData";
-import { CTokenIcon } from "./FusePoolsPage";
+import { ETH_TOKEN_DATA, useTokenData } from "hooks/useTokenData";
+import { CTokenIcon } from "components/shared/CTokenIcon";
 import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
 import {
@@ -630,7 +630,9 @@ const AssetAndOtherInfo = ({
                 },
               ]}
             />
-            <Text position="absolute" zIndex={4} top={4} left={4} color="white"> {IRMidentity?.replace("_", " ") ?? ""} </Text>
+            <Text position="absolute" zIndex={4} top={4} left={4} color="white"> {IRMidentity?.replace("_", " ") ?? ""}
+            
+             </Text>
             </>
           )
         ) : (

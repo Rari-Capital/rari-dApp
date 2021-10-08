@@ -23,13 +23,13 @@ import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
-import { GlowingButton } from "./GlowingButton";
+import { DarkGlowingButton, GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
 import { version } from "../..";
 
-import MoonpayModal from "../pages/MoonpayModal";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+import { useClaimable } from "hooks/rewards/useClaimable";
 
 export const AccountButton = memo(() => {
   const {
@@ -48,13 +48,7 @@ export const AccountButton = memo(() => {
 
   const authedOpenClaimRGTModal = useAuthedCallback(openClaimRGTModal);
 
-  const {
-    isOpen: isMoonpayModalOpen,
-    onOpen: openMoonpayModal,
-    onClose: closeMoonpayModal,
-  } = useDisclosure();
-
-  const authedOpenMoonpayModal = useAuthedCallback(openMoonpayModal);
+  const { hasClaimableRewards } = useClaimable();
 
   return (
     <>
@@ -62,17 +56,15 @@ export const AccountButton = memo(() => {
         isOpen={isSettingsModalOpen}
         onClose={closeSettingsModal}
         openClaimRGTModal={openClaimRGTModal}
-        openMoonpayModal={openMoonpayModal}
       />
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}
         onClose={closeClaimRGTModal}
       />
-      <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons
         openModal={authedOpenSettingsModal}
         openClaimRGTModal={authedOpenClaimRGTModal}
-        openMoonpayModal={authedOpenMoonpayModal}
+        hasClaimableRewards={hasClaimableRewards}
       />
     </>
   );
@@ -81,11 +73,11 @@ export const AccountButton = memo(() => {
 const Buttons = ({
   openModal,
   openClaimRGTModal,
-  openMoonpayModal,
+  hasClaimableRewards,
 }: {
   openModal: () => any;
   openClaimRGTModal: () => any;
-  openMoonpayModal: () => any;
+  hasClaimableRewards: boolean;
 }) => {
   const { address, isAuthed, login, isAttemptingLogin } = useRari();
 
@@ -103,29 +95,30 @@ const Buttons = ({
     <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
-          {/* <DashboardBox
-            as="button"
-            flexShrink={0}
-            width="110px"
-            height="40px"
-            fontWeight="bold"
-            onClick={openMoonpayModal}
-          >
-            <Center expand>{t("Buy Crypto")}</Center>
-          </DashboardBox> */}
-
-          <DashboardBox
-            ml={1}
-            as="button"
-            height="40px"
-            flexShrink={0}
-            width="95px"
-            fontSize="15px"
-            onClick={openClaimRGTModal}
-            fontWeight="bold"
-          >
-            <Center expand>{t("Claim RGT")}</Center>
-          </DashboardBox>
+          {hasClaimableRewards ? (
+            <DarkGlowingButton
+              label={t("Claim")}
+              onClick={openClaimRGTModal}
+              height="40px"
+              flexShrink={0}
+              width="95px"
+              fontSize="15px"
+              fontWeight="bold"
+            />
+          ) : (
+            <DashboardBox
+              ml={1}
+              as="button"
+              height="40px"
+              flexShrink={0}
+              width="95px"
+              fontSize="15px"
+              fontWeight="bold"
+              onClick={openClaimRGTModal}
+            >
+              <Center expand>{t("Claim")}</Center>
+            </DashboardBox>
+          )}
         </>
       )}
 
@@ -171,12 +164,10 @@ export const SettingsModal = ({
   isOpen,
   onClose,
   openClaimRGTModal,
-  openMoonpayModal,
 }: {
   isOpen: boolean;
   onClose: () => any;
   openClaimRGTModal: () => any;
-  openMoonpayModal: () => any;
 }) => {
   const { t } = useTranslation();
 
@@ -216,28 +207,9 @@ export const SettingsModal = ({
           crossAxisAlignment="center"
           p={4}
         >
-          <GlowingButton
-            label={t("Claim RGT")}
-            onClick={onClaimRGT}
-            width="100%"
-            height="51px"
-            mb={4}
-          />
-
-          <Button
-            bg="facebook.500"
-            width="100%"
-            height="45px"
-            fontSize="xl"
-            borderRadius="7px"
-            fontWeight="bold"
-            onClick={openMoonpayModal}
-            _hover={{}}
-            _active={{}}
-            mb={4}
-          >
-            {t("Buy Crypto")}
-          </Button>
+          <GlowingButton onClick={onClaimRGT} width="100%" height="51px" mb={4}>
+            {t("Claim")}
+          </GlowingButton>
 
           <Button
             bg={"whatsapp.500"}

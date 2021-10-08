@@ -9,10 +9,10 @@ import { Image } from "@chakra-ui/image";
 import { Input } from "@chakra-ui/input";
 import DashboardBox, {
   DASHBOARD_BOX_PROPS,
-} from "../../../../shared/DashboardBox";
+} from "components/shared/DashboardBox";
 
 // Utils
-import { USDPricedFuseAsset } from "../../../../../utils/fetchFusePoolData";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // React
 import { useState } from "react";
@@ -24,7 +24,7 @@ import { useRari } from "context/RariContext";
 import {
   ETH_TOKEN_DATA,
   useTokenData,
-} from "../../../../../hooks/useTokenData";
+} from "hooks/useTokenData";
 
 // Components
 import AssetSettings from "./AssetSettings";
