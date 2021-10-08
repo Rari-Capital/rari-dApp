@@ -597,8 +597,8 @@ export const NewsAndTwitterLink = () => {
 
 const NewsMarquee = memo(() => {
   const news = [
-    "The first Fuse pools deployed by the Rari Capital DAO are now open for deposits/borrows in the Fuse tab!",
-    "You can now earn rewards for pooling ETH and RGT on Sushiswap in the Pool2 tab.",
+    "Permissionless Pool Creation is out! Now anyone can create a Fuse Pool without limitations.",
+    "Look out for permissionless liquidity mining right around the corner 👀.",
     "We're migrating from Telegram to Discord! Join us there to talk all things Rari Capital.",
     "Individual Pool Dashboards are now live! View detailed analytics about your account and other useful metrics!",
   ];

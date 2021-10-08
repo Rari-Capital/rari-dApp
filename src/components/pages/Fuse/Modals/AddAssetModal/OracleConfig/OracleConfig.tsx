@@ -340,7 +340,7 @@ const OracleConfig = ({
         crossAxisAlignment={mode === "Editing" ? "flex-start" : "center"}
         flexDirection="column"
         width={
-          mode === "Adding" && shouldShowUniV3BaseTokenOracleForm
+          mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm
             ? "100%"
             : "50%"
         }
