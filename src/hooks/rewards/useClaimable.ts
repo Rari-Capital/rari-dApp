@@ -42,7 +42,7 @@ interface CTokenUnclaimedForPool {}
 
 const RGT = "0xd291e7a03283640fdc51b121ac401383a46cc623";
 
-const DUST_THRESHOLD = 0.000001;
+const DUST_THRESHOLD = 0;
 
 const amountIsNotDust = (amount: number, decimals = 18) => {
   return amount / 10 ** decimals > DUST_THRESHOLD;
