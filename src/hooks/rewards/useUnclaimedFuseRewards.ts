@@ -32,9 +32,7 @@ export function useUnclaimedFuseRewards() {
 
       const rewardsDistributorsByFusePool =
         await fuse.contracts.FusePoolLensSecondary.methods
-          .getRewardsDistributorsBySupplier(
-            "0x6997060D6bA220d8A0B102e0003Fe12796b874bd"
-          )
+          .getRewardsDistributorsBySupplier(address)
           .call();
 
       return rewardsDistributorsByFusePool ?? [];

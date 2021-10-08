@@ -5,7 +5,6 @@ import {
 } from "./useUnclaimedFuseRewards";
 import { useUnclaimedRGT } from "./useUnclaimedRGT";
 
-
 /**
  *
  * Claimable Rewards won't tell you the APY, only the claimable amt.
@@ -76,6 +75,8 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
     unclaimedFuseRewards,
   ]);
 
+  console.log({ unclaimedFuseRewards });
+
   // Construct a list of claimable rewards across reward types
   const allClaimable: GenericClaimableReward[] = useMemo(() => {
     // Fuse Rewards
@@ -101,7 +102,11 @@ export function useClaimable(showPrivate: boolean = false): UseClaimableReturn {
       return reward;
     };
 
-    if (showPrivate && privateUnclaimedRGT && amountIsNotDust(privateUnclaimedRGT))
+    if (
+      showPrivate &&
+      privateUnclaimedRGT &&
+      amountIsNotDust(privateUnclaimedRGT)
+    )
       rgtRewards.push(constructReward("private", privateUnclaimedRGT));
     if (unclaimedRGT && amountIsNotDust(unclaimedRGT))
       rgtRewards.push(constructReward("yieldagg", unclaimedRGT));
