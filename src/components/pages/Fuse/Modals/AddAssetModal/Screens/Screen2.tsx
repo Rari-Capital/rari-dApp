@@ -88,10 +88,9 @@ const Screen2 = ({
       />
     );
 
-    // If it has a default oracle and the user hasn't edited to be outside the default oracle
+  // If it has a default oracle and the user hasn't edited to be outside the default oracle
   const hasDefaultOraclePriceAndHasntEdited =
-    hasDefaultOracle && hasPriceForAsset && ( oracleAddress === defaultOracle) ;
-
+    hasDefaultOracle && hasPriceForAsset && oracleAddress === defaultOracle;
 
   return (
     <Column
@@ -99,7 +98,6 @@ const Screen2 = ({
       crossAxisAlignment="flex-start"
       h="100%"
       w="100%"
-      mt={4}
       // bg="aqua"
     >
       {hasDefaultOraclePriceAndHasntEdited && (
@@ -110,12 +108,7 @@ const Screen2 = ({
           h="30%"
           // bg="red"
         >
-          <Alert
-            status="info"
-            width="80%"
-            height="50px"
-            borderRadius={5}
-          >
+          <Alert status="info" width="80%" height="50px" borderRadius={5}>
             <AlertIcon />
             <Text fontSize="sm" align="center" color="black">
               This asset already has a price from the Pool's Default Oracle, but
@@ -129,16 +122,16 @@ const Screen2 = ({
         crossAxisAlignment="flex-start"
         h="100%"
         w="100%"
-        // bg="aqua"
+        bg="aqua"
       >
         <Column
-          mainAxisAlignment="center"
-          crossAxisAlignment="center"
-          overflowY="scroll"
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="flex-start"
           maxHeight="100%"
-          height="95%"
+          height="100%"
           maxWidth="100%"
-          width={shouldShowUniV3BaseTokenOracleForm ? "50%" : "100%"}
+          width={"100%"}
+          bg="pink"
         >
           <OracleConfig
             mode={mode}
@@ -169,6 +162,7 @@ const Screen2 = ({
         {shouldShowUniV3BaseTokenOracleForm ? (
           <Column
             width="50%"
+            minW="50%"
             height="100%"
             mainAxisAlignment="center"
             crossAxisAlignment="center"

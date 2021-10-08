@@ -61,12 +61,12 @@ const Screen3 = ({
           alignItems="center"
           justifyContent="center"
         >
+          <IRMChart modal curves={curves} tokenData={tokenData} />
           <Text>
             {fuse
               .identifyInterestRateModelName(interestRateModel)
               .replace("_", " ")}
           </Text>
-          <IRMChart modal curves={curves} tokenData={tokenData} />
         </Column>
         <Column
           width="47%"

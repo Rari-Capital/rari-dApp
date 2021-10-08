@@ -222,7 +222,6 @@ const OracleConfig = ({
     }
   };
 
-  console.log("heyr", { uniV3BaseToken });
 
   if (!options)
     return (
@@ -237,7 +236,7 @@ const OracleConfig = ({
         mainAxisAlignment="space-between"
         alignItems="center"
         crossAxisAlignment="center"
-        width={mode === "Editing" ? "100%" : "50%"}
+        width={"100%"}
         pt={mode === "Editing" ? 4 : 0}
         pb={mode === "Editing" ? 1 : 0}
         px={mode === "Editing" ? 4 : 0}
@@ -333,7 +332,7 @@ const OracleConfig = ({
         mainAxisAlignment="center"
         crossAxisAlignment="center"
         flexDirection="column"
-        width="50%"
+        width="100%%"
         // bg="pink"
         ml={mode === "Editing" ? "auto" : ""}
       >

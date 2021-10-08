@@ -608,9 +608,10 @@ const AssetSettings = ({
     >
       <Row
         mainAxisAlignment={"center"}
-        crossAxisAlignment={"flex-start"}
+        crossAxisAlignment={"center"}
         w="100%"
-        height="10%"
+        flexBasis={"10%"}
+        bg="green"
       >
         <Title stage={stage} />
       </Row>
@@ -622,6 +623,8 @@ const AssetSettings = ({
         height={!isDeploying ? "70%" : "60%"}
         width="100%"
         overflowY="auto"
+        flexBasis={"80%"}
+        bg="red"
       >
         {stage === 1 ? (
           <Column
@@ -731,13 +734,25 @@ export default AssetSettings;
 const Title = ({ stage }: { stage: number }) => {
   return (
     <>
-      <Fade in={stage === 1} unmountOnExit>
+      <Fade
+        in={stage === 1}
+        unmountOnExit
+        style={{ background: "transparent" }}
+      >
         <Heading size="md"> Configure Interest Rate Model </Heading>
       </Fade>
-      <Fade in={stage === 2} unmountOnExit>
+      <Fade
+        in={stage === 2}
+        unmountOnExit
+        style={{ background: "transparent" }}
+      >
         <Heading size="md"> Configure Oracle </Heading>
       </Fade>
-      <Fade in={stage === 3} unmountOnExit>
+      <Fade
+        in={stage === 3}
+        unmountOnExit
+        style={{ background: "transparent" }}
+      >
         <Heading size="md"> Asset Config Summary </Heading>
       </Fade>
     </>
