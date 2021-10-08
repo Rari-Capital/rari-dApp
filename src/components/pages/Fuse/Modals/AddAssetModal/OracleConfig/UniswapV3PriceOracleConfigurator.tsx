@@ -108,6 +108,7 @@ const UniswapV3PriceOracleConfigurator = ({
         px={4}
         ml={"auto"}
         // bg="aqua"
+        id="UNIv3COLUMN"
       >
         <Row
           crossAxisAlignment="center"

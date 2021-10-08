@@ -1,4 +1,11 @@
-import { Avatar, AvatarGroup, Link, Spinner, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  AvatarGroup,
+  Link,
+  Spinner,
+  Text,
+  Box,
+} from "@chakra-ui/react";
 import { Center, Column, Row, useIsMobile } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
@@ -117,7 +124,7 @@ const PoolList = () => {
         width="100%"
         minHeight="100px"
       >
-        {filteredPools ? (
+        {filteredPools && filteredPools.length ? (
           filteredPools.map((pool, index) => {
             return (
               <PoolRow
@@ -137,7 +144,9 @@ const PoolList = () => {
             );
           })
         ) : (
-          <Spinner my={8} />
+          <Center h="100%" w="100%" bg="transparent">
+            <Spinner my={8} />
+          </Center>
         )}
       </Column>
     </Column>
@@ -212,18 +221,14 @@ const PoolRow = ({
               </SimpleTooltip>
             )}
 
-            <Row
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              mt={isEmpty ? 0 : 3}
-            >
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center" mt={isEmpty ? 0 : 2}>
               <WhitelistedIcon
                 isWhitelisted={isWhitelisted}
                 mr={2}
-                mb="3px"
                 boxSize={"15px"}
+                mb="2px"
               />
-              <Text>{name}</Text>
+              <Text >{name}</Text>
             </Row>
           </Column>
 
