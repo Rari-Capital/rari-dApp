@@ -76,8 +76,8 @@ const AddAssetModal = ({
         width={isEmpty ? "25%" : "50%"}
         height={isEmpty ? "auto" : "95%"}
         maxWidth="50%"
-        maxHeight="85%"
-        overflowY="hidden"
+        maxHeight="100%"
+        overflowY="scroll"
       >
         <Box
           d="flex"

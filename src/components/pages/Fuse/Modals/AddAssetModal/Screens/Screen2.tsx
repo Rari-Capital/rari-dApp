@@ -100,7 +100,7 @@ const Screen2 = ({
       h="100%"
       w="100%"
       mt={4}
-      bg="aqua"
+      // bg="aqua"
     >
       {hasDefaultOraclePriceAndHasntEdited && (
         <Row
@@ -129,7 +129,7 @@ const Screen2 = ({
         crossAxisAlignment="flex-start"
         h="100%"
         w="100%"
-        bg="aqua"
+        // bg="aqua"
       >
         <Column
           mainAxisAlignment="center"

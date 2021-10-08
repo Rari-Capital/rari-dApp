@@ -141,7 +141,7 @@ const AssetSettings = ({
     [uniV3BaseTokenHasOracle, uniV3BaseToken, activeOracle]
   );
 
-  // If you choose a UniV3 Pool as the oracle, check if fuse pool's oracle has an oracle for uniV3BaseToken
+  // If you choose a UniV3 Pool as the oracle, check if fuse pool's oracle can get a price for uniV3BaseToken
   useEffect(() => {
     if (
       !!uniV3BaseToken &&
@@ -150,13 +150,17 @@ const AssetSettings = ({
       typeof oracleData !== "string"
     ) {
       oracleData.oracleContract.methods
-        .oracles(uniV3BaseToken)
+        .price(uniV3BaseToken)
         .call()
-        .then((address: string) => {
-          // if address  is EmptyAddress then there is no oracle for this token
-          return address === "0x0000000000000000000000000000000000000000"
-            ? setUniV3BaseTokenHasOracle(false)
-            : setUniV3BaseTokenHasOracle(true);
+        .then((price: string) => {
+          // if you're able to get a price for this asset then
+          return parseFloat(price) > 0
+            ? setUniV3BaseTokenHasOracle(true)
+            : setUniV3BaseTokenHasOracle(false);
+        })
+        .catch((err: any) => {
+          console.log("Could not fetch price using pool's oracle");
+          console.error(err);
         });
     }
   }, [uniV3BaseToken, oracleData, setUniV3BaseTokenHasOracle]);
@@ -359,9 +363,11 @@ const AssetSettings = ({
     //const mpoNeedsUpdating = hasOracles.some((x) => !x);
 
     if (hasOracles) {
-      await poolOracleContract.methods
+      const tx = await poolOracleContract.methods
         .add(tokenArray, oracleAddress)
         .send({ from: address });
+
+      console.log({ tx });
 
       toast({
         title: "You have successfully configured the oracle for this asset!",
@@ -715,13 +721,13 @@ const Title = ({ stage }: { stage: number }) => {
   return (
     <>
       <Fade in={stage === 1} unmountOnExit>
-        <Heading size="lg"> Configure Interest Rate Model </Heading>
+        <Heading size="md"> Configure Interest Rate Model </Heading>
       </Fade>
       <Fade in={stage === 2} unmountOnExit>
-        <Heading> Configure Oracle </Heading>
+        <Heading size="md"> Configure Oracle </Heading>
       </Fade>
       <Fade in={stage === 3} unmountOnExit>
-        <Heading> Asset Config Summary </Heading>
+        <Heading size="md"> Asset Config Summary </Heading>
       </Fade>
     </>
   );
