@@ -100,7 +100,7 @@ const DeployButton = ({
         width="100%"
         height="100%"
         flexBasis="10%"
-        bg="lime"
+        // bg="red"
       >
       {isDeploying ? (
         <TransactionStepper
@@ -116,10 +116,10 @@ const DeployButton = ({
         width="100%"
         height="100%"
       >
-        <Center>
+        <Center w="100%" h="100%">
           {stage !== 1 && !isDeploying && (
             <Button
-              width={stage === 3 ? "20%" : "45%"}
+              width={stage === 3 ? "20%" : "50%"}
               mx={4}
               height="100%"
               // fontSize="2xl"
@@ -138,7 +138,8 @@ const DeployButton = ({
 
           {stage < 3 && (
             <Button
-              width="45%"
+              width="100%"
+              height="100%"
               // height="70px"
               mx={4}
               // fontSize="2xl"

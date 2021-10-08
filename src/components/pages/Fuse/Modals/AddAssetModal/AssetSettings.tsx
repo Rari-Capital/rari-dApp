@@ -160,7 +160,7 @@ const AssetSettings = ({
         })
         .catch((err: any) => {
           console.log("Could not fetch price using pool's oracle");
-          console.error(err);
+          setUniV3BaseTokenHasOracle(false)
         });
     }
   }, [uniV3BaseToken, oracleData, setUniV3BaseTokenHasOracle]);
@@ -188,7 +188,7 @@ const AssetSettings = ({
     () => !!priceForAsset && priceForAsset > 0,
     [priceForAsset]
   );
-  
+
   // For this asset, check for a defaultOracle, customOracle, and Pool MPO price for this token
   useEffect(() => {
     // If its a legacy oracle (type === string) then we cant create a MasterPriceOracle isntance for it and the user wont even be able to configure the oracle.
@@ -600,7 +600,7 @@ const AssetSettings = ({
         crossAxisAlignment={"center"}
         w="100%"
         flexBasis={"10%"}
-        bg="green"
+        // bg="green"
       >
         <Title stage={stage} />
       </Row>
@@ -613,7 +613,8 @@ const AssetSettings = ({
         width="100%"
         overflowY="auto"
         flexBasis={"80%"}
-        bg="red"
+        flexGrow={1}
+        // bg="red"
       >
         {stage === 1 ? (
           <Column

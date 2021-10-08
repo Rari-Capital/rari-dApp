@@ -222,7 +222,6 @@ const OracleConfig = ({
     }
   };
 
-
   if (!options)
     return (
       <Center>
@@ -233,13 +232,15 @@ const OracleConfig = ({
   return (
     <>
       <Row
-        mainAxisAlignment="space-between"
-        alignItems="center"
+        mainAxisAlignment={mode === "Editing" ? "space-between" : "flex-start"}
+        // background="gold"
         crossAxisAlignment="center"
-        width={"100%"}
+        width={mode === "Editing" ? "100%" : "50%"}
+        flexGrow={1}
         pt={mode === "Editing" ? 4 : 0}
         pb={mode === "Editing" ? 1 : 0}
         px={mode === "Editing" ? 4 : 0}
+        id="PRICEORACLE"
       >
         <SimpleTooltip label={t("Choose the best price oracle for the asset.")}>
           <Text fontWeight="bold">
@@ -329,12 +330,14 @@ const OracleConfig = ({
       </Row>
 
       <Row
-        mainAxisAlignment="center"
-        crossAxisAlignment="center"
+        mainAxisAlignment={mode === "Editing" ? "center" : "center"}
+        crossAxisAlignment={mode === "Editing" ? "flex-start" : "center"}
         flexDirection="column"
-        width="100%%"
+        width={(mode === "Adding") && shouldShowUniV3BaseTokenOracleForm  ? "50%" : "100%"}
         // bg="pink"
         ml={mode === "Editing" ? "auto" : ""}
+        px={mode === "Editing" ? 4 : 0}
+        id="UNIV3Config"
       >
         {activeOracle === "Uniswap_V3_Oracle" ? (
           <UniswapV3PriceOracleConfigurator

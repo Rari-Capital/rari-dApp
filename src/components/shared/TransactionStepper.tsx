@@ -28,7 +28,6 @@ const TransactionStepper = ({
             mainAxisAlignment="space-around"
             crossAxisAlignment="center"
             width="90%"
-            p={4}
           >
             {steps.map((step, index) => (
               <Circle

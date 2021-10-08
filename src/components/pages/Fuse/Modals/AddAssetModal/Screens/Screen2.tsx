@@ -126,7 +126,7 @@ const Screen2 = ({
       >
         <Column
           mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
+          crossAxisAlignment="center"
           maxHeight="100%"
           height="100%"
           maxWidth="100%"

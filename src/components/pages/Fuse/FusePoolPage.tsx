@@ -141,7 +141,9 @@ const PendingAdminAlert = ({ comptroller }: { comptroller?: string }) => {
               disabled={isAccepting}
             >
               <HStack>
-                <Text fontWeight="bold">{isAccepting} ? Accepting... : Accept Admin </Text>
+                <Text fontWeight="bold">
+                  {isAccepting} ? Accepting... : Accept Admin{" "}
+                </Text>
               </HStack>
             </Button>
           }
