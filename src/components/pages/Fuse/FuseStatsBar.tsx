@@ -34,9 +34,8 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
       height={isMobile ? "auto" : "125px"}
     >
       <DashboardBox
-        width={isMobile ? "100%" : "100%"}
+        width={isMobile ? "100%" : "50%"}
         height={isMobile ? "auto" : "100%"}
-        flexBasis="60%"
       >
         <Column
           expand
@@ -69,8 +68,7 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
               </span>{" "}
               across{" "}
               <span style={{ fontWeight: "bold" }}>
-                {data.assets.length} {" "}
-                assets.
+                {data.assets.length} assets.
               </span>{" "}
               Fuse is the first truly open interest rate protocol. Lend, borrow,
               and create isolated lending markets with unlimited flexibility.
@@ -88,15 +86,14 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
         isRow={!isMobile}
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        flexBasis="40%"
-        h="100%"
-        w="100%"
+        height="100%"
+        width={isMobile ? "100%" : "50%"}
       >
         {isAuthed &&
         totalBorrowAndSupply &&
         totalBorrowAndSupply.totalSuppliedUSD > 0 ? (
           <>
-            <StatBox>
+            <StatBox width={isMobile ? "100%" : "50%"}>
               <CaptionedStat
                 crossAxisAlignment="center"
                 captionFirst={false}
@@ -111,7 +108,7 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
               />
             </StatBox>
 
-            <StatBox>
+            <StatBox width={isMobile ? "100%" : "50%"}>
               <CaptionedStat
                 crossAxisAlignment="center"
                 captionFirst={false}
@@ -127,7 +124,7 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
             </StatBox>
           </>
         ) : (
-          <StatBox width={isMobile ? "100%" : "100%"}>
+          <StatBox width="100%">
             <APYWithRefreshMovingStat
               formatStat={smallUsdFormatter}
               fetchInterval={40000}
@@ -162,9 +159,7 @@ const StatBox = ({
 
   return (
     <DashboardBox
-      width={isMobile ? "100%" : "100%"}
       height={isMobile ? "auto" : "100%"}
-      flexShrink={1}
       mt={isMobile ? 4 : 0}
       ml={isMobile ? 0 : 4}
       {...others}
