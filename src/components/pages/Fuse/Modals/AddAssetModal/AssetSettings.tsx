@@ -680,6 +680,7 @@ const AssetSettings = ({
             adminFee={adminFee}
             tokenData={tokenData}
             activeOracle={activeOracle}
+            oracleAddress={oracleAddress}
             reserveFactor={reserveFactor}
             collateralFactor={collateralFactor}
             interestRateModel={interestRateModel}

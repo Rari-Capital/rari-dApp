@@ -7,7 +7,7 @@ import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../../../shared/SimpleTooltip";
 
 // React
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
 
@@ -95,10 +95,11 @@ const OracleConfig = ({
 
   // Available oracle options for asset
   const options = useGetOracleOptions(oracleData, tokenAddress);
-  console.log({ options });
 
   // Identify token oracle address
   const oracleIdentity = useIdentifyOracle(oracleAddress);
+
+  const [inputTouched, setInputTouched] = useState(false);
 
   // If user's editing the asset's properties, show the Ctoken's active Oracle
   useEffect(() => {
@@ -149,7 +150,8 @@ const OracleConfig = ({
       (activeOracle === "Custom_Oracle" ||
         activeOracle === "Uniswap_V3_Oracle" ||
         activeOracle === "Uniswap_V2_Oracle" ||
-        activeOracle === "SushiSwap_Oracle")
+        activeOracle === "SushiSwap_Oracle") &&
+      !inputTouched
     )
       _setOracleAddress("");
   }, [activeOracle, options, _setOracleAddress, activeUniSwapPair]);
@@ -315,6 +317,7 @@ const OracleConfig = ({
               value={oracleAddress}
               onChange={(event) => {
                 const address = event.target.value;
+                setInputTouched(true);
                 _setOracleAddress(address);
               }}
               {...DASHBOARD_BOX_PROPS}

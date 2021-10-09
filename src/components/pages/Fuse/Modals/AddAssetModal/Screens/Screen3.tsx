@@ -9,12 +9,14 @@ import { useRari } from "context/RariContext";
 
 // Components
 import IRMChart from "../IRMChart";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 const Screen3 = ({
   curves,
   adminFee,
   tokenData,
   activeOracle,
+  oracleAddress,
   reserveFactor,
   collateralFactor,
   interestRateModel,
@@ -27,6 +29,7 @@ const Screen3 = ({
   collateralFactor: number;
   reserveFactor: number;
   activeOracle: string;
+  oracleAddress: string;
   tokenData: any;
   adminFee: number;
   curves: any;
@@ -100,7 +103,9 @@ const Screen3 = ({
 
           <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
             <Text size="sm">Oracle:</Text>
-            <Text size="sm">{activeOracle.replace("_", " ")}</Text>
+            <SimpleTooltip label={oracleAddress}>
+              <Text size="sm">{activeOracle.replace("_", " ")}</Text>
+            </SimpleTooltip>
           </ConfigRow>
 
           {shouldShowUniV3BaseTokenOracleForm ? (

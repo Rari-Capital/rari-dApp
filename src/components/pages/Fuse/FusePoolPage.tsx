@@ -622,7 +622,10 @@ const AssetSupplyRow = ({
       ? `${supplyIncentives[hovered].supplyAPR.toFixed(2)} % APR in ${
           rewardTokensData[supplyIncentives[hovered].rewardToken].symbol
         } distributions.`
-      : `${displayedSupplyAPR.toFixed(2)}% total APR `;
+      : `${displayedSupplyAPR.toFixed(2)}% total APR distributed in ${supplyIncentives
+          .map((incentive) => rewardTokensData[incentive.rewardToken].symbol)
+          .join(", ")}
+         `;
 
   const _hovered = hovered > 0 ? hovered : 0;
 
@@ -731,9 +734,9 @@ const AssetSupplyRow = ({
                   })}
                 </AvatarGroup>
                 <SimpleTooltip label={displayedSupplyAPRLabel}>
-                  <Text color={color} fontWeight="bold" pl={1}>
+                  <Text color={color} fontWeight="bold" pl={1} fontSize="sm">
                     {/* {(supplyIncentive.supplySpeed / 1e18).toString()}%  */}
-                    {displayedSupplyAPR.toFixed(2)}%
+                    {displayedSupplyAPR.toFixed(2)}% APR
                   </Text>
                 </SimpleTooltip>
               </Row>
