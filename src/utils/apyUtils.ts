@@ -6,14 +6,12 @@ export const convertMantissaToAPR = (mantissa: any) => {
   return (mantissa * 2372500) / 1e16;
 };
 
-
-// for supply-side rewards apy: 
-// export const 
+// for supply-side rewards apy:
+// export const
 // convertMantissaToAPY((rewardSupplySpeed * rewardEthPrice) / (totalSupply * underlyingEthPrice))
 
 //  - CToken
 // -
 
-
-// for borrow-side rewards apy: 
+// for borrow-side rewards apy:
 // convertMantissaToAPY((rewardBorrowSpeed * rewardEthPrice) / (totalBorrow * underlyingEthPrice))

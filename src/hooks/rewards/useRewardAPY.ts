@@ -11,7 +11,6 @@ import { toBN } from "utils/bigUtils";
 import {
   CTokenIncentivesMap,
   CTokenRewardsDistributorIncentives,
-  RewardsDistributorCTokensMap,
 } from "./usePoolIncentives";
 import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 
@@ -45,10 +44,11 @@ interface RewardsDataForMantissa {
 
 export const useIncentivesWithRates = (
   incentives: CTokenIncentivesMap,
-  rewardTokenAddrs: string[],
+  rewardTokenAddrs: string[]
 ) => {
-    // this is what we return
-  const incentivesWithRates: CTokenRewardsDistributorIncentivesWithRatesMap = {};
+  // this is what we return
+  const incentivesWithRates: CTokenRewardsDistributorIncentivesWithRatesMap =
+    {};
 
   const ctokenAddrs = Object.keys(incentives);
 
@@ -134,7 +134,6 @@ export const useIncentivesWithRates = (
             return cTokenIncentiveDataWithAPYs;
           })
         : [];
-
 
     // this is what we return
     incentivesWithRates[cTokenAddress] = incentivesForCTokenWithRates;

@@ -39,7 +39,7 @@ import {
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
 // Utils
-import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
+import { convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { createComptroller, createUnitroller } from "utils/createComptroller";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
@@ -614,8 +614,6 @@ const AssetSupplyRow = ({
   const handleMouseEnter = (index: number) => setHovered(index);
   const handleMouseLeave = () => setHovered(-1);
 
-  console.log({ supplyIncentives });
-
   const displayedSupplyAPR =
     hovered >= 0 ? supplyIncentives[hovered].supplyAPR : totalSupplyAPR;
 
@@ -626,15 +624,11 @@ const AssetSupplyRow = ({
         } distributions.`
       : `${displayedSupplyAPR.toFixed(2)}% total APR `;
 
-  console.log({ hovered, displayedSupplyAPR });
-
   const _hovered = hovered > 0 ? hovered : 0;
 
   const color =
     rewardTokensData[supplyIncentives?.[_hovered]?.rewardToken]?.color ??
     "white";
-
-  console.log({ rewardTokensData, hovered, _hovered, supplyIncentives, color });
 
   return (
     <>
@@ -935,7 +929,7 @@ const BorrowList = ({
 
           {isMobile ? null : (
             <Text width="27%" fontWeight="bold" textAlign="right">
-              {t("APR/TVL")}
+              {t("APY/TVL")}
             </Text>
           )}
 
@@ -1046,7 +1040,7 @@ const AssetBorrowRow = ({
 
   const tokenData = useTokenData(asset.underlyingToken);
 
-  const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
+  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
 
   const { t } = useTranslation();
 
@@ -1121,7 +1115,7 @@ const AssetBorrowRow = ({
               fontWeight="bold"
               fontSize="17px"
             >
-              {borrowAPR.toFixed(2)}%
+              {borrowAPY.toFixed(2)}%
             </Text>
 
             {/* Demo Borrow Incentives */}

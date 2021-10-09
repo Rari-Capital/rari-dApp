@@ -22,7 +22,7 @@ import { useAssetsMapWithTokenData } from "hooks/useAssetsMap";
 import { FusePoolData, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 import { TokenData } from "hooks/useTokenData";
 import { TokensDataHash } from "utils/tokenUtils";
-import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
+import { convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
@@ -90,7 +90,7 @@ const Fuse = () => {
               {t("Borrows")}
             </Th>
             <Th textAlign="right" color="white">
-              {`${t("Lend APY")} / ${t("Borrow APR")}`}
+              {`${t("Lend APY")} / ${t("Borrow APY")}`}
             </Th>
           </Tr>
         </Thead>
@@ -212,7 +212,10 @@ const AssetContainer = ({
   const supplyBalanceUSD = shortUsdFormatter(asset.supplyBalanceUSD);
   const borrowBalanceUSD = shortUsdFormatter(asset.borrowBalanceUSD);
 
-  const borrowRate = convertMantissaToAPR(asset.borrowRatePerBlock).toFixed(2);
+  const borrowRate = convertMantissaToAPY(
+    asset.borrowRatePerBlock,
+    365
+  ).toFixed(2);
   const supplyRate = convertMantissaToAPY(
     asset.supplyRatePerBlock,
     365

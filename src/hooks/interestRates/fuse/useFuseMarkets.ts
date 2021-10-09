@@ -6,7 +6,7 @@ import { useFusePools } from "hooks/fuse/useFusePools";
 
 // Util
 import { fetchFusePoolData, FusePoolData } from "utils/fetchFusePoolData";
-import { convertMantissaToAPY, convertMantissaToAPR } from "utils/apyUtils";
+import { convertMantissaToAPY } from "utils/apyUtils";
 
 // Types
 import { MarketInfo } from "../types";
@@ -46,7 +46,7 @@ export default function useFuseMarkets() {
                     lending:
                       convertMantissaToAPY(asset.supplyRatePerBlock, 365) / 100,
                     borrowing:
-                      convertMantissaToAPR(asset.borrowRatePerBlock) / 100,
+                      convertMantissaToAPY(asset.borrowRatePerBlock, 365) / 100,
                   },
                 });
               });
