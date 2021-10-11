@@ -335,7 +335,7 @@ const FundStats = ({ glow = false }: { glow?: boolean }) => {
           <Center expand>
             {hasNotDeposited ? (
               <APYWithRefreshMovingStat
-                formatStat={usdFormatter}
+                formatStat={smallUsdFormatter}
                 fetchInterval={40000}
                 loadingPlaceholder="$?"
                 apyInterval={100}
