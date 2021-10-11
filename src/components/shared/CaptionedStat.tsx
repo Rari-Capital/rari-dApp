@@ -10,6 +10,7 @@ export interface CaptionedStatProps {
   captionSize: string;
   spacing?: string | number;
   captionFirst?: boolean;
+  captionColor?: string;
 }
 
 const CaptionedStat = ({
@@ -20,6 +21,7 @@ const CaptionedStat = ({
   statSize,
   crossAxisAlignment,
   captionFirst,
+  captionColor,
 }: CaptionedStatProps) => {
   const crossAxisAlignmentStatic = useMaybeResponsiveProp(crossAxisAlignment);
   const textAlign = crossAxisAlignmentStatic.replace("flex-", "") as any;
@@ -33,6 +35,7 @@ const CaptionedStat = ({
             spacing={spacing ?? 0}
             textAlign={textAlign}
             text={caption}
+            color={captionColor}
           />
           <Stat size={statSize} text={stat} />
         </>
@@ -44,6 +47,7 @@ const CaptionedStat = ({
             spacing={spacing ?? 0}
             textAlign={textAlign}
             text={caption}
+            color={captionColor}
           />
         </>
       )}
@@ -70,6 +74,7 @@ const Caption = ({
   textAlign,
   spacing,
   text,
+  color = "#858585",
 }: {
   size: { md: string; xs: string } | string;
 
@@ -78,12 +83,14 @@ const Caption = ({
   spacing: string | number;
 
   text: string;
+
+  color?: string;
 }) => {
   return (
     <Text
       textTransform="uppercase"
       letterSpacing="wide"
-      color="#858585"
+      color={color}
       fontSize={size}
       textAlign={textAlign}
       mt={spacing ?? 0}

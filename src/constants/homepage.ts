@@ -216,3 +216,5 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
     vaultType: Pool.YIELD,
   },
 ];
+
+export const ABILLY = 1e9 / 2;
