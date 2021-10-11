@@ -1,11 +1,14 @@
 // Fuse
 import Fuse from "../fuse-sdk";
-import ERC20ABI from "rari-sdk/abi/ERC20.json";
+import ERC20ABI from "../rari-sdk/abi/ERC20.json";
 
 // Web3
-import { Contract } from "web3-eth-contract"
+import { Contract } from "web3-eth-contract";
 
-export const createComptroller = (comptrollerAddress: string, fuse: Fuse): Contract => {
+export const createComptroller = (
+  comptrollerAddress: string,
+  fuse: Fuse
+): Contract => {
   const comptroller = new fuse.web3.eth.Contract(
     JSON.parse(
       fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi
@@ -16,7 +19,10 @@ export const createComptroller = (comptrollerAddress: string, fuse: Fuse): Contr
   return comptroller;
 };
 
-export const createUnitroller = (unitrollerAddress: string, fuse: Fuse): Contract => {
+export const createUnitroller = (
+  unitrollerAddress: string,
+  fuse: Fuse
+): Contract => {
   const unitroller = new fuse.web3.eth.Contract(
     JSON.parse(
       fuse.compoundContracts["contracts/Unitroller.sol:Unitroller"].abi
@@ -44,15 +50,18 @@ export const createRewardsDistributor = (
   return rewardsDistributorInstance;
 };
 
-export const createOracle = (oracleAddress: string, fuse: Fuse, type: string): Contract => {
-
+export const createOracle = (
+  oracleAddress: string,
+  fuse: Fuse,
+  type: string
+): Contract => {
   const oracle = new fuse.web3.eth.Contract(
-      fuse.oracleContracts[type].abi,
-      oracleAddress,
-  )
+    fuse.oracleContracts[type].abi,
+    oracleAddress
+  );
 
-  return oracle
-}
+  return oracle;
+};
 
 export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
   const cErc20Delegate = new fuse.web3.eth.Contract(

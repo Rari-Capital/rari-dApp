@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import * as React from "react";
 import { useQuery } from "react-query";
 import CaptionedStat, { CaptionedStatProps } from "./CaptionedStat";
+import { ABILLY } from "constants/homepage";
 
 export function useInterval(callback: () => any, delay: number) {
   const intervalId = React.useRef<null | number>(null);
@@ -140,10 +141,18 @@ export const APYWithRefreshMovingStat = React.memo(
       }
     }, [data]);
 
+    const celebrate = useMemo(() => currentStat > ABILLY, [currentStat]);
+
     return (
       <CaptionedStat
         {...statProps}
-        stat={!data ? loadingPlaceholder : formattedStat}
+        stat={
+          !data
+            ? loadingPlaceholder
+            : celebrate
+            ? `${formattedStat}`
+            : formattedStat
+        }
       />
     );
   }
