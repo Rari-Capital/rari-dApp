@@ -193,7 +193,6 @@ const FusePoolEditPage = memo(() => {
     RewardsDistributor | undefined
   >();
 
-
   console.log({ rewardsDistributors, poolIncentives });
 
   const handleRewardsRowClick = useCallback(
@@ -483,7 +482,7 @@ const PoolConfiguration = ({
 
     try {
       await testForComptrollerErrorAndSend(
-        unitroller.methods._renounceAdminRights(),
+        unitroller.methods._toggleAdminRights(false),
         address,
         ""
       );
@@ -1155,7 +1154,9 @@ const RewardsDistributorRow = ({
               />
             ) : null}
             <Heading fontSize="22px" color={tokenData?.color ?? "#FFF"} ml={2}>
-              {tokenData ? tokenData.symbol ?? "Invalid Address!" : "Loading..."}
+              {tokenData
+                ? tokenData.symbol ?? "Invalid Address!"
+                : "Loading..."}
             </Heading>
           </HStack>
         </Td>
