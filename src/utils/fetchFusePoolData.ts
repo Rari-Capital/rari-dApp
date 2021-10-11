@@ -89,6 +89,10 @@ export const filterPoolName = (name: string) => {
     return "Tetranode's Locker";
   }
 
+  if (name === "state's pool") {
+    return "Ribbon Pool";
+  }
+
   if (name === "Stake DAO Pool") {
     return "The Animal Kingdom";
   }
@@ -109,7 +113,7 @@ export const filterPoolName = (name: string) => {
     return "Yearn Soup Pot of Yield";
   }
 
- return filter.clean(name + "T1T$OR@$$").replace('T1T$OR@$$', '')
+  return filter.clean(name + "T1T$OR@$$").replace("T1T$OR@$$", "");
 };
 
 export const fetchFusePoolData = async (
