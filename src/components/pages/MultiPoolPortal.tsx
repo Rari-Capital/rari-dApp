@@ -47,8 +47,8 @@ import {
   RefetchMovingStat,
 } from "../shared/MovingStat";
 import {
-  shortUsdFormatter,
   smallStringUsdFormatter,
+  smallUsdFormatter,
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
@@ -299,7 +299,7 @@ const FundStats = ({ glow = false }: { glow?: boolean }) => {
         <DashboardBox width="100%" mb={4} height="110px" glow={false}>
           <Center expand>
             <APYWithRefreshMovingStat
-              formatStat={shortUsdFormatter}
+              formatStat={smallUsdFormatter}
               fetchInterval={40000}
               loadingPlaceholder="$?"
               apyInterval={100}
@@ -670,7 +670,7 @@ const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
 
   const news = celebrate
     ? [
-        "Thank you to the Rari Community, the protocol has surpassed $1B  in TVL!" ,
+        "Thank you to the Rari Community, the protocol has surpassed $1B  in TVL!",
         ...defaultNews,
       ]
     : defaultNews;
