@@ -73,6 +73,22 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 import ConfettiGenerator from "confetti-js";
 import { ABILLY } from "constants/homepage";
 
+
+const faces = [
+  { type: "svg", src: "jack.svg", size: 20, weight: 0.03 },
+  { type: "svg", src: "david.svg", size: 20, weight: 0.03 },
+  { type: "svg", src: "jai.svg", size: 20, weight: 0.03 },
+  // { type: "svg", src: "t11s.svg", size: 20, weight: 0.03 },
+]
+
+const props = [
+        "square",
+        "triangle",
+        "line"
+  ]
+
+const propsWithFaces = [...props, ...faces]
+
 const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
 
@@ -91,16 +107,7 @@ const MultiPoolPortal = memo(() => {
       max: "81",
       size: "1",
       animate: true,
-      props: [
-        "square",
-        "triangle",
-        "line",
-        // { type: "svg", src: "site/hat.svg", size: 25, weight: 0.2 },
-        { type: "svg", src: "jack.svg", size: 25, weight: 0.03 },
-        { type: "svg", src: "david.svg", size: 25, weight: 0.03 },
-        { type: "svg", src: "jai.svg", size: 25, weight: 0.03 },
-        { type: "svg", src: "rgt.svg", size: 25, weight: 0.03 },
-      ],
+      props: propsWithFaces,
       colors: [
         [165, 104, 246],
         [230, 61, 135],
@@ -677,14 +684,14 @@ const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
 
   return (
     <Box whiteSpace="nowrap" overflow="hidden" width="100%" fontSize="sm">
-      <MarqueeIfAuthed>
+      <Marquee delay={1200} childMargin={0} speed={0.015} direction="left">
         {news.map((text: string) => (
           <span key={text}>
             {text}
             <NewsMarqueeSpacer />
           </span>
         ))}
-      </MarqueeIfAuthed>
+      </Marquee>
     </Box>
   );
 });
@@ -693,14 +700,3 @@ const NewsMarqueeSpacer = () => {
   return <b> &nbsp;&nbsp;&nbsp;&nbsp;📣 &nbsp;&nbsp;&nbsp;&nbsp; </b>;
 };
 
-const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
-  const { isAuthed } = useRari();
-
-  return isAuthed ? (
-    <Marquee delay={1200} childMargin={0} speed={0.015} direction="left">
-      {children}
-    </Marquee>
-  ) : (
-    <>{children}</>
-  );
-};
