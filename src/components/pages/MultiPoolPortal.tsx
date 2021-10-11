@@ -96,7 +96,9 @@ const MultiPoolPortal = memo(() => {
         "triangle",
         "line",
         // { type: "svg", src: "site/hat.svg", size: 25, weight: 0.2 },
-        { type: "svg", src: "rgt2.svg", size: 25, weight: 0.01 },
+        // { type: "svg", src: "david.svg", size: 25, weight: 0.1 },
+        // { type: "svg", src: "jack.svg", size: 25, weight: 0.1 },
+        // { type: "svg", src: "jai.svg", size: 25, weight: 0.1 },
         // { type: "png", src: "rgt.png", size: 25, weight: 0.8 },
       ],
       colors: [
@@ -668,7 +670,7 @@ const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
 
   const news = celebrate
     ? [
-      "Rari Capital now has over $1bn in TVL!",
+        "Thank you to the Rari Community, the protocol has surpassed $1B  in TVL!" ,
         ...defaultNews,
       ]
     : defaultNews;

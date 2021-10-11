@@ -217,4 +217,4 @@ export const HOMEPAGE_EARN_VAULTS: HomepageOpportunity[] = [
   },
 ];
 
-export const ABILLY = 1e9 / 2;
+export const ABILLY = 1e9;
