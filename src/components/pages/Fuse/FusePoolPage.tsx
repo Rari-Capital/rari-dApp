@@ -71,6 +71,7 @@ import { EditIcon } from "@chakra-ui/icons";
 import { testForComptrollerErrorAndSend } from "./FusePoolEditPage";
 import { handleGenericError } from "utils/errorHandling";
 import { CTokenRewardsDistributorIncentivesWithRates } from "hooks/rewards/useRewardAPY";
+import { getSymbol } from "utils/symbolUtils";
 
 export const useIsComptrollerAdmin = (comptrollerAddress?: string): boolean => {
   const { fuse, address } = useRari();
@@ -622,7 +623,9 @@ const AssetSupplyRow = ({
       ? `${supplyIncentives[hovered].supplyAPR.toFixed(2)} % APR in ${
           rewardTokensData[supplyIncentives[hovered].rewardToken].symbol
         } distributions.`
-      : `${displayedSupplyAPR.toFixed(2)}% total APR distributed in ${supplyIncentives
+      : `${displayedSupplyAPR.toFixed(
+          2
+        )}% total APR distributed in ${supplyIncentives
           .map((incentive) => rewardTokensData[incentive.rewardToken].symbol)
           .join(", ")}
          `;
@@ -632,6 +635,8 @@ const AssetSupplyRow = ({
   const color =
     rewardTokensData[supplyIncentives?.[_hovered]?.rewardToken]?.color ??
     "white";
+
+  const symbol = getSymbol(tokenData, asset);
 
   return (
     <>
@@ -668,14 +673,14 @@ const AssetSupplyRow = ({
             <Avatar
               bg="#FFF"
               boxSize="37px"
-              name={asset.underlyingSymbol}
+              name={symbol}
               src={
                 tokenData?.logoURL ??
                 "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
               }
             />
             <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-              {tokenData?.symbol ?? asset.underlyingSymbol}
+              {symbol}
             </Text>
           </Row>
         </Column>
@@ -861,7 +866,7 @@ const AssetSupplyRow = ({
             {smallUsdFormatter(
               asset.supplyBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Column>
 
@@ -870,12 +875,11 @@ const AssetSupplyRow = ({
           width={isMobile ? "34%" : "20%"}
           mainAxisAlignment="flex-end"
           crossAxisAlignment="center"
-          // alignSelf=
         >
-          <SwitchCSS symbol={asset.underlyingSymbol} color={tokenData?.color} />
+          <SwitchCSS symbol={symbol} color={tokenData?.color} />
           <Switch
             isChecked={asset.membership}
-            className={asset.underlyingSymbol + "-switch"}
+            className={symbol + "-switch"}
             onChange={onToggleCollateral}
             size="md"
             mt={1}
@@ -1067,6 +1071,8 @@ const AssetBorrowRow = ({
       ? borrowIncentives[hovered].borrowSpeed / 1e18
       : totalBorrowAPY;
 
+  const symbol = getSymbol(tokenData, asset);
+
   return (
     <>
       <PoolModal
@@ -1096,14 +1102,14 @@ const AssetBorrowRow = ({
           <Avatar
             bg="#FFF"
             boxSize="37px"
-            name={asset.underlyingSymbol}
+            name={symbol}
             src={
               tokenData?.logoURL ??
               "https://raw.githubusercontent.com/feathericons/feather/master/icons/help-circle.svg"
             }
           />
           <Text fontWeight="bold" fontSize="lg" ml={2} flexShrink={0}>
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Row>
 
@@ -1266,7 +1272,7 @@ const AssetBorrowRow = ({
             {smallUsdFormatter(
               asset.borrowBalance / 10 ** asset.underlyingDecimals
             ).replace("$", "")}{" "}
-            {tokenData?.symbol ?? asset.underlyingSymbol}
+            {symbol}
           </Text>
         </Column>
 
@@ -1293,7 +1299,7 @@ const AssetBorrowRow = ({
                 {shortUsdFormatter(
                   asset.liquidity / 10 ** asset.underlyingDecimals
                 ).replace("$", "")}{" "}
-                {tokenData?.symbol}
+                {symbol}
               </Text>
             </Column>
           </Box>

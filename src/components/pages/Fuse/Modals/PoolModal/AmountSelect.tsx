@@ -554,7 +554,7 @@ const AmountSelect = ({
             <Heading fontSize="27px" ml={3}>
               {!isMobile && asset.underlyingName.length < 25
                 ? asset.underlyingName
-                : asset.underlyingSymbol}
+                : symbol}
             </Heading>
           </Row>
 
