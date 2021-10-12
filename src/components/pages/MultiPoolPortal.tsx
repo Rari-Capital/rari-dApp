@@ -73,21 +73,16 @@ import { useAuthedCallback } from "hooks/useAuthedCallback";
 import ConfettiGenerator from "confetti-js";
 import { ABILLY } from "constants/homepage";
 
-
 const faces = [
   { type: "svg", src: "jack.svg", size: 20, weight: 0.03 },
   { type: "svg", src: "david.svg", size: 20, weight: 0.03 },
   { type: "svg", src: "jai.svg", size: 20, weight: 0.03 },
   // { type: "svg", src: "t11s.svg", size: 20, weight: 0.03 },
-]
+];
 
-const props = [
-        "square",
-        "triangle",
-        "line"
-  ]
+const props = ["square", "triangle", "line"];
 
-const propsWithFaces = [...props, ...faces]
+const propsWithFaces = [...props, ...faces];
 
 const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
@@ -303,7 +298,7 @@ const FundStats = ({ glow = false }: { glow?: boolean }) => {
   return (
     <>
       {hasNotDeposited ? null : (
-        <DashboardBox width="100%" mb={4} height="110px" glow={false}>
+        <DashboardBox width="100%" mb={4} height="110px" glow={glow}>
           <Center expand>
             <APYWithRefreshMovingStat
               formatStat={smallUsdFormatter}
@@ -337,7 +332,7 @@ const FundStats = ({ glow = false }: { glow?: boolean }) => {
             md: hasNotDeposited ? "0px" : 4,
             base: 0,
           }}
-          glow={glow}
+          glow={hasNotDeposited && glow}
         >
           <Center expand>
             {hasNotDeposited ? (
@@ -699,4 +694,3 @@ const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
 const NewsMarqueeSpacer = () => {
   return <b> &nbsp;&nbsp;&nbsp;&nbsp;📣 &nbsp;&nbsp;&nbsp;&nbsp; </b>;
 };
-
