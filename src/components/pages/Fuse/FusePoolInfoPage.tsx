@@ -88,15 +88,15 @@ export const useExtraPoolInfo = (
 
       (() => {
         try {
-          comptroller.methods.enforceWhitelist().call();
-        } catch (_) {
+          return comptroller.methods.enforceWhitelist().call();
+        } catch (e) {
           return false;
         }
       })(),
 
       (() => {
         try {
-          comptroller.methods.getWhitelist().call();
+          return comptroller.methods.getWhitelist().call();
         } catch (_) {
           return [];
         }
@@ -391,17 +391,6 @@ const OracleAndInterestRates = ({
           statBTitle={t("Whitelist")}
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
-      { oracleModel === "MasterPriceOracleV3" ?
-
-          <StatRow
-            statATitle={t("Default Oracle")}
-            statA={
-              defaultOracleIdentity
-                ? defaultOracleIdentity ?? t("Unrecognized Oracle")
-                : "?"
-            }
-        />
-      : null }
       </Column>
     </Column>
   );
@@ -470,26 +459,29 @@ const AssetAndOtherInfo = ({
           ).toFixed(0)
         );
 
-  const { data: curveData  } = useQuery(selectedAsset.cToken + " curves", async () => {
-    const interestRateModel = await fuse.getInterestRateModel(
-      selectedAsset.cToken
-    );
+  const { data: curveData } = useQuery(
+    selectedAsset.cToken + " curves",
+    async () => {
+      const interestRateModel = await fuse.getInterestRateModel(
+        selectedAsset.cToken
+      );
 
-        if (interestRateModel === null) {
-      return { borrowerRates: null, supplierRates: null };
+      if (interestRateModel === null) {
+        return { borrowerRates: null, supplierRates: null };
+      }
+
+      const IRMidentity = await fuse.identifyInterestRateModelName(
+        interestRateModel
+      );
+
+      const curve = convertIRMtoCurve(interestRateModel, fuse);
+
+      return { curve, IRMidentity };
     }
+  );
 
-    const IRMidentity = await fuse.identifyInterestRateModelName(interestRateModel)
-
-    const curve = convertIRMtoCurve(interestRateModel, fuse);
-    
-    return { curve, IRMidentity}
-
-  });
-
-  const { curve: data, IRMidentity } = curveData ?? {}
-  console.log({data, IRMidentity})
-
+  const { curve: data, IRMidentity } = curveData ?? {};
+  console.log({ data, IRMidentity });
 
   const isMobile = useIsMobile();
 
@@ -573,66 +565,73 @@ const AssetAndOtherInfo = ({
             </Center>
           ) : (
             <>
-            <Chart
-              options={
-                {
-                  ...FuseUtilizationChartOptions,
-                  annotations: {
-                    points: [
-                      {
-                        x: selectedAssetUtilization,
-                        y: data.borrowerRates[selectedAssetUtilization].y,
-                        marker: {
-                          size: 6,
-                          fillColor: "#FFF",
-                          strokeColor: "#DDDCDC",
-                        },
-                      },
-                      {
-                        x: selectedAssetUtilization,
-                        y: data.supplierRates[selectedAssetUtilization].y,
-                        marker: {
-                          size: 6,
-                          fillColor: selectedTokenData?.color ?? "#A6A6A6",
-                          strokeColor: "#FFF",
-                        },
-                      },
-                    ],
-                    xaxis: [
-                      {
-                        x: selectedAssetUtilization,
-                        label: {
-                          text: t("Current Utilization"),
-                          orientation: "horizontal",
-                          style: {
-                            background: "#121212",
-                            color: "#FFF",
+              <Chart
+                options={
+                  {
+                    ...FuseUtilizationChartOptions,
+                    annotations: {
+                      points: [
+                        {
+                          x: selectedAssetUtilization,
+                          y: data.borrowerRates[selectedAssetUtilization].y,
+                          marker: {
+                            size: 6,
+                            fillColor: "#FFF",
+                            strokeColor: "#DDDCDC",
                           },
                         },
-                      },
-                    ],
-                  },
+                        {
+                          x: selectedAssetUtilization,
+                          y: data.supplierRates[selectedAssetUtilization].y,
+                          marker: {
+                            size: 6,
+                            fillColor: selectedTokenData?.color ?? "#A6A6A6",
+                            strokeColor: "#FFF",
+                          },
+                        },
+                      ],
+                      xaxis: [
+                        {
+                          x: selectedAssetUtilization,
+                          label: {
+                            text: t("Current Utilization"),
+                            orientation: "horizontal",
+                            style: {
+                              background: "#121212",
+                              color: "#FFF",
+                            },
+                          },
+                        },
+                      ],
+                    },
 
-                  colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
-                } as any
-              }
-              type="line"
-              width="100%"
-              height="100%"
-              series={[
-                {
-                  name: "Borrow Rate",
-                  data: data.borrowerRates,
-                },
-                {
-                  name: "Deposit Rate",
-                  data: data.supplierRates,
-                },
-              ]}
-            />
-            <Text position="absolute" zIndex={4} top={4} left={4} color="white"> {IRMidentity?.replace("_", " ") ?? ""}
-            
-             </Text>
+                    colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
+                  } as any
+                }
+                type="line"
+                width="100%"
+                height="100%"
+                series={[
+                  {
+                    name: "Borrow Rate",
+                    data: data.borrowerRates,
+                  },
+                  {
+                    name: "Deposit Rate",
+                    data: data.supplierRates,
+                  },
+                ]}
+              />
+              <Text
+                position="absolute"
+                zIndex={4}
+                top={4}
+                left={4}
+                color="white"
+              >
+                {" "}
+                {IRMidentity?.replace("_", " ") ?? ""}
+              </Text>
             </>
           )
         ) : (
