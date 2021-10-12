@@ -99,7 +99,7 @@ const MultiPoolPortal = memo(() => {
   useEffect(() => {
     const confettiSettings = {
       target: "my-canvas",
-      max: "81",
+      max: "200",
       size: "1",
       animate: true,
       props: propsWithFaces,
