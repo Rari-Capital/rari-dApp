@@ -86,6 +86,7 @@ export const useIncentivesWithRates = (
             const { rewardToken, borrowSpeed, supplySpeed } =
               incentiveForCToken;
 
+
             const supplyMantissaData: RewardsDataForMantissa = {
               cTokenAddress,
               rewardSpeed: supplySpeed,
@@ -188,19 +189,28 @@ export const useCTokensDataForRewards = (
             .exchangeRateCurrent()
             .call();
 
-          console.log({ cTokenAddr, cTokenTotalSupply, exchangeRateCurrent });
+          const underlyingTotalSupply2 =
+            parseFloat(cTokenTotalSupply) /
+            parseFloat(exchangeRateCurrent) * 1e18
 
-          const underlyingTotalSupply =
-            parseFloat(
-              toBN(cTokenTotalSupply).mul(toBN(exchangeRateCurrent)).toString()
-            ) /
-            10 ** 18;
+          // const underlyingTotalSupply =
+          //   parseFloat(
+          //     toBN(cTokenTotalSupply).mul(toBN(exchangeRateCurrent)).toString()
+          //   ) /
+          //   10 ** 18;
+
+          // console.log({
+          //   cTokenAddr,
+          //   cTokenTotalSupply,
+          //   exchangeRateCurrent,
+          //   underlyingTotalSupply2,
+          // });
 
           const obj: CTokenDataForRewards = {
             underlyingToken: underlying,
             underlyingPrice: 0,
             cToken: cTokenAddr,
-            totalSupply: underlyingTotalSupply ?? 0,
+            totalSupply: underlyingTotalSupply2 ?? 0,
           };
 
           _map[cTokenAddr] = obj;
