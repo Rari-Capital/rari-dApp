@@ -81,9 +81,9 @@ export const Header = ({
       >
         <HeaderLink name={t("Overview")} route="/" />
 
-        <PoolsLink ml={3} />
-
         <HeaderLink ml={4} name={t("Fuse")} route="/fuse" />
+
+        <PoolsLink ml={3} />
 
         <HeaderLink ml={4} name={t("Pool2")} route="/pool2" />
 
@@ -143,6 +143,11 @@ export const UtilsLink = ({
               name={t("Interest Rates")}
               link="/utils/interest-rates"
             />
+            <SubMenuItem
+              name={t("Metrics")}
+              link="https://rari.grafana.net/goto/61kctV_Gk"
+            />
+            <SubMenuItem name={t("Liquidations")} link="/fuse/liquidations" />
           </MenuList>
         </Portal>
       </Menu>

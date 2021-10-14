@@ -6,7 +6,7 @@ import { useFusePools } from "hooks/fuse/useFusePools";
 
 // Util
 import { fetchFusePoolData, FusePoolData } from "utils/fetchFusePoolData";
-import { convertMantissaToAPY, convertMantissaToAPR } from "utils/apyUtils";
+import { convertMantissaToAPY } from "utils/apyUtils";
 
 // Types
 import { MarketInfo } from "../types";
@@ -17,7 +17,7 @@ type FuseMarket = {
 
 export default function useFuseMarkets() {
   const { rari, fuse, address } = useRari();
-  const { pools } = useFusePools(null);
+  const { pools } = useFusePools();
   const [markets, setMarkets] = useState<FuseMarket>({});
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function useFuseMarkets() {
                     lending:
                       convertMantissaToAPY(asset.supplyRatePerBlock, 365) / 100,
                     borrowing:
-                      convertMantissaToAPR(asset.borrowRatePerBlock) / 100,
+                      convertMantissaToAPY(asset.borrowRatePerBlock, 365) / 100,
                   },
                 });
               });

@@ -1,42 +1,56 @@
+// Chakra  and UI
 import {
   Heading,
-  Select,
   Text,
   Switch,
   Input,
   Spinner,
   IconButton,
   useToast,
+  useDisclosure,
+  Box,
+  Button,
+  CloseButton,
 } from "@chakra-ui/react";
+
 import { Column, Center, Row } from "utils/chakraUtils";
-import { memo, ReactNode, useState } from "react";
-import { useTranslation } from "react-i18next";
-
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-
 import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-
-import FuseStatsBar from "./FuseStatsBar";
-import FuseTabBar from "./FuseTabBar";
+import { ModalDivider, MODAL_PROPS } from "../../shared/Modal";
 import { SliderWithLabel } from "../../shared/SliderWithLabel";
-
-import BigNumber from "bignumber.js";
-import { useNavigate } from "react-router-dom";
-import Fuse from "../../../fuse-sdk";
 import { AddIcon, QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../shared/SimpleTooltip";
+import { Header } from "components/shared/Header";
+import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/modal";
 
-import { handleGenericError } from "../../../utils/errorHandling";
+// React
+import { memo, ReactNode, useState } from "react";
+
+// Rari
+import { useRari } from "../../../context/RariContext";
+
+// Hooks
+import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
+
+// Utils
+import { handleGenericError } from "../../../utils/errorHandling";
+
+// Components
+import FuseStatsBar from "./FuseStatsBar";
+import FuseTabBar from "./FuseTabBar";
+
+import Fuse from "fuse-sdk";
+import TransactionStepper from "components/shared/TransactionStepper";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
 const FusePoolCreatePage = memo(() => {
   const isMobile = useIsSemiSmallScreen();
-
   const { isAuthed } = useRari();
 
   return (
@@ -69,8 +83,9 @@ const PoolConfiguration = () => {
   const { fuse, address } = useRari();
   const navigate = useNavigate();
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [name, setName] = useState("");
-  const [oracle, setOracle] = useState("");
   const [isWhitelisted, setIsWhitelisted] = useState(false);
   const [whitelist, setWhitelist] = useState<string[]>([]);
 
@@ -79,7 +94,43 @@ const PoolConfiguration = () => {
 
   const [isCreating, setIsCreating] = useState(false);
 
+  const [activeStep, setActiveStep] = useState<number>(0);
+
+  const increaseActiveStep = (step: string) => {
+    setActiveStep(steps.indexOf(step));
+  };
+
+  const [needsRetry, setNeedsRetry] = useState<boolean>(false);
+  const [retryFlag, setRetryFlag] = useState<number>(1);
+
+  const [deployedPriceOracle, setDeployedPriceOracle] = useState<string>("");
+
+  const postDeploymentHandle = (priceOracle: string) => {
+    setDeployedPriceOracle(priceOracle);
+  };
+
+  const deployPool = async (
+    bigCloseFactor: string,
+    bigLiquidationIncentive: string,
+    options: any,
+    priceOracle: string
+  ) => {
+    const [poolAddress] = await fuse.deployPool(
+      name,
+      isWhitelisted,
+      bigCloseFactor,
+      bigLiquidationIncentive,
+      priceOracle,
+      {},
+      options,
+      isWhitelisted ? whitelist : null
+    );
+
+    return poolAddress;
+  };
+
   const onDeploy = async () => {
+    let priceOracle = deployedPriceOracle;
     if (name === "") {
       toast({
         title: "Error!",
@@ -93,22 +144,8 @@ const PoolConfiguration = () => {
       return;
     }
 
-    if (oracle === "") {
-      toast({
-        title: "Error!",
-        description: "You must select an oracle.",
-        status: "error",
-        duration: 2000,
-        isClosable: true,
-        position: "top-right",
-      });
-
-      return;
-    }
-
     setIsCreating(true);
-
-    const maxAssets = "20";
+    onOpen();
 
     // 50% -> 0.5 * 1e18
     const bigCloseFactor = new BigNumber(closeFactor)
@@ -123,52 +160,85 @@ const PoolConfiguration = () => {
       .multipliedBy(1e18)
       .toFixed(0);
 
-    let reporter = null;
+    let _retryFlag = retryFlag;
 
     try {
-      const [poolAddress] = await fuse.deployPool(
-        name,
-        isWhitelisted,
-        bigCloseFactor,
-        maxAssets,
-        bigLiquidationIncentive,
-        oracle,
-        { reporter },
-        { from: address },
-        isWhitelisted ? whitelist : null
-      );
+      const options = { from: address };
 
-      toast({
-        title: "Your pool has been deployed!",
-        description: "You may now add assets to it.",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-        position: "top-right",
-      });
+      setNeedsRetry(false);
 
-      const event = (
-        await fuse.contracts.FusePoolDirectory.getPastEvents("PoolRegistered", {
-          fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
-          toBlock: "latest",
-        })
-      ).filter(
-        (event) =>
-          event.returnValues.pool.comptroller.toLowerCase() ===
-          poolAddress.toLowerCase()
-      )[0];
+      if (_retryFlag === 1) {
+        priceOracle = await fuse.deployPriceOracle(
+          "MasterPriceOracle",
+          {
+            underlyings: [],
+            oracles: [],
+            canAdminOverwrite: true,
+            defaultOracle:
+              Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES.MasterPriceOracle, // We give the MasterPriceOracle a default "fallback" oracle of the Rari MasterPriceOracle
+          },
+          options
+        );
+        postDeploymentHandle(priceOracle);
+        increaseActiveStep("Deploying Pool!");
+        _retryFlag = 2;
+      }
 
-      LogRocket.track("Fuse-CreatePool");
+      let poolAddress: string;
 
-      let id = event.returnValues.index;
-      navigate(`/fuse/pool/${id}/edit`);
+      if (_retryFlag === 2) {
+        poolAddress = await deployPool(
+          bigCloseFactor,
+          bigLiquidationIncentive,
+          options,
+          priceOracle
+        );
+
+        const event = (
+          await fuse.contracts.FusePoolDirectory.getPastEvents(
+            "PoolRegistered",
+            {
+              fromBlock: (await fuse.web3.eth.getBlockNumber()) - 10,
+              toBlock: "latest",
+            }
+          )
+        ).filter(
+          (event) =>
+            event.returnValues.pool.comptroller.toLowerCase() ===
+            poolAddress.toLowerCase()
+        )[0];
+
+        LogRocket.track("Fuse-CreatePool");
+
+        toast({
+          title: "Your pool has been deployed!",
+          description: "You may now add assets to it.",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+          position: "top-right",
+        });
+
+        let id = event.returnValues.index;
+        onClose();
+        navigate(`/fuse/pool/${id}/edit`);
+      }
     } catch (e) {
       handleGenericError(e, toast);
+      setRetryFlag(_retryFlag);
+      setNeedsRetry(true);
     }
   };
 
   return (
     <>
+      <TransactionStepperModal
+        handleRetry={onDeploy}
+        needsRetry={needsRetry}
+        activeStep={activeStep}
+        isOpen={isOpen}
+        onClose={onClose}
+      />
       <DashboardBox width="100%" mt={4}>
         <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
           <Heading size="sm" px={4} py={4}>
@@ -189,28 +259,6 @@ const PoolConfiguration = () => {
           </OptionRow>
 
           <ModalDivider />
-
-          <OptionRow>
-            <Text fontWeight="bold" mr={4}>
-              {t("Oracle")}
-            </Text>
-            <Select
-              width="20%"
-              value={oracle}
-              onChange={(event) => setOracle(event.target.value)}
-              placeholder="Select Oracle"
-            >
-              <option
-                className="black-bg-option"
-                value={
-                  Fuse.PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES
-                    .ChainlinkPriceOracle
-                }
-              >
-                ChainlinkPriceOracle
-              </option>
-            </Select>
-          </OptionRow>
 
           <ModalDivider />
 
@@ -309,13 +357,76 @@ const PoolConfiguration = () => {
         py={3}
         fontSize="xl"
         as="button"
-        onClick={onDeploy}
+        onClick={useAuthedCallback(onDeploy)}
       >
         <Center expand fontWeight="bold">
           {isCreating ? <Spinner /> : t("Create")}
         </Center>
       </DashboardBox>
     </>
+  );
+};
+
+const steps = ["Deploying Oracle", "Deploying Pool!"];
+
+const TransactionStepperModal = ({
+  isOpen,
+  onClose,
+  activeStep,
+  needsRetry,
+  handleRetry,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  activeStep: number;
+  needsRetry: boolean;
+  handleRetry: () => void;
+}) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <ModalOverlay>
+        <ModalContent
+          {...MODAL_PROPS}
+          display="flex"
+          alignSelf="center"
+          alignItems="center"
+          justifyContent="center"
+          height="25%"
+          width="25%"
+        >
+          <Row
+            mb={6}
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            w="100%"
+            px={4}
+          >
+            <Box mx="auto">
+              <Text textAlign="center" fontSize="20px">
+                {steps[activeStep]}
+              </Text>
+              {steps[activeStep] === "Deploying Pool!" ? (
+                <Text fontSize="13px" opacity="0.8">
+                  Will take two transactions, please wait.
+                </Text>
+              ) : null}
+            </Box>
+           
+          </Row>
+          <TransactionStepper
+            steps={steps}
+            activeStep={activeStep}
+            tokenData={{ color: "#21C35E" }}
+          />
+          {needsRetry ? (
+            <Button onClick={() => handleRetry()} mx={3} bg="#21C35E">
+              {" "}
+              Retry{" "}
+            </Button>
+          ) : null}
+        </ModalContent>
+      </ModalOverlay>
+    </Modal>
   );
 };
 

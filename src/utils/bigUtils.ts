@@ -40,6 +40,6 @@ export function shortUsdFormatter(num: number) {
   return "$" + shortFormatter.format(num);
 }
 
-const toBN = Web3.utils.toBN;
+export const toBN = Web3.utils.toBN;
 
 export type BN = ReturnType<typeof toBN>;

@@ -48,7 +48,7 @@ export default function InterestRatesTable() {
         return {
           key: pool.id.toString(),
           width: 150,
-          title: pool.pool.name,
+          title: pool.name,
           Component: PercentageComponent,
         };
       }) || []),

@@ -47,10 +47,7 @@ import { handleGenericError } from "../../../../../utils/errorHandling";
 import { ComptrollerErrorCodes } from "../../FusePoolEditPage";
 import { SwitchCSS } from "../../../../shared/SwitchCSS";
 
-import {
-  convertMantissaToAPR,
-  convertMantissaToAPY,
-} from "../../../../../utils/apyUtils";
+import { convertMantissaToAPY } from "../../../../../utils/apyUtils";
 import { getSymbol } from "utils/symbolUtils";
 
 enum UserAction {
@@ -95,7 +92,7 @@ export async function testForCTokenErrorAndSend(
     if (response >= 1000) {
       const comptrollerResponse = response - 1000;
 
-      let msg = ComptrollerErrorCodes[comptrollerResponse];
+      let msg = ComptrollerErrorCodes[comptrollerResponse] ?? response;
 
       if (msg === "BORROW_BELOW_MIN") {
         msg =
@@ -155,8 +152,7 @@ async function fetchMaxAmount(
   mode: Mode,
   fuse: Fuse,
   address: string,
-  asset: USDPricedFuseAsset,
-  comptrollerAddress: string
+  asset: USDPricedFuseAsset
 ) {
   if (mode === Mode.SUPPLY) {
     const balance = await fetchTokenBalance(
@@ -184,33 +180,21 @@ async function fetchMaxAmount(
   }
 
   if (mode === Mode.BORROW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxBorrow } = await comptroller.methods
+    const maxBorrow = await fuse.contracts.FusePoolLensSecondary.methods
       .getMaxBorrow(address, asset.cToken)
       .call();
 
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(
-        new BigNumber(maxBorrow).multipliedBy(0.95).toFixed(0)
-      );
-    } else {
-      throw new Error("Could not fetch your max borrow amount! Code: " + err);
-    }
+    return fuse.web3.utils.toBN(
+      new BigNumber(maxBorrow).multipliedBy(0.95).toFixed(0)
+    );
   }
 
   if (mode === Mode.WITHDRAW) {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const { 0: err, 1: maxRedeem } = await comptroller.methods
+    const maxRedeem = await fuse.contracts.FusePoolLensSecondary.methods
       .getMaxRedeem(address, asset.cToken)
       .call();
 
-    if (err !== 0) {
-      return fuse.web3.utils.toBN(maxRedeem);
-    } else {
-      throw new Error("Could not fetch your max withdraw amount! Code: " + err);
-    }
+    return fuse.web3.utils.toBN(maxRedeem);
   }
 }
 
@@ -284,13 +268,7 @@ const AmountSelect = ({
       }
 
       try {
-        const max = await fetchMaxAmount(
-          mode,
-          fuse,
-          address,
-          asset,
-          comptrollerAddress
-        );
+        const max = await fetchMaxAmount(mode, fuse, address, asset);
 
         return amount.lte(max!.toString());
       } catch (e) {
@@ -576,7 +554,7 @@ const AmountSelect = ({
             <Heading fontSize="27px" ml={3}>
               {!isMobile && asset.underlyingName.length < 25
                 ? asset.underlyingName
-                : asset.underlyingSymbol}
+                : symbol}
             </Heading>
           </Row>
 
@@ -961,20 +939,21 @@ const StatsColumn = ({
     mode === Mode.SUPPLY || mode === Mode.WITHDRAW;
 
   const supplyAPY = convertMantissaToAPY(asset.supplyRatePerBlock, 365);
-  const borrowAPR = convertMantissaToAPR(asset.borrowRatePerBlock);
+  const borrowAPY = convertMantissaToAPY(asset.borrowRatePerBlock, 365);
 
   const updatedSupplyAPY = convertMantissaToAPY(
     updatedAsset?.supplyRatePerBlock ?? 0,
     365
   );
-  const updatedBorrowAPR = convertMantissaToAPR(
-    updatedAsset?.borrowRatePerBlock ?? 0
+  const updatedBorrowAPY = convertMantissaToAPY(
+    updatedAsset?.borrowRatePerBlock ?? 0,
+    365
   );
 
   // If the difference is greater than a 0.1 percentage point change, alert the user
   const updatedAPYDiffIsLarge = isSupplyingOrWithdrawing
     ? Math.abs(updatedSupplyAPY - supplyAPY) > 0.1
-    : Math.abs(updatedBorrowAPR - borrowAPR) > 0.1;
+    : Math.abs(updatedBorrowAPY - borrowAPY) > 0.1;
 
   return (
     <DashboardBox width="100%" height="190px" mt={4}>
@@ -1023,7 +1002,7 @@ const StatsColumn = ({
             width="100%"
           >
             <Text fontWeight="bold" flexShrink={0}>
-              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APR")}:
+              {isSupplyingOrWithdrawing ? t("Supply APY") : t("Borrow APY")}:
             </Text>
             <Text
               fontWeight="bold"
@@ -1031,14 +1010,14 @@ const StatsColumn = ({
             >
               {isSupplyingOrWithdrawing
                 ? supplyAPY.toFixed(2)
-                : borrowAPR.toFixed(2)}
+                : borrowAPY.toFixed(2)}
               %
               {updatedAPYDiffIsLarge ? (
                 <>
                   {" → "}
                   {isSupplyingOrWithdrawing
                     ? updatedSupplyAPY.toFixed(2)
-                    : updatedBorrowAPR.toFixed(2)}
+                    : updatedBorrowAPY.toFixed(2)}
                   %
                 </>
               ) : null}
@@ -1120,13 +1099,7 @@ const TokenNameAndMaxButton = ({
     setIsMaxLoading(true);
 
     try {
-      const maxBN = await fetchMaxAmount(
-        mode,
-        fuse,
-        address,
-        asset,
-        comptrollerAddress
-      );
+      const maxBN = await fetchMaxAmount(mode, fuse, address, asset);
 
       if (maxBN!.isNeg() || maxBN!.isZero()) {
         updateAmount("");

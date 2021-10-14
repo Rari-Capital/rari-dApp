@@ -1,41 +1,92 @@
+// Chakra and UI
 import {
   AvatarGroup,
   Box,
+  Badge,
   Heading,
   Text,
   Switch,
   useDisclosure,
   Spinner,
   useToast,
+  Input,
+  Link,
+  // Table
+  Image,
+  HStack,
+  Table,
+  TableCaption,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
-import { memo, ReactNode, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-
-import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
+import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
 import { ModalDivider } from "../../shared/Modal";
+import { SliderWithLabel } from "../../shared/SliderWithLabel";
 
+// Components
+import { Header } from "../../shared/Header";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
-import { SliderWithLabel } from "../../shared/SliderWithLabel";
-import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { CTokenIcon } from "./FusePoolsPage";
-import { createComptroller } from "../../../utils/createComptroller";
-import { useQueryClient, useQuery } from "react-query";
+import AddAssetModal from "./Modals/AddAssetModal/AddAssetModal";
+import AssetSettings from "./Modals/AddAssetModal/AssetSettings";
 import { WhitelistInfo } from "./FusePoolCreatePage";
-
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
+
+// React
+import { memo, ReactNode, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import { useQueryClient, useQuery } from "react-query";
+
+// Rari
+import { useRari } from "../../../context/RariContext";
+
+// Hooks
+import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
+import { useFusePoolData } from "../../../hooks/useFusePoolData";
+import {
+  TokenData,
+  useTokenData,
+  useTokensData,
+} from "../../../hooks/useTokenData";
+import {
+  OracleDataType,
+  useIdentifyOracle,
+  useOracleData,
+} from "hooks/fuse/useOracleData";
+
+// Utils
+import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
+import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
+import {
+  createComptroller,
+  createUnitroller,
+} from "../../../utils/createComptroller";
+import { handleGenericError } from "utils/errorHandling";
+
+// Libraries
 import BigNumber from "bignumber.js";
-import { useTokenData } from "../../../hooks/useTokenData";
 import LogRocket from "logrocket";
-import { handleGenericError } from "../../../utils/errorHandling";
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import { useIsComptrollerAdmin } from "./FusePoolPage";
+import { AdminAlert } from "components/shared/AdminAlert";
+import useOraclesForPool from "hooks/fuse/useOraclesForPool";
+import { shortAddress } from "utils/shortAddress";
+
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import {
+  useCTokensUnderlying,
+  usePoolIncentives,
+} from "hooks/rewards/usePoolIncentives";
+import { useRewardsDistributorsForPool } from "hooks/rewards/useRewardsDistributorsForPool";
+import { RewardsDistributor } from "hooks/rewards/useRewardsDistributorsForPool";
+import { useTokenBalance } from "hooks/useTokenBalance";
+import AddRewardsDistributorModal from "./Modals/AddRewardsDistributorModal";
+import EditRewardsDistributorModal from "./Modals/EditRewardsDistributorModal";
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -64,6 +115,7 @@ export enum ComptrollerErrorCodes {
   SUPPLIER_NOT_WHITELISTED,
   BORROW_BELOW_MIN,
   SUPPLY_ABOVE_MAX,
+  NONZERO_TOTAL_SUPPLY,
 }
 
 export const useIsUpgradeable = (comptrollerAddress: string) => {
@@ -92,7 +144,7 @@ export async function testForComptrollerErrorAndSend(
   // For some reason `response` will be `["0"]` if no error but otherwise it will return a string number.
   if (response[0] !== "0") {
     const err = new Error(
-      failMessage + " Code: " + ComptrollerErrorCodes[response]
+      failMessage + " Code: " + (ComptrollerErrorCodes[response] ?? response)
     );
 
     LogRocket.captureException(err);
@@ -113,6 +165,18 @@ const FusePoolEditPage = memo(() => {
     onClose: closeAddAssetModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isAddRewardsDistributorModalOpen,
+    onOpen: openAddRewardsDistributorModal,
+    onClose: closeAddRewardsDistributorModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditRewardsDistributorModalOpen,
+    onOpen: openEditRewardsDistributorModal,
+    onClose: closeEditRewardsDistributorModal,
+  } = useDisclosure();
+
   const authedOpenModal = useAuthedCallback(openAddAssetModal);
 
   const { t } = useTranslation();
@@ -120,17 +184,56 @@ const FusePoolEditPage = memo(() => {
   const { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+  const isAdmin = useIsComptrollerAdmin(data?.comptroller);
+
+  // RewardsDistributor stuff
+  const poolIncentives = usePoolIncentives(data?.comptroller);
+  const rewardsDistributors = useRewardsDistributorsForPool(data?.comptroller);
+  const [rewardsDistributor, setRewardsDistributor] = useState<
+    RewardsDistributor | undefined
+  >();
+
+  console.log({ rewardsDistributors, poolIncentives });
+
+  const handleRewardsRowClick = useCallback(
+    (rD: RewardsDistributor) => {
+      setRewardsDistributor(rD);
+      openEditRewardsDistributorModal();
+    },
+    [setRewardsDistributor, openEditRewardsDistributorModal]
+  );
 
   return (
     <>
       {data ? (
         <AddAssetModal
           comptrollerAddress={data.comptroller}
+          poolOracleAddress={data.oracle}
+          oracleModel={data.oracleModel}
           existingAssets={data.assets}
           poolName={data.name}
           poolID={poolId}
           isOpen={isAddAssetModalOpen}
           onClose={closeAddAssetModal}
+        />
+      ) : null}
+
+      {data ? (
+        <AddRewardsDistributorModal
+          comptrollerAddress={data.comptroller}
+          poolName={data.name}
+          poolID={poolId}
+          isOpen={isAddRewardsDistributorModalOpen}
+          onClose={closeAddRewardsDistributorModal}
+        />
+      ) : null}
+
+      {data && !!rewardsDistributor ? (
+        <EditRewardsDistributorModal
+          rewardsDistributor={rewardsDistributor}
+          pool={data}
+          isOpen={isEditRewardsDistributorModalOpen}
+          onClose={closeEditRewardsDistributorModal}
         />
       ) : null}
 
@@ -144,9 +247,17 @@ const FusePoolEditPage = memo(() => {
       >
         <Header isAuthed={isAuthed} isFuse />
 
-        <FuseStatsBar />
+        <FuseStatsBar data={data} />
 
         <FuseTabBar />
+
+        {!!data && (
+          <AdminAlert
+            isAdmin={isAdmin}
+            isAdminText="You are the admin of this Fuse Pool!"
+            isNotAdminText="You are not the admin of this Fuse Pool!"
+          />
+        )}
 
         <RowOrColumn
           width="100%"
@@ -156,13 +267,14 @@ const FusePoolEditPage = memo(() => {
         >
           <DashboardBox
             width={isMobile ? "100%" : "50%"}
-            height={isMobile ? "auto" : "440px"}
+            height={isMobile ? "auto" : "560px"}
             mt={4}
           >
             {data ? (
               <PoolConfiguration
                 assets={data.assets}
                 comptrollerAddress={data.comptroller}
+                oracleAddress={data.oracle}
               />
             ) : (
               <Center expand>
@@ -175,13 +287,15 @@ const FusePoolEditPage = memo(() => {
             <DashboardBox
               width="100%"
               mt={4}
-              height={isMobile ? "auto" : "440px"}
+              height={isMobile ? "auto" : "560px"}
             >
               {data ? (
                 data.assets.length > 0 ? (
                   <AssetConfiguration
                     openAddAssetModal={authedOpenModal}
                     assets={data.assets}
+                    poolOracleAddress={data.oracle}
+                    oracleModel={data.oracleModel}
                     comptrollerAddress={data.comptroller}
                     poolID={poolId}
                     poolName={data.name}
@@ -209,6 +323,63 @@ const FusePoolEditPage = memo(() => {
             </DashboardBox>
           </Box>
         </RowOrColumn>
+
+        {/* Rewards Distributors */}
+        {/* <DashboardBox w="100%" h="100%" my={4}>
+          <Row mainAxisAlignment="flex-end" crossAxisAlignment="center" p={3}>
+            <AddRewardsDistributorButton
+              openAddRewardsDistributorModal={openAddRewardsDistributorModal}
+              comptrollerAddress={data?.comptroller}
+            />
+          </Row>
+
+          <Table>
+            <Thead>
+              <Tr>
+                <Th color="white" size="sm">
+                  {t("Reward Token:")}
+                </Th>
+                <Th color="white">{t("Active CTokens:")}</Th>
+                <Th color="white">{t("Balance:")}</Th>
+                <Th color="white">{t("Admin?")}</Th>
+              </Tr>
+            </Thead>
+
+            <Tbody minHeight="50px">
+              {!data ? (
+                <Spinner />
+              ) : rewardsDistributors.length ? (
+                rewardsDistributors.map((rD, i) => {
+                  return (
+                    <RewardsDistributorRow
+                      key={rD.address}
+                      rewardsDistributor={rD}
+                      handleRowClick={handleRewardsRowClick}
+                      hideModalDivider={i === rewardsDistributors.length - 1}
+                      activeCTokens={
+                        poolIncentives.rewardsDistributorCtokens[rD.address]
+                      }
+                    />
+                  );
+                })
+              ) : (
+                <>
+                  <Text mb={4}>
+                    {t("There are no RewardsDistributors for this pool.")}
+                  </Text>
+                  <AddRewardsDistributorButton
+                    openAddRewardsDistributorModal={
+                      openAddRewardsDistributorModal
+                    }
+                    comptrollerAddress={data?.comptroller}
+                  />
+                </>
+              )}
+            </Tbody>
+          </Table>
+
+          <ModalDivider />
+        </DashboardBox> */}
       </Column>
     </>
   );
@@ -219,9 +390,11 @@ export default FusePoolEditPage;
 const PoolConfiguration = ({
   assets,
   comptrollerAddress,
+  oracleAddress,
 }: {
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
+  oracleAddress: string;
 }) => {
   const { t } = useTranslation();
   const { poolId } = useParams();
@@ -231,7 +404,13 @@ const PoolConfiguration = ({
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const data = useExtraPoolInfo(comptrollerAddress);
+  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
+
+  // Maps underlying to oracle
+  const oraclesMap = useOraclesForPool(
+    oracleAddress,
+    assets.map((asset: USDPricedFuseAsset) => asset.underlyingToken) ?? []
+  );
 
   const changeWhitelistStatus = async (enforce: boolean) => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
@@ -282,7 +461,7 @@ const PoolConfiguration = ({
       await testForComptrollerErrorAndSend(
         comptroller.methods._setWhitelistStatuses(
           whitelist,
-          whitelist.map((user) => user !== removeUser)
+          whitelist.map((user: string) => user !== removeUser)
         ),
         address,
         ""
@@ -296,23 +475,60 @@ const PoolConfiguration = ({
     }
   };
 
-  const renounceOwnership = async () => {
-    const unitroller = new fuse.web3.eth.Contract(
-      JSON.parse(
-        fuse.compoundContracts["contracts/Unitroller.sol:Unitroller"].abi
-      ),
-      comptrollerAddress
-    );
+  const [admin, setAdmin] = useState(address);
+
+  const revokeRights = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
 
     try {
-      // TODO: Revoke admin rights on all the cTokens!
       await testForComptrollerErrorAndSend(
-        unitroller.methods._renounceAdminRights(),
+        unitroller.methods._toggleAdminRights(false),
         address,
         ""
       );
 
-      LogRocket.track("Fuse-RenounceOwnership");
+      LogRocket.track("Fuse-RevokeRights");
+
+      queryClient.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
+  const acceptAdmin = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._acceptAdmin(),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-AcceptAdmin");
+
+      queryClient.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
+
+  const updateAdmin = async () => {
+    const unitroller = createUnitroller(comptrollerAddress, fuse);
+
+    if (!fuse.web3.utils.isAddress(admin)) {
+      handleGenericError({ message: "This is not a valid address." }, toast);
+      return;
+    }
+
+    try {
+      await testForComptrollerErrorAndSend(
+        unitroller.methods._setPendingAdmin(admin),
+        address,
+        ""
+      );
+
+      LogRocket.track("Fuse-UpdateAdmin");
 
       queryClient.refetchQueries();
     } catch (e) {
@@ -338,6 +554,7 @@ const PoolConfiguration = ({
       setLiquidationIncentive(
         scaleLiquidationIncentive(data.liquidationIncentive)
       );
+      setAdmin(data.admin);
     }
   }, [data]);
 
@@ -417,13 +634,12 @@ const PoolConfiguration = ({
 
             {assets.length > 0 ? (
               <>
-                <AvatarGroup size="xs" max={30}>
-                  {assets.map(({ underlyingToken, cToken }) => {
-                    return (
-                      <CTokenIcon key={cToken} address={underlyingToken} />
-                    );
-                  })}
-                </AvatarGroup>
+                <CTokenAvatarGroup
+                  tokenAddresses={assets.map(
+                    ({ underlyingToken }) => underlyingToken
+                  )}
+                  popOnHover={true}
+                />
 
                 <Text ml={2} flexShrink={0}>
                   {assets.map(({ underlyingSymbol }, index, array) => {
@@ -472,25 +688,50 @@ const PoolConfiguration = ({
 
             <ModalDivider />
 
-            <ConfigRow>
-              <Text fontWeight="bold">{t("Upgradeable")}:</Text>
+            <ConfigRow height="35px">
+              <Text fontWeight="bold">{t("Admin")}:</Text>
 
-              {data.upgradeable ? (
-                <DashboardBox
-                  height="35px"
-                  ml="auto"
-                  as="button"
-                  onClick={renounceOwnership}
-                >
-                  <Center expand px={2} fontWeight="bold">
-                    {t("Renounce Ownership")}
-                  </Center>
-                </DashboardBox>
-              ) : (
-                <Text ml="auto" fontWeight="bold">
-                  {t("Admin Rights Disabled")}
-                </Text>
-              )}
+              {admin.toLowerCase() !== data.admin.toLowerCase() ? (
+                <SaveButton ml={3} onClick={updateAdmin} />
+              ) : address.toLowerCase() === data.pendingAdmin.toLowerCase() ? (
+                <SaveButton
+                  ml={3}
+                  onClick={acceptAdmin}
+                  fontSize="xs"
+                  altText={t("Become Admin")}
+                />
+              ) : data.adminHasRights &&
+                address.toLowerCase() === data.admin.toLowerCase() ? (
+                <SaveButton
+                  ml={3}
+                  onClick={revokeRights}
+                  fontSize="xs"
+                  altText={t("Revoke Rights")}
+                />
+              ) : null}
+
+              <Input
+                isDisabled={
+                  !data.adminHasRights ||
+                  data.admin?.toLowerCase() !== address.toLowerCase()
+                }
+                ml="auto"
+                width="320px"
+                height="100%"
+                textAlign="center"
+                variant="filled"
+                size="sm"
+                value={admin}
+                onChange={(event) => {
+                  const address = event.target.value;
+                  setAdmin(address);
+                }}
+                {...DASHBOARD_BOX_PROPS}
+                _placeholder={{ color: "#e0e0e0" }}
+                _focus={{ bg: "#121212" }}
+                _hover={{ bg: "#282727" }}
+                bg="#282727"
+              />
             </ConfigRow>
 
             <ModalDivider />
@@ -532,14 +773,116 @@ const PoolConfiguration = ({
                 max={50}
               />
             </ConfigRow>
+            <ModalDivider />
+
+            {/* OraclesTable */}
+            <OraclesTable oraclesMap={oraclesMap} data={data} />
+            {/* <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              expand
+            >
+              <ConfigRow height="35px">
+                <Text fontWeight="bold">{t("Oracles")}:</Text>
+              </ConfigRow>
+
+              {!!data.defaultOracle && (
+                <OracleRow
+                  oracle={data.defaultOracle}
+                  underlyings={[]}
+                  isDefault={true}
+                />
+              )}
+              {Object.keys(oraclesMap).map((oracle) => {
+                const underlyings = oraclesMap[oracle];
+                return <OracleRow oracle={oracle} underlyings={underlyings} />;
+              })}
+            </Column> */}
           </Column>
         </Column>
       ) : (
         <Center expand>
-          <Spinner />
+          <Spinner my={8} />
         </Center>
       )}
     </Column>
+  );
+};
+
+const OraclesTable = ({
+  data,
+  oraclesMap,
+}: {
+  data: any;
+  oraclesMap: {
+    [oracleAddr: string]: string[];
+  };
+}) => {
+  return (
+    <Table variant="unstyled">
+      <Thead>
+        <Tr>
+          <Th color="white">Oracle:</Th>
+          <Th color="white">Assets</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {!!data.defaultOracle && (
+          <OracleRow
+            oracle={data.defaultOracle}
+            underlyings={[]}
+            isDefault={true}
+          />
+        )}
+        {Object.keys(oraclesMap).map((oracle) => {
+          const underlyings = oraclesMap[oracle];
+          return <OracleRow oracle={oracle} underlyings={underlyings} />;
+        })}
+      </Tbody>
+    </Table>
+  );
+};
+
+const OracleRow = ({
+  oracle,
+  underlyings,
+  isDefault = false,
+}: {
+  oracle: string;
+  underlyings: string[];
+  isDefault?: boolean;
+}) => {
+  const oracleIdentity = useIdentifyOracle(oracle);
+
+  const displayedOracle = !!oracleIdentity
+    ? oracleIdentity
+    : shortAddress(oracle);
+
+  return (
+    <>
+      <Tr>
+        <Td>
+          <Link
+            href={`https://etherscan.io/address/${oracle}`}
+            isExternal
+            _hover={{ pointer: "cursor", color: "#21C35E" }}
+          >
+            <Text fontWeight="bold">{displayedOracle}</Text>
+          </Link>
+        </Td>
+        <Td>
+          {isDefault ? (
+            <span style={{ fontWeight: "bold" }}>DEFAULT</span>
+          ) : (
+            <AvatarGroup size="xs" max={30} mr={2}>
+              {underlyings.map((underlying) => {
+                return <CTokenIcon key={underlying} address={underlying} />;
+              })}
+            </AvatarGroup>
+          )}
+        </Td>
+      </Tr>
+    </>
   );
 };
 
@@ -547,26 +890,29 @@ const AssetConfiguration = ({
   openAddAssetModal,
   assets,
   comptrollerAddress,
+  poolOracleAddress,
+  oracleModel,
   poolName,
   poolID,
 }: {
   openAddAssetModal: () => any;
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
+  poolOracleAddress: string;
+  oracleModel: string | undefined;
   poolName: string;
   poolID: string;
 }) => {
-  const isMobile = useIsSemiSmallScreen();
-
   const { t } = useTranslation();
-
+  const { fuse } = useRari();
+  const oracleData = useOracleData(poolOracleAddress, fuse, oracleModel);
   const [selectedAsset, setSelectedAsset] = useState(assets[0]);
 
   return (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      height={isMobile ? "auto" : "440px"}
+      height="100%"
       width="100%"
       flexShrink={0}
     >
@@ -617,6 +963,9 @@ const AssetConfiguration = ({
         cTokenAddress={selectedAsset.cToken}
         poolName={poolName}
         poolID={poolID}
+        poolOracleAddress={poolOracleAddress}
+        oracleModel={oracleModel}
+        oracleData={oracleData}
       />
     </Column>
   );
@@ -628,17 +977,28 @@ const ColoredAssetSettings = ({
   poolID,
   comptrollerAddress,
   cTokenAddress,
+  poolOracleAddress,
+  oracleModel,
+  oracleData,
 }: {
   tokenAddress: string;
   poolName: string;
   poolID: string;
   comptrollerAddress: string;
   cTokenAddress: string;
+  poolOracleAddress: string;
+  oracleModel: string | undefined;
+  oracleData?: OracleDataType | string | undefined;
 }) => {
   const tokenData = useTokenData(tokenAddress);
 
   return tokenData ? (
     <AssetSettings
+      mode="Editing"
+      tokenAddress={tokenAddress}
+      poolOracleAddress={poolOracleAddress}
+      oracleModel={oracleModel}
+      oracleData={oracleData}
       closeModal={noop}
       comptrollerAddress={comptrollerAddress}
       poolName={poolName}
@@ -648,16 +1008,18 @@ const ColoredAssetSettings = ({
     />
   ) : (
     <Center expand>
-      <Spinner />
+      <Spinner my={8} />
     </Center>
   );
 };
 
 export const SaveButton = ({
   onClick,
+  altText,
   ...others
 }: {
   onClick: () => any;
+  altText?: string;
   [key: string]: any;
 }) => {
   const { t } = useTranslation();
@@ -666,14 +1028,14 @@ export const SaveButton = ({
     <DashboardBox
       flexShrink={0}
       ml={2}
-      width="60px"
+      px={2}
       height="35px"
       as="button"
       fontWeight="bold"
       onClick={onClick}
       {...others}
     >
-      {t("Save")}
+      <Center expand>{altText ?? t("Save")}</Center>
     </DashboardBox>
   );
 };
@@ -722,5 +1084,103 @@ export const ConfigRow = ({
     >
       {children}
     </Row>
+  );
+};
+
+const AddRewardsDistributorButton = ({
+  openAddRewardsDistributorModal,
+  comptrollerAddress,
+}: {
+  openAddRewardsDistributorModal: () => any;
+  comptrollerAddress: string;
+}) => {
+  const { t } = useTranslation();
+
+  const isUpgradeable = useIsUpgradeable(comptrollerAddress);
+
+  return isUpgradeable ? (
+    <DashboardBox
+      onClick={openAddRewardsDistributorModal}
+      as="button"
+      py={1}
+      px={2}
+      fontWeight="bold"
+    >
+      {t("Add Rewards Distributor")}
+    </DashboardBox>
+  ) : null;
+};
+
+const RewardsDistributorRow = ({
+  rewardsDistributor,
+  handleRowClick,
+  hideModalDivider,
+  activeCTokens,
+}: {
+  rewardsDistributor: RewardsDistributor;
+  handleRowClick: (rD: RewardsDistributor) => void;
+  hideModalDivider: boolean;
+  activeCTokens: string[];
+}) => {
+  const { address, fuse } = useRari();
+  const isAdmin = address === rewardsDistributor.admin;
+
+  const tokenData = useTokenData(rewardsDistributor.rewardToken);
+  //   Balances
+  const { data: rDBalance } = useTokenBalance(
+    rewardsDistributor.rewardToken,
+    rewardsDistributor.address
+  );
+
+  const underlyingsMap = useCTokensUnderlying(activeCTokens);
+  const underlyings = Object.values(underlyingsMap);
+
+  return (
+    <>
+      <Tr
+        _hover={{ background: "grey", cursor: "pointer" }}
+        h="30px"
+        p={5}
+        flexDir="row"
+        onClick={() => handleRowClick(rewardsDistributor)}
+      >
+        <Td>
+          <HStack>
+            {tokenData?.logoURL ? (
+              <Image
+                src={tokenData.logoURL}
+                boxSize="30px"
+                borderRadius="50%"
+              />
+            ) : null}
+            <Heading fontSize="22px" color={tokenData?.color ?? "#FFF"} ml={2}>
+              {tokenData
+                ? tokenData.symbol ?? "Invalid Address!"
+                : "Loading..."}
+            </Heading>
+          </HStack>
+        </Td>
+
+        <Td>
+          {!!underlyings.length ? (
+            <CTokenAvatarGroup tokenAddresses={underlyings} popOnHover={true} />
+          ) : (
+            <Badge colorScheme="red">Inactive</Badge>
+          )}
+        </Td>
+
+        <Td>
+          {(parseFloat(rDBalance?.toString() ?? "0") / 1e18).toFixed(3)}{" "}
+          {tokenData?.symbol}
+        </Td>
+
+        <Td>
+          <Badge colorScheme={isAdmin ? "green" : "red"}>
+            {isAdmin ? "Is Admin" : "Not Admin"}
+          </Badge>
+        </Td>
+      </Tr>
+      {/* {!hideModalDivider && <ModalDivider />} */}
+    </>
   );
 };

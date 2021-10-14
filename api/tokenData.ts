@@ -5,9 +5,9 @@ import Web3 from "web3";
 import ERC20ABI from "../src/rari-sdk/abi/ERC20.json";
 
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { turboGethURL } from "../src/utils/web3Providers";
+import { alchemyURL } from "../src/utils/web3Providers";
 
-const web3 = new Web3(turboGethURL);
+const web3 = new Web3(alchemyURL);
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");

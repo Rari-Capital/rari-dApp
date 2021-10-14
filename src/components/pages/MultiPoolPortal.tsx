@@ -1,4 +1,4 @@
-import { memo, ReactNode } from "react";
+import { memo, ReactNode, useEffect, useState } from "react";
 
 import {
   Center,
@@ -48,6 +48,7 @@ import {
 } from "../shared/MovingStat";
 import {
   smallStringUsdFormatter,
+  smallUsdFormatter,
   stringUsdFormatter,
   usdFormatter,
 } from "../../utils/bigUtils";
@@ -69,6 +70,20 @@ import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
+import ConfettiGenerator from "confetti-js";
+import { ABILLY } from "constants/homepage";
+
+const faces = [
+  { type: "svg", src: "jack.svg", size: 20, weight: 0.03 },
+  { type: "svg", src: "david.svg", size: 20, weight: 0.03 },
+  { type: "svg", src: "jai.svg", size: 20, weight: 0.03 },
+  // { type: "svg", src: "t11s.svg", size: 20, weight: 0.03 },
+];
+
+const props = ["square", "triangle", "line"];
+
+const propsWithFaces = [...props, ...faces];
+
 const MultiPoolPortal = memo(() => {
   const { width } = useWindowSize();
 
@@ -77,46 +92,89 @@ const MultiPoolPortal = memo(() => {
   // Determine the column width based on the width of the window.
   const columnWidth = width > 930 ? "900px" : width > 730 ? "700px" : "100%";
 
+  const { getNumberTVL } = useTVLFetchers();
+
+  const [celebrate, setCelebrate] = useState(false);
+
+  useEffect(() => {
+    const confettiSettings = {
+      target: "my-canvas",
+      max: "200",
+      size: "1",
+      animate: true,
+      props: propsWithFaces,
+      colors: [
+        [165, 104, 246],
+        [230, 61, 135],
+        [0, 199, 228],
+        [253, 214, 126],
+      ],
+      clock: "25",
+      rotate: true,
+      start_from_edge: true,
+      respawn: true,
+    };
+    const confetti = new ConfettiGenerator(confettiSettings);
+
+    getNumberTVL().then((tvl) => {
+      if (tvl > ABILLY) {
+        setCelebrate(true);
+        confetti.render();
+      }
+    });
+
+    return () => confetti.clear();
+  }, []); // add the var dependencies or not
+
   return (
     <>
-      <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        color="#FFFFFF"
-        mx="auto"
-        width={columnWidth}
-        px={columnWidth === "100%" ? 4 : 0}
-      >
-        <Header isAuthed={isAuthed} />
-
-        <FundStats />
-
-        <DashboardBox mt={4} width="100%" height="100px">
-          <NewsAndTwitterLink />
-        </DashboardBox>
-
-        <DashboardBox
-          mt={4}
-          height="300px"
-          width="100%"
-          color="#292828"
-          overflow="hidden"
-          px={1}
+      <canvas
+        id="my-canvas"
+        style={{
+          position: "fixed",
+          zIndex: 0,
+        }}
+      ></canvas>
+      <Box h="100%" w="100%" zIndex={1}>
+        <Column
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          color="#FFFFFF"
+          mx="auto"
+          width={columnWidth}
+          px={columnWidth === "100%" ? 4 : 0}
         >
-          <PoolsPerformanceChart size={300} />
-        </DashboardBox>
+          <Header isAuthed={isAuthed} />
 
-        <DashboardBox
-          width="100%"
-          height={{ md: "100px", base: "250px" }}
-          mt={4}
-        >
-          <GovernanceStats />
-        </DashboardBox>
+          <FundStats glow={celebrate} />
 
-        <PoolCards />
-        <Footer />
-      </Column>
+          <DashboardBox mt={4} width="100%" height="100px">
+            <NewsAndTwitterLink celebrate={celebrate} />
+          </DashboardBox>
+
+          <DashboardBox
+            mt={4}
+            height="300px"
+            width="100%"
+            color="#292828"
+            overflow="hidden"
+            px={1}
+          >
+            <PoolsPerformanceChart size={300} />
+          </DashboardBox>
+
+          <DashboardBox
+            width="100%"
+            height={{ md: "100px", base: "250px" }}
+            mt={4}
+          >
+            <GovernanceStats />
+          </DashboardBox>
+
+          <PoolCards />
+          <Footer />
+        </Column>
+      </Box>
     </>
   );
 });
@@ -210,7 +268,7 @@ const GovernanceStats = () => {
   );
 };
 
-const FundStats = () => {
+const FundStats = ({ glow = false }: { glow?: boolean }) => {
   const { t } = useTranslation();
 
   const { isAuthed } = useRari();
@@ -240,10 +298,10 @@ const FundStats = () => {
   return (
     <>
       {hasNotDeposited ? null : (
-        <DashboardBox width="100%" mb={4} height="110px">
+        <DashboardBox width="100%" mb={4} height="110px" glow={glow}>
           <Center expand>
             <APYWithRefreshMovingStat
-              formatStat={usdFormatter}
+              formatStat={smallUsdFormatter}
               fetchInterval={40000}
               loadingPlaceholder="$?"
               apyInterval={100}
@@ -255,6 +313,7 @@ const FundStats = () => {
               caption={t("Total Value Locked")}
               crossAxisAlignment="center"
               captionFirst={false}
+              captionColor={glow ? "white" : "#858585"}
             />
           </Center>
         </DashboardBox>
@@ -273,11 +332,12 @@ const FundStats = () => {
             md: hasNotDeposited ? "0px" : 4,
             base: 0,
           }}
+          glow={hasNotDeposited && glow}
         >
           <Center expand>
             {hasNotDeposited ? (
               <APYWithRefreshMovingStat
-                formatStat={usdFormatter}
+                formatStat={smallUsdFormatter}
                 fetchInterval={40000}
                 loadingPlaceholder="$?"
                 apyInterval={100}
@@ -289,6 +349,7 @@ const FundStats = () => {
                 caption={t("Total Value Locked")}
                 crossAxisAlignment="center"
                 captionFirst={false}
+                captionColor={glow ? "white" : "#858585"}
               />
             ) : (
               <APYMovingStat
@@ -301,6 +362,7 @@ const FundStats = () => {
                 caption={t("Account Balance")}
                 crossAxisAlignment="center"
                 captionFirst={false}
+                captionColor={glow ? "white" : "#858585"}
               />
             )}
           </Center>
@@ -329,24 +391,27 @@ const PoolCards = () => {
       crossAxisAlignment="center"
       width="100%"
     >
-      {Object.values(Pool).map((pool: Pool, index: number, array: Pool[]) => {
-        return (
-          <DashboardBox
-            key={pool}
-            width={{ md: "33%", base: "100%" }}
-            height="280px"
-            mr={{
-              md:
-                // Don't add right margin on the last child
-                index === array.length - 1 ? 0 : 4,
-              base: 0,
-            }}
-            mt={4}
-          >
-            <PoolDetailCard pool={pool} />
-          </DashboardBox>
-        );
-      })}
+      {Object.values(Pool)
+        .slice(0, 2)
+        .map((pool: Pool, index: number, array: Pool[]) => {
+          return (
+            <DashboardBox
+              key={pool}
+              width={{ md: "33%", base: "100%" }}
+              height="280px"
+              mr={{
+                md:
+                  // Don't add right margin on the last child
+                  index === array.length - 1 ? 0 : 4,
+                base: 0,
+              }}
+              mt={4}
+              flexGrow={1}
+            >
+              <PoolDetailCard pool={pool} />
+            </DashboardBox>
+          );
+        })}
     </RowOnDesktopColumnOnMobile>
   );
 };
@@ -556,7 +621,11 @@ const InterestEarned = () => {
   );
 };
 
-export const NewsAndTwitterLink = () => {
+export const NewsAndTwitterLink = ({
+  celebrate = false,
+}: {
+  celebrate?: boolean;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -588,46 +657,40 @@ export const NewsAndTwitterLink = () => {
         mainAxisAlignment="center"
         crossAxisAlignment="flex-start"
       >
-        <NewsMarquee />
+        <NewsMarquee celebrate={celebrate} />
       </Column>
     </Column>
   );
 };
 
-const NewsMarquee = memo(() => {
-  const news = [
-    "The first Fuse pools deployed by the Rari Capital DAO are now open for deposits/borrows in the Fuse tab!",
-    "You can now earn rewards for pooling ETH and RGT on Sushiswap in the Pool2 tab.",
-    "We're migrating from Telegram to Discord! Join us there to talk all things Rari Capital.",
-    "Individual Pool Dashboards are now live! View detailed analytics about your account and other useful metrics!",
+const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
+  const defaultNews = [
+    "Permissionless Pool Creation is out! Now anyone can create a Fuse Pool without limitations.",
+    "TRIBE liquidity mining rewards are currently active in Pool 8!",
+    "Watch out for permissionless liquidity mining right around the corner 👀.",
   ];
+
+  const news = celebrate
+    ? [
+        "Thank you to the Rari Community, the protocol has surpassed $1B  in TVL!",
+        ...defaultNews,
+      ]
+    : defaultNews;
 
   return (
     <Box whiteSpace="nowrap" overflow="hidden" width="100%" fontSize="sm">
-      <MarqueeIfAuthed>
+      <Marquee delay={1200} childMargin={0} speed={0.015} direction="left">
         {news.map((text: string) => (
           <span key={text}>
             {text}
             <NewsMarqueeSpacer />
           </span>
         ))}
-      </MarqueeIfAuthed>
+      </Marquee>
     </Box>
   );
 });
 
 const NewsMarqueeSpacer = () => {
   return <b> &nbsp;&nbsp;&nbsp;&nbsp;📣 &nbsp;&nbsp;&nbsp;&nbsp; </b>;
-};
-
-const MarqueeIfAuthed = ({ children }: { children: ReactNode }) => {
-  const { isAuthed } = useRari();
-
-  return isAuthed ? (
-    <Marquee delay={1200} childMargin={0} speed={0.015} direction="left">
-      {children}
-    </Marquee>
-  ) : (
-    <>{children}</>
-  );
 };

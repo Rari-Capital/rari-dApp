@@ -36,34 +36,51 @@ import FuseTabBar from "./FuseTabBar";
 import { useQuery } from "react-query";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
 
-import { useTokenData } from "../../../hooks/useTokenData";
-import { CTokenIcon } from "./FusePoolsPage";
+import { ETH_TOKEN_DATA, useTokenData } from "hooks/useTokenData";
+import { CTokenIcon } from "components/shared/CTokenIcon";
 import { shortAddress } from "../../../utils/shortAddress";
 import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller } from "../../../utils/createComptroller";
+import {
+  createComptroller,
+  createOracle,
+} from "../../../utils/createComptroller";
 import Fuse from "../../../fuse-sdk";
 import CaptionedStat from "../../shared/CaptionedStat";
 import Footer from "components/shared/Footer";
+import { useIdentifyOracle } from "hooks/fuse/useOracleData";
+import { truncate } from "utils/stringUtils";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-export const useExtraPoolInfo = (comptrollerAddress: string) => {
+export const useExtraPoolInfo = (
+  comptrollerAddress: string,
+  oracleAddress: string
+) => {
   const { fuse, address } = useRari();
 
   const { data } = useQuery(comptrollerAddress + " extraPoolInfo", async () => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
 
+    const poolOracle = createOracle(oracleAddress, fuse, "MasterPriceOracle");
+
+    let defaultOracle = undefined;
+    try {
+      defaultOracle = await poolOracle.methods.defaultOracle().call();
+    } catch (err) {
+      console.error("Error querying for defaultOracle");
+    }
+
     const [
       { 0: admin, 1: upgradeable },
-      oracle,
       closeFactor,
       liquidationIncentive,
       enforceWhitelist,
       whitelist,
+      adminHasRights,
+      pendingAdmin,
     ] = await Promise.all([
-      fuse.contracts.FusePoolLens.methods
+      fuse.contracts.FusePoolLensSecondary.methods
         .getPoolOwnership(comptrollerAddress)
         .call({ gas: 1e18 }),
-
-      fuse.getPriceOracle(await comptroller.methods.oracle().call()),
 
       comptroller.methods.closeFactorMantissa().call(),
 
@@ -71,19 +88,22 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
 
       (() => {
         try {
-          comptroller.methods.enforceWhitelist().call();
-        } catch (_) {
+          return comptroller.methods.enforceWhitelist().call();
+        } catch (e) {
           return false;
         }
       })(),
 
       (() => {
         try {
-          comptroller.methods.getWhitelist().call();
+          return comptroller.methods.getWhitelist().call();
         } catch (_) {
           return [];
         }
       })(),
+
+      comptroller.methods.adminHasRights().call(),
+      comptroller.methods.pendingAdmin().call(),
     ]);
 
     return {
@@ -93,9 +113,11 @@ export const useExtraPoolInfo = (comptrollerAddress: string) => {
       whitelist: whitelist as string[],
       isPowerfulAdmin:
         admin.toLowerCase() === address.toLowerCase() && upgradeable,
-      oracle,
       closeFactor,
       liquidationIncentive,
+      adminHasRights,
+      pendingAdmin,
+      defaultOracle,
     };
   });
 
@@ -123,7 +145,7 @@ const FusePoolInfoPage = memo(() => {
       >
         <Header isAuthed={isAuthed} isFuse />
 
-        <FuseStatsBar />
+        <FuseStatsBar data={data} />
 
         <FuseTabBar />
 
@@ -146,6 +168,8 @@ const FusePoolInfoPage = memo(() => {
                 totalBorrowedUSD={data.totalBorrowedUSD}
                 totalLiquidityUSD={data.totalLiquidityUSD}
                 comptrollerAddress={data.comptroller}
+                oracleAddress={data.oracle}
+                oracleModel={data.oracleModel}
               />
             ) : (
               <Center expand>
@@ -162,7 +186,10 @@ const FusePoolInfoPage = memo(() => {
           >
             {data ? (
               data.assets.length > 0 ? (
-                <AssetAndOtherInfo assets={data.assets} />
+                <AssetAndOtherInfo
+                  assets={data.assets}
+                  poolOracle={data.oracle}
+                />
               ) : (
                 <Center expand>{t("There are no assets in this pool.")}</Center>
               )
@@ -188,6 +215,8 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD,
   totalLiquidityUSD,
   comptrollerAddress,
+  oracleAddress,
+  oracleModel,
 }: {
   assets: USDPricedFuseAsset[];
   name: string;
@@ -195,12 +224,17 @@ const OracleAndInterestRates = ({
   totalBorrowedUSD: number;
   totalLiquidityUSD: number;
   comptrollerAddress: string;
+  oracleAddress: string;
+  oracleModel: string | undefined;
 }) => {
   let { poolId } = useParams();
 
   const { t } = useTranslation();
 
-  const data = useExtraPoolInfo(comptrollerAddress);
+  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
+  const defaultOracleIdentity = useIdentifyOracle(data?.defaultOracle);
+
+  console.log(data?.defaultOracle, { defaultOracleIdentity });
 
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
@@ -353,7 +387,7 @@ const OracleAndInterestRates = ({
 
         <StatRow
           statATitle={t("Oracle")}
-          statA={data ? data.oracle ?? t("Unrecognized Oracle") : "?"}
+          statA={data ? oracleModel ?? t("Unrecognized Oracle") : "?"}
           statBTitle={t("Whitelist")}
           statB={data ? (data.enforceWhitelist ? "Yes" : "No") : "?"}
         />
@@ -371,8 +405,8 @@ const StatRow = ({
 }: {
   statATitle: string;
   statA: string;
-  statBTitle: string;
-  statB: string;
+  statBTitle?: string;
+  statB?: string;
   [key: string]: any;
 }) => {
   return (
@@ -387,14 +421,22 @@ const StatRow = ({
         {statATitle}: <b>{statA}</b>
       </Text>
 
-      <Text width="50%" textAlign="center">
-        {statBTitle}: <b>{statB}</b>
-      </Text>
+      {statBTitle && statB && (
+        <Text width="50%" textAlign="center">
+          {statBTitle}: <b>{statB}</b>
+        </Text>
+      )}
     </RowOnDesktopColumnOnMobile>
   );
 };
 
-const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
+const AssetAndOtherInfo = ({
+  assets,
+  poolOracle,
+}: {
+  assets: USDPricedFuseAsset[];
+  poolOracle: string;
+}) => {
   let { poolId } = useParams();
 
   const { fuse } = useRari();
@@ -417,19 +459,42 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           ).toFixed(0)
         );
 
-  const { data } = useQuery(selectedAsset.cToken + " curves", async () => {
-    const interestRateModel = await fuse.getInterestRateModel(
-      selectedAsset.cToken
-    );
+  const { data: curveData } = useQuery(
+    selectedAsset.cToken + " curves",
+    async () => {
+      const interestRateModel = await fuse.getInterestRateModel(
+        selectedAsset.cToken
+      );
 
-    if (interestRateModel === null) {
-      return { borrowerRates: null, supplierRates: null };
+      if (interestRateModel === null) {
+        return { borrowerRates: null, supplierRates: null };
+      }
+
+      const IRMidentity = await fuse.identifyInterestRateModelName(
+        interestRateModel
+      );
+
+      const curve = convertIRMtoCurve(interestRateModel, fuse);
+
+      return { curve, IRMidentity };
     }
+  );
 
-    return convertIRMtoCurve(interestRateModel, fuse);
-  });
+  const { curve: data, IRMidentity } = curveData ?? {};
+  console.log({ data, IRMidentity });
 
   const isMobile = useIsMobile();
+
+  const oracleIdentity = useIdentifyOracle(
+    selectedAsset.oracle,
+    selectedAsset.underlyingToken
+  );
+
+  // Link to MPO if asset is ETH
+  const oracleAddress =
+    selectedAsset.underlyingToken === ETH_TOKEN_DATA.address
+      ? poolOracle
+      : selectedAsset.oracle;
 
   return (
     <Column
@@ -489,6 +554,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
         px={3}
         className="hide-bottom-tooltip"
         flexShrink={0}
+        // bg="red"
       >
         {data ? (
           data.supplierRates === null ? (
@@ -498,63 +564,75 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
               </Text>
             </Center>
           ) : (
-            <Chart
-              options={
-                {
-                  ...FuseUtilizationChartOptions,
-                  annotations: {
-                    points: [
-                      {
-                        x: selectedAssetUtilization,
-                        y: data.borrowerRates[selectedAssetUtilization].y,
-                        marker: {
-                          size: 6,
-                          fillColor: "#FFF",
-                          strokeColor: "#DDDCDC",
-                        },
-                      },
-                      {
-                        x: selectedAssetUtilization,
-                        y: data.supplierRates[selectedAssetUtilization].y,
-                        marker: {
-                          size: 6,
-                          fillColor: selectedTokenData?.color ?? "#A6A6A6",
-                          strokeColor: "#FFF",
-                        },
-                      },
-                    ],
-                    xaxis: [
-                      {
-                        x: selectedAssetUtilization,
-                        label: {
-                          text: t("Current Utilization"),
-                          orientation: "horizontal",
-                          style: {
-                            background: "#121212",
-                            color: "#FFF",
+            <>
+              <Chart
+                options={
+                  {
+                    ...FuseUtilizationChartOptions,
+                    annotations: {
+                      points: [
+                        {
+                          x: selectedAssetUtilization,
+                          y: data.borrowerRates[selectedAssetUtilization].y,
+                          marker: {
+                            size: 6,
+                            fillColor: "#FFF",
+                            strokeColor: "#DDDCDC",
                           },
                         },
-                      },
-                    ],
-                  },
+                        {
+                          x: selectedAssetUtilization,
+                          y: data.supplierRates[selectedAssetUtilization].y,
+                          marker: {
+                            size: 6,
+                            fillColor: selectedTokenData?.color ?? "#A6A6A6",
+                            strokeColor: "#FFF",
+                          },
+                        },
+                      ],
+                      xaxis: [
+                        {
+                          x: selectedAssetUtilization,
+                          label: {
+                            text: t("Current Utilization"),
+                            orientation: "horizontal",
+                            style: {
+                              background: "#121212",
+                              color: "#FFF",
+                            },
+                          },
+                        },
+                      ],
+                    },
 
-                  colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
-                } as any
-              }
-              type="line"
-              width="100%"
-              height="100%"
-              series={[
-                {
-                  name: "Borrow Rate",
-                  data: data.borrowerRates,
-                },
-                {
-                  name: "Deposit Rate",
-                  data: data.supplierRates,
-                },
-              ]}
-            />
+                    colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
+                  } as any
+                }
+                type="line"
+                width="100%"
+                height="100%"
+                series={[
+                  {
+                    name: "Borrow Rate",
+                    data: data.borrowerRates,
+                  },
+                  {
+                    name: "Deposit Rate",
+                    data: data.supplierRates,
+                  },
+                ]}
+              />
+              <Text
+                position="absolute"
+                zIndex={4}
+                top={4}
+                left={4}
+                color="white"
+              >
+                {" "}
+                {IRMidentity?.replace("_", " ") ?? ""}
+              </Text>
+            </>
           )
         ) : (
           <Center expand color="#FFFFFF">
@@ -582,6 +660,23 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           crossAxisAlignment="center"
           captionFirst={true}
         />
+
+        <SimpleTooltip label={oracleIdentity}>
+          <Link
+            href={`https://etherscan.io/address/${oracleAddress}`}
+            isExternal
+            _hover={{ pointer: "cursor", color: "#21C35E" }}
+          >
+            <CaptionedStat
+              stat={truncate(oracleIdentity, 20)}
+              statSize="md"
+              captionSize="xs"
+              caption={t("Oracle")}
+              crossAxisAlignment="center"
+              captionFirst={true}
+            />
+          </Link>
+        </SimpleTooltip>
 
         <CaptionedStat
           stat={(selectedAsset.reserveFactor / 1e16).toFixed(0) + "%"}
@@ -640,6 +735,7 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
           captionFirst={true}
         />
       </Row>
+      <ModalDivider />
     </Column>
   );
 };

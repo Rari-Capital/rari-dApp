@@ -43,7 +43,7 @@ import { useQuery, useQueryClient } from "react-query";
 import { QuestionIcon } from "@chakra-ui/icons";
 import { SimpleTooltip } from "../../../shared/SimpleTooltip";
 import BigNumber from "bignumber.js";
-import { createComptroller } from "../../../../utils/createComptroller";
+import { createComptroller, createCToken } from "utils/createComptroller";
 import { testForCTokenErrorAndSend } from "./PoolModal/AmountSelect";
 
 import { handleGenericError } from "../../../../utils/errorHandling";
@@ -52,15 +52,19 @@ import LogRocket from "logrocket";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-export const createCToken = (fuse: Fuse, cTokenAddress: string) => {
-  const cErc20Delegate = new fuse.web3.eth.Contract(
-    JSON.parse(
-      fuse.compoundContracts["contracts/CErc20Delegate.sol:CErc20Delegate"].abi
-    ),
-    cTokenAddress
+export const useLiquidationIncentive = (comptrollerAddress: string) => {
+  const { fuse } = useRari();
+
+  const { data } = useQuery(
+    comptrollerAddress + " comptrollerData",
+    async () => {
+      const comptroller = createComptroller(comptrollerAddress, fuse);
+
+      return comptroller.methods.liquidationIncentiveMantissa().call();
+    }
   );
 
-  return cErc20Delegate;
+  return data;
 };
 
 export const useCTokenData = (
@@ -79,11 +83,13 @@ export const useCTokenData = (
         reserveFactorMantissa,
         interestRateModelAddress,
         { collateralFactorMantissa },
+        isPaused,
       ] = await Promise.all([
         cToken.methods.adminFeeMantissa().call(),
         cToken.methods.reserveFactorMantissa().call(),
         cToken.methods.interestRateModel().call(),
         comptroller.methods.markets(cTokenAddress).call(),
+        comptroller.methods.borrowGuardianPaused(cTokenAddress).call(),
       ]);
 
       return {
@@ -91,6 +97,8 @@ export const useCTokenData = (
         adminFeeMantissa,
         collateralFactorMantissa,
         interestRateModelAddress,
+        cTokenAddress,
+        isPaused,
       };
     } else {
       return null;
@@ -130,7 +138,9 @@ export const AssetSettings = ({
 
   const [collateralFactor, setCollateralFactor] = useState(50);
   const [reserveFactor, setReserveFactor] = useState(10);
-  const [adminFee, setAdminFee] = useState(5);
+  const [adminFee, setAdminFee] = useState(0);
+
+  const [isBorrowPaused, setIsBorrowPaused] = useState(false);
 
   const scaleCollateralFactor = (_collateralFactor: number) => {
     return _collateralFactor / 1e16;
@@ -223,7 +233,6 @@ export const AssetSettings = ({
       // Ex: fUSDC-456
       symbol: "f" + tokenData.symbol + "-" + poolID,
       decimals: 8,
-      admin: address,
     };
 
     try {
@@ -232,7 +241,9 @@ export const AssetSettings = ({
         bigCollateralFacotr,
         bigReserveFactor,
         bigAdminFee,
-        { from: address }
+        { from: address },
+        // TODO: Disable this. This bypasses the price feed check. Only using now because only trusted partners are deploying assets.
+        true
       );
 
       LogRocket.track("Fuse-DeployAsset");
@@ -257,6 +268,9 @@ export const AssetSettings = ({
     }
   };
 
+  const liquidationIncentiveMantissa =
+    useLiquidationIncentive(comptrollerAddress);
+
   const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
 
   // Update values on refetch!
@@ -265,10 +279,26 @@ export const AssetSettings = ({
       setCollateralFactor(cTokenData.collateralFactorMantissa / 1e16);
       setReserveFactor(cTokenData.reserveFactorMantissa / 1e16);
       setAdminFee(cTokenData.adminFeeMantissa / 1e16);
-
       setInterestRateModel(cTokenData.interestRateModelAddress);
+      setIsBorrowPaused(cTokenData.isPaused);
     }
   }, [cTokenData]);
+
+  const togglePause = async () => {
+    const comptroller = createComptroller(comptrollerAddress, fuse);
+
+    try {
+      await comptroller.methods
+        ._setBorrowPaused(cTokenAddress, !isBorrowPaused)
+        .send({ from: address });
+
+      LogRocket.track("Fuse-PauseToggle");
+
+      queryClient.refetchQueries();
+    } catch (e) {
+      handleGenericError(e, toast);
+    }
+  };
 
   const updateCollateralFactor = async () => {
     const comptroller = createComptroller(comptrollerAddress, fuse);
@@ -363,6 +393,8 @@ export const AssetSettings = ({
   };
 
   return (
+    cTokenAddress ? cTokenData?.cTokenAddress === cTokenAddress : true
+  ) ? (
     <Column
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
@@ -392,9 +424,36 @@ export const AssetSettings = ({
           value={collateralFactor}
           setValue={setCollateralFactor}
           formatValue={formatPercentage}
-          max={90}
+          max={
+            liquidationIncentiveMantissa
+              ? // 100% CF - Liquidation Incentive (ie: 8%) - 5% buffer
+                100 - (liquidationIncentiveMantissa.toString() / 1e16 - 100) - 5
+              : 90
+          }
         />
       </ConfigRow>
+
+      <ModalDivider />
+      {cTokenAddress ? (
+        <ConfigRow>
+          <SimpleTooltip
+            label={t("If enabled borrowing this asset will be disabled.")}
+          >
+            <Text fontWeight="bold">
+              {t("Pause Borrowing")} <QuestionIcon ml={1} mb="4px" />
+            </Text>
+          </SimpleTooltip>
+
+          <SaveButton
+            ml="auto"
+            onClick={togglePause}
+            fontSize="xs"
+            altText={
+              isBorrowPaused ? t("Enable Borrowing") : t("Pause Borrowing")
+            }
+          />
+        </ConfigRow>
+      ) : null}
 
       <ModalDivider />
 
@@ -533,7 +592,7 @@ export const AssetSettings = ({
           />
         ) : curves === undefined ? (
           <Center expand color="#FFF">
-            <Spinner />
+            <Spinner my={8} />
           </Center>
         ) : (
           <Center expand color="#FFFFFF">
@@ -564,6 +623,10 @@ export const AssetSettings = ({
         </Box>
       )}
     </Column>
+  ) : (
+    <Center expand>
+      <Spinner my={8} />
+    </Center>
   );
 };
 
