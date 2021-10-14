@@ -410,10 +410,10 @@ export default class Governance {
             .div(Web3.utils.toBN(1e18));
         },
         stakedReservesOf: async function (account) {
-          var stakingBalance = await self.rgt.sushiSwapDistributions.stakingBalanceOf(
-            account
-          );
-          var reservesPerLpToken = await self.rgt.sushiSwapDistributions.getReservesPerLpToken();
+          var stakingBalance =
+            await self.rgt.sushiSwapDistributions.stakingBalanceOf(account);
+          var reservesPerLpToken =
+            await self.rgt.sushiSwapDistributions.getReservesPerLpToken();
           return {
             rgt: reservesPerLpToken.rgt
               .mul(stakingBalance)
