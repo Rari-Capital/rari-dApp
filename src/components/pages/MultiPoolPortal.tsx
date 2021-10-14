@@ -70,7 +70,6 @@ import Footer from "components/shared/Footer";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 
-import ConfettiGenerator from "confetti-js";
 import { ABILLY } from "constants/homepage";
 
 const faces = [
@@ -97,34 +96,12 @@ const MultiPoolPortal = memo(() => {
   const [celebrate, setCelebrate] = useState(false);
 
   useEffect(() => {
-    const confettiSettings = {
-      target: "my-canvas",
-      max: "200",
-      size: "1",
-      animate: true,
-      props: propsWithFaces,
-      colors: [
-        [165, 104, 246],
-        [230, 61, 135],
-        [0, 199, 228],
-        [253, 214, 126],
-      ],
-      clock: "25",
-      rotate: true,
-      start_from_edge: true,
-      respawn: true,
-    };
-    const confetti = new ConfettiGenerator(confettiSettings);
-
     getNumberTVL().then((tvl) => {
       if (tvl > ABILLY) {
         setCelebrate(true);
-        confetti.render();
       }
     });
-
-    return () => confetti.clear();
-  }, []); // add the var dependencies or not
+  }, []);
 
   return (
     <>
