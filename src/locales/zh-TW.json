@@ -226,7 +226,6 @@
   "Borrowed": "已借取",
   "Borrow Ratio": "借款比率",
   "Limit Used": "限製使用",
-  "Liquidations": "清算",
   "This is how much you have borrowed.": "這是您總共借的。",
   "Recent Liquidations": "最近的清算",
   "Collateral Seized": "被扣押的抵押品",
@@ -288,7 +287,6 @@
   "There are no RewardsDistributors for this pool.": "__NOT_TRANSLATED__",
   "Oracles": "__NOT_TRANSLATED__",
   "Add Rewards Distributor": "__NOT_TRANSLATED__",
-  "Default Oracle": "__NOT_TRANSLATED__",
   "Verified Pools": "__NOT_TRANSLATED__",
   "Deploy": "__NOT_TRANSLATED__",
   "Deploy Rewards Distributor": "__NOT_TRANSLATED__",
@@ -296,5 +294,6 @@
   "Edit Rewards Distributor": "__NOT_TRANSLATED__",
   "Claim": "__NOT_TRANSLATED__",
   "Claim Rewards": "__NOT_TRANSLATED__",
-  "Claim All": "__NOT_TRANSLATED__"
+  "Claim All": "__NOT_TRANSLATED__",
+  "Fuse Liquidations": "__NOT_TRANSLATED__"
 }

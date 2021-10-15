@@ -302,7 +302,7 @@ const FuseLiquidationsPage = memo(() => {
             <iframe
               height="100%"
               width="100%"
-              src="https://rari.grafana.net/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
+              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
               title="Leverage"
             />
           </DashboardBox>
@@ -316,7 +316,7 @@ const FuseLiquidationsPage = memo(() => {
             bg="#141619"
           >
             <iframe
-              src="https://rari.grafana.net/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=19"
+              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=19"
               height="100%"
               width="100%"
               title="Liquidation Count"
