@@ -1,19 +1,5 @@
-/* eslint-disable no-loop-func */
-import {
-  AvatarGroup,
-  Box,
-  Link,
-  Spinner,
-  Switch,
-  Text,
-} from "@chakra-ui/react";
-import {
-  Center,
-  Column,
-  Row,
-  RowOrColumn,
-  useIsMobile,
-} from "utils/chakraUtils";
+import { Box, Link, Spinner, Text } from "@chakra-ui/react";
+import { Column, Row, RowOrColumn, useIsMobile } from "utils/chakraUtils";
 import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
@@ -23,13 +9,10 @@ import DashboardBox from "../../shared/DashboardBox";
 import { Header } from "../../shared/Header";
 import { ModalDivider } from "../../shared/Modal";
 
-import { Link as RouterLink } from "react-router-dom";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 
 import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
-
-import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
 import Footer from "components/shared/Footer";
 import { memo, useState } from "react";
@@ -72,85 +55,7 @@ export type LiquidationEvent = {
 const FuseLiquidationsPage = memo(() => {
   const isMobile = useIsSmallScreen();
 
-  const { fuse, rari, isAuthed } = useRari();
-
-  const [showAtRiskPositions, setShowAtRiskPositions] = useState(false);
-
-  const { data: positions } = useQuery(
-    showAtRiskPositions ? "atRiskPositions" : "liquidatablePositions",
-    async () => {
-      const [response, ethPriceBN] = await Promise.all([
-        fuse.contracts.FusePoolLens.methods
-          .getPublicPoolUsersWithData(
-            fuse.web3.utils.toBN(showAtRiskPositions ? 1.1e18 : 1e18)
-          )
-          .call(),
-        rari.getEthUsdPriceBN(),
-      ]);
-
-      const ethPrice: number = fuse.web3.utils.fromWei(ethPriceBN) as any;
-
-      const comptrollers = response[0];
-      const poolUsers = response[1];
-
-      let positions: LiquidatablePosition[] = [];
-
-      let userFetches: Promise<any>[] = [];
-
-      for (let poolID = 0; poolID < comptrollers.length; poolID++) {
-        const comptroller = comptrollers[poolID];
-        const filteredUsers: LiquidatablePosition[] = poolUsers[poolID].filter(
-          (position: LiquidatablePosition) => {
-            // Filter out users that are borrowing less than 0.1 ETH
-            return (
-              position.totalBorrow / 1e18 > 0.1 &&
-              // If we want to show at risk positions, don't show liquidatable ones.
-              (showAtRiskPositions ? position.health / 1e18 > 1 : true) &&
-              // Hide positions that are only one asset.
-              position.assets.filter(
-                // Must be borrowing/supplying more than $1 for this to count as an asset.
-                (a) => {
-                  const price = a.underlyingPrice;
-
-                  return (
-                    ((a.supplyBalance * price) / 1e36) * ethPrice > 1 ||
-                    ((a.borrowBalance * price) / 1e36) * ethPrice > 1
-                  );
-                }
-              ).length > 1
-            );
-          }
-        );
-
-        for (let userIndex = 0; userIndex < filteredUsers.length; userIndex++) {
-          const user = filteredUsers[userIndex];
-
-          userFetches.push(
-            fuse.contracts.FusePoolLens.methods
-              .getPoolUserSummary(comptroller, user.account)
-              .call()
-              .then((userSummary: number[]) => {
-                // Add the positions to the list with extra details:
-                positions.push({
-                  ...user,
-                  totalCollateral: (user.totalCollateral / 1e18) * ethPrice,
-                  totalBorrow: (user.totalBorrow / 1e18) * ethPrice,
-                  totalSupplied: (userSummary[0] / 1e18) * ethPrice,
-                  assets: user.assets.map(filterOnlyObjectProperties),
-
-                  poolID,
-                });
-              })
-          );
-        }
-      }
-
-      await Promise.all(userFetches);
-
-      // Sort the positions by borrow balance in descending order.
-      return positions.sort((a, b) => b.totalBorrow - a.totalBorrow);
-    }
-  );
+  const { fuse, isAuthed } = useRari();
 
   const { data: liquidations } = useQuery("liquidations", async () => {
     const pools = await fuse.contracts.FusePoolDirectory.methods
@@ -260,14 +165,8 @@ const FuseLiquidationsPage = memo(() => {
     });
   });
 
-  const [liquidationsToShow, setLiquidationsToShow] = useState(1);
+  const [liquidationsToShow, setLiquidationsToShow] = useState(10);
   const limitedLiquidations = liquidations?.slice(0, liquidationsToShow);
-
-  const [positionsToShow, setPositionsToShow] = useState(-1);
-  const limitedPositions = positions?.slice(
-    0,
-    positionsToShow === -1 ? positions.length : positionsToShow
-  );
 
   return (
     <>
@@ -300,10 +199,10 @@ const FuseLiquidationsPage = memo(() => {
             bg="#141619"
           >
             <iframe
+              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=19"
               height="100%"
               width="100%"
-              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
-              title="Leverage"
+              title="Liquidation Count"
             />
           </DashboardBox>
 
@@ -316,10 +215,10 @@ const FuseLiquidationsPage = memo(() => {
             bg="#141619"
           >
             <iframe
-              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=19"
               height="100%"
               width="100%"
-              title="Liquidation Count"
+              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
+              title="Leverage"
             />
           </DashboardBox>
         </RowOrColumn>
@@ -329,16 +228,6 @@ const FuseLiquidationsPage = memo(() => {
             liquidations={limitedLiquidations}
             totalLiquidations={liquidations?.length ?? 0}
             setLiquidationsToShow={setLiquidationsToShow}
-          />
-        </DashboardBox>
-
-        <DashboardBox width="100%" mt={4}>
-          <LiquidatablePositionsList
-            setShowAtRiskPositions={setShowAtRiskPositions}
-            showAtRiskPositions={showAtRiskPositions}
-            positions={limitedPositions}
-            setPositionsToShow={setPositionsToShow}
-            totalPositions={positions?.length ?? 0}
           />
         </DashboardBox>
 
@@ -548,237 +437,6 @@ const LiquidationRow = ({
 
                 <Text mt={1}>{date.toLocaleDateString()}</Text>
               </Column>
-            </>
-          )}
-        </Row>
-      </Link>
-
-      {noBottomDivider ? null : <ModalDivider />}
-    </>
-  );
-};
-
-const LiquidatablePositionsList = ({
-  positions,
-  totalPositions,
-  setPositionsToShow,
-  showAtRiskPositions,
-  setShowAtRiskPositions,
-}: {
-  positions?: LiquidatablePosition[];
-  totalPositions: number;
-  setPositionsToShow: React.Dispatch<React.SetStateAction<number>>;
-  showAtRiskPositions: boolean;
-  setShowAtRiskPositions: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  const { t } = useTranslation();
-
-  const isMobile = useIsMobile();
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      expand
-    >
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        height="45px"
-        width="100%"
-        flexShrink={0}
-        pl={4}
-        pr={1}
-      >
-        <Row
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          width={isMobile ? "100%" : "30%"}
-        >
-          <SimpleTooltip
-            label={
-              showAtRiskPositions
-                ? t(
-                    "At risk positions are positions that are less than 110% collateralized."
-                  )
-                : t(
-                    "Liquidatable positions are positions less than 100% collateralized."
-                  )
-            }
-          >
-            <Text fontWeight="bold">
-              {showAtRiskPositions
-                ? t("At Risk Positions")
-                : t("Liquidatable Positions")}
-            </Text>
-          </SimpleTooltip>
-          <SimpleTooltip
-            label={
-              showAtRiskPositions
-                ? t("Disable the switch to just view liquidatable positions.")
-                : t("Enable the switch to view 'at risk' positions.")
-            }
-          >
-            <Box ml={3}>
-              <Switch
-                size="sm"
-                colorScheme="yellow"
-                checked={showAtRiskPositions}
-                onChange={() => setShowAtRiskPositions((past) => !past)}
-              />
-            </Box>
-          </SimpleTooltip>
-        </Row>
-
-        {isMobile ? null : (
-          <>
-            <Text fontWeight="bold" textAlign="center" width="14%">
-              {t("Supplied")}
-            </Text>
-
-            <Text fontWeight="bold" textAlign="center" width="14%">
-              {t("Borrowed")}
-            </Text>
-
-            <Text textAlign="center" width="14%">
-              {t("Borrow Ratio")}
-            </Text>
-
-            <Text fontWeight="bold" textAlign="center" width="14%">
-              {t("Borrow Limit")}
-            </Text>
-
-            <Text textAlign="center" width="14%">
-              {t("Limit Used")}
-            </Text>
-          </>
-        )}
-      </Row>
-
-      <ModalDivider />
-
-      <Column
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="center"
-        width="100%"
-      >
-        {positions ? (
-          <>
-            {" "}
-            {positions.map((position, index) => {
-              return (
-                <PositionRow
-                  key={position.account + position.poolID}
-                  position={position}
-                  noBottomDivider={index === positions.length - 1}
-                />
-              );
-            })}
-            <RowsControl
-              totalAmount={totalPositions}
-              setAmountToShow={setPositionsToShow}
-            />
-          </>
-        ) : (
-          <Spinner my={8} />
-        )}
-      </Column>
-    </Column>
-  );
-};
-
-const PositionRow = ({
-  position,
-  noBottomDivider,
-}: {
-  position: LiquidatablePosition;
-  noBottomDivider?: boolean;
-}) => {
-  const isMobile = useIsMobile();
-
-  const borrowRatio = (position.totalBorrow / position.totalSupplied) * 100;
-  const limitUsed = (position.totalBorrow / position.totalCollateral) * 100;
-
-  return (
-    <>
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
-        width="100%"
-        className="no-underline"
-        to={"/fuse/pool/" + position.poolID + `?address=${position.account}`}
-      >
-        <Row
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          width="100%"
-          height="90px"
-          className="hover-row"
-          pl={4}
-          pr={1}
-        >
-          <Column
-            pt={1}
-            width={isMobile ? "100%" : "30%"}
-            height="100%"
-            mainAxisAlignment="center"
-            crossAxisAlignment="flex-start"
-          >
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              <Jazzicon
-                diameter={23}
-                seed={jsNumberForAddress(position.account)}
-              />
-
-              <Text ml={3} fontWeight="bold">
-                Pool #{position.poolID}
-              </Text>
-
-              <SimpleTooltip
-                label={position.assets
-                  .map((t) => t.underlyingSymbol)
-                  .join(" / ")}
-              >
-                <AvatarGroup size="xs" max={30} ml={2} mr={2}>
-                  {position.assets.map(({ underlyingToken }) => {
-                    return (
-                      <CTokenIcon
-                        key={underlyingToken}
-                        address={underlyingToken}
-                      />
-                    );
-                  })}
-                </AvatarGroup>
-              </SimpleTooltip>
-            </Row>
-
-            <Text mt={2} fontSize="11px">
-              {position.account}
-            </Text>
-          </Column>
-
-          {isMobile ? null : (
-            <>
-              <Center height="100%" width="14%">
-                <b>{smallUsdFormatter(position.totalSupplied)}</b>
-              </Center>
-
-              <Center height="100%" width="14%">
-                <b>{smallUsdFormatter(position.totalBorrow)}</b>
-              </Center>
-              <Center
-                height="100%"
-                width="14%"
-                color={borrowRatio > 100 ? "#EE1E45" : "#73BF69"}
-              >
-                {borrowRatio.toFixed(2) + "%"}
-              </Center>
-              <Center height="100%" width="14%">
-                <b>{smallUsdFormatter(position.totalCollateral)}</b>
-              </Center>
-              <Center height="100%" width="14%">
-                {limitUsed.toFixed(2) + "%"}
-              </Center>
             </>
           )}
         </Row>

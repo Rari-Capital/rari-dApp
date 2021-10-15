@@ -189,8 +189,8 @@ const FusePoolPage = memo(() => {
         crossAxisAlignment="center"
         color="#FFFFFF"
         mx="auto"
-        width={isMobile ? "100%" : "1350px"}
-        px={isMobile ? 2 : 0}
+        width={isMobile ? "100%" : "1150px"}
+        px={isMobile ? 4 : 0}
       >
         <Header isAuthed={isAuthed} isFuse />
 

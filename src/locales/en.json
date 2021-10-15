@@ -216,16 +216,6 @@
   "Debt": "Debt",
   "Product": "Product",
   "Snapshot": "Snapshot",
-  "At risk positions are positions that are less than 110% collateralized.": "At risk positions are positions that are less than 110% collateralized.",
-  "Liquidatable positions are positions less than 100% collateralized.": "Liquidatable positions are positions less than 100% collateralized.",
-  "At Risk Positions": "At Risk Positions",
-  "Liquidatable Positions": "Liquidatable Positions",
-  "Disable the switch to just view liquidatable positions.": "Disable the switch to just view liquidatable positions.",
-  "Enable the switch to view 'at risk' positions.": "Enable the switch to view 'at risk' positions.",
-  "Supplied": "Supplied",
-  "Borrowed": "Borrowed",
-  "Borrow Ratio": "Borrow Ratio",
-  "Limit Used": "Limit Used",
   "This is how much you have borrowed.": "This is how much you have borrowed.",
   "Recent Liquidations": "Recent Liquidations",
   "Collateral Seized": "Collateral Seized",
@@ -295,5 +285,5 @@
   "Claim": "Claim",
   "Claim Rewards": "Claim Rewards",
   "Claim All": "Claim All",
-  "Fuse Liquidations": "Fuse Liquidations"
+  "Liquidations": "Liquidations"
 }

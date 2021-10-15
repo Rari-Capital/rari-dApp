@@ -216,16 +216,6 @@
   "Connect": "连接",
   "Disconnect": "断开",
   "Snapshot": "Snapshot",
-  "At risk positions are positions that are less than 110% collateralized.": "有风险的仓位是少于110％抵押的仓位。",
-  "Liquidatable positions are positions less than 100% collateralized.": "可強行清算的仓位是少于100％抵押的仓位。",
-  "At Risk Positions": "处于危险的仓位",
-  "Liquidatable Positions": "可清算的仓位",
-  "Disable the switch to just view liquidatable positions.": "关闭该开关以仅查看可清算的仓位。",
-  "Enable the switch to view 'at risk' positions.": "启用该开关以查看“处于危险中”的仓位。",
-  "Supplied": "已提供",
-  "Borrowed": "已借取",
-  "Borrow Ratio": "借款比率",
-  "Limit Used": "限制使用",
   "This is how much you have borrowed.": "这是您总共借的。",
   "Recent Liquidations": "最近的清算",
   "Collateral Seized": "被扣押的抵押品",
@@ -295,5 +285,5 @@
   "Claim": "__NOT_TRANSLATED__",
   "Claim Rewards": "__NOT_TRANSLATED__",
   "Claim All": "__NOT_TRANSLATED__",
-  "Fuse Liquidations": "__NOT_TRANSLATED__"
+  "Liquidations": "__NOT_TRANSLATED__"
 }
