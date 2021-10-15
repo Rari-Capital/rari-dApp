@@ -139,15 +139,21 @@ export const UtilsLink = ({
             {isAuthed && (
               <SubMenuItem name={t("Positions")} link="/utils/positions" />
             )}
+
+            <SubMenuItem
+              name={t("Metrics")}
+              link="https://metrics.rari.capital"
+            />
+
+            <SubMenuItem
+              name={t("Fuse Liquidations")}
+              link="/fuse/liquidations"
+            />
+
             <SubMenuItem
               name={t("Interest Rates")}
               link="/utils/interest-rates"
             />
-            <SubMenuItem
-              name={t("Metrics")}
-              link="https://rari.grafana.net/goto/61kctV_Gk"
-            />
-            <SubMenuItem name={t("Liquidations")} link="/fuse/liquidations" />
           </MenuList>
         </Portal>
       </Menu>

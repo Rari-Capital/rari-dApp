@@ -226,7 +226,6 @@
   "Borrowed": "Borrowed",
   "Borrow Ratio": "Borrow Ratio",
   "Limit Used": "Limit Used",
-  "Liquidations": "Liquidations",
   "This is how much you have borrowed.": "This is how much you have borrowed.",
   "Recent Liquidations": "Recent Liquidations",
   "Collateral Seized": "Collateral Seized",
@@ -288,7 +287,6 @@
   "There are no RewardsDistributors for this pool.": "There are no RewardsDistributors for this pool.",
   "Oracles": "Oracles",
   "Add Rewards Distributor": "Add Rewards Distributor",
-  "Default Oracle": "Default Oracle",
   "Verified Pools": "Verified Pools",
   "Deploy": "Deploy",
   "Deploy Rewards Distributor": "Deploy Rewards Distributor",
@@ -296,5 +294,6 @@
   "Edit Rewards Distributor": "Edit Rewards Distributor",
   "Claim": "Claim",
   "Claim Rewards": "Claim Rewards",
-  "Claim All": "Claim All"
+  "Claim All": "Claim All",
+  "Fuse Liquidations": "Fuse Liquidations"
 }
