@@ -160,7 +160,7 @@ const AssetSettings = ({
         })
         .catch((err: any) => {
           console.log("Could not fetch price using pool's oracle");
-          setUniV3BaseTokenHasOracle(false)
+          setUniV3BaseTokenHasOracle(false);
         });
     }
   }, [uniV3BaseToken, oracleData, setUniV3BaseTokenHasOracle]);
@@ -313,12 +313,25 @@ const AssetSettings = ({
   const deployUniV3Oracle = async () => {
     increaseActiveStep("Deploying Uniswap V3 Twap Oracle");
 
+    alert("deploying univ3twapOracle");
+
+    console.log("deployUniV3Oracle", {
+      feeTier,
+      uniV3BaseToken,
+      address,
+      deployPriceOracle: fuse.deployPriceOracle,
+    });
+
     // Deploy UniV3 oracle
     const oracleAddressToUse = await fuse.deployPriceOracle(
       "UniswapV3TwapPriceOracleV2",
       { feeTier, baseToken: uniV3BaseToken },
       { from: address }
     );
+
+    alert("finished univ3twapOracle " + oracleAddressToUse);
+
+    console.log({ oracleAddressToUse });
 
     return oracleAddressToUse;
   };
@@ -345,6 +358,7 @@ const AssetSettings = ({
     const tokenArray = shouldShowUniV3BaseTokenOracleForm
       ? [tokenAddress, uniV3BaseToken] // univ3 only
       : [tokenAddress];
+
     const oracleAddress = shouldShowUniV3BaseTokenOracleForm
       ? [oracleAddressToUse, uniV3BaseTokenOracle] // univ3 only
       : [oracleAddressToUse];
@@ -360,14 +374,14 @@ const AssetSettings = ({
       })
     );
 
-    //const mpoNeedsUpdating = hasOracles.some((x) => !x);
+    const tokenHasOraclesInPool = hasOracles.some((x) => !!x);
 
-    if (hasOracles) {
+    console.log({ hasOracles, tokenArray, oracleAddress, tokenHasOraclesInPool });
+
+    if (!tokenHasOraclesInPool) {
       const tx = await poolOracleContract.methods
         .add(tokenArray, oracleAddress)
         .send({ from: address });
-
-      console.log({ tx });
 
       toast({
         title: "You have successfully configured the oracle for this asset!",
@@ -471,7 +485,7 @@ const AssetSettings = ({
         if (activeOracle === "Uniswap_V3_Oracle") {
           console.log("predeploy");
           oracleAddressToUse = await deployUniV3Oracle();
-          console.log("postDeploy");
+          console.log("postDeploy", { oracleAddressToUse });
         }
         _retryFlag = 3;
       }
@@ -497,6 +511,7 @@ const AssetSettings = ({
             oracleModel === "MasterPriceOracleV2") &&
           oracleAddress !== defaultOracle // If you have not selected the default oracle you will have to configure.
         ) {
+          alert("addOraclesToMasterPriceOracle");
           await addOraclesToMasterPriceOracle(oracleAddressToUse);
         }
         _retryFlag = 5;
