@@ -77,7 +77,7 @@ const OracleConfig = ({
   oracleTouched: boolean;
   tokenAddress: string; // Asset's address. i.e USDC, DAI.
   activeOracle: string; // Stores oracle option that has been chosen for the asset.
-  oracleData: any; // Stores Fuse pool's Oracle dat.
+  oracleData: any; // Stores Fuse pool's Oracle data.
   setFeeTier: React.Dispatch<React.SetStateAction<number>>;
   feeTier: number; // Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
   mode: "Editing" | "Adding"; // Modal config
@@ -90,8 +90,7 @@ const OracleConfig = ({
 
   const { fuse, address } = useRari();
 
-  const isUserAdmin =
-    oracleData !== undefined ? address === oracleData.admin : undefined;
+  const isUserAdmin = !!oracleData ? address === oracleData.admin : undefined;
 
   // Available oracle options for asset
   const options = useGetOracleOptions(oracleData, tokenAddress);
