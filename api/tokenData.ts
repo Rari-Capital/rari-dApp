@@ -157,6 +157,11 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png";
   }
 
+  if (symbol === "VCRED") {
+    logoURL =
+      "https://github.com/spacechain/vcred-token/blob/main/bee-256-256.png";
+  }
+
   const basicTokenInfo = {
     symbol,
     name,
