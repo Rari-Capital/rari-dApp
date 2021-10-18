@@ -11,50 +11,30 @@ import { useTranslation } from "react-i18next";
 
 // Components
 import TransactionStepper from "components/shared/TransactionStepper";
-import { Column, Row, useIsMobile } from "utils/chakraUtils";
+import { Column } from "utils/chakraUtils";
 import { useIsMediumScreen } from "../../FuseTabBar";
+import { useAddAssetContext } from "context/AddAssetContext";
 
-const DeployButton = ({
-  mode,
-  steps,
-  stage,
-  deploy,
-  tokenData,
-  activeStep,
-  isDeploying,
-  oracleAddress,
-  handleSetStage,
-  uniV3BaseTokenOracle,
-  shouldShowUniV3BaseTokenOracleForm,
-  needsRetry,
-  // New stuff
-  hasPriceForAsset,
-  hasDefaultOracle,
-  hasCustomOracleForToken,
-  defaultOracle,
-  customOracleForToken,
-}: {
-  shouldShowUniV3BaseTokenOracleForm: boolean;
-  uniV3BaseTokenOracle: string;
-  handleSetStage: any;
-  oracleAddress: string;
-  isDeploying: any;
-  activeStep: any;
-  tokenData: any;
-  deploy: any;
-  stage: any;
-  steps: any;
-  mode: any;
-  needsRetry: boolean;
-  // New stuff - Oracle skip
-  hasPriceForAsset: boolean;
-  hasDefaultOracle: boolean;
-  hasCustomOracleForToken: boolean;
-  defaultOracle: string;
-  customOracleForToken: string;
-}) => {
+const DeployButton = ({ steps, deploy }: { deploy: any; steps: any }) => {
   const { t } = useTranslation();
   const { fuse } = useRari();
+
+  const {
+    mode,
+    stage,
+    tokenData,
+    activeStep,
+    isDeploying,
+    oracleAddress,
+    handleSetStage,
+    uniV3BaseTokenOracle,
+    shouldShowUniV3BaseTokenOracleForm,
+    needsRetry,
+    // New stuff
+    hasPriceForAsset,
+    hasDefaultOracle,
+    defaultOracle,
+  } = useAddAssetContext();
 
   // If user hasnt edited the form and we have a default oracle price for this asset
   const hasDefaultOraclePriceAndHasntEdited =
@@ -94,14 +74,14 @@ const DeployButton = ({
 
   return (
     <Column
-        mainAxisAlignment="center"
-        crossAxisAlignment="center"
-        px={4}
-        width="100%"
-        height="100%"
-        flexBasis="10%"
-        // bg="red"
-      >
+      mainAxisAlignment="center"
+      crossAxisAlignment="center"
+      px={4}
+      width="100%"
+      height="100%"
+      flexBasis="10%"
+      // bg="red"
+    >
       {isDeploying ? (
         <TransactionStepper
           activeStep={activeStep}

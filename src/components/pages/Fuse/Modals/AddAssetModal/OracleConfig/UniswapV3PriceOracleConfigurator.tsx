@@ -13,34 +13,20 @@ import { useQuery } from "react-query";
 import axios from "axios";
 
 // Utils
-import {  shortUsdFormatter } from "utils/bigUtils";
+import { shortUsdFormatter } from "utils/bigUtils";
+import { useAddAssetContext } from "context/AddAssetContext";
 
-const UniswapV3PriceOracleConfigurator = ({
-  setFeeTier,
-  tokenAddress,
-  _setOracleAddress,
-  setUniV3BaseToken,
-  activeUniSwapPair,
-  setActiveUniSwapPair,
-}: {
-  // Assets Address. i.e DAI, USDC
-  tokenAddress: string;
-
-  // Will update the oracle address that we use when adding, editing an asset
-  _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
-
-  // Will update BaseToken address. This is used in component: AssetSettings (see top of this page).
-  // Helps us know if oracle has a price feed for this asset. If it doesn't we need to add one.
-  setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>;
-
-  // Will update FeeTier Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
-  setFeeTier: React.Dispatch<React.SetStateAction<number>>;
-
-  // Will store the uniswap pair index.
-  activeUniSwapPair: string;
-  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
-}) => {
+const UniswapV3PriceOracleConfigurator = () => {
   const { t } = useTranslation();
+
+  const {
+    setFeeTier,
+    tokenAddress,
+    setOracleAddress,
+    setUniV3BaseTokenAddress,
+    activeUniSwapPair,
+    setActiveUniSwapPair,
+  } = useAddAssetContext();
 
   // We get a list of whitelistedPools from uniswap-v3's the graph.
   const { data: liquidity, error } = useQuery(
@@ -84,8 +70,8 @@ const UniswapV3PriceOracleConfigurator = ({
         : uniPool.token0.id;
     setActiveUniSwapPair(value);
     setFeeTier(uniPool.feeTier);
-    _setOracleAddress(uniPool.id);
-    setUniV3BaseToken(baseToken);
+    setOracleAddress(uniPool.id);
+    setUniV3BaseTokenAddress(baseToken);
   };
 
   // If liquidity is undefined, theres an error or theres no token found return nothing.

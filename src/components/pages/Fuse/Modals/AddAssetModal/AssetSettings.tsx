@@ -4,7 +4,7 @@ import { Column, Center, RowOrColumn, Row } from "utils/chakraUtils";
 import { Fade } from "@chakra-ui/react";
 
 // React
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, createContext, useContext } from "react";
 
 // React Query
 import { useQueryClient } from "react-query";
@@ -16,7 +16,7 @@ import { useRari } from "../../../../../context/RariContext";
 // Hooks
 import { ETH_TOKEN_DATA, TokenData } from "../../../../../hooks/useTokenData";
 import { createOracle } from "../../../../../utils/createComptroller";
-import { useCTokenData } from "hooks/fuse/useCTokenData";
+import { CTokenData, useCTokenData } from "hooks/fuse/useCTokenData";
 import { OracleDataType } from "hooks/fuse/useOracleData";
 import useIRMCurves from "hooks/fuse/useIRMCurves";
 
@@ -36,6 +36,7 @@ import AssetConfig from "./AssetConfig";
 import Screen1 from "./Screens/Screen1";
 import Screen2 from "./Screens/Screen2";
 import Screen3 from "./Screens/Screen3";
+import { AddAssetContextData, AddAssetContext } from "context/AddAssetContext";
 
 const SimpleDeployment = [
   "Configuring your Fuse pool's Master Price Oracle",
@@ -52,7 +53,7 @@ const UniSwapV3DeploymentSimple = [
   "All Done!",
 ];
 
-type RETRY_FLAG = 1 | 2 | 3 | 4 | 5;
+export type RETRY_FLAG = 1 | 2 | 3 | 4 | 5;
 
 const AssetSettings = ({
   mode,
@@ -72,7 +73,7 @@ const AssetSettings = ({
   poolOracleAddress: string; // Fuse pool's oracle address
   tokenAddress: string; // Underlying token's addres. i.e. USDC, DAI, etc.
   oracleModel: string | undefined; // Fuse pool's oracle model name. i.e MasterPrice, Chainlink, etc.
-  oracleData?: OracleDataType | string | undefined; // Fuse pool's oracle contract, admin, overwriting permissions.
+  oracleData: OracleDataType | undefined; // Fuse pool's oracle contract, admin, overwriting permissions.
   tokenData: TokenData; // Token's data i.e. symbol, logo, css color, etc.
   poolName: string; // Fuse pool's name.
   poolID: string; // Fuse pool's ID.
@@ -101,8 +102,6 @@ const AssetSettings = ({
   const [isBorrowPaused, setIsBorrowPaused] = useState(false);
   const [collateralFactor, setCollateralFactor] = useState(50);
 
-  const [oracleTouched, setOracleTouched] = useState(false);
-
   const [interestRateModel, setInterestRateModel] = useState(
     Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
       .JumpRateModel_Cream_Stables_Majors
@@ -111,14 +110,16 @@ const AssetSettings = ({
   const curves = useIRMCurves({ interestRateModel, adminFee, reserveFactor });
 
   // Asset's Oracle Configuration
-  const [activeOracle, _setActiveOracle] = useState<string>(""); // Will store the oracle's model selected for this asset. i.e. Rari Master Price Oracle, Custome Oracle, etc.
-  const [oracleAddress, _setOracleAddress] = useState<string>(""); // Will store the actual address of the oracle.
+  const [oracleTouched, setOracleTouched] = useState(false);
+  const [activeOracleModel, setActiveOracleModel] = useState<string>(""); // Will store the oracle's model selected for this asset. i.e. Rari Master Price Oracle, Custome Oracle, etc.
+  const [oracleAddress, setOracleAddress] = useState<string>(""); // Will store the actual address of the oracle.
 
   // Uniswap V3 base token oracle config - these following lines are used only
   // if you choose Uniswap V3 Twap Oracle as the asset's oracle.
   const [feeTier, setFeeTier] = useState<number>(0);
-  const [uniV3BaseToken, setUniV3BaseToken] = useState<string>(""); // This will store the pair's base token.
-  const [uniV3BaseTokenOracle, setUniV3BaseTokenOracle] = useState<string>(""); // This will store the oracle chosen for the univ3BaseToken.
+  const [uniV3BaseTokenAddress, setUniV3BaseTokenAddress] =
+    useState<string>(""); // This will store the pair's base token.
+  const [uniV3BaseTokenOracle, setUniV3BaseTokenOracle] = useState<string>(""); // This will store the oracle chosen for the uniV3BaseTokenAddress.
   const [baseTokenActiveOracleName, setBaseTokenActiveOracleName] =
     useState<string>("");
   const [uniV3BaseTokenHasOracle, setUniV3BaseTokenHasOracle] =
@@ -128,29 +129,29 @@ const AssetSettings = ({
   // It also helps us know if user has selected anything or not. If they have, detail fields are shown.
   const [activeUniSwapPair, setActiveUniSwapPair] = useState<string>("");
 
-  // If univ3Basetoken doesn't have an oracle in the fuse pool's oracle, then show the form
+  // If uniV3BaseTokenAddress doesn't have an oracle in the fuse pool's oracle, then show the form
   // Or if the baseToken is weth then dont show form because we already have a hardcoded oracle for it
   const shouldShowUniV3BaseTokenOracleForm = useMemo(
     () =>
-      !!uniV3BaseToken &&
+      !!uniV3BaseTokenAddress &&
       !uniV3BaseTokenHasOracle &&
-      !isTokenETHOrWETH(uniV3BaseToken) &&
-      (activeOracle === "Uniswap_V3_Oracle" ||
-        activeOracle === "Uniswap_V2_Oracle" ||
-        activeOracle === "SushiSwap_Oracle"),
-    [uniV3BaseTokenHasOracle, uniV3BaseToken, activeOracle]
+      !isTokenETHOrWETH(uniV3BaseTokenAddress) &&
+      (activeOracleModel === "Uniswap_V3_Oracle" ||
+        activeOracleModel === "Uniswap_V2_Oracle" ||
+        activeOracleModel === "SushiSwap_Oracle"),
+    [uniV3BaseTokenHasOracle, uniV3BaseTokenAddress, activeOracleModel]
   );
 
-  // If you choose a UniV3 Pool as the oracle, check if fuse pool's oracle can get a price for uniV3BaseToken
+  // If you choose a UniV3 Pool as the oracle, check if fuse pool's oracle can get a price for uniV3BaseTokenAddress
   useEffect(() => {
     if (
-      !!uniV3BaseToken &&
-      !isTokenETHOrWETH(uniV3BaseToken) &&
+      !!uniV3BaseTokenAddress &&
+      !isTokenETHOrWETH(uniV3BaseTokenAddress) &&
       !!oracleData &&
       typeof oracleData !== "string"
     ) {
       oracleData.oracleContract.methods
-        .price(uniV3BaseToken)
+        .price(uniV3BaseTokenAddress)
         .call()
         .then((price: string) => {
           // if you're able to get a price for this asset then
@@ -163,7 +164,7 @@ const AssetSettings = ({
           setUniV3BaseTokenHasOracle(false);
         });
     }
-  }, [uniV3BaseToken, oracleData, setUniV3BaseTokenHasOracle]);
+  }, [uniV3BaseTokenAddress, oracleData, setUniV3BaseTokenHasOracle]);
 
   // Sharad: New stuff  - to skip oracle step if possible
   const [defaultOracle, setDefaultOracle] = useState<string>(
@@ -222,6 +223,7 @@ const AssetSettings = ({
 
   // Modal Pages
   const [stage, setStage] = useState<number>(1);
+
   const handleSetStage = (incr: number) => {
     const newStage = stage + incr;
 
@@ -249,10 +251,10 @@ const AssetSettings = ({
 
   // Set transaction steps based on type of Oracle deployed
   const steps: string[] =
-    activeOracle === "Rari_Default_Oracle" ||
-    activeOracle === "Chainlink_Oracle"
+    activeOracleModel === "Rari_Default_Oracle" ||
+    activeOracleModel === "Chainlink_Oracle"
       ? SimpleDeployment
-      : activeOracle === "Uniswap_V3_Oracle"
+      : activeOracleModel === "Uniswap_V3_Oracle"
       ? UniSwapV3DeploymentSimple
       : SimpleDeployment;
 
@@ -313,11 +315,11 @@ const AssetSettings = ({
   const deployUniV3Oracle = async () => {
     increaseActiveStep("Deploying Uniswap V3 Twap Oracle");
 
-    alert("deploying univ3twapOracle");
+    // alert("deploying univ3twapOracle");
 
     console.log("deployUniV3Oracle", {
       feeTier,
-      uniV3BaseToken,
+      uniV3BaseTokenAddress,
       address,
       deployPriceOracle: fuse.deployPriceOracle,
     });
@@ -325,11 +327,11 @@ const AssetSettings = ({
     // Deploy UniV3 oracle
     const oracleAddressToUse = await fuse.deployPriceOracle(
       "UniswapV3TwapPriceOracleV2",
-      { feeTier, baseToken: uniV3BaseToken },
+      { feeTier, baseToken: uniV3BaseTokenAddress },
       { from: address }
     );
 
-    alert("finished univ3twapOracle " + oracleAddressToUse);
+    // alert("finished univ3twapOracle " + oracleAddressToUse);
 
     console.log({ oracleAddressToUse });
 
@@ -340,7 +342,7 @@ const AssetSettings = ({
   const deployUniV2Oracle = async () =>
     await fuse.deployPriceOracle(
       "UniswapTwapPriceOracleV2",
-      { baseToken: uniV3BaseToken },
+      { baseToken: uniV3BaseTokenAddress },
       { from: address }
     );
 
@@ -356,7 +358,7 @@ const AssetSettings = ({
     );
 
     const tokenArray = shouldShowUniV3BaseTokenOracleForm
-      ? [tokenAddress, uniV3BaseToken] // univ3 only
+      ? [tokenAddress, uniV3BaseTokenAddress] // univ3 only
       : [tokenAddress];
 
     const oracleAddress = shouldShowUniV3BaseTokenOracleForm
@@ -376,7 +378,12 @@ const AssetSettings = ({
 
     const tokenHasOraclesInPool = hasOracles.some((x) => !!x);
 
-    console.log({ hasOracles, tokenArray, oracleAddress, tokenHasOraclesInPool });
+    console.log({
+      hasOracles,
+      tokenArray,
+      oracleAddress,
+      tokenHasOraclesInPool,
+    });
 
     if (!tokenHasOraclesInPool) {
       const tx = await poolOracleContract.methods
@@ -471,7 +478,7 @@ const AssetSettings = ({
       /** IF UNISWAP V3 ORACLE **/
       if (_retryFlag === 1) {
         setNeedsRetry(false);
-        if (activeOracle === "Uniswap_V3_Oracle") {
+        if (activeOracleModel === "Uniswap_V3_Oracle") {
           console.log("preCheck");
           await checkUniV3Oracle();
           console.log("postCheck");
@@ -482,7 +489,7 @@ const AssetSettings = ({
       /** IF UNISWAP V3 ORACLE **/
       if (_retryFlag === 2) {
         setNeedsRetry(false);
-        if (activeOracle === "Uniswap_V3_Oracle") {
+        if (activeOracleModel === "Uniswap_V3_Oracle") {
           console.log("predeploy");
           oracleAddressToUse = await deployUniV3Oracle();
           console.log("postDeploy", { oracleAddressToUse });
@@ -493,7 +500,7 @@ const AssetSettings = ({
       /** IF UNISWAP V2 ORACLE **/
       if (_retryFlag === 3) {
         setNeedsRetry(false);
-        if (activeOracle === "Uniswap_V2_Oracle") {
+        if (activeOracleModel === "Uniswap_V2_Oracle") {
           oracleAddressToUse = await deployUniV2Oracle();
         }
         _retryFlag = 4;
@@ -511,7 +518,7 @@ const AssetSettings = ({
             oracleModel === "MasterPriceOracleV2") &&
           oracleAddress !== defaultOracle // If you have not selected the default oracle you will have to configure.
         ) {
-          alert("addOraclesToMasterPriceOracle");
+          // alert("addOraclesToMasterPriceOracle");
           await addOraclesToMasterPriceOracle(oracleAddressToUse);
         }
         _retryFlag = 5;
@@ -551,6 +558,7 @@ const AssetSettings = ({
 
   // Update values on refetch!
   const cTokenData = useCTokenData(comptrollerAddress, cTokenAddress);
+
   useEffect(() => {
     if (cTokenData) {
       setIsBorrowPaused(cTokenData.isPaused);
@@ -561,173 +569,143 @@ const AssetSettings = ({
     }
   }, [cTokenData]);
 
-  const args = {
+  const args2: AddAssetContextData = {
     mode,
-    feeTier,
+    isDeploying,
+    setIsDeploying,
     adminFee,
-    baseTokenActiveOracleName,
-    setBaseTokenActiveOracleName,
-    tokenData,
-    cTokenData,
-    setFeeTier,
-    oracleData,
     setAdminFee,
-    oracleModel,
-    tokenAddress,
-    activeOracle,
-    oracleAddress,
-    cTokenAddress,
     reserveFactor,
-    isBorrowPaused,
-    uniV3BaseToken,
-    collateralFactor,
-    _setActiveOracle,
     setReserveFactor,
-    poolOracleAddress,
-    _setOracleAddress,
-    interestRateModel,
-    setUniV3BaseToken,
-    comptrollerAddress,
+    isBorrowPaused,
+    setIsBorrowPaused,
+    collateralFactor,
     setCollateralFactor,
-    setActiveUniSwapPair,
+    interestRateModel,
     setInterestRateModel,
-    activeUniSwapPair,
+    curves,
+    oracleTouched,
+    setOracleTouched,
+    activeOracleModel,
+    setActiveOracleModel,
+    oracleAddress,
+    setOracleAddress,
+    feeTier,
+    setFeeTier,
+    uniV3BaseTokenAddress,
+    setUniV3BaseTokenAddress: setUniV3BaseTokenAddress,
     uniV3BaseTokenOracle,
     setUniV3BaseTokenOracle,
+    baseTokenActiveOracleName,
+    setBaseTokenActiveOracleName,
+    uniV3BaseTokenHasOracle,
+    setUniV3BaseTokenHasOracle,
+    activeUniSwapPair,
+    setActiveUniSwapPair,
     shouldShowUniV3BaseTokenOracleForm,
-    setOracleTouched,
-    oracleTouched,
+    defaultOracle,
+    setDefaultOracle,
+    customOracleForToken,
+    setCustomOracleForToken,
+    priceForAsset,
+    setPriceForAsset,
+    hasDefaultOracle,
+    hasCustomOracleForToken,
+    hasPriceForAsset,
+    stage,
+    setStage,
+    handleSetStage,
+    activeStep,
+    setActiveStep,
+    increaseActiveStep,
+    retryFlag,
+    setRetryFlag,
+    needsRetry,
+    setNeedsRetry,
+    cTokenData,
+    cTokenAddress,
+    oracleData,
+    poolOracleAddress,
+    poolOracleModel: oracleModel,
+    tokenData,
+    tokenAddress,
+    comptrollerAddress,
   };
 
-  if (mode === "Editing") return <AssetConfig {...args} />;
+  if (mode === "Editing")
+    return (
+      <AddAssetContext.Provider value={args2}>
+        <AssetConfig />
+      </AddAssetContext.Provider>
+    );
 
   return (
     cTokenAddress ? cTokenData?.cTokenAddress === cTokenAddress : true
   ) ? (
-    <Column
-      mainAxisAlignment="center"
-      crossAxisAlignment="center"
-      height="100%"
-      minHeight="100%"
-    >
-      <Row
-        mainAxisAlignment={"center"}
-        crossAxisAlignment={"center"}
-        w="100%"
-        flexBasis={"10%"}
-        // bg="green"
+    <AddAssetContext.Provider value={args2}>
+      <Column
+        mainAxisAlignment="center"
+        crossAxisAlignment="center"
+        height="100%"
+        minHeight="100%"
+        bg="pink"
       >
-        <Title stage={stage} />
-      </Row>
-      <RowOrColumn
-        maxHeight="70%"
-        isRow={!isMobile}
-        crossAxisAlignment={stage < 3 ? "flex-start" : "center"}
-        mainAxisAlignment={stage < 3 ? "flex-start" : "center"}
-        height={!isDeploying ? "70%" : "60%"}
-        width="100%"
-        overflowY="auto"
-        flexBasis={"80%"}
-        flexGrow={1}
-        // bg="red"
-      >
-        {stage === 1 ? (
-          <Column
-            width="100%"
-            height="100%"
-            d="flex"
-            direction="row"
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Screen1 args={args} />
-          </Column>
-        ) : stage === 2 ? (
-          <Row
-            width="100%"
-            height="100%"
-            d="flex"
-            mainAxisAlignment="center"
-            crossAxisAlignment="center"
-            alignItems="center"
-            justifyContent="center"
-            // bg="aqua"
-          >
-            <Screen2
-              mode="Adding"
-              feeTier={feeTier}
-              oracleModel={oracleModel}
-              oracleData={oracleData}
-              setFeeTier={setFeeTier}
-              activeOracle={activeOracle}
-              tokenAddress={tokenAddress}
-              oracleAddress={oracleAddress}
-              oracleTouched={oracleTouched}
-              uniV3BaseToken={uniV3BaseToken}
-              setOracleTouched={setOracleTouched}
-              activeUniSwapPair={activeUniSwapPair}
-              _setActiveOracle={_setActiveOracle}
-              _setOracleAddress={_setOracleAddress}
-              setUniV3BaseToken={setUniV3BaseToken}
-              poolOracleAddress={poolOracleAddress}
-              setActiveUniSwapPair={setActiveUniSwapPair}
-              uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-              setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-              baseTokenActiveOracleName={baseTokenActiveOracleName}
-              setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
-              shouldShowUniV3BaseTokenOracleForm={
-                shouldShowUniV3BaseTokenOracleForm
-              }
-              // New stuff - skip oracle step with default oracle
-              hasPriceForAsset={hasPriceForAsset}
-              hasDefaultOracle={hasDefaultOracle}
-              hasCustomOracleForToken={hasCustomOracleForToken}
-              priceForAsset={priceForAsset}
-              defaultOracle={defaultOracle}
-              customOracleForToken={customOracleForToken}
-            />
-          </Row>
-        ) : (
-          <Screen3
-            curves={curves}
-            adminFee={adminFee}
-            tokenData={tokenData}
-            activeOracle={activeOracle}
-            oracleAddress={oracleAddress}
-            reserveFactor={reserveFactor}
-            collateralFactor={collateralFactor}
-            interestRateModel={interestRateModel}
-            baseTokenActiveOracle={baseTokenActiveOracleName}
-            shouldShowUniV3BaseTokenOracleForm={
-              shouldShowUniV3BaseTokenOracleForm
-            }
-          />
-        )}
-      </RowOrColumn>
-      <DeployButton
-        mode={mode}
-        steps={steps}
-        stage={stage}
-        deploy={deploy}
-        handleSetStage={handleSetStage}
-        tokenData={tokenData}
-        activeStep={activeStep}
-        isDeploying={isDeploying}
-        oracleAddress={oracleAddress}
-        shouldShowUniV3BaseTokenOracleForm={shouldShowUniV3BaseTokenOracleForm}
-        uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-        needsRetry={needsRetry}
-        // New stuff
-        hasPriceForAsset={hasPriceForAsset}
-        hasDefaultOracle={hasDefaultOracle}
-        hasCustomOracleForToken={hasCustomOracleForToken}
-        defaultOracle={defaultOracle}
-        customOracleForToken={customOracleForToken}
-      />
-      {/* {needsRetry && <Button onClick={deploy}>Retry</Button>} */}
-    </Column>
+        <Row
+          mainAxisAlignment={"center"}
+          crossAxisAlignment={"center"}
+          w="100%"
+          flexBasis={"10%"}
+          // bg="green"
+        >
+          <Title stage={stage} />
+        </Row>
+        <RowOrColumn
+          maxHeight="70%"
+          isRow={!isMobile}
+          crossAxisAlignment={stage < 3 ? "flex-start" : "center"}
+          mainAxisAlignment={stage < 3 ? "flex-start" : "center"}
+          height={!isDeploying ? "70%" : "60%"}
+          width="100%"
+          overflowY="auto"
+          flexBasis={"80%"}
+          flexGrow={1}
+          // bg="red"
+        >
+          {stage === 1 ? (
+            <Column
+              width="100%"
+              height="100%"
+              d="flex"
+              direction="row"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Screen1 />
+            </Column>
+          ) : stage === 2 ? (
+            <Row
+              width="100%"
+              height="100%"
+              d="flex"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              alignItems="center"
+              justifyContent="center"
+              // bg="aqua"
+            >
+              <Screen2 mode="Adding" />
+            </Row>
+          ) : (
+            <Screen3 />
+            // <Heading>SCREEN3</Heading>
+          )}
+        </RowOrColumn>
+        <DeployButton steps={steps} deploy={deploy} />
+        {/* {needsRetry && <Button onClick={deploy}>Retry</Button>} */}
+      </Column>
+    </AddAssetContext.Provider>
   ) : (
     <Center expand>
       <Spinner my={8} />
