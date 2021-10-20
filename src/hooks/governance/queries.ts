@@ -1,6 +1,6 @@
 const rariGovAdr = "0x91d9c2b5cf81d55a5f2ecc0fc84e62f9cd2cefd6"
-var governanceAbi = require( "lib/rari-sdk/governance/abi/RariGovBravo.json"); //fix path
-
+var governanceAbi = require( "lib/rari-sdk/governance/abi/RariGovBravo.json");
+import {timestampToTime, timestampToDate} from "utils/timestampUtilities"
 
 //const rariGovAdr = "0xc0Da02939E1441F497fd74F78cE7Decb17B66529"  //this is actually compound address for debugging
 
@@ -33,102 +33,133 @@ export const getAllProposals = async (rari) => {
    toBlock: 'latest'
   });
 
-  const voteResult = (for_votes, against_votes) => {
+  const proposalCanceledEvents = await govBravContract.getPastEvents('ProposalCanceled', {
+   fromBlock: 0,
+   toBlock: 'latest'
+  });
 
-    if ((for_votes == 0.0) && (against_votes == 0.0) ){
-      return "No Votes"
-    }
-    else{
-      const forP = (parseFloat(for_votes) / (parseFloat(for_votes) + parseFloat(against_votes))*100).toFixed(0)
-      const againstP =  (parseFloat(against_votes) / (parseFloat(for_votes) + parseFloat(against_votes))*100).toFixed(0)
-      return (forP.toString() + "% / " + againstP.toString() + "%")
-    }
-  }
-
-  proposalCreatedEvents.reverse();
 
   proposals.forEach( (p, i) => {
     const { description } = proposalCreatedEvents[i].returnValues;
-    //console.log("desc at  beginning: ", description)
+    //console.log("description: ", description)
     p.title = description.split(/# |\n/g)[1] || 'Untitled'
-    var desc = description.substring(p.title.length + 2)
 
-    const descTrash = description.split("[Snapshot](")[0]
-    const descLinks = description.split("[Snapshot](")[1]
+    var desc = description.substring(p.title.length + 2) //+2 removes "# "
+    //console.log("desc: ", desc)
 
-    desc = desc.substring(0, desc.length - descLinks.length - 11)
-    p.description = desc
+    const descLinks = description.split("[Snapshot](")[1] || "no links"// splits on "[Snapshot](", takes links and some filler chars
 
-    //console.log("descTrash: ", descTrash)
-    //console.log("descLinks: ", descLinks)
+    desc = desc.substring(0, desc.length - descLinks.length - 11) //-11 removes "[Snapshot](" from desc
 
-    var snapshot = descLinks.split("[Forums]")[0]
-    var forum = (descLinks.split("[Forums]")[1]).substring(1)
+    let snapshot = "no link"
+    let forum = "no link"
 
-    snapshot = snapshot.substring(0, snapshot.length - 3) //removes space and )
-    forum = forum.substring(0, forum.length - 1) //removes )
+    if (descLinks != "no links"){
+      snapshot = descLinks.split("[Forums]")[0]
+      forum = (descLinks.split("[Forums]")[1]).substring(1)
+
+      snapshot = snapshot.substring(0, snapshot.length - 3) //removes space and )
+      forum = forum.substring(0, forum.length - 1) //removes )
+      p.description = desc
+    }
+    else{
+      p.description = "unformatted description"
+    }
 
     p.snapshot = snapshot
     p.forum = forum
     p.state = enumerateProposalState(proposalStates[i]);
 
+    getLables(rari, p)
+
+
+    //for debugging
+/*
+    if (p.state == "Executed"){
+      p.state = "Active"
+      p.againstVotes = "1059118182549173786924391"
+      //console.log("p: ", p)
+    }
+*/
+
   });
 
-  //console.log(proposals)
+  let pCanceledIndex = 0
+  proposals.map(p => {
+    if (p.state == "Canceled"){
+      p.canceledBlock = proposalCanceledEvents[pCanceledIndex].blockNumber
+      pCanceledIndex++
+    }
+  })
+
+  const lables = await getLables(rari, proposals)
+  proposals.forEach( (p, i) => p.dateLable = lables[i])
 
   return proposals
 
 }
 
 
-const treasuryTransactions = async (rari) => {
 
-var treasuryAdr = '0x10dB6Bce3F2AE1589ec91A872213DAE59697967a'
-var block = await rari.web3.eth.getBlock('latest')
-var blockNumber = block.number
-var n = await rari.web3.eth.getTransactionCount(treasuryAdr)
-var bal = await rari.web3.eth.getBalance(treasuryAdr)
+
+const getLables = async (rari, proposals) => {
+  const recentBlock = await rari.web3.eth.getBlock('latest')
+  const lables = []
 
 
 
-rari.web3.eth.getTransactionCount(treasuryAdr).then(tCount => {
-  console.log("tCount: ", tCount)
-})
 
-rari.web3.eth.getBalance(treasuryAdr).then(bal => {
-  console.log("bal: ", bal)
-})
-//console.log("curblock: ", bloc)
-/*for (var i=blockNumber; i >= 0 && (n > 0 || bal > 0); --i) {
-  //console.log("in for")
-  try {
-      var block = await rari.web3.eth.getBlock(i)
-      if (block && block.transactions) {
-          block.transactions.forEach(function(e) {
-              if (myAddr == e.from) {
-                  if (e.from != e.to)
-                      bal = bal.plus(e.value);
-                  console.log(i, e.from, e.to, e.value.toString(10));
-                  --n;
-              }
-              if (myAddr == e.to) {
-                  if (e.from != e.to)
-                      bal = bal.minus(e.value);
-                  console.log(i, e.from, e.to, e.value.toString(10));
-              }
-          });
+  for (let i = 0; i < proposals.length; i++){
+
+    let str = "dd";
+    if (proposals[i].state == "Pending") {
+
+      const ts = (recentBlock.timestamp + (proposals[i].startBlock - recentBlock.number)*13.1)
+
+      str = "Voting Starts in: " + timestampToTime(ts - Date.now()/1000)
+
+    }
+    else if (proposals[i].state == "Active"){
+
+      const recentBlock = await rari.web3.eth.getBlock('latest')
+      const ts = (proposals[i].endBlock - recentBlock.number)*13.1
+
+      str = "Voting Ends In: " + timestampToTime(ts)
+    }
+    else if (proposals[i].state == "Canceled"){
+      let block = await rari.web3.eth.getBlock(proposals[i].canceledBlock)
+      let ts = block.timestamp*1000
+
+      str = "Canceled on: " + timestampToDate(ts)
+
+    }
+
+    else {
+      let block = await rari.web3.eth.getBlock(proposals[i].endBlock)
+      let ts = block.timestamp*1000
+      let header;
+
+      if (proposals[i].state == "Queued"){
+        header = "Queued on: "
       }
-  } catch (e) { console.error("Error in block " + i, e); }
-}*/
+      if (proposals[i].state == "Defeated"){
+        header = "Defeated on: "
+      }
+      if (proposals[i].state == "Succeeded"){
+        header = "Succeeded on: "
+      }
+      if (proposals[i].state == "Expired"){
+        header = "Expired on: "
+      }
+      if (proposals[i].state == "Executed"){
+        header = "Executed on: "
+      }
+      str = header + timestampToDate(ts)
+    }
+    lables.push(str)
 
-}
+  }
 
 
-export const getTeasuryTransactions = (rari) => {
-  treasuryTransactions(rari)
-  console.log("hello")
-
-
-
-  return null
+  return lables
 }

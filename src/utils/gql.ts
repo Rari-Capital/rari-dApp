@@ -14,3 +14,13 @@ export const makeGqlRequest = async (query: any, vars: any = {}) => {
     console.error(err);
   }
 };
+
+const HASURA_ENDPOINT = "https://rari-test.hasura.app/v1/graphql"
+
+export const makeHasuraRequest = async (query: any, vars: any = {}) => {
+  try {
+    return await request(HASURA_ENDPOINT, query, { ...vars });
+  } catch (err) {
+    console.error(err);
+  }
+};

@@ -5,22 +5,36 @@ import { Heading, Box, Button }  from "@chakra-ui/react";
 import DashboardBox from "components/shared/DashboardBox";
 
 
-const BarFilter = ({setWhichProposals}) => {
+const BarFilter = ({setWhichProposals, whichProposals}) => {
   const green = "#41C345"
   const greenHover = "#77d47a"
   const black = "#262626"
   const blackHover = "#4d4d4d"
 
-  const [activeColor, setActiveColor] = useState(green)
-  const [activeHover, setActiveHover] = useState(greenHover)
+  const [activeColor, setActiveColor] = useState(black)
+  const [activeHover, setActiveHover] = useState(blackHover)
 
-  const [allColor, setAllColor] = useState(black)
-  const [allHover, setAllHover] = useState(blackHover)
+  const [allColor, setAllColor] = useState(green)
+  const [allHover, setAllHover] = useState(greenHover)
 
   const [expiredColor, setExpiredColor] = useState(black)
   const [expiredHover, setExpiredHover] = useState(blackHover)
 
-//can replace box with dashboardbox
+  useEffect(() => {
+    setState()
+  },[whichProposals])
+
+  const setState = () => {
+    if (whichProposals == "Active"){
+      onActiveClick()
+    }
+    else if (whichProposals == "All"){
+      onAllClick()
+    }
+    else {
+      onExpiredClick()
+    }
+  }
 
   const onActiveClick = () => {
 
@@ -73,7 +87,7 @@ const BarFilter = ({setWhichProposals}) => {
 
   return(
 
-    <Column paddingLeft="25px" paddingBottom="15px">
+    <Column paddingBottom="15px">
       <Box
       backgroundColor="#262626"
       border="1px"
