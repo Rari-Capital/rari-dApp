@@ -10,6 +10,10 @@ import {
   // Table
   Image,
   HStack,
+  Th,
+  Thead,
+  Table,
+  Tbody,
   Tr,
   Td,
 } from "@chakra-ui/react";
@@ -59,6 +63,7 @@ import AssetConfiguration, {
   AddAssetButton,
 } from "./Modals/Edit/AssetConfiguration";
 import PoolConfiguration from "./Modals/Edit/PoolConfiguration";
+import { ModalDivider } from "components/shared/Modal";
 
 export enum ComptrollerErrorCodes {
   NO_ERROR,
@@ -292,61 +297,83 @@ const FusePoolEditPage = memo(() => {
         </RowOrColumn>
 
         {/* Rewards Distributors */}
-        {/* <DashboardBox w="100%" h="100%" my={4}>
-          <Row mainAxisAlignment="flex-end" crossAxisAlignment="center" p={3}>
+        <DashboardBox w="100%" h="100%" my={4}>
+          <Row mainAxisAlignment="space-between" crossAxisAlignment="center" p={3}>
+            <Heading size="md">Rewards Distributors </Heading>
             <AddRewardsDistributorButton
               openAddRewardsDistributorModal={openAddRewardsDistributorModal}
               comptrollerAddress={data?.comptroller}
             />
           </Row>
 
-          <Table>
-            <Thead>
-              <Tr>
-                <Th color="white" size="sm">
-                  {t("Reward Token:")}
-                </Th>
-                <Th color="white">{t("Active CTokens:")}</Th>
-                <Th color="white">{t("Balance:")}</Th>
-                <Th color="white">{t("Admin?")}</Th>
-              </Tr>
-            </Thead>
+          {!!data && !rewardsDistributors.length && (
+            <Column
+              w="100%"
+              h="100%"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              p={4}
+            >
+              <Text mb={4}>
+                {t("There are no RewardsDistributors for this pool.")}
+              </Text>
+              <AddRewardsDistributorButton
+                openAddRewardsDistributorModal={openAddRewardsDistributorModal}
+                comptrollerAddress={data?.comptroller}
+              />
+            </Column>
+          )}
 
-            <Tbody minHeight="50px">
-              {!data ? (
-                <Spinner />
-              ) : rewardsDistributors.length ? (
-                rewardsDistributors.map((rD, i) => {
-                  return (
-                    <RewardsDistributorRow
-                      key={rD.address}
-                      rewardsDistributor={rD}
-                      handleRowClick={handleRewardsRowClick}
-                      hideModalDivider={i === rewardsDistributors.length - 1}
-                      activeCTokens={
-                        poolIncentives.rewardsDistributorCtokens[rD.address]
-                      }
-                    />
-                  );
-                })
-              ) : (
-                <>
-                  <Text mb={4}>
-                    {t("There are no RewardsDistributors for this pool.")}
-                  </Text>
-                  <AddRewardsDistributorButton
-                    openAddRewardsDistributorModal={
-                      openAddRewardsDistributorModal
-                    }
-                    comptrollerAddress={data?.comptroller}
-                  />
-                </>
-              )}
-            </Tbody>
-          </Table>
+          {!data && (
+            <Column
+              w="100%"
+              h="100%"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              p={4}
+
+            >
+              <Spinner />
+            </Column>
+          )}
+
+          {!!data && !!rewardsDistributors.length && (
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th color="white" size="sm">
+                    {t("Reward Token:")}
+                  </Th>
+                  <Th color="white">{t("Active CTokens:")}</Th>
+                  <Th color="white">{t("Balance:")}</Th>
+                  <Th color="white">{t("Admin?")}</Th>
+                </Tr>
+              </Thead>
+
+              <Tbody minHeight="50px">
+                {!data && !rewardsDistributors.length ? (
+                  <Spinner />
+                ) : (
+                  rewardsDistributors.map((rD, i) => {
+                    return (
+                      <RewardsDistributorRow
+                        key={rD.address}
+                        rewardsDistributor={rD}
+                        handleRowClick={handleRewardsRowClick}
+                        hideModalDivider={i === rewardsDistributors.length - 1}
+                        activeCTokens={
+                          poolIncentives.rewardsDistributorCtokens[rD.address]
+                        }
+                      />
+                    );
+                  })
+                )}
+              </Tbody>
+            </Table>
+          )}
 
           <ModalDivider />
-        </DashboardBox> */}
+        </DashboardBox>
       </Column>
     </>
   );
