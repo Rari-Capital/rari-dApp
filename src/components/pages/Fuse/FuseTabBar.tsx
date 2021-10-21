@@ -119,12 +119,12 @@ const FuseTabBar = () => {
           />
         )}
 
-        {/* <TabExternalLink
+        <TabExternalLink
           route="https://metrics.rari.capital"
           text={t("Metrics")}
         />
 
-        <TabLink route="/fuse/liquidations" text={t("Liquidations")} /> */}
+        <TabLink route="/fuse/liquidations" text={t("Liquidations")} />
 
         {poolId ? (
           <>

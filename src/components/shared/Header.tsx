@@ -144,14 +144,6 @@ export const UtilsLink = ({
               name={t("Interest Rates")}
               link="/utils/interest-rates"
             />
-            <SubMenuItem
-              name={t("Metrics")}
-              link="https://metrics.rari.capital"
-            />
-            <SubMenuItem
-              name={t("Liquidations")}
-              link="/fuse/liquidations"
-            />
           </MenuList>
         </Portal>
       </Menu>
