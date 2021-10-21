@@ -275,15 +275,15 @@
   "Balance:": "__NOT_TRANSLATED__",
   "Admin?": "__NOT_TRANSLATED__",
   "There are no RewardsDistributors for this pool.": "__NOT_TRANSLATED__",
-  "Oracles": "__NOT_TRANSLATED__",
   "Add Rewards Distributor": "__NOT_TRANSLATED__",
   "Verified Pools": "__NOT_TRANSLATED__",
-  "Deploy": "__NOT_TRANSLATED__",
   "Deploy Rewards Distributor": "__NOT_TRANSLATED__",
-  "Rewards Distributor Address": "__NOT_TRANSLATED__",
   "Edit Rewards Distributor": "__NOT_TRANSLATED__",
   "Claim": "__NOT_TRANSLATED__",
   "Claim Rewards": "__NOT_TRANSLATED__",
   "Claim All": "__NOT_TRANSLATED__",
-  "Liquidations": "__NOT_TRANSLATED__"
+  "Liquidations": "__NOT_TRANSLATED__",
+  "RewardsDistributor Address:": "__NOT_TRANSLATED__",
+  "Deploy RewardsDistributor": "__NOT_TRANSLATED__",
+  "Add RewardsDistributor": "__NOT_TRANSLATED__"
 }

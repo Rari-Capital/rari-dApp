@@ -6,35 +6,27 @@ import { ModalDivider } from "components/shared/Modal";
 
 // Rari
 import { useRari } from "context/RariContext";
+import { useAddAssetContext } from "context/AddAssetContext";
 
 // Components
 import IRMChart from "../IRMChart";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-const Screen3 = ({
-  curves,
-  adminFee,
-  tokenData,
-  activeOracle,
-  oracleAddress,
-  reserveFactor,
-  collateralFactor,
-  interestRateModel,
-  baseTokenActiveOracle,
-  shouldShowUniV3BaseTokenOracleForm,
-}: {
-  shouldShowUniV3BaseTokenOracleForm: boolean;
-  baseTokenActiveOracle: any;
-  interestRateModel: any;
-  collateralFactor: number;
-  reserveFactor: number;
-  activeOracle: string;
-  oracleAddress: string;
-  tokenData: any;
-  adminFee: number;
-  curves: any;
-}) => {
+const Screen3 = () => {
   const { fuse } = useRari();
+  const {
+    curves,
+    adminFee,
+    tokenData,
+    activeOracleModel,
+    oracleAddress,
+    reserveFactor,
+    collateralFactor,
+    interestRateModel,
+    baseTokenActiveOracleName,
+    shouldShowUniV3BaseTokenOracleForm,
+  } = useAddAssetContext();
+
   return (
     <Column
       mainAxisAlignment="center"
@@ -104,7 +96,7 @@ const Screen3 = ({
           <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
             <Text size="sm">Oracle:</Text>
             <SimpleTooltip label={oracleAddress}>
-              <Text size="sm">{activeOracle.replace("_", " ")}</Text>
+              <Text size="sm">{activeOracleModel.replace("_", " ")}</Text>
             </SimpleTooltip>
           </ConfigRow>
 
@@ -113,7 +105,7 @@ const Screen3 = ({
               <ModalDivider />
               <ConfigRow maxHeight="35px" mainAxisAlignment="space-between">
                 <Text size="sm"> Base token oracle: </Text>
-                <Text size="sm">{baseTokenActiveOracle}</Text>
+                <Text size="sm">{baseTokenActiveOracleName}</Text>
               </ConfigRow>
             </>
           ) : null}
