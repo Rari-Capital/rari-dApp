@@ -1,47 +1,36 @@
 // Chakra and UI
 import {
-  AvatarGroup,
   Box,
   Badge,
   Heading,
   Text,
-  Switch,
   useDisclosure,
   Spinner,
-  useToast,
-  Input,
-  Link,
+
   // Table
   Image,
   HStack,
-  Table,
-  TableCaption,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
   Th,
+  Thead,
+  Table,
+  Tbody,
+  Tr,
   Td,
 } from "@chakra-ui/react";
 import { Column, RowOrColumn, Center, Row } from "utils/chakraUtils";
-import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import { ModalDivider } from "../../shared/Modal";
-import { SliderWithLabel } from "../../shared/SliderWithLabel";
+import DashboardBox from "../../shared/DashboardBox";
 
 // Components
 import { Header } from "../../shared/Header";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
 import AddAssetModal from "./Modals/AddAssetModal/AddAssetModal";
-import AssetSettings from "./Modals/AddAssetModal/AssetSettings";
-import { WhitelistInfo } from "./FusePoolCreatePage";
-import { useExtraPoolInfo } from "./FusePoolInfoPage";
 
 // React
 import { memo, ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { useQueryClient, useQuery } from "react-query";
+import { useQuery } from "react-query";
 
 // Rari
 import { useRari } from "../../../context/RariContext";
@@ -49,33 +38,16 @@ import { useRari } from "../../../context/RariContext";
 // Hooks
 import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import {
-  TokenData,
-  useTokenData,
-  useTokensData,
-} from "../../../hooks/useTokenData";
-import {
-  OracleDataType,
-  useIdentifyOracle,
-  useOracleData,
-} from "hooks/fuse/useOracleData";
+import { useTokenData } from "../../../hooks/useTokenData";
 
 // Utils
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { CTokenAvatarGroup, CTokenIcon } from "components/shared/CTokenIcon";
-import {
-  createComptroller,
-  createUnitroller,
-} from "../../../utils/createComptroller";
-import { handleGenericError } from "utils/errorHandling";
+import { CTokenAvatarGroup } from "components/shared/CTokenIcon";
+import { createComptroller } from "../../../utils/createComptroller";
 
 // Libraries
-import BigNumber from "bignumber.js";
 import LogRocket from "logrocket";
 import { useIsComptrollerAdmin } from "./FusePoolPage";
 import { AdminAlert } from "components/shared/AdminAlert";
-import useOraclesForPool from "hooks/fuse/useOraclesForPool";
-import { shortAddress } from "utils/shortAddress";
 
 import { useAuthedCallback } from "hooks/useAuthedCallback";
 import {
@@ -87,11 +59,11 @@ import { RewardsDistributor } from "hooks/rewards/useRewardsDistributorsForPool"
 import { useTokenBalance } from "hooks/useTokenBalance";
 import AddRewardsDistributorModal from "./Modals/AddRewardsDistributorModal";
 import EditRewardsDistributorModal from "./Modals/EditRewardsDistributorModal";
-
-const activeStyle = { bg: "#FFF", color: "#000" };
-const noop = () => {};
-
-const formatPercentage = (value: number) => value.toFixed(0) + "%";
+import AssetConfiguration, {
+  AddAssetButton,
+} from "./Modals/Edit/AssetConfiguration";
+import PoolConfiguration from "./Modals/Edit/PoolConfiguration";
+import { ModalDivider } from "components/shared/Modal";
 
 export enum ComptrollerErrorCodes {
   NO_ERROR,
@@ -325,693 +297,89 @@ const FusePoolEditPage = memo(() => {
         </RowOrColumn>
 
         {/* Rewards Distributors */}
-        {/* <DashboardBox w="100%" h="100%" my={4}>
-          <Row mainAxisAlignment="flex-end" crossAxisAlignment="center" p={3}>
+        <DashboardBox w="100%" h="100%" my={4}>
+          <Row mainAxisAlignment="space-between" crossAxisAlignment="center" p={3}>
+            <Heading size="md">Rewards Distributors </Heading>
             <AddRewardsDistributorButton
               openAddRewardsDistributorModal={openAddRewardsDistributorModal}
               comptrollerAddress={data?.comptroller}
             />
           </Row>
 
-          <Table>
-            <Thead>
-              <Tr>
-                <Th color="white" size="sm">
-                  {t("Reward Token:")}
-                </Th>
-                <Th color="white">{t("Active CTokens:")}</Th>
-                <Th color="white">{t("Balance:")}</Th>
-                <Th color="white">{t("Admin?")}</Th>
-              </Tr>
-            </Thead>
+          {!!data && !rewardsDistributors.length && (
+            <Column
+              w="100%"
+              h="100%"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              p={4}
+            >
+              <Text mb={4}>
+                {t("There are no RewardsDistributors for this pool.")}
+              </Text>
+              <AddRewardsDistributorButton
+                openAddRewardsDistributorModal={openAddRewardsDistributorModal}
+                comptrollerAddress={data?.comptroller}
+              />
+            </Column>
+          )}
 
-            <Tbody minHeight="50px">
-              {!data ? (
-                <Spinner />
-              ) : rewardsDistributors.length ? (
-                rewardsDistributors.map((rD, i) => {
-                  return (
-                    <RewardsDistributorRow
-                      key={rD.address}
-                      rewardsDistributor={rD}
-                      handleRowClick={handleRewardsRowClick}
-                      hideModalDivider={i === rewardsDistributors.length - 1}
-                      activeCTokens={
-                        poolIncentives.rewardsDistributorCtokens[rD.address]
-                      }
-                    />
-                  );
-                })
-              ) : (
-                <>
-                  <Text mb={4}>
-                    {t("There are no RewardsDistributors for this pool.")}
-                  </Text>
-                  <AddRewardsDistributorButton
-                    openAddRewardsDistributorModal={
-                      openAddRewardsDistributorModal
-                    }
-                    comptrollerAddress={data?.comptroller}
-                  />
-                </>
-              )}
-            </Tbody>
-          </Table>
+          {!data && (
+            <Column
+              w="100%"
+              h="100%"
+              mainAxisAlignment="center"
+              crossAxisAlignment="center"
+              p={4}
+
+            >
+              <Spinner />
+            </Column>
+          )}
+
+          {!!data && !!rewardsDistributors.length && (
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th color="white" size="sm">
+                    {t("Reward Token:")}
+                  </Th>
+                  <Th color="white">{t("Active CTokens:")}</Th>
+                  <Th color="white">{t("Balance:")}</Th>
+                  <Th color="white">{t("Admin?")}</Th>
+                </Tr>
+              </Thead>
+
+              <Tbody minHeight="50px">
+                {!data && !rewardsDistributors.length ? (
+                  <Spinner />
+                ) : (
+                  rewardsDistributors.map((rD, i) => {
+                    return (
+                      <RewardsDistributorRow
+                        key={rD.address}
+                        rewardsDistributor={rD}
+                        handleRowClick={handleRewardsRowClick}
+                        hideModalDivider={i === rewardsDistributors.length - 1}
+                        activeCTokens={
+                          poolIncentives.rewardsDistributorCtokens[rD.address]
+                        }
+                      />
+                    );
+                  })
+                )}
+              </Tbody>
+            </Table>
+          )}
 
           <ModalDivider />
-        </DashboardBox> */}
+        </DashboardBox>
       </Column>
     </>
   );
 });
 
 export default FusePoolEditPage;
-
-const PoolConfiguration = ({
-  assets,
-  comptrollerAddress,
-  oracleAddress,
-}: {
-  assets: USDPricedFuseAsset[];
-  comptrollerAddress: string;
-  oracleAddress: string;
-}) => {
-  const { t } = useTranslation();
-  const { poolId } = useParams();
-
-  const { fuse, address } = useRari();
-
-  const queryClient = useQueryClient();
-  const toast = useToast();
-
-  const data = useExtraPoolInfo(comptrollerAddress, oracleAddress);
-
-  // Maps underlying to oracle
-  const oraclesMap = useOraclesForPool(
-    oracleAddress,
-    assets.map((asset: USDPricedFuseAsset) => asset.underlyingToken) ?? []
-  );
-
-  const changeWhitelistStatus = async (enforce: boolean) => {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    try {
-      await testForComptrollerErrorAndSend(
-        comptroller.methods._setWhitelistEnforcement(enforce),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-ChangeWhitelistStatus");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const addToWhitelist = async (newUser: string) => {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const newList = [...data!.whitelist, newUser];
-
-    try {
-      await testForComptrollerErrorAndSend(
-        comptroller.methods._setWhitelistStatuses(
-          newList,
-          Array(newList.length).fill(true)
-        ),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-AddToWhitelist");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const removeFromWhitelist = async (removeUser: string) => {
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    const whitelist = data!.whitelist;
-    try {
-      await testForComptrollerErrorAndSend(
-        comptroller.methods._setWhitelistStatuses(
-          whitelist,
-          whitelist.map((user: string) => user !== removeUser)
-        ),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-RemoveFromWhitelist");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const [admin, setAdmin] = useState(address);
-
-  const revokeRights = async () => {
-    const unitroller = createUnitroller(comptrollerAddress, fuse);
-
-    try {
-      await testForComptrollerErrorAndSend(
-        unitroller.methods._toggleAdminRights(false),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-RevokeRights");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const acceptAdmin = async () => {
-    const unitroller = createUnitroller(comptrollerAddress, fuse);
-
-    try {
-      await testForComptrollerErrorAndSend(
-        unitroller.methods._acceptAdmin(),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-AcceptAdmin");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const updateAdmin = async () => {
-    const unitroller = createUnitroller(comptrollerAddress, fuse);
-
-    if (!fuse.web3.utils.isAddress(admin)) {
-      handleGenericError({ message: "This is not a valid address." }, toast);
-      return;
-    }
-
-    try {
-      await testForComptrollerErrorAndSend(
-        unitroller.methods._setPendingAdmin(admin),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-UpdateAdmin");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const [closeFactor, setCloseFactor] = useState(50);
-  const [liquidationIncentive, setLiquidationIncentive] = useState(8);
-
-  const scaleCloseFactor = (_closeFactor: number) => {
-    return _closeFactor / 1e16;
-  };
-
-  const scaleLiquidationIncentive = (_liquidationIncentive: number) => {
-    return _liquidationIncentive / 1e16 - 100;
-  };
-
-  // Update values on refetch!
-  useEffect(() => {
-    if (data) {
-      setCloseFactor(scaleCloseFactor(data.closeFactor));
-      setLiquidationIncentive(
-        scaleLiquidationIncentive(data.liquidationIncentive)
-      );
-      setAdmin(data.admin);
-    }
-  }, [data]);
-
-  const updateCloseFactor = async () => {
-    // 50% -> 0.5 * 1e18
-    const bigCloseFactor = new BigNumber(closeFactor)
-      .dividedBy(100)
-      .multipliedBy(1e18)
-      .toFixed(0);
-
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    try {
-      await testForComptrollerErrorAndSend(
-        comptroller.methods._setCloseFactor(bigCloseFactor),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-UpdateCloseFactor");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  const updateLiquidationIncentive = async () => {
-    // 8% -> 1.08 * 1e8
-    const bigLiquidationIncentive = new BigNumber(liquidationIncentive)
-      .dividedBy(100)
-      .plus(1)
-      .multipliedBy(1e18)
-      .toFixed(0);
-
-    const comptroller = createComptroller(comptrollerAddress, fuse);
-
-    try {
-      await testForComptrollerErrorAndSend(
-        comptroller.methods._setLiquidationIncentive(bigLiquidationIncentive),
-        address,
-        ""
-      );
-
-      LogRocket.track("Fuse-UpdateLiquidationIncentive");
-
-      queryClient.refetchQueries();
-    } catch (e) {
-      handleGenericError(e, toast);
-    }
-  };
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      height="100%"
-    >
-      <Heading size="sm" px={4} py={4}>
-        {t("Pool {{num}} Configuration", { num: poolId })}
-      </Heading>
-
-      <ModalDivider />
-
-      {data ? (
-        <Column
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="flex-start"
-          height="100%"
-          width="100%"
-          overflowY="auto"
-        >
-          <ConfigRow>
-            <Text fontWeight="bold" mr={2}>
-              {t("Assets:")}
-            </Text>
-
-            {assets.length > 0 ? (
-              <>
-                <CTokenAvatarGroup
-                  tokenAddresses={assets.map(
-                    ({ underlyingToken }) => underlyingToken
-                  )}
-                  popOnHover={true}
-                />
-
-                <Text ml={2} flexShrink={0}>
-                  {assets.map(({ underlyingSymbol }, index, array) => {
-                    return (
-                      underlyingSymbol +
-                      (index !== array.length - 1 ? " / " : "")
-                    );
-                  })}
-                </Text>
-              </>
-            ) : (
-              <Text>{t("None")}</Text>
-            )}
-          </ConfigRow>
-
-          <ModalDivider />
-
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            width="100%"
-          >
-            <ConfigRow>
-              <Text fontWeight="bold">{t("Whitelist")}:</Text>
-
-              <Switch
-                ml="auto"
-                h="20px"
-                isDisabled={!data.upgradeable}
-                isChecked={data.enforceWhitelist}
-                onChange={() => {
-                  changeWhitelistStatus(!data.enforceWhitelist);
-                }}
-                className="black-switch"
-                colorScheme="#121212"
-              />
-            </ConfigRow>
-
-            {data.enforceWhitelist ? (
-              <WhitelistInfo
-                whitelist={data.whitelist}
-                addToWhitelist={addToWhitelist}
-                removeFromWhitelist={removeFromWhitelist}
-              />
-            ) : null}
-
-            <ModalDivider />
-
-            <ConfigRow height="35px">
-              <Text fontWeight="bold">{t("Admin")}:</Text>
-
-              {admin.toLowerCase() !== data.admin.toLowerCase() ? (
-                <SaveButton ml={3} onClick={updateAdmin} />
-              ) : address.toLowerCase() === data.pendingAdmin.toLowerCase() ? (
-                <SaveButton
-                  ml={3}
-                  onClick={acceptAdmin}
-                  fontSize="xs"
-                  altText={t("Become Admin")}
-                />
-              ) : data.adminHasRights &&
-                address.toLowerCase() === data.admin.toLowerCase() ? (
-                <SaveButton
-                  ml={3}
-                  onClick={revokeRights}
-                  fontSize="xs"
-                  altText={t("Revoke Rights")}
-                />
-              ) : null}
-
-              <Input
-                isDisabled={
-                  !data.adminHasRights ||
-                  data.admin?.toLowerCase() !== address.toLowerCase()
-                }
-                ml="auto"
-                width="320px"
-                height="100%"
-                textAlign="center"
-                variant="filled"
-                size="sm"
-                value={admin}
-                onChange={(event) => {
-                  const address = event.target.value;
-                  setAdmin(address);
-                }}
-                {...DASHBOARD_BOX_PROPS}
-                _placeholder={{ color: "#e0e0e0" }}
-                _focus={{ bg: "#121212" }}
-                _hover={{ bg: "#282727" }}
-                bg="#282727"
-              />
-            </ConfigRow>
-
-            <ModalDivider />
-
-            <ConfigRow height="35px">
-              <Text fontWeight="bold">{t("Close Factor")}:</Text>
-
-              {data && scaleCloseFactor(data.closeFactor) !== closeFactor ? (
-                <SaveButton onClick={updateCloseFactor} />
-              ) : null}
-
-              <SliderWithLabel
-                ml="auto"
-                value={closeFactor}
-                setValue={setCloseFactor}
-                formatValue={formatPercentage}
-                min={5}
-                max={90}
-              />
-            </ConfigRow>
-
-            <ModalDivider />
-
-            <ConfigRow height="35px">
-              <Text fontWeight="bold">{t("Liquidation Incentive")}:</Text>
-
-              {data &&
-              scaleLiquidationIncentive(data.liquidationIncentive) !==
-                liquidationIncentive ? (
-                <SaveButton onClick={updateLiquidationIncentive} />
-              ) : null}
-
-              <SliderWithLabel
-                ml="auto"
-                value={liquidationIncentive}
-                setValue={setLiquidationIncentive}
-                formatValue={formatPercentage}
-                min={0}
-                max={50}
-              />
-            </ConfigRow>
-            <ModalDivider />
-
-            {/* OraclesTable */}
-            <OraclesTable oraclesMap={oraclesMap} data={data} />
-            {/* <Column
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="flex-start"
-              expand
-            >
-              <ConfigRow height="35px">
-                <Text fontWeight="bold">{t("Oracles")}:</Text>
-              </ConfigRow>
-
-              {!!data.defaultOracle && (
-                <OracleRow
-                  oracle={data.defaultOracle}
-                  underlyings={[]}
-                  isDefault={true}
-                />
-              )}
-              {Object.keys(oraclesMap).map((oracle) => {
-                const underlyings = oraclesMap[oracle];
-                return <OracleRow oracle={oracle} underlyings={underlyings} />;
-              })}
-            </Column> */}
-          </Column>
-        </Column>
-      ) : (
-        <Center expand>
-          <Spinner my={8} />
-        </Center>
-      )}
-    </Column>
-  );
-};
-
-const OraclesTable = ({
-  data,
-  oraclesMap,
-}: {
-  data: any;
-  oraclesMap: {
-    [oracleAddr: string]: string[];
-  };
-}) => {
-  return (
-    <Table variant="unstyled">
-      <Thead>
-        <Tr>
-          <Th color="white">Oracle:</Th>
-          <Th color="white">Assets</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {!!data.defaultOracle && (
-          <OracleRow
-            oracle={data.defaultOracle}
-            underlyings={[]}
-            isDefault={true}
-          />
-        )}
-        {Object.keys(oraclesMap).map((oracle) => {
-          const underlyings = oraclesMap[oracle];
-          return <OracleRow oracle={oracle} underlyings={underlyings} />;
-        })}
-      </Tbody>
-    </Table>
-  );
-};
-
-const OracleRow = ({
-  oracle,
-  underlyings,
-  isDefault = false,
-}: {
-  oracle: string;
-  underlyings: string[];
-  isDefault?: boolean;
-}) => {
-  const oracleIdentity = useIdentifyOracle(oracle);
-
-  const displayedOracle = !!oracleIdentity
-    ? oracleIdentity
-    : shortAddress(oracle);
-
-  return (
-    <>
-      <Tr>
-        <Td>
-          <Link
-            href={`https://etherscan.io/address/${oracle}`}
-            isExternal
-            _hover={{ pointer: "cursor", color: "#21C35E" }}
-          >
-            <Text fontWeight="bold">{displayedOracle}</Text>
-          </Link>
-        </Td>
-        <Td>
-          {isDefault ? (
-            <span style={{ fontWeight: "bold" }}>DEFAULT</span>
-          ) : (
-            <AvatarGroup size="xs" max={30} mr={2}>
-              {underlyings.map((underlying) => {
-                return <CTokenIcon key={underlying} address={underlying} />;
-              })}
-            </AvatarGroup>
-          )}
-        </Td>
-      </Tr>
-    </>
-  );
-};
-
-const AssetConfiguration = ({
-  openAddAssetModal,
-  assets,
-  comptrollerAddress,
-  poolOracleAddress,
-  oracleModel,
-  poolName,
-  poolID,
-}: {
-  openAddAssetModal: () => any;
-  assets: USDPricedFuseAsset[];
-  comptrollerAddress: string;
-  poolOracleAddress: string;
-  oracleModel: string | undefined;
-  poolName: string;
-  poolID: string;
-}) => {
-  const { t } = useTranslation();
-  const { fuse } = useRari();
-  const oracleData = useOracleData(poolOracleAddress, fuse, oracleModel);
-  const [selectedAsset, setSelectedAsset] = useState(assets[0]);
-
-  return (
-    <Column
-      mainAxisAlignment="flex-start"
-      crossAxisAlignment="flex-start"
-      height="100%"
-      width="100%"
-      flexShrink={0}
-    >
-      <ConfigRow mainAxisAlignment="space-between">
-        <Heading size="sm">{t("Assets Configuration")}</Heading>
-
-        <AddAssetButton
-          comptrollerAddress={comptrollerAddress}
-          openAddAssetModal={openAddAssetModal}
-        />
-      </ConfigRow>
-
-      <ModalDivider />
-
-      <ConfigRow>
-        <Text fontWeight="bold" mr={2}>
-          {t("Assets:")}
-        </Text>
-
-        {assets.map((asset, index, array) => {
-          return (
-            <Box
-              pr={index === array.length - 1 ? 4 : 2}
-              key={asset.cToken}
-              flexShrink={0}
-            >
-              <DashboardBox
-                as="button"
-                onClick={() => setSelectedAsset(asset)}
-                {...(asset.cToken === selectedAsset.cToken
-                  ? activeStyle
-                  : noop)}
-              >
-                <Center expand px={4} py={1} fontWeight="bold">
-                  {asset.underlyingSymbol}
-                </Center>
-              </DashboardBox>
-            </Box>
-          );
-        })}
-      </ConfigRow>
-
-      <ModalDivider />
-
-      <ColoredAssetSettings
-        comptrollerAddress={comptrollerAddress}
-        tokenAddress={selectedAsset.underlyingToken}
-        cTokenAddress={selectedAsset.cToken}
-        poolName={poolName}
-        poolID={poolID}
-        poolOracleAddress={poolOracleAddress}
-        oracleModel={oracleModel}
-        oracleData={oracleData}
-      />
-    </Column>
-  );
-};
-
-const ColoredAssetSettings = ({
-  tokenAddress,
-  poolName,
-  poolID,
-  comptrollerAddress,
-  cTokenAddress,
-  poolOracleAddress,
-  oracleModel,
-  oracleData,
-}: {
-  tokenAddress: string;
-  poolName: string;
-  poolID: string;
-  comptrollerAddress: string;
-  cTokenAddress: string;
-  poolOracleAddress: string;
-  oracleModel: string | undefined;
-  oracleData?: OracleDataType | string | undefined;
-}) => {
-  const tokenData = useTokenData(tokenAddress);
-
-  return tokenData ? (
-    <AssetSettings
-      mode="Editing"
-      tokenAddress={tokenAddress}
-      poolOracleAddress={poolOracleAddress}
-      oracleModel={oracleModel}
-      oracleData={oracleData}
-      closeModal={noop}
-      comptrollerAddress={comptrollerAddress}
-      poolName={poolName}
-      poolID={poolID}
-      tokenData={tokenData}
-      cTokenAddress={cTokenAddress}
-    />
-  ) : (
-    <Center expand>
-      <Spinner my={8} />
-    </Center>
-  );
-};
 
 export const SaveButton = ({
   onClick,
@@ -1038,30 +406,6 @@ export const SaveButton = ({
       <Center expand>{altText ?? t("Save")}</Center>
     </DashboardBox>
   );
-};
-
-const AddAssetButton = ({
-  openAddAssetModal,
-  comptrollerAddress,
-}: {
-  openAddAssetModal: () => any;
-  comptrollerAddress: string;
-}) => {
-  const { t } = useTranslation();
-
-  const isUpgradeable = useIsUpgradeable(comptrollerAddress);
-
-  return isUpgradeable ? (
-    <DashboardBox
-      onClick={openAddAssetModal}
-      as="button"
-      py={1}
-      px={2}
-      fontWeight="bold"
-    >
-      {t("Add Asset")}
-    </DashboardBox>
-  ) : null;
 };
 
 export const ConfigRow = ({

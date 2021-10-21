@@ -12,79 +12,51 @@ import { OracleDataType } from "hooks/fuse/useOracleData";
 import { useQuery } from "react-query";
 import { createOracle } from "utils/createComptroller";
 import { Spinner } from "@chakra-ui/spinner";
+import { useAddAssetContext } from "context/AddAssetContext";
 
-const Screen2 = ({
-  mode,
-  feeTier,
-  oracleModel,
-  oracleData,
-  setFeeTier,
-  activeOracle,
-  tokenAddress,
-  oracleAddress,
-  oracleTouched,
-  uniV3BaseToken,
-  setOracleTouched,
-  activeUniSwapPair,
-  _setOracleAddress,
-  _setActiveOracle,
-  setUniV3BaseToken,
-  poolOracleAddress,
-  setActiveUniSwapPair,
-  uniV3BaseTokenOracle,
-  setUniV3BaseTokenOracle,
-  baseTokenActiveOracleName,
-  setBaseTokenActiveOracleName,
-  shouldShowUniV3BaseTokenOracleForm,
-  // New stuff -skip oracle step with default oracle
-  hasPriceForAsset,
-  hasDefaultOracle,
-  hasCustomOracleForToken,
-  priceForAsset,
-  defaultOracle,
-  customOracleForToken,
-}: {
-  mode: "Editing" | "Adding";
-  feeTier: number;
-  oracleModel: string | undefined;
-  oracleData: OracleDataType | string | undefined;
-  setFeeTier: React.Dispatch<React.SetStateAction<number>>;
-  activeOracle: string;
-  tokenAddress: string;
-  oracleAddress: string;
-  oracleTouched: boolean;
-  uniV3BaseToken: string;
-  setOracleTouched: React.Dispatch<React.SetStateAction<boolean>>;
-  activeUniSwapPair: string;
-  _setActiveOracle: React.Dispatch<React.SetStateAction<string>>;
-  _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
-  setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>;
-  poolOracleAddress: string;
-  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
-  uniV3BaseTokenOracle: string;
-  setUniV3BaseTokenOracle: React.Dispatch<React.SetStateAction<string>>;
-  baseTokenActiveOracleName: string;
-  setBaseTokenActiveOracleName: React.Dispatch<React.SetStateAction<string>>;
-  shouldShowUniV3BaseTokenOracleForm: boolean;
-  // New stuff - skip oracle step with default
-  hasPriceForAsset: boolean;
-  hasDefaultOracle: boolean;
-  hasCustomOracleForToken: boolean;
-  priceForAsset: number | undefined;
-  defaultOracle: string;
-  customOracleForToken: string;
-}) => {
+const Screen2 = ({ mode }: { mode: string }) => {
+  const {
+    feeTier,
+    poolOracleModel,
+    oracleData,
+    setFeeTier,
+    activeOracleModel,
+    tokenAddress,
+    oracleAddress,
+    oracleTouched,
+    uniV3BaseTokenAddress,
+    setOracleTouched,
+    activeUniSwapPair,
+    setOracleAddress,
+    setActiveOracleModel,
+    setUniV3BaseTokenAddress,
+    poolOracleAddress,
+    setActiveUniSwapPair,
+    uniV3BaseTokenOracle,
+    setUniV3BaseTokenOracle,
+    baseTokenActiveOracleName,
+    setBaseTokenActiveOracleName,
+    shouldShowUniV3BaseTokenOracleForm,
+    // New stuff -skip oracle step with default oracle
+    hasPriceForAsset,
+    hasDefaultOracle,
+    hasCustomOracleForToken,
+    priceForAsset,
+    defaultOracle,
+    customOracleForToken,
+  } = useAddAssetContext();
+
   if (
-    oracleModel === "MasterOracleV1" ||
-    oracleModel === "ChainlinkPriceOracle"
+    poolOracleModel === "MasterOracleV1" ||
+    poolOracleModel === "ChainlinkPriceOracle"
   )
     return (
       <LegacyOracle
         tokenAddress={tokenAddress}
-        oracleModel={oracleModel}
-        setActiveOracle={_setActiveOracle}
+        poolOracleModel={poolOracleModel}
+        setActiveOracleModel={setActiveOracleModel}
         poolOracleAddress={poolOracleAddress}
-        _setOracleAddress={_setOracleAddress}
+        setOracleAddress={setOracleAddress}
       />
     );
 
@@ -118,8 +90,16 @@ const Screen2 = ({
         </Row>
       )}
       <Row
-        mainAxisAlignment={mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm ? "center" : "flex-start"}
-        crossAxisAlignment={mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm ? "center" : "flex-start"}
+        mainAxisAlignment={
+          mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm
+            ? "center"
+            : "flex-start"
+        }
+        crossAxisAlignment={
+          mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm
+            ? "center"
+            : "flex-start"
+        }
         h="100%"
         w="100%"
       >
@@ -131,33 +111,13 @@ const Screen2 = ({
           maxHeight="100%"
           height="100%"
           maxWidth="100%"
-          width={mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm ? "50%" : "100%"}
+          width={
+            mode === "Adding" && !shouldShowUniV3BaseTokenOracleForm
+              ? "50%"
+              : "100%"
+          }
         >
-          <OracleConfig
-            mode={mode}
-            feeTier={feeTier}
-            oracleData={oracleData}
-            setFeeTier={setFeeTier}
-            activeOracle={activeOracle}
-            tokenAddress={tokenAddress}
-            oracleAddress={oracleAddress}
-            oracleTouched={oracleTouched}
-            uniV3BaseToken={uniV3BaseToken}
-            setOracleTouched={setOracleTouched}
-            activeUniSwapPair={activeUniSwapPair}
-            _setActiveOracle={_setActiveOracle}
-            _setOracleAddress={_setOracleAddress}
-            setUniV3BaseToken={setUniV3BaseToken}
-            poolOracleAddress={poolOracleAddress}
-            setActiveUniSwapPair={setActiveUniSwapPair}
-            uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-            setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-            baseTokenActiveOracleName={baseTokenActiveOracleName}
-            setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
-            shouldShowUniV3BaseTokenOracleForm={
-              shouldShowUniV3BaseTokenOracleForm
-            }
-          />
+          <OracleConfig />
         </Column>
         {shouldShowUniV3BaseTokenOracleForm ? (
           <Column
@@ -167,15 +127,7 @@ const Screen2 = ({
             mainAxisAlignment="center"
             crossAxisAlignment="center"
           >
-            <BaseTokenOracleConfig
-              mode="Adding"
-              oracleData={oracleData}
-              uniV3BaseToken={uniV3BaseToken}
-              uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-              setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-              baseTokenActiveOracleName={baseTokenActiveOracleName}
-              setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
-            />
+            <BaseTokenOracleConfig />
           </Column>
         ) : null}
       </Row>
@@ -186,20 +138,20 @@ export default Screen2;
 
 const LegacyOracle = ({
   tokenAddress,
-  oracleModel,
+  poolOracleModel,
   poolOracleAddress,
-  _setOracleAddress,
-  setActiveOracle,
+  setOracleAddress,
+  setActiveOracleModel,
 }: {
   tokenAddress: string;
-  oracleModel: string;
+  poolOracleModel: string;
   poolOracleAddress: string;
-  _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
-  setActiveOracle: React.Dispatch<React.SetStateAction<string>>;
+  setOracleAddress: (x: string) => void;
+  setActiveOracleModel: (x: string) => void;
 }) => {
   const supportedAddress: string | undefined = useIsAssetSupported(
     tokenAddress,
-    oracleModel,
+    poolOracleModel,
     poolOracleAddress
   );
 
@@ -214,8 +166,8 @@ const LegacyOracle = ({
       </h1>
     );
 
-  _setOracleAddress(supportedAddress);
-  setActiveOracle(oracleModel);
+  setOracleAddress(supportedAddress);
+  setActiveOracleModel(poolOracleModel);
   return <h2>Your oracle supports this token.</h2>;
 };
 

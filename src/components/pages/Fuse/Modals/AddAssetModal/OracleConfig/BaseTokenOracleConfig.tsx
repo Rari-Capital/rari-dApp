@@ -16,33 +16,28 @@ import { useTranslation } from "react-i18next";
 import { useRari } from "context/RariContext";
 
 // Hooks
-import { useGetOracleOptions } from "hooks/fuse/useOracleData";
+import { OracleDataType, useGetOracleOptions } from "hooks/fuse/useOracleData";
+import { useAddAssetContext } from "context/AddAssetContext";
 
-const BaseTokenOracleConfig = ({
-  mode,
-  oracleData,
-  uniV3BaseToken,
-  uniV3BaseTokenOracle,
-  setUniV3BaseTokenOracle,
-  baseTokenActiveOracleName,
-  setBaseTokenActiveOracleName,
-}: {
-  setBaseTokenActiveOracleName: React.Dispatch<React.SetStateAction<string>>; // Sets Base token oracle model name
-  baseTokenActiveOracleName: string; // Base token oracle model. i.e Rari Master Price, Chainlink Oracle, etc.
-  setUniV3BaseTokenOracle: React.Dispatch<React.SetStateAction<string>>; // Sets oracle address for base token
-  uniV3BaseTokenOracle: string; // Oracle address chosen for the base token
-  uniV3BaseToken: string; // Base token address.
-  oracleData: any; // Fuse Pool's Oracle data. i.e contract, admin, overwrite permissions.
-  mode: "Editing" | "Adding";
-}) => {
+const BaseTokenOracleConfig = () => {
   const { t } = useTranslation();
 
   const { address } = useRari();
 
-  const isUserAdmin = address === oracleData.admin;
+  const {
+    mode,
+    oracleData,
+    uniV3BaseTokenAddress,
+    uniV3BaseTokenOracle,
+    setUniV3BaseTokenOracle,
+    baseTokenActiveOracleName,
+    setBaseTokenActiveOracleName,
+  } = useAddAssetContext();
+
+  const isUserAdmin = address === oracleData?.admin ?? false;
 
   // We get all oracle options.
-  const options = useGetOracleOptions(oracleData, uniV3BaseToken);
+  const options = useGetOracleOptions(oracleData, uniV3BaseTokenAddress);
 
   console.log("helo there", { options });
   // If we're editing the asset, show master price oracle as a default.
@@ -101,7 +96,7 @@ const BaseTokenOracleConfig = ({
             height="50%"
             justifyContent="space-around"
           >
-            <CTokenIcon address={uniV3BaseToken} boxSize={"50px"} />
+            <CTokenIcon address={uniV3BaseTokenAddress} boxSize={"50px"} />
             <SimpleTooltip
               label={t("Choose the best price oracle for this BaseToken.")}
             >
@@ -128,7 +123,7 @@ const BaseTokenOracleConfig = ({
                 value={baseTokenActiveOracleName.toLowerCase()}
                 disabled={
                   !isUserAdmin ||
-                  (!oracleData.adminOverwrite &&
+                  (!oracleData?.adminOverwrite &&
                     !options.Current_Price_Oracle === null)
                 }
                 onChange={(event) =>

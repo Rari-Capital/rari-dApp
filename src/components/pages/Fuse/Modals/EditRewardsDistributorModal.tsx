@@ -17,6 +17,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  useClipboard,
 } from "@chakra-ui/react";
 
 import { Column, Center, Row } from "utils/chakraUtils";
@@ -40,6 +41,7 @@ import { useTokenBalance } from "hooks/useTokenBalance";
 import DashboardBox from "../../../shared/DashboardBox";
 import { createRewardsDistributor } from "utils/createComptroller";
 import { RewardsDistributor } from "hooks/rewards/useRewardsDistributorsForPool";
+import { shortAddress } from "utils/shortAddress";
 
 // Styles
 const activeStyle = { bg: "#FFF", color: "#000" };
@@ -133,6 +135,8 @@ const EditRewardsDistributorModal = ({
     selectedAsset?.cToken
   );
 
+  const { hasCopied, onCopy } = useClipboard(rewardsDistributor?.address ?? "");
+
   // Sends tokens to distributor
   const fundDistributor = async () => {
     // Create ERC20 instance of rewardToken
@@ -225,7 +229,7 @@ const EditRewardsDistributorModal = ({
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
-          py={4}
+          p={4}
         >
           <>
             {tokenData?.logoURL ? (
@@ -251,10 +255,18 @@ const EditRewardsDistributorModal = ({
                 : 0}{" "}
               {tokenData?.symbol}
             </Text>
+            <Text onClick={onCopy}>
+              Contract: {shortAddress(rewardsDistributor.address)}{" "}
+              {hasCopied && "Copied!"}
+            </Text>
           </>
         </Column>
 
-        <AdminAlert isAdmin={isAdmin} />
+        <AdminAlert
+          isAdmin={isAdmin}
+          mt={2}
+          isNotAdminText="You are not the admin of this RewardsDistributor. Only the admin can configure rewards."
+        />
 
         {/* Basic Info  */}
         <Column
@@ -262,7 +274,7 @@ const EditRewardsDistributorModal = ({
           crossAxisAlignment="flex-start"
           py={4}
         >
-          <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          {/* <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
             <Text>Address: {rewardsDistributor.address}</Text>
           </Row>
           <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
@@ -274,7 +286,7 @@ const EditRewardsDistributorModal = ({
               {balanceERC20 ? parseFloat(balanceERC20?.toString()) / 1e18 : 0}{" "}
               {tokenData?.symbol}
             </Text>
-          </Row>
+          </Row> */}
 
           <ModalDivider />
 
@@ -282,23 +294,30 @@ const EditRewardsDistributorModal = ({
           <Column
             mainAxisAlignment="flex-start"
             crossAxisAlignment="flex-start"
-            py={4}
+            p={4}
           >
-            <Heading fontSize={"md"}>Fund Distributor </Heading>
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+            <Heading fontSize={"lg"}> Fund Distributor </Heading>
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="center"
+              mt={1}
+            >
               <NumberInput
-                onChange={(valueString) => {
-                  console.log(valueString);
-                  setSendAmt(valueString ? parseFloat(valueString) : 0);
-                }}
-                value={sendAmt.toString()}
+                step={0.1}
                 min={0}
+                onChange={(valueString) => {
+                  console.log({ valueString });
+                }}
               >
                 <NumberInputField
                   width="100%"
                   textAlign="center"
                   placeholder={"0 " + tokenData?.symbol}
                 />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
               </NumberInput>
               <Button
                 onClick={fundDistributor}
@@ -308,7 +327,7 @@ const EditRewardsDistributorModal = ({
                 {fundingDistributor ? <Spinner /> : "Send"}
               </Button>
             </Row>
-            <Text>
+            <Text mt={1}>
               Your balance:{" "}
               {myBalance
                 ? (parseFloat(myBalance?.toString()) / 1e18).toFixed(2)
@@ -318,134 +337,147 @@ const EditRewardsDistributorModal = ({
           </Column>
 
           {/* Add or Edit a CToken to the Distributor */}
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            py={4}
-          >
-            <Heading fontSize={"md"}> Manage CTokens </Heading>
-            {/* Select Asset */}
-            <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
-              {pool.assets.map(
-                (asset: USDPricedFuseAsset, index: number, array: any[]) => {
-                  return (
-                    <Box
-                      pr={index === array.length - 1 ? 4 : 2}
-                      key={asset.cToken}
-                      flexShrink={0}
-                    >
-                      <DashboardBox
-                        as="button"
-                        onClick={() => setSelectedAsset(asset)}
-                        {...(asset.cToken === selectedAsset?.cToken
-                          ? activeStyle
-                          : noop)}
+
+          {pool.assets.length ? (
+            <Column
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              p={4}
+            >
+              <Heading fontSize={"lg"}> Manage CToken Rewards </Heading>
+              {/* Select Asset */}
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                mt={1}
+              >
+                {pool.assets.map(
+                  (asset: USDPricedFuseAsset, index: number, array: any[]) => {
+                    return (
+                      <Box
+                        pr={index === array.length - 1 ? 4 : 2}
+                        key={asset.cToken}
+                        flexShrink={0}
                       >
-                        <Center expand px={4} py={1} fontWeight="bold">
-                          {asset.underlyingSymbol}
-                        </Center>
-                      </DashboardBox>
-                    </Box>
-                  );
-                }
-              )}
-            </Row>
-
-            {/* Change Supply Speed */}
-            <Column
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="flex-start"
-              py={3}
-            >
-              <Row
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-              >
-                <Text>
-                  Supply Speed: {parseFloat(supplySpeedForCToken) / 1e18}
-                </Text>
-              </Row>
-              <Row
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="flex-start"
-              >
-                <NumberInput
-                  onChange={(valueString) => {
-                    console.log(valueString);
-                    setSupplySpeed(
-                      valueString ? parseFloat(valueString) : 0.001
+                        <DashboardBox
+                          as="button"
+                          onClick={() => setSelectedAsset(asset)}
+                          {...(asset.cToken === selectedAsset?.cToken
+                            ? activeStyle
+                            : noop)}
+                        >
+                          <Center expand px={4} py={1} fontWeight="bold">
+                            {asset.underlyingSymbol}
+                          </Center>
+                        </DashboardBox>
+                      </Box>
                     );
-                  }}
-                  value={supplySpeed.toString()}
-                  min={0}
-                >
-                  <NumberInputField
-                    width="100%"
-                    textAlign="center"
-                    placeholder={"0 " + tokenData?.symbol}
-                  />
-                </NumberInput>
-                <Button
-                  onClick={changeSupplySpeed}
-                  bg="black"
-                  disabled={changingSpeed}
-                >
-                  {changingSpeed ? <Spinner /> : "Set"}
-                </Button>
+                  }
+                )}
               </Row>
-            </Column>
 
-            {/* Change Borrow Speed */}
-            <Column
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="flex-start"
-              py={3}
-            >
-              <Row
+              {/* Change Supply Speed */}
+              <Column
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="flex-start"
+                py={3}
               >
-                <Text>
-                  Borrow Speed: {parseFloat(borrowSpeedForCToken) / 1e18}
-                </Text>
-              </Row>
-              <Row
+                <Row
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                >
+                  <NumberInput
+                    step={0.1}
+                    min={0}
+                    onChange={(supplySpeed) => {
+                      console.log({ supplySpeed });
+                      setSupplySpeed(parseFloat(supplySpeed));
+                    }}
+                  >
+                    <NumberInputField
+                      width="100%"
+                      textAlign="center"
+                      placeholder={"0 " + tokenData?.symbol}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <Button
+                    onClick={changeSupplySpeed}
+                    bg="black"
+                    disabled={changingSpeed || !isAdmin}
+                  >
+                    {changingSpeed ? <Spinner /> : "Set"}
+                  </Button>
+                </Row>
+                <Row
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
+                >
+                  <Text>
+                    Supply Speed:{" "}
+                    {(parseFloat(supplySpeedForCToken) / 1e18).toFixed(4)}
+                  </Text>
+                </Row>
+              </Column>
+
+              {/* Change Borrow Speed */}
+              <Column
                 mainAxisAlignment="flex-start"
                 crossAxisAlignment="flex-start"
+                py={3}
               >
-                <NumberInput
-                  onChange={(valueString) => {
-                    setBorrowSpeed(parseFloat(valueString));
-                  }}
-                  value={borrowSpeed.toString()}
-                  precision={3}
-                  step={0.001}
-                  min={0}
+                <Row
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
                 >
-                  <NumberInputField
-                    width="100%"
-                    textAlign="center"
-                    placeholder={"0 " + tokenData?.symbol}
-                  />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-                {/* <NumberInputField
-                   
-                  />
-                </NumberInput> */}
-                <Button
-                  onClick={changeBorrowSpeed}
-                  bg="black"
-                  disabled={changingBorrowSpeed}
+                  <NumberInput
+                    step={0.1}
+                    min={0}
+                    onChange={(borrowSpeed) => {
+                      console.log({ borrowSpeed });
+                      setBorrowSpeed(parseFloat(borrowSpeed));
+                    }}
+                  >
+                    <NumberInputField
+                      width="100%"
+                      textAlign="center"
+                      placeholder={"0 " + tokenData?.symbol}
+                    />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+
+                  <Button
+                    onClick={changeBorrowSpeed}
+                    bg="black"
+                    disabled={changingBorrowSpeed || !isAdmin}
+                  >
+                    {changingBorrowSpeed ? <Spinner /> : "Set"}
+                  </Button>
+                </Row>
+                <Row
+                  mainAxisAlignment="flex-start"
+                  crossAxisAlignment="flex-start"
                 >
-                  {changingBorrowSpeed ? <Spinner /> : "Set"}
-                </Button>
-              </Row>
+                  <Text>
+                    Borrow Speed:{" "}
+                    {(parseFloat(borrowSpeedForCToken) / 1e18).toFixed(2)}
+                  </Text>
+                </Row>
+              </Column>
             </Column>
-          </Column>
+          ) : (
+            <Center p={4}>
+              <Text fontWeight="bold">
+                Add CTokens to this pool to configure their rewards.
+              </Text>
+            </Center>
+          )}
         </Column>
       </ModalContent>
     </Modal>

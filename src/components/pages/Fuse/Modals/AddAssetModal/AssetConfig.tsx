@@ -38,86 +38,36 @@ import LogRocket from "logrocket";
 // Components
 import IRMChart from "./IRMChart";
 import OracleConfig from "./OracleConfig/OracleConfig";
+import { useAddAssetContext } from "context/AddAssetContext";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
-const AssetConfig = ({
-  cTokenData,
-  collateralFactor,
-  setCollateralFactor,
-  cTokenAddress,
-  isBorrowPaused,
-  adminFee,
-  setAdminFee,
-  oracleModel,
-  oracleData,
-  tokenAddress,
-  mode,
-  setFeeTier,
-  activeOracle,
-  oracleAddress,
-  _setActiveOracle,
-  feeTier,
-  _setOracleAddress,
-  setUniV3BaseToken,
-  poolOracleAddress,
-  shouldShowUniV3BaseTokenOracleForm,
-  uniV3BaseToken,
-  uniV3BaseTokenOracle,
-  setUniV3BaseTokenOracle,
-  setInterestRateModel,
-  interestRateModel,
-  tokenData,
-  setReserveFactor,
-  reserveFactor,
-  comptrollerAddress,
-  setOracleTouched,
-  baseTokenActiveOracleName,
-  setBaseTokenActiveOracleName,
-  oracleTouched,
-  activeUniSwapPair,
-  setActiveUniSwapPair,
-}: {
-  mode: any;
-  feeTier: any;
-  adminFee: any;
-  tokenData: any;
-  oracleData: any;
-  cTokenData: any;
-  setFeeTier: any;
-  oracleModel: any;
-  setAdminFee: any;
-  tokenAddress: any;
-  activeOracle: any;
-  reserveFactor: any;
-  oracleAddress: any;
-  cTokenAddress: any;
-  uniV3BaseToken: any;
-  isBorrowPaused: any;
-  collateralFactor: any;
-  setReserveFactor: any;
-  _setActiveOracle: any;
-  interestRateModel: any;
-  _setOracleAddress: any;
-  setUniV3BaseToken: any;
-  poolOracleAddress: any;
-  comptrollerAddress: any;
-  setCollateralFactor: any;
-  activeUniSwapPair: string;
-  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
-  uniV3BaseTokenOracle: any;
-  setInterestRateModel: any;
-  setUniV3BaseTokenOracle: any;
-  shouldShowUniV3BaseTokenOracleForm: any;
-  setOracleTouched: any;
-  baseTokenActiveOracleName: any;
-  setBaseTokenActiveOracleName: any;
-  oracleTouched: any;
-}) => {
+const AssetConfig = () => {
   const queryClient = useQueryClient();
   const { fuse, address } = useRari();
   const { t } = useTranslation();
   const toast = useToast();
+
+  const {
+    cTokenData,
+    collateralFactor,
+    setCollateralFactor,
+    cTokenAddress,
+    isBorrowPaused,
+    adminFee,
+    setAdminFee,
+    activeOracleModel,
+    oracleData,
+    tokenAddress,
+    mode,
+    setInterestRateModel,
+    interestRateModel,
+    tokenData,
+    setReserveFactor,
+    reserveFactor,
+    comptrollerAddress,
+  } = useAddAssetContext();
+
   const curves = useIRMCurves({ interestRateModel, adminFee, reserveFactor });
 
   // Liquidation incentive. (This is configured at pool level)
@@ -372,37 +322,13 @@ const AssetConfig = ({
 
         <ModalDivider />
 
-        {(oracleModel === "MasterPriceOracleV2" ||
-          oracleModel === "MasterPriceOracleV3") &&
+        {(activeOracleModel === "MasterPriceOracleV2" ||
+          activeOracleModel === "MasterPriceOracleV3") &&
           oracleData !== undefined &&
           !isTokenETHOrWETH(tokenAddress) &&
           mode === "Editing" && (
             <>
-              <OracleConfig
-                mode={mode}
-                feeTier={feeTier}
-                setFeeTier={setFeeTier}
-                oracleData={oracleData}
-                tokenAddress={tokenAddress}
-                activeOracle={activeOracle}
-                oracleAddress={oracleAddress}
-                _setActiveOracle={_setActiveOracle}
-                _setOracleAddress={_setOracleAddress}
-                setUniV3BaseToken={setUniV3BaseToken}
-                poolOracleAddress={poolOracleAddress}
-                shouldShowUniV3BaseTokenOracleForm={
-                  shouldShowUniV3BaseTokenOracleForm
-                }
-                setActiveUniSwapPair={setActiveUniSwapPair}
-                activeUniSwapPair={activeUniSwapPair}
-                uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-                setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-                uniV3BaseToken={uniV3BaseToken}
-                setOracleTouched={setOracleTouched}
-                oracleTouched={oracleTouched}
-                baseTokenActiveOracleName={baseTokenActiveOracleName}
-                setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
-              />
+              <OracleConfig />
 
               <ModalDivider />
             </>

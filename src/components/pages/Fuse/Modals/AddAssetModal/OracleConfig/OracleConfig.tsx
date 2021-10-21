@@ -29,6 +29,7 @@ import { isTokenETHOrWETH } from "utils/tokenUtils";
 import UniswapV3PriceOracleConfigurator from "./UniswapV3PriceOracleConfigurator";
 import UniswapV2OrSushiPriceOracleConfigurator from "./UniswapV2OrSushiPriceOracleConfigurator";
 import BaseTokenOracleConfig from "./BaseTokenOracleConfig";
+import { useAddAssetContext } from "context/AddAssetContext";
 
 // const useOraclesLoading = (options: any) => {
 //   const [isLoading, setIsLoading] = useState(false)
@@ -39,58 +40,33 @@ import BaseTokenOracleConfig from "./BaseTokenOracleConfig";
 
 // };
 
-const OracleConfig = ({
-  mode,
-  feeTier,
-  oracleData,
-  setFeeTier,
-  activeOracle,
-  tokenAddress,
-  oracleAddress,
-  oracleTouched,
-  uniV3BaseToken,
-  setOracleTouched,
-  activeUniSwapPair,
-  _setActiveOracle,
-  _setOracleAddress,
-  setUniV3BaseToken,
-  poolOracleAddress,
-  setActiveUniSwapPair,
-  uniV3BaseTokenOracle,
-  setUniV3BaseTokenOracle,
-  baseTokenActiveOracleName,
-  setBaseTokenActiveOracleName,
-  shouldShowUniV3BaseTokenOracleForm,
-}: {
-  shouldShowUniV3BaseTokenOracleForm: any;
-  baseTokenActiveOracleName: any;
-  setBaseTokenActiveOracleName: any;
-  setUniV3BaseTokenOracle: any;
-  uniV3BaseTokenOracle: any;
-  poolOracleAddress: string; // Fuse pool's oracle address.
-  _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
-  setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>;
-  setOracleTouched: React.Dispatch<React.SetStateAction<boolean>>;
-  _setActiveOracle: React.Dispatch<React.SetStateAction<string>>;
-  uniV3BaseToken: any;
-  oracleAddress: string; // Address of the oracle that will be used for the asset.
-  oracleTouched: boolean;
-  tokenAddress: string; // Asset's address. i.e USDC, DAI.
-  activeOracle: string; // Stores oracle option that has been chosen for the asset.
-  oracleData: any; // Stores Fuse pool's Oracle data.
-  setFeeTier: React.Dispatch<React.SetStateAction<number>>;
-  feeTier: number; // Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
-  mode: "Editing" | "Adding"; // Modal config
-  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
-  activeUniSwapPair: string;
-}) => {
+const OracleConfig = () => {
   const toast = useToast();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { fuse, address } = useRari();
 
-  const isUserAdmin = !!oracleData ? address === oracleData.admin : undefined;
+  const {
+    mode,
+    feeTier,
+    oracleData,
+    activeOracleModel,
+    tokenAddress,
+    oracleAddress,
+    oracleTouched,
+    uniV3BaseTokenAddress,
+    setOracleTouched,
+    activeUniSwapPair,
+    setActiveOracleModel,
+    setOracleAddress,
+    poolOracleAddress,
+    uniV3BaseTokenOracle,
+    baseTokenActiveOracleName,
+    shouldShowUniV3BaseTokenOracleForm,
+  } = useAddAssetContext();
+
+  const isUserAdmin = !!oracleData ? address === oracleData.admin : false;
 
   // Available oracle options for asset
   const options = useGetOracleOptions(oracleData, tokenAddress);
@@ -111,7 +87,7 @@ const OracleConfig = ({
       options["Current_Price_Oracle"] &&
       !oracleTouched
     ) {
-      _setActiveOracle("Current_Price_Oracle");
+      setActiveOracleModel("Current_Price_Oracle");
     }
 
     // if avaiable, set to "Default_Price_Oracle" if you are adding
@@ -121,13 +97,13 @@ const OracleConfig = ({
       !!options["Default_Price_Oracle"] &&
       !oracleTouched
     ) {
-      _setActiveOracle("Default_Price_Oracle");
+      setActiveOracleModel("Default_Price_Oracle");
     }
   }, [
     mode,
-    activeOracle,
+    activeOracleModel,
     options,
-    _setActiveOracle,
+    setActiveOracleModel,
     oracleIdentity,
     oracleTouched,
   ]);
@@ -136,24 +112,24 @@ const OracleConfig = ({
   // If option is Custom_Oracle or Uniswap_V3_Oracle, oracle address is changed differently so we dont trigger this.
   useEffect(() => {
     if (
-      activeOracle.length > 0 &&
-      activeOracle !== "Custom_Oracle" &&
-      activeOracle !== "Uniswap_V3_Oracle" &&
-      activeOracle !== "Uniswap_V2_Oracle" &&
-      activeOracle !== "SushiSwap_Oracle" &&
+      activeOracleModel.length > 0 &&
+      activeOracleModel !== "Custom_Oracle" &&
+      activeOracleModel !== "Uniswap_V3_Oracle" &&
+      activeOracleModel !== "Uniswap_V2_Oracle" &&
+      activeOracleModel !== "SushiSwap_Oracle" &&
       options
     )
-      _setOracleAddress(options[activeOracle]);
+      setOracleAddress(options[activeOracleModel]);
     if (
       activeUniSwapPair === "" &&
-      (activeOracle === "Custom_Oracle" ||
-        activeOracle === "Uniswap_V3_Oracle" ||
-        activeOracle === "Uniswap_V2_Oracle" ||
-        activeOracle === "SushiSwap_Oracle") &&
+      (activeOracleModel === "Custom_Oracle" ||
+        activeOracleModel === "Uniswap_V3_Oracle" ||
+        activeOracleModel === "Uniswap_V2_Oracle" ||
+        activeOracleModel === "SushiSwap_Oracle") &&
       !inputTouched
     )
-      _setOracleAddress("");
-  }, [activeOracle, options, _setOracleAddress, activeUniSwapPair]);
+      setOracleAddress("");
+  }, [activeOracleModel, options, setOracleAddress, activeUniSwapPair]);
 
   // Will update oracle for the asset. This is used only if user is editing asset.
   const updateOracle = async () => {
@@ -171,7 +147,7 @@ const OracleConfig = ({
       if (options === null) return null;
 
       // If activeOracle if a TWAP Oracle
-      if (activeOracle === "Uniswap_V3_Oracle") {
+      if (activeOracleModel === "Uniswap_V3_Oracle") {
         // Check for observation cardinality and fix if necessary
         await fuse.primeUniswapV3Oracle(oracleAddressToUse, { from: address });
 
@@ -180,18 +156,20 @@ const OracleConfig = ({
           "UniswapV3TwapPriceOracleV2",
           {
             feeTier,
-            baseToken: uniV3BaseToken,
+            baseToken: uniV3BaseTokenAddress,
           },
           { from: address }
         );
       }
 
       const tokenArray =
-        shouldShowUniV3BaseTokenOracleForm && !isTokenETHOrWETH(uniV3BaseToken)
-          ? [tokenAddress, uniV3BaseToken]
+        shouldShowUniV3BaseTokenOracleForm &&
+        !isTokenETHOrWETH(uniV3BaseTokenAddress)
+          ? [tokenAddress, uniV3BaseTokenAddress]
           : [tokenAddress];
       const oracleAddressArray =
-        shouldShowUniV3BaseTokenOracleForm && !isTokenETHOrWETH(uniV3BaseToken)
+        shouldShowUniV3BaseTokenOracleForm &&
+        !isTokenETHOrWETH(uniV3BaseTokenAddress)
           ? [oracleAddressToUse, uniV3BaseTokenOracle]
           : [oracleAddressToUse];
 
@@ -216,8 +194,8 @@ const OracleConfig = ({
         isClosable: true,
         position: "top-right",
       });
-      _setActiveOracle("Current_Price_Oracle");
-      _setOracleAddress(options["Current_Price_Oracle"]);
+      setActiveOracleModel("Current_Price_Oracle");
+      setOracleAddress(options["Current_Price_Oracle"]);
     } catch (e) {
       handleGenericError(e, toast);
     }
@@ -270,28 +248,28 @@ const OracleConfig = ({
             {...DASHBOARD_BOX_PROPS}
             borderRadius="7px"
             _focus={{ outline: "none" }}
-            value={activeOracle.toLowerCase()}
+            value={activeOracleModel.toLowerCase()}
             onChange={(event) => {
               // if (mode === "Editing") {
               // }
               setOracleTouched(true);
-              _setActiveOracle(event.target.value);
+              setActiveOracleModel(event.target.value);
             }}
             placeholder={
-              activeOracle.length === 0
+              activeOracleModel.length === 0
                 ? t("Choose Oracle")
-                : activeOracle.replaceAll("_", " ")
+                : activeOracleModel.replaceAll("_", " ")
             }
             disabled={
               !isUserAdmin ||
-              (!oracleData.adminOverwrite &&
+              (!oracleData?.adminOverwrite &&
                 !options.Current_Price_Oracle === null)
             }
           >
             {Object.entries(options).map(([key, value]) =>
               value !== null &&
               value !== undefined &&
-              key !== activeOracle &&
+              key !== activeOracleModel &&
               (mode === "Adding" ? key !== "Current_Price_Oracle" : true) ? (
                 // dont show the selected choice in the list
                 <option key={key} value={key} className="black-bg-option">
@@ -302,7 +280,7 @@ const OracleConfig = ({
             {/* <option disabled={true}>Loading...</option> */}
           </Select>
 
-          {activeOracle.length > 0 ? (
+          {activeOracleModel.length > 0 ? (
             <Input
               mt={2}
               mb={2}
@@ -317,19 +295,19 @@ const OracleConfig = ({
               onChange={(event) => {
                 const address = event.target.value;
                 setInputTouched(true);
-                _setOracleAddress(address);
+                setOracleAddress(address);
               }}
               {...DASHBOARD_BOX_PROPS}
               _focus={{ bg: "#121212" }}
               _hover={{ bg: "#282727" }}
               _placeholder={{ color: "#e0e0e0" }}
-              disabled={activeOracle === "Custom_Oracle" ? false : true}
+              disabled={activeOracleModel === "Custom_Oracle" ? false : true}
             />
           ) : null}
           <Text color="grey" fontSize="sm" textAlign="center">
             {oracleIdentity}
           </Text>
-          {activeOracle === "Custom_Oracle" && (
+          {activeOracleModel === "Custom_Oracle" && (
             <Text color="red" fontSize="sm" textAlign="center">
               Make sure you know what you are doing!
             </Text>
@@ -351,49 +329,28 @@ const OracleConfig = ({
         px={mode === "Editing" ? 4 : 0}
         id="UNIV3Config"
       >
-        {activeOracle === "Uniswap_V3_Oracle" ? (
-          <UniswapV3PriceOracleConfigurator
-            setFeeTier={setFeeTier}
-            _setOracleAddress={_setOracleAddress}
-            setUniV3BaseToken={setUniV3BaseToken}
-            tokenAddress={tokenAddress.toLocaleLowerCase()}
-            setActiveUniSwapPair={setActiveUniSwapPair}
-            activeUniSwapPair={activeUniSwapPair}
-          />
+        {activeOracleModel === "Uniswap_V3_Oracle" ? (
+          <UniswapV3PriceOracleConfigurator />
         ) : null}
 
-        {activeOracle === "Uniswap_V2_Oracle" ? (
+        {activeOracleModel === "Uniswap_V2_Oracle" ? (
           <UniswapV2OrSushiPriceOracleConfigurator
             type="UniswapV2"
-            _setOracleAddress={_setOracleAddress}
-            setUniV3BaseToken={setUniV3BaseToken}
-            tokenAddress={tokenAddress.toLocaleLowerCase()}
           />
         ) : null}
 
-        {activeOracle === "SushiSwap_Oracle" ? (
+        {activeOracleModel === "SushiSwap_Oracle" ? (
           <UniswapV2OrSushiPriceOracleConfigurator
             type="Sushiswap"
-            _setOracleAddress={_setOracleAddress}
-            setUniV3BaseToken={setUniV3BaseToken}
-            tokenAddress={tokenAddress.toLocaleLowerCase()}
           />
         ) : null}
       </Row>
 
       {shouldShowUniV3BaseTokenOracleForm && mode === "Editing" ? (
-        <BaseTokenOracleConfig
-          mode={mode}
-          oracleData={oracleData}
-          uniV3BaseToken={uniV3BaseToken}
-          uniV3BaseTokenOracle={uniV3BaseTokenOracle}
-          setUniV3BaseTokenOracle={setUniV3BaseTokenOracle}
-          baseTokenActiveOracleName={baseTokenActiveOracleName}
-          setBaseTokenActiveOracleName={setBaseTokenActiveOracleName}
-        />
+        <BaseTokenOracleConfig />
       ) : null}
 
-      {activeOracle !== "Current_Price_Oracle" && mode === "Editing" ? (
+      {activeOracleModel !== "Current_Price_Oracle" && mode === "Editing" ? (
         <SaveButton
           ml={"auto"}
           mb={3}

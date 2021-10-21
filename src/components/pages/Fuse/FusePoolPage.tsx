@@ -968,9 +968,9 @@ const BorrowList = ({
           <>
             {borrowedAssets.map((asset, index) => {
               // Don't show paused assets.
-              if (asset.isPaused) {
-                return null;
-              }
+              // if (asset.isPaused) {
+              //   return null;
+              // }
 
               const incentivesForAsset = (
                 incentivesData?.incentives?.[asset.cToken] ?? []

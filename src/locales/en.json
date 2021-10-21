@@ -275,15 +275,15 @@
   "Balance:": "Balance:",
   "Admin?": "Admin?",
   "There are no RewardsDistributors for this pool.": "There are no RewardsDistributors for this pool.",
-  "Oracles": "Oracles",
   "Add Rewards Distributor": "Add Rewards Distributor",
   "Verified Pools": "Verified Pools",
-  "Deploy": "Deploy",
   "Deploy Rewards Distributor": "Deploy Rewards Distributor",
-  "Rewards Distributor Address": "Rewards Distributor Address",
   "Edit Rewards Distributor": "Edit Rewards Distributor",
   "Claim": "Claim",
   "Claim Rewards": "Claim Rewards",
   "Claim All": "Claim All",
-  "Liquidations": "Liquidations"
+  "Liquidations": "Liquidations",
+  "RewardsDistributor Address:": "RewardsDistributor Address:",
+  "Deploy RewardsDistributor": "Deploy RewardsDistributor",
+  "Add RewardsDistributor": "Add RewardsDistributor"
 }
