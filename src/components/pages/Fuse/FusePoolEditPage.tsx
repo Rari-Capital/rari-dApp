@@ -308,7 +308,6 @@ const FusePoolEditPage = memo(() => {
 
           {!!data && !rewardsDistributors.length && (
             <Column
-              bg="pink"
               w="100%"
               h="100%"
               mainAxisAlignment="center"

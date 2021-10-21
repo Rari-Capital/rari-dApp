@@ -39,7 +39,7 @@ import TransactionStepper from "components/shared/TransactionStepper";
 
 const steps = [
   "Deploying Rewards Distributor",
-  "Adding RewardsDistributor to Comptroller",
+  "Configuring Comptroller",
 ];
 
 const AddRewardsDistributorModal = ({
@@ -320,7 +320,8 @@ const AddRewardsDistributorModal = ({
                   bg={tokenData.color! ?? "#FFF"}
                   _hover={{ transform: "scale(1.02)" }}
                   _active={{ transform: "scale(0.95)" }}
-                  isLoading={isDeploying}
+                  // isLoading={isDeploying}
+                  disabled={isDeploying}
                   onClick={handleDeploy}
                 >
                   {isDeploying

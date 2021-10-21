@@ -135,7 +135,7 @@ const EditRewardsDistributorModal = ({
     selectedAsset?.cToken
   );
 
-  const { hasCopied, onCopy } = useClipboard(rewardsDistributor?.admin ?? "");
+  const { hasCopied, onCopy } = useClipboard(rewardsDistributor?.address ?? "");
 
   // Sends tokens to distributor
   const fundDistributor = async () => {
