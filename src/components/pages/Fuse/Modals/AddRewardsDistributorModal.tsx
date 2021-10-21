@@ -62,7 +62,7 @@ const AddRewardsDistributorModal = ({
   const [isDeploying, setIsDeploying] = useState(false);
 
   const [address, setAddress] = useState<string>(
-    "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+    ""
   );
   const [rewardToken, setRewardToken] = useState<string>("");
 
