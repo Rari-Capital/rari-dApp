@@ -3,7 +3,12 @@
 
 import { useQuery } from "react-query";
 import { useTokensDataAsMap } from "hooks/useTokenData";
-import { createCToken, createMasterPriceOracle } from "utils/createComptroller";
+import {
+  createComptroller,
+  createCToken,
+  createMasterPriceOracle,
+  createOracle,
+} from "utils/createComptroller";
 import Fuse from "fuse-sdk";
 import { useRari } from "context/RariContext";
 import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
@@ -44,7 +49,8 @@ interface RewardsDataForMantissa {
 
 export const useIncentivesWithRates = (
   incentives: CTokenIncentivesMap,
-  rewardTokenAddrs: string[]
+  rewardTokenAddrs: string[],
+  comptroller: string
 ) => {
   // this is what we return
   const incentivesWithRates: CTokenRewardsDistributorIncentivesWithRatesMap =
@@ -66,10 +72,10 @@ export const useIncentivesWithRates = (
   // );
 
   // Then we need to get underlying prices
-  const tokenPrices = useAssetPricesInEth([
-    ...underlyings,
-    ...rewardTokenAddrs,
-  ]);
+  const tokenPrices = useAssetPricesInEth(
+    [...underlyings, ...rewardTokenAddrs],
+    comptroller
+  );
   // console.log({ incentives, cTokensDataMap, underlyings, tokenPrices });
 
   // This shit is bananas
@@ -85,7 +91,6 @@ export const useIncentivesWithRates = (
         ? incentivesForCToken.map((incentiveForCToken) => {
             const { rewardToken, borrowSpeed, supplySpeed } =
               incentiveForCToken;
-
 
             const supplyMantissaData: RewardsDataForMantissa = {
               cTokenAddress,
@@ -190,8 +195,8 @@ export const useCTokensDataForRewards = (
             .call();
 
           const underlyingTotalSupply2 =
-            parseFloat(cTokenTotalSupply) /
-            parseFloat(exchangeRateCurrent) * 1e18
+            (parseFloat(cTokenTotalSupply) / parseFloat(exchangeRateCurrent)) *
+            1e18;
 
           // const underlyingTotalSupply =
           //   parseFloat(
@@ -238,10 +243,38 @@ interface TokenPrices {
   ethUSDPrice: number;
 }
 
+// Fetches price from pool oracle then from Rari DAO MasterPriceOracle if fail
+export const getPriceFromOracles = async (
+  tokenAddress: string,
+  comptroller: string,
+  fuse: Fuse
+) => {
+  // Rari MPO
+  const masterPriceOracle = createMasterPriceOracle(fuse);
+
+  // Pool's MPO
+  const comptrollerInstance = createComptroller(comptroller, fuse);
+  const oracleAddress: string = await comptrollerInstance.methods
+    .oracle()
+    .call();
+  // const oracleModel: string | undefined = await fuse.getPriceOracle(oracle);
+  const oracleContract = createOracle(oracleAddress, fuse, "MasterPriceOracle");
+
+  let price;
+  try {
+    price = await oracleContract.methods.price(tokenAddress).call();
+  } catch {
+    price = await masterPriceOracle.methods.price(tokenAddress).call();
+  }
+
+  return price;
+};
+
 // Todo - handle situation where oracle cant find the price
 // Todo 2 - make sure that you are always using the Fuse Pool's oracle and that the Fuse Pool's Oracle supports this asset
 export const useAssetPricesInEth = (
-  tokenAddresses: string[]
+  tokenAddresses: string[],
+  comptroller: string
 ): TokenPrices | undefined => {
   const { fuse } = useRari();
   const masterPriceOracle = createMasterPriceOracle(fuse);
@@ -257,7 +290,7 @@ export const useAssetPricesInEth = (
       const [ethUSDBN, ...tokenPricesInEth] = await Promise.all([
         fuse.getEthUsdPriceBN(),
         ...tokenAddresses.map(
-          async (t) => await masterPriceOracle.methods.price(t).call()
+          async (t) => await getPriceFromOracles(t, comptroller, fuse)
         ),
       ]);
 
