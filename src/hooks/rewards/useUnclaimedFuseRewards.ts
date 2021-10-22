@@ -177,10 +177,6 @@ export function useUnclaimedFuseRewards() {
     }
   );
 
-  // Get asset Prices in ETH
-  const assetPrices = useAssetPricesInEth(Object.keys(rewardTokensMap));
-  console.log({ assetPrices });
-
   // Filter by claimable balances greater than 0
   const unclaimed: UnclaimedReward[] =
     _unclaimed?.filter((fuseUnclaimed) => {
