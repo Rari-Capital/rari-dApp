@@ -476,6 +476,7 @@ const SupplyList = ({
                   index={index}
                   supplyIncentives={supplyIncentivesForAsset}
                   rewardTokensData={incentivesData.rewardTokensData}
+                  isPaused={asset.isPaused}
                 />
               );
             })}
@@ -495,6 +496,7 @@ const SupplyList = ({
                   index={index}
                   supplyIncentives={supplyIncentivesForAsset}
                   rewardTokensData={incentivesData.rewardTokensData}
+                  isPaused={asset.isPaused}
                 />
               );
             })}
@@ -515,12 +517,14 @@ const AssetSupplyRow = ({
   comptrollerAddress,
   supplyIncentives,
   rewardTokensData,
+  isPaused
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
   comptrollerAddress: string;
   supplyIncentives: CTokenRewardsDistributorIncentivesWithRates[];
   rewardTokensData: TokensDataMap;
+  isPaused: boolean;
 }) => {
   const {
     isOpen: isModalOpen,
@@ -647,6 +651,7 @@ const AssetSupplyRow = ({
         index={index}
         isOpen={isModalOpen}
         onClose={closeModal}
+        isBorrowPaused={asset.isPaused}
       />
 
       <Row
@@ -683,6 +688,15 @@ const AssetSupplyRow = ({
               {symbol}
             </Text>
           </Row>
+          {/* <Row
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="center"
+            width="100%"
+          >
+            <Text fontSize="sm" ml={2} flexShrink={0}>
+            {shortUsdFormatter(asset.liquidityUSD)}
+            </Text>
+          </Row> */}
         </Column>
 
         {/* APY */}
@@ -984,6 +998,7 @@ const BorrowList = ({
                   index={index}
                   borrowIncentives={incentivesForAsset}
                   rewardTokensData={incentivesData.rewardTokensData}
+                  isPaused={asset.isPaused}
                 />
               );
             })}
@@ -1008,6 +1023,7 @@ const BorrowList = ({
                   index={index}
                   borrowIncentives={incentivesForAsset}
                   rewardTokensData={incentivesData.rewardTokensData}
+                  isPaused={asset.isPaused}
                 />
               );
             })}
@@ -1028,12 +1044,14 @@ const AssetBorrowRow = ({
   comptrollerAddress,
   borrowIncentives,
   rewardTokensData,
+  isPaused
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
   comptrollerAddress: string;
   borrowIncentives: CTokenRewardsDistributorIncentives[];
   rewardTokensData: TokensDataMap;
+  isPaused: boolean;
 }) => {
   const asset = assets[index];
 
@@ -1082,6 +1100,7 @@ const AssetBorrowRow = ({
         index={index}
         isOpen={isModalOpen}
         onClose={closeModal}
+        isBorrowPaused={isPaused}
       />
 
       <Row
@@ -1093,6 +1112,7 @@ const AssetBorrowRow = ({
         className="hover-row"
         as="button"
         onClick={authedOpenModal}
+
       >
         <Row
           mainAxisAlignment="flex-start"

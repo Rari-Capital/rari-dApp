@@ -648,7 +648,6 @@ const AssetSettings = ({
         crossAxisAlignment="center"
         height="100%"
         minHeight="100%"
-        bg="pink"
       >
         <Row
           mainAxisAlignment={"center"}
