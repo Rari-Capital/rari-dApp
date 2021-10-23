@@ -206,6 +206,7 @@ const AmountSelect = ({
   setMode,
 
   comptrollerAddress,
+  isBorrowPaused = false
 }: {
   onClose: () => any;
   assets: USDPricedFuseAsset[];
@@ -213,6 +214,7 @@ const AmountSelect = ({
   mode: Mode;
   setMode: (mode: Mode) => any;
   comptrollerAddress: string;
+  isBorrowPaused?: boolean;
 }) => {
   const asset = assets[index];
 
@@ -280,7 +282,10 @@ const AmountSelect = ({
 
   let depositOrWithdrawAlert = null;
 
-  if (amount === null || amount.isZero()) {
+  if (mode === Mode.BORROW && isBorrowPaused){
+    depositOrWithdrawAlert = t("Borrowing is disabled for this asset.");
+  }
+  else if (amount === null || amount.isZero()) {
     if (mode === Mode.SUPPLY) {
       depositOrWithdrawAlert = t("Enter a valid amount to supply.");
     } else if (mode === Mode.BORROW) {
@@ -586,6 +591,7 @@ const AmountSelect = ({
                     color={tokenData?.color ?? "#FFF"}
                     displayAmount={userEnteredAmount}
                     updateAmount={updateAmount}
+                    disabled={mode === Mode.BORROW && isBorrowPaused}
                   />
                   <TokenNameAndMaxButton
                     comptrollerAddress={comptrollerAddress}
@@ -1168,10 +1174,12 @@ const AmountInput = ({
   displayAmount,
   updateAmount,
   color,
+  disabled=false
 }: {
   displayAmount: string;
   updateAmount: (symbol: string) => any;
   color: string;
+  disabled?: boolean;
 }) => {
   return (
     <Input
@@ -1186,6 +1194,7 @@ const AmountInput = ({
       color={color}
       onChange={(event) => updateAmount(event.target.value)}
       mr={4}
+      disabled={disabled}
     />
   );
 };
