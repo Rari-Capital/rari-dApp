@@ -307,6 +307,7 @@ const EditRewardsDistributorModal = ({
                 min={0}
                 onChange={(valueString) => {
                   console.log({ valueString });
+                  setSendAmt(parseFloat(valueString))
                 }}
               >
                 <NumberInputField
