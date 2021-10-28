@@ -258,10 +258,14 @@ export const useGetOracleOptions = (
                 feeTier,
                 totalValueLockedUSD,
                 token0 {
-                  name
+                  name,
+                  id,
+                  symbol
                 },
                 token1 {
-                  name
+                  name,
+                  id,
+                  symbol
                 }
               }
             }
