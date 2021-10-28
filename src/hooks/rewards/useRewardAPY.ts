@@ -195,7 +195,7 @@ export const useCTokensDataForRewards = (
             .call();
 
           const underlyingTotalSupply2 =
-            (parseFloat(cTokenTotalSupply) / parseFloat(exchangeRateCurrent)) *
+            (parseFloat(cTokenTotalSupply) * parseFloat(exchangeRateCurrent)) /
             1e18;
 
           // const underlyingTotalSupply =
