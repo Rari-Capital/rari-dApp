@@ -39,6 +39,7 @@ import LogRocket from "logrocket";
 import IRMChart from "./IRMChart";
 import OracleConfig from "./OracleConfig/OracleConfig";
 import { useAddAssetContext } from "context/AddAssetContext";
+import MarketCapConfigurator from "../Edit/MarketCapConfigurator";
 
 const formatPercentage = (value: number) => value.toFixed(0) + "%";
 
@@ -209,6 +210,29 @@ const AssetConfig = () => {
         mainAxisAlignment={mode === "Adding" ? "center" : "flex-start"}
         crossAxisAlignment={mode === "Adding" ? "center" : "flex-start"}
       >
+
+        { mode === "Editing" ? 
+        <>
+          <MarketCapConfigurator 
+            mode="Borrow" 
+            tokenSymbol={tokenData.symbol} 
+            cTokenAddress={cTokenAddress} 
+            comptrollerAddress={comptrollerAddress} 
+          /> 
+
+          <ModalDivider />
+          
+          <MarketCapConfigurator 
+            mode="Supply" 
+            tokenSymbol={tokenData.symbol} 
+            cTokenAddress={cTokenAddress} 
+            comptrollerAddress={comptrollerAddress} 
+          />
+        </>
+        : null }
+
+        <ModalDivider />
+
         <ConfigRow height="35px">
           <SimpleTooltip
             label={t(
