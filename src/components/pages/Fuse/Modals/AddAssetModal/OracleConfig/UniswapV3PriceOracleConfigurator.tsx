@@ -37,18 +37,20 @@ const UniswapV3PriceOracleConfigurator = () => {
           "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
           {
             query: `{
-              token(id:"${tokenAddress}") {
+              token(id:"${tokenAddress.toLowerCase()}") {
                 whitelistPools {
                   id,
                   feeTier,
                   totalValueLockedUSD,
                   token0 {
                     symbol,
-                    id
+                    id,
+                    name
                   },
                   token1 {
                     symbol,
-                    id
+                    id,
+                    name
                   }
                 }
               }
