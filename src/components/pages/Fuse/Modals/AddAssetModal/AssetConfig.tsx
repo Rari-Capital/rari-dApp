@@ -41,7 +41,7 @@ import OracleConfig from "./OracleConfig/OracleConfig";
 import { useAddAssetContext } from "context/AddAssetContext";
 import MarketCapConfigurator from "../Edit/MarketCapConfigurator";
 
-const formatPercentage = (value: number) => value.toFixed(0) + "%";
+const formatPercentage = (value: number) => value.toFixed(1) + "%";
 
 const AssetConfig = () => {
   const queryClient = useQueryClient();
@@ -210,26 +210,25 @@ const AssetConfig = () => {
         mainAxisAlignment={mode === "Adding" ? "center" : "flex-start"}
         crossAxisAlignment={mode === "Adding" ? "center" : "flex-start"}
       >
+        {mode === "Editing" ? (
+          <>
+            <MarketCapConfigurator
+              mode="Borrow"
+              tokenSymbol={tokenData.symbol}
+              cTokenAddress={cTokenAddress}
+              comptrollerAddress={comptrollerAddress}
+            />
 
-        { mode === "Editing" ? 
-        <>
-          <MarketCapConfigurator 
-            mode="Borrow" 
-            tokenSymbol={tokenData.symbol} 
-            cTokenAddress={cTokenAddress} 
-            comptrollerAddress={comptrollerAddress} 
-          /> 
+            <ModalDivider />
 
-          <ModalDivider />
-          
-          <MarketCapConfigurator 
-            mode="Supply" 
-            tokenSymbol={tokenData.symbol} 
-            cTokenAddress={cTokenAddress} 
-            comptrollerAddress={comptrollerAddress} 
-          />
-        </>
-        : null }
+            <MarketCapConfigurator
+              mode="Supply"
+              tokenSymbol={tokenData.symbol}
+              cTokenAddress={cTokenAddress}
+              comptrollerAddress={comptrollerAddress}
+            />
+          </>
+        ) : null}
 
         <ModalDivider />
 
@@ -256,6 +255,7 @@ const AssetConfig = () => {
             value={collateralFactor}
             setValue={setCollateralFactor}
             formatValue={formatPercentage}
+            step={0.5}
             max={
               liquidationIncentiveMantissa
                 ? // 100% CF - Liquidation Incentive (ie: 8%) - 5% buffer
