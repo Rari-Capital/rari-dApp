@@ -141,7 +141,7 @@ const Home = () => {
           crossAxisAlignment="center"
           width="100%"
           height="100%"
-          mb={5}
+          my={5}
           // px="20%"
         >
           <Marquee gradient={false} style={{ padding: "10px" }}>

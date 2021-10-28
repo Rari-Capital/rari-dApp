@@ -51,10 +51,12 @@ export const FuseList = ({
     sortDir,
   } = useSortableList(poolsWithThisAsset);
 
+  console.log({ poolsWithThisAsset, sortedPools });
+
   return (
     <DashboardBox h="100%" w="100%">
       {!sortedPools.length ? (
-        <Box w="100%" h="100px" bg="pink">
+        <Box w="100%" h="100px">
           <Center>
             <Spinner />
           </Center>

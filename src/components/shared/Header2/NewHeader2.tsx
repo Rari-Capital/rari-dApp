@@ -45,7 +45,7 @@ export const NewHeader = () => {
         px={4}
         height="38px"
         my={4}
-        mainAxisAlignment="space-around"
+        mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         overflowX="visible"
         overflowY="visible"
@@ -92,21 +92,25 @@ export const NewHeader = () => {
         )}
 
         {!isMobile && <HeaderSearchbar />}
-        <AccountButton />
-        {isMobile && (
-          <DashboardBox
-            ml={1}
-            as="button"
-            height="40px"
-            flexShrink={0}
-            width="50px"
-            fontSize="15px"
-            onClick={openNavModal}
-            fontWeight="bold"
-          >
-            <Icon as={HamburgerIcon} />
-          </DashboardBox>
-        )}
+
+        <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
+          <AccountButton />
+
+          {isMobile && (
+            <DashboardBox
+              ml={1}
+              as="button"
+              height="40px"
+              flexShrink={0}
+              width="50px"
+              fontSize="15px"
+              onClick={openNavModal}
+              fontWeight="bold"
+            >
+              <Icon as={HamburgerIcon} />
+            </DashboardBox>
+          )}
+        </Row>
       </Row>
 
       <MobileNavModal

@@ -81,15 +81,15 @@ Access the underlying web3.js instance used by the SDK.
 ```
 // Set parameters
 var poolName = "Compound Finance";
-var isPrivate = false;
+var enforceWhitelist = false;
 var closeFactor = Web3.utils.toBN(0.051e18);
-var maxAssets = Web3.utils.toBN(10);
 var liquidationIncentive = Web3.utils.toBN(1e18);
 var priceOracle = "ChainlinkPriceOracle"; // Or set to an address to use an existing price oracle
+var priceOracleConf = {}; // No conf necessary for ChainlinkPriceOracle
 
 // Deploy new Fuse pool
 try {
-    var [poolAddress, receipt] = await fuse.deployPool(poolName, isPrivate, closeFactor, maxAssets, liquidationIncentive, priceOracle, { from: "0x0000000000000000000000000000000000000000" });
+    var [poolAddress, receipt] = await fuse.deployPool(poolName, enforceWhitelist, closeFactor, liquidationIncentive, priceOracle, priceOracleConf, { from: "0x0000000000000000000000000000000000000000" });
 } catch (error) {
     return console.error(error);
 }
@@ -107,18 +107,17 @@ var conf = {
     underlying: "0x6b175474e89094c44da98b954eedeac495271d0f", // Leave blank for ETH
     comptroller: "0x0000000000000000000000000000000000000000", // Fuse pool contract address
     interestRateModel: "WhitePaperInterestRateModel", // Or set to an address to use an existing interest rate model
-    initialExchangeRateMantissa: Web3.utils.toBN(2e18),
     name: "Compound DAI",
     symbol: "cDAI",
-    decimals: 8,
-    admin: "0x0000000000000000000000000000000000000000"
 };
 
 var collateralFactor = Web3.utils.toBN(0.5e18);
+var reserveFactor = Web3.utils.toBN(0.1e18);
+var adminFee = Web3.utils.toBN(0.05e18);
 
 // Deploy new Fuse pool
 try {
-    var [poolAddress, receipt] = await App.fuse.deployAsset(conf, collateralFactor, { from: "0x0000000000000000000000000000000000000000" });
+    var [poolAddress, receipt] = await App.fuse.deployAsset(conf, collateralFactor, reserveFactor, adminFee, { from: "0x0000000000000000000000000000000000000000" });
 } catch (error) {
     return console.error(error);
 }

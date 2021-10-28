@@ -21,6 +21,8 @@ const AssetBorrowLend = dynamic(
 const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
 
+  console.log({ token });
+
   return (
     <Column
       mainAxisAlignment="flex-start"

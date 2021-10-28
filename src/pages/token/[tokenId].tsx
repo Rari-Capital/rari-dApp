@@ -18,6 +18,7 @@ import { Column } from "lib/chakraUtils";
 const tokenDataFetcher = async (
   tokenAddress: string
 ): Promise<TokenData | undefined> => {
+  console.log({ tokenAddress });
   if (!tokenAddress) return undefined;
   const token: TokenData = await fetchTokenData(tokenAddress);
   return token;
@@ -25,22 +26,29 @@ const tokenDataFetcher = async (
 
 const TokenDetailsPage: NextPage<{ token: TokenData }> = () => {
   const router = useRouter();
+  console.log({ router });
+
   const [tokenAddress, setTokenAddress] = useState<string>("");
 
   useEffect(() => {
-    const tokenId = (router.query.tokenId as string)?.toUpperCase();
+    const tokenId = (router.query.tokenId as string)?.toLowerCase();
 
-    try {
-      const tokenAddress = ["ETH", ETH_TOKEN_DATA.address].includes(tokenId)
-        ? ETH_TOKEN_DATA.address
-        : utils.getAddress(tokenId);
-      setTokenAddress(tokenAddress);
-    } catch (err) {
-      console.error(err);
+    if (!!tokenId) {
+      try {
+        const tokenAddress = ["ETH", ETH_TOKEN_DATA.address].includes(tokenId)
+          ? ETH_TOKEN_DATA.address
+          : tokenId
+
+
+        setTokenAddress(tokenAddress);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }, [router.query]);
 
   const { data, error } = useSWR(tokenAddress, tokenDataFetcher);
+  console.log({ data, error });
 
   if (!data)
     return (
