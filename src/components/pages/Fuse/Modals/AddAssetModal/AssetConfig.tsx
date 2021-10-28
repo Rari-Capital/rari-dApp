@@ -211,7 +211,25 @@ const AssetConfig = () => {
         crossAxisAlignment={mode === "Adding" ? "center" : "flex-start"}
       >
 
-        { mode === "Editing" ? <MarketCapConfigurator tokenSymbol={tokenData.symbol} cTokenAddress={cTokenAddress} comptrollerAddress={comptrollerAddress} /> : null }
+        { mode === "Editing" ? 
+        <>
+          <MarketCapConfigurator 
+            mode="Borrow" 
+            tokenSymbol={tokenData.symbol} 
+            cTokenAddress={cTokenAddress} 
+            comptrollerAddress={comptrollerAddress} 
+          /> 
+
+          <ModalDivider />
+          
+          <MarketCapConfigurator 
+            mode="Supply" 
+            tokenSymbol={tokenData.symbol} 
+            cTokenAddress={cTokenAddress} 
+            comptrollerAddress={comptrollerAddress} 
+          />
+        </>
+        : null }
 
         <ModalDivider />
 

@@ -17,11 +17,13 @@ import { useToast } from "@chakra-ui/toast"
 const MarketCapConfigurator = ({
     comptrollerAddress,
     cTokenAddress,
-    tokenSymbol
+    tokenSymbol,
+    mode
     }: {
     comptrollerAddress: string,
     cTokenAddress: string | undefined,
     tokenSymbol: string | null
+    mode: "Supply" | "Borrow"
 }) => {
     const { t } = useTranslation()
     const [newSupplyCap, setNewSupplyCap] = useState<string>("");
@@ -30,19 +32,37 @@ const MarketCapConfigurator = ({
 
     const comptroller = createComptroller(comptrollerAddress, fuse)
 
-    const {data: supplyCap} = useQuery('Get supply cap for: ' + tokenSymbol , async () => {
-        if (cTokenAddress) return await comptroller.methods.supplyCaps(cTokenAddress).call()
+    const {data: supplyCap} = useQuery('Get ' + mode + ' cap for: ' + tokenSymbol , async () => {
+        if (cTokenAddress) {
+            if (mode === "Supply") {
+                return await comptroller.methods.supplyCaps(cTokenAddress).call()
+            }
+            
+            if (mode === "Borrow") {
+                return await comptroller.methods.borrowCaps(cTokenAddress).call()
+            }
+        }
     })
     
     const handleSubmit = async (cTokenAddress: string[], newSupplyCap: number[]) => {
 
-        console.log({cTokenAddress, newSupplyCap})
         try {
-            await comptroller.methods._setMarketSupplyCaps(cTokenAddress, newSupplyCap).send({from: address})
 
+            if (mode === "Supply")
+                await comptroller.methods._setMarketSupplyCaps(
+                    cTokenAddress, 
+                    newSupplyCap
+                ).send({from: address})
+            
+            if(mode === "Borrow") 
+                await comptroller.methods._setMarketBorrowCaps(
+                    cTokenAddress, 
+                    newSupplyCap
+                ).send({from: address})
+            
             toast({
                 title: "Success!",
-                description: "You've updated the asset's supply cap.",
+                description: "You've updated the asset's" + mode + " cap.",
                 status: "success",
                 duration: 2000,
                 isClosable: true,
@@ -71,7 +91,7 @@ const MarketCapConfigurator = ({
                 )}
             >
                 <Text fontWeight="bold">
-                {t("Supply Caps")} <QuestionIcon ml={1} mb="4px" />
+                {mode  + " caps"} <QuestionIcon ml={1} mb="4px" />
                 </Text>
             </SimpleTooltip>
             <Box
