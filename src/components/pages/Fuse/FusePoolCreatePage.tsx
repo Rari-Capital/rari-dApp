@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   Heading,
   Select,
@@ -127,13 +128,13 @@ const PoolConfiguration = () => {
         name,
         isWhitelisted,
         bigCloseFactor,
-        maxAssets,
         bigLiquidationIncentive,
-        oracle,
-        { reporter },
+        "MasterPriceOracle",
+        {},
         { from: address },
         isWhitelisted ? whitelist : null
       );
+  
 
       toast({
         title: "Your pool has been deployed!",
@@ -414,3 +415,4 @@ export const WhitelistInfo = ({
     </>
   );
 };
+

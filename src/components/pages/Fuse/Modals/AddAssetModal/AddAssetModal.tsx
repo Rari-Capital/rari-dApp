@@ -149,7 +149,7 @@ export const AssetSettings = ({
   };
 
   const [interestRateModel, setInterestRateModel] = useState(
-    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_DAI
+    Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES.JumpRateModel_Cream_Stables_Majors
   );
 
   const { data: curves } = useQuery(
@@ -466,7 +466,7 @@ export const AssetSettings = ({
           </Text>
         </SimpleTooltip>
 
-        <Select
+        {/* <Select
           {...DASHBOARD_BOX_PROPS}
           ml="auto"
           borderRadius="7px"
@@ -495,7 +495,7 @@ export const AssetSettings = ({
           >
             ETH WhitePaperRateModel
           </option>
-        </Select>
+        </Select> */}
 
         {cTokenData &&
         cTokenData.interestRateModelAddress.toLowerCase() !==

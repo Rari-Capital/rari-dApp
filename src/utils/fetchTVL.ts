@@ -1,10 +1,11 @@
 import Rari from "lib/rari-sdk/index";
 import Fuse from "lib/fuse-sdk/src";
 import BigNumber from "bignumber.js";
+import { toBN } from "web3-eth-abi/node_modules/web3-utils";
 
 export const fetchFuseTVL = async (fuse: Fuse) => {
   const { 2: suppliedETHPerPool } = await fuse.contracts.FusePoolLens.methods
-    .getPublicPoolsWithData()
+    .getPublicPoolsByVerificationWithData()
     .call({ gas: 1e18 });
 
   const totalSuppliedETH = fuse.web3.utils.toBN(
@@ -48,30 +49,42 @@ export const fetchFuseTVLBorrowsAndSupply = async (
 };
 
 export const perPoolTVL = async (rari: Rari, fuse: Fuse) => {
-  const [
-    stableTVL,
-    yieldTVL,
-    ethTVLInETH,
-    daiTVL,
-    ethPriceBN,
-    stakedTVL,
-    fuseTVLInETH,
-  ] = await Promise.all([
-    rari.pools.stable.balances.getTotalSupply(),
-    rari.pools.yield.balances.getTotalSupply(),
-    rari.pools.ethereum.balances.getTotalSupply(),
-    rari.pools.dai.balances.getTotalSupply(),
-    rari.getEthUsdPriceBN(),
-    rari.governance.rgt.sushiSwapDistributions.totalStakedUsd(),
-    fetchFuseTVL(fuse),
-  ]);
+  try {
+    const [
+      stableTVL,
+      yieldTVL,
+      ethTVLInETH,
+      daiTVL,
+      ethPriceBN,
+      stakedTVL,
+      fuseTVLInETH,
+    ] = await Promise.all([
+      rari.pools.stable.balances.getTotalSupply(),
+      rari.pools.yield.balances.getTotalSupply(),
+      rari.pools.ethereum.balances.getTotalSupply(),
+      rari.pools.dai.balances.getTotalSupply(),
+      rari.getEthUsdPriceBN(),
+      rari.governance.rgt.sushiSwapDistributions.totalStakedUsd(),
+      fetchFuseTVL(fuse),
+    ]);
 
-  const ethUSDBN = ethPriceBN.div(rari.web3.utils.toBN(1e18));
+    const ethUSDBN = ethPriceBN.div(rari.web3.utils.toBN(1e18));
 
-  const ethTVL = ethTVLInETH.mul(ethUSDBN);
-  const fuseTVL = fuseTVLInETH.mul(ethUSDBN);
+    const ethTVL = ethTVLInETH.mul(ethUSDBN);
+    const fuseTVL = fuseTVLInETH.mul(ethUSDBN);
 
-  return { stableTVL, yieldTVL, ethTVL, daiTVL, fuseTVL, stakedTVL };
+    return { stableTVL, yieldTVL, ethTVL, daiTVL, fuseTVL, stakedTVL };
+  } catch (err) {
+    console.log({ err });
+  }
+  return {
+    stableTVL: toBN(0),
+    yieldTVL: toBN(0),
+    ethTVL: toBN(0),
+    daiTVL: toBN(0),
+    fuseTVL: toBN(0),
+    stakedTVL: toBN(0),
+  };
 };
 
 export const fetchTVL = async (rari: Rari, fuse: Fuse) => {

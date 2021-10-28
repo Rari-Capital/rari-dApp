@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 
-export function useFilter() : string | null {
+export function useFilter() : string | undefined {
   const router = useRouter();
   const { filter } = router.query
 
@@ -8,5 +8,5 @@ export function useFilter() : string | null {
   if (typeof filter === "object") return filter[0]
 
   // Else return the filter or null
-  else return filter ?? null;
+  else return filter ?? undefined;
 }

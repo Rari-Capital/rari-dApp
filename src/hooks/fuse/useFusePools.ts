@@ -71,15 +71,19 @@ export const fetchPools = async ({
   fuse,
   address,
   filter,
+  blockNum,
 }: {
   rari: Rari;
   fuse: Fuse;
   address: string;
   filter?: string;
+  blockNum?: number
 }) => {
   const isMyPools = filter === "my-pools";
   const isCreatedPools = filter === "created-pools";
   const isNonWhitelistedPools = filter === "unverified-pools";
+
+  console.log({blockNum})
 
   const req = isMyPools
     ? fuse.contracts.FusePoolLens.methods
@@ -134,7 +138,7 @@ interface UseFusePoolsReturn {
 }
 
 // returns impersonal data about fuse pools ( can filter by your supplied/created pools )
-export const useFusePools = (filter: string | null): UseFusePoolsReturn => {
+export const useFusePools = (filter?: string): UseFusePoolsReturn => {
   const { fuse, rari, address } = useRari();
 
   const isMyPools = filter === "my-pools";
@@ -147,7 +151,7 @@ export const useFusePools = (filter: string | null): UseFusePoolsReturn => {
 
   const filteredPools = useMemo(() => {
     if (!pools) {
-      return null;
+      return [];
     }
 
     if (!filter) {

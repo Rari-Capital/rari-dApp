@@ -264,6 +264,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 // Hook
 export function useRari() {
   const context = useContext(RariContext);
+  console.log({ context });
 
   if (context === undefined) {
     throw new Error(`useRari must be used within a RariProvider`);
