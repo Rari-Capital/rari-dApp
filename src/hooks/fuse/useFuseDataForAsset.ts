@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { convertMantissaToAPY } from "utils/apyUtils";
-import { USDPricedFuseAssetWithTokenData } from "utils/fetchFusePoolData";
+import {
+  FusePoolData,
+  USDPricedFuseAssetWithTokenData,
+} from "utils/fetchFusePoolData";
 import useAllFusePools from "./useAllFusePools";
 
 interface AssetInFuse {
@@ -9,19 +12,30 @@ interface AssetInFuse {
   highestSupplyAPY: number;
 }
 
-export const useFuseDataForAsset = (assetSymbol: String) => {
+export const useFuseDataForAsset = (assetAddress?: String) => {
   const allPools = useAllFusePools();
 
-  const poolsWithThisAsset = useMemo(
-    () =>
+  // A map of which index this asset is in its respective Fuse pool's assets array.
+  // IE: Fuse pool 6 has this asset at index N
+  const poolAssetIndex: { [poolId: number]: number } = {};
+
+  // Find Fuse pools where this asset exists
+  const poolsWithThisAsset: FusePoolData[] = useMemo(() => {
+    if (!assetAddress) return allPools as FusePoolData[];
+
+    return (
       allPools?.filter((pool) =>
-        pool.assets.find((asset) => {
-          const _asset = asset as USDPricedFuseAssetWithTokenData;
-          return _asset?.tokenData?.symbol === assetSymbol;
+        pool.assets.find((asset, index) => {
+          if (
+            asset.underlyingToken.toLowerCase() === assetAddress?.toLowerCase()
+          ) {
+            poolAssetIndex[pool.id] = index;
+            return true;
+          }
         })
-      ),
-    [assetSymbol, allPools]
-  );
+      ) ?? []
+    );
+  }, [assetAddress, allPools]);
 
   const totals = useMemo(() => {
     let totalBorrowedUSD = 0;
@@ -32,7 +46,7 @@ export const useFuseDataForAsset = (assetSymbol: String) => {
       // Get the specific asset from the pool
       const asset = pool?.assets?.find((_ass) => {
         const ass = _ass as USDPricedFuseAssetWithTokenData;
-        return ass?.tokenData?.symbol === assetSymbol;
+        return ass?.tokenData?.symbol === assetAddress;
       });
 
       totalBorrowedUSD += asset?.totalBorrowUSD ?? 0;
@@ -43,9 +57,9 @@ export const useFuseDataForAsset = (assetSymbol: String) => {
     });
 
     return { totalBorrowedUSD, totalSuppliedUSD, highestSupplyAPY };
-  }, [assetSymbol, poolsWithThisAsset]);
+  }, [assetAddress, poolsWithThisAsset]);
 
-  return { totals, poolsWithThisAsset };
+  return { totals, poolsWithThisAsset, poolAssetIndex };
 };
 
 export const useFuseDataForAssets = (assetSymbols: String[]) => {
@@ -95,3 +109,28 @@ export const useFuseDataForAssets = (assetSymbols: String[]) => {
 
   return { totals, poolsWithThisAsset };
 };
+
+export const filterFusePoolsByToken = (
+  fusePools: FusePoolData[],
+  tokenAddress: string
+) =>
+  fusePools.filter((pool) =>
+    pool.assets.find((asset) => {
+      if (asset.underlyingToken.toLowerCase() === tokenAddress?.toLowerCase()) {
+        return true;
+      }
+    })
+  );
+
+export const filterFusePoolsByTokens = (
+  fusePools: FusePoolData[],
+  tokenAddresses: string[]
+) =>
+  fusePools.filter((pool) =>
+    pool.assets.find((asset) => {
+      if (tokenAddresses.includes(asset.underlyingToken)) {
+        console.log("yup");
+        return true;
+      }
+    })
+  );

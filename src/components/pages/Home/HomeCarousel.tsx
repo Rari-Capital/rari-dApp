@@ -2,10 +2,10 @@ import { Box, Heading, Text } from "@chakra-ui/layout";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
-import { Column } from "buttered-chakra";
+import { Column } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFuseDataForAssets } from "hooks/fuse/useFuseDataForAsset";
-import { smallStringUsdFormatter } from "utils/bigUtils";
+import { shortUsdFormatter } from "utils/bigUtils";
 
 const ASSETS = ["DAI", "ETH", "RGT"];
 
@@ -34,18 +34,19 @@ const HomeCarousel = () => {
       >
         {pools.map((pool, i) => {
           return (
-            <Box w="100%" h="100%">
+            <Box w="100%" h="100%" key={i}>
               <Heading
                 fontSize={{ base: "md", sm: "lg", md: "lg", lg: "xl" }}
                 textAlign={isMobile ? "left" : "center"}
               >
                 The Rari Capital Ecosystem currently has{" "}
                 <InlineStyledText
-                  text={`${smallStringUsdFormatter(pool.totalSuppliedUSD)} ${
-                    ASSETS[i]
-                  }`}
-                />{" "}
-                earning{" "}
+                  text={`${shortUsdFormatter(pool.totalSuppliedUSD)}
+                  `}
+                />
+                in {" "}
+                <InlineStyledText text={`${ASSETS[i]}`} />
+                {" "} earning{" "}
                 <InlineStyledText
                   text={`${pool.highestSupplyAPY.toFixed(2)}%`}
                 />{" "}

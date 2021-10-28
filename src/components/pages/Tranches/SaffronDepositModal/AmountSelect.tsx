@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "buttered-chakra";
-import SmallWhiteCircle from "../../../../static/small-white-circle.png";
+import { Row, Column } from "lib/chakraUtils";
 
 import {
   Heading,
@@ -11,19 +10,16 @@ import {
   Input,
   useToast,
 } from "@chakra-ui/react";
-import DashboardBox from "../../../shared/DashboardBox";
-import { tokens } from "../../../../utils/tokenUtils";
+import DashboardBox from "components/shared/DashboardBox";
+import { tokens } from "utils/tokenUtils";
 
-import {
-  useTokenBalance,
-  fetchTokenBalance,
-} from "../../../../hooks/useTokenBalance";
+import { useTokenBalance, fetchTokenBalance } from "hooks/useTokenBalance";
 
-import { useTranslation } from "react-i18next";
-import { ModalDivider } from "../../../shared/Modal";
-import { useRari } from "../../../../context/RariContext";
+import { useTranslation } from "next-i18next";
+import { ModalDivider } from "components/shared/Modal";
+import { useRari } from "context/RariContext";
 
-import { BN } from "../../../../utils/bigUtils";
+import { BN } from "utils/bigUtils";
 
 import BigNumber from "bignumber.js";
 
@@ -38,9 +34,10 @@ import {
 
 import { useSaffronData } from "hooks/tranches/useSaffronData";
 
-import ERC20ABI from "../../../../rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
+
 import { Token } from "rari-tokens-generator";
-import { handleGenericError } from "../../../../utils/errorHandling";
+import { handleGenericError } from "utils/errorHandling";
 
 function noop() {}
 
@@ -124,16 +121,10 @@ const AmountSelect = ({ onClose, tranchePool, trancheRating }: Props) => {
 
     _setUserEnteredAmount(newAmount);
 
-    try {
-      BigNumber.DEBUG = true;
-
-      // Try to set the amount to BigNumber(newAmount):
-      const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
+    const bigAmount = new BigNumber(newAmount);
+    bigAmount.isNaN()
+      ? _setAmount(null)
+      : _setAmount(bigAmount.multipliedBy(10 ** token.decimals));
 
     setUserAction(UserAction.NO_ACTION);
   };
@@ -454,7 +445,7 @@ const TokenNameAndMaxButton = ({
             width="100%"
             height="100%"
             borderRadius="50%"
-            backgroundImage={`url(${SmallWhiteCircle})`}
+            backgroundImage={`url(/static/small-white-circle.png)`}
             src={token.logoURL}
             alt=""
           />

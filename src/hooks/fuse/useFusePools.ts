@@ -1,11 +1,14 @@
 import { useMemo } from "react";
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import Rari from "rari-sdk/index";
-import Fuse from "fuse-sdk";
+import Rari from "lib/rari-sdk/index";
+import Fuse from "lib/fuse-sdk";
 import FuseJs from "fuse.js";
 
 import { filterOnlyObjectProperties } from "utils/fetchFusePoolData";
+import { formatDateToDDMMYY } from "utils/api/dateUtils";
+import { blockNumberToTimeStamp } from "utils/web3Utils";
+import { fetchCurrentETHPrice, fetchETHPriceAtDate } from "utils/coingecko";
 
 export interface FusePool {
   name: string;
@@ -23,6 +26,31 @@ export interface MergedPool {
   borrowedUSD: number;
 }
 
+interface LensFusePool {
+  blockPosted: string;
+  name: string;
+  creator: string;
+  comptroller: string;
+  timestampPosted: string;
+}
+
+interface LensFusePoolData {
+  totalBorrow: string;
+  totalSupply: string;
+  underlyingSymbols: string[];
+  underlyingTokens: string[];
+  whitelistedAdmin: boolean;
+}
+
+export type LensPoolsWithData = [
+  ids: string[],
+  fusePools: LensFusePool[],
+  fusePoolsData: LensFusePoolData[],
+  errors: boolean[]
+];
+
+
+
 const poolSort = (pools: MergedPool[]) => {
   return pools.sort((a, b) => {
     if (b.suppliedUSD > a.suppliedUSD) {
@@ -34,74 +62,83 @@ const poolSort = (pools: MergedPool[]) => {
     }
 
     // They're equal, let's sort by pool number:
-
     return b.id > a.id ? 1 : -1;
   });
 };
 
-const fetchPools = async ({
+export const fetchPools = async ({
   rari,
   fuse,
   address,
   filter,
+  blockNum,
 }: {
   rari: Rari;
   fuse: Fuse;
   address: string;
-  filter: string | null;
+  filter?: string;
+  blockNum?: number
 }) => {
   const isMyPools = filter === "my-pools";
   const isCreatedPools = filter === "created-pools";
+  const isNonWhitelistedPools = filter === "unverified-pools";
 
-  const [
-    {
-      0: ids,
-      1: fusePools,
-      2: totalSuppliedETH,
-      3: totalBorrowedETH,
-      4: underlyingTokens,
-      5: underlyingSymbols,
-    },
-    ethPrice,
-  ] = await Promise.all([
-    isMyPools
-      ? fuse.contracts.FusePoolLens.methods
-          .getPoolsBySupplierWithData(address)
-          .call({ gas: 1e18 })
-      : isCreatedPools
-      ? fuse.contracts.FusePoolLens.methods
-          .getPoolsByAccountWithData(address)
-          .call({ gas: 1e18 })
-      : fuse.contracts.FusePoolLens.methods
-          .getPublicPoolsWithData()
-          .call({ gas: 1e18 }),
+  console.log({blockNum})
 
-    rari.web3.utils.fromWei(await rari.getEthUsdPriceBN()),
-  ]);
+  const req = isMyPools
+    ? fuse.contracts.FusePoolLens.methods
+        .getPoolsBySupplierWithData(address)
+        .call({ gas: 1e18 })
+    : isCreatedPools
+    ? fuse.contracts.FusePoolLens.methods
+        .getPoolsByAccountWithData(address)
+        .call({ gas: 1e18 })
+    : isNonWhitelistedPools
+    ? fuse.contracts.FusePoolLens.methods
+        .getPublicPoolsByVerificationWithData(false)
+        .call({ gas: 1e18 })  
+    : fuse.contracts.FusePoolLens.methods
+        .getPublicPoolsByVerificationWithData(true)
+        .call({ gas: 1e18 });
+
+  const {
+    0: ids,
+    1: fusePools,
+    2: fusePoolsData,
+    3: errors,
+  }: LensPoolsWithData = await req;
+
+  const ethPrice = await rari.web3.utils.fromWei(await rari.getEthUsdPriceBN());
 
   const merged: MergedPool[] = [];
-  for (let id = 0; id < ids.length; id++) {
-    merged.push({
-      // I don't know why we have to do this but for some reason it just becomes an array after a refetch for some reason, so this forces it to be an object.
-      underlyingTokens: underlyingTokens[id],
-      underlyingSymbols: underlyingSymbols[id],
-      pool: filterOnlyObjectProperties(fusePools[id]),
-      id: ids[id],
-      suppliedUSD: (totalSuppliedETH[id] / 1e18) * parseFloat(ethPrice),
-      borrowedUSD: (totalBorrowedETH[id] / 1e18) * parseFloat(ethPrice),
-    });
+  for (let i = 0; i < ids.length; i++) {
+    const id = parseFloat(ids[i]);
+    const fusePool = fusePools[i];
+    const fusePoolData = fusePoolsData[i];
+
+    const mergedPool = {
+      id,
+      suppliedUSD:
+        (parseFloat(fusePoolData.totalSupply) / 1e18) * parseFloat(ethPrice),
+      borrowedUSD:
+        (parseFloat(fusePoolData.totalBorrow) / 1e18) * parseFloat(ethPrice),
+      ...filterOnlyObjectProperties(fusePool),
+      ...filterOnlyObjectProperties(fusePoolData),
+    };
+
+    merged.push(mergedPool);
   }
 
   return merged;
 };
 
-export interface UseFusePoolsReturn {
-  pools: MergedPool[] | undefined,
-  filteredPools: MergedPool[] | null,
+interface UseFusePoolsReturn {
+  pools: MergedPool[] | undefined;
+  filteredPools: MergedPool[];
 }
 
 // returns impersonal data about fuse pools ( can filter by your supplied/created pools )
-export const useFusePools = (filter: string | null) : UseFusePoolsReturn => {
+export const useFusePools = (filter?: string): UseFusePoolsReturn => {
   const { fuse, rari, address } = useRari();
 
   const isMyPools = filter === "my-pools";
@@ -114,7 +151,7 @@ export const useFusePools = (filter: string | null) : UseFusePoolsReturn => {
 
   const filteredPools = useMemo(() => {
     if (!pools) {
-      return null;
+      return [];
     }
 
     if (!filter) {

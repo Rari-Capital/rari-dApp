@@ -1,6 +1,6 @@
 import { Heading, Text } from "@chakra-ui/react";
-import { CrossAxisAlignment, Column } from "buttered-chakra";
-import { useMaybeResponsiveProp } from "../../hooks/useMaybeResponsiveProp";
+import { CrossAxisAlignment, Column } from "lib/chakraUtils";
+import { useMaybeResponsiveProp } from "hooks/useMaybeResponsiveProp";
 
 export interface CaptionedStatProps {
   crossAxisAlignment: CrossAxisAlignment;

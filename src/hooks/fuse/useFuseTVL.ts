@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import Rari from "rari-sdk/index";
-import Fuse from "fuse-sdk";
+import Rari from "lib/rari-sdk/index";
+import Fuse from "lib/fuse-sdk";
 import { fetchFuseTVL } from "utils/fetchTVL";
 
 export const fetchFuseNumberTVL = async (rari: Rari, fuse: Fuse) => {

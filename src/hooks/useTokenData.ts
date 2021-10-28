@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
 import { useQuery, useQueries } from "react-query";
-import ERC20ABI from "../../src/rari-sdk/abi/ERC20.json";
+import ERC20ABI from "lib/rari-sdk/abi/ERC20.json";
 import { useRari } from "../context/RariContext";
 
 export const ETH_TOKEN_DATA = {
   symbol: "ETH",
   address: "0x0000000000000000000000000000000000000000",
-  name: "Ethereum Network Token",
+  name: "Ethereum",
   decimals: 18,
   color: "#627EEA",
   overlayTextColor: "#fff",
@@ -16,13 +16,13 @@ export const ETH_TOKEN_DATA = {
 };
 
 export interface TokenData {
-  name: string | null;
-  symbol: string | null;
-  address: string | null;
-  decimals: number | null;
-  color: string | null;
-  overlayTextColor: string | null;
-  logoURL: string | null;
+  name: string;
+  symbol: string;
+  address: string;
+  decimals: number;
+  color: string;
+  overlayTextColor: string;
+  logoURL: string;
 }
 
 export const useTokenDataWithContract = (address: string) => {
@@ -38,10 +38,11 @@ export const useTokenDataWithContract = (address: string) => {
   return { tokenData, contract };
 };
 
-export const fetchTokenData = async (address: string) => {
+export const fetchTokenData = async (address: string): Promise<TokenData> => {
   let data;
 
   if (address !== ETH_TOKEN_DATA.address) {
+    console.log("saerching address", address);
     try {
       data = {
         ...(await fetch(
@@ -67,13 +68,14 @@ export const fetchTokenData = async (address: string) => {
       };
     }
   } else {
+    console.log("eth2 address", address);
     data = ETH_TOKEN_DATA;
   }
 
   return data as TokenData;
 };
 
-export const useTokenData = (address: string) => {
+export const useTokenData = (address: string): TokenData | undefined => {
   const { data: tokenData } = useQuery(
     address + " tokenData",
     async () => await fetchTokenData(address)
@@ -81,7 +83,7 @@ export const useTokenData = (address: string) => {
   return tokenData;
 };
 
-export const useTokensData = (addresses: string[]) => {
+export const useTokensData = (addresses: string[]): TokenData[] | null => {
   const tokensData = useQueries(
     addresses.map((address: string) => {
       return {

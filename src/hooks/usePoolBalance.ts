@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery, useQueries } from "react-query";
 import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
 import { BN } from "../utils/bigUtils";
 import { getSDKPool } from "../utils/poolUtils";
 import { PoolInterface } from "constants/pools";

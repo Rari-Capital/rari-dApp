@@ -1,4 +1,4 @@
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
 
 import { getSDKPool, Pool } from "./poolUtils";
 
@@ -23,8 +23,8 @@ export const fetchRGTAPR = async (rari: Rari) => {
 export const fetchPoolAPY = async (
   rari: Rari,
   pool: Pool | undefined
-): Promise<string | null > => {
-  if (!pool) return null
+): Promise<string | null> => {
+  if (!pool) return null;
 
   const poolRawAPY = await getSDKPool({
     rari,

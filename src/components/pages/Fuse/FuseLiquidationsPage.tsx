@@ -1,37 +1,42 @@
 /* eslint-disable no-loop-func */
+import { memo, useState } from "react";
+
+// Components
 import {
   AvatarGroup,
   Box,
-  Link,
   Spinner,
   Switch,
   Text,
 } from "@chakra-ui/react";
-import { Center, Column, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
-import { useTranslation } from "react-i18next";
-import { useRari } from "context/RariContext";
-import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { smallUsdFormatter } from "utils/bigUtils";
 
-import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-
-import { Link as RouterLink } from "react-router-dom";
+import DashboardBox from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
+import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
+import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
+import AppLink from "components/shared/AppLink";
 
+// Hooks
+import { useTranslation } from 'next-i18next';
+import { useRari } from "context/RariContext";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { useQuery } from "react-query";
+
+// Utils
+import { smallUsdFormatter } from "utils/bigUtils";
 import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
-
-import { SimpleTooltip } from "components/shared/SimpleTooltip";
-
-import Footer from "components/shared/Footer";
-import { memo, useState } from "react";
-
+import {
+  Center,
+  Column,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "lib/chakraUtils";
 // @ts-ignore
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { CTokenIcon } from "./FusePoolsPage";
-import { useQuery } from "react-query";
+
 
 const FuseLiquidationsPage = memo(() => {
   const { isAuthed } = useRari();
@@ -48,7 +53,6 @@ const FuseLiquidationsPage = memo(() => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -95,8 +99,6 @@ const FuseLiquidationsPage = memo(() => {
         <DashboardBox width="100%" mt={4}>
           <LiquidatablePositionsList />
         </DashboardBox>
-
-        <Footer />
       </Column>
     </>
   );
@@ -351,12 +353,10 @@ const PositionRow = ({
 
   return (
     <>
-      <Link
-        /* @ts-ignore */
-        as={RouterLink}
+      <AppLink
         width="100%"
         className="no-underline"
-        to={"/fuse/pool/" + poolNumber + `?address=${address}`}
+        href={"/fuse/pool/" + poolNumber + `?address=${address}`}
       >
         <Row
           mainAxisAlignment="flex-start"
@@ -416,7 +416,7 @@ const PositionRow = ({
             </>
           )}
         </Row>
-      </Link>
+      </AppLink>
 
       {noBottomDivider ? null : <ModalDivider />}
     </>

@@ -1,4 +1,4 @@
-import { useWindowSize } from "buttered-chakra";
+import { useWindowSize } from "lib/chakraUtils";
 
 export const useIsSmallScreen = () => {
   const { width } = useWindowSize();

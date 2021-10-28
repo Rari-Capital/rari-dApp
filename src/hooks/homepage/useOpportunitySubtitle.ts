@@ -14,7 +14,7 @@ import { usePoolInfos } from "hooks/usePoolInfo";
 import {
   SaffronTranchePool,
   TrancheRating,
-  useMySaffronData,
+  useRariSupportedTranches,
 } from "hooks/tranches/useSaffronData";
 
 export const useOpportunitySubtitle = (
@@ -33,7 +33,7 @@ export const useOpportunitySubtitle = (
   const pool2APR = usePool2APR();
 
   // Tranches
-  const mySaffronData: SaffronTranchePool[] = useMySaffronData();
+  const mySaffronData: SaffronTranchePool[] = useRariSupportedTranches();
   const trancheAPYs = useMemo(() => {
     const sTrancheAPY =
       mySaffronData?.[0]?.tranches?.[TrancheRating.S]?.["total-apy"];
@@ -87,7 +87,9 @@ export const useOpportunitySubtitle = (
         return pool2APR ? `${pool2APR}% APR` : null;
 
       case HomepageOpportunityType.TranchesPage:
-        return `${trancheAPYs.map((apy) => `${apy}%`).join(" - ")} APY`;
+        return `${trancheAPYs
+          .map((apy) => `${apy?.toFixed(0)}%`)
+          .join(" - ")} APY`;
 
       default:
         return null;

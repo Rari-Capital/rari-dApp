@@ -28,7 +28,7 @@ import Pool2Row from "./Pool2Row";
 import { smallUsdFormatter } from "utils/bigUtils";
 import TranchesRow from "./TranchesRow";
 import { FusePoolData } from "utils/fetchFusePoolData";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 const StatsTotalSection = ({
   setNetDeposits,

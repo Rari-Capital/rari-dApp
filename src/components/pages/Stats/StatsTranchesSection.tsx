@@ -3,9 +3,9 @@ import { Box, Table, Text, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 // Hooks
-import { Row } from "buttered-chakra";
+import { Row } from "lib/chakraUtils";
 import {
-  useMySaffronData,
+  useRariSupportedTranches,
   usePrincipal,
   TranchePool,
   TrancheRating,
@@ -14,12 +14,12 @@ import {
   SaffronTranchePool,
 } from "hooks/tranches/useSaffronData";
 import { smallUsdFormatter } from "utils/bigUtils";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 const Earn = () => {
   const { t } = useTranslation();
 
-  const mySaffronData: SaffronTranchePool[] = useMySaffronData();
+  const mySaffronData: SaffronTranchePool[] = useRariSupportedTranches();
   const daiSPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.S);
   const daiAPrincipal = usePrincipal(TranchePool.DAI, TrancheRating.A);
   const estimatedSFI = useEstimatedSFI();

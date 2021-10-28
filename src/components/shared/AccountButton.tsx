@@ -1,5 +1,5 @@
 import { memo, useCallback } from "react";
-import { useRari } from "../../context/RariContext";
+import { useRari } from "context/RariContext";
 import {
   useDisclosure,
   Modal,
@@ -9,9 +9,13 @@ import {
   Link,
   Text,
   Spinner,
+  Avatar,
+  Box,
+  Icon,
+  Stack,
 } from "@chakra-ui/react";
 
-import { Row, Column, Center } from "buttered-chakra";
+import { Row, Column, Center } from "lib/chakraUtils";
 import DashboardBox from "./DashboardBox";
 
 // @ts-ignore
@@ -19,17 +23,18 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 import { shortAddress } from "../../utils/shortAddress";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
 import { LanguageSelect } from "./TranslateButton";
 
 import { GlowingButton } from "./GlowingButton";
 import { ClaimRGTModal } from "./ClaimRGTModal";
-import { version } from "../..";
+// import version from "utils/version";
 
-import MoonpayModal from "../pages/MoonpayModal";
-import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
-import { useAuthedCallback } from "../../hooks/useAuthedCallback";
+import MoonpayModal from "components/pages/MoonpayModal";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import { useIsSmallScreen } from "hooks/useIsSmallScreen";
+import { HamburgerIcon } from "@chakra-ui/icons";
 
 export const AccountButton = memo(() => {
   const {
@@ -67,6 +72,7 @@ export const AccountButton = memo(() => {
       <ClaimRGTModal
         isOpen={isClaimRGTModalOpen}
         onClose={closeClaimRGTModal}
+        defaultMode="private"
       />
       <MoonpayModal isOpen={isMoonpayModalOpen} onClose={closeMoonpayModal} />
       <Buttons
@@ -103,6 +109,7 @@ const Buttons = ({
     <Row mainAxisAlignment="center" crossAxisAlignment="center">
       {isMobile ? null : (
         <>
+          {/* Moonpay */}
           {/* <DashboardBox
             as="button"
             flexShrink={0}
@@ -154,12 +161,20 @@ const Buttons = ({
               <Text fontWeight="semibold">{t("Connect")}</Text>
             )
           ) : (
-            <>
-              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+            <Center>
+              <Stack
+                border="transparent"
+                w="100%"
+                h="100%"
+                direction="row"
+                spacing={4}
+              >
+                <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              </Stack>
               <Text ml={2} fontWeight="semibold">
                 {shortAddress(address)}
               </Text>
-            </>
+            </Center>
           )}
         </Row>
       </DashboardBox>
@@ -301,7 +316,8 @@ export const SettingsModal = ({
           </Row>
 
           <Text mt={4} fontSize="10px">
-            {t("Version")} {version}
+            {t("Version")}
+            {/* {version} */}
           </Text>
         </Column>
       </ModalContent>

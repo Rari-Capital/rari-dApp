@@ -1,9 +1,9 @@
 import { Box, Td, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { Column } from "buttered-chakra";
+import { Column } from "lib/chakraUtils";
 import { TranchesLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { UseEstimatedSFIReturn } from "hooks/tranches/useSaffronData";
 
 const TranchesRow = ({

@@ -1,5 +1,5 @@
-import Fuse from "../fuse-sdk";
-import Rari from "../rari-sdk/index";
+import Fuse from "lib/fuse-sdk";
+import Rari from "lib/rari-sdk/index";
 
 // @ts-ignore
 import Filter from "bad-words";
@@ -66,13 +66,13 @@ export interface FusePoolData {
   totalBorrowedUSD: any;
   totalSupplyBalanceUSD: any;
   totalBorrowBalanceUSD: any;
-  id?: number;
+  id: number;
 }
 
 export enum FusePoolMetric {
   TotalLiquidityUSD,
   TotalSuppliedUSD,
-  TotalBorrowedUSD
+  TotalBorrowedUSD,
 }
 
 export const filterPoolName = (name: string) => {
@@ -92,7 +92,8 @@ export const fetchFusePoolData = async (
   poolId: string | undefined,
   address: string,
   fuse: Fuse,
-  rari?: Rari
+  rari?: Rari,
+  blockNum: string | number = "latest"
 ): Promise<FusePoolData | undefined> => {
   if (!poolId) return undefined;
 
@@ -102,7 +103,7 @@ export const fetchFusePoolData = async (
     isPrivate,
   } = await fuse.contracts.FusePoolDirectory.methods
     .pools(poolId)
-    .call({ from: address });
+    .call({ from: address }, blockNum);
 
   // Remove any profanity from the pool name
   let name = filterPoolName(_unfiliteredName);
@@ -110,7 +111,7 @@ export const fetchFusePoolData = async (
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
       .getPoolAssetsWithData(comptroller)
-      .call({ from: address, gas: 1e18 })
+      .call({ from: address, gas: 1e18 }, blockNum)
   ).map(filterOnlyObjectProperties);
 
   let totalLiquidityUSD = 0;
@@ -165,5 +166,6 @@ export const fetchFusePoolData = async (
 
     totalSupplyBalanceUSD,
     totalBorrowBalanceUSD,
+    id: parseFloat(poolId),
   };
 };

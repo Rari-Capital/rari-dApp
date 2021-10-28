@@ -1,3 +1,5 @@
+/*  This is a dynamically imported component on client-side only */
+
 import { Box, Text } from "@chakra-ui/react";
 import {
   useSpacedLayout,
@@ -6,9 +8,9 @@ import {
   PercentageSize,
   Row,
   Center,
-} from "buttered-chakra";
+} from "lib/chakraUtils";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { PoolReturnChartOptions } from "../../utils/chartOptions";
 
 import Chart from "react-apexcharts";
@@ -41,8 +43,9 @@ const PoolsPerformanceChart = ({ size }: { size: number }) => {
   const { t } = useTranslation();
 
   const ethAPY = usePoolAPY(Pool.ETH);
-  const stableAPY = usePoolAPY(Pool.STABLE);
+  const stableAPY = usePoolAPY(Pool.USDC);
   const yieldAPY = usePoolAPY(Pool.YIELD);
+
 
   const points = useMemo(() => {
     if (ethAPY && stableAPY && yieldAPY) {

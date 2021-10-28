@@ -8,34 +8,38 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { Column, RowOrColumn, Center, Row } from "buttered-chakra";
 import { memo, ReactNode, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
 
-import DashboardBox from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-
+// Components
+import DashboardBox from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
+import { SliderWithLabel } from "components/shared/SliderWithLabel";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
-import { SliderWithLabel } from "../../shared/SliderWithLabel";
 import AddAssetModal, { AssetSettings } from "./Modals/AddAssetModal";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { CTokenIcon } from "./FusePoolsPage";
-import { createComptroller } from "../../../utils/createComptroller";
-import { useQueryClient, useQuery } from "react-query";
-import { WhitelistInfo } from "./FusePoolCreatePage";
+import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
 
+// Hooks
+import { useQueryClient, useQuery } from "react-query";
+import { useTokenData } from "hooks/useTokenData";
+import { useAuthedCallback } from "hooks/useAuthedCallback";
+import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
+import { useFusePoolData } from "hooks/useFusePoolData";
+import { useTranslation } from 'next-i18next';
+import { useRari } from "context/RariContext";
+import { useRouter } from "next/router";
 import { useExtraPoolInfo } from "./FusePoolInfoPage";
-import BigNumber from "bignumber.js";
-import { useTokenData } from "../../../hooks/useTokenData";
+
+// Utils
+import { createComptroller } from "utils/createComptroller";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
+import { handleGenericError } from "utils/errorHandling";
+import { Column, RowOrColumn, Center, Row } from "lib/chakraUtils";
+
+import { WhitelistInfo } from "./FusePoolCreatePage";
 import LogRocket from "logrocket";
-import { handleGenericError } from "../../../utils/errorHandling";
-import { useAuthedCallback } from "../../../hooks/useAuthedCallback";
+import BigNumber from "bignumber.js";
+
 
 const activeStyle = { bg: "#FFF", color: "#000" };
 const noop = () => {};
@@ -117,7 +121,8 @@ const FusePoolEditPage = memo(() => {
 
   const { t } = useTranslation();
 
-  const { poolId } = useParams();
+  const router = useRouter()
+  const poolId = router.query.poolId as string
 
   const data = useFusePoolData(poolId);
 
@@ -142,8 +147,6 @@ const FusePoolEditPage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -224,7 +227,8 @@ const PoolConfiguration = ({
   comptrollerAddress: string;
 }) => {
   const { t } = useTranslation();
-  const { poolId } = useParams();
+  const router = useRouter()
+  const poolId = router.query.poolId as string
 
   const { fuse, address } = useRari();
 

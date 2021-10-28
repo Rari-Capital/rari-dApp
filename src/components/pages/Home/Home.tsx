@@ -1,21 +1,30 @@
-import React, { useState } from "react";
-import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Heading, Text, Link, SimpleGrid } from "@chakra-ui/react";
-import { Column, Row } from "buttered-chakra";
+// Next
+import dynamic from "next/dynamic";
+import {
+  Heading,
+  Text,
+  SimpleGrid,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import { Column, Row } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import NewHeader from "components/shared/Header2/NewHeader";
 import Marquee from "react-fast-marquee";
 import HomeFuseCard from "./HomeFuseCard";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { motion } from "framer-motion";
 
 import { smallStringUsdFormatter } from "utils/bigUtils";
 
-import { APYWithRefreshMovingStat } from "components/shared/MovingStat";
+const APYWithRefreshMovingStat = dynamic<APYWithRefreshMovingProps>(
+  () =>
+    import("components/shared/MovingStat").then(
+      (mod) => mod.APYWithRefreshMovingStat
+    ),
+  { ssr: false }
+);
+
 import { useTVLFetchers } from "hooks/useTVL";
 import HomeVaultCard from "./HomeVaultCard";
-import Footer from "components/shared/Footer";
 import OpportunityCard from "./OpportunityCard";
 import HomeCarousel from "./HomeCarousel";
 
@@ -25,27 +34,52 @@ import {
   HOMEPAGE_OPPORTUNIES,
   HOMEPAGE_EARN_VAULTS,
 } from "constants/homepage";
-import { useFusePoolsData } from "hooks/useFusePoolData";
 import { SaffronProvider } from "../Tranches/SaffronContext";
-import { SearchIcon } from "@chakra-ui/icons";
+// import { SearchIcon } from "@chakra-ui/icons";
 import DashboardBox from "components/shared/DashboardBox";
+import AppLink from "components/shared/AppLink";
+import { APYWithRefreshMovingProps } from "components/shared/MovingStat";
+import Searchbar from "components/shared/Searchbar";
+import useSWR from "swr";
+import { queryFusePools } from "services/gql";
+import { fetchTokensAPIDataAsMap } from "utils/services";
+import { TokensDataMap } from "types/tokens";
+import { SubgraphPool } from "pages/api/explore";
 
-const Home = React.memo(() => {
+// Fetcher
+const homepagePoolsFetcher = async (
+  ...ids: number[]
+): Promise<{
+  pools: SubgraphPool[];
+  tokensData: TokensDataMap;
+}> => {
+  const pools = await queryFusePools(ids);
+  const addresses = new Set<string>();
+  for (let pool of pools) {
+    for (let asset of pool.assets) {
+      addresses.add(asset.underlying.address);
+    }
+  }
+  const tokensData = await fetchTokensAPIDataAsMap([...Array.from(addresses)]);
+  return { pools, tokensData };
+};
+
+const Home = () => {
   // const { isAuthed } = useRari();
   const isMobile = useIsSmallScreen();
-  const navigate = useNavigate();
-
-  const [val, setVal] = useState("");
-
   const { getNumberTVL } = useTVLFetchers();
 
-  const pools = useFusePoolsData(
-    HOMEPAGE_FUSE_POOLS.map(({ id }: { id: number }) => id)
+  const { data } = useSWR(
+    [...HOMEPAGE_FUSE_POOLS.map((pool) => pool.id)],
+    homepagePoolsFetcher
   );
 
-  const handleSubmit = () => {
-    navigate(`/token/${val}`);
+  const { pools, tokensData } = data ?? {
+    pools: [],
+    tokensData: {},
   };
+
+  const sliceNum = useBreakpointValue({ sm: 4, md: 4, lg: 6, xl: 8 });
 
   return (
     <SaffronProvider>
@@ -56,23 +90,24 @@ const Home = React.memo(() => {
         mx="auto"
         width="100%"
       >
-        {/* Header */}
-        <NewHeader />
-
         {/* Hero */}
         <Row
-          mainAxisAlignment="center"
+          mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
           width="100%"
-          height="400px"
+          height={{ sm: "300px", md: "350px" }}
           px={{ sm: "0", md: "15%" }}
+          // bg="pink"
         >
           <Column
-            mainAxisAlignment="center"
+            mainAxisAlignment="flex-start"
             crossAxisAlignment="center"
-            mx="auto"
+            my="auto"
+            mt="auto"
             width="100%"
-            padding="20%"
+            height="100%"
+            padding="10%"
+            // bg="aqua"
           >
             <motion.div
               initial={{ opacity: 0, y: -40 }}
@@ -87,37 +122,15 @@ const Home = React.memo(() => {
                 , lend <br /> and borrow
               </Heading>
             </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
             >
-              <form onSubmit={handleSubmit}>
-                <InputGroup
-                  width={{ base: "sm", sm: "sm", md: "md", lg: "2xl" }}
-                  h="55px"
-                  // pl={2}
-                >
-                  <InputLeftElement
-                    pointerEvents="none"
-                    height="100%"
-                    color="grey"
-                    children={<SearchIcon color="gray.300" boxSize={5} />}
-                    ml={1}
-                  />
-
-                  <Input
-                    border="3px solid"
-                    borderColor="grey"
-                    height="100%"
-                    placeholder="Search by token, pool or product..."
-                    _placeholder={{ color: "grey", fontWeight: "bold" }}
-                    onChange={({ target: { value } }) => setVal(value)}
-                    value={val}
-                    color="grey"
-                  />
-                </InputGroup>
-              </form>
+              <Searchbar
+                width={{ base: "xs", sm: "sm", md: "md", lg: "2xl" }}
+              />
             </motion.div>
           </Column>
         </Row>
@@ -128,12 +141,14 @@ const Home = React.memo(() => {
           crossAxisAlignment="center"
           width="100%"
           height="100%"
+          my={5}
           // px="20%"
         >
           <Marquee gradient={false} style={{ padding: "10px" }}>
             {HOMEPAGE_FUSE_POOLS.map((constantPool, i) => (
               <HomeFuseCard
-                pool={pools?.find((p) => p.id === constantPool.id)}
+                pool={pools?.find((p) => parseInt(p.index) == constantPool.id)}
+                tokensData={tokensData}
                 key={i}
               />
             ))}
@@ -162,23 +177,20 @@ const Home = React.memo(() => {
               crossAxisAlignment="center"
             >
               <Heading size="md">Explore Opportunities</Heading>
-              <Link to={`/`} as={RouterLink}>
+              <AppLink href="/explore">
                 <Text size="md" color="grey">
                   View All
                 </Text>
-              </Link>
+              </AppLink>
             </Row>
 
             <SimpleGrid
-              columns={{ sm: 2, md: 2, lg: 4 }}
+              columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
               spacing="32px"
               w="100%"
               mt={5}
             >
-              {HOMEPAGE_OPPORTUNIES.slice(
-                0,
-                isMobile ? 4 : HOMEPAGE_OPPORTUNIES.length
-              ).map((opportunity, i) => (
+              {HOMEPAGE_OPPORTUNIES.slice(0, sliceNum).map((opportunity, i) => (
                 <OpportunityCard opportunity={opportunity} key={i} />
               ))}
             </SimpleGrid>
@@ -190,12 +202,12 @@ const Home = React.memo(() => {
           mainAxisAlignment="center"
           crossAxisAlignment="center"
           mx="auto"
-          my={5}
+          my={10}
           px={{ base: "5%", sm: "5%", md: "15%" }}
           width="100%"
           // background="purple"
         >
-          <DashboardBox width="100%" height="200px">
+          <DashboardBox width="100%" height="230px">
             <Row
               mainAxisAlignment="flex-start"
               crossAxisAlignment="flex-start"
@@ -210,7 +222,7 @@ const Home = React.memo(() => {
                 flexBasis={{
                   base: "25%",
                   sm: "25%",
-                  md: "30%",
+                  md: "40%",
                   lg: "40%",
                 }}
                 p={5}
@@ -223,13 +235,13 @@ const Home = React.memo(() => {
                   fetch={getNumberTVL}
                   queryKey={"totalValueLocked"}
                   apy={0.15}
-                  statSize="2xl"
-                  captionSize="xs"
+                  statSize="3xl"
+                  captionSize="md"
                   caption={"in TVL across all products"}
                   crossAxisAlignment="flex-start"
                   captionFirst={false}
                 />
-                <Text fontSize={isMobile ? "sm" : "md"} fontWeight="bold">
+                <Text fontSize={isMobile ? "sm" : "lg"} fontWeight="bold">
                   Discover infinite possibilities across the Rari Capital
                   Ecosystem
                 </Text>
@@ -242,11 +254,11 @@ const Home = React.memo(() => {
                 flexBasis={{
                   base: "75%",
                   sm: "75%",
-                  md: "70%",
+                  md: "60%",
                   lg: "60%",
                 }}
                 width="1px" // weird hack to make the carousel fit. idk why it works
-                py={{ base: 0, sm: 0, md: 0, lg: 5 }}
+                p={{ base: 0, sm: 0, md: 0, lg: 5 }}
               >
                 <HomeCarousel />
               </Column>
@@ -255,7 +267,7 @@ const Home = React.memo(() => {
         </Row>
 
         {/* Easily Earn (Vaults) */}
-        <Row
+        {/* <Row
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
           width="100%"
@@ -276,32 +288,28 @@ const Home = React.memo(() => {
               mb={5}
             >
               <Heading size="md">Easily Earn </Heading>
-              <RouterLink to="/">
-                <Link>
-                  <Text size="md" color="grey">
-                    View All
-                  </Text>
-                </Link>
-              </RouterLink>
+              <AppLink href="/explore?filter=earn">
+                <Text size="md" color="grey">
+                  View All
+                </Text>
+              </AppLink>
             </Row>
             <Marquee
               direction="right"
               gradient={false}
               style={{ padding: "10px" }}
             >
-              {HOMEPAGE_EARN_VAULTS.map((opportunity) => (
-                <HomeVaultCard opportunity={opportunity} />
+              {HOMEPAGE_EARN_VAULTS.map((opportunity, i) => (
+                <HomeVaultCard opportunity={opportunity} key={i} />
               ))}
             </Marquee>
           </Column>
-        </Row>
+        </Row> */}
 
         {/* Explore Today */}
-
-        <Footer />
       </Column>
     </SaffronProvider>
   );
-});
+};
 
 export default Home;

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { usePoolType } from "context/PoolContext";
 import { Pool, getPoolName, getPoolCaption } from "utils/poolUtils";
 import { formatBalanceBN } from "utils/format";
@@ -17,17 +17,13 @@ import { getPoolLogo } from "utils/poolIconUtils";
 export const usePoolInfo = (poolType: Pool) => {
   const { t } = useTranslation();
 
-  const poolData = useMemo(() => {
+  return useMemo(() => {
     const poolName = getPoolName(poolType, t);
     const poolCaption = getPoolCaption(poolType, t);
     const poolLogo = getPoolLogo(poolType);
-    return { poolCaption, poolName, poolLogo };
-  }, [poolType, t]);
 
-  return {
-    ...poolData,
-    poolType,
-  };
+    return { poolCaption, poolName, poolLogo, poolType };
+  }, [poolType, t]);
 };
 
 export const usePoolInfoFromContext = () => {
@@ -74,7 +70,7 @@ export type AggregatePoolsInfoReturn = {
   totals: PoolTotals;
 };
 
-export const useAggregatePoolInfos = () => {
+export const useAggregatePoolInfos = (): AggregatePoolsInfoReturn => {
   const { rari } = useRari();
   const {
     web3: {

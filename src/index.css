@@ -6,8 +6,9 @@ html {
   More info here: https://stackoverflow.com/questions/7768269/ipad-safari-disable-scrolling-and-bounce-effect
   */
   width: 100%;
-  /* height: 100% !important; */
+  height: 100% !important;
   background-color: #000000 !important;
+  overflow-y: scroll;
 }
 
 * {
@@ -49,8 +50,8 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
 */
 @font-face {
   font-family: "Avenir Next";
-  src: url(AvenirNext-Bold.woff2) format("woff2"),
-    url(AvenirNext-Bold.woff) format("woff");
+  src: url('/static/fonts/AvenirNext-Bold.woff2') format("woff2"),
+    url('/static/fonts/AvenirNext-Bold.woff2')  format("woff");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -58,8 +59,8 @@ Here's the symbols we currently support: " !"#$%&'()*+,-./0123456789:;<=>?@ABCDE
 
 @font-face {
   font-family: "Avenir Next";
-  src: url(AvenirNext-Regular.woff2) format("woff2"),
-    url(AvenirNext-Regular.woff) format("woff");
+  src: url('/static/fonts/AvenirNext-Regular.woff2')  format("woff2"),
+    url('/static/fonts/AvenirNext-Regular.woff2')  format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -213,4 +214,9 @@ img:not([src]) {
 
 li .dot .selected {
   background: green !important;
+}
+
+/* Needed to remove ugly blue boxes: https://github.com/chakra-ui/chakra-ui/issues/708 */
+*:focus {
+  box-shadow:  none !important;
 }

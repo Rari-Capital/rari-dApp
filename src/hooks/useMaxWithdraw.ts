@@ -2,7 +2,7 @@ import { useQuery } from "react-query";
 import { usePoolType } from "../context/PoolContext";
 import { Pool } from "../utils/poolUtils";
 import { useRari } from "../context/RariContext";
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
 import { BN } from "../utils/bigUtils";
 import { getSDKPool } from "../utils/poolUtils";
 import { fetchPoolBalance } from "./usePoolBalance";

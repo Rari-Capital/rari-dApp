@@ -1,35 +1,27 @@
-import { Box, Heading, Link, Image, Spinner, Text } from "@chakra-ui/react";
-import { Column, Row, RowOrColumn } from "buttered-chakra";
-import DashboardBox from "components/shared/DashboardBox";
-import NewHeader from "components/shared/Header2/NewHeader";
-import useTokenDataBySymbol from "hooks/tokens/useTokenDataBySymbol";
+import dynamic from "next/dynamic";
+
+import { Box, Heading, Link, Image } from "@chakra-ui/react";
+import { Column, Row, RowOrColumn } from "lib/chakraUtils";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
-import { useMemo } from "react";
-import { useParams } from "react-router";
-import { filterPoolName, USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
-import { PoolRow } from "components/pages/Fuse/FusePoolsPage";
-import { getMinMaxOf2DIndex } from "utils/tokenUtils";
-import { smallUsdFormatter } from "utils/bigUtils";
+import { TokenData } from "hooks/useTokenData";
+import MarketChart from "components/modules/MarketChart";
+import AssetOpportunities from "components/modules/AssetOpportunities";
+// import Foursquare from "components/modules/Foursquare";
+import TrendingOpportunities from "components/modules/TrendingOpportunities";
+import AssetBalance from "components/modules/AssetBalance";
+import InternalAd from "components/modules/InternalAd";
+// import AssetHistory from "components/modules/AssetHistory";
 
-const TokenDetails = () => {
-  const { symbol } = useParams();
+const AssetBorrowLend = dynamic(
+  () => import("components/modules/AssetBorrowLend"),
+  { ssr: false }
+);
+
+const TokenDetails = ({ token }: { token: TokenData }) => {
   const isMobile = useIsSmallScreen();
 
-  const tokenSymbol = useMemo(() => symbol.toUpperCase(), [symbol]);
-
-  const { tokenData, tokenMarketData, fuseDataForAsset } =
-    useTokenDataBySymbol(tokenSymbol);
-
-  const minMax = useMemo(() => {
-    if (tokenMarketData) {
-      const { prices } = tokenMarketData;
-      const stuff = getMinMaxOf2DIndex(prices, 1);
-      return stuff;
-    }
-  }, [tokenMarketData]);
-
-  const { poolsWithThisAsset } = fuseDataForAsset;
+  console.log({ token });
 
   return (
     <Column
@@ -37,250 +29,164 @@ const TokenDetails = () => {
       crossAxisAlignment="center"
       color="#FFFFFF"
       mx="auto"
+      mt={5}
       width="100%"
+      px={isMobile ? 3 : 10}
     >
       {/* Header */}
-      <NewHeader />
-      <Column
+      <Header isMobile={isMobile} tokenData={token} />
+
+      <RowOrColumn
         mainAxisAlignment="flex-start"
         crossAxisAlignment="flex-start"
-        w="100%"
-        h="100%"
-        px={isMobile ? 3 : 10}
-        mt={10}
+        isRow={!isMobile}
+        width="100%"
+        // bg="red"
       >
-        <Row
-          mainAxisAlignment="flex-start"
-          crossAxisAlignment="center"
-          //   bg="aqua"
-          w="100%"
-          h="100%"
-        >
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            w="100%"
-            h="100%"
-            mr={!isMobile ? 5 : 0}
-            p={3}
-            flexBasis={!isMobile ? "65%" : "100%"}
-            // bg="lime"
-          >
-            {/* Token Name + Logo */}
-            <Row
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              flexBasis={"75%"}
-            //   bg="purple"
-            >
-              <Image
-                src={
-                  tokenData?.logoURL ??
-                  "https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png"
-                }
-                boxSize="50"
-              />
-              <Heading ml={4} size={isMobile ? "md" : "lg"}>
-                {tokenData?.name} ({tokenData?.symbol}){" "}
-              </Heading>
-            </Row>
-
-            {/* Links */}
-            <Row
-              mainAxisAlignment="flex-end"
-              crossAxisAlignment="center"
-            //   bg="blue"
-              w="100%"
-              h="100%"
-              flexBasis={"25%"}
-            >
-              <Box size="sm" mr={3}>
-                <Link href="/home" isExternal>
-                  <Image
-                    src={
-                      "https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png"
-                    }
-                    boxSize="20px"
-                  />
-                </Link>
-              </Box>
-              <Box size="sm" mr={3}>
-                <Link
-                  href={`https://etherscan.io/address/${tokenData?.address}`}
-                  isExternal
-                >
-                  <Image
-                    src={
-                      "https://etherscan.io/images/brandassets/etherscan-logo-circle.jpg"
-                    }
-                    boxSize="20px"
-                  />
-                </Link>
-              </Box>
-              <Box size="sm" mr={3}>
-                <Link
-                  href={`https://info.uniswap.org/#/tokens/${tokenData?.address}`}
-                  isExternal
-                >
-                  <Image
-                    src={"https://cryptologos.cc/logos/uniswap-uni-logo.png"}
-                    boxSize="20px"
-                  />
-                </Link>
-              </Box>
-            </Row>
-          </Row>
-          {!isMobile && <Box w="100%" flexBasis={"35%"} />}
-        </Row>
-
-        {/* Chart + Foursquare */}
-        <RowOrColumn
+        {/* Column 1 */}
+        <Column
           width="100%"
-          height={"400px"}
-          isRow={!isMobile}
+          height="100%"
           mainAxisAlignment="center"
           crossAxisAlignment="flex-start"
           p={2}
-        //   bg="pink"
+          flexBasis={"70%"}
+          flexGrow={0}
         >
           {/* Chart */}
+          <MarketChart token={token} mb={5} />
+
+          <AssetBalance token={token} mb={5} />
+
+          {/* Fuse Pools */}
+          <AssetOpportunities token={token} />
+
+          {/* Tx Hist
           <DashboardBox
-            height="100%"
-            position="relative"
             w="100%"
+            // h="400px"
             h="100%"
-            // bg="blue"
-            mr={10}
-            mt={0}
-            flexBasis={"65%"}
+            mt={5}
           >
-            <Heading>Chart</Heading>
-            <Row
-              mainAxisAlignment="flex-start"
-              crossAxisAlignment="center"
-              position="absolute"
-              bottom={0}
-              left={0}
-            //   bg={"pink"}
-              zIndex={1000}
-              w="100%"
-              p={4}
-            >
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-                mr={10}
-              >
-                <Heading size="sm">24hr high</Heading>
-                <Text>{smallUsdFormatter(minMax?.max ?? 0)}</Text>
-              </Column>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-              >
-                <Heading size="sm">24hr low</Heading>
-                <Text>{smallUsdFormatter(minMax?.min ?? 0)}</Text>
-              </Column>
-            </Row>
-          </DashboardBox>
+            <Heading>Tx History</Heading>
+          </DashboardBox> */}
+        </Column>
 
-          {/* Foursq */}
-          <DashboardBox
-            height="100%"
-            w="300px"
-            flexBasis={"35%"}
-            mt={isMobile ? 2 : 0}
-          >
-            <Heading>Foursquare</Heading>
-          </DashboardBox>
-        </RowOrColumn>
-
-        {/* Fuse etc */}
-        <RowOrColumn
-          width="100%"
-          height={"800px"}
-          isRow={!isMobile}
+        {/*  Col 2 - 4sq, Trending, Ad, history */}
+        <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="flex-start"
+          w={"100%"}
+          h={"100%"}
+          flexBasis={"30%"}
+          mt={isMobile ? 5 : 0}
           p={2}
-        //   bg="lime"
         >
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            w={"100%"}
-            h={"100%"}
-            flexBasis={"65%"}
-            mr={10}
-            // bg="bisque"
-          >
-            {/* Fuse Pools */}
-            <DashboardBox
-              //   height="400px"
-              h="100%"
-              w="100%"
-              mr={5}
-              mt={0}
-              overflowY="scroll"
-            //   bg="purple"
-            >
-              <Heading>Fuse Pools</Heading>
-              <Column
-                mainAxisAlignment="flex-start"
-                crossAxisAlignment="center"
-                width="100%"
-              >
-                {poolsWithThisAsset?.map((pool, index) => {
-                  return (
-                    <PoolRow
-                      key={pool.id}
-                      poolNumber={pool.id!}
-                      name={filterPoolName(pool.name)}
-                      tvl={pool.totalSuppliedUSD}
-                      borrowed={pool.totalBorrowedUSD}
-                      tokens={pool.assets.map((asset: USDPricedFuseAsset) => ({
-                        symbol: asset.underlyingSymbol,
-                        address: asset.underlyingToken,
-                      }))}
-                      noBottomDivider={index === poolsWithThisAsset.length - 1}
-                    />
-                  );
-                }) ?? <Spinner />}
-              </Column>
-            </DashboardBox>
+          {/* Foursq */}
+          {/* <Foursquare token={token}  mb={5}/> */}
+          <AssetBorrowLend token={token} mb={5} />
 
-            {/* Tx Hist */}
-            <DashboardBox
-              w="100%"
-              // h="400px"
-              h="100%"
-              mt={5}
-            >
-              <Heading>Tx History</Heading>
-            </DashboardBox>
-          </Column>
+          <TrendingOpportunities token={token} mb={5} />
 
-          <Column
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            w={"100%"}
-            h={"100%"}
-            // bg={"aquamarine"}
-            flexBasis={"35%"}
-            mt={isMobile ? 5 : 0}
-          >
-            <DashboardBox height="100%" w="100%" h="100%" mt={0}>
-              <Heading>Earn stuff</Heading>
-            </DashboardBox>
+          <InternalAd mb={5} />
 
-            <DashboardBox height="100%" w="100%" h="100%" mt={5}>
-              <Heading>Fuse stuff</Heading>
-            </DashboardBox>
-          </Column>
-        </RowOrColumn>
-      </Column>
+          {/* <AssetHistory token={token} /> */}
+
+          {/* <DashboardBox height="100%" w="100%" h="100%" mt={5}>
+            <Heading>Fuse stuff</Heading>
+          </DashboardBox> */}
+        </Column>
+      </RowOrColumn>
     </Column>
   );
 };
 
 export default TokenDetails;
+
+const Header = ({
+  isMobile,
+  tokenData,
+}: {
+  isMobile: boolean;
+  tokenData?: TokenData;
+}) => {
+  return (
+    <Row
+      mainAxisAlignment="flex-start"
+      crossAxisAlignment="center"
+      // bg="aqua"
+      w="100%"
+      h="100%"
+    >
+      <Row
+        mainAxisAlignment="space-between"
+        crossAxisAlignment="center"
+        w="100%"
+        h="100%"
+        p={3}
+      >
+        {/* Token Name + Logo */}
+        <Row
+          mainAxisAlignment="flex-start"
+          crossAxisAlignment="center"
+          flexBasis={"75%"}
+          //   bg="purple"
+        >
+          <Image
+            src={
+              tokenData?.logoURL ??
+              "https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png"
+            }
+            boxSize="50"
+          />
+          <Heading ml={4} size={isMobile ? "md" : "lg"}>
+            {tokenData?.name} ({tokenData?.symbol}){" "}
+          </Heading>
+        </Row>
+
+        {/* Links */}
+        <Row
+          mainAxisAlignment="flex-end"
+          crossAxisAlignment="center"
+          //   bg="blue"
+          w="100%"
+          h="100%"
+          flexBasis={"25%"}
+        >
+          <Box size="sm" mr={3}>
+            <Link href="/home" isExternal>
+              <Image
+                src={
+                  "https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png"
+                }
+                boxSize="20px"
+              />
+            </Link>
+          </Box>
+          <Box size="sm" mr={3}>
+            <Link
+              href={`https://etherscan.io/address/${tokenData?.address}`}
+              isExternal
+            >
+              <Image
+                src={"/static/icons/etherscan-logo-light-circle.svg"}
+                boxSize="20px"
+              />
+            </Link>
+          </Box>
+          <Box size="sm" mr={3}>
+            <Link
+              href={`https://info.uniswap.org/#/tokens/${tokenData?.address}`}
+              isExternal
+            >
+              <Image
+                src={"/static/icons/uniswap-uni-logo.svg"}
+                boxSize="20px"
+              />
+            </Link>
+          </Box>
+        </Row>
+      </Row>
+    </Row>
+  );
+};

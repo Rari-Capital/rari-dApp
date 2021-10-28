@@ -10,12 +10,17 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { Column, Center, Row, RowOrColumn, useIsMobile } from "buttered-chakra";
+import {
+  Column,
+  Center,
+  Row,
+  RowOrColumn,
+  useIsMobile,
+} from "lib/chakraUtils";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useQueryClient } from "react-query";
-import { useParams } from "react-router-dom";
 import { useRari } from "context/RariContext";
 import { useBorrowLimit } from "hooks/useBorrowLimit";
 import { useFusePoolData } from "hooks/useFusePoolData";
@@ -31,7 +36,6 @@ import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
 
 // Components
 import DashboardBox from "components/shared/DashboardBox";
-import { Header } from "components/shared/Header";
 import { ModalDivider } from "components/shared/Modal";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 import { SwitchCSS } from "components/shared/SwitchCSS";
@@ -41,16 +45,17 @@ import FuseTabBar from "./FuseTabBar";
 import PoolModal, { Mode } from "./Modals/PoolModal";
 
 import LogRocket from "logrocket";
-import Footer from "components/shared/Footer";
+import { useRouter } from "next/router";
 
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
 
   const isMobile = useIsSemiSmallScreen();
+  const router = useRouter();
 
-  let { poolId } = useParams();
+  let { poolId } = router.query;
 
-  const data = useFusePoolData(poolId);
+  const data = useFusePoolData(poolId as string | undefined);
 
   return (
     <>
@@ -62,8 +67,6 @@ const FusePoolPage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -117,7 +120,6 @@ const FusePoolPage = memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
-        <Footer />
       </Column>
     </>
   );

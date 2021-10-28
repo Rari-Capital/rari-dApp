@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { smallStringUsdFormatter } from "utils/bigUtils";
 import { FuseLogoPNGWhite } from "components/shared/Logos";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { MergedPool } from "hooks/fuse/useFusePools";
 import { FusePoolData } from "utils/fetchFusePoolData";
 

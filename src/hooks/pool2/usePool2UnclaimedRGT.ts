@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { useRari } from "context/RariContext";
-import Rari from "rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
 
 export const fetchPool2UnclaimedRGT = async ({
   rari,

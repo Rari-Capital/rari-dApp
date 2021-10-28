@@ -1,3 +1,6 @@
+// Next
+import { useRouter } from "next/router";
+
 import {
   createContext,
   useContext,
@@ -9,41 +12,32 @@ import {
 } from "react";
 
 import { useQueryClient } from "react-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { DASHBOARD_BOX_PROPS } from "../components/shared/DashboardBox";
 
-import Rari from "../rari-sdk/index";
+import Rari from "lib/rari-sdk/index";
+import Fuse from "lib/fuse-sdk/src";
 
 import LogRocket from "logrocket";
 import { useToast } from "@chakra-ui/react";
-import Fuse from "../fuse-sdk/src";
+
 import {
   chooseBestWeb3Provider,
   infuraURL,
   initFuseWithProviders,
 } from "../utils/web3Providers";
-import { useIsMobile } from "buttered-chakra";
-import { useLocation } from "react-router-dom";
 
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
   cacheProvider: boolean = true
 ) {
-  const [
-    WalletConnectProvider,
-    Portis,
-    Authereum,
-    Fortmatic,
-    Torus,
-    Web3Modal,
-  ] = await Promise.all([
-    import("@walletconnect/web3-provider"),
-    import("@portis/web3"),
-    import("authereum"),
-    import("fortmatic"),
-    import("@toruslabs/torus-embed"),
-    import("web3modal"),
-  ]);
+  const [WalletConnectProvider, Authereum, Fortmatic, Web3Modal] =
+    await Promise.all([
+      import("@walletconnect/web3-provider"),
+      import("authereum"),
+      import("fortmatic"),
+      import("web3modal"),
+    ]);
 
   const providerOptions = {
     injected: {
@@ -69,25 +63,6 @@ async function launchModalLazy(
       display: {
         description: t("Connect with your {{provider}} account", {
           provider: "Fortmatic",
-        }),
-      },
-    },
-    torus: {
-      package: Torus.default,
-      display: {
-        description: t("Connect with your {{provider}} account", {
-          provider: "Torus",
-        }),
-      },
-    },
-    portis: {
-      package: Portis.default,
-      options: {
-        id: process.env.REACT_APP_PORTIS_ID,
-      },
-      display: {
-        description: t("Connect with your {{provider}} account", {
-          provider: "Portis",
         }),
       },
     },
@@ -133,14 +108,15 @@ export interface RariContextData {
 
 export const EmptyAddress = "0x0000000000000000000000000000000000000000";
 
-export const RariContext =
-  createContext<RariContextData | undefined>(undefined);
+export const RariContext = createContext<RariContextData | undefined>(
+  undefined
+);
 
 export const RariProvider = ({ children }: { children: ReactNode }) => {
-  const { t } = useTranslation();
+  const router = useRouter();
+  const { address: requestedAddress } = router.query;
 
-  const location = useLocation();
-
+  // Rari and Fuse get initally set already
   const [rari, setRari] = useState<Rari>(
     () => new Rari(chooseBestWeb3Provider())
   );
@@ -148,7 +124,15 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
 
   const [isAttemptingLogin, setIsAttemptingLogin] = useState<boolean>(false);
 
+  const [address, setAddress] = useState<string>(EmptyAddress);
+
+  const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
+
+  const [ethersProvider, setEthersProvider] = useState<any | null>(null);
+
   const toast = useToast();
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   // Check the user's network:
   useEffect(() => {
@@ -168,7 +152,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
               description:
                 "You are on the wrong network! Switch to the mainnet and reload this page!",
               status: "warning",
-              position: "top-right",
+              position: "bottom-right",
               duration: 300000,
               isClosable: true,
             });
@@ -178,30 +162,23 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     );
   }, [rari, toast]);
 
-  const [address, setAddress] = useState<string>(EmptyAddress);
-
-  const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
-
-  const queryClient = useQueryClient();
-
+  // We need to give rari the new provider (todo: and also ethers.js signer) every time someone logs in again
   const setRariAndAddressFromModal = useCallback(
     (modalProvider) => {
       const rariInstance = new Rari(modalProvider);
       const fuseInstance = initFuseWithProviders(modalProvider);
-
+      ``;
       setRari(rariInstance);
       setFuse(fuseInstance);
 
       rariInstance.web3.eth.getAccounts().then((addresses) => {
         if (addresses.length === 0) {
           console.log("Address array was empty. Reloading!");
-          window.location.reload();
+          router.reload();
         }
 
         const address = addresses[0];
-        const requestedAddress = new URLSearchParams(location.search).get(
-          "address"
-        );
+        const requestedAddress = router.query.address as string;
 
         console.log("Setting Logrocket user to new address: " + address);
         LogRocket.identify(address);
@@ -210,18 +187,19 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
         setAddress(requestedAddress ?? address);
       });
     },
-    [setRari, setAddress, location.search]
+    [setRari, setAddress, requestedAddress]
   );
 
   const login = useCallback(
     async (cacheProvider: boolean = true) => {
       try {
         setIsAttemptingLogin(true);
-        const provider = await launchModalLazy(t, cacheProvider);
-        setWeb3ModalProvider(provider);
-        setRariAndAddressFromModal(provider);
+        const providerWeb3Modal = await launchModalLazy(t, cacheProvider);
+        setWeb3ModalProvider(providerWeb3Modal);
+        setRariAndAddressFromModal(providerWeb3Modal);
         setIsAttemptingLogin(false);
       } catch (err) {
+        console.log(err);
         setIsAttemptingLogin(false);
         return console.error(err);
       }
@@ -266,14 +244,6 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [web3ModalProvider, refetchAccountData]);
 
-  // Automatically open the web3modal if not on mobile (or just login if they have already used the site)
-  const isMobile = useIsMobile();
-  useEffect(() => {
-    if (localStorage.WEB3_CONNECT_CACHED_PROVIDER) {
-      login();
-    }
-  }, [login, isMobile]);
-
   const value = useMemo(
     () => ({
       web3ModalProvider,
@@ -291,8 +261,10 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;
 };
 
+// Hook
 export function useRari() {
   const context = useContext(RariContext);
+  console.log({ context });
 
   if (context === undefined) {
     throw new Error(`useRari must be used within a RariProvider`);

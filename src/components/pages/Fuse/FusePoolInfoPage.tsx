@@ -1,3 +1,6 @@
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+
 import {
   AvatarGroup,
   Box,
@@ -8,6 +11,7 @@ import {
   Text,
   useClipboard,
 } from "@chakra-ui/react";
+
 import {
   Column,
   RowOnDesktopColumnOnMobile,
@@ -15,35 +19,34 @@ import {
   Center,
   Row,
   useIsMobile,
-} from "buttered-chakra";
-import { memo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import { useRari } from "../../../context/RariContext";
-import { useIsSemiSmallScreen } from "../../../hooks/useIsSemiSmallScreen";
-import { shortUsdFormatter } from "../../../utils/bigUtils";
-import { FuseUtilizationChartOptions } from "../../../utils/chartOptions";
+} from "lib/chakraUtils";
 
-import DashboardBox, { DASHBOARD_BOX_PROPS } from "../../shared/DashboardBox";
-import { Header } from "../../shared/Header";
-import { ModalDivider } from "../../shared/Modal";
-import { Link as RouterLink } from "react-router-dom";
-
-import Chart from "react-apexcharts";
-
+const AssetChart = dynamic(() => import("./AssetChart"), { ssr: false });
+import { CTokenIcon } from "./FusePoolsPage/CTokenIcon";
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
-import { useQuery } from "react-query";
-import { useFusePoolData } from "../../../hooks/useFusePoolData";
+import CaptionedStat from "components/shared/CaptionedStat";
+import AppLink from "components/shared/AppLink";
+import DashboardBox, { DASHBOARD_BOX_PROPS } from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
 
-import { useTokenData } from "../../../hooks/useTokenData";
-import { CTokenIcon } from "./FusePoolsPage";
-import { shortAddress } from "../../../utils/shortAddress";
-import { USDPricedFuseAsset } from "../../../utils/fetchFusePoolData";
-import { createComptroller } from "../../../utils/createComptroller";
-import Fuse from "../../../fuse-sdk";
-import CaptionedStat from "../../shared/CaptionedStat";
-import Footer from "components/shared/Footer";
+
+// Hooks
+import { useQuery } from "react-query";
+import { useFusePoolData } from "hooks/useFusePoolData";
+import { useTokenData } from "hooks/useTokenData";
+import { useRari } from "context/RariContext";
+import { useIsSemiSmallScreen } from "hooks/useIsSemiSmallScreen";
+import { memo, useState } from "react";
+import { useTranslation } from 'next-i18next';
+
+// Utils
+import Fuse from "lib/fuse-sdk";
+import { shortAddress } from "utils/shortAddress";
+import { USDPricedFuseAsset } from "utils/fetchFusePoolData";
+import { createComptroller } from "utils/createComptroller";
+import { shortUsdFormatter } from "utils/bigUtils";
+import { FuseUtilizationChartOptions } from "utils/chartOptions";
 
 export const useExtraPoolInfo = (comptrollerAddress: string) => {
   const { fuse, address } = useRari();
@@ -107,7 +110,10 @@ const FusePoolInfoPage = memo(() => {
 
   const isMobile = useIsSemiSmallScreen();
   const { t } = useTranslation();
-  let { poolId } = useParams();
+
+  const router = useRouter();
+  const poolId = router.query.poolId as string;
+
   const data = useFusePoolData(poolId);
 
   return (
@@ -121,8 +127,6 @@ const FusePoolInfoPage = memo(() => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
-
         <FuseStatsBar />
 
         <FuseTabBar />
@@ -173,7 +177,6 @@ const FusePoolInfoPage = memo(() => {
             )}
           </DashboardBox>
         </RowOrColumn>
-        <Footer />
       </Column>
     </>
   );
@@ -196,12 +199,12 @@ const OracleAndInterestRates = ({
   totalLiquidityUSD: number;
   comptrollerAddress: string;
 }) => {
-  let { poolId } = useParams();
+  const router = useRouter();
+  const poolId = router.query.poolId as string;
 
   const { t } = useTranslation();
 
   const data = useExtraPoolInfo(comptrollerAddress);
-
   const { hasCopied, onCopy } = useClipboard(data?.admin ?? "");
 
   return (
@@ -237,19 +240,13 @@ const OracleAndInterestRates = ({
         </Link>
 
         {data?.isPowerfulAdmin ? (
-          <Link
-            /* @ts-ignore */
-            as={RouterLink}
-            className="no-underline"
-            to="../edit"
-            ml={2}
-          >
+          <AppLink className="no-underline" href="../edit" ml={2}>
             <DashboardBox height="35px">
               <Center expand px={2} fontWeight="bold">
                 {t("Edit")}
               </Center>
             </DashboardBox>
-          </Link>
+          </AppLink>
         ) : null}
       </Row>
 
@@ -391,7 +388,8 @@ const StatRow = ({
 };
 
 const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
-  let { poolId } = useParams();
+  const router = useRouter();
+  const poolId = router.query.poolId as string;
 
   const { fuse } = useRari();
 
@@ -494,62 +492,10 @@ const AssetAndOtherInfo = ({ assets }: { assets: USDPricedFuseAsset[] }) => {
               </Text>
             </Center>
           ) : (
-            <Chart
-              options={
-                {
-                  ...FuseUtilizationChartOptions,
-                  annotations: {
-                    points: [
-                      {
-                        x: selectedAssetUtilization,
-                        y: data.borrowerRates[selectedAssetUtilization].y,
-                        marker: {
-                          size: 6,
-                          fillColor: "#FFF",
-                          strokeColor: "#DDDCDC",
-                        },
-                      },
-                      {
-                        x: selectedAssetUtilization,
-                        y: data.supplierRates[selectedAssetUtilization].y,
-                        marker: {
-                          size: 6,
-                          fillColor: selectedTokenData?.color ?? "#A6A6A6",
-                          strokeColor: "#FFF",
-                        },
-                      },
-                    ],
-                    xaxis: [
-                      {
-                        x: selectedAssetUtilization,
-                        label: {
-                          text: t("Current Utilization"),
-                          orientation: "horizontal",
-                          style: {
-                            background: "#121212",
-                            color: "#FFF",
-                          },
-                        },
-                      },
-                    ],
-                  },
-
-                  colors: ["#FFFFFF", selectedTokenData?.color ?? "#A6A6A6"],
-                } as any
-              }
-              type="line"
-              width="100%"
-              height="100%"
-              series={[
-                {
-                  name: "Borrow Rate",
-                  data: data.borrowerRates,
-                },
-                {
-                  name: "Deposit Rate",
-                  data: data.supplierRates,
-                },
-              ]}
+            <AssetChart
+              selectedAssetUtilization={selectedAssetUtilization}
+              selectedTokenData={selectedTokenData}
+              data={data}
             />
           )
         ) : (

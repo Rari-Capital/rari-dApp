@@ -3,10 +3,9 @@ import { useMemo, useState } from "react";
 // Components
 import { Box, Heading } from "@chakra-ui/react";
 import { QuestionOutlineIcon } from "@chakra-ui/icons";
-import { Column, Row } from "buttered-chakra";
+import { Column, Row } from "lib/chakraUtils";
 import { motion } from "framer-motion";
 
-import { Header } from "components/shared/Header";
 import SubNav from "./StatsSubNav";
 
 import StatsTotalSection from "./Totals/StatsTotalSection";
@@ -14,13 +13,12 @@ import StatsFuseSection from "./StatsFuseSection";
 import StatsPool2Section from "./StatsPool2Section";
 import StatsEarnSection from "./StatsEarnSection";
 import StatsTranchesSection from "./StatsTranchesSection";
-import Footer from "components/shared/Footer";
 
 // Context
-import { useRari } from "context/RariContext";
+// import { useRari } from "context/RariContext";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
@@ -35,7 +33,6 @@ export enum StatsSubNav {
 }
 
 const StatsPage = () => {
-  const { isAuthed } = useRari();
   const { t } = useTranslation();
   const isMobile = useIsSmallScreen();
   const [subNav, setSubNav] = useState(StatsSubNav.TOTAL);
@@ -58,8 +55,6 @@ const StatsPage = () => {
         height="100%"
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} />
-
         <Column
           width="100%"
           mainAxisAlignment="center"
@@ -119,7 +114,6 @@ const StatsPage = () => {
             {subNav === StatsSubNav.TRANCHES && <StatsTranchesSection />}
           </Box>
         </Column>
-        <Footer />
       </Column>
     </SaffronProvider>
   );

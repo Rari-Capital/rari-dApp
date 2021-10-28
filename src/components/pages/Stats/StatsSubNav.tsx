@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 // Components
-import { Column, Row } from "buttered-chakra";
+import { Column, Row } from "lib/chakraUtils";
 import { Box, Heading } from "@chakra-ui/react";
 
 import {
@@ -18,7 +18,7 @@ import {
 } from "components/shared/Logos";
 
 // Hooks
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 // Types
 import { StatsSubNav } from "./StatsPage";
@@ -103,9 +103,9 @@ const SubNavItem = ({
       break;
     case StatsSubNav.POOL2:
       logo = !active ? (
-        <Pool2LogoPNGWhite height="18px" />
+        <Pool2LogoPNGWhite height={18} />
       ) : (
-        <Pool2LogoPNGGreen height="18px" />
+        <Pool2LogoPNGGreen height={18} />
       );
       break;
     case StatsSubNav.EARN:

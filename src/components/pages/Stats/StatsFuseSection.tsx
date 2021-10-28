@@ -10,7 +10,7 @@ import {
   Th,
   Td,
 } from "@chakra-ui/react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "lib/chakraUtils";
 import { motion } from "framer-motion";
 
 // Hooks
@@ -26,7 +26,7 @@ import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
 import { shortUsdFormatter, smallUsdFormatter } from "utils/bigUtils";
 import { SimpleTooltip } from "components/shared/SimpleTooltip";
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 
 export enum AssetContainerType {
   SUPPLY,
@@ -46,6 +46,7 @@ const Fuse = () => {
 
   const assetsArray: USDPricedFuseAsset[][] | null =
     fusePoolsData?.map((pool) => pool?.assets) ?? null;
+    
   const maxBorrows = useBorrowLimits(assetsArray);
 
   const { tokensDataMap }: { tokensDataMap: TokensDataHash } =

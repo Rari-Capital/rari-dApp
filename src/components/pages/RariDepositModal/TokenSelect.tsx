@@ -10,17 +10,16 @@ import {
 } from "@chakra-ui/react";
 import { tokens } from "../../../utils/tokenUtils";
 import { Fade } from "react-awesome-reveal";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "lib/chakraUtils";
 import { useTokenBalance } from "../../../hooks/useTokenBalance";
 
-import BigWhiteCircle from "../../../static/big-white-circle.png";
 import {
   FixedSizeList as List,
   areEqual,
   ListItemKeySelector,
 } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'next-i18next';
 import { ModalDivider, ModalTitleWithCloseButton } from "../../shared/Modal";
 import { usdFormatter } from "../../../utils/bigUtils";
 import { usePoolType } from "../../../context/PoolContext";
@@ -175,7 +174,7 @@ const TokenRow = memo(
               width="100%"
               height="100%"
               borderRadius="50%"
-              backgroundImage={`url(${BigWhiteCircle})`}
+              backgroundImage={`url(/static/big-white-circle.png)`}
               src={token.logoURL}
               alt=""
             />

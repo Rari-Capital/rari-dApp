@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Row, Column } from "buttered-chakra";
+import { Row, Column } from "lib/chakraUtils";
 
 import {
   Heading,
@@ -12,7 +12,6 @@ import {
   useToast,
   IconButton,
 } from "@chakra-ui/react";
-import SmallWhiteCircle from "../../../../static/small-white-circle.png";
 
 import BigNumber from "bignumber.js";
 
@@ -20,22 +19,22 @@ import { useQuery, useQueryClient } from "react-query";
 
 import { HashLoader } from "react-spinners";
 
-import { useTranslation } from "react-i18next";
-import { useRari } from "../../../../context/RariContext";
+import { useTranslation } from 'next-i18next';
+import { useRari } from "context/RariContext";
 import {
   fetchTokenBalance,
   useTokenBalance,
-} from "../../../../hooks/useTokenBalance";
-import { BN } from "../../../../utils/bigUtils";
+} from "hooks/useTokenBalance";
+import { BN } from "utils/bigUtils";
 
-import DashboardBox from "../../../shared/DashboardBox";
-import { ModalDivider } from "../../../shared/Modal";
+import DashboardBox from "components/shared/DashboardBox";
+import { ModalDivider } from "components/shared/Modal";
 
 import { Mode } from ".";
 import { SettingsIcon } from "@chakra-ui/icons";
 
-import { LP_TOKEN_CONTRACT } from "../../../../rari-sdk/governance";
-import { handleGenericError } from "../../../../utils/errorHandling";
+import { LP_TOKEN_CONTRACT } from "lib/rari-sdk/governance";
+import { handleGenericError } from "utils/errorHandling";
 
 interface Props {
   onClose: () => any;
@@ -78,16 +77,10 @@ const AmountSelect = ({ onClose, mode, openOptions }: Props) => {
 
     _setUserEnteredAmount(newAmount);
 
-    try {
-      BigNumber.DEBUG = true;
-
-      // Try to set the amount to BigNumber(newAmount):
-      const bigAmount = new BigNumber(newAmount);
-      _setAmount(bigAmount.multipliedBy(10 ** 18));
-    } catch (e) {
-      // If the number was invalid, set the amount to null to disable confirming:
-      _setAmount(null);
-    }
+    const bigAmount = new BigNumber(newAmount);
+    bigAmount.isNaN()
+      ? _setAmount(null)
+      : _setAmount(bigAmount.multipliedBy(10 ** 18));
 
     setUserAction(UserAction.NO_ACTION);
   };
@@ -320,7 +313,7 @@ const TokenNameAndMaxButton = ({
             width="100%"
             height="100%"
             borderRadius="50%"
-            backgroundImage={`url(${SmallWhiteCircle})`}
+            backgroundImage={`url(/static/small-white-circle.png)`}
             src={
               "https://assets.coingecko.com/coins/images/12900/small/rgt_logo.png?1603340632"
             }
