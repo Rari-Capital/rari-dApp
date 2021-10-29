@@ -87,7 +87,7 @@ const MarketCapConfigurator = ({
             >
             <SimpleTooltip
                 label={t(
-                "Sets supply cap for the market. Users will not be able to supply once the cap is met."
+                "Sets cap for the market. Users will not be able to supply/borrow once the cap is met."
                 )}
             >
                 <Text fontWeight="bold">
