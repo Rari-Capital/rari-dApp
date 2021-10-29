@@ -131,6 +131,20 @@ const PoolConfiguration = () => {
 
   const onDeploy = async () => {
     let priceOracle = deployedPriceOracle;
+
+    if (isWhitelisted && whitelist.length < 2 ) {
+      toast({
+        title: "Error!",
+        description: "You must add an address to your whitelist!",
+        status:"error",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      })
+
+      return
+    }
+
     if (name === "") {
       toast({
         title: "Error!",
