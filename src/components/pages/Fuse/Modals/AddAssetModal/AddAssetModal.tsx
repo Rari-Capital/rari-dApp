@@ -98,6 +98,8 @@ const AddAssetModal = ({
           </Box>
         </Box>
 
+        <ModalDivider />
+
         <Column
           mainAxisAlignment="flex-start"
           crossAxisAlignment="center"
