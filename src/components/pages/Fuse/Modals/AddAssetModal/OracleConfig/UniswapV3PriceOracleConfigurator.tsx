@@ -75,7 +75,7 @@ const UniswapV3PriceOracleConfigurator = () => {
   };
 
   // If liquidity is undefined, theres an error or theres no token found return nothing.
-  if (liquidity === undefined || error || liquidity.data.token === null)
+  if (liquidity === undefined || liquidity.data === undefined)
     return null;
 
   // Sort whitelisted pools by TVL. Greatest to smallest. Greater TVL is safer for users so we show it first.

@@ -11,6 +11,7 @@ import {
   Box,
   Button,
   CloseButton,
+  Checkbox
 } from "@chakra-ui/react";
 
 import { Column, Center, Row } from "utils/chakraUtils";
@@ -63,13 +64,13 @@ const FusePoolCreatePage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        <Header isAuthed={isAuthed} isFuse />
+        {/** <Header isAuthed={isAuthed} isFuse />
 
         <FuseStatsBar />
 
-        <FuseTabBar />
+  <FuseTabBar /> **/}
 
-        <PoolConfiguration />
+        <PoolConfiguration /> 
       </Column>
     </>
   );
@@ -91,6 +92,9 @@ const PoolConfiguration = () => {
 
   const [closeFactor, setCloseFactor] = useState(50);
   const [liquidationIncentive, setLiquidationIncentive] = useState(8);
+
+  const [isUsingMPO, setIsUsingMPO] = useState(true)
+  const [customOracleAddress, setCustomOracleAddress] = useState('')
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -132,6 +136,19 @@ const PoolConfiguration = () => {
   const onDeploy = async () => {
     let priceOracle = deployedPriceOracle;
 
+    if (name === "") {
+      toast({
+        title: "Error!",
+        description: "You must specify a name for your Fuse pool!",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+        position: "top-right",
+      });
+
+      return;
+    }
+
     if (isWhitelisted && whitelist.length < 2 ) {
       toast({
         title: "Error!",
@@ -145,18 +162,20 @@ const PoolConfiguration = () => {
       return
     }
 
-    if (name === "") {
+    if (!isUsingMPO && !fuse.web3.utils.isAddress(customOracleAddress)) {
+      
       toast({
         title: "Error!",
-        description: "You must specify a name for your Fuse pool!",
-        status: "error",
+        description: "You must add an address for your oracle or use the default oracle.",
+        status:"error",
         duration: 2000,
         isClosable: true,
         position: "top-right",
-      });
+      })
 
-      return;
-    }
+      return
+  }
+
 
     setIsCreating(true);
     onOpen();
@@ -180,6 +199,11 @@ const PoolConfiguration = () => {
       const options = { from: address };
 
       setNeedsRetry(false);
+
+      if (!isUsingMPO && _retryFlag === 1) {
+        _retryFlag = 2;
+        priceOracle = customOracleAddress
+      }
 
       if (_retryFlag === 1) {
         priceOracle = await fuse.deployPriceOracle(
@@ -360,6 +384,43 @@ const PoolConfiguration = () => {
               min={0}
               max={50}
             />
+          </OptionRow>
+
+          <ModalDivider />
+
+          <OptionRow>
+            <SimpleTooltip
+              label={t(
+                "We will deploy a price oracle for your pool. This price oracle will contain price feeds for popular ERC20 tokens."
+              )}
+            >
+              <Text fontWeight="bold">
+                {isUsingMPO ? t("Default Price Oracle") : t("Custom Price Oracle")} <QuestionIcon ml={1} mb="4px" />
+              </Text>
+            </SimpleTooltip>
+
+            <Box display="flex" alignItems='flex-end' flexDirection="column"> 
+              <Checkbox
+                isChecked={isUsingMPO}
+                onChange={(e) => setIsUsingMPO(!isUsingMPO)}
+                marginBottom={3}
+              />
+              {
+                !isUsingMPO ? (
+                  <>
+                  <Input 
+                    value={customOracleAddress}
+                    onChange={(e) => setCustomOracleAddress(e.target.value)}
+                  />
+                  <Text mt={3} opacity="0.6" fontSize="sm">
+                    Please make sure you know what you're doing.
+                  </Text>
+                  </>
+                ) 
+                : null
+              }
+              
+            </Box>
           </OptionRow>
         </Column>
       </DashboardBox>
