@@ -1,5 +1,5 @@
 // Chakra and UI
-import { Text, Select, Link } from "@chakra-ui/react";
+import { Text, Select, Link, Alert, AlertIcon } from "@chakra-ui/react";
 import { Column, Row } from "utils/chakraUtils";
 import { DASHBOARD_BOX_PROPS } from "../../../../../shared/DashboardBox";
 import { QuestionIcon } from "@chakra-ui/icons";
@@ -15,6 +15,7 @@ import axios from "axios";
 // Utils
 import { shortUsdFormatter } from "utils/bigUtils";
 import { useAddAssetContext } from "context/AddAssetContext";
+import { useMemo } from "react";
 
 const UniswapV3PriceOracleConfigurator = () => {
   const { t } = useTranslation();
@@ -41,6 +42,7 @@ const UniswapV3PriceOracleConfigurator = () => {
                 whitelistPools {
                   id,
                   feeTier,
+                  volumeUSD,
                   totalValueLockedUSD,
                   token0 {
                     symbol,
@@ -81,10 +83,18 @@ const UniswapV3PriceOracleConfigurator = () => {
     return null;
 
   // Sort whitelisted pools by TVL. Greatest to smallest. Greater TVL is safer for users so we show it first.
+  // Filter out pools where volume is less than $100,000
   const liquiditySorted = liquidity.data.token.whitelistPools.sort(
     (a: any, b: any): any =>
       parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1
   );
+  // .filter((pool: any) => pool.volumeUSD >= 100000);
+
+  const selectedOracle = liquidity.data.token.whitelistPools[activeUniSwapPair];
+  console.log({ selectedOracle });
+  // const warning = useMemo(() => {
+  //   if (selectedOracle.liquidityProviderCount <=100)
+  // }, [selectedOracle]);
 
   return (
     <>
@@ -149,7 +159,27 @@ const UniswapV3PriceOracleConfigurator = () => {
         </Row>
 
         {activeUniSwapPair !== "" ? (
-          <>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+          >
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+              <Alert
+                status="warning"
+                width="100%"
+                height="70px"
+                borderRadius={5}
+                my={1}
+              >
+                <AlertIcon />
+                <Text fontSize="sm" align="center" color="black">
+                  {
+                    "Make sure this Uniswap V3 Pool has full-range liquidity. If not, your pool could be compromised."
+                  }
+                </Text>
+              </Alert>
+            </Row>
+
             <Row
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
@@ -178,6 +208,28 @@ const UniswapV3PriceOracleConfigurator = () => {
               w="100%"
               // bg="pink"
             >
+              <SimpleTooltip label={t("Volume of pool.")}>
+                <Text fontWeight="bold">
+                  {t("Volume:")} <QuestionIcon ml={1} mb="4px" />
+                </Text>
+              </SimpleTooltip>
+
+              <h1>
+                {activeUniSwapPair !== ""
+                  ? shortUsdFormatter(
+                      liquidity.data.token.whitelistPools[activeUniSwapPair]
+                        .volumeUSD
+                    )
+                  : null}
+              </h1>
+            </Row>
+            {/* <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              my={2}
+              w="100%"
+              // bg="pink"
+            >
               <SimpleTooltip
                 label={t(
                   "The fee percentage for the pool on Uniswap (0.05%, 0.3%, 1%)"
@@ -194,7 +246,7 @@ const UniswapV3PriceOracleConfigurator = () => {
                       .feeTier / 10000
                   : null}
               </Text>
-            </Row>
+            </Row> */}
             <Row
               crossAxisAlignment="center"
               mainAxisAlignment="center"
@@ -208,7 +260,7 @@ const UniswapV3PriceOracleConfigurator = () => {
                 Visit Pool in Uniswap
               </Link>
             </Row>
-          </>
+          </Column>
         ) : null}
       </Column>
     </>
