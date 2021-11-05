@@ -1,6 +1,7 @@
 /* eslint-disable */
 import Web3 from "web3";
 import axios from "axios";
+import Big from "big.js";
 
 import Cache from "./cache.js";
 
@@ -363,11 +364,12 @@ export default class Governance {
           // TODO: RGT price getter function from Coingecko
           var data = await self.rgt.sushiSwapDistributions.getLpTokenData();
           return Web3.utils.toBN(
-            Math.trunc(
+            new Big(
               (data.data.ethRgtPair.reserveUSD /
                 data.data.ethRgtPair.totalSupply) *
                 1e18
             )
+            .toFixed(0)
           );
         },
         getReservesPerLpToken: async function () {
