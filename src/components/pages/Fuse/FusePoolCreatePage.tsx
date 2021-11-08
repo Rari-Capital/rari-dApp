@@ -64,11 +64,11 @@ const FusePoolCreatePage = memo(() => {
         width={isMobile ? "100%" : "1150px"}
         px={isMobile ? 4 : 0}
       >
-        {/** <Header isAuthed={isAuthed} isFuse />
+        <Header isAuthed={isAuthed} isFuse />
 
         <FuseStatsBar />
 
-  <FuseTabBar /> **/}
+        <FuseTabBar />
 
         <PoolConfiguration /> 
       </Column>
