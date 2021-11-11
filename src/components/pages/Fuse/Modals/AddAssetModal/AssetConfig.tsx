@@ -214,7 +214,7 @@ const AssetConfig = () => {
           <>
             <MarketCapConfigurator
               mode="Borrow"
-              tokenSymbol={tokenData.symbol}
+              tokenData={tokenData}
               cTokenAddress={cTokenAddress}
               comptrollerAddress={comptrollerAddress}
             />
@@ -223,7 +223,7 @@ const AssetConfig = () => {
 
             <MarketCapConfigurator
               mode="Supply"
-              tokenSymbol={tokenData.symbol}
+              tokenData={tokenData}
               cTokenAddress={cTokenAddress}
               comptrollerAddress={comptrollerAddress}
             />
