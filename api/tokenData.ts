@@ -165,6 +165,35 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       "https://raw.githubusercontent.com/spacechain/vcred-token/main/bee-256-256.png";
   }
 
+  // Handle Token Logos
+
+  // fxAUD
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x7E141940932E3D13bfa54B224cb4a16510519308")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/fxAUDDarkLogo.png";
+  }
+
+  // fxEUD
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x116172b2482c5dc3e6f445c16ac13367ac3fcd35")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/fxEURDarkLogo.png";
+  }
+
+  // fxPHP
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x3d147cd9ac957b2a5f968de9d1c6b9d0872286a0")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/fxPHPDarkLogo.png";
+  }
+
   const basicTokenInfo = {
     symbol,
     name,
