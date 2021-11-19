@@ -1,5 +1,5 @@
 // Chakra and UI
-import { Text, Select, Link } from "@chakra-ui/react";
+import { Text, Select, Link, Alert, AlertIcon } from "@chakra-ui/react";
 import { Column, Row } from "utils/chakraUtils";
 import { DASHBOARD_BOX_PROPS } from "../../../../../shared/DashboardBox";
 import { QuestionIcon } from "@chakra-ui/icons";
@@ -13,34 +13,21 @@ import { useQuery } from "react-query";
 import axios from "axios";
 
 // Utils
-import {  shortUsdFormatter } from "utils/bigUtils";
+import { shortUsdFormatter } from "utils/bigUtils";
+import { useAddAssetContext } from "context/AddAssetContext";
+import { useMemo } from "react";
 
-const UniswapV3PriceOracleConfigurator = ({
-  setFeeTier,
-  tokenAddress,
-  _setOracleAddress,
-  setUniV3BaseToken,
-  activeUniSwapPair,
-  setActiveUniSwapPair,
-}: {
-  // Assets Address. i.e DAI, USDC
-  tokenAddress: string;
-
-  // Will update the oracle address that we use when adding, editing an asset
-  _setOracleAddress: React.Dispatch<React.SetStateAction<string>>;
-
-  // Will update BaseToken address. This is used in component: AssetSettings (see top of this page).
-  // Helps us know if oracle has a price feed for this asset. If it doesn't we need to add one.
-  setUniV3BaseToken: React.Dispatch<React.SetStateAction<string>>;
-
-  // Will update FeeTier Only used to deploy Uniswap V3 Twap Oracle. It holds fee tier from Uniswap's token pair pool.
-  setFeeTier: React.Dispatch<React.SetStateAction<number>>;
-
-  // Will store the uniswap pair index.
-  activeUniSwapPair: string;
-  setActiveUniSwapPair: React.Dispatch<React.SetStateAction<string>>;
-}) => {
+const UniswapV3PriceOracleConfigurator = () => {
   const { t } = useTranslation();
+
+  const {
+    setFeeTier,
+    tokenAddress,
+    setOracleAddress,
+    setUniV3BaseTokenAddress,
+    activeUniSwapPair,
+    setActiveUniSwapPair,
+  } = useAddAssetContext();
 
   // We get a list of whitelistedPools from uniswap-v3's the graph.
   const { data: liquidity, error } = useQuery(
@@ -51,18 +38,21 @@ const UniswapV3PriceOracleConfigurator = ({
           "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
           {
             query: `{
-              token(id:"${tokenAddress}") {
+              token(id:"${tokenAddress.toLowerCase()}") {
                 whitelistPools {
                   id,
                   feeTier,
+                  volumeUSD,
                   totalValueLockedUSD,
                   token0 {
                     symbol,
-                    id
+                    id,
+                    name
                   },
                   token1 {
                     symbol,
-                    id
+                    id,
+                    name
                   }
                 }
               }
@@ -84,19 +74,27 @@ const UniswapV3PriceOracleConfigurator = ({
         : uniPool.token0.id;
     setActiveUniSwapPair(value);
     setFeeTier(uniPool.feeTier);
-    _setOracleAddress(uniPool.id);
-    setUniV3BaseToken(baseToken);
+    setOracleAddress(uniPool.id);
+    setUniV3BaseTokenAddress(baseToken);
   };
 
   // If liquidity is undefined, theres an error or theres no token found return nothing.
-  if (liquidity === undefined || error || liquidity.data.token === null)
+  if (liquidity === undefined || liquidity.data === undefined)
     return null;
 
   // Sort whitelisted pools by TVL. Greatest to smallest. Greater TVL is safer for users so we show it first.
+  // Filter out pools where volume is less than $100,000
   const liquiditySorted = liquidity.data.token.whitelistPools.sort(
     (a: any, b: any): any =>
       parseInt(a.totalValueLockedUSD) > parseInt(b.totalValueLockedUSD) ? -1 : 1
   );
+  // .filter((pool: any) => pool.volumeUSD >= 100000);
+
+  const selectedOracle = liquidity.data.token.whitelistPools[activeUniSwapPair];
+  console.log({ selectedOracle });
+  // const warning = useMemo(() => {
+  //   if (selectedOracle.liquidityProviderCount <=100)
+  // }, [selectedOracle]);
 
   return (
     <>
@@ -161,7 +159,27 @@ const UniswapV3PriceOracleConfigurator = ({
         </Row>
 
         {activeUniSwapPair !== "" ? (
-          <>
+          <Column
+            mainAxisAlignment="flex-start"
+            crossAxisAlignment="flex-start"
+          >
+            <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
+              <Alert
+                status="warning"
+                width="100%"
+                height="70px"
+                borderRadius={5}
+                my={1}
+              >
+                <AlertIcon />
+                <Text fontSize="sm" align="center" color="black">
+                  {
+                    "Make sure this Uniswap V3 Pool has full-range liquidity. If not, your pool could be compromised."
+                  }
+                </Text>
+              </Alert>
+            </Row>
+
             <Row
               mainAxisAlignment="space-between"
               crossAxisAlignment="center"
@@ -190,6 +208,28 @@ const UniswapV3PriceOracleConfigurator = ({
               w="100%"
               // bg="pink"
             >
+              <SimpleTooltip label={t("Volume of pool.")}>
+                <Text fontWeight="bold">
+                  {t("Volume:")} <QuestionIcon ml={1} mb="4px" />
+                </Text>
+              </SimpleTooltip>
+
+              <h1>
+                {activeUniSwapPair !== ""
+                  ? shortUsdFormatter(
+                      liquidity.data.token.whitelistPools[activeUniSwapPair]
+                        .volumeUSD
+                    )
+                  : null}
+              </h1>
+            </Row>
+            {/* <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              my={2}
+              w="100%"
+              // bg="pink"
+            >
               <SimpleTooltip
                 label={t(
                   "The fee percentage for the pool on Uniswap (0.05%, 0.3%, 1%)"
@@ -206,7 +246,7 @@ const UniswapV3PriceOracleConfigurator = ({
                       .feeTier / 10000
                   : null}
               </Text>
-            </Row>
+            </Row> */}
             <Row
               crossAxisAlignment="center"
               mainAxisAlignment="center"
@@ -220,7 +260,7 @@ const UniswapV3PriceOracleConfigurator = ({
                 Visit Pool in Uniswap
               </Link>
             </Row>
-          </>
+          </Column>
         ) : null}
       </Column>
     </>

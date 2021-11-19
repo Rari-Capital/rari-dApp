@@ -50,7 +50,7 @@ import { handleGenericError } from "../../../../utils/errorHandling";
 import { USDPricedFuseAsset } from "../../../../utils/fetchFusePoolData";
 import LogRocket from "logrocket";
 
-const formatPercentage = (value: number) => value.toFixed(0) + "%";
+const formatPercentage = (value: number) => value.toFixed(1) + "%";
 
 export const useLiquidationIncentive = (comptrollerAddress: string) => {
   const { fuse } = useRari();
@@ -424,6 +424,7 @@ export const AssetSettings = ({
           value={collateralFactor}
           setValue={setCollateralFactor}
           formatValue={formatPercentage}
+          step={0.5}
           max={
             liquidationIncentiveMantissa
               ? // 100% CF - Liquidation Incentive (ie: 8%) - 5% buffer

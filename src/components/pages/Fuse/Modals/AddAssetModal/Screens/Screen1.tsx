@@ -5,12 +5,7 @@ import { Row } from "utils/chakraUtils";
 import AssetConfig from "../AssetConfig";
 
 
-const Screen1 = ({
-    args,
-  }: {
-    args: any;
-  }) => {
-
+const Screen1 = () => {
 
     return (
       <>
@@ -24,7 +19,7 @@ const Screen1 = ({
           maxWidth="100%"
           id="SCREEN1COLUMN"
         >
-              <AssetConfig {...args} />
+              <AssetConfig />
         </Row>
       </>
     );

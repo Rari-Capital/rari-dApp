@@ -13,6 +13,7 @@ interface Props {
   index: number;
   assets: USDPricedFuseAsset[];
   comptrollerAddress: string;
+  isBorrowPaused: boolean;
 }
 
 export enum Mode {
@@ -45,6 +46,7 @@ const DepositModal = (props: Props) => {
           index={props.index}
           mode={mode}
           setMode={setMode}
+          isBorrowPaused={props.isBorrowPaused}
         />
       </ModalContent>
     </Modal>

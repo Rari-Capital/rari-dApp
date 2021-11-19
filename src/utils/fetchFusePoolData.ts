@@ -113,7 +113,7 @@ export const filterPoolName = (name: string) => {
     return "Yearn Soup Pot of Yield";
   }
 
-  return filter.clean(name + "T1T$OR@$$").replace("T1T$OR@$$", "");
+  return filter.clean(name + "$W@G0N0M1C$").replace("$W@G0N0M1C$", "");
 };
 
 export const fetchFusePoolData = async (
@@ -137,7 +137,7 @@ export const fetchFusePoolData = async (
   let assets: USDPricedFuseAsset[] = (
     await fuse.contracts.FusePoolLens.methods
       .getPoolAssetsWithData(comptroller)
-      .call({ from: address, gas: 1e18 })
+      .call({ from: address, gas: 1e18 }) 
   ).map(filterOnlyObjectProperties);
 
   let totalLiquidityUSD = 0;
@@ -166,6 +166,8 @@ export const fetchFusePoolData = async (
   const isAdminWhitelisted = await fuse.contracts.FusePoolDirectory.methods
     .adminWhitelist(admin)
     .call();
+
+  console.log({ assets });
 
   for (let i = 0; i < assets.length; i++) {
     let asset = assets[i];

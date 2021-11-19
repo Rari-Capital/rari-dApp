@@ -27,8 +27,10 @@ const useOraclesForPool = (
         const oracles: {
           [underlyingToken: string]: string;
         } = {};
-        for (let e of events)
-          oracles[e.returnValues.underlying] = e.returnValues.newOracle;
+        for (let e of events) {
+          if (e.returnValues.newOracle !== "0x0000000000000000000000000000000000000000") oracles[e.returnValues.underlying] = e.returnValues.newOracle;
+          else if (oracles[e.returnValues.underlying] !== undefined) delete oracles[e.returnValues.underlying];
+        }
 
         return oracles;
       } catch (err) {
