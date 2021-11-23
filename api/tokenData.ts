@@ -194,6 +194,52 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/fxPHPDarkLogo.png";
   }
 
+  // Tokemak
+  // tTOKE
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0xa760e26aA76747020171fCF8BdA108dFdE8Eb930")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tTOKE.png";
+  }
+
+  // tUSDC
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x04bDA0CF6Ad025948Af830E75228ED420b0e860d")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tUSDC.png";
+  }
+
+  // tWETH
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tWETH.png";
+  }
+  
+  // tUNILP
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x1b429e75369ea5cd84421c1cc182cee5f3192fd3")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UniV2.png";
+  }
+
+  // tSUSHILP
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x8858A739eA1dd3D80FE577EF4e0D03E88561FaA3")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tSUSHI.png";
+  }
+
   const basicTokenInfo = {
     symbol,
     name,
