@@ -802,10 +802,10 @@ const AssetSupplyRow = ({
 
             <SimpleTooltip
               label={t(
-                "The Loan to Value (LTV) ratio defines the maximum amount of tokens in the pool that can be borrowed with a specific collateral. It’s expressed in percentage: if in a pool ETH has 75% LTV, for every 1 ETH worth of collateral, borrowers will be able to borrow 0.75 ETH worth of other tokens in the pool."
+                "The Collateral Factor (CF) ratio defines the maximum amount of tokens in the pool that can be borrowed with a specific collateral. It’s expressed in percentage: if in a pool ETH has 75% LTV, for every 1 ETH worth of collateral, borrowers will be able to borrow 0.75 ETH worth of other tokens in the pool."
               )}
             >
-              <Text fontSize="sm">{asset.collateralFactor / 1e16}% LTV</Text>
+              <Text fontSize="sm">{asset.collateralFactor / 1e16}% CF</Text>
             </SimpleTooltip>
 
             {/* Incentives under APY
