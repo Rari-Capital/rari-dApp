@@ -517,7 +517,7 @@ const AssetSupplyRow = ({
   comptrollerAddress,
   supplyIncentives,
   rewardTokensData,
-  isPaused
+  isPaused,
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
@@ -1044,7 +1044,7 @@ const AssetBorrowRow = ({
   comptrollerAddress,
   borrowIncentives,
   rewardTokensData,
-  isPaused
+  isPaused,
 }: {
   assets: USDPricedFuseAsset[];
   index: number;
@@ -1112,7 +1112,6 @@ const AssetBorrowRow = ({
         className="hover-row"
         as="button"
         onClick={authedOpenModal}
-
       >
         <Row
           mainAxisAlignment="flex-start"

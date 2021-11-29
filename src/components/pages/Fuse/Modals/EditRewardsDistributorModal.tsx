@@ -250,8 +250,11 @@ const EditRewardsDistributorModal = ({
               {tokenData ? tokenData.name ?? "Invalid Address!" : "Loading..."}
             </Heading>
             <Text>
-              {balanceERC20
-                ? (parseFloat(balanceERC20?.toString()) / 1e18).toFixed(3)
+              {balanceERC20 && tokenData && tokenData.decimals
+                ? (
+                    parseFloat(balanceERC20?.toString()) /
+                    10 ** tokenData.decimals
+                  ).toFixed(3)
                 : 0}{" "}
               {tokenData?.symbol}
             </Text>
@@ -307,7 +310,7 @@ const EditRewardsDistributorModal = ({
                 min={0}
                 onChange={(valueString) => {
                   console.log({ valueString });
-                  setSendAmt(parseFloat(valueString))
+                  setSendAmt(parseFloat(valueString));
                 }}
               >
                 <NumberInputField
