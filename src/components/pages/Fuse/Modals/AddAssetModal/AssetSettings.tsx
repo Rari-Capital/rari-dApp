@@ -385,21 +385,19 @@ const AssetSettings = ({
       tokenHasOraclesInPool,
     });
 
-    if (!tokenHasOraclesInPool) {
-      const tx = await poolOracleContract.methods
-        .add(tokenArray, oracleAddress)
-        .send({ from: address });
+    const tx = await poolOracleContract.methods
+      .add(tokenArray, oracleAddress)
+      .send({ from: address });
 
-      toast({
-        title: "You have successfully configured the oracle for this asset!",
-        description:
-          "Oracle will now point to the new selected address. Now, lets add you asset to the pool.",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-        position: "top-right",
-      });
-    }
+    toast({
+      title: "You have successfully configured the oracle for this asset!",
+      description:
+        "Oracle will now point to the new selected address. Now, lets add you asset to the pool.",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+      position: "top-right",
+    });
   };
 
   const deployAssetToPool = async () => {
