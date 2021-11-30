@@ -155,7 +155,11 @@ const EditRewardsDistributorModal = ({
           rewardsDistributor.address,
           Fuse.Web3.utils
             .toBN(sendAmt)
-            .mul(Fuse.Web3.utils.toBN(10).pow(Fuse.Web3.utils.toBN(18)))
+            .mul(
+              Fuse.Web3.utils
+                .toBN(10)
+                .pow(Fuse.Web3.utils.toBN(tokenData?.decimals ?? 18))
+            )
         )
         .send({
           from: address,
@@ -178,7 +182,7 @@ const EditRewardsDistributorModal = ({
       await rewardsDistributorInstance.methods
         ._setCompSupplySpeed(
           selectedAsset?.cToken,
-          Fuse.Web3.utils.toBN(supplySpeed * 1e18) // set supplySpeed to 0.001e18 for now
+          Fuse.Web3.utils.toBN(supplySpeed * 10 ** (tokenData?.decimals ?? 18)) // set supplySpeed to 0.001e18 for now
         )
         .send({ from: address });
 
@@ -199,7 +203,7 @@ const EditRewardsDistributorModal = ({
       await rewardsDistributorInstance.methods
         ._setCompBorrowSpeed(
           selectedAsset?.cToken,
-          Fuse.Web3.utils.toBN(borrowSpeed * 1e18) // set supplySpeed to 0.001e18 for now
+          Fuse.Web3.utils.toBN(borrowSpeed * 10 ** (tokenData?.decimals ?? 18)) // set supplySpeed to 0.001e18 for now
         )
         .send({ from: address });
 
@@ -334,7 +338,10 @@ const EditRewardsDistributorModal = ({
             <Text mt={1}>
               Your balance:{" "}
               {myBalance
-                ? (parseFloat(myBalance?.toString()) / 1e18).toFixed(2)
+                ? (
+                    parseFloat(myBalance?.toString()) /
+                    10 ** (tokenData?.decimals ?? 18)
+                  ).toFixed(2)
                 : 0}{" "}
               {tokenData?.symbol}
             </Text>

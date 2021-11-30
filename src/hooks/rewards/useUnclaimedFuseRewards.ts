@@ -1,13 +1,7 @@
 import { useQuery } from "react-query";
 import { useRari } from "../../context/RariContext";
-import {
-  createMasterPriceOracle,
-  createRewardsDistributor,
-} from "utils/createComptroller";
-
-import Fuse from "fuse-sdk";
-import { useTokensDataAsMap } from "hooks/useTokenData";
-import { useAssetPricesInEth } from "./useRewardAPY";
+import { createRewardsDistributor } from "utils/createComptroller";
+import { isRDExcluded, stripExcludedRDs } from "./usePoolIncentives";
 
 export interface RewardsDistributorToPoolsMap {
   [rD: string]: {
@@ -68,13 +62,15 @@ export function useUnclaimedFuseRewards() {
   });
 
   // 2. Reduce this 2D array into a single deduped array of RewardsDistributors
-  const uniqueRDs: string[] = [
+  const uniqueRDs: string[] = stripExcludedRDs([
     ...new Set(
       rewardsDistributorsByFusePool?.reduce(function (prev, curr) {
         return prev.concat(curr);
       }, []) ?? []
     ),
-  ];
+  ]);
+
+  console.log({ uniqueRDs });
 
   // 3. Create map of {[rewardToken: string] : RewardDistributor[] }
 
@@ -145,7 +141,7 @@ export function useUnclaimedFuseRewards() {
 
   //  4.  getUnclaimedRewardsByDistributors
   const { data: _unclaimed, error: unclaimedErr } = useQuery(
-    "unclaimed for " + address,
+    "unclaimed for " + address + " " + uniqueRDs.join(","),
     async () => {
       const unclaimedResults =
         await fuse.contracts.FusePoolLensSecondary.methods

@@ -297,6 +297,7 @@ export const getPriceFromOracles = async (
   try {
     price = await oracleContract.methods.price(tokenAddress).call();
   } catch {
+    console.log(tokenAddress, ": err fetching price. trying MPO" )
     price = await masterPriceOracle.methods.price(tokenAddress).call();
   }
 
@@ -314,7 +315,7 @@ export const useAssetPricesInEth = (
 
   const tokensData = useTokensDataAsMap(tokenAddresses);
 
-  const { data } = useQuery(
+  const { data } = useQuery(  
     "asset prices for " +
       tokenAddresses.join(",") +
       " " +
