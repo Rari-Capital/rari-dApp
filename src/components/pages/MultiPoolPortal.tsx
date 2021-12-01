@@ -642,7 +642,7 @@ export const NewsAndTwitterLink = ({
 
 const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
   const news = [
-    "Fuse pool creation is now 100% permissionless! Deploy your own isolated lending market today!",
+    "Fuse pool creation is now 100% permissionless! Deploy your own isolated lending pool today!",
     "TRIBE liquidity mining rewards are currently available in Fuse pool #8!",
   ];
 
