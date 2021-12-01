@@ -71,12 +71,12 @@ const FuseStatsBar = ({ data }: { data?: FusePoolData }) => {
                 {data.assets.length} assets.
               </span>{" "}
               Fuse is a truly open interest rate protocol. Lend, borrow,
-              and create isolated lending markets with extreme flexibility.
+              and create isolated lending pools with extreme flexibility.
             </Text>
           ) : (
             <Text>
               Fuse is a truly open interest rate protocol. Lend, borrow,
-              and create isolated lending markets with extreme flexibility.
+              and create isolated lending pools with extreme flexibility.
             </Text>
           )}
         </Column>
