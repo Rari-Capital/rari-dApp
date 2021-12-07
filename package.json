@@ -11,6 +11,7 @@
     "@cypress/instrument-cra": "^1.4.0",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
+    "@ensdomains/ensjs": "^2.0.1",
     "@loadable/component": "^5.13.2",
     "@testing-library/cypress": "^7.0.1",
     "@testing-library/jest-dom": "^5.11.2",

@@ -13,11 +13,9 @@ import {
 
 import { Row, Column, Center } from "utils/chakraUtils";
 import DashboardBox from "./DashboardBox";
+import Avatar from "./Avatar";
 
-// @ts-ignore
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-
-import { shortAddress } from "../../utils/shortAddress";
+import { shortAddress, shortEnsName } from "../../utils/shortAddress";
 
 import { useTranslation } from "react-i18next";
 import { MODAL_PROPS, ModalDivider, ModalTitleWithCloseButton } from "./Modal";
@@ -79,7 +77,7 @@ const Buttons = ({
   openClaimRGTModal: () => any;
   hasClaimableRewards: boolean;
 }) => {
-  const { address, isAuthed, login, isAttemptingLogin } = useRari();
+  const { address, ensName, isAuthed, login, isAttemptingLogin } = useRari();
 
   const { t } = useTranslation();
 
@@ -148,9 +146,11 @@ const Buttons = ({
             )
           ) : (
             <>
-              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              <Avatar ensName={ensName} address={address} />
               <Text ml={2} fontWeight="semibold">
-                {shortAddress(address)}
+                {ensName
+                  ? shortEnsName(ensName)
+                  : shortAddress(ensName ?? address)}
               </Text>
             </>
           )}

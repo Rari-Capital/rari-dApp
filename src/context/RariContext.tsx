@@ -24,6 +24,8 @@ import {
 } from "../utils/web3Providers";
 import { useLocation } from "react-router-dom";
 
+import ENS, { getEnsAddress, namehash } from "@ensdomains/ensjs";
+
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
   cacheProvider: boolean = true
@@ -81,6 +83,7 @@ export interface RariContextData {
   login: (cacheProvider?: boolean) => Promise<any>;
   logout: () => any;
   address: string;
+  ensName?: string;
   isAttemptingLogin: boolean;
 }
 
@@ -133,6 +136,7 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
   }, [rari, toast]);
 
   const [address, setAddress] = useState<string>(EmptyAddress);
+  const [ensName, setEnsName] = useState<string>();
 
   const [web3ModalProvider, setWeb3ModalProvider] = useState<any | null>(null);
 
@@ -147,23 +151,36 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       setRari(rariInstance);
       setFuse(fuseInstance);
 
-      rariInstance.web3.eth.getAccounts().then((addresses) => {
-        if (addresses.length === 0) {
-          console.log("Address array was empty. Reloading!");
-          window.location.reload();
-        }
+      rariInstance.web3.eth
+        .getAccounts()
+        .then((addresses) => {
+          if (addresses.length === 0) {
+            console.log("Address array was empty. Reloading!");
+            window.location.reload();
+          }
 
-        const address = addresses[0];
-        const requestedAddress = new URLSearchParams(location.search).get(
-          "address"
-        );
+          const address = addresses[0];
+          const requestedAddress = new URLSearchParams(location.search).get(
+            "address"
+          );
 
-        console.log("Setting Logrocket user to new address: " + address);
-        LogRocket.identify(address);
+          console.log("Setting Logrocket user to new address: " + address);
+          LogRocket.identify(address);
 
-        console.log("Requested address: ", requestedAddress);
-        setAddress(requestedAddress ?? address);
-      });
+          console.log("Requested address: ", requestedAddress);
+          setAddress(requestedAddress ?? address);
+
+          const ens = new ENS({
+            provider: modalProvider,
+            ensAddress: getEnsAddress("1"),
+          });
+
+          return ens.getName(requestedAddress ?? address);
+        })
+        .then((ensName) => {
+          setEnsName(ensName.name);
+          console.log(namehash(ensName.name));
+        });
     },
     [setRari, setAddress, location.search]
   );
@@ -238,9 +255,19 @@ export const RariProvider = ({ children }: { children: ReactNode }) => {
       login,
       logout,
       address,
+      ensName,
       isAttemptingLogin,
     }),
-    [rari, web3ModalProvider, login, logout, address, fuse, isAttemptingLogin]
+    [
+      rari,
+      web3ModalProvider,
+      login,
+      logout,
+      address,
+      ensName,
+      fuse,
+      isAttemptingLogin,
+    ]
   );
 
   return <RariContext.Provider value={value}>{children}</RariContext.Provider>;

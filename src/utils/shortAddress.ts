@@ -6,6 +6,12 @@ export function shortAddress(address: string) {
   );
 }
 
+export function shortEnsName(name: string) {
+  return (
+    name.substring(0, 3) + "..." + name.substring(name.length - 3, name.length)
+  );
+}
+
 export function mediumAddress(address: string) {
   return (
     address.substring(0, 8) +
