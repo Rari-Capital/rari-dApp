@@ -172,14 +172,9 @@ const constructMantissa = (
     rewardEthPrice * (rewardSpeed / 10 ** rewardDecimals);
 
   const newUnderlyingTotalSupplyETH =
-    (underlyingEthPrice * (underlyingTotalSupply / 10 ** underlyingDecimals)) /
-    10 ** rewardDecimals;
+    underlyingEthPrice * (underlyingTotalSupply / 10 ** underlyingDecimals);
 
-  const newMantissa = newRewardETHPerBlock / newUnderlyingTotalSupplyETH;
-
-  const mantissa =
-    (rewardSpeed * rewardEthPrice) /
-    ((underlyingTotalSupply * underlyingEthPrice) / 1e18);
+  const newMantissa = newRewardETHPerBlock * 1e18 / newUnderlyingTotalSupplyETH;
 
   return newMantissa;
 };
