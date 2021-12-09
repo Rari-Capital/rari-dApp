@@ -123,6 +123,7 @@ const EditRewardsDistributorModal = ({
 
   //  Loading states
   const [fundingDistributor, setFundingDistributor] = useState(false);
+  const [seizing, setSeizing] = useState(false);
   const [changingSpeed, setChangingSpeed] = useState(false);
   const [changingBorrowSpeed, setChangingBorrowSpeed] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<
@@ -212,6 +213,26 @@ const EditRewardsDistributorModal = ({
       handleGenericError(err, toast);
       setChangingBorrowSpeed(false);
     }
+  };
+
+  const handleSeizeTokens = async () => {
+    setSeizing(true);
+    if (isAdmin) {
+      await rewardsDistributorInstance.methods._grantComp(
+        address,
+        balanceERC20
+      );
+    } else {
+      toast({
+        title: "Admin Only!",
+        description: "Only admin can seize tokens!",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+    setSeizing(false);
   };
 
   return (
@@ -334,6 +355,11 @@ const EditRewardsDistributorModal = ({
               >
                 {fundingDistributor ? <Spinner /> : "Send"}
               </Button>
+              {isAdmin && (!balanceERC20?.isZero() ?? false) && (
+                <Button onClick={handleSeizeTokens} bg="red" disabled={seizing}>
+                  {seizing ? <Spinner /> : "Withdraw Tokens"}
+                </Button>
+              )}
             </Row>
             <Text mt={1}>
               Your balance:{" "}
