@@ -221,7 +221,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     logoURL =
       "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tWETH.png";
   }
-  
+
   // tUNILP
   if (
     web3.utils.toChecksumAddress(address) ===
@@ -238,6 +238,15 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   ) {
     logoURL =
       "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tSUSHI.png";
+  }
+
+  // txJP
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0x961dd84059505d59f82ce4fb87d3c09bec65301d")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png";
   }
 
   const basicTokenInfo = {
