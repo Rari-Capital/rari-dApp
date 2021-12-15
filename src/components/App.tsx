@@ -91,6 +91,13 @@ const InterestRatesPage = loadable(
   }
 );
 
+const PortfolioPage = loadable(
+  () => import(/* webpackPrefetch: true */ "./pages/Portfolio/Portfolio"),
+  {
+    fallback: <FullPageSpinner />,
+  }
+);
+
 const PageNotFound = memo(() => {
   return (
     <Heading
@@ -140,6 +147,7 @@ const App = memo(() => {
         <Route path="/utils" element={<Navigate to="/" replace={true} />} />
         <Route path="/utils/interest-rates" element={<InterestRatesPage />} />
         <Route path="/utils/positions" element={<StatsPage />} />
+        <Route path="/utils/portfolio" element={<PortfolioPage />} />
 
         {/* Backwards Compatibility Routes */}
         <Route
