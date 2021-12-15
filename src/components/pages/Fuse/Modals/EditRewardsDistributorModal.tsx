@@ -123,6 +123,7 @@ const EditRewardsDistributorModal = ({
 
   //  Loading states
   const [fundingDistributor, setFundingDistributor] = useState(false);
+  const [seizing, setSeizing] = useState(false);
   const [changingSpeed, setChangingSpeed] = useState(false);
   const [changingBorrowSpeed, setChangingBorrowSpeed] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<
@@ -155,7 +156,11 @@ const EditRewardsDistributorModal = ({
           rewardsDistributor.address,
           Fuse.Web3.utils
             .toBN(sendAmt)
-            .mul(Fuse.Web3.utils.toBN(10).pow(Fuse.Web3.utils.toBN(18)))
+            .mul(
+              Fuse.Web3.utils
+                .toBN(10)
+                .pow(Fuse.Web3.utils.toBN(tokenData?.decimals ?? 18))
+            )
         )
         .send({
           from: address,
@@ -178,7 +183,7 @@ const EditRewardsDistributorModal = ({
       await rewardsDistributorInstance.methods
         ._setCompSupplySpeed(
           selectedAsset?.cToken,
-          Fuse.Web3.utils.toBN(supplySpeed * 1e18) // set supplySpeed to 0.001e18 for now
+          Fuse.Web3.utils.toBN(supplySpeed * 10 ** (tokenData?.decimals ?? 18)) // set supplySpeed to 0.001e18 for now
         )
         .send({ from: address });
 
@@ -199,7 +204,7 @@ const EditRewardsDistributorModal = ({
       await rewardsDistributorInstance.methods
         ._setCompBorrowSpeed(
           selectedAsset?.cToken,
-          Fuse.Web3.utils.toBN(borrowSpeed * 1e18) // set supplySpeed to 0.001e18 for now
+          Fuse.Web3.utils.toBN(borrowSpeed * 10 ** (tokenData?.decimals ?? 18)) // set supplySpeed to 0.001e18 for now
         )
         .send({ from: address });
 
@@ -208,6 +213,26 @@ const EditRewardsDistributorModal = ({
       handleGenericError(err, toast);
       setChangingBorrowSpeed(false);
     }
+  };
+
+  const handleSeizeTokens = async () => {
+    setSeizing(true);
+    if (isAdmin) {
+      await rewardsDistributorInstance.methods._grantComp(
+        address,
+        balanceERC20
+      );
+    } else {
+      toast({
+        title: "Admin Only!",
+        description: "Only admin can seize tokens!",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+    setSeizing(false);
   };
 
   return (
@@ -250,8 +275,11 @@ const EditRewardsDistributorModal = ({
               {tokenData ? tokenData.name ?? "Invalid Address!" : "Loading..."}
             </Heading>
             <Text>
-              {balanceERC20
-                ? (parseFloat(balanceERC20?.toString()) / 1e18).toFixed(3)
+              {balanceERC20 && tokenData && tokenData.decimals
+                ? (
+                    parseFloat(balanceERC20?.toString()) /
+                    10 ** tokenData.decimals
+                  ).toFixed(3)
                 : 0}{" "}
               {tokenData?.symbol}
             </Text>
@@ -307,7 +335,7 @@ const EditRewardsDistributorModal = ({
                 min={0}
                 onChange={(valueString) => {
                   console.log({ valueString });
-                  setSendAmt(parseFloat(valueString))
+                  setSendAmt(parseFloat(valueString));
                 }}
               >
                 <NumberInputField
@@ -327,11 +355,19 @@ const EditRewardsDistributorModal = ({
               >
                 {fundingDistributor ? <Spinner /> : "Send"}
               </Button>
+              {isAdmin && (!balanceERC20?.isZero() ?? false) && (
+                <Button onClick={handleSeizeTokens} bg="red" disabled={seizing}>
+                  {seizing ? <Spinner /> : "Withdraw Tokens"}
+                </Button>
+              )}
             </Row>
             <Text mt={1}>
               Your balance:{" "}
               {myBalance
-                ? (parseFloat(myBalance?.toString()) / 1e18).toFixed(2)
+                ? (
+                    parseFloat(myBalance?.toString()) /
+                    10 ** (tokenData?.decimals ?? 18)
+                  ).toFixed(2)
                 : 0}{" "}
               {tokenData?.symbol}
             </Text>

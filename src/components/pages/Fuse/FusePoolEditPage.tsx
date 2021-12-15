@@ -298,7 +298,11 @@ const FusePoolEditPage = memo(() => {
 
         {/* Rewards Distributors */}
         <DashboardBox w="100%" h="100%" my={4}>
-          <Row mainAxisAlignment="space-between" crossAxisAlignment="center" p={3}>
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            p={3}
+          >
             <Heading size="md">Rewards Distributors </Heading>
             <AddRewardsDistributorButton
               openAddRewardsDistributorModal={openAddRewardsDistributorModal}
@@ -331,7 +335,6 @@ const FusePoolEditPage = memo(() => {
               mainAxisAlignment="center"
               crossAxisAlignment="center"
               p={4}
-
             >
               <Spinner />
             </Column>
@@ -514,7 +517,10 @@ const RewardsDistributorRow = ({
         </Td>
 
         <Td>
-          {(parseFloat(rDBalance?.toString() ?? "0") / 1e18).toFixed(3)}{" "}
+          {(
+            parseFloat(rDBalance?.toString() ?? "0") /
+            10 ** (tokenData?.decimals ?? 18)
+          ).toFixed(3)}{" "}
           {tokenData?.symbol}
         </Td>
 

@@ -78,6 +78,9 @@ export function usePoolIncentives(comptroller?: string): IncentivesData {
         // j contains the index of the current rewardsDistributor.
         // Even if a CToken has no RewardsDistributor assigned to it, there will still be a value in this array for it. We will handle this discrepancy below
         const rewardsDistributorAddress = rewardsDistributors[j];
+        if (isRDExcluded(rewardsDistributorAddress)) {
+          continue;
+        }
         const rewardToken = rewardTokens[j];
         const supplySpeed = parseFloat(distributorSupplySpeedsForCToken[j]);
         const borrowSpeed = parseFloat(distributorBorrowSpeedsForCToken[j]);
@@ -117,8 +120,12 @@ export function usePoolIncentives(comptroller?: string): IncentivesData {
     [incentives]
   );
 
-  const incentivesWithRates = useIncentivesWithRates(incentives, rewardTokens, comptroller!);
-  // const  = useAssetPricesInEth(
+  const incentivesWithRates = useIncentivesWithRates(
+    incentives,
+    rewardTokens,
+    rewardTokensData,
+    comptroller!
+  );
 
   if (hasIncentives) {
     console.log({ incentives });
@@ -159,3 +166,12 @@ export const useCTokensUnderlying = (
 
   return cTokensUnderlying ?? {};
 };
+
+const rdExcludeList = [
+  "0x12336b4c2d7884AA9BBB86dC00cf202BdEc355d3",
+  "0xeb06873efBceb36f442ece56de618E073AfCA450" // TXJP RD 
+];
+
+export const isRDExcluded = (rD: string) => rdExcludeList.includes(rD);
+export const stripExcludedRDs = (RDs: string[]) =>
+  RDs.filter((rd) => !rdExcludeList.includes(rd));

@@ -2,10 +2,11 @@
 // export const
 
 import { useQuery } from "react-query";
-import { useTokensDataAsMap } from "hooks/useTokenData";
+import { TokensDataMap, useTokensDataAsMap } from "hooks/useTokenData";
 import {
   createComptroller,
   createCToken,
+  createERC20,
   createMasterPriceOracle,
   createOracle,
 } from "utils/createComptroller";
@@ -45,11 +46,14 @@ interface RewardsDataForMantissa {
   rewardEthPrice: number;
   underlyingTotalSupply: number;
   underlyingEthPrice: number;
+  rewardDecimals: number;
+  underlyingDecimals: number;
 }
 
 export const useIncentivesWithRates = (
   incentives: CTokenIncentivesMap,
   rewardTokenAddrs: string[],
+  rewardTokensData: TokensDataMap,
   comptroller: string
 ) => {
   // this is what we return
@@ -99,6 +103,8 @@ export const useIncentivesWithRates = (
               underlyingTotalSupply: cTokenData.totalSupply,
               underlyingEthPrice:
                 tokenPrices.tokenPrices[cTokenData.underlyingToken].ethPrice,
+              rewardDecimals: rewardTokensData[rewardToken].decimals ?? 18,
+              underlyingDecimals: cTokenData.underlyingDecimals,
             };
 
             const borrowMantissaData: RewardsDataForMantissa = {
@@ -108,20 +114,26 @@ export const useIncentivesWithRates = (
               underlyingTotalSupply: cTokenData.totalSupply,
               underlyingEthPrice:
                 tokenPrices.tokenPrices[cTokenData.underlyingToken].ethPrice,
+              rewardDecimals: rewardTokensData[rewardToken].decimals ?? 18,
+              underlyingDecimals: cTokenData.underlyingDecimals,
             };
 
             const supplyMantissa = constructMantissa(
               supplyMantissaData.rewardSpeed,
               supplyMantissaData.rewardEthPrice,
               supplyMantissaData.underlyingTotalSupply,
-              supplyMantissaData.underlyingEthPrice
+              supplyMantissaData.underlyingEthPrice,
+              supplyMantissaData.rewardDecimals,
+              supplyMantissaData.underlyingDecimals
             );
 
             const borrowMantissa = constructMantissa(
               borrowMantissaData.rewardSpeed,
               borrowMantissaData.rewardEthPrice,
               borrowMantissaData.underlyingTotalSupply,
-              borrowMantissaData.underlyingEthPrice
+              borrowMantissaData.underlyingEthPrice,
+              borrowMantissaData.rewardDecimals,
+              borrowMantissaData.underlyingDecimals
             );
 
             const supplyAPY = convertMantissaToAPY(supplyMantissa, 365);
@@ -152,12 +164,19 @@ const constructMantissa = (
   rewardSpeed: number,
   rewardEthPrice: number,
   underlyingTotalSupply: number,
-  underlyingEthPrice: number
+  underlyingEthPrice: number,
+  rewardDecimals: number = 18,
+  underlyingDecimals: number = 18
 ) => {
-  const mantissa =
-    (rewardSpeed * rewardEthPrice) /
-    ((underlyingTotalSupply * underlyingEthPrice) / 1e18);
-  return mantissa;
+  const newRewardETHPerBlock =
+    rewardEthPrice * (rewardSpeed / 10 ** rewardDecimals);
+
+  const newUnderlyingTotalSupplyETH =
+    underlyingEthPrice * (underlyingTotalSupply / 10 ** underlyingDecimals);
+
+  const newMantissa = newRewardETHPerBlock * 1e18 / newUnderlyingTotalSupplyETH;
+
+  return newMantissa;
 };
 
 export interface CTokensDataForRewardsMap {
@@ -166,7 +185,11 @@ export interface CTokensDataForRewardsMap {
 
 export type CTokenDataForRewards = Pick<
   USDPricedFuseAsset,
-  "underlyingToken" | "cToken" | "totalSupply" | "underlyingPrice"
+  | "underlyingToken"
+  | "cToken"
+  | "totalSupply"
+  | "underlyingPrice"
+  | "underlyingDecimals"
 >;
 
 export const useCTokensDataForRewards = (
@@ -181,10 +204,14 @@ export const useCTokensDataForRewards = (
       const cTokensArray = await Promise.all(
         cTokenAddrs.map(async (cTokenAddr) => {
           const ctokenInstance = createCToken(fuse, cTokenAddr);
-          console.log({ ctokenInstance });
+
           const underlying = await ctokenInstance.methods.underlying().call();
 
-          const decimals = await ctokenInstance.methods.decimals().call();
+          const underlyingInstance = createERC20(fuse, underlying);
+
+          const underlyingDecimals = await underlyingInstance.methods
+            .decimals()
+            .call();
 
           const cTokenTotalSupply = await ctokenInstance.methods
             .totalSupply()
@@ -216,6 +243,7 @@ export const useCTokensDataForRewards = (
             underlyingPrice: 0,
             cToken: cTokenAddr,
             totalSupply: underlyingTotalSupply2 ?? 0,
+            underlyingDecimals: parseFloat(underlyingDecimals),
           };
 
           _map[cTokenAddr] = obj;
@@ -264,6 +292,7 @@ export const getPriceFromOracles = async (
   try {
     price = await oracleContract.methods.price(tokenAddress).call();
   } catch {
+    console.log(tokenAddress, ": err fetching price. trying MPO" )
     price = await masterPriceOracle.methods.price(tokenAddress).call();
   }
 
@@ -281,7 +310,7 @@ export const useAssetPricesInEth = (
 
   const tokensData = useTokensDataAsMap(tokenAddresses);
 
-  const { data } = useQuery(
+  const { data } = useQuery(  
     "asset prices for " +
       tokenAddresses.join(",") +
       " " +

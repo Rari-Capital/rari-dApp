@@ -641,18 +641,10 @@ export const NewsAndTwitterLink = ({
 };
 
 const NewsMarquee = memo(({ celebrate = false }: { celebrate?: boolean }) => {
-  const defaultNews = [
-    "Permissionless Pool Creation is out! Now anyone can create a Fuse Pool without limitations.",
-    "TRIBE liquidity mining rewards are currently active in Pool 8!",
-    "Watch out for permissionless liquidity mining right around the corner 👀.",
+  const news = [
+    "Fuse pool creation is now 100% permissionless! Deploy your own isolated lending pool today!",
+    "TRIBE liquidity mining rewards are currently available in Fuse pool #8!",
   ];
-
-  const news = celebrate
-    ? [
-        "Thank you to the Rari Community, the protocol has surpassed $1B  in TVL!",
-        ...defaultNews,
-      ]
-    : defaultNews;
 
   return (
     <Box whiteSpace="nowrap" overflow="hidden" width="100%" fontSize="sm">

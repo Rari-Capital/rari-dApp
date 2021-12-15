@@ -64,14 +64,14 @@ export const getPoolName = (pool: Pool, t: any) => {
 export const getPoolCaption = (pool: Pool, t: any) => {
   switch (pool) {
     case Pool.USDC:
-      return t("Safe returns on USDC");
+      return t("Earn interest on stablecoins by providing liquidity to Fuse pools.");
     case Pool.DAI:
-      return t("Safe returns on DAI");
+      return t("Earn interest on stablecoins by providing liquidity to Fuse pools.");
     case Pool.ETH:
-      return t("Returns on ETH");
+      return t("Please withdraw funds. Pool is no longer in use.");
     case Pool.YIELD:
-      return t("High risk, high reward");
+      return t("Please withdraw funds. Pool is no longer in use.");
     default:
-      return t("High risk, high reward");
+      return t("Earn interest on tokens by providing liquidity to Fuse pools.");
   }
 };

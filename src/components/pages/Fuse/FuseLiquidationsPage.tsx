@@ -193,8 +193,8 @@ const FuseLiquidationsPage = memo(() => {
           height={isMobile ? "400px" : "200px"}
         >
           <DashboardBox
-            height={isMobile ? "70%" : "100%"}
-            width={isMobile ? "100%" : "70%"}
+            height="100%"
+            width="100%"
             overflow="hidden"
             bg="#141619"
           >
@@ -203,22 +203,6 @@ const FuseLiquidationsPage = memo(() => {
               height="100%"
               width="100%"
               title="Liquidation Count"
-            />
-          </DashboardBox>
-
-          <DashboardBox
-            height={isMobile ? "30%" : "100%"}
-            width={isMobile ? "100%" : "30%"}
-            mt={isMobile ? 4 : 0}
-            ml={isMobile ? 0 : 4}
-            overflow="hidden"
-            bg="#141619"
-          >
-            <iframe
-              height="100%"
-              width="100%"
-              src="https://metrics.rari.capital/d-solo/NlUs6DwGk/fuse-overview?orgId=1&refresh=5m&panelId=16"
-              title="Leverage"
             />
           </DashboardBox>
         </RowOrColumn>

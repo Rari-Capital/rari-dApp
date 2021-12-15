@@ -29,7 +29,7 @@ export const fetchTokenBalance = async (
 export function useTokenBalance(tokenAddress: string, customAddress?: string) {
   const { rari, address } = useRari();
 
-  const addressToCheck = customAddress ?? address
+  const addressToCheck = customAddress ?? address;
 
   return useQuery(tokenAddress + " balanceOf " + addressToCheck, () =>
     fetchTokenBalance(tokenAddress, rari.web3, addressToCheck)
