@@ -1,5 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
+  Avatar,
   Box,
   Flex,
   Heading,
@@ -28,8 +29,14 @@ import { useRari } from "context/RariContext";
 import { useFusePools, MergedPool } from "hooks/fuse/useFusePools";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFusePoolsData } from "hooks/useFusePoolData";
-import { FusePoolData } from "utils/fetchFusePoolData";
+import { useTokensDataAsMap } from "hooks/useTokenData";
+import {
+  filterPoolName,
+  FusePoolData,
+  USDPricedFuseAsset,
+} from "utils/fetchFusePoolData";
 import { smallUsdFormatter } from "utils/bigUtils";
+import { convertMantissaToAPY } from "utils/apyUtils";
 
 const borderBottomColor = "rgba(255,255,255,0.1)";
 const thStyle: React.CSSProperties = {
@@ -55,6 +62,10 @@ const PoolTr = ({
     paddingLeft: 0,
     borderBottomColor: dropdownOpened ? "transparent" : borderBottomColor,
   };
+  const assets: USDPricedFuseAsset[] = poolData.assets;
+  const tokensData = useTokensDataAsMap(
+    assets.map(({ underlyingToken }) => underlyingToken)
+  );
 
   return (
     <>
@@ -69,7 +80,7 @@ const PoolTr = ({
             &nbsp;
             {/* Prevent selection on double click */}
             <Text fontWeight="bold" userSelect="none">
-              {pool.name}
+              {filterPoolName(pool.name)}
             </Text>
           </Flex>
         </Td>
@@ -85,6 +96,9 @@ const PoolTr = ({
             width="100%"
             className="no-underline"
             to={"/fuse/pool/" + pool.id}
+            // Call `stopPropagation` to prevent dropdown from opening
+            // when a user specifically clicks on the `ExternalLinkIcon`
+            onClick={(e) => e.stopPropagation()}
           >
             <ExternalLinkIcon />
           </Link>
@@ -95,6 +109,60 @@ const PoolTr = ({
           <Td colSpan={99} pt={0} pl={0} borderBottomColor={borderBottomColor}>
             <DashboardBox width="100%" p={4}>
               <Text fontWeight="bold">Supply positions</Text>
+              <Box mt={2}>
+                <Table>
+                  <Thead>
+                    <Tr>
+                      <Th style={thStyle} borderBottomWidth={0}>
+                        Amount
+                      </Th>
+                      <Th style={thStyle} borderBottomWidth={0}>
+                        APY
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {poolData.assets.map((asset: USDPricedFuseAsset) => {
+                      const supplyAPY = convertMantissaToAPY(
+                        asset.supplyRatePerBlock,
+                        365
+                      );
+
+                      return (
+                        asset.supplyBalanceUSD > 0 && (
+                          <Tr>
+                            <Td style={tdStyle}>
+                              <Flex alignItems="center">
+                                <Avatar
+                                  src={
+                                    tokensData[asset.underlyingToken]
+                                      ?.logoURL ?? ""
+                                  }
+                                  size="xs"
+                                  marginRight={2}
+                                />
+                                {(
+                                  asset.supplyBalance /
+                                  10 ** asset.underlyingDecimals
+                                ).toFixed(2)}{" "}
+                                {asset.underlyingSymbol}
+                              </Flex>
+                              <Text
+                                color="rgba(255,255,255,0.5)"
+                                fontSize="sm"
+                                mt="3"
+                              >
+                                {smallUsdFormatter(asset.supplyBalanceUSD)}
+                              </Text>
+                            </Td>
+                            <Td style={tdStyle}>{supplyAPY.toFixed(2)}%</Td>
+                          </Tr>
+                        )
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              </Box>
               <Text fontWeight="bold">Borrow positions</Text>
             </DashboardBox>
           </Td>
@@ -115,6 +183,7 @@ const PortfolioPage = () => {
     [myPools]
   );
   const fusePoolsData: FusePoolData[] | null = useFusePoolsData(poolIds);
+
   const totalBorrowBalanceUsd = useMemo(
     () => sumBy(fusePoolsData, (it) => it.totalBorrowBalanceUSD),
     [fusePoolsData]
