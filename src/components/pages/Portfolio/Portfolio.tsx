@@ -26,7 +26,7 @@ import { Header } from "components/shared/Header";
 
 import { useRari } from "context/RariContext";
 
-import { useFusePools, MergedPool } from "hooks/fuse/useFusePools";
+import { useFusePools, MergedPool, FusePool } from "hooks/fuse/useFusePools";
 import { useIsSmallScreen } from "hooks/useIsSmallScreen";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 import { useTokensDataAsMap } from "hooks/useTokenData";
@@ -36,7 +36,8 @@ import {
   USDPricedFuseAsset,
 } from "utils/fetchFusePoolData";
 import { smallUsdFormatter } from "utils/bigUtils";
-import { convertMantissaToAPY } from "utils/apyUtils";
+import { convertMantissaToAPR, convertMantissaToAPY } from "utils/apyUtils";
+import { usePoolIncentives } from "hooks/rewards/usePoolIncentives";
 
 const borderBottomColor = "rgba(255,255,255,0.1)";
 const thStyle: React.CSSProperties = {
@@ -66,6 +67,8 @@ const PoolTr = ({
   const tokensData = useTokensDataAsMap(
     assets.map(({ underlyingToken }) => underlyingToken)
   );
+
+  const poolIncentives = usePoolIncentives(poolData?.comptroller);
 
   return (
     <>
@@ -109,6 +112,8 @@ const PoolTr = ({
           <Td colSpan={99} pt={0} pl={0} borderBottomColor={borderBottomColor}>
             <DashboardBox width="100%" p={4}>
               <Text fontWeight="bold">Supply positions</Text>
+
+              <Text fontWeight="bold">Borrow positions</Text>
               <Box mt={2}>
                 <Table>
                   <Thead>
@@ -117,19 +122,19 @@ const PoolTr = ({
                         Amount
                       </Th>
                       <Th style={thStyle} borderBottomWidth={0}>
-                        APY
+                        APR
                       </Th>
+                      <Th style={thStyle} borderBottomWidth={0} />
                     </Tr>
                   </Thead>
                   <Tbody>
                     {poolData.assets.map((asset: USDPricedFuseAsset) => {
-                      const supplyAPY = convertMantissaToAPY(
-                        asset.supplyRatePerBlock,
-                        365
+                      const borrowAPR = convertMantissaToAPR(
+                        asset.borrowRatePerBlock
                       );
 
                       return (
-                        asset.supplyBalanceUSD > 0 && (
+                        asset.borrowBalanceUSD > 0 && (
                           <Tr>
                             <Td style={tdStyle}>
                               <Flex alignItems="center">
@@ -141,10 +146,10 @@ const PoolTr = ({
                                   size="xs"
                                   marginRight={2}
                                 />
-                                {(
-                                  asset.supplyBalance /
-                                  10 ** asset.underlyingDecimals
-                                ).toFixed(2)}{" "}
+                                {smallUsdFormatter(
+                                  asset.borrowBalance /
+                                    10 ** asset.underlyingDecimals
+                                ).replace("$", "")}{" "}
                                 {asset.underlyingSymbol}
                               </Flex>
                               <Text
@@ -152,10 +157,11 @@ const PoolTr = ({
                                 fontSize="sm"
                                 mt="3"
                               >
-                                {smallUsdFormatter(asset.supplyBalanceUSD)}
+                                {smallUsdFormatter(asset.borrowBalanceUSD)}
                               </Text>
                             </Td>
-                            <Td style={tdStyle}>{supplyAPY.toFixed(2)}%</Td>
+                            <Td style={tdStyle}>{borrowAPR.toFixed(2)}%</Td>
+                            <Td style={tdStyle} />
                           </Tr>
                         )
                       );
@@ -163,12 +169,68 @@ const PoolTr = ({
                   </Tbody>
                 </Table>
               </Box>
-              <Text fontWeight="bold">Borrow positions</Text>
             </DashboardBox>
           </Td>
         </Tr>
       )}
     </>
+  );
+};
+
+/**
+ * TODO(nathanhleung): abstract supply/borrow position table component
+ * into a separate component. Should take a parameter like filter="supplied|borrowed"
+ */
+const PoolAssetsTable = ({ poolData }: { poolData: FusePoolData }) => {
+  return (
+    <Box mt={2}>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th style={thStyle} borderBottomWidth={0}>
+              Amount
+            </Th>
+            <Th style={thStyle} borderBottomWidth={0}>
+              APY
+            </Th>
+            <Th style={thStyle} borderBottomWidth={0} />
+          </Tr>
+        </Thead>
+        <Tbody>
+          {poolData.assets.map((asset: USDPricedFuseAsset) => {
+            const supplyAPY = convertMantissaToAPY(
+              asset.supplyRatePerBlock,
+              365
+            );
+
+            return (
+              asset.supplyBalanceUSD > 0 && (
+                <Tr>
+                  <Td style={tdStyle}>
+                    <Flex alignItems="center">
+                      <Avatar
+                        src={tokensData[asset.underlyingToken]?.logoURL ?? ""}
+                        size="xs"
+                        marginRight={2}
+                      />
+                      {smallUsdFormatter(
+                        asset.supplyBalance / 10 ** asset.underlyingDecimals
+                      ).replace("$", "")}{" "}
+                      {asset.underlyingSymbol}
+                    </Flex>
+                    <Text color="rgba(255,255,255,0.5)" fontSize="sm" mt="3">
+                      {smallUsdFormatter(asset.supplyBalanceUSD)}
+                    </Text>
+                  </Td>
+                  <Td style={tdStyle}>{supplyAPY.toFixed(2)}%</Td>
+                  <Td style={tdStyle} />
+                </Tr>
+              )
+            );
+          })}
+        </Tbody>
+      </Table>
+    </Box>
   );
 };
 
