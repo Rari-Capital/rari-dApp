@@ -13,9 +13,7 @@ import {
 
 import { Row, Column, Center } from "utils/chakraUtils";
 import DashboardBox from "./DashboardBox";
-
-// @ts-ignore
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import Davatar from "@davatar/react";
 
 import { shortAddress } from "../../utils/shortAddress";
 
@@ -30,6 +28,8 @@ import { version } from "../..";
 import { useIsSmallScreen } from "../../hooks/useIsSmallScreen";
 import { useAuthedCallback } from "../../hooks/useAuthedCallback";
 import { useClaimable } from "hooks/rewards/useClaimable";
+import useENS from "hooks/useENS";
+import { shortENS } from "utils/shortENS";
 
 export const AccountButton = memo(() => {
   const {
@@ -80,6 +80,7 @@ const Buttons = ({
   hasClaimableRewards: boolean;
 }) => {
   const { address, isAuthed, login, isAttemptingLogin } = useRari();
+  const { ensName } = useENS(address);
 
   const { t } = useTranslation();
 
@@ -148,9 +149,9 @@ const Buttons = ({
             )
           ) : (
             <>
-              <Jazzicon diameter={23} seed={jsNumberForAddress(address)} />
+              <Davatar size={23} address={address} />
               <Text ml={2} fontWeight="semibold">
-                {shortAddress(address)}
+                {ensName ? shortENS(ensName) : shortAddress(address)}
               </Text>
             </>
           )}
