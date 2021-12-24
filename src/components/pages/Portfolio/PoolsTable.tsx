@@ -7,21 +7,15 @@ import { useTable, useSortBy } from "react-table";
 import { useFusePools } from "hooks/fuse/useFusePools";
 import { useFusePoolsData } from "hooks/useFusePoolData";
 
-import { smallUsdFormatter } from "utils/bigUtils";
 import { filterPoolName, FusePoolData } from "utils/fetchFusePoolData";
 
 import PoolTr from "./PoolTr";
 import { thStyle } from "./styles";
-
-type TableRow = {
-  name: string;
-  supplied: number;
-  borrowed: number;
-};
+import { TableRow } from "./types/react-table-config";
 
 /**
- * Displays the pools in which the currently-authed user has an active position
- * in.
+ * Displays the pools in which the currently-authed user has an active position.
+ * Uses React Table to make the table sortable.
  */
 const PoolsTable = () => {
   const { t } = useTranslation();
@@ -59,51 +53,63 @@ const PoolsTable = () => {
   );
 
   const data = useMemo(() => {
-    const poolsData = [...(fusePoolsData ?? [])];
-
     return (myPools ?? []).map<TableRow>((pool, index) => {
       const poolData = fusePoolsData?.[index];
 
       return {
         name: filterPoolName(pool.name),
-        supplied: poolData?.totalSupplyBalanceUSD,
-        borrowed: poolData?.totalBorrowBalanceUSD,
+        supplied: poolData?.totalSupplyBalanceUSD ?? 0,
+        borrowed: poolData?.totalBorrowBalanceUSD ?? 0,
+        poolData,
       };
     });
   }, [myPools, fusePoolsData]);
 
-  // TODO(nathanhleung) fix react-table integration
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable<TableRow>({ columns, data });
+    useTable<TableRow>(
+      {
+        columns,
+        data,
+        // Prevent "Maximum update depth" error
+        // https://github.com/tannerlinsley/react-table/issues/2369#issuecomment-644481605
+        autoResetSortBy: false,
+        initialState: {
+          hiddenColumns: ["poolData"],
+        },
+      },
+      useSortBy
+    );
 
   return (
     <Table variant="simple" {...getTableProps()}>
       <Thead>
         {headerGroups.map((headerGroup) => (
           <Tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => {
-              <Th style={thStyle} {...column.getHeaderProps()}>
-                {column.render("Header")}
-                {(column as any).isSorted ? (
-                  (column as any).isSortedDesc ? (
+            <Th style={thStyle} />
+            {headerGroup.headers.map((column) => (
+              <Th
+                {...column.getHeaderProps(column.getSortByToggleProps())}
+                style={{ ...thStyle, cursor: "pointer", userSelect: "none" }}
+              >
+                {column.render("Header")}&nbsp;
+                {column.isSorted ? (
+                  column.isSortedDesc ? (
                     <TriangleDownIcon aria-label="sorted descending" />
                   ) : (
                     <TriangleUpIcon aria-label="sorted ascending" />
                   )
                 ) : null}
-              </Th>;
-            })}
+              </Th>
+            ))}
             <Th style={thStyle} />
           </Tr>
         ))}
       </Thead>
-      <Tbody>
-        {myPools.map((pool, index) => {
-          const fusePoolData = fusePoolsData?.[index];
+      <Tbody {...getTableBodyProps()}>
+        {rows.map((row) => {
+          prepareRow(row);
 
-          return fusePoolData ? (
-            <PoolTr key={pool.id} pool={pool} poolData={fusePoolData} />
-          ) : null;
+          return <PoolTr row={row} key={row.id} />;
         })}
       </Tbody>
     </Table>
