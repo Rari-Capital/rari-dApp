@@ -9,6 +9,9 @@ import {
   Tbody,
   Td,
 } from "@chakra-ui/react";
+import { sumBy } from "lodash";
+
+import { CTokenIcon } from "components/shared/CTokenIcon";
 
 import { usePoolIncentives } from "hooks/rewards/usePoolIncentives";
 import { useTokensDataAsMap } from "hooks/useTokenData";
@@ -36,9 +39,7 @@ const PoolAssetsTable = ({
     assets.map(({ underlyingToken }) => underlyingToken)
   );
 
-  // TODO(nathanhleung) display liquidity mining incentives
   const poolIncentives = usePoolIncentives(poolData?.comptroller);
-
   const filteredAssets = poolData.assets.filter((asset: USDPricedFuseAsset) => {
     const balance =
       filter === "supplied" ? asset.supplyBalance : asset.borrowBalance;
@@ -74,6 +75,22 @@ const PoolAssetsTable = ({
               ? asset.supplyBalanceUSD
               : asset.borrowBalanceUSD;
           const rate = filter === "supplied" ? supplyAPY : borrowAPR;
+          const incentives = (
+            poolIncentives.incentives?.[asset.cToken] ?? []
+          ).filter((incentive) => {
+            const speed =
+              filter === "supplied"
+                ? incentive.supplySpeed
+                : incentive.borrowSpeed;
+            return speed !== 0;
+          });
+
+          const incentiveRate = sumBy(incentives, (incentive) => {
+            if (filter === "supplied") {
+              return incentive.supplyAPY;
+            }
+            return incentive.borrowAPR;
+          });
 
           return (
             <Tr>
@@ -89,11 +106,27 @@ const PoolAssetsTable = ({
                   ).replace("$", "")}{" "}
                   {asset.underlyingSymbol}
                 </Flex>
-                <Text color="rgba(255,255,255,0.5)" fontSize="sm" mt="3">
+                <Text color="rgba(255,255,255,0.5)" fontSize="sm" mt={3}>
                   {smallUsdFormatter(balanceUSD)}
                 </Text>
               </Td>
-              <Td style={tdStyle}>{rate.toFixed(2)}%</Td>
+              <Td style={tdStyle}>
+                {rate.toFixed(2)}%
+                {incentives.length > 0 && (
+                  <Flex alignItems="center" mt={3}>
+                    <Flex mr={1}>
+                      {incentives.map((incentive) => (
+                        <CTokenIcon address={incentive.rewardToken} size="xs" />
+                      ))}
+                    </Flex>
+                    <Text bold fontSize="sm">
+                      {filter === "supplied" ? "+" : "-"}{" "}
+                      {incentiveRate.toFixed(2)}%{" "}
+                      {filter === "supplied" ? "APY" : "APR"}
+                    </Text>
+                  </Flex>
+                )}
+              </Td>
               <Td style={tdStyle} />
             </Tr>
           );
