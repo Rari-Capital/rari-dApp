@@ -119,13 +119,15 @@ const PoolAssetsTable = ({
                 {rate.toFixed(2)}%
                 {incentives.length > 0 && (
                   <Flex alignItems="center" mt={3}>
-                    <Flex mr={1}>
+                    <Text color="rgba(255,255,255,0.5)" fontSize="sm">
+                      {filter === "supplied" ? "+" : "-"}
+                    </Text>
+                    <Flex mx={2}>
                       {incentives.map((incentive) => (
                         <CTokenIcon address={incentive.rewardToken} size="xs" />
                       ))}
                     </Flex>
-                    <Text bold fontSize="sm">
-                      {filter === "supplied" ? "+" : "-"}{" "}
+                    <Text color="rgba(255,255,255,0.5)" fontSize="sm">
                       {incentiveRate.toFixed(2)}%{" "}
                       {filter === "supplied" ? "APY" : "APR"}
                     </Text>
