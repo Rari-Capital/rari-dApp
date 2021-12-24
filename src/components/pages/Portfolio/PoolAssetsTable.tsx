@@ -10,6 +10,7 @@ import {
   Td,
 } from "@chakra-ui/react";
 import { sumBy } from "lodash";
+import { useMemo } from "react";
 
 import { CTokenIcon } from "components/shared/CTokenIcon";
 
@@ -40,11 +41,15 @@ const PoolAssetsTable = ({
   );
 
   const poolIncentives = usePoolIncentives(poolData?.comptroller);
-  const filteredAssets = poolData.assets.filter((asset: USDPricedFuseAsset) => {
-    const balance =
-      filter === "supplied" ? asset.supplyBalance : asset.borrowBalance;
-    return balance > 0;
-  });
+  const filteredAssets = useMemo(
+    () =>
+      poolData.assets.filter((asset: USDPricedFuseAsset) => {
+        const balance =
+          filter === "supplied" ? asset.supplyBalance : asset.borrowBalance;
+        return balance > 0;
+      }),
+    [poolData, filter]
+  );
 
   if (filteredAssets.length === 0) {
     return <Text>No positions</Text>;
