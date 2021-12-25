@@ -40,6 +40,22 @@ const Footer = () => {
           <Text color="white" text="sm">
             ·
           </Text>
+          
+          <Link isExternal href="https://rari.capital/terms-conditions.html">
+            <Text color="white" mx={2} text="sm" textDecoration="underline">
+              {t("Terms and Conditions")}
+            </Text>
+          </Link>
+
+          <Text color="white" text="sm">
+            ·
+            <Link isExternal href="https://rari.capital/privacy-policy.html">
+            <Text color="white" mx={2} text="sm" textDecoration="underline">
+              {t("Privacy Policy")}
+            </Text>
+          </Link>
+
+          <Text color="white" text="sm">
 
           <Link
             target="_blank"
