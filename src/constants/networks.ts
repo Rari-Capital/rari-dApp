@@ -44,4 +44,11 @@ export const networkData: Record<string, any> = {
     enabled: true,
     rpc: `https://arb-mainnet.g.alchemy.com/v2/rNfYbx5O5Ng09hw9s9YE-huxzVNaWWbX`,
   },
+  [ChainID.KOVAN]: {
+    color: "#a557fe",
+    name: "Ethereum (Kovan Testnet)",
+    shortName: "Kovan",
+    enabled: true,
+    rpc: `https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161`,
+  },
 };

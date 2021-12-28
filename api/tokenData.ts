@@ -12,8 +12,6 @@ import {
 } from "../src/constants/networks";
 
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { alchemyURL } from "../src/utils/web3Providers";
-import { chain } from "mathjs";
 
 type tokenData = {
   color;
