@@ -14,7 +14,8 @@ var fusePoolLensSecondaryAbi = require(__dirname +
   "/abi/FusePoolLensSecondary.json");
 var fuseSafeLiquidatorAbi = require(__dirname + "/abi/FuseSafeLiquidator.json");
 var fuseFeeDistributorAbi = require(__dirname + "/abi/FuseFeeDistributor.json");
-var initializableClonesAbi = require(__dirname + "/abi/InitializableClones.json");
+var initializableClonesAbi = require(__dirname +
+  "/abi/InitializableClones.json");
 var uniswapV3PoolAbiSlim = require(__dirname + "/abi/UniswapV3Pool.slim.json");
 var contracts = require(__dirname +
   "/contracts/compound-protocol.min.json").contracts;
@@ -38,14 +39,14 @@ export default class Fuse {
     "0xc76190E04012f26A364228Cfc41690429C44165d";
 
   static COMPTROLLER_IMPLEMENTATION_CONTRACT_ADDRESS =
-    "0xe16db319d9da7ce40b666dd2e365a4b8b3c18217"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
+    "checkForCErc20PriceFeed"; // v1.0.0: 0x94b2200d28932679def4a7d08596a229553a994e; v1.0.1 (with _unsupportMarket): 0x8A78A9D35c9C61F9E0Ff526C5d88eC28354543fE
   static CERC20_DELEGATE_CONTRACT_ADDRESS =
     "0x67db14e73c2dce786b5bbbfa4d010deab4bbfcf9"; // v1.0.0: 0x67e70eeb9dd170f7b4a9ef620720c9069d5e706c; v1.0.2 (for V2 yVaults): 0x2b3dd0ae288c13a730f6c422e2262a9d3da79ed1
   static CETHER_DELEGATE_CONTRACT_ADDRESS =
     "0xd77e28a1b9a9cfe1fc2eee70e391c05d25853cbf"; // v1.0.0: 0x60884c8faad1b30b1c76100da92b76ed3af849ba
   static REWARDS_DISTRIBUTOR_DELEGATE_CONTRACT_ADDRESS =
     "0x220f93183a69d1598e8405310cb361cff504146f";
-  
+
   static MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS =
     "0xb3c8ee7309be658c186f986388c2377da436d8fb";
   static INITIALIZABLE_CLONES_CONTRACT_ADDRESS =
@@ -176,17 +177,22 @@ export default class Fuse {
       "0xc301f891f1f905e68d1c5df5202cf0eec2ee8abcf3a510d5bd00d46f7dea01b4",
     UniswapV3TwapPriceOracleV2:
       "0xc844372c8856a5f9569721d3aca38c7804bae2ae4e296605e683aa8d1601e538", // v1.2.0
-    YVaultV1PriceOracleV1: // fuse-contracts@v1.0.0
+    // fuse-contracts@v1.0.0
+    YVaultV1PriceOracleV1:
       "0xd0dda181a4eb699a966b23edb883cff43377297439822b1b0f99b06af2002cc3",
-    YVaultV1PriceOracleV2: // fuse-contracts@v1.2.1
+    // fuse-contracts@v1.2.1
+    YVaultV1PriceOracleV2:
       "0x78ac4b231a4ce3ac5259847cd1cb227bf45882d736722290bee6b6c99a722f22",
     YVaultV2PriceOracle:
       "0x177c22cc7d05280cea84a36782303d17246783be7b8c0b6f9731bb9002ffcc68",
-    MasterPriceOracleV1: // fuse-contracts@v1.0.0
+    // fuse-contracts@v1.0.0
+    MasterPriceOracleV1:
       "0xfa1349af05af40ffb5e66605a209dbbdc8355ba7dda76b2be10bafdf5ffd1dc6",
-    MasterPriceOracleV2: // fuse-contracts@80c79b45bda4151e22358d22cc0bf1489f34900c (before final release of v1.2.0)
+    // fuse-contracts@80c79b45bda4151e22358d22cc0bf1489f34900c (before final release of v1.2.0)
+    MasterPriceOracleV2:
       "0xdfa5aa37efea3b16d143a12c4ae7006f3e29768b3e375b59842c7ecd3809f1d1",
-    MasterPriceOracleV3: // fuse-contracts@v1.2.0
+    // fuse-contracts@v1.2.0
+    MasterPriceOracleV3:
       "0xe4199a03b164ca492d19d655b85fdf8cc14cf2da6ddedd236712552b7676b03d",
     CurveLpTokenPriceOracle:
       "0x6742ae836b1f7df0cfd9b858c89d89da3ee814c28c5ee9709a371bcf9dfd2145",
@@ -214,9 +220,11 @@ export default class Fuse {
       "0x3736e8b6c11fcd413c0b60c3291a3a2e2ebe496a2780f3c45790a123f5ee9705",
     BadgerPriceOracle:
       "0x310210400b2d3992dc8fb9ace5001b1b55d3a468fba18ae0bc82a375fd150638",
-    HarvestPriceOracleV1: // fuse-contracts@v1.1.4
+    // fuse-contracts@v1.1.4
+    HarvestPriceOracleV1:
       "0x6e23380d1d640118cf80cf2bfa9ca7a89068659dfcb50abc0a7f8b9e5f9daab7",
-    HarvestPriceOracleV2: // fuse-contracts@v1.2.1
+    // fuse-contracts@v1.2.1
+    HarvestPriceOracleV2:
       "0x5eff948725404a38311ebe4b3bafc312f63dd8ae611e3ddcdfebb9cfa231988c",
     StakedSdtPriceOracle:
       "0x1b489bd00e5cbe4998e985f147297c1a39bd9da659e78544c94c1f3415edf7b7",
@@ -420,7 +428,9 @@ export default class Fuse {
       options,
       whitelist
     ) {
-      // Deploy new price oracle via SDK if requested
+      // Here, if you pass in a STRING for `priceOracle` it will search for it in Fuse.ORACLES and deploy that oracle from scratch using the priceOracleConf you pass in.
+      // Most likely though, you will pass in an ADDRESS for `priceOracle` because the UI already deploys a priceOracle before you deploy a pool.
+      // In the case that `priceOracle` is an ADDRESS, it will skip the below step and go straight into pool deployment using the priceOracle address.
       if (Fuse.ORACLES.indexOf(priceOracle) >= 0) {
         try {
           priceOracle = await this.deployPriceOracle(
@@ -843,12 +853,21 @@ export default class Fuse {
           var deployArgs = [
             conf.underlyings ? conf.underlyings : [],
             conf.oracles ? conf.oracles : [],
-            conf.defaultOracle ? conf.defaultOracle : "0x0000000000000000000000000000000000000000",
+            conf.defaultOracle
+              ? conf.defaultOracle
+              : "0x0000000000000000000000000000000000000000",
             conf.admin ? conf.admin : options.from,
             conf.canAdminOverwrite ? true : false,
           ];
-          var initializerData = masterPriceOracle.methods.initialize(...deployArgs).encodeABI();
-          var receipt = await initializableClones.methods.clone(Fuse.MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS, initializerData).send(options);
+          var initializerData = masterPriceOracle.methods
+            .initialize(...deployArgs)
+            .encodeABI();
+          var receipt = await initializableClones.methods
+            .clone(
+              Fuse.MASTER_PRICE_ORACLE_IMPLEMENTATION_CONTRACT_ADDRESS,
+              initializerData
+            )
+            .send(options);
           var priceOracle = new this.web3.eth.Contract(
             oracleContracts["MasterPriceOracle"].abi,
             receipt.events["Deployed"].returnValues.instance
