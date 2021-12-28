@@ -120,8 +120,20 @@ export const TokenDataOverrides: {
   },
   [ChainID.ARBITRUM]: {
     "0x0e15258734300290a651FdBAe8dEb039a8E7a2FA": {
-    //   logoURL:
-    //     "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
+      //   logoURL:
+      //     "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
+    },
+  },
+  [ChainID.KOVAN]: {
+    // RAI
+    "0x76b06a2f6df6f0514e7bec52a9afb3f603b477cd": {
+      logoURL:
+        "https://raw.githubusercontent.com/sushiswap/icons/master/token/rai.jpg",
+    },
+    // WETH
+    "0xd0a1e359811322d97991e03f863a0c30c2cf029c": {
+      logoURL:
+        "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xd0A1E359811322d97991E03f863a0C30C2cF029C/logo.png",
     },
   },
 };
