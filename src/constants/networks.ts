@@ -44,6 +44,13 @@ export const networkData: Record<string, any> = {
     enabled: true,
     rpc: `https://arb-mainnet.g.alchemy.com/v2/rNfYbx5O5Ng09hw9s9YE-huxzVNaWWbX`,
   },
+  [ChainID.ARBITRUM_TESTNET]: {
+    color: "#a557fe",
+    name: "Arbitrum One",
+    shortName: "Arbitrum",
+    enabled: true,
+    rpc: `https://arb-rinkeby.g.alchemy.com/v2/PkZ7ilUhTBT6tHUsgToel62IOcuyKcwb`,
+  },
   [ChainID.KOVAN]: {
     color: "#a557fe",
     name: "Ethereum (Kovan Testnet)",
