@@ -184,7 +184,7 @@ const FusePoolEditPage = memo(() => {
           oracleModel={data.oracleModel}
           existingAssets={data.assets}
           poolName={data.name}
-          poolID={poolId}
+          poolID={poolId!}
           isOpen={isAddAssetModalOpen}
           onClose={closeAddAssetModal}
         />
@@ -194,7 +194,7 @@ const FusePoolEditPage = memo(() => {
         <AddRewardsDistributorModal
           comptrollerAddress={data.comptroller}
           poolName={data.name}
-          poolID={poolId}
+          poolID={poolId!}
           isOpen={isAddRewardsDistributorModalOpen}
           onClose={closeAddRewardsDistributorModal}
         />
@@ -269,7 +269,7 @@ const FusePoolEditPage = memo(() => {
                     poolOracleAddress={data.oracle}
                     oracleModel={data.oracleModel}
                     comptrollerAddress={data.comptroller}
-                    poolID={poolId}
+                    poolID={poolId!}
                     poolName={data.name}
                   />
                 ) : (
