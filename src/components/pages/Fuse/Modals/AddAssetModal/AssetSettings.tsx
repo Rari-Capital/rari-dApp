@@ -385,6 +385,8 @@ const AssetSettings = ({
       tokenHasOraclesInPool,
     });
 
+    if (!!tokenHasOraclesInPool) return;
+
     const tx = await poolOracleContract.methods
       .add(tokenArray, oracleAddress)
       .send({ from: address });

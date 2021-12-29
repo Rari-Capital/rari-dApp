@@ -99,6 +99,16 @@ const OracleConfig = () => {
     ) {
       setActiveOracleModel("Default_Price_Oracle");
     }
+
+    // if avaiable, set to "Default_Price_Oracle" if you are adding
+    if (
+      mode === "Adding" &&
+      options &&
+      !!options["Current_Price_Oracle"] &&
+      !oracleTouched
+    ) {
+      setActiveOracleModel("Current_Price_Oracle");
+    }
   }, [
     mode,
     activeOracleModel,
@@ -334,15 +344,11 @@ const OracleConfig = () => {
         ) : null}
 
         {activeOracleModel === "Uniswap_V2_Oracle" ? (
-          <UniswapV2OrSushiPriceOracleConfigurator
-            type="UniswapV2"
-          />
+          <UniswapV2OrSushiPriceOracleConfigurator type="UniswapV2" />
         ) : null}
 
         {activeOracleModel === "SushiSwap_Oracle" ? (
-          <UniswapV2OrSushiPriceOracleConfigurator
-            type="Sushiswap"
-          />
+          <UniswapV2OrSushiPriceOracleConfigurator type="Sushiswap" />
         ) : null}
       </Row>
 
