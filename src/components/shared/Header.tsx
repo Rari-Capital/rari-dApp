@@ -137,7 +137,10 @@ export const UtilsLink = ({
         <Portal>
           <MenuList {...DASHBOARD_BOX_PROPS} color="#FFF" minWidth="110px">
             {isAuthed && (
-              <SubMenuItem name={t("Positions")} link="/utils/positions" />
+              <>
+                <SubMenuItem name={t("Positions")} link="/utils/positions" />
+                <SubMenuItem name={t("Portfolio")} link="/utils/portfolio" />
+              </>
             )}
 
             <SubMenuItem
