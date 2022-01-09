@@ -252,7 +252,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   // Fei3crv3crv
   if (
     web3.utils.toChecksumAddress(address) ===
-    web3.utils.toChecksumAddress("0xBFB6f7532d2DB0fE4D83aBb001c5C2B0842AF4dB")
+    web3.utils.toChecksumAddress("0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655")
   ) {
     logoURL =
       "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xD533a949740bb3306d119CC777fa900bA034cd52/logo.png";
