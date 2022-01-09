@@ -249,6 +249,16 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png";
   }
 
+  // Fei3crv3crv
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0xBFB6f7532d2DB0fE4D83aBb001c5C2B0842AF4dB")
+  ) {
+    logoURL =
+      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xD533a949740bb3306d119CC777fa900bA034cd52/logo.png";
+    symbol = "FEI3CRV";
+  }
+
   const basicTokenInfo = {
     symbol,
     name,
