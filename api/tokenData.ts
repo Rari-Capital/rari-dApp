@@ -265,7 +265,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xbaaa1f5dba42c3389bdbc2c9d2de134f5cd0dc89")
   ) {
     logoURL =
-      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/d3.jpg";
+      "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/D3.jpg";
     symbol = "D3";
   }
 
