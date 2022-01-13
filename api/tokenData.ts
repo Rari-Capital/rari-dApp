@@ -259,6 +259,15 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     symbol = "FEI3CRV";
   }
 
+    // D3-f
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xbaaa1f5dba42c3389bdbc2c9d2de134f5cd0dc89")
+    ) {
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/d3.jpg";
+    }
+
   const basicTokenInfo = {
     symbol,
     name,
