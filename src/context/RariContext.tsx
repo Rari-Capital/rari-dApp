@@ -23,11 +23,13 @@ import {
   alchemyURL,
 } from "../utils/web3Providers";
 import { useLocation } from "react-router-dom";
+import WalletLink from "walletlink";
 
 async function launchModalLazy(
   t: (text: string, extra?: any) => string,
   cacheProvider: boolean = true
 ) {
+  // WalletLink provider doesn't work when dynamically imported
   const [WalletConnectProvider, Web3Modal] = await Promise.all([
     import("@walletconnect/web3-provider"),
     import("web3modal"),
@@ -49,6 +51,14 @@ async function launchModalLazy(
       },
       display: {
         description: t("Scan with a wallet to connect"),
+      },
+    },
+    walletlink: {
+      package: WalletLink,
+      options: {
+        appName: "Rari Capital",
+        appLogoUrl: "/logo512.png",
+        rpc: alchemyURL,
       },
     },
   };
