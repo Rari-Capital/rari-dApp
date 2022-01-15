@@ -93,7 +93,7 @@ export default class Fuse {
     CurveLiquidityGaugeV2PriceOracle:
       "0xd9eefdb09d75ca848433079ea72ef609a1c1ea21",
     FixedEthPriceOracle: "0xffc9ec4adbf75a537e4d233720f06f0df01fb7f5",
-    FixedEurPriceOracle: "0x817158553F4391B0d53d242fC332f2eF82463e2a",
+    FixedEurPriceOracle: "0x817158553F4391B0d53d242fC332f2eF82463e2a", // v1.1.0
     WSTEthPriceOracle: "0xb11de4c003c80dc36a810254b433d727ac71c517",
     FixedTokenPriceOracle_OHM: "0x71FE48562B816D03Ce9e2bbD5aB28674A8807CC5",
     UniswapTwapPriceOracleV2_SushiSwap_DAI:
@@ -106,6 +106,8 @@ export default class Fuse {
       "0x6127e381756796fb978bc872556bf790f14cde98", // v1.1.3
     UniswapTwapPriceOracleV2_SushiSwap_ETH:
       "0xf411CD7c9bC70D37f194828ce71be00d9aEC9edF", // v1.1.3
+    UniswapTwapPriceOracleV2_SushiSwap_WBTC:
+      "0xC9Ad18928B1D9F61105d43Ecc33c670838D1C853", // v1.1.3
     SushiBarPriceOracle: "0x290E0f31e96e13f9c0DB14fD328a3C2A94557245",
     BadgerPriceOracle: "0xd0C86943e594640c4598086a2359A0e70b80eF8D",
     HarvestPriceOracle: "0x6141d9353bb1fb8131d07d358c112b372aa92514", // v1.2.1; v1.1.4 = 0x8D364609cd2716172016838fF9FBC7fBcAC91792
@@ -115,6 +117,10 @@ export default class Fuse {
     GelatoGUniPriceOracle: "0xea3633b38c747cea231adb74b511dc2ed3992b43",
     StakedSpellPriceOracle: "0xb544f62045b96a60b398abb5a5c23bf04cb4ed9c",
     CurveTriCryptoLpTokenPriceOracle: "0xb2d16916d520d585ee49f08db1436b961b48fe60",
+    GOhmPriceOracle: "0x057eCDA7f61C73c3Adcc36899d2626C7b79C3249",
+    WSSquidPriceOracle: "0xAE7C2169f3B5179bA56E471623BC47bEE06E4aA7",
+    WXBtrflyPriceOracle: "0x66159b1250f7ec2e335176643c25a0a3deae7b1f",
+    StakedFodlPriceOracle: "0x92cf2299680c063ccaf18f62a60c500a625e08e2",
   };
 
   static UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS =
@@ -123,7 +129,7 @@ export default class Fuse {
     "0xf1860b3714f0163838cf9ee3adc287507824ebdb";
   static UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS = ""; // TODO: Set correct mainnet address after deployment
   static UNISWAP_V3_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS =
-    "0x8Eed20f31E7d434648fF51114446b3CfFD1FF9F1"; // TODO: Set correct mainnet address after deployment
+    "0x8Eed20f31E7d434648fF51114446b3CfFD1FF9F1";
 
   static DAI_POT = "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7"; // DAIInterestRateModelV2 NOT IN USE
   static DAI_JUG = "0x19c0976f590d67707e62397c87829d896dc0f1f1"; // DAIInterestRateModelV2 NOT IN USE
