@@ -25,7 +25,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
-    "@walletconnect/web3-provider": "^1.5.2",
+    "@walletconnect/web3-provider": "^1.7.1",
     "apexcharts": "3.20.2",
     "axios": "^0.20.0",
     "bad-words": "^3.0.4",
@@ -64,8 +64,9 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "typescript": "^4.0.3",
+    "walletlink": "^2.4.3",
     "web3": "^1.2.11",
-    "web3modal": "^1.9.0",
+    "web3modal": "^1.9.5",
     "window-table": "^1.0.0-alpha.11"
   },
   "scripts": {

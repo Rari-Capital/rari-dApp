@@ -1,4 +1,5 @@
-body,
+/* The !important styles below break the Coinbase WalletLink extension, so we use `:not` to fix */
+body:not(.-walletlink-extension-dialog-box-top-description-text):not(.-walletlink-extension-dialog-box-bottom-description),
 html {
   margin: 0 !important;
   /*
