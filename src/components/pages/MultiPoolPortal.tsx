@@ -47,6 +47,9 @@ import {
   RefetchMovingStat,
 } from "../shared/MovingStat";
 import {
+  CountdownBanner
+} from "../shared/CountdownBanner"
+import {
   smallStringUsdFormatter,
   smallUsdFormatter,
   stringUsdFormatter,
@@ -112,6 +115,7 @@ const MultiPoolPortal = memo(() => {
           zIndex: 0,
         }}
       ></canvas>
+      <CountdownBanner />
       <Box h="100%" w="100%" zIndex={1}>
         <Column
           mainAxisAlignment="flex-start"
