@@ -10,7 +10,7 @@ export const CountdownBanner = () => {
 
     const [isOpen, setIsOpen] = useState(false)
     const [countdownValue, setCountdownValue] = useState(999999)
-    const final = new Date(Date.UTC(2022, 0, 24, 0, 0, 0, 0)).getTime()
+    const final = new Date(Date.UTC(2022, 0, 24, 16, 0, 0, 0)).getTime()
 
     const getCountdownSeconds = () => {
         const now = new Date().getTime()
