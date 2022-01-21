@@ -712,16 +712,16 @@ export default class Fuse {
             Fuse.UNISWAP_TWAP_PRICE_ORACLE_V2_FACTORY_CONTRACT_ADDRESS
           );
           var oracle = await oracleFactory.methods
-            .oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken)
+            .oracles(conf.uniswapV2Factory, conf.baseToken)
             .call();
 
           // Deploy if oracle does not exist
           if (oracle == "0x0000000000000000000000000000000000000000") {
             await oracleFactory.methods
-              .deploy(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken)
+              .deploy(conf.uniswapV2Factory, conf.baseToken)
               .send(options);
             oracle = await oracleFactory.methods
-              .oracles(Fuse.UNISWAP_V2_FACTORY_ADDRESS, conf.baseToken)
+              .oracles(conf.uniswapV2Factory, conf.baseToken)
               .call();
           }
 
