@@ -1,4 +1,4 @@
-import { Flex, Text, Box, Image } from "@chakra-ui/react"
+import { Flex, Text, Box, Image, Collapse } from "@chakra-ui/react"
 import ArbitrumLogo from "../../static/arbitrum-banner/arbitrum.png";
 import RightArrow from "../../static/arbitrum-banner/right-arrow.png";
 import BGLeft from "../../static/arbitrum-banner/bg-left.png";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 
 export const CountdownBanner = () => {
 
+    const [isOpen, setIsOpen] = useState(false)
     const [countdownValue, setCountdownValue] = useState(999999)
     const final = new Date(Date.UTC(2022, 0, 24, 0, 0, 0, 0)).getTime()
 
@@ -40,10 +41,14 @@ export const CountdownBanner = () => {
 
     useEffect(() => {
         updateCountdownValue()
+        setTimeout(() => {
+            setIsOpen(true)
+        }, 500)
     }, [])
 
     return (
-        <Flex width="100%" height="82px" flexDirection={'column'} justifyContent={'center'}
+        <Collapse in={isOpen}>
+        <Flex width="100%" height="70px" flexDirection={'column'} justifyContent={'center'}
         backgroundImage={`url(${BGLeft}), url(${BGRight}), linear-gradient(90.05deg, #072FAD 4.01%, #0F82C7 96.95%)`}
         backgroundSize={'contain'}
         backgroundRepeat={'no-repeat'}
@@ -65,6 +70,7 @@ export const CountdownBanner = () => {
                     {countdownValue <= 0 && <Image height="28px" width="28px" src={RightArrow} mt="3px" ml="-1px"/>}
             </Flex>
         </Flex>
+        </Collapse>
     )
 }
 
