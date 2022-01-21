@@ -1315,9 +1315,7 @@ export default class Fuse {
       // Get PriceOracle type from runtime bytecode hash
       const runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
-      );
-
-      console.log({ priceOracleAddress, runtimeBytecodeHash });
+      ).toLowerCase();
 
       for (const oracleContractName of Object.keys(
         Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
@@ -1326,12 +1324,11 @@ export default class Fuse {
           Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[oracleContractName];
 
         if (Array.isArray(valueOrArr)) {
-          console.log("ISARRAY", { valueOrArr });
-          for (const potentialHash of valueOrArr)
-            console.log("ISARRAY", { potentialHash, runtimeBytecodeHash });
-          if (runtimeBytecodeHash == potentialHash) return oracleContractName;
+          for (const potentialHash of valueOrArr) {
+            if (runtimeBytecodeHash == potentialHash.toLowerCase()) return oracleContractName;
+          }
         } else {
-          if (runtimeBytecodeHash == valueOrArr) return oracleContractName;
+          if (runtimeBytecodeHash == valueOrArr.toLowerCase()) return oracleContractName;
         }
       }
 
@@ -1802,13 +1799,13 @@ export default class Fuse {
       // Get price oracle contract name from runtime bytecode hash
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
-      );
+      ).toLowerCase();
       for (const model of Object.keys(
         Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
       ))
         if (
           runtimeBytecodeHash ==
-          Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model]
+          Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model].toLowerCase()
         )
           return model;
       return undefined;
@@ -1864,12 +1861,13 @@ export default class Fuse {
     };
 
     this.identifyInterestRateModelName = (irmAddress) => {
+      irmAddress = irmAddress.toLowerCase();
       let name = "";
 
       Object.entries(
         Fuse.PUBLIC_INTEREST_RATE_MODEL_CONTRACT_ADDRESSES
       ).forEach(([key, value]) => {
-        if (value === irmAddress) {
+        if (value.toLowerCase() === irmAddress) {
           name = key;
         }
       });
