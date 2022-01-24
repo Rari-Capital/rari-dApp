@@ -1312,6 +1312,7 @@ export default class Fuse {
     };
 
     this.identifyPriceOracle = async function (priceOracleAddress) {
+      if (!priceOracleAddress) return "";
       // Get PriceOracle type from runtime bytecode hash
       const runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
@@ -1332,7 +1333,7 @@ export default class Fuse {
         }
       }
 
-      return null;
+      return "";
     };
 
     this.identifyInterestRateModel = async function (interestRateModelAddress) {
@@ -1796,6 +1797,7 @@ export default class Fuse {
     };
 
     this.getPriceOracle = async function (oracleAddress) {
+      if (!oracleAddress) return "";
       // Get price oracle contract name from runtime bytecode hash
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
@@ -1808,7 +1810,7 @@ export default class Fuse {
           Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES[model].toLowerCase()
         )
           return model;
-      return undefined;
+      return "";
     };
 
     this.deployRewardsDistributor = async function (rewardToken, options) {
@@ -1861,6 +1863,7 @@ export default class Fuse {
     };
 
     this.identifyInterestRateModelName = (irmAddress) => {
+      if (!irmAddress) return "";
       irmAddress = irmAddress.toLowerCase();
       let name = "";
 
