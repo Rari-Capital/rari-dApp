@@ -1313,7 +1313,7 @@ export default class Fuse {
 
     this.identifyPriceOracle = async function (priceOracleAddress) {
       // Get PriceOracle type from runtime bytecode hash
-      const runtimeBytecodeHash = Web3.utils.sha3(
+      var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
       );
       if (!runtimeBytecodeHash) return "";
@@ -1799,7 +1799,7 @@ export default class Fuse {
 
     this.getPriceOracle = async function (oracleAddress) {
       // Get PriceOracle type from runtime bytecode hash
-      const runtimeBytecodeHash = Web3.utils.sha3(
+      var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
       );
       if (!runtimeBytecodeHash) return "";
