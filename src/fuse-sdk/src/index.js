@@ -1316,7 +1316,7 @@ export default class Fuse {
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
       );
-      if (!runtimeBytecodeHash) return "";
+      if (!runtimeBytecodeHash || !(typeof runtimeBytecodeHash === 'string' || runtimeBytecodeHash instanceof String)) return null;
       runtimeBytecodeHash = runtimeBytecodeHash.toLowerCase();
 
       for (const oracleContractName of Object.keys(
@@ -1349,6 +1349,8 @@ export default class Fuse {
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(interestRateModelAddress)
       );
+      if (!runtimeBytecodeHash || !(typeof runtimeBytecodeHash === 'string' || runtimeBytecodeHash instanceof String)) return null;
+      runtimeBytecodeHash = runtimeBytecodeHash.toLowerCase();
       var interestRateModel = null;
 
       outerLoop: for (const model of [
@@ -1360,13 +1362,13 @@ export default class Fuse {
         if (interestRateModels[model].RUNTIME_BYTECODE_HASHES !== undefined) {
           for (const hash of interestRateModels[model]
             .RUNTIME_BYTECODE_HASHES) {
-            if (runtimeBytecodeHash == hash) {
+            if (runtimeBytecodeHash == hash.toLowerCase()) {
               interestRateModel = new interestRateModels[model]();
               break outerLoop;
             }
           }
         } else if (
-          runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH
+          runtimeBytecodeHash == interestRateModels[model].RUNTIME_BYTECODE_HASH.toLowerCase()
         ) {
           interestRateModel = new interestRateModels[model]();
           break;
@@ -1802,7 +1804,7 @@ export default class Fuse {
       var runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
       );
-      if (!runtimeBytecodeHash) return "";
+      if (!runtimeBytecodeHash || !(typeof runtimeBytecodeHash === 'string' || runtimeBytecodeHash instanceof String)) return "";
       runtimeBytecodeHash = runtimeBytecodeHash.toLowerCase();
       
       for (const model of Object.keys(
@@ -1866,7 +1868,7 @@ export default class Fuse {
     };
 
     this.identifyInterestRateModelName = (irmAddress) => {
-      if (!irmAddress) return "";
+      if (!irmAddress || !(typeof irmAddress === 'string' || irmAddress instanceof String)) return "";
       irmAddress = irmAddress.toLowerCase();
       let name = "";
 
