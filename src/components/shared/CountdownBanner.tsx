@@ -1,8 +1,9 @@
-import { Flex, Text, Box, Image, Collapse } from "@chakra-ui/react"
+import { Flex, Text, Box, Image, Collapse, Link } from "@chakra-ui/react"
 import ArbitrumLogo from "../../static/arbitrum-banner/arbitrum.png";
 import RightArrow from "../../static/arbitrum-banner/right-arrow.png";
 import BGLeft from "../../static/arbitrum-banner/bg-left.png";
 import BGRight from "../../static/arbitrum-banner/bg-right.png";
+
 
 import { useEffect, useState } from "react"
 
@@ -10,6 +11,7 @@ export const CountdownBanner = () => {
 
     const [isOpen, setIsOpen] = useState(false)
     const [countdownValue, setCountdownValue] = useState(999999)
+    const [arrowXTranslate, setArrowXTranslate] = useState(0)
     const final = new Date(Date.UTC(2022, 0, 24, 16, 0, 0, 0)).getTime()
 
     const getCountdownSeconds = () => {
@@ -46,8 +48,14 @@ export const CountdownBanner = () => {
         }, 500)
     }, [])
 
+
+
     return (
-        <Collapse in={isOpen}>
+        <Link href='https://rari.app' isExternal _hover={{textDecoration: 'none'}}>
+        <Collapse in={isOpen}
+        onHoverStart={() => setArrowXTranslate(6)}
+        onHoverEnd={() => setArrowXTranslate(0)}
+        >
         <Flex width="100%" height="70px" flexDirection={'column'} justifyContent={'center'}
         backgroundImage={`url(${BGLeft}), url(${BGRight}), linear-gradient(90.05deg, #072FAD 4.01%, #0F82C7 96.95%)`}
         backgroundSize={'contain'}
@@ -67,10 +75,14 @@ export const CountdownBanner = () => {
                         </>
                         }
                     </Text>
-                    {countdownValue <= 0 && <Image height="28px" width="28px" src={RightArrow} mt="3px" ml="-1px"/>}
+                    {countdownValue <= 0 && <Image height="28px" width="28px" src={RightArrow} mt="3px" ml="-1px" 
+                    transform={`translate(${arrowXTranslate}px)`} 
+                    transition={'transform 0.5s'}
+                    transitionTimingFunction={'ease-out'}/>}
             </Flex>
         </Flex>
         </Collapse>
+        </Link>
     )
 }
 
