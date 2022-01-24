@@ -1312,11 +1312,12 @@ export default class Fuse {
     };
 
     this.identifyPriceOracle = async function (priceOracleAddress) {
-      if (!priceOracleAddress) return "";
       // Get PriceOracle type from runtime bytecode hash
       const runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(priceOracleAddress)
-      ).toLowerCase();
+      );
+      if (!runtimeBytecodeHash) return "";
+      runtimeBytecodeHash = runtimeBytecodeHash.toLowerCase();
 
       for (const oracleContractName of Object.keys(
         Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
@@ -1797,11 +1798,13 @@ export default class Fuse {
     };
 
     this.getPriceOracle = async function (oracleAddress) {
-      if (!oracleAddress) return "";
-      // Get price oracle contract name from runtime bytecode hash
-      var runtimeBytecodeHash = Web3.utils.sha3(
+      // Get PriceOracle type from runtime bytecode hash
+      const runtimeBytecodeHash = Web3.utils.sha3(
         await this.web3.eth.getCode(oracleAddress)
-      ).toLowerCase();
+      );
+      if (!runtimeBytecodeHash) return "";
+      runtimeBytecodeHash = runtimeBytecodeHash.toLowerCase();
+      
       for (const model of Object.keys(
         Fuse.PRICE_ORACLE_RUNTIME_BYTECODE_HASHES
       ))
