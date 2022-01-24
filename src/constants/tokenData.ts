@@ -117,11 +117,24 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
     },
+
+    //Fei3rcv
+    "0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655": {
+      logoURL:
+        "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xD533a949740bb3306d119CC777fa900bA034cd52/logo.png",
+      symbol: "FEI3CRV",
+    },
+    //D3-f
+    "0xbaaa1f5dba42c3389bdbc2c9d2de134f5cd0dc89": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/d3.jpg",
+      symbol: "D3",
+    },
   },
   [ChainID.ARBITRUM]: {
-    "0x0e15258734300290a651FdBAe8dEb039a8E7a2FA": {
-      //   logoURL:
-      //     "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
+    "0x17fc002b466eec40dae837fc4be5c67993ddbd6f": {
+        logoURL:
+          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x853d955aCEf822Db058eb8505911ED77F175b99e/logo.png",
     },
   },
   [ChainID.KOVAN]: {
