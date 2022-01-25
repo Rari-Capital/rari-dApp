@@ -39,6 +39,19 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     //////////////////
     // Edge cases: //
     /////////////////
+    
+    // Wormhole UST
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xa693b19d2931d498c5b318df961919bb4aee87a5")
+    ) {
+      name = "TerraUSD";
+      symbol = "(Wormhole)(UST)";
+      logoURL =
+        "https://github.com/Jacklipstone/rari-dApp/blob/65c4cbcf102dec4591bed6424aaef30125f5b715/src/static/download-11.jpg";
+    }
+
+    
     if (
       web3.utils.toChecksumAddress(address) ===
       web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
