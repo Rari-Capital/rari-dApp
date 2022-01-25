@@ -269,6 +269,16 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     symbol = "D3";
   }
 
+  // Wormhole UST
+  if (
+    web3.utils.toChecksumAddress(address) ===
+    web3.utils.toChecksumAddress("0xa693b19d2931d498c5b318df961919bb4aee87a5")
+  ) {
+    name = "TerraUSD";
+    symbol = "(Wormhole)(UST)";
+    logoURL =
+    "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg";
+  }
   const basicTokenInfo = {
     symbol,
     name,
