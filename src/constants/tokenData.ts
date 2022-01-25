@@ -141,9 +141,16 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
     },
+    // G-UNI
     "0xCf84a3dC12319531E3deBD48C86E68eAeAfF224a": {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
+    },
+    "0xa693b19d2931d498c5b318df961919bb4aee87a5": {
+      name: "TerraUSD",
+      symbol: "(Wormhole)(UST)",
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg",
     },
   },
   [ChainID.ARBITRUM]: {
