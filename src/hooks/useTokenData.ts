@@ -48,8 +48,8 @@ export const fetchTokenData = async (address: string) => {
           // Since running the vercel functions requires a Vercel account and is super slow,
           // just fetch this data from the live site in development:
           (process.env.NODE_ENV === "development"
-            ? "https://app.rari.capital"
-            : "https://app.rari.capital") +
+            ? "https://v2.rari.capital"
+            : "https://v2.rari.capital") +
             "/api/tokenData?address=" +
             address
         ).then((res) => res.json())),
