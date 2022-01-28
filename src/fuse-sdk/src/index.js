@@ -55,6 +55,9 @@ export default class Fuse {
     "0xc629c26dced4277419cde234012f8160a0278a79"; // UniswapAnchoredView NOT IN USE
   static COINBASE_PRO_REPORTER_ADDRESS =
     "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC"; // UniswapAnchoredView NOT IN USE
+    
+  static COMPTROLLER_IMPLEMENTATION_TEMP_TOKEN_MIGRATION = "0x1a1e7b69348b22b304428a07a7ffa1c6347f8ef6";
+  static CERC20_DELEGATE_TEMP_TOKEN_MIGRATION = "0x49a4af90cfc103a71e893a0302dd25940a8baf18";
 
   static PUBLIC_PRICE_ORACLE_CONTRACT_ADDRESSES = {
     ChainlinkPriceOracle: "0xe102421A85D9C0e71C0Ef1870DaC658EB43E1493",
@@ -108,6 +111,8 @@ export default class Fuse {
       "0xf411CD7c9bC70D37f194828ce71be00d9aEC9edF", // v1.1.3
     UniswapTwapPriceOracleV2_SushiSwap_WBTC:
       "0xC9Ad18928B1D9F61105d43Ecc33c670838D1C853", // v1.1.3
+    UniswapTwapPriceOracleV2_Uniswap_ETH:
+      "0xd4219c15b9cfc40090181ab934a08bed14017372", // v1.1.3
     SushiBarPriceOracle: "0x290E0f31e96e13f9c0DB14fD328a3C2A94557245",
     BadgerPriceOracle: "0xd0C86943e594640c4598086a2359A0e70b80eF8D",
     HarvestPriceOracle: "0x6141d9353bb1fb8131d07d358c112b372aa92514", // v1.2.1; v1.1.4 = 0x8D364609cd2716172016838fF9FBC7fBcAC91792
@@ -218,6 +223,8 @@ export default class Fuse {
       "0xc820466d7af2319646d25e2203187254a37cb9b9ae6c8a263d40fb5c01a54c51",
     MStablePriceOracle:
       "0x39fc7b2cdac3d401ea91becf897346b2156dbe261162de14082e856103456eb4",
+    GelatoGUniPriceOracle:
+      "0xbed0eddba7009021dd774a530b53a784fc80217c7bf27c15c9b2487b13fb2863",
     StakedSpellPriceOracle:
       "0x9fcea6d23c7e2e330e35e303a49f39e0c2c783e6b770ccc2de41fbbfbfc539e7",
     CurveTriCryptoLpTokenPriceOracle:
