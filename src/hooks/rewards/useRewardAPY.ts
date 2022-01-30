@@ -2,7 +2,11 @@
 // export const
 
 import { useQuery } from "react-query";
-import { TokensDataMap, useTokensDataAsMap } from "hooks/useTokenData";
+import {
+  ETH_TOKEN_DATA,
+  TokensDataMap,
+  useTokensDataAsMap,
+} from "hooks/useTokenData";
 import {
   createComptroller,
   createCToken,
@@ -174,7 +178,8 @@ const constructMantissa = (
   const newUnderlyingTotalSupplyETH =
     underlyingEthPrice * (underlyingTotalSupply / 10 ** underlyingDecimals);
 
-  const newMantissa = newRewardETHPerBlock * 1e18 / newUnderlyingTotalSupplyETH;
+  const newMantissa =
+    (newRewardETHPerBlock * 1e18) / newUnderlyingTotalSupplyETH;
 
   return newMantissa;
 };
@@ -289,12 +294,19 @@ export const getPriceFromOracles = async (
   const oracleContract = createOracle(oracleAddress, fuse, "MasterPriceOracle");
 
   let price;
+
   try {
-    price = await oracleContract.methods.price(tokenAddress).call();
-  } catch {
-    console.log(tokenAddress, ": err fetching price. trying MPO" )
-    price = await masterPriceOracle.methods.price(tokenAddress).call();
-  }
+    if (tokenAddress === ETH_TOKEN_DATA.address) {
+      price = toBN(1);
+    } else {
+      try {
+        price = await oracleContract.methods.price(tokenAddress).call();
+      } catch {
+        console.log(tokenAddress, ": err fetching price. trying MPO");
+        price = await masterPriceOracle.methods.price(tokenAddress).call();
+      }
+    }
+  } catch (err) {}
 
   return price;
 };
@@ -310,7 +322,7 @@ export const useAssetPricesInEth = (
 
   const tokensData = useTokensDataAsMap(tokenAddresses);
 
-  const { data } = useQuery(  
+  const { data } = useQuery(
     "asset prices for " +
       tokenAddresses.join(",") +
       " " +
