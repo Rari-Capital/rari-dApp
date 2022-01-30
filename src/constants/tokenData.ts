@@ -152,6 +152,10 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg",
     },
+    "0x4c2e59d098df7b6cbae0848d66de2f8a4889b9c3": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/FODL.png",
+    },
   },
   [ChainID.ARBITRUM]: {
     "0x17fc002b466eec40dae837fc4be5c67993ddbd6f": {
