@@ -126,6 +126,7 @@ export default class Fuse {
     WSSquidPriceOracle: "0xAE7C2169f3B5179bA56E471623BC47bEE06E4aA7",
     WXBtrflyPriceOracle: "0x66159b1250f7ec2e335176643c25a0a3deae7b1f",
     StakedFodlPriceOracle: "0x92cf2299680c063ccaf18f62a60c500a625e08e2",
+    RgtTempPriceOracle: "0x0b43d7372e49ad2b04c7ab04bddd7f724480aaed",
   };
 
   static UNISWAP_TWAP_PRICE_ORACLE_ROOT_CONTRACT_ADDRESS =
