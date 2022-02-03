@@ -48,7 +48,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       web3.utils.toChecksumAddress("0xa693b19d2931d498c5b318df961919bb4aee87a5")
     ) {
       name = "TerraUSD";
-      symbol = "(Wormhole)(UST)";
+      symbol = "UST (Wormhole)";
       logoURL =
         "https://github.com/Jacklipstone/rari-dApp/blob/65c4cbcf102dec4591bed6424aaef30125f5b715/src/static/download-11.jpg";
     }
@@ -317,7 +317,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     web3.utils.toChecksumAddress("0xa693b19d2931d498c5b318df961919bb4aee87a5")
   ) {
     name = "TerraUSD";
-    symbol = "(Wormhole)(UST)";
+    symbol = "UST (Wormhole)";
     logoURL =
     "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg";
   }
