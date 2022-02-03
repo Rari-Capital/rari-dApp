@@ -146,12 +146,14 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
     },
+    // UST
     "0xa693b19d2931d498c5b318df961919bb4aee87a5": {
       name: "TerraUSD",
-      symbol: "(Wormhole)(UST)",
+      symbol: "UST (Wormhhole)",
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg",
     },
+    // FODL
     "0x7e05540A61b531793742fde0514e6c136b5fbAfE": {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/l2tokendata/src/static/tokens/FODL.png",
