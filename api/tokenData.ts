@@ -40,6 +40,48 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     // Edge cases: //
     /////////////////
 
+=======
+    
+    // Wormhole UST
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xa693b19d2931d498c5b318df961919bb4aee87a5")
+    ) {
+      name = "TerraUSD";
+      symbol = "(Wormhole)(UST)";
+      logoURL =
+        "https://github.com/Jacklipstone/rari-dApp/blob/65c4cbcf102dec4591bed6424aaef30125f5b715/src/static/download-11.jpg";
+    }
+
+    
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0xFD4D8a17df4C27c1dD245d153ccf4499e806C87D")
+    ) {
+      name = "linkCRV Gauge Deposit";
+      symbol = "[G]linkCRV";
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/crvLINKGauge.png";
+    }
+
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0")
+    ) {
+      name = "Wrapped Staked Ether";
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/wstETH.png";
+    }
+
+    if (
+      web3.utils.toChecksumAddress(address) ===
+      web3.utils.toChecksumAddress("0x04f2694c8fcee23e8fd0dfea1d4f5bb8c352111f")
+    ) {
+      logoURL =
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/token_sOHM_2.png";
+    }
+
+
     // Fetch the logo from yearn if possible:
     const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
     const yearnLogoResponse = await fetch(yearnLogoURL);
