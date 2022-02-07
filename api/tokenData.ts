@@ -72,73 +72,82 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const trustWalletURL = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
   const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
 
-  // Fetch data from rari token data first
-  const [decimals, rariTokenData] = await Promise.all([
-    tokenContract.methods
-      .decimals()
-      .call()
-      .then((res) => parseFloat(res)),
-    // 18,
-    fetch(rariURL).then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-    }),
-  ]);
+  let decimals = 18;
+  try {
+    // Fetch data from rari token data first
+    const [_decimals, rariTokenData] = await Promise.all([
+      tokenContract.methods
+        .decimals()
+        .call()
+        .then((res) => parseFloat(res)),
+      // 18,
+      fetch(rariURL).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      }),
+    ]);
 
-  let method: "RARI" | "COINGECKO" | "CONTRACT";
+    decimals = _decimals;
 
-  //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
-  if (!!rariTokenData) {
-    // We got data from rari token list
-    let { symbol: _symbol, name: _name, logoURI } = rariTokenData;
-    symbol = _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
-    name = _name;
-    logoURL = logoURI;
+    let method: "RARI" | "COINGECKO" | "CONTRACT";
 
-    method = "RARI";
-  } else {
-    // We could not get data from rari token list. Try Coingecko
-    const coingeckoData = await fetch(coingeckoURL).then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-    });
-
-    if (!!coingeckoData) {
-      // We got data from Coingecko
-      let {
-        symbol: _symbol,
-        name: _name,
-        image: { small },
-      } = coingeckoData;
-
+    //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
+    if (!!rariTokenData) {
+      // We got data from rari token list
+      let { symbol: _symbol, name: _name, logoURI } = rariTokenData;
       symbol =
         _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
       name = _name;
-      // Prefer the logo from trustwallet if possible!
-      const trustWalletLogoResponse = await fetch(trustWalletURL);
-      if (trustWalletLogoResponse.ok) {
-        logoURL = trustWalletURL;
-      } else {
-        logoURL = small;
-      }
-      method = "COINGECKO";
-    } else {
-      // We could not get data from coingecko. Use the contract data
-      name = await tokenContract.methods.name().call();
-      symbol = await tokenContract.methods.symbol().call();
+      logoURL = logoURI;
 
-      // We can't get the logo data from literally anywhere else so try one last time from yearn
-      const yearnLogoResponse = await fetch(yearnLogoURL);
-      if (yearnLogoResponse.ok) {
-        // A lot of the yearn tokens are curve tokens with long names,
-        // so we flatten them here and just remove the Curve part
-        symbol = symbol.replace("Curve-", "");
-        logoURL = yearnLogoURL;
+      method = "RARI";
+    } else {
+      // We could not get data from rari token list. Try Coingecko
+      const coingeckoData = await fetch(coingeckoURL).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      });
+
+      if (!!coingeckoData) {
+        // We got data from Coingecko
+        let {
+          symbol: _symbol,
+          name: _name,
+          image: { small },
+        } = coingeckoData;
+
+        symbol =
+          _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
+        name = _name;
+        // Prefer the logo from trustwallet if possible!
+        const trustWalletLogoResponse = await fetch(trustWalletURL);
+        if (trustWalletLogoResponse.ok) {
+          logoURL = trustWalletURL;
+        } else {
+          logoURL = small;
+        }
+        method = "COINGECKO";
+      } else {
+        // We could not get data from coingecko. Use the contract data
+        name = await tokenContract.methods.name().call();
+        symbol = await tokenContract.methods.symbol().call();
+
+        // We can't get the logo data from literally anywhere else so try one last time from yearn
+        const yearnLogoResponse = await fetch(yearnLogoURL);
+        if (yearnLogoResponse.ok) {
+          // A lot of the yearn tokens are curve tokens with long names,
+          // so we flatten them here and just remove the Curve part
+          symbol = symbol.replace("Curve-", "");
+          logoURL = yearnLogoURL;
+        }
+        method = "CONTRACT";
       }
-      method = "CONTRACT";
     }
+  } catch (err) {
+    // If it errored we should return 404
+    return response.status(404);
   }
 
   // Assign any overides if any specified
