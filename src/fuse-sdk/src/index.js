@@ -331,6 +331,25 @@ export default class Fuse {
     "TOKEN_TRANSFER_OUT_FAILED",
     "UTILIZATION_ABOVE_MAX",
   ];
+  
+  static COLLATERAL_REDEMPTION_STRATEGIES = {
+    CurveLpToken: "0xb5eEaeB4E7e0a9feD003ED402016342A09FC2784",
+    CurveLiquidityGaugeV2: "0x97e6E953C9a9250c8e889D888158F27752e0aFe0",
+    YearnYVaultV2: "0x50293EB96E90616faD66CEF227EDA2b344F592c0",
+    PoolTogether: "0xDDB0d86fDBF33210Ba6EFc97757fFcdBF26B5530", 
+    UniswapV2: "0x8db1884def49b001c0b9b2fd5ba8e8b71f69b958",
+    UniswapV1: "0x9fa9ffa397be8e33930571dcd9f5f92b629b0fad",
+    CurveSwap: "0xebea141052d759b75c4c9eeaad28f07f329d0163",
+    WSTEth: "0xca844845a3578296b3fcfe50fc3a1064a2922fbc",
+    SOhm: "0xeBC0752232697F17EbfAA1f26aB8543EcEC35AE3",
+    UniswapV3: "0x5E829D997294F7f1d40a45C0f6431aF13a381E63",
+    SushiBar: "0x5F2dF200636e203863819CbEaA02017CFabEc4D6",
+    UniswapLpToken: "0x3659a0a9128ee84f143bdc83c4f3932cd8f552e7",
+    Harvest: "0xbb77A6a11A5998A6C7B9337f97Fd82f0D90f873b",
+    StakedSdt: "0x015e435df0bfb249990be78ce050bf8b3b88f757",
+    GOhm: "0x2bA5f816FB2c219Ae1C621c69A263899C1914Da4",
+    BadgerSett: "0xc743c9d1801ad9169be176761e8bb95c1298d817",
+  };
 
   constructor(web3Provider) {
     this.web3 = new Web3(web3Provider);
