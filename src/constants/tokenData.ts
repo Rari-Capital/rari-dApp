@@ -117,17 +117,52 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
     },
-  },
-  [ChainID.ARBITRUM]: {
-    "0x0e15258734300290a651FdBAe8dEb039a8E7a2FA": {
-      //   logoURL:
-      //     "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
+
+    //Fei3rcv
+    "0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655": {
+      logoURL:
+        "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xD533a949740bb3306d119CC777fa900bA034cd52/logo.png",
+      symbol: "FEI3CRV",
+    },
+    //D3-f
+    "0xbaaa1f5dba42c3389bdbc2c9d2de134f5cd0dc89": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/d3.jpg",
+      symbol: "D3",
+    },
+    //D3-f
+    "0xBaaa1F5DbA42C3389bDbc2c9D2dE134F5cD0Dc89": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/d3.jpg",
+      symbol: "D3",
+    },
+    //D3-f
+    "0x3D1556e84783672f2a3bd187a592520291442539": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
+    },
+    // G-UNI
+    "0xCf84a3dC12319531E3deBD48C86E68eAeAfF224a": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
+    },
+    // UST
+    "0xa693b19d2931d498c5b318df961919bb4aee87a5": {
+      name: "TerraUSD",
+      symbol: "UST (Wormhhole)",
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg",
+    },
+    // FODL
+    "0x7e05540A61b531793742fde0514e6c136b5fbAfE": {
+      logoURL:
+        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/l2tokendata/src/static/tokens/FODL.png",
     },
   },
-[ChainID.ARBITRUM_TESTNET]: {
-    "0x0e15258734300290a651FdBAe8dEb039a8E7a2FA": {
-      //   logoURL:
-      //     "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
+  [ChainID.ARBITRUM]: {
+    "0x17fc002b466eec40dae837fc4be5c67993ddbd6f": {
+      logoURL:
+        "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x853d955aCEf822Db058eb8505911ED77F175b99e/logo.png",
     },
   },
   [ChainID.KOVAN]: {

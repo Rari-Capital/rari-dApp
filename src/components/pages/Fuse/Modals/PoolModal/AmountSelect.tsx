@@ -157,6 +157,7 @@ async function fetchMaxAmount(
   if (mode === Mode.SUPPLY) {
     const balance = await fetchTokenBalance(
       asset.underlyingToken,
+      //@ts-ignore
       fuse.web3,
       address
     );
@@ -167,6 +168,7 @@ async function fetchMaxAmount(
   if (mode === Mode.REPAY) {
     const balance = await fetchTokenBalance(
       asset.underlyingToken,
+      //@ts-ignore
       fuse.web3,
       address
     );
@@ -282,7 +284,7 @@ const AmountSelect = ({
 
   let depositOrWithdrawAlert = null;
 
-  if (mode === Mode.BORROW && isBorrowPaused){
+  if (mode === Mode.BORROW && isBorrowPaused) {
     depositOrWithdrawAlert = t("Borrowing is disabled for this asset.");
   }
   else if (amount === null || amount.isZero()) {
@@ -349,15 +351,15 @@ const AmountSelect = ({
       const cToken = new fuse.web3.eth.Contract(
         isETH
           ? JSON.parse(
-              fuse.compoundContracts[
-                "contracts/CEtherDelegate.sol:CEtherDelegate"
-              ].abi
-            )
+            fuse.compoundContracts[
+              "contracts/CEtherDelegate.sol:CEtherDelegate"
+            ].abi
+          )
           : JSON.parse(
-              fuse.compoundContracts[
-                "contracts/CErc20Delegate.sol:CErc20Delegate"
-              ].abi
-            ),
+            fuse.compoundContracts[
+              "contracts/CErc20Delegate.sol:CErc20Delegate"
+            ].abi
+          ),
         asset.cToken
       );
 
@@ -656,8 +658,8 @@ const AmountSelect = ({
               // If the size is small, this means the text is large and we don't want the font size scale animation.
               className={
                 isMobile ||
-                depositOrWithdrawAlertFontSize === "14px" ||
-                depositOrWithdrawAlertFontSize === "15px"
+                  depositOrWithdrawAlertFontSize === "14px" ||
+                  depositOrWithdrawAlertFontSize === "15px"
                   ? "confirm-button-disable-font-size-scale"
                   : ""
               }
@@ -828,9 +830,9 @@ const StatsColumn = ({
               fuse.web3.utils.toBN(
                 totalSupply > 0
                   ? new BigNumber(assetToBeUpdated.totalBorrow)
-                      .dividedBy(totalSupply.toString())
-                      .multipliedBy(1e18)
-                      .toFixed(0)
+                    .dividedBy(totalSupply.toString())
+                    .multipliedBy(1e18)
+                    .toFixed(0)
                   : 0
               )
             ),
@@ -855,9 +857,9 @@ const StatsColumn = ({
               fuse.web3.utils.toBN(
                 totalSupply > 0
                   ? new BigNumber(assetToBeUpdated.totalBorrow)
-                      .dividedBy(totalSupply.toString())
-                      .multipliedBy(1e18)
-                      .toFixed(0)
+                    .dividedBy(totalSupply.toString())
+                    .multipliedBy(1e18)
+                    .toFixed(0)
                   : 0
               )
             ),
@@ -882,9 +884,9 @@ const StatsColumn = ({
               fuse.web3.utils.toBN(
                 assetToBeUpdated.totalSupply > 0
                   ? new BigNumber(totalBorrow.toString())
-                      .dividedBy(assetToBeUpdated.totalSupply)
-                      .multipliedBy(1e18)
-                      .toFixed(0)
+                    .dividedBy(assetToBeUpdated.totalSupply)
+                    .multipliedBy(1e18)
+                    .toFixed(0)
                   : 0
               )
             ),
@@ -909,9 +911,9 @@ const StatsColumn = ({
               fuse.web3.utils.toBN(
                 assetToBeUpdated.totalSupply > 0
                   ? new BigNumber(totalBorrow.toString())
-                      .dividedBy(assetToBeUpdated.totalSupply)
-                      .multipliedBy(1e18)
-                      .toFixed(0)
+                    .dividedBy(assetToBeUpdated.totalSupply)
+                    .multipliedBy(1e18)
+                    .toFixed(0)
                   : 0
               )
             ),
@@ -936,8 +938,8 @@ const StatsColumn = ({
     updatedAssets ?? [],
     enableAsCollateral
       ? {
-          ignoreIsEnabledCheckFor: asset.cToken,
-        }
+        ignoreIsEnabledCheckFor: asset.cToken,
+      }
       : undefined
   );
 
@@ -994,7 +996,7 @@ const StatsColumn = ({
                   {" → "}
                   {smallUsdFormatter(
                     updatedAsset!.supplyBalance /
-                      10 ** updatedAsset!.underlyingDecimals
+                    10 ** updatedAsset!.underlyingDecimals
                   ).replace("$", "")}
                 </>
               ) : null}{" "}
@@ -1174,7 +1176,7 @@ const AmountInput = ({
   displayAmount,
   updateAmount,
   color,
-  disabled=false
+  disabled = false
 }: {
   displayAmount: string;
   updateAmount: (symbol: string) => any;
