@@ -147,7 +147,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     }
   } catch (err) {
     // If it errored we should return 404
-    return response.status(404);
+    return response.status(404).send("Nope");
   }
 
   // Assign any overides if any specified
@@ -166,7 +166,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     overrides
   );
 
-  console.log({ overrides, basicTokenInfo, method });
+  // console.log({ overrides, basicTokenInfo, method });
 
   // Get the color
   let color: Palette;
