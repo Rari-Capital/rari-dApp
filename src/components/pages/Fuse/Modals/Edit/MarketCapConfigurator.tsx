@@ -83,6 +83,10 @@ const MarketCapConfigurator = ({
       handleGenericError(e, toast);
     }
   };
+
+
+  const displayedSupplyCap = (parseInt(supplyCap) / (10 ** (tokenData?.decimals ?? 18))).toLocaleString() + " " + tokenSymbol
+
   return (
     <>
       <Row
@@ -119,7 +123,7 @@ const MarketCapConfigurator = ({
             mb={newSupplyCap !== "" ? 5 : 0}
             placeholder={
               supplyCap > 0
-                ? parseInt(supplyCap).toLocaleString() + " " + tokenSymbol
+                ? displayedSupplyCap
                 : t(`${tokenSymbol} Cap`)
             }
             type="number"
@@ -148,7 +152,7 @@ const MarketCapConfigurator = ({
                 </Text>
                 <Box height="100%" width="40%">
                   <Text opacity="0.5" textAlign="end">
-                    {tokenSymbol} {parseInt(newSupplyCap).toLocaleString()}
+                    {parseInt(newSupplyCap).toLocaleString()} {tokenSymbol} 
                   </Text>
                 </Box>
               </Box>
@@ -164,7 +168,7 @@ const MarketCapConfigurator = ({
                   </Text>
                   <Box height="100%" width="40%">
                     <Text opacity="0.5" textAlign="end">
-                      {tokenSymbol} {parseInt(supplyCap).toLocaleString()}
+                     {displayedSupplyCap}
                     </Text>
                   </Box>
                 </Box>

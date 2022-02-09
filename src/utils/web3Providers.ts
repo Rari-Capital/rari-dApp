@@ -1,4 +1,5 @@
 import Fuse from "../fuse-sdk/src";
+declare var window: any
 
 export const alchemyURL =  `https://eth-mainnet.alchemyapi.io/v2/2Mt-6brbJvTA4w9cpiDtnbTo6qOoySnN`;
 export const testnetURL =  `http://localhost:8545`;

@@ -14,6 +14,8 @@ import {
   useToast,
   HStack,
 } from "@chakra-ui/react";
+import { Alert, AlertIcon } from "@chakra-ui/alert";
+
 import {
   Column,
   Center,
@@ -21,6 +23,8 @@ import {
   RowOrColumn,
   useIsMobile,
 } from "utils/chakraUtils";
+
+import { FusePoolData } from "utils/fetchFusePoolData";
 
 // Hooks
 import { useTranslation } from "react-i18next";
@@ -169,6 +173,17 @@ const PendingAdminAlert = ({ comptroller }: { comptroller?: string }) => {
   );
 };
 
+const RiskyPoolAlert = () => {
+  return (
+    <Alert colorScheme={"red"} borderRadius={5} mt="5">
+      <AlertIcon />
+      <Text color="black">
+        Do not use this pool. This pool has risks due to a weak oracle.
+      </Text>
+    </Alert>
+  );
+};
+
 const FusePoolPage = memo(() => {
   const { isAuthed } = useRari();
 
@@ -177,6 +192,7 @@ const FusePoolPage = memo(() => {
   let { poolId } = useParams();
 
   const data = useFusePoolData(poolId);
+  const isRiskyPool = poolId == "90" ?? false
 
   const incentivesData: IncentivesData = usePoolIncentives(data?.comptroller);
   const { hasIncentives } = incentivesData;
@@ -232,6 +248,8 @@ const FusePoolPage = memo(() => {
         {!!data && isAuthed && (
           <PendingAdminAlert comptroller={data?.comptroller} />
         )}
+
+        {!!isRiskyPool && <RiskyPoolAlert />}
 
         {hasIncentives && (
           <motion.div

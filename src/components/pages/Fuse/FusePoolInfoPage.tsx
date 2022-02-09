@@ -7,6 +7,7 @@ import {
   Spinner,
   Text,
   useClipboard,
+  VStack,
 } from "@chakra-ui/react";
 import {
   Column,
@@ -452,12 +453,12 @@ const AssetAndOtherInfo = ({
     selectedAsset.totalSupply === "0"
       ? 0
       : parseFloat(
-          // Use Max.min() to cap util at 100%
-          Math.min(
-            (selectedAsset.totalBorrow / selectedAsset.totalSupply) * 100,
-            100
-          ).toFixed(0)
-        );
+        // Use Max.min() to cap util at 100%
+        Math.min(
+          (selectedAsset.totalBorrow / selectedAsset.totalSupply) * 100,
+          100
+        ).toFixed(0)
+      );
 
   const { data: curveData } = useQuery(
     selectedAsset.cToken + " curves",
@@ -554,7 +555,7 @@ const AssetAndOtherInfo = ({
         px={3}
         className="hide-bottom-tooltip"
         flexShrink={0}
-        // bg="red"
+      // bg="red"
       >
         {data ? (
           data.supplierRates === null ? (
@@ -698,14 +699,16 @@ const AssetAndOtherInfo = ({
         p={4}
         mt={3}
       >
-        <CaptionedStat
-          stat={shortUsdFormatter(selectedAsset.totalSupplyUSD)}
-          statSize="lg"
-          captionSize="xs"
-          caption={t("Total Supplied")}
-          crossAxisAlignment="center"
-          captionFirst={true}
-        />
+          <SimpleTooltip label={`${selectedAsset.totalSupply} ${selectedAsset.underlyingSymbol}`}>
+            <CaptionedStat
+              stat={(selectedAsset.totalSupply / (10 ** selectedAsset.underlyingDecimals)).toFixed(2) + ` (${shortUsdFormatter(selectedAsset.totalSupplyUSD)})`}
+              statSize="lg"
+              captionSize="xs"
+              caption={t("Total Supplied")}
+              crossAxisAlignment="center"
+              captionFirst={true}
+            />
+          </SimpleTooltip>
 
         {isMobile ? null : (
           <CaptionedStat
@@ -713,10 +716,10 @@ const AssetAndOtherInfo = ({
               selectedAsset.totalSupplyUSD.toString() === "0"
                 ? "0%"
                 : (
-                    (selectedAsset.totalBorrowUSD /
-                      selectedAsset.totalSupplyUSD) *
-                    100
-                  ).toFixed(0) + "%"
+                  (selectedAsset.totalBorrowUSD /
+                    selectedAsset.totalSupplyUSD) *
+                  100
+                ).toFixed(0) + "%"
             }
             statSize="lg"
             captionSize="xs"
@@ -750,8 +753,8 @@ export const convertIRMtoCurve = (interestRateModel: any, fuse: Fuse) => {
           fuse.web3.utils.toBN((i * 1e16).toString())
         ) /
           1e18) *
-          (4 * 60 * 24) +
-          1,
+        (4 * 60 * 24) +
+        1,
         365
       ) -
         1) *
@@ -763,8 +766,8 @@ export const convertIRMtoCurve = (interestRateModel: any, fuse: Fuse) => {
           fuse.web3.utils.toBN((i * 1e16).toString())
         ) /
           1e18) *
-          (4 * 60 * 24) +
-          1,
+        (4 * 60 * 24) +
+        1,
         365
       ) -
         1) *

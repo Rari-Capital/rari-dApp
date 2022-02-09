@@ -12,6 +12,7 @@
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
     "@loadable/component": "^5.13.2",
+    "@sushiswap/default-token-list": "^20.11.0",
     "@testing-library/cypress": "^7.0.1",
     "@testing-library/jest-dom": "^5.11.2",
     "@testing-library/react": "^11.0.4",
@@ -25,7 +26,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-virtualized-auto-sizer": "^1.0.0",
     "@types/react-window": "^1.8.2",
-    "@walletconnect/web3-provider": "^1.5.2",
+    "@walletconnect/web3-provider": "^1.7.1",
     "apexcharts": "3.20.2",
     "axios": "^0.20.0",
     "bad-words": "^3.0.4",
@@ -66,8 +67,9 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "typescript": "^4.0.3",
+    "walletlink": "^2.4.3",
     "web3": "^1.2.11",
-    "web3modal": "^1.9.0",
+    "web3modal": "^1.9.5",
     "window-table": "^1.0.0-alpha.11"
   },
   "scripts": {
@@ -81,7 +83,8 @@
     "e2e-test": "cypress run",
     "test-all-with-coverage": "npm run unit-test && npm run e2e-test && npx merge-cypress-jest-coverage",
     "translate": "npx i18next-scanner@2.11.0",
-    "check-translations": "npm run translate && if grep -q \"__NOT_TRANSLATED__\" src/locales/*.json; then echo \"Translations missing!\"; exit 1; else echo \"All translations present!\"; fi"
+    "check-translations": "npm run translate && if grep -q \"__NOT_TRANSLATED__\" src/locales/*.json; then echo \"Translations missing!\"; exit 1; else echo \"All translations present!\"; fi",
+    "compile-tokens": "node ./src/utils/compileTokenData.js"
   },
   "eslintConfig": {
     "extends": "react-app"

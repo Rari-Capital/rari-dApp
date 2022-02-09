@@ -123,6 +123,7 @@ const PoolConfiguration = () => {
       name,
       isWhitelisted,
       bigCloseFactor,
+      
       bigLiquidationIncentive,
       priceOracle,
       {},
