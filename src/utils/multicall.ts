@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import { alchemyURL } from "./web3Providers";
 
 export const createMultiCall = (web3: Web3) => {
   const multicallContract = new web3.eth.Contract(
@@ -9,10 +10,10 @@ export const createMultiCall = (web3: Web3) => {
 };
 
 export const sendWithMultiCall = async (
-  web3: Web3,
   encodedCalls: any,
   address: string
 ) => {
+  const web3 = new Web3(alchemyURL);
   const multicall = createMultiCall(web3);
 
   console.log("sendWithMultiCall", { encodedCalls, multicall });
