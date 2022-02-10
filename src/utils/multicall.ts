@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import Fuse from "fuse-sdk";
 import { alchemyURL } from "./web3Providers";
 
 export const createMultiCall = (web3: Web3) => {
@@ -10,11 +11,12 @@ export const createMultiCall = (web3: Web3) => {
 };
 
 export const sendWithMultiCall = async (
+  fuse: Fuse,
   encodedCalls: any,
   address: string
 ) => {
-  const web3 = new Web3(alchemyURL);
-  const multicall = createMultiCall(web3);
+  // @ts-ignore
+  const multicall = createMultiCall(fuse.web3);
 
   console.log("sendWithMultiCall", { encodedCalls, multicall });
 
