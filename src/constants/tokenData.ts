@@ -150,7 +150,7 @@ export const TokenDataOverrides: {
       name: "Wormhole UST",
       symbol: "USTw",
       logoURL:
-        "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg",
+        "https://raw.githubusercontent.com/sushiswap/icons/master/token/ust.jpg",
     },
     // Terra UST
     "0xa47c8bf37f92abed4a126bda807a7b7498661acd": {
