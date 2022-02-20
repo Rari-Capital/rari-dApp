@@ -147,10 +147,17 @@ export const TokenDataOverrides: {
     },
     // Wormhole UST 
     "0xa693B19d2931d498c5B318dF961919BB4aee87a5": {
-      name: "TerraUSD",
-      symbol: "UST (Wormhhole)",
+      name: "Wormhole UST",
+      symbol: "USTw",
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/UST.jpeg",
+    },
+    // Terra UST
+    "0xa47c8bf37f92abed4a126bda807a7b7498661acd": {
+      name: "Terra UST",
+      symbol: "UST",
+      logoURL:
+        "https://miro.medium.com/max/1000/1*NQsDZz1XgwOik3PpejCALQ.png",
     },
     // FODL
     "0x7e05540A61b531793742fde0514e6c136b5fbAfE": {
