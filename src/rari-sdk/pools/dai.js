@@ -19,10 +19,12 @@ const legacyContractAddresses = {
   }
 };
 
-var legacyAbis = {};
+var legacyAbis = {
+  "v1.0.0": {}
+};
 
 // 1.0.0
-wlegacyAbis["v1.0.0"]["RariFundController"] = require("." +
+legacyAbis["v1.0.0"]["RariFundController"] = require("." +
   "/dai/abi/legacy/" +
   "v1.0.0" +
   "/" +
