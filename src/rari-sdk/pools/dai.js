@@ -22,8 +22,7 @@ const legacyContractAddresses = {
 var legacyAbis = {};
 
 // 1.0.0
-legacyAbis["v1.0.0"] = {};
-legacyAbis["v1.0.0"]["RariFundController"] = require("." +
+wlegacyAbis["v1.0.0"]["RariFundController"] = require("." +
   "/dai/abi/legacy/" +
   "v1.0.0" +
   "/" +

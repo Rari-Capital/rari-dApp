@@ -3006,7 +3006,7 @@ export default class StablePool {
               tokenRawFundBalanceBN
                 .mul(
                   Web3.utils.toBN(
-                    allBalances["4"][
+                    allBalances["4"][ 
                       self.allocations.CURRENCIES.indexOf(currencyCode)
                     ]
                   )

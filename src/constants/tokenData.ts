@@ -113,11 +113,10 @@ export const TokenDataOverrides: {
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/tSUSHI.png",
     },
     // txJP
-    "0x961dd84059505d59f82ce4fb87d3c09bec65301d": {
+    "0x961dD84059505D59f82cE4fb87D3c09bec65301d": {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/TXJP.png",
     },
-
     //Fei3rcv
     "0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655": {
       logoURL:
@@ -146,8 +145,8 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
     },
-    // UST
-    "0xa693b19d2931d498c5b318df961919bb4aee87a5": {
+    // Wormhole UST 
+    "0xa693B19d2931d498c5B318dF961919BB4aee87a5": {
       name: "TerraUSD",
       symbol: "UST (Wormhhole)",
       logoURL:
@@ -158,6 +157,7 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/l2tokendata/src/static/tokens/FODL.png",
     },
+    // 
   },
   [ChainID.ARBITRUM]: {
     "0x17fc002b466eec40dae837fc4be5c67993ddbd6f": {
