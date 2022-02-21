@@ -164,6 +164,11 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/l2tokendata/src/static/tokens/FODL.png",
     },
+    // stkAAVE
+    "0x4da27a545c0c5b758a6ba100e3a049001de870f5": {
+      logoURL:
+        "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png",
+    },
     // 
   },
   [ChainID.ARBITRUM]: {
