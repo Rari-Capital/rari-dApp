@@ -172,7 +172,7 @@ export const TokenDataOverrides: {
     // 
   },
   [ChainID.ARBITRUM]: {
-    "0x17fc002b466eec40dae837fc4be5c67993ddbd6f": {
+    "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F": {
       logoURL:
         "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x853d955aCEf822Db058eb8505911ED77F175b99e/logo.png",
     },
