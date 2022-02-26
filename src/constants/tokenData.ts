@@ -145,7 +145,7 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/Rari-Capital/rari-dApp/master/src/static/tokens/G-UNI.png",
     },
-    // Wormhole UST 
+    // Wormhole UST
     "0xa693B19d2931d498c5B318dF961919BB4aee87a5": {
       name: "Wormhole UST",
       symbol: "USTw",
@@ -156,8 +156,7 @@ export const TokenDataOverrides: {
     "0xa47c8bf37f92abed4a126bda807a7b7498661acd": {
       name: "Terra UST",
       symbol: "UST",
-      logoURL:
-        "https://miro.medium.com/max/1000/1*NQsDZz1XgwOik3PpejCALQ.png",
+      logoURL: "https://miro.medium.com/max/1000/1*NQsDZz1XgwOik3PpejCALQ.png",
     },
     // FODL
     "0x7e05540A61b531793742fde0514e6c136b5fbAfE": {
@@ -169,12 +168,16 @@ export const TokenDataOverrides: {
       logoURL:
         "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png",
     },
-    // 
+    //
   },
   [ChainID.ARBITRUM]: {
     "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F": {
       logoURL:
         "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x853d955aCEf822Db058eb8505911ED77F175b99e/logo.png",
+    },
+    "0x4a717522566c7a09fd2774ccedc5a8c43c5f9fd2": {
+      logoURL:
+        "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/0x956F47F50A910163D8BF957Cf5846D573E7f87CA/logo.png",
     },
   },
   [ChainID.KOVAN]: {
