@@ -65,7 +65,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const tokenContract = new web3.eth.Contract(ERC20ABI as any, address);
 
   // L1/L2 URLS
-  const rariURL = `https://raw.githubusercontent.com/sharad-s/rari-token-list/main/tokens/${chainId}/${address}/info.json`;
+  const rariURL = `https://raw.githubusercontent.com/sharad-s/rari-token-list/main/tokens/${chainId}/${address.toLowerCase()}/info.json`;
   const coingeckoURL = `https://api.coingecko.com/api/v3/coins/${coingeckoNetworkPath[chainId]}/contract/${address}`;
 
   // L1 URLS
@@ -91,6 +91,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     decimals = _decimals;
 
     let method: "RARI" | "COINGECKO" | "CONTRACT";
+
+    console.log({ rariTokenData, rariURL });
 
     //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
     if (!!rariTokenData) {
@@ -153,7 +155,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   // Assign any overides if any specified
   let overrides = {};
   if (!!TokenDataOverrides[chainId]) {
-    overrides = TokenDataOverrides[chainId][address] ?? {};
+    overrides = TokenDataOverrides[chainId][address.toLowerCase()] ?? {};
   }
   const basicTokenInfo = Object.assign(
     {},
