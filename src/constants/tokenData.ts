@@ -175,7 +175,7 @@ export const TokenDataOverrides: {
       logoURL:
         "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x853d955aCEf822Db058eb8505911ED77F175b99e/logo.png",
     },
-    "0x4a717522566c7a09fd2774ccedc5a8c43c5f9fd2": {
+    "0x4A717522566C7A09FD2774cceDC5A8c43C5F9FD2": {
       logoURL:
         "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/0x956F47F50A910163D8BF957Cf5846D573E7f87CA/logo.png",
     },
