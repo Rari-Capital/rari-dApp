@@ -13,6 +13,12 @@ export const TokenDataOverrides: {
   };
 } = {
   [ChainID.MAINNET]: {
+    // We use the zero address in the dapp to denote ETH
+    "0x0000000000000000000000000000000000000000": {
+      symbol: "ETH",
+      name: "Ether",
+      logoURL: "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png",
+    },
     // FTX
     "0x50d1c9771902476076ecfc8b2a83ad6b9355a4c9": {
       symbol: "FTT",
