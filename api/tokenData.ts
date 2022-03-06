@@ -26,8 +26,7 @@ type tokenData = {
  *
  */
 
-// params: address (required), chainId (optional) (default 1)
-export default async (request: VercelRequest, response: VercelResponse) => {
+export default async function handler(request: VercelRequest, response: VercelResponse) {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
 
@@ -92,7 +91,10 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
     let method: "RARI" | "COINGECKO" | "CONTRACT";
 
-    //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
+    // 1.) Try Rari Token list
+    // 2.) Check if the address is the zero address (denotes ETH)
+    // 3.) Try Coingecko
+    // 4.) Try contracts
     if (!!rariTokenData) {
       // We got data from rari token list
       let { symbol: _symbol, name: _name, logoURI } = rariTokenData;
@@ -102,6 +104,10 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       logoURL = logoURI;
 
       method = "RARI";
+    } else if (address === "0x0000000000000000000000000000000000000000") {
+      symbol = "ETH";    // We use the zero address in the dapp to denote ETH
+      name = "Ether";
+      logoURL = "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/64/Ethereum-ETH-icon.png";
     } else {
       // We could not get data from rari token list. Try Coingecko
       const coingeckoData = await fetch(coingeckoURL).then((res) => {
