@@ -92,6 +92,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
     let method: "RARI" | "COINGECKO" | "CONTRACT";
 
+    console.log({ rariTokenData, rariURL });
+
     //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
     if (!!rariTokenData) {
       // We got data from rari token list
