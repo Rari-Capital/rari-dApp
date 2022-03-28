@@ -11,14 +11,13 @@ import { ModalDivider } from "../../shared/Modal";
 
 import FuseStatsBar from "./FuseStatsBar";
 import FuseTabBar from "./FuseTabBar";
+import Davatar from "@davatar/react";
 
 import { filterOnlyObjectProperties, FuseAsset } from "utils/fetchFusePoolData";
 
 import Footer from "components/shared/Footer";
 import { memo, useState } from "react";
 
-// @ts-ignore
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { CTokenIcon } from "components/shared/CTokenIcon";
 import { useQuery } from "react-query";
 
@@ -341,10 +340,7 @@ const LiquidationRow = ({
           >
             <Row mainAxisAlignment="flex-start" crossAxisAlignment="center">
               <Box boxSize="23px">
-                <Jazzicon
-                  diameter={23}
-                  seed={jsNumberForAddress(liquidation.liquidator)}
-                />
+                <Davatar size={23} address={liquidation.liquidator} />
               </Box>
 
               <Text ml={2} mr={2} fontWeight="bold">
@@ -358,10 +354,7 @@ const LiquidationRow = ({
               </Text>
 
               <Box boxSize="23px">
-                <Jazzicon
-                  diameter={23}
-                  seed={jsNumberForAddress(liquidation.borrower)}
-                />
+                <Davatar size={23} address={liquidation.borrower} />
               </Box>
 
               <Text ml={3} mr={2} fontWeight="bold">
