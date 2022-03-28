@@ -179,12 +179,12 @@ export const TokenDataOverrides: {
       symbol: "oneUNI"
     },
     // ICHI oneUNI
-    "0xfaeccee632912c42a7c88c3544885a8d455408fa": {
+    "0xfaeCcee632912c42a7c88c3544885A8D455408FA": {
       logoURL: "https://cdn.discordapp.com/attachments/953712381886861372/956944983515086959/ICHI_Uni.png",
       symbol: "oneUNI"
     },
     // ICHI oneBTC Angel Vault LP
-    "0x5318c21c96256ce4b73c27d405147df97d28e0be": {
+    "0x5318c21c96256ce4b73c27D405147df97d28E0Be": {
       logoURL: "https://cdn.discordapp.com/attachments/953712381886861372/956945051240513596/ICHI_BTC.png",
     },
   },
