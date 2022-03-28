@@ -99,7 +99,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       // We got data from rari token list
       let { symbol: _symbol, name: _name, logoURI } = rariTokenData;
       symbol =
-        _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
+        _symbol == !!_symbol?.toLowerCase() ? _symbol.toUpperCase() : _symbol;
       name = _name;
       logoURL = logoURI;
 
@@ -121,7 +121,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
         } = coingeckoData;
 
         symbol =
-          _symbol == _symbol.toLowerCase() ? _symbol.toUpperCase() : _symbol;
+          _symbol == !!_symbol?.toLowerCase() ? _symbol?.toUpperCase() : _symbol;
         name = _name;
         // Prefer the logo from trustwallet if possible!
         const trustWalletLogoResponse = await fetch(trustWalletURL);
@@ -148,6 +148,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       }
     }
   } catch (err) {
+    console.log(err)
     // If it errored we should return 404
     return response.status(404).send("Nope");
   }
@@ -167,8 +168,9 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     },
     overrides
   );
+  
 
-  // console.log({ overrides, basicTokenInfo, method });
+  console.log({ overrides, basicTokenInfo, address });
 
   // Get the color
   let color: Palette;

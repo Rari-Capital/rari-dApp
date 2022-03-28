@@ -168,7 +168,17 @@ export const TokenDataOverrides: {
       logoURL:
         "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png",
     },
-    //
+    // ICHI oneBTC
+    "0xEc4325F0518584F0774b483c215F65474EAbD27F": {
+      logoURL: "https://cdn.discordapp.com/attachments/953712381886861372/957671684515696660/logo.png",
+      symbol: "oneBTC"
+    },
+    // ICHI oneUNI
+    "0x8290D7a64F25e6b5002d98367E8367c1b532b534": {
+      logoURL: "https://cdn.discordapp.com/attachments/953712381886861372/957671604060553257/logo.png",
+      symbol: "oneUNI"
+    },
+
   },
   [ChainID.ARBITRUM]: {
     "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F": {
