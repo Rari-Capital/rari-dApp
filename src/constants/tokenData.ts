@@ -187,6 +187,26 @@ export const TokenDataOverrides: {
     "0x5318c21c96256ce4b73c27D405147df97d28E0Be": {
       logoURL: "https://cdn.discordapp.com/attachments/953712381886861372/956945051240513596/ICHI_BTC.png",
     },
+    // FOX
+    "0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d": {
+      symbol: "FOX"
+    },
+    // oneFOX
+    "0x03352D267951E96c6F7235037C5DFD2AB1466232": {
+      symbol: "oneFOX"
+    },
+    // oneFOX ICHI Angel Vault LP
+    "0x779F9BAd1f4B1Ef5198AD9361DBf3791F9e0D596": {
+      name: "oneFOX Angel Vault LP",
+      logoURL: "https://cdn.discordapp.com/attachments/954083960454000711/960193552732782652/OneFOX_Angel_Vault_LP.png",
+      symbol: "oneFOX ICHI LP"
+    },
+    // UNI-v2 WETH-Fox LP
+    "0x470e8de2eBaef52014A47Cb5E6aF86884947F08c": {
+      logoURL: "https://cdn.discordapp.com/attachments/954083960454000711/960196275008073818/FOX-WETH_UniswapV2_LP.png",
+      name: "FOX-ETH UniV2 LP",
+      symbol: "FOX-ETH UniV2 LP",
+    }
   },
   [ChainID.ARBITRUM]: {
     "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F": {
