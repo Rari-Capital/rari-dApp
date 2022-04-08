@@ -13,7 +13,9 @@ import {
 
 import { VercelRequest, VercelResponse } from "@vercel/node";
 
-type tokenData = {
+import axios from "axios";
+
+type TokenData = {
   color;
   overlayTextColor;
   address;
@@ -27,6 +29,7 @@ type tokenData = {
  */
 
 // params: address (required), chainId (optional) (default 1)
+let method: "RARI" | "COINGECKO" | "CONTRACT";
 export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Cache-Control", "max-age=3600, s-maxage=3600");
@@ -34,6 +37,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const { address: _address, chainId: _chainId = "1" } = request.query;
 
   let chainId: number;
+
   // Validate ChainID
   try {
     chainId = parseInt(_chainId as string);
@@ -44,6 +48,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     return response.status(500).send(`Unsupported Chain ID: ${_chainId}`);
   }
 
+  // Try to get networkdata
   const netData = networkData[chainId];
   if (!netData) {
     return response
@@ -73,84 +78,84 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const yearnLogoURL = `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/tokens/${address}/logo-128.png`;
 
   let decimals = 18;
+  let rariTokenData;
+
+  // Get decimals, return 404 if cant
+  try {
+    decimals = await tokenContract.methods.decimals().call();
+  } catch {
+    return response
+      .status(404)
+      .send(`Invalid Token ${address} on chain ${chainId}`);
+  }
+
+  // Rari Token Data
   try {
     // Fetch data from rari token data first
-    const [_decimals, rariTokenData] = await Promise.all([
-      tokenContract.methods
-        .decimals()
-        .call()
-        .then((res) => parseFloat(res)),
-      // 18,
-      fetch(rariURL).then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-      }),
-    ]);
-
-    decimals = _decimals;
-
-    let method: "RARI" | "COINGECKO" | "CONTRACT";
-
+    const { data } = await axios.get(rariURL);
+    rariTokenData = data;
+  } catch (err) {
+    console.log(`Could not find Rari Token Data at url ${rariURL}}`);
+  } finally {
     console.log({ rariTokenData, rariURL });
+  }
 
-    //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
-    if (!!rariTokenData) {
-      // We got data from rari token list
-      let { symbol: _symbol, name: _name, logoURI } = rariTokenData;
+  //1.) Try Rari Token list 2.) Try Coingecko 3.) Try contracts
+  if (!!rariTokenData) {
+    // We got data from rari token list
+    let { symbol: _symbol, name: _name, logoURI } = rariTokenData;
+    symbol =
+      _symbol == !!_symbol?.toLowerCase() ? _symbol.toUpperCase() : _symbol;
+    name = _name;
+    logoURL = logoURI;
+    method = "RARI";
+  } else {
+    // We could not get data from rari token list. Try Coingecko
+
+    const { data: coingeckoData } = await axios.get(coingeckoURL);
+
+    if (!!coingeckoData) {
+      // We got data from Coingecko
+      let {
+        symbol: _symbol,
+        name: _name,
+        image: { small },
+      } = coingeckoData;
+
       symbol =
-        _symbol == !!_symbol?.toLowerCase() ? _symbol.toUpperCase() : _symbol;
+        _symbol == !!_symbol?.toLowerCase() ? _symbol?.toUpperCase() : _symbol;
       name = _name;
-      logoURL = logoURI;
-
-      method = "RARI";
-    } else {
-      // We could not get data from rari token list. Try Coingecko
-      const coingeckoData = await fetch(coingeckoURL).then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-      });
-
-      if (!!coingeckoData) {
-        // We got data from Coingecko
-        let {
-          symbol: _symbol,
-          name: _name,
-          image: { small },
-        } = coingeckoData;
-
-        symbol =
-          _symbol == !!_symbol?.toLowerCase() ? _symbol?.toUpperCase() : _symbol;
-        name = _name;
-        // Prefer the logo from trustwallet if possible!
-        const trustWalletLogoResponse = await fetch(trustWalletURL);
-        if (trustWalletLogoResponse.ok) {
-          logoURL = trustWalletURL;
-        } else {
-          logoURL = small;
-        }
-        method = "COINGECKO";
+      // Prefer the logo from trustwallet if possible!
+      const trustWalletLogoResponse = await fetch(trustWalletURL);
+      if (trustWalletLogoResponse.ok) {
+        logoURL = trustWalletURL;
       } else {
-        // We could not get data from coingecko. Use the contract data
+        logoURL = small;
+      }
+      method = "COINGECKO";
+    } else {
+      // We could not get data from coingecko. Use the contract data
+      try {
         name = await tokenContract.methods.name().call();
         symbol = await tokenContract.methods.symbol().call();
-
-        // We can't get the logo data from literally anywhere else so try one last time from yearn
-        const yearnLogoResponse = await fetch(yearnLogoURL);
-        if (yearnLogoResponse.ok) {
-          // A lot of the yearn tokens are curve tokens with long names,
-          // so we flatten them here and just remove the Curve part
-          symbol = symbol.replace("Curve-", "");
-          logoURL = yearnLogoURL;
-        }
-        method = "CONTRACT";
+      } catch (err) {
+        return response
+          .status(404)
+          .send(
+            `Could not get name and symbol for token ${address} on chain ${chainId}`
+          );
       }
+
+      // We can't get the logo data from literally anywhere else so try one last time from yearn
+      const yearnLogoResponse = await fetch(yearnLogoURL);
+      if (yearnLogoResponse.ok) {
+        // A lot of the yearn tokens are curve tokens with long names,
+        // so we flatten them here and just remove the Curve part
+        symbol = symbol.replace("Curve-", "");
+        logoURL = yearnLogoURL;
+      }
+      method = "CONTRACT";
     }
-  } catch (err) {
-    console.log(err)
-    // If it errored we should return 404
-    return response.status(404).send("Nope");
   }
 
   // Assign any overides if any specified
@@ -168,7 +173,6 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     },
     overrides
   );
-  
 
   console.log({ overrides, basicTokenInfo, address });
 
