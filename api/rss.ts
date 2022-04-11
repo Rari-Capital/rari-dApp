@@ -274,6 +274,8 @@ export default async (request: NowRequest, response: NowResponse) => {
     timeZone: "America/Los_Angeles",
   });
 
+  try {
+
   if (address) {
     response.setHeader("Cache-Control", "s-maxage=3600");
 
@@ -471,6 +473,10 @@ export default async (request: NowRequest, response: NowResponse) => {
 
     console.log("done!");
   } else {
-    response.status(404).send("Specify address or poolID!");
+    return response.status(404).send("Specify address or poolID!");
   }
+} catch (err) {
+    return response.status(500).send("Error fetching RSS.");
+}
+
 };
