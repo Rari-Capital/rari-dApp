@@ -40,7 +40,7 @@ abis["RariGovernanceTokenUniswapDistributor"] = require("." +
   ".json");
 
 export default class Governance {
-  API_BASE_URL = "https://api.rari.capital/governance/";
+  API_BASE_URL = "http://206.81.6.235:3000/governance/";
 
   static CONTRACT_ADDRESSES = contractAddresses;
   static CONTRACT_ABIS = abis;

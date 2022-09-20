@@ -26,7 +26,7 @@ interface Props {
 }
 
 const DepositModal = (props: Props) => {
-  const [mode, setMode] = useState(Mode.DEPOSIT);
+  const [mode, setMode] = useState(Mode.WITHDRAW);
 
   const [currentScreen, setCurrentScreen] = useState(CurrentScreen.MAIN);
 

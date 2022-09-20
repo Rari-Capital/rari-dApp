@@ -59,7 +59,7 @@ legacyAbis["v1.2.0"]["RariFundController"] = require("." +
   ".json");
 
 export default class EthereumPool extends StablePool {
-  API_BASE_URL = "https://api.rari.capital/pools/ethereum/";
+  API_BASE_URL = "http://206.81.6.235:3000/pools/ethereum/";
   POOL_TOKEN_SYMBOL = "REPT";
 
   static CONTRACT_ADDRESSES = contractAddresses;

@@ -39,7 +39,7 @@ legacyAbis["v1.0.0"]["RariFundProxy"] = require("." +
   ".json");
 
 export default class DaiPool extends StablePool {
-  API_BASE_URL = "https://api.rari.capital/pools/dai/";
+  API_BASE_URL = "http://206.81.6.235:3000/pools/dai/";
   POOL_NAME = "Rari DAI Pool";
   POOL_TOKEN_SYMBOL = "RDPT";
 

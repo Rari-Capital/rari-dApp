@@ -13,6 +13,7 @@ export default class DydxSubpool {
   }
 
   async getCurrencyApys() {
+    return {}
     return await this.cache.getOrUpdate("dydxCurrencyApys", async function () {
       const data = (await axios.get("https://api.dydx.exchange/v1/markets"))
         .data;

@@ -50,7 +50,7 @@ legacyAbis["v1.1.0"]["RariFundProxy"] = require("." +
   ".json");
 
 export default class YieldPool extends StablePool {
-  API_BASE_URL = "https://api.rari.capital/pools/yield/";
+  API_BASE_URL = "http://206.81.6.235:3000/pools/yield/";
   POOL_NAME = "Rari Yield Pool";
   POOL_TOKEN_SYMBOL = "RYPT";
 

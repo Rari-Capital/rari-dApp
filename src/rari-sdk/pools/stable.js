@@ -185,7 +185,7 @@ legacyAbis["v2.5.0"]["RariFundController"] = require("." +
   ".json");
 
 export default class StablePool {
-  API_BASE_URL = "https://api.rari.capital/pools/stable/";
+  API_BASE_URL = "http://206.81.6.235:3000/pools/stable/";
   POOL_NAME = "Rari Stable Pool";
   POOL_TOKEN_SYMBOL = "RSPT";
 
