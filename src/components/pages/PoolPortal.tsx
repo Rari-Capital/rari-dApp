@@ -1070,7 +1070,7 @@ const DepositButton = (
 
   return (
     <GlowingButton width="170px" height="50px" {...props}>
-      {t("Deposit")}
+      {t("Withdraw")}
     </GlowingButton>
   );
 };

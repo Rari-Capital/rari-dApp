@@ -14,7 +14,7 @@
 
 
 /src/static/contracts/compiled/*.ts
-/src/static/compiled/*.json
+
 
 # production
 /build

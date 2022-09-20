@@ -5,7 +5,8 @@ import {
 } from "utils/fetchFusePoolData";
 import { TokenData } from "hooks/useTokenData";
 
-export const tokens = {} as AllTokens;
+import Tokens from "../static/compiled/tokens.json";
+export const tokens = Tokens as AllTokens;
 
 export interface AssetHash {
   [address: string]: USDPricedFuseAsset;
