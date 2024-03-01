@@ -1,4 +1,4 @@
-# Rari dApp &middot; ![Tests](https://github.com/Rari-Capital/rari-dApp/workflows/Tests/badge.svg) &middot; [![Coverage Status](https://coveralls.io/repos/github/Rari-Capital/rari-dApp/badge.svg?branch=master)](https://coveralls.io/github/Rari-Capital/rari-dApp?branch=master)
+# Rari dApp &middot; ![Tests](https://github.com/Rari-Capital/rari-dApp/workflows/Tests/badge.svg) &middot; [![Coverage Status](https://coveralls.io/repos/github/Rari-Capital/rari-dApp/badge.svg?branch=master)](https://coveralls.io/github/Rari-Capital/rari-dApp?branch=master) &middot; [![GitPOAP Badge](https://public-api.gitpoap.io/v1/repo/Rari-Capital/rari-dApp/badge)](https://www.gitpoap.io/gh/Rari-Capital/rari-dApp)
 
 Rari Capital's Web3 Portal.
 
